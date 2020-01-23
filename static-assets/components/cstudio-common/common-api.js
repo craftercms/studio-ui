@@ -58,10 +58,10 @@ var nodeOpen = false,
   studioTimeZone = null;
 
 
-(function(undefined) {
+(function(undefined){
 
   // Private functions
-  var encodePathToNumbers = function (path) {
+  var encodePathToNumbers = function(path) {
     var re1 = new RegExp('/', 'g');
 
     var res = path.replace(re1, '00');    // substitute all forward slash with '00'
@@ -70,7 +70,7 @@ var nodeOpen = false,
     return res;
   };
 
-  var decodeNumbersToPath = function (pathWithNumbers) {
+  var decodeNumbersToPath = function(pathWithNumbers) {
     var res = pathWithNumbers.replace(/00/g, '/');
     res = res.replace(/111/g, '-');
     res = res.replace(/010/g, '.');
@@ -80,7 +80,7 @@ var nodeOpen = false,
   /**
    * authoring object
    */
-  if (typeof CStudioAuthoring == 'undefined' || !CStudioAuthoring) CStudioAuthoring = {
+  if (typeof CStudioAuthoring == "undefined" || !CStudioAuthoring) CStudioAuthoring = {
 
     processing: false,
     compConfProcessing: false,
@@ -100,17 +100,17 @@ var nodeOpen = false,
      * @param {String} multiple_arguments The namespaces to create
      * @return {Object} the last namespace object created
      */
-    namespace: function () {
+    namespace: function() {
       var imply = (arguments[0] !== false),
         oRoot = imply ? CStudioAuthoring : window,
-        a = arguments, o = null, j, k, d;
+        a=arguments, o=null, j, k, d;
       for (var i = (imply ? 0 : 1), l = a.length; i < l; i++) {
-        d = a[i].split('.');
+        d = a[i].split(".");
         o = oRoot;
-        for (j = (!imply ? 0 : ((d[0] == 'CStudioAuthoring') ? 1 : 0)), // Imply CStudioAuthoring if not otherwise specified
+        for (j = (!imply ? 0 : ((d[0] == "CStudioAuthoring") ? 1 : 0)), // Imply CStudioAuthoring if not otherwise specified
                k = d.length; j < k; j++) {
-          !(o[d[j]]) && (o[d[j]] = {});
-          o = o[d[j]];
+          !(o[ d[j] ]) && (o[ d[j] ] = {});
+          o = o[ d[j] ];
         }
       }
       return o;
@@ -125,30 +125,30 @@ var nodeOpen = false,
      *    and initialize them with the paired value of the namespace (object key)
      * @param {Object} oNamespaces An object containing the namespaces to register & initialize
      */
-    register: function (oNamespaces) {
+    register: function(oNamespaces){
       var np, oNamespace, exists = this.isSet,
         set = YAHOO.lang.augmentObject,
-        rootnp = 'CStudioAuthoring.', aux;
-      if (arguments.length == 1) {
-        for (np in oNamespaces) {
+        rootnp = "CStudioAuthoring.", aux;
+      if(arguments.length == 1) {
+        for(np in oNamespaces) {
           if (!exists(np, true)) {
             oNamespace = this.namespace(np);
-            if (!(typeof oNamespaces[np] == 'function'))
+            if (!(typeof oNamespaces[np] == "function"))
               set(oNamespace, oNamespaces[np]);
             else {
               aux = ((np.substr(0, 16) !== rootnp) ? (rootnp + np) : np);
-              eval(aux + '=oNamespaces[np]');
+              eval(aux + "=oNamespaces[np]");
             }
           }
         }
       } else {
         np = arguments[0];
         oNamespace = this.namespace(np);
-        if (typeof arguments[1] != 'function')
+        if (typeof arguments[1] != "function")
           set(oNamespace, arguments[1]);
         else {
           aux = ((np.substr(0, 16) !== rootnp) ? (rootnp + np) : np);
-          eval(aux + '=arguments[1]');
+          eval(aux + "=arguments[1]");
         }
       }
       return oNamespace;
@@ -158,10 +158,10 @@ var nodeOpen = false,
      * @param {String} namespace The namespace to check to see if initialized. Non-String values will be evaluated for a value != undefined
      * @param {Boolean} imply If true, looks for the namespace inside the CStudioAuthoring object
      */
-    isSet: function (namespace, imply) {
+    isSet: function(namespace, imply){
       var o = namespace;
-      if (Object.prototype.toString.call(namespace) == '[object String]') {
-        var props = namespace.split('.'),
+      if (Object.prototype.toString.call(namespace) == "[object String]") {
+        var props = namespace.split("."),
           l = props.length;
         o = imply ? CStudioAuthoring : window;
         if (l == 1) return !!(o[namespace]);
@@ -170,23 +170,23 @@ var nodeOpen = false,
       }
       return (o !== undefined);
     }
-  };
+  }
 
   var CSA = CStudioAuthoring;
 
-  function CStudioConstant(value) {
+  function CStudioConstant (value) {
     this.getValue = function () {
       return value;
-    };
+    }
   }
 
   CStudioConstant.prototype.toString = function () {
     return this.getValue();
-  };
+  }
 
   CStudioConstant.toString = function () {
-    return 'CStudioAuthoring.Constant';
-  };
+    return "CStudioAuthoring.Constant";
+  }
 
   CSA.register({
     Constant: CStudioConstant,
@@ -194,15 +194,15 @@ var nodeOpen = false,
      * authoring events
      */
     Events: {
-      contextNavLoaded: new YAHOO.util.CustomEvent('contextNavLoadedEvent', CSA),
-      contextNavReady: new YAHOO.util.CustomEvent('contextNavReadyEvent', CSA),
-      moduleActiveContentReady: new YAHOO.util.CustomEvent('modActiveContentEvent', CSA),
+      contextNavLoaded: new YAHOO.util.CustomEvent("contextNavLoadedEvent", CSA),
+      contextNavReady: new YAHOO.util.CustomEvent("contextNavReadyEvent", CSA),
+      moduleActiveContentReady: new YAHOO.util.CustomEvent("modActiveContentEvent", CSA),
 
-      widgetScriptLoaded: new YAHOO.util.CustomEvent('widgetScript', CSA),
-      moduleScriptLoaded: new YAHOO.util.CustomEvent('moduleScript', CSA),
+      widgetScriptLoaded: new YAHOO.util.CustomEvent("widgetScript", CSA),
+      moduleScriptLoaded: new YAHOO.util.CustomEvent("moduleScript", CSA),
 
-      contentSelected: new YAHOO.util.CustomEvent('contentSelected', CSA),
-      contentUnSelected: new YAHOO.util.CustomEvent('contentunSelected', CSA)
+      contentSelected: new YAHOO.util.CustomEvent("contentSelected", CSA),
+      contentUnSelected: new YAHOO.util.CustomEvent("contentunSelected", CSA)
     },
     /**
      * general place for constants
@@ -210,57 +210,57 @@ var nodeOpen = false,
     Constants: {
       /*
              * Permission checking constants */
-      PERMISSION_READ: new CStudioConstant('read'),
-      PERMISSION_WRITE: new CStudioConstant('write'),
-      PERMISSION_DELETE: new CStudioConstant('delete'),
-      PERMISSION_CREATE_FOLDER: new CStudioConstant('create folder'),
+      PERMISSION_READ: new CStudioConstant("read"),
+      PERMISSION_WRITE: new CStudioConstant("write"),
+      PERMISSION_DELETE: new CStudioConstant("delete"),
+      PERMISSION_CREATE_FOLDER: new CStudioConstant("create folder"),
       CONFIG_FILES_PATH: '/config/studio',
       CONFIG_FILES_PATH_ADMIN: '/config',
       CONFIG_SAMPLE_FILES_PATH_ADMIN: '/configuration/samples',
-      IMAGE_VALID_EXTENSIONS: ['jpg', 'jpeg', 'gif', 'png', 'tiff', 'tif', 'bmp', 'svg', 'JPG', 'JPEG', 'GIF', 'PNG', 'TIFF', 'TIF', 'BMP', 'SVG'],
+      IMAGE_VALID_EXTENSIONS: ["jpg", "jpeg", "gif", "png", "tiff", "tif", "bmp", "svg", "JPG", "JPEG", "GIF", "PNG", "TIFF", "TIF", "BMP", "SVG"],
       MAX_INT_VALUE: 2147483647,
       CACHE_TIME_CONFIGURATION: 900000,
       CACHE_TIME_PERMISSION: 900000,
       CACHE_TIME_GET_CONTENT_ITEM: 0,
-      CACHE_TIME_GET_ROLES: 900000,
-      MIMETYPES: {
-        'navPage': { class: 'fa-file' },
-        'floatingPage': { class: 'fa-file-o' },
-        'component': { class: 'fa-puzzle-piece' },
-        'taxonomy': { class: 'fa-tag' },
-        'unknown': { class: 'fa-file-text' },
-        'video': { class: 'fa-file-video-o' },
-        'image': { class: 'fa-file-image-o' },
-        'pdf': { class: 'fa-file-pdf-o' },
-        'powerpoint': { class: 'fa-file-powerpoint-o' },
-        'word': { class: 'fa-file-word-o' },
-        'excel': { class: 'fa-file-excel-o' },
-        'zip': { class: 'fa-file-archive-o' },
-        'js': { class: 'fa-file-code-o' },
-        'groovy': { class: 'fa-file-code-o' },
-        'css': { class: 'fa-css3' },
-        'ftl': { class: 'fa-file-code-o' },
-        'font': { class: 'fa-font' }
+      CACHE_TIME_GET_ROLES: 900000 ,
+      MIMETYPES :  {
+        "navPage": { class: "fa-file" },
+        "floatingPage": { class: "fa-file-o" },
+        "component": { class: "fa-puzzle-piece" },
+        "taxonomy" : {class: "fa-tag"},
+        "unknown": { class: "fa-file-text" },
+        "video": { class: "fa-file-video-o" },
+        "image": { class: "fa-file-image-o" },
+        "pdf": { class: "fa-file-pdf-o" },
+        "powerpoint": { class: "fa-file-powerpoint-o" },
+        "word": { class: "fa-file-word-o" },
+        "excel": { class: "fa-file-excel-o" },
+        "zip": { class: "fa-file-archive-o" },
+        "js": { class: "fa-file-code-o" },
+        "groovy": { class: "fa-file-code-o" },
+        "css": { class: "fa-css3" },
+        "ftl": { class: "fa-file-code-o" },
+        "font": { class: "fa-font"}
       },
       WORKFLOWICONS: {
-        processing: 'fa-spinner fa-spin',
-        locked: 'fa-lock',
-        neverpublished: 'fa-plus',
-        deleted: 'fa-ban',
-        scheduled: 'fa-clock-o',
-        inworkflow: 'fa-flag',
-        edited: 'fa-pencil'
+        processing: "fa-spinner fa-spin",
+        locked: "fa-lock",
+        neverpublished: "fa-plus",
+        deleted: "fa-ban",
+        scheduled: "fa-clock-o",
+        inworkflow: "fa-flag",
+        edited: "fa-pencil"
       },
       STATUS: {
-        submittedStatus: 'submitted',
-        scheduledStatus: 'scheduled',
-        inWorkflowStatus: 'in workflow'
+        submittedStatus: "submitted",
+        scheduledStatus: "scheduled",
+        inWorkflowStatus: "in workflow"
       },
-      HEADERS: 'headers',
-      AUTH_HEADERS: 'AUTH_HEADERS',
-      DATASOURCE_URL: '/static-assets/components/cstudio-forms/data-sources/',
-      CONTROL_URL: '/static-assets/components/cstudio-forms/controls/',
-      GET_ALL_CONTENT_TYPES: 'getAllContentType'
+      HEADERS: "headers",
+      AUTH_HEADERS: "AUTH_HEADERS",
+      DATASOURCE_URL: "/static-assets/components/cstudio-forms/data-sources/",
+      CONTROL_URL: "/static-assets/components/cstudio-forms/controls/",
+      GET_ALL_CONTENT_TYPES: "getAllContentType"
     },
     /**
      * required resources, exension of the authoring environment bootstrap
@@ -293,7 +293,7 @@ var nodeOpen = false,
        * this CSS has dynamically defined contents so load order is important
        * Context must be available
        */
-      loadContextNavCss: function () {
+      loadContextNavCss: function() {
         //CStudioAuthoring.Utils.addCss('/overlay-css?baseUrl=' +
         //                           CStudioAuthoringContext.baseUri);'
         CSA.Utils.addCss('/static-assets/styles/temp.css');
@@ -304,7 +304,7 @@ var nodeOpen = false,
        * load all the resources initially
        * required to run the authoring environment
        */
-      loadRequiredResources: function () {
+      loadRequiredResources: function() {
         for (var i = 0; i < this.css.length; i++) {
           CSA.Utils.addCss(this.css[i]);
         }
@@ -317,12 +317,11 @@ var nodeOpen = false,
       /**
        * constructor
        */
-      init: function () {
-      },
+      init: function() {},
       /**
        * get content items in clipboard
        */
-      getClipboardContent: function (callback) {
+      getClipboardContent: function(callback) {
         CSA.Service.getClipboardItems(
           CStudioAuthoringContext.site,
           callback);
@@ -330,27 +329,27 @@ var nodeOpen = false,
       /**
        * copy an content item on to the clipboard
        */
-      copyContent: function (contentTO, callback) {
+      copyContent: function(contentTO, callback) {
         CSA.Service.copyContentToClipboard(
           CStudioAuthoringContext.site,
           contentTO.uri,
-          'content',
+          "content",
           callback);
       },
       /**
        * cut a content item on to the clipboard
        */
-      cutContent: function (contentTO, callback) {
+      cutContent: function(contentTO, callback) {
         CSA.Service.cutContentToClipboard(
           CStudioAuthoringContext.site,
           contentTO.uri,
-          'content',
+          "content",
           callback);
       },
       /**
        * paste all content as child of contentTO
        */
-      pasteContent: function (contentTO, callback) {
+      pasteContent: function(contentTO, callback) {
 
         CSA.Service.pasteContentFromClipboard(
           CStudioAuthoringContext.site,
@@ -361,7 +360,7 @@ var nodeOpen = false,
       /**
        * permissions to display the items on clipboard
        */
-      getPermissions: function (path, callback) {
+      getPermissions: function(path, callback) {
 
         CSA.Service.getUserPermissions(
           CStudioAuthoringContext.site, path,
@@ -371,14 +370,14 @@ var nodeOpen = false,
     /**
      * track content that is currently selected
      */
-    SelectedContent: {
+    SelectedContent:{
 
       selectedContent: null,
 
       /**
        * constructor
        */
-      init: function () {
+      init: function() {
         this.selectedContent = [];
       },
 
@@ -386,17 +385,17 @@ var nodeOpen = false,
         this.selectedContent = [contentTO];
         CSA.Events.contentSelected.fire(contentTO);
 
-        var event = new CustomEvent('setContentDone');
+        var event = new CustomEvent("setContentDone");
         document.dispatchEvent(event);
       },
 
       /**
        * content is selected, track it
        */
-      selectContent: function (contentTO, avoidEvent) {
+      selectContent: function(contentTO, avoidEvent) {
         if (this.at(contentTO) == -1) {
           this.selectedContent.push(contentTO);
-          if (!avoidEvent) {
+          if(!avoidEvent){
             CSA.Events.contentSelected.fire(contentTO);
           }
         }
@@ -405,13 +404,13 @@ var nodeOpen = false,
       /**
        * content unselected, stop tracking it
        */
-      unselectContent: function (contentTO, avoidEvent) {
+      unselectContent: function(contentTO, avoidEvent) {
 
         var position = this.at(contentTO);
 
         if (position != -1) {
           this.selectedContent.splice(position, 1);
-          if (!avoidEvent) {
+          if(!avoidEvent){
             CSA.Events.contentUnSelected.fire(contentTO);
           }
         }
@@ -420,21 +419,21 @@ var nodeOpen = false,
       /**
        * return the number of selected content items
        */
-      getSelectedContentCount: function () {
+      getSelectedContentCount: function() {
         return this.selectedContent.length;
       },
 
       /**
        * return the selected content
        */
-      getSelectedContent: function () {
+      getSelectedContent: function() {
         return this.selectedContent;
       },
 
       /**
        * return the position of the item
        */
-      at: function (contentTO) {
+      at: function(contentTO) {
         var retAt = -1;
 
         var atContentToId = CSA.Utils.createContentTOId(contentTO);
@@ -456,7 +455,7 @@ var nodeOpen = false,
        * Unselects or clears all the selected items from the data structure
        *
        */
-      clear: function () {
+      clear: function() {
         this.selectedContent = [];
         CSA.Events.contentUnSelected.fire();
       }
@@ -466,24 +465,24 @@ var nodeOpen = false,
      */
     Module: {
 
-      loadedModules: [],
-      waitingForModule: [],
+      loadedModules: new Array(),
+      waitingForModule: new Array(),
 
       /**
        * either receive the Module Class or wait for it to be loaded
        */
-      requireModule: function (moduleName, script, moduleConfig, callback) {
+      requireModule: function(moduleName, script, moduleConfig, callback) {
 
         var moduleClass = this.loadedModules[moduleName];
 
         if (!moduleClass) {
-          if (!this.waitingForModule) {
+          if(!this.waitingForModule) {
             this.waitingForModule = [];
           }
 
           var waiting = this.waitingForModule[moduleName];
 
-          if (!waiting) {
+          if(!waiting) {
             waiting = [];
           }
 
@@ -499,32 +498,33 @@ var nodeOpen = false,
       /**
        * event that module has been loaded for those wating
        */
-      moduleLoaded: function (moduleName, moduleClass) {
+      moduleLoaded: function(moduleName, moduleClass) {
         this.loadedModules[moduleName] = moduleClass;
 
         try {
           var waiting = this.waitingForModule[moduleName];
           var waiter;
 
-          if (waiting) {
-            for (var i = 0; i < waiting.length; i++) {
+          if(waiting) {
+            for(var i=0; i<waiting.length; i++) {
               waiter = waiting[i];
 
-              if (waiter.callback) {
+              if(waiter.callback) {
                 var config = (waiter.moduleConfig) ? waiter.moduleConfig : {};
                 waiter.callback.moduleLoaded(moduleName, moduleClass, config);
               }
             }
           }
-        } catch (err) {
-          var msg = '';
-          msg += 'Error while loading module: ' + moduleName + '\r\n';
-          msg += 'Err:' + err + '\r\n';
-          msg += 'callback:' + ((waiter.callback) ? waiter.callback : 'none') + '\r\n';
-          msg += 'moduleClass:' + ((waiter.moduleClass) ? moduleClass.moduleClass : 'none') + '\r\n';
-          msg += 'moduleConfig:' + ((waiter.moduleConfig) ? moduleClass.moduleConfig : 'none') + '\r\n';
+        }
+        catch(err) {
+          var msg = "";
+          msg += "Error while loading module: " + moduleName + "\r\n";
+          msg += "Err:" + err +"\r\n";
+          msg += "callback:" + ((waiter.callback) ? waiter.callback : "none") + "\r\n";
+          msg += "moduleClass:" + ((waiter.moduleClass) ? moduleClass.moduleClass : "none") + "\r\n";
+          msg += "moduleConfig:" + ((waiter.moduleConfig) ? moduleClass.moduleConfig : "none") + "\r\n";
 
-          if (window.console && window.console.log) {
+          if( window.console && window.console.log) {
             window.console.log(msg);
           }
         }
@@ -535,18 +535,18 @@ var nodeOpen = false,
      */
     Operations: {
 
-      _showDialogueView: function (oRequest, setZIndex, dialogWidth, ApproveTypeParam) {
-        var width = (dialogWidth) ? dialogWidth : '602px';
+      _showDialogueView: function(oRequest, setZIndex, dialogWidth, ApproveTypeParam){
+        var width = (dialogWidth) ? dialogWidth : "602px";
         var Loader = CSA.Env.Loader,
           moduleid = oRequest.controller;
-        var fn = function () {
-          var dialogueId = CSA.Utils.getScopedId(moduleid || 'view'),
+        var fn = function() {
+          var dialogueId = CSA.Utils.getScopedId(moduleid || "view"),
             Controller, dialogue;
           Controller = CSA.Env.ModuleMap.get(moduleid);
           dialogue = new CSA.Component.Dialogue(dialogueId, {
             loadBody: {
               loaderFn: oRequest.fn,
-              callback: function () {
+              callback: function() {
                 /* set timezone dynamically */
                 if (arguments[0] &&
                   arguments[0].getResponseHeader &&
@@ -554,7 +554,7 @@ var nodeOpen = false,
                   var timeZoneText = arguments[0].getResponseHeader.Timezone;
                   if (timeZoneText) {
                     timeZoneText = timeZoneText.replace(/^\s+|\s+$/, '');
-                    var oTimeZoneSpan = YDom.get('timeZone');
+                    var oTimeZoneSpan = YDom.get("timeZone");
                     if (oTimeZoneSpan) {
                       oTimeZoneSpan.innerHTML = timeZoneText;
                     }
@@ -563,9 +563,7 @@ var nodeOpen = false,
                 var view;
                 if (Controller) {
                   view = new Controller({ context: dialogueId });
-                  view.on('end', function () {
-                    dialogue.destroy();
-                  });
+                  view.on("end", function(){ dialogue.destroy(); });
                 }
                 oRequest.callback && oRequest.callback.call(view, dialogue);
                 dialogue.centreY();
@@ -576,43 +574,40 @@ var nodeOpen = false,
             width: width,
             modal: true,
             close: false,
-            underlay: 'none',
+            underlay: "none",
             autofillheight: null
           });
           dialogue.render(document.body);
           dialogue.centreY();
 
           //set z-index to 101 so that dialog will display over context nav bar
-          if (setZIndex && dialogue.element && dialogue.element.style.zIndex != '') {
-            dialogue.element.style.zIndex = '102000';
-            dialogue.mask.style.zIndex = '101000';
+          if (setZIndex && dialogue.element && dialogue.element.style.zIndex != "") {
+            dialogue.element.style.zIndex = "102000";
+            dialogue.mask.style.zIndex = "101000";
           }
         };
-        var params = ['component-dialogue'];
+        var params = ["component-dialogue"];
         oRequest.controller && params.push(oRequest.controller);
         params.push(fn);
         Loader.use.apply(Loader, params);
       },
 
-      simpleDialogTypeINFO: 'INFO',
-      simpleDialogTypeWARN: 'WARN',
-      simpleDialogTypeERROR: 'ERROR',
+      simpleDialogTypeINFO: "INFO",
+      simpleDialogTypeWARN: "WARN",
+      simpleDialogTypeERROR: "ERROR",
 
-      showSimpleDialog: function (id, type, header, message, buttonsArray, dialogType, className, width, customZIndex) {
+      showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className, width, customZIndex) {
 
         var dialogId = id;
 
-        if (!buttonsArray) {
-          buttonsArray = [{
-            text: 'OK', handler: function () {
+        if(!buttonsArray) {
+          buttonsArray = [{ text: "OK",  handler:function(){
               this.destroy();
-            }, isDefault: false
-          }];
-        }
+            },isDefault:false }];
+        };
 
         var dialog = new YAHOO.widget.SimpleDialog(dialogId,
-          {
-            width: width ? width : '400px',
+          {   width: width ? width :"400px",
             fixedcenter: true,
             visible: false,
             draggable: false,
@@ -627,22 +622,22 @@ var nodeOpen = false,
         dialog.setHeader(header);
         dialog.render(document.body);
 
-        var bdIcon = dialog.element.getElementsByClassName('fa')[0],
+        var bdIcon = dialog.element.getElementsByClassName("fa")[0],
           bdHeight,
-          element = dialog.element.getElementsByClassName('bd')[0],
+          element = dialog.element.getElementsByClassName("bd")[0],
           computedStyle = getComputedStyle(element);
 
         bdHeight = element.clientHeight;  // height with padding
         bdHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
 
-        if (dialogType) {
+        if(dialogType) {
           if (bdHeight > bdIcon.offsetHeight) {
             bdIcon.style.marginBottom = (bdHeight - 15) + 'px';
           }
         }
 
-        if (className) {
-          dialog.element.firstElementChild.className += (' ' + className);
+        if(className){
+          dialog.element.firstElementChild.className +=(' '+className);
         }
 
         dialog.show();
@@ -651,64 +646,64 @@ var nodeOpen = false,
           dialog.element.style.setProperty('z-index', customZIndex, 'important');
         }
 
-        $('.studioDialog').on('keyup', function (e) {
+        $(".studioDialog").on("keyup", function(e) {
           if (e.keyCode === 27) {	// esc
             dialog.hide();
-            $(document).off('keyup');
+            $(document).off("keyup");
           }
         });
 
       },
 
-      createNavBarDropDown: function (opt) {
+      createNavBarDropDown: function(opt){
 
-        var dropdown = YDom.get(opt + '-dropdown');
+        var dropdown = YDom.get(opt+"-dropdown");
 
         dropdown.onclick = function () {
-          var className = ' ' + this.parentElement.className + ' ';
+          var className = " " + this.parentElement.className + " ";
 
-          if (~className.indexOf(' open ')) {
-            this.parentElement.className = className.replace(' open ', ' ');
+          if ( ~className.indexOf(" open ") ) {
+            this.parentElement.className = className.replace(" open ", " ");
           } else {
-            this.parentElement.className += ' open ';
+            this.parentElement.className += " open ";
           }
 
-          document.body.addEventListener('click', dropdownCloser, false);
+          document.body.addEventListener("click", dropdownCloser, false);
 
-          function dropdownCloser(e) {
-            var dropdownEl = (e.target.id == opt + '-dropdown'
-              || e.target.parentElement.id == opt + '-dropdown'
-              || e.target.parentElement.parentElement.id == opt + '-dropdown');
+          function dropdownCloser(e){
+            var dropdownEl = (e.target.id == opt+"-dropdown"
+              || e.target.parentElement.id == opt+"-dropdown"
+              || e.target.parentElement.parentElement.id == opt+"-dropdown");
 
-            if (!dropdownEl) {
-              document.body.removeEventListener('click', dropdownCloser, false);
-              dropdown.parentElement.className = className.replace(' open ', ' ');
+            if(!dropdownEl){
+              document.body.removeEventListener("click", dropdownCloser, false);
+              dropdown.parentElement.className = className.replace(" open ", " ");
             }
           }
         };
       },
 
-      translateContent: function (langBundle, specificSelector, dataAtt) {
+      translateContent: function(langBundle, specificSelector, dataAtt){
         var elements,
           dataAtt = dataAtt ? dataAtt : 'data-translation';
-        if (specificSelector) {
-          elements = document.querySelectorAll(specificSelector + ' [' + dataAtt + ']');
-        } else {
-          elements = document.querySelectorAll('[' + dataAtt + ']');
+        if(specificSelector){
+          elements = document.querySelectorAll(specificSelector + " [" + dataAtt + "]");
+        }else{
+          elements = document.querySelectorAll("[" + dataAtt + "]");
         }
 
-        for (var i = 0; i < elements.length; i++) {
+        for(var i=0; i<elements.length; i++){
           elements[i].innerHTML = CMgs.format(langBundle, elements[i].getAttribute(dataAtt));
         }
       },
 
-      deleteContent: function (items, requestDelete, callback) {
+      deleteContent: function(items, requestDelete, callback) {
         var controller, view;
-        if (requestDelete == true) {
-          controller = 'viewcontroller-submitfordelete';
+        if(requestDelete == true) {
+          controller = "viewcontroller-submitfordelete";
           view = CSA.Service.getSubmitForDeleteView;
         } else {
-          controller = 'viewcontroller-delete';
+          controller = "viewcontroller-delete";
           view = CSA.Service.getDeleteView;
         }
 
@@ -717,19 +712,19 @@ var nodeOpen = false,
           controller: controller,
           callback: function (dialogue) {
             var _self = this;
-            CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
-            if (YDom.get('cancelBtn')) {
-              YDom.get('cancelBtn').value = CMgs.format(formsLangBundle, 'cancel');
+            CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
+            if (YDom.get("cancelBtn")) {
+              YDom.get("cancelBtn").value = CMgs.format(formsLangBundle, "cancel");
             }
-            if (YDom.get('deleteBtn')) {
-              YDom.get('deleteBtn').value = CMgs.format(formsLangBundle, 'deleteDialogDelete');
+            if (YDom.get("deleteBtn")) {
+              YDom.get("deleteBtn").value = CMgs.format(formsLangBundle, "deleteDialogDelete");
             }
             this.loadDependencies(items);
             (function (items) {
-              _self.on('submitComplete', function (evt, args) {
+              _self.on("submitComplete", function (evt, args) {
                 var reloadFn = function () {
                   eventNS.data = items;
-                  eventNS.typeAction = '';
+                  eventNS.typeAction = "";
                   eventNS.oldPath = null;
                   document.dispatchEvent(eventNS);
                   callback && callback();
@@ -740,40 +735,40 @@ var nodeOpen = false,
             })(items);
             // Admin version of the view does not have this events
             // but then the call is ignored
-            this.on('hideRequest', function (evt, args) {
+            this.on("hideRequest", function (evt, args) {
               dialogue.destroy();
             });
-            this.on('showRequest', function (evt, args) {
+            this.on("showRequest", function (evt, args) {
               dialogue.show();
             });
           }
         }, true);
       },
-      viewSchedulingPolicy: function (callback) {
+      viewSchedulingPolicy: function(callback) {
         CSA.Operations._showDialogueView({
           fn: CSA.Service.getSchedulingPolicyView,
           callback: callback
         });
       },
 
-      viewContentHistory: function (contentObj, isWrite) {
+      viewContentHistory: function(contentObj, isWrite){
         CSA.Operations._showDialogueView({
           fn: CSA.Service.getHistoryView,
-          controller: 'viewcontroller-history',
-          callback: function (dialogue) {
+          controller: "viewcontroller-history",
+          callback: function(dialogue) {
 
-            CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
+            CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
 
-            YDom.get('historyCloseBtn').value = CMgs.format(formsLangBundle, 'close');
+            YDom.get("historyCloseBtn").value = CMgs.format(formsLangBundle, "close");
 
             this.loadHistory(contentObj, isWrite);
 
-            this.on('submitComplete', function (evt, args) {
+            this.on("submitComplete", function(evt, args){
 
-              var reloadFn = function () {
+              var reloadFn = function(){
                 dialogue.destroy();
                 eventNS.data = contentObj;
-                eventNS.typeAction = '';
+                eventNS.typeAction = "";
                 eventNS.oldPath = null;
                 document.dispatchEvent(eventNS);
               };
@@ -784,35 +779,35 @@ var nodeOpen = false,
 
             // Admin version of the view does not have this events
             // but then the call is ignored
-            this.on('hideRequest', function (evt, args) {
+            this.on("hideRequest", function(evt, args){
               dialogue.destroy();
             });
 
-            this.on('showRequest', function (evt, args) {
+            this.on("showRequest", function(evt, args){
               dialogue.show();
             });
           }
         }, true);
       },
 
-      viewConfigurationHistory: function (contentObj, isWrite) {
+      viewConfigurationHistory: function(contentObj, isWrite){
         CSA.Operations._showDialogueView({
           fn: CSA.Service.getHistoryView,
-          controller: 'viewcontroller-history',
-          callback: function (dialogue) {
+          controller: "viewcontroller-history",
+          callback: function(dialogue) {
 
-            CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
+            CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
 
-            YDom.get('historyCloseBtn').value = CMgs.format(formsLangBundle, 'close');
+            YDom.get("historyCloseBtn").value = CMgs.format(formsLangBundle, "close");
 
             this.loadConfigurationHistory(contentObj, isWrite);
 
-            this.on('submitComplete', function (evt, args) {
+            this.on("submitComplete", function(evt, args){
 
-              var reloadFn = function () {
+              var reloadFn = function(){
                 dialogue.destroy();
                 eventNS.data = contentObj;
-                eventNS.typeAction = '';
+                eventNS.typeAction = "";
                 eventNS.oldPath = null;
                 document.dispatchEvent(eventNS);
               };
@@ -823,11 +818,11 @@ var nodeOpen = false,
 
             // Admin version of the view does not have this events
             // but then the call is ignored
-            this.on('hideRequest', function (evt, args) {
+            this.on("hideRequest", function(evt, args){
               dialogue.destroy();
             });
 
-            this.on('showRequest', function (evt, args) {
+            this.on("showRequest", function(evt, args){
               dialogue.show();
             });
           }
@@ -838,7 +833,7 @@ var nodeOpen = false,
         const _self = this;
         const container = ($('<div class="approve-dialog-container"/>').appendTo('body'))[0];
         const user = CStudioAuthoringContext.user;
-        const scheduling = approveType ? 'custom' : 'now';
+        const scheduling = approveType ? 'custom': 'now';
 
         let unmount;
         CrafterCMSNext.render(
@@ -846,7 +841,7 @@ var nodeOpen = false,
           'PublishDialog',
           {
             onClose: (response) => {
-              if (response) {
+              if(response) {
                 _self.reloadItems(items, response);
               }
               unmount({ delay: 300, removeContainer: true });
@@ -861,13 +856,13 @@ var nodeOpen = false,
       viewDependencies: function (site, items, approveType, defaultSelection) {
         //defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
 
-        var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on';
+        var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on'
 
         CSA.Operations._showDialogueView({
           fn: CSA.Service.getDependenciesView,
           controller: 'viewcontroller-dependencies',
-          callback: function (dialogue) {
-            CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
+          callback: function(dialogue) {
+            CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
             this.loadItems(items, dependenciesSelection);
 
           }
@@ -875,7 +870,7 @@ var nodeOpen = false,
 
       },
 
-      submitContent: function (site, items) {
+      submitContent: function(site, items) {
         const _self = this;
         const container = ($('<div class="request-publish-container"/>').appendTo('body'))[0];
         const user = CStudioAuthoringContext.user;
@@ -886,17 +881,17 @@ var nodeOpen = false,
           'PublishDialog',
           {
             onClose: (response) => {
-              if (response) {
+              if(response) {
                 _self.reloadItems(items, response);
               }
               unmount({ delay: 300, removeContainer: true });
             },
-            items: items
+            items: items,
           }
         ).then(done => unmount = done.unmount);
       },
 
-      reloadItems: function (items, args) {
+      reloadItems: function(items, args) {
         var entities = { 'entities': [] };
 
         if (typeof items === 'string' || items instanceof String) {
@@ -908,16 +903,16 @@ var nodeOpen = false,
         }
 
         eventNS.data = items;
-        eventNS.typeAction = 'publish';
+        eventNS.typeAction = "publish";
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), {
-          success: function (response) {
+          success: function(response) {
             var dependenciesObj = JSON.parse(response.responseText).entities,
               dependencies = [];
 
             // add dependencies and their own dependencies
-            $.each(dependenciesObj, function () {
+            $.each(dependenciesObj, function(){
               dependencies.push(this.item);
-              $.each(this.dependencies, function () {
+              $.each(this.dependencies, function(){
                 dependencies.push(this.item);
               });
             });
@@ -932,7 +927,7 @@ var nodeOpen = false,
       /**
        * render a preview of the given content
        */
-      renderContentAssetPreview: function (nodeRef, callback) {
+      renderContentAssetPreview: function(nodeRef, callback) {
 
         CStudioAuthoring.Service.renderContentAssetPreview(nodeRef, callback);
       },
@@ -940,77 +935,79 @@ var nodeOpen = false,
       /**
        * open a gallery search page
        */
-      openGallerySearch: function (searchType, searchContext, select, mode, newWindow, callback, searchId) {
+      openGallerySearch: function(searchType, searchContext, select, mode, newWindow, callback, searchId) {
 
         var openInSameWindow = (newWindow) ? false : true;
 
         var searchUrl = CStudioAuthoringContext.authoringAppBaseUri +
-          '/gallery?site=' +
+          "/gallery?site=" +
           CStudioAuthoringContext.site +
-          '&s=';
+          "&s=";
 
         if (searchType) {
-          searchUrl += '&context=' + searchType;
+          searchUrl += "&context=" + searchType;
         }
 
         if (searchContext.includeAspects && searchContext.includeAspects.length > 0) {
-          searchUrl += '&includeAspects=';
+          searchUrl += "&includeAspects=";
 
           for (var i = 0; i < searchContext.includeAspects.length; i++) {
             searchUrl += searchContext.includeAspects[i];
 
             if (i < (searchContext.includeAspects.length - 1)) {
-              searchUrl += '|';
+              searchUrl += "|";
             }
           }
         }
 
         if (searchContext.excludeAspects && searchContext.excludeAspects.length > 0) {
-          searchUrl += '&includeAspects=';
+          searchUrl += "&includeAspects=";
 
           for (var j = 0; i < searchContext.excludeAspects.length; j++) {
             searchUrl += searchContext.excludeAspects[j];
 
             if (j < (searchContext.excludeAspects.length - 1)) {
-              searchUrl += '|';
+              searchUrl += "|";
             }
           }
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.keywords)) {
-          searchUrl += '&keywords=' + searchContext.keywords;
+          searchUrl += "&keywords=" + searchContext.keywords;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.sortBy)) {
-          searchUrl += '&sortBy=' + searchContext.sortBy;
+          searchUrl += "&sortBy=" + searchContext.sortBy;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.type)) {
-          searchUrl += '&type=' + searchContext.type;
+          searchUrl += "&type=" + searchContext.type;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.uploadTime)) {
-          searchUrl += '&uploadTime=' + searchContext.uploadTime;
+          searchUrl += "&uploadTime=" + searchContext.uploadTime;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(select)) {
-          searchUrl += '&selection=' + select;
+          searchUrl += "&selection=" + select;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(mode)) {
-          searchUrl += '&mode=' + mode;
+          searchUrl += "&mode=" + mode;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.itemsPerPage)) {
-          searchUrl += '&ipp=' + searchContext.itemsPerPage;
-        } else {
-          searchUrl += '&ipp=20';
+          searchUrl += "&ipp=" + searchContext.itemsPerPage;
+        }
+        else {
+          searchUrl += "&ipp=20";
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.page)) {
-          searchUrl += '&page=' + searchContext.page;
-        } else {
-          searchUrl += '&page=1';
+          searchUrl += "&page=" + searchContext.page;
+        }
+        else {
+          searchUrl += "&page=1";
         }
 
         if (searchContext.filters && searchContext.filters.length && searchContext.filters.length > 0) {
@@ -1018,12 +1015,12 @@ var nodeOpen = false,
             var startDate = searchContext.filters[i].startDate;
             var endDate = searchContext.filters[i].endDate;
 
-            if ((startDate != null && startDate != undefined && startDate != '')
-              || (endDate != null && endDate != undefined && endDate != '')) {
-              searchUrl += '&' + searchContext.filters[i].qname + '=' + searchContext.filters[i].value
-                + '|' + searchContext.filters[i].startDate + '|' + searchContext.filters[i].endDate;
+            if ( (startDate != null && startDate != undefined && startDate != "")
+              || (endDate != null && endDate != undefined && endDate != "") ) {
+              searchUrl += "&" + searchContext.filters[i].qname + "=" + searchContext.filters[i].value
+                + "|" + searchContext.filters[i].startDate + "|" + searchContext.filters[i].endDate;
             } else {
-              searchUrl += '&' + searchContext.filters[i].qname + '=' + searchContext.filters[i].value;
+              searchUrl += "&" + searchContext.filters[i].qname + "=" + searchContext.filters[i].value;
             }
           }
         }
@@ -1031,35 +1028,36 @@ var nodeOpen = false,
         // non filter URL data
         if (searchContext.nonFilters && searchContext.nonFilters.length && searchContext.nonFilters.length > 0) {
           for (var i = 0; i < searchContext.nonFilters.length; i++) {
-            searchUrl += '&' + searchContext.nonFilters[i].qname + '=' + searchContext.nonFilters[i].value;
+            searchUrl += "&" + searchContext.nonFilters[i].qname + "=" + searchContext.nonFilters[i].value;
           }
         }
 
-        if (!CStudioAuthoring.Utils.isEmpty(searchId) && searchId != 'undefined') {
-          searchUrl += '&searchId=' + searchId;
+        if (!CStudioAuthoring.Utils.isEmpty(searchId) && searchId != "undefined") {
+          searchUrl += "&searchId=" + searchId;
         } else {
           /* first time search called from other page : show empty result */
           if (!searchContext.filters || !searchContext.filters.length || searchContext.filters.length == 0)
-            if (!searchContext.contextName || searchContext.contextName == 'undefined')
-              searchUrl += '&presearch=false';
+            if (!searchContext.contextName || searchContext.contextName == "undefined")
+              searchUrl += "&presearch=false";
         }
 
 
         var childSearch = null;
 
-        if (!searchId || searchId == null || searchId == 'undefined'
+        if (!searchId || searchId == null || searchId == "undefined"
           || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
           childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
           childSearch.openInSameWindow = openInSameWindow;
           searchId = CStudioAuthoring.Utils.generateUUID();
 
           childSearch.searchId = searchId;
-          childSearch.searchUrl = searchUrl + '&searchId=' + searchId;
+          childSearch.searchUrl = searchUrl + "&searchId=" + searchId;
           childSearch.saveCallback = callback;
 
           CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
 
-        } else {
+        }
+        else {
           if (window.opener) {
 
             if (window.opener.CStudioAuthoring) {
@@ -1074,7 +1072,8 @@ var nodeOpen = false,
                 openerChildSearchMgr.openChildSearch(childSearch);
               }
             }
-          } else {
+          }
+          else {
             childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
             childSearch.searchUrl = searchUrl;
 
@@ -1086,38 +1085,38 @@ var nodeOpen = false,
       /**
        * open a search page
        */
-      openSearch: function (searchContext, newWindow, callback, searchId) {
+      openSearch: function(searchContext, newWindow, callback, searchId) {
 
         var openInSameWindow = (newWindow) ? false : true;
 
         var searchUrl = CStudioAuthoringContext.authoringAppBaseUri +
-          '/search?site=' +
+          "/search?site=" +
           CStudioAuthoringContext.site;
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.keywords)) {
-          searchUrl += '&keywords=' + searchContext.keywords;
+          searchUrl += "&keywords=" + searchContext.keywords;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.sortBy)) {
-          searchUrl += '&sortBy=' + searchContext.sortBy;
+          searchUrl += "&sortBy=" + searchContext.sortBy;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.page)) {
-          searchUrl += '&page=' + searchContext.page;
+          searchUrl += "&page=" + searchContext.page;
         } else {
-          searchUrl += '&page=1';
+          searchUrl += "&page=1";
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.mode)) {
-          searchUrl += '&mode=' + searchContext.mode;
+          searchUrl += "&mode=" + searchContext.mode;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.itemsPerPage)) {
-          searchUrl += '&ipp=' + searchContext.itemsPerPage;
+          searchUrl += "&ipp=" + searchContext.itemsPerPage;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(searchContext.query)) {
-          searchUrl += '&query=' + searchContext.query;
+          searchUrl += "&query=" + searchContext.query;
         }
 
         // Add search filters to url
@@ -1125,13 +1124,13 @@ var nodeOpen = false,
         // csr = crafter studio range
         // csrTO = crafter studio range separator in URL
         if (!jQuery.isEmptyObject(searchContext.filters)) {
-          $.each(searchContext.filters, function (key, value) {
+          $.each(searchContext.filters, function(key, value) {
             if (typeof value === 'string') {
               searchUrl += '&csf_' + key + '=' + value;
             } else if ($.isArray(value)) {
-              $.each(value, function () {
+              $.each(value, function() {
                 searchUrl += '&csf_' + key + '=' + this;
-              });
+              })
             } else {  //is a range
               if (value.date) {
                 var min = value.min,
@@ -1144,17 +1143,17 @@ var nodeOpen = false,
                 searchUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max;
               }
             }
-          });
+          })
         }
 
         var childSearch = null;
 
-        if (!searchId || searchId == null || searchId == 'undefined'
+        if (!searchId || searchId == null || searchId == "undefined"
           || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
           childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
           childSearch.openInSameWindow = openInSameWindow;
           searchId = CStudioAuthoring.Utils.generateUUID();
-          searchUrl += '&searchId=' + searchId;
+          searchUrl += "&searchId=" + searchId;
 
           childSearch.searchId = searchId;
           childSearch.searchUrl = searchUrl;
@@ -1162,7 +1161,8 @@ var nodeOpen = false,
 
           CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
 
-        } else {
+        }
+        else {
           if (window.opener) {
 
             if (window.opener.CStudioAuthoring) {
@@ -1177,7 +1177,8 @@ var nodeOpen = false,
                 openerChildSearchMgr.openChildSearch(childSearch);
               }
             }
-          } else {
+          }
+          else {
             childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
             childSearch.searchUrl = searchUrl;
 
@@ -1189,59 +1190,60 @@ var nodeOpen = false,
       /**
        * open a browse page
        */
-      openBrowse: function (searchType, path, select, mode, newWindow, callback, searchId) {
+      openBrowse: function(searchType, path, select, mode, newWindow, callback, searchId) {
 
         var searchContext = CStudioAuthoring.Service.createSearchContext();
 
         var openInSameWindow = (newWindow) ? false : true;
 
         var searchUrl = CStudioAuthoringContext.authoringAppBaseUri +
-          '/browse?site=' +
+          "/browse?site=" +
           CStudioAuthoringContext.site +
-          '&s=';
+          "&s=";
 
         if (searchType) {
-          searchUrl += '&context=' + searchType;
+          searchUrl += "&context=" + searchType;
         }
 
 
         if (!CStudioAuthoring.Utils.isEmpty(select)) {
-          searchUrl += '&selection=' + select;
+          searchUrl += "&selection=" + select;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(mode)) {
-          searchUrl += '&mode=' + mode;
+          searchUrl += "&mode=" + mode;
         }
 
         if (path) {
-          searchUrl += '&PATH=' + path;
+          searchUrl += "&PATH=" + path;
         }
 
-        if (!CStudioAuthoring.Utils.isEmpty(searchId) && searchId != 'undefined') {
-          searchUrl += '&searchId=' + searchId;
+        if (!CStudioAuthoring.Utils.isEmpty(searchId) && searchId != "undefined") {
+          searchUrl += "&searchId=" + searchId;
         } else {
           /* first time search called from other page : show empty result */
           if (!searchContext.filters || !searchContext.filters.length || searchContext.filters.length == 0)
-            if (!searchContext.contextName || searchContext.contextName == 'undefined')
-              searchUrl += '&presearch=false';
+            if (!searchContext.contextName || searchContext.contextName == "undefined")
+              searchUrl += "&presearch=false";
         }
 
 
         var childSearch = null;
 
-        if (!searchId || searchId == null || searchId == 'undefined'
+        if (!searchId || searchId == null || searchId == "undefined"
           || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
           childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
           childSearch.openInSameWindow = openInSameWindow;
           searchId = CStudioAuthoring.Utils.generateUUID();
 
           childSearch.searchId = searchId;
-          childSearch.searchUrl = searchUrl + '&searchId=' + searchId;
+          childSearch.searchUrl = searchUrl + "&searchId=" + searchId;
           childSearch.saveCallback = callback;
 
           CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
 
-        } else {
+        }
+        else {
           if (window.opener) {
 
             if (window.opener.CStudioAuthoring) {
@@ -1256,7 +1258,8 @@ var nodeOpen = false,
                 openerChildSearchMgr.openChildSearch(childSearch);
               }
             }
-          } else {
+          }
+          else {
             childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
             childSearch.searchUrl = searchUrl;
 
@@ -1268,51 +1271,51 @@ var nodeOpen = false,
       /**
        * open a browse page for CMIS repo
        */
-      openCMISBrowse: function (repoId, path, studioPath, allowedOperations, mode, newWindow, callback) {
+      openCMISBrowse: function(repoId, path, studioPath, allowedOperations, mode, newWindow, callback) {
 
         var searchId = null;
 
         var openInSameWindow = (newWindow) ? false : true;
 
         var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
-          '/browseCMIS?site=' +
+          "/browseCMIS?site=" +
           CStudioAuthoringContext.site;
 
         if (repoId) {
-          browseUrl += '&repoId=' + repoId;
+          browseUrl += "&repoId=" + repoId;
 
-        }
-        if (path) {
-          browseUrl += '&path=' + path;
+        } if (path) {
+          browseUrl += "&path=" + path;
         }
 
         if (studioPath) {
-          browseUrl += '&studioPath=' + studioPath;
+          browseUrl += "&studioPath=" + studioPath;
         }
 
         if (allowedOperations) {
-          browseUrl += '&allowedOperations=' + allowedOperations;
+          browseUrl += "&allowedOperations=" + allowedOperations;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(mode)) {
-          browseUrl += '&mode=' + mode;
+          browseUrl += "&mode=" + mode;
         }
 
         var childSearch = null;
 
-        if (!searchId || searchId == null || searchId == 'undefined'
+        if (!searchId || searchId == null || searchId == "undefined"
           || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
           childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
           childSearch.openInSameWindow = openInSameWindow;
           searchId = CStudioAuthoring.Utils.generateUUID();
 
           childSearch.searchId = searchId;
-          childSearch.searchUrl = browseUrl + '&searchId=' + searchId;
+          childSearch.searchUrl = browseUrl + "&searchId=" + searchId;
           childSearch.saveCallback = callback;
 
           CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
 
-        } else {
+        }
+        else {
           if (window.opener) {
 
             if (window.opener.CStudioAuthoring) {
@@ -1327,7 +1330,8 @@ var nodeOpen = false,
                 openerChildSearchMgr.openChildSearch(childSearch);
               }
             }
-          } else {
+          }
+          else {
             childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
             childSearch.searchUrl = browseUrl;
 
@@ -1340,47 +1344,48 @@ var nodeOpen = false,
       /**
        * open a browse page for CMIS repo
        */
-      openWebDAVBrowse: function (path, profileId, mode, newWindow, callback, filter = 'none') {
+      openWebDAVBrowse: function(path, profileId, mode, newWindow, callback, filter = 'none') {
 
         var searchId = null;
 
         var openInSameWindow = (newWindow) ? false : true;
 
         var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
-          '/browseWebDAV?site=' +
+          "/browseWebDAV?site=" +
           CStudioAuthoringContext.site;
 
         if (path) {
-          browseUrl += '&path=' + path;
+          browseUrl += "&path=" + path;
         }
 
-        if (profileId) {
-          browseUrl += '&profileId=' + profileId;
+        if(profileId){
+          browseUrl += "&profileId=" + profileId;
         }
 
-        if (filter !== 'none') {
-          browseUrl += '&filter=' + filter;
+        if(filter !== 'none'){
+          browseUrl += "&filter=" + filter;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(mode)) {
-          browseUrl += '&mode=' + mode;
+          browseUrl += "&mode=" + mode;
         }
 
         var childSearch = null;
 
-        if (!searchId || searchId == null || searchId == 'undefined'
+        if (!searchId || searchId == null || searchId == "undefined"
           || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
           childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
           childSearch.openInSameWindow = openInSameWindow;
           searchId = CStudioAuthoring.Utils.generateUUID();
 
           childSearch.searchId = searchId;
-          childSearch.searchUrl = browseUrl + '&searchId=' + searchId;
+          childSearch.searchUrl = browseUrl + "&searchId=" + searchId;
           childSearch.saveCallback = callback;
 
           CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
 
-        } else {
+        }
+        else {
           if (window.opener) {
 
             if (window.opener.CStudioAuthoring) {
@@ -1395,7 +1400,8 @@ var nodeOpen = false,
                 openerChildSearchMgr.openChildSearch(childSearch);
               }
             }
-          } else {
+          }
+          else {
             childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
             childSearch.searchUrl = browseUrl;
 
@@ -1408,47 +1414,48 @@ var nodeOpen = false,
       /**
        * open a browse page for S3 repo
        */
-      openS3Browse: function (profileId, path, mode, newWindow, callback, filter = 'none') {
+      openS3Browse: function(profileId, path, mode, newWindow, callback, filter = 'none') {
 
         var searchId = null;
 
         var openInSameWindow = (newWindow) ? false : true;
 
         var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
-          '/browseS3?site=' +
+          "/browseS3?site=" +
           CStudioAuthoringContext.site;
 
-        if (profileId) {
-          browseUrl += '&profileId=' + profileId;
+        if(profileId){
+          browseUrl += "&profileId=" + profileId;
         }
 
-        if (path) {
-          browseUrl += '&path=' + path;
+        if(path){
+          browseUrl += "&path=" + path;
         }
 
-        if (filter !== 'none') {
-          browseUrl += '&filter=' + filter;
+        if(filter !== 'none'){
+          browseUrl += "&filter=" + filter;
         }
 
         if (!CStudioAuthoring.Utils.isEmpty(mode)) {
-          browseUrl += '&mode=' + mode;
+          browseUrl += "&mode=" + mode;
         }
 
         var childSearch = null;
 
-        if (!searchId || searchId == null || searchId == 'undefined'
+        if (!searchId || searchId == null || searchId == "undefined"
           || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
           childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
           childSearch.openInSameWindow = openInSameWindow;
           searchId = CStudioAuthoring.Utils.generateUUID();
 
           childSearch.searchId = searchId;
-          childSearch.searchUrl = browseUrl + '&searchId=' + searchId;
+          childSearch.searchUrl = browseUrl + "&searchId=" + searchId;
           childSearch.saveCallback = callback;
 
           CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
 
-        } else {
+        }
+        else {
           if (window.opener) {
 
             if (window.opener.CStudioAuthoring) {
@@ -1463,7 +1470,8 @@ var nodeOpen = false,
                 openerChildSearchMgr.openChildSearch(childSearch);
               }
             }
-          } else {
+          }
+          else {
             childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
             childSearch.searchUrl = browseUrl;
 
@@ -1473,19 +1481,17 @@ var nodeOpen = false,
 
       },
 
-      refreshPreviewParent: function () {
-        var previewFrameEl = window.parent.document.getElementById('engineWindow');
-        if (previewFrameEl) {
-          previewFrameEl.contentWindow.location.reload();
-        }
+      refreshPreviewParent: function() {
+        var previewFrameEl = window.parent.document.getElementById("engineWindow");
+        if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
       },
 
-      refreshPreview: function (context) {
-        var previewFrameEl = document.getElementById('engineWindow');
-        if (previewFrameEl) {
-          if (!context || context.isComponent) {
+      refreshPreview: function(context) {
+        var previewFrameEl = document.getElementById("engineWindow");
+        if(previewFrameEl){
+          if(!context || context.isComponent){
             amplify.publish(crafter.studio.preview.cstopic(crafter.studio.preview.Topics.REFRESH_PREVIEW));
-          } else {
+          }else{
             if (context && context.browserUri) {
               amplify.publish(crafter.studio.preview.Topics.GUEST_CHECKIN, CStudioAuthoring.Operations.getPreviewUrl(context, false));
               return;
@@ -1496,8 +1502,8 @@ var nodeOpen = false,
         }
       },
 
-      setPreview: function (url) {
-        var previewFrameEl = document.getElementById('engineWindow');
+      setPreview: function(url) {
+        var previewFrameEl = document.getElementById("engineWindow");
         previewFrameEl.src = url;
       },
 
@@ -1509,11 +1515,11 @@ var nodeOpen = false,
        *
        * return {string}
        */
-      getPreviewUrl: function (contentTO, useAppBase, noReplaceExtension) {
-        var url = '';
+      getPreviewUrl: function(contentTO, useAppBase, noReplaceExtension) {
+        var url = "";
         var baseUri = (useAppBase === false) ? '' : CStudioAuthoringContext.previewAppBaseUri;
         var filename = encodeURI((contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name);
-        if (CStudioAuthoring.Utils.endsWith(filename, '.xml')) {
+        if (CStudioAuthoring.Utils.endsWith(filename, ".xml")) {
           url = baseUri + contentTO.browserUri;
 
           url = noReplaceExtension ? url : url.replace('.xml', '.html');
@@ -1531,9 +1537,9 @@ var nodeOpen = false,
       /**
        * given a transfer object, open a preview URL
        */
-      openPreview: function (contentTO, windowId, soundTone, incontextEdit, targetWindowId) {
+      openPreview: function(contentTO, windowId, soundTone, incontextEdit, targetWindowId) {
 
-        if (!targetWindowId) {
+        if(!targetWindowId) {
           // if no target is supplied assume local call
           // basically mimics behavior before target was implmented
           targetWindowId = window.name;
@@ -1546,17 +1552,17 @@ var nodeOpen = false,
         } else {
 
           // remove server name and port etc
-          if (url.indexOf('//') != -1) {
-            url = url.replace('//', '--x--');
-            url = url.substring(url.indexOf('/'));
-            if (url.indexOf('--x--') != -1) {
-              url = '/';
+          if(url.indexOf("//") != -1) {
+            url = url.replace("//","--x--");
+            url = url.substring(url.indexOf("/"));
+            if(url.indexOf("--x--") != -1) {
+              url = "/";
             }
 
           }
 
           var Topics = crafter.studio.preview.Topics;
-          window.location = '/studio/preview/#/?page=' + url + '&site=' + CStudioAuthoringContext.site;
+          window.location = '/studio/preview/#/?page='+url+'&site='+CStudioAuthoringContext.site;
         }
 
       },
@@ -1739,23 +1745,23 @@ var nodeOpen = false,
        * this method will open a form with the legacy form server
        * this method is maintained for backward compatability and for extremely complex use cases
        */
-      openContentWebFormLegacyFormServer: function (formId, id, noderef, path, edit, asPopup, callback, readOnly, auxParams, includeMetaData) {
+      openContentWebFormLegacyFormServer: function(formId, id, noderef, path, edit, asPopup, callback, readOnly,auxParams,includeMetaData) {
         CStudioAuthoring.Operations.showSimpleDialog(
-          'error-dialog',
+          "error-dialog",
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          CMgs.format(formsLangBundle, 'notification'),
-          CMgs.format(formsLangBundle, 'legacyFormNoSupported'),
+          CMgs.format(formsLangBundle, "notification"),
+          CMgs.format(formsLangBundle, "legacyFormNoSupported"),
           null, // use default button
           YAHOO.widget.SimpleDialog.ICON_INFO,
-          'studioDialog'
+          "studioDialog"
         );
       },
 
-      addMetadata: function (params) {
-        if (typeof CStudioForms != 'undefined' && CStudioForms) {
-          var metadataControl = CStudioForms.nodeManagers['page-metadata'];
-          if (metadataControl) {
-            if (metadataControl.hasPageId() && metadataControl.hasPageIdGroup()) {
+      addMetadata: function(params) {
+        if(typeof CStudioForms != "undefined" && CStudioForms) {
+          var metadataControl = CStudioForms.nodeManagers["page-metadata"];
+          if(metadataControl) {
+            if(metadataControl.hasPageId() && metadataControl.hasPageIdGroup() ) {
               metadataControl.addToParams(params);
             }
           }
@@ -1763,9 +1769,9 @@ var nodeOpen = false,
         return params;
       },
 
-      hasParam: function (params, name) {
+      hasParam : function(params, name) {
         for (var i = 0; i < params.length; i++) {
-          if (params[i].name == name)
+          if(params[i].name == name)
             return true;
         }
         return false;
@@ -1774,13 +1780,13 @@ var nodeOpen = false,
       /**
        * open order taxonomy dialog
        */
-      orderTaxonomy: function (site, modelName, level, orderedCb) {
+      orderTaxonomy: function(site, modelName, level, orderedCb) {
 
         var openDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(moduleConfig.site, moduleConfig.modelName, moduleConfig.level, moduleConfig.orderedCb);
           }
-        };
+        }
 
         var moduleConfig = {
           site: site,
@@ -1790,8 +1796,8 @@ var nodeOpen = false,
         };
 
         CStudioAuthoring.Module.requireModule(
-          'dialog-order-taxonomy',
-          '/static-assets/components/cstudio-dialogs/order-taxonomy.js',
+          "dialog-order-taxonomy",
+          "/static-assets/components/cstudio-dialogs/order-taxonomy.js",
           moduleConfig,
           openDialogCb);
       },
@@ -1799,13 +1805,13 @@ var nodeOpen = false,
       /**
        * create a new taxonomy item
        */
-      newTaxonomy: function (site, modelName, level, newCb) {
+      newTaxonomy: function(site, modelName, level, newCb) {
 
         var openDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(moduleConfig.site, moduleConfig.modelName, moduleConfig.level, moduleConfig.newCb);
           }
-        };
+        }
 
         var moduleConfig = {
           site: site,
@@ -1815,8 +1821,8 @@ var nodeOpen = false,
         };
 
         CStudioAuthoring.Module.requireModule(
-          'dialog-new-taxonomy',
-          '/static-assets/components/cstudio-dialogs/new-taxonomy.js',
+          "dialog-new-taxonomy",
+          "/static-assets/components/cstudio-dialogs/new-taxonomy.js",
           moduleConfig,
           openDialogCb);
       },
@@ -1836,7 +1842,7 @@ var nodeOpen = false,
 
         isEdit = (typeof (isEdit) === 'undefined') ? true : isEdit;
 
-        var $modal = $(`<div ${openHidden ? `style="visibility: hidden"` : ''}>
+        var $modal = $(`<div ${openHidden? `style="visibility: hidden"`: ""}>
                    <div class="no-ice-mask"></div>
                     <div
                     class="studio-ice-dialog studio-ice-container-${editorId}"
@@ -1844,7 +1850,7 @@ var nodeOpen = false,
                     >
                     <div class="bd overlay" id="${id}"></div>
                     </div>
-              </div>`);
+              </div>`)
 
         if (aux && aux.length) {
           for (var j = 0; j < aux.length; j++) {
@@ -1915,8 +1921,7 @@ var nodeOpen = false,
             $modal.find('.studio-ice-dialog').resizable({
               minHeight: 50,
               grid: [10000, 1],
-              create: function (event, ui) {
-              },
+              create: function (event, ui) {},
               start: function (event, ui) {
                 $('#engineWindow', window.top.document).css('pointer-events', 'none');
                 $('#in-context-edit-editor-' + editorId, window.top.document).css('pointer-events', 'none');
@@ -1932,33 +1937,33 @@ var nodeOpen = false,
         });
       },
 
-      openDiff: function (site, path, version, versionTO, escaped) {
+      openDiff: function(site, path, version, versionTO, escaped) {
 
-        window.top.studioFormZorder = (window.top.studioFormZorder) ? window.top.studioFormZorder + 1 : 9999;
+        window.top.studioFormZorder= (window.top.studioFormZorder) ? window.top.studioFormZorder + 1 : 9999;
         var id = CSA.Utils.getScopedId(),
           animator,
-          editorId = CStudioAuthoring.Utils.generateUUID(),
+          editorId =  CStudioAuthoring.Utils.generateUUID(),
           $modal = $('<div><div class="no-ice-mask"></div><div class="studio-ice-dialog studio-ice-container" id="studio-ice-container-' + editorId + '" style="display:none;"><div class="bd"></div></div></div>'),
-          template = '<iframe name="diffDialog" id="in-context-edit-editor-' + editorId + '" frameborder="0" style="z-index:' + window.top.studioFormZorder + ';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>',
+          template = '<iframe name="diffDialog" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+window.top.studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>',
           parentEl = window.top.document.body,
           diffUrl;
 
         animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
 
-        window.setTimeout(function () {
-          $(function () {
-            $modal.find('.studio-ice-dialog').each(function () {
+        window.setTimeout(function() {
+          $(function() {
+            $modal.find('.studio-ice-dialog').each(function() {
               var $this = $(this);
               $this.resizable({
                 minHeight: 50,
                 grid: [10000, 1],
-                start: function (event, ui) {
-                  $('#engineWindow').css('pointer-events', 'none');
-                  $('#in-context-edit-editor-' + editorId).css('pointer-events', 'none').height('');
+                start: function(event, ui) {
+                  $('#engineWindow').css('pointer-events','none');
+                  $("#in-context-edit-editor-"+editorId).css('pointer-events','none').height('');
                 },
-                stop: function (event, ui) {
-                  $('#engineWindow').css('pointer-events', 'auto');
-                  $('#in-context-edit-editor-' + editorId).css('pointer-events', 'auto');
+                stop: function( event, ui ) {
+                  $('#engineWindow').css('pointer-events','auto');
+                  $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
                 }
               });
             });
@@ -1968,13 +1973,13 @@ var nodeOpen = false,
         $modal.find('.bd').html(template).end().appendTo(parentEl);
         $modal.find('.studio-ice-container').css('z-index', 104000);
 
-        $('body').on('diff-end', function () {
+        $('body').on("diff-end", function () {
           $modal.remove();
         });
 
-        diffUrl = CStudioAuthoringContext.baseUri + '/diff?site=' + site + '&path=' + path + '&version=' + version;
+        diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
         diffUrl = versionTO ? diffUrl + '&versionTO=' + versionTO : diffUrl;
-        diffUrl += '&mode=iframe';
+        diffUrl += "&mode=iframe";
         diffUrl += escaped ? '&escaped=true' : '';
 
         window.open(diffUrl, 'diffDialog');
@@ -1982,59 +1987,59 @@ var nodeOpen = false,
         animator.slideInDown();
       },
 
-      _openIframe: function (url, name) {
+      _openIframe: function(url, name) {
         var id = CSA.Utils.getScopedId(),
           animator,
-          editorId = CStudioAuthoring.Utils.generateUUID(),
-          modalTpl = '<div class="studio-iframe-view">' +
+          editorId =  CStudioAuthoring.Utils.generateUUID(),
+          modalTpl =  '<div class="studio-iframe-view">' +
             '   <div class="overlay">' +
             '   </div>' +
-            '   <div class="studio-ice-dialog studio-ice-container studio-ice-container-' + editorId + '" id="studio-ice-container-' + editorId + '">' +
+            '   <div class="studio-ice-dialog studio-ice-container studio-ice-container-'+ editorId +'" id="studio-ice-container-' + editorId + '">' +
             '       <div class="bd">' +
             '           <input id="colExpButton" class="btn btn-default" type="button" value="Collapse">' +
             '       </div>' +
             '   </div>' +
             '</div>',
           $modal = $(modalTpl),
-          template = '<iframe name="' + name + '" id="in-context-edit-editor-' + editorId + '" frameborder="0" style="z-index:' + window.top.studioFormZorder + ';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>',
+          template = '<iframe name="'+ name +'" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+window.top.studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>',
           parentEl = window.top.document.body;
 
         animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
 
-        window.setTimeout(function () {
-          $(function () {
+        window.setTimeout(function() {
+          $(function() {
             $modal.find('.studio-ice-dialog').resizable({
               minHeight: 50,
               grid: [10000, 1],
-              start: function (event, ui) {
-                $('#engineWindow', window.top.document).css('pointer-events', 'none');
-                $('#in-context-edit-editor-' + editorId, window.top.document).css('pointer-events', 'none').height('');
+              start: function(event, ui) {
+                $('#engineWindow', window.top.document).css('pointer-events','none');
+                $("#in-context-edit-editor-"+editorId, window.top.document).css('pointer-events','none').height('');
               },
-              stop: function (event, ui) {
-                $('#engineWindow', window.top.document).css('pointer-events', 'auto');
-                $('#in-context-edit-editor-' + editorId, window.top.document).css('pointer-events', 'auto');
+              stop: function( event, ui ) {
+                $('#engineWindow', window.top.document).css('pointer-events','auto');
+                $("#in-context-edit-editor-"+editorId, window.top.document).css('pointer-events','auto');
               }
             });
           }, 1000);
 
-          $modal.on('click', '#colExpButton', function () {
-            var dialog = window.parent.$('.studio-ice-container-' + editorId),
+          $modal.on('click', '#colExpButton', function(){
+            var dialog = window.parent.$( ".studio-ice-container-"+editorId),
               dialogContainer = dialog.parent(),
               controlContainer = dialog.find('.bd'),
               colExpButtonBtn = $('#colExpButtonBtn'),
               overlayContainer = dialogContainer.find('.overlay'),
               iframe = dialog.find('iframe');
 
-            if (!controlContainer.hasClass('collapseForm')) {
-              CStudioAuthoring.Utils.Cookies.createCookie('formEngineHeight', $(dialog).height().toString());
+            if(!controlContainer.hasClass("collapseForm")){
+              CStudioAuthoring.Utils.Cookies.createCookie("formEngineHeight", $(dialog).height().toString());
               $(dialog).height(60);
-              controlContainer.addClass('collapseForm');
+              controlContainer.addClass("collapseForm");
               overlayContainer && overlayContainer.addClass('overlay-collapsed');
               iframe.css('top', -(iframe.height() - 60));
               overlayContainer.hide();
-            } else {
-              $(dialog).height(parseInt(CStudioAuthoring.Utils.Cookies.readCookie('formEngineHeight')));
-              controlContainer.removeClass('collapseForm');
+            } else{
+              $(dialog).height(parseInt(CStudioAuthoring.Utils.Cookies.readCookie("formEngineHeight")));
+              controlContainer.removeClass("collapseForm");
               overlayContainer && overlayContainer.removeClass('overlay-collapsed');
               iframe.css('top', 0);
               overlayContainer.show();
@@ -2051,37 +2056,37 @@ var nodeOpen = false,
         animator.slideInDown();
       },
 
-      openCopyDialog: function (site, uri, callback, args) {
+      openCopyDialog:function(site, uri, callback, args) {
 
-        var idx = uri.lastIndexOf('index.xml');
+        var idx = uri.lastIndexOf("index.xml");
         var folderPath = uri;
         if (idx > 0) {
-          folderPath = uri.substring(0, uri.lastIndexOf('index.xml'));
+          folderPath = uri.substring(0, uri.lastIndexOf("index.xml"));
         }
         var cut = false,  // args.cut was the original value, but this parameter is always returning undefined
-          serviceUri = CSA.Service.getPagesServiceUrl + '?site=' + site + '&path=' + folderPath + '&depth=' + CStudioAuthoring.Constants.MAX_INT_VALUE + '&order=default',
+          serviceUri = CSA.Service.getPagesServiceUrl + "?site=" + site + "&path=" + folderPath + "&depth=" + CStudioAuthoring.Constants.MAX_INT_VALUE + "&order=default",
           getCopyTreeItemRequest = CStudioAuthoring.Service.createServiceUri(serviceUri);
 
         submitDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.createDialog(cut, site);
 
             var fillCopyDialog = {
-              success: function (response) {
-                var copyTree = eval('(' + response.responseText + ')');
+              success:function(response) {
+                var copyTree= eval("(" + response.responseText + ")");
 
                 dialogClass.updateDialog(copyTree, cut);
 
               },
-              failure: function () {
+              failure:function() {
                 CStudioAuthoring.Operations.showSimpleDialog(
-                  'error-dialog',
+                  "error-dialog",
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(formsLangBundle, 'notification'),
-                  CMgs.format(formsLangBundle, 'loadContentsError'),
+                  CMgs.format(formsLangBundle, "notification"),
+                  CMgs.format(formsLangBundle, "loadContentsError"),
                   null, // use default button
                   YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
+                  "studioDialog"
                 );
               }
             };
@@ -2090,8 +2095,8 @@ var nodeOpen = false,
           }
         };
 
-        CStudioAuthoring.Module.requireModule('dialog-copy',
-          '/static-assets/components/cstudio-dialogs/copyDialog.js',
+        CStudioAuthoring.Module.requireModule("dialog-copy",
+          "/static-assets/components/cstudio-dialogs/copyDialog.js",
           {},
           submitDialogCb);
       },
@@ -2099,15 +2104,15 @@ var nodeOpen = false,
       /**
        * Assign a new template to an existing content item
        */
-      assignContentTemplate: function (site, author, path, assignCallback, currentContentType) {
+      assignContentTemplate: function(site, author, path, assignCallback, currentContentType) {
 
         var chooseTemplateCb = {
-          success: function (contentTypes) {
+          success: function(contentTypes) {
             //Remove current content type from list.
             var originalTypesCount = contentTypes.length;
             if (currentContentType && contentTypes.length > 1) {
-              var newContentTypes = [];
-              for (var typeIdx = 0; typeIdx < contentTypes.length; typeIdx++) {
+              var newContentTypes = new Array();
+              for (var typeIdx=0; typeIdx < contentTypes.length; typeIdx++) {
                 var contType = contentTypes[typeIdx];
                 if (contType.form != currentContentType) {
                   newContentTypes.push(contType);
@@ -2117,51 +2122,40 @@ var nodeOpen = false,
             }
 
             if (contentTypes.length == 0) {
-              var dialogEl = document.getElementById('errMissingRequirements');
-              if (!dialogEl) {
-                var dialog = new YAHOO.widget.SimpleDialog('errMissingRequirements',
-                  {
-                    width: '400px',
-                    fixedcenter: true,
-                    visible: false,
-                    draggable: false,
-                    close: false,
-                    modal: true,
-                    text: CMgs.format(formsLangBundle, 'noContentTypes') + ' ' + path,
-                    icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+              var dialogEl = document.getElementById("errMissingRequirements");
+              if(!dialogEl){
+                var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
+                  { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                    text: CMgs.format(formsLangBundle, "noContentTypes")+ " " + path, icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
                     constraintoviewport: true,
-                    buttons: [{
-                      text: CMgs.format(formsLangBundle, 'ok'), handler: function () {
-                        this.hide();
-                      }, isDefault: false
-                    }]
+                    buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
                   });
-                dialog.setHeader(CMgs.format(formsLangBundle, 'cancelDialogHeader'));
+                dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
                 dialog.render(document.body);
-                dialogEl = document.getElementById('errMissingRequirements');
+                dialogEl = document.getElementById("errMissingRequirements");
                 dialogEl.dialog = dialog;
               }
               dialogEl.dialog.show();
             } else {
               var selectTemplateDialogCb = {
-                moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+                moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
 
                   //filter only related content Types
                   var contentTypes = [];
                   compareContentType,
-                    contentType = 0 == currentContentType.indexOf('/') ? currentContentType.replace('/', '') : currentContentType;
-                  contentType = contentType.substring(0, contentType.indexOf('/'));
+                    contentType = 0 == currentContentType.indexOf("/") ? currentContentType.replace("/", "") : currentContentType;
+                  contentType = contentType.substring(0, contentType.indexOf("/"));
 
-                  for (var x = 0; x < moduleConfig.contentTypes.length; x++) {
+                  for(var x = 0; x < moduleConfig.contentTypes.length; x++){
                     var compareContentType = moduleConfig.contentTypes[x].name;
 
-                    if ('/component/level-descriptor' === currentContentType === compareContentType) {
+                    if("/component/level-descriptor" === currentContentType === compareContentType){
                       contentTypes.push(currentContentType);
-                    } else {
-                      compareContentType = 0 == compareContentType.indexOf('/') ? compareContentType.replace('/', '') : compareContentType;
-                      compareContentType = compareContentType.substring(0, compareContentType.indexOf('/'));
+                    }else{
+                      compareContentType = 0 == compareContentType.indexOf("/") ? compareContentType.replace("/", "") : compareContentType;
+                      compareContentType = compareContentType.substring(0, compareContentType.indexOf("/"));
 
-                      if (contentType === compareContentType) {
+                      if(contentType === compareContentType){
                         contentTypes.push(moduleConfig.contentTypes[x]);
                       }
                     }
@@ -2170,18 +2164,18 @@ var nodeOpen = false,
                   // dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, true);
                   dialogClass.showDialog(contentTypes, path, false, moduleConfig.selectTemplateCb, true);
                 }
-              };
+              }
 
               var typeSelectedCb = {
 
-                success: function (typeSelected) {
+                success: function(typeSelected) {
 
                   var changeTemplateServiceCb = {
-                    success: function () {
+                    success: function() {
                       this.assignCallback.success(this.typeSelected);
                     },
 
-                    failure: function () {
+                    failure: function() {
                       this.assignCallback.failure();
                     },
 
@@ -2192,7 +2186,7 @@ var nodeOpen = false,
                   changeTemplateServiceCb.success();
                 },
 
-                failure: function () {
+                failure: function() {
                   this.assignCallback.failure();
                 },
 
@@ -2204,23 +2198,23 @@ var nodeOpen = false,
                 selectTemplateCb: typeSelectedCb
               };
 
-              CStudioAuthoring.Module.requireModule('dialog-select-template',
-                '/static-assets/components/cstudio-dialogs/select-content-type.js',
+              CStudioAuthoring.Module.requireModule("dialog-select-template",
+                "/static-assets/components/cstudio-dialogs/select-content-type.js",
                 moduleConfig,
                 selectTemplateDialogCb);
             }
           },
 
-          failure: function () {
+          failure: function() {
           }
         };
 
         CStudioAuthoring.Service.lookupAllowedContentTypesForPath(site, path, chooseTemplateCb);
       },
 
-      getImageRequest: function (data) {
+      getImageRequest: function(data) {
         var callback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             data.image.src = data.url;
           },
           failure: function (oResponse) {
@@ -2231,24 +2225,22 @@ var nodeOpen = false,
               failure: function (oResponse) {
                 data.image.src = data.url;
               }
-            };
-            setTimeout(function () {
-              CStudioAuthoring.Service.getImageRequest({ url: data.url, callback: secondCallback });
-            }, 700);
+            }
+            setTimeout(function(){ CStudioAuthoring.Service.getImageRequest({ url:data.url, callback: secondCallback}); },700);
           }
-        };
-        CStudioAuthoring.Service.getImageRequest({ url: data.url, callback: callback });
+        }
+        CStudioAuthoring.Service.getImageRequest({ url:data.url, callback: callback});
       },
 
-      getloadItems: function (data) {
+      getloadItems: function(data) {
         var callback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
           },
           failure: function (oResponse) {
 
           }
-        };
-        CStudioAuthoring.Service.getImageRequest({ url: data.url, callback: callback });
+        }
+        CStudioAuthoring.Service.getImageRequest({ url:data.url, callback: callback});
       },
 
       /**
@@ -2256,10 +2248,10 @@ var nodeOpen = false,
        * opens a dialog if needed or goes directly to the form if no
        * template selection is require (only one option
        */
-      createNewContentForType: function (site, path, type, asPopup, formSaveCb, childForm) {
+      createNewContentForType: function(site, path, type, asPopup, formSaveCb, childForm) {
         var auxParams = [];
-        if (childForm && childForm == true) {
-          auxParams = [{ name: 'childForm', value: 'true' }];
+        if(childForm && childForm == true) {
+          auxParams = [ { name: "childForm", value: "true" }];
         }
 
         CStudioAuthoring.Operations.openContentWebForm(
@@ -2278,41 +2270,30 @@ var nodeOpen = false,
        * opens a dialog if needed or goes directly to the form if no
        * template selection is require (only one option
        */
-      createNewContent: function (site, path, asPopup, formSaveCb, childForm, isFlattenedInclude, filterCB) {
+      createNewContent: function(site, path, asPopup, formSaveCb, childForm, isFlattenedInclude, filterCB) {
         var auxParams = [];
-        if (childForm && childForm == true) {
-          auxParams = [{ name: 'childForm', value: 'true' }];
+        if(childForm && childForm == true) {
+          auxParams = [ { name: "childForm", value: "true" }];
         }
 
         var callback = {
-          success: function (contentTypes) {
+          success: function(contentTypes) {
             if (filterCB) {
               contentTypes = contentTypes.filter(filterCB);
             }
 
             if (contentTypes.length == 0) {
-              var dialogEl = document.getElementById('errMissingRequirements');
-              if (!dialogEl) {
-                var dialog = new YAHOO.widget.SimpleDialog('errMissingRequirements',
-                  {
-                    width: '400px',
-                    fixedcenter: true,
-                    visible: false,
-                    draggable: false,
-                    close: false,
-                    modal: true,
-                    text: CMgs.format(formsLangBundle, 'noContentTypes') + ' ' + path,
-                    icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+              var dialogEl = document.getElementById("errMissingRequirements");
+              if(!dialogEl){
+                var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
+                  { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                    text: CMgs.format(formsLangBundle, "noContentTypes")+ " " + path, icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
                     constraintoviewport: true,
-                    buttons: [{
-                      text: CMgs.format(formsLangBundle, 'ok'), handler: function () {
-                        this.hide();
-                      }, isDefault: false
-                    }]
+                    buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
                   });
-                dialog.setHeader(CMgs.format(formsLangBundle, 'cancelDialogHeader'));
+                dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
                 dialog.render(document.body);
-                dialogEl = document.getElementById('errMissingRequirements');
+                dialogEl = document.getElementById("errMissingRequirements");
                 dialogEl.dialog = dialog;
               }
               dialogEl.dialog.show();
@@ -2334,12 +2315,12 @@ var nodeOpen = false,
                 isFlattenedInclude);
             } else {
               var selectTemplateCb = {
-                success: function (selectedTemplate) {
+                success: function(selectedTemplate) {
                   CStudioAuthoring.Operations.openContentWebForm(
                     selectedTemplate,
                     null,
                     null,
-                    path == CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES ? '' : path,
+                    path == CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES ? "" : path,
                     false,
                     this.asPopup,
                     this.formSaveCb,
@@ -2348,7 +2329,7 @@ var nodeOpen = false,
                     isFlattenedInclude);
                 },
 
-                failure: function () {
+                failure: function() {
                   this.formSaveCb.failure();
                 },
 
@@ -2357,25 +2338,25 @@ var nodeOpen = false,
               };
 
               var selectTemplateDialogCb = {
-                moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+                moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
 
                   dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, false);
                 }
-              };
+              }
 
               var moduleConfig = {
                 contentTypes: contentTypes,
                 selectTemplateCb: selectTemplateCb
               };
 
-              CStudioAuthoring.Module.requireModule('dialog-select-template',
-                '/static-assets/components/cstudio-dialogs/select-content-type.js',
+              CStudioAuthoring.Module.requireModule("dialog-select-template",
+                "/static-assets/components/cstudio-dialogs/select-content-type.js",
                 moduleConfig,
                 selectTemplateDialogCb);
             }
           },
 
-          failure: function () {
+          failure: function() {
           }
         };
 
@@ -2395,8 +2376,8 @@ var nodeOpen = false,
           serviceURI;
 
         if (params) for (var key in params) {
-          serviceParams.push(key + '=' + params[key]);
-        }
+          serviceParams.push(key + "=" + params[key]);
+        };
 
         serviceURI = CSA.Service.createServiceUri(CSA.Service.getWorkflowAffectedPathsServiceUrl + '?' + serviceParams.join('&'));
 
@@ -2405,8 +2386,7 @@ var nodeOpen = false,
             var content;
             try {
               content = CSA.Utils.decode(response.responseText).items;
-            } catch (ex) {
-            }
+            } catch (ex) {  }
             callback.success && callback.success(content);
           },
           failure: function (response) {
@@ -2415,16 +2395,12 @@ var nodeOpen = false,
               // TODO can we improve this message to say something useful? will response bring any sort of useful message?
               var message = 'An error occurred trying to get the affected files.';
               var dialog = new YAHOO.widget.SimpleDialog(CSA.Utils.getScopedId('error'), {
-                width: '300px', visible: true, fixedcenter: true,
-                draggable: false, close: false, modal: true,
-                text: message, icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-                buttons: [{
-                  text: 'Accept', handler: function () {
-                    this.hide();
-                  }, isDefault: true
-                }]
+                width: "300px",     visible: true,      fixedcenter: true,
+                draggable: false,   close: false,       modal: true,
+                text: message,      icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+                buttons: [{ text:"Accept", handler: function() { this.hide(); }, isDefault:true }]
               });
-              dialog.setHeader('Warning');
+              dialog.setHeader("Warning");
               dialog.render(document.body);
             }
           }
@@ -2480,8 +2456,7 @@ var nodeOpen = false,
                 }
                 callback.success(nodeRef);
               },
-              failure: function () {
-              },
+              failure: function () {},
               callingWindow: window
             }, null, mode);
           }
@@ -2518,12 +2493,12 @@ var nodeOpen = false,
       /**
        * view content
        */
-      viewContent: function (formId, site, id, noderef, path, asPopup, callback, auxParams) {
-        if (!auxParams) {
+      viewContent: function(formId, site, id, noderef, path, asPopup, callback, auxParams) {
+        if(!auxParams) {
           auxParams = [];
         }
 
-        auxParams[auxParams.length] = { 'name': 'readonly', 'value': 'true' };
+        auxParams[auxParams.length] = { "name": "readonly", "value" : "true" };
 
         CStudioAuthoring.Operations.openContentWebForm(
           formId,
@@ -2540,29 +2515,29 @@ var nodeOpen = false,
       /**
        * Duplicate operation
        */
-      duplicateContent: function (site, path, opCallBack) {
-        if (path) {
+      duplicateContent: function(site, path, opCallBack) {
+        if(path){
           CStudioAuthoring.Service.lookupContentItem(site, path, {
-            success: function (content) {
+            success: function(content){
               var contentTO = content.item;
-              var parentPath = contentTO.uri;
-              if (contentTO.uri.indexOf('index.xml') != -1) {
-                parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf('/'));
-                parentPath = parentPath.substring(0, parentPath.lastIndexOf('/'));
-                parentPath += '/index.xml';
+              var parentPath  = contentTO.uri;
+              if(contentTO.uri.indexOf("index.xml") != -1) {
+                parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
+                parentPath = parentPath.substring(0, parentPath.lastIndexOf("/"));
+                parentPath += "/index.xml";
               }
 
-              var refreshFn = function (to, newTo) {
+              var refreshFn = function(to, newTo) {
                 if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
                   CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
                 }
 
-                if (newTo) {
+                if(newTo) {
                   CStudioAuthoring.Operations.refreshPreview(newTo);
                 }
 
                 eventYS.data = to;
-                eventYS.typeAction = '';
+                eventYS.typeAction = "";
                 eventYS.oldPath = null;
                 eventYS.parent = false;
                 document.dispatchEvent(eventYS);
@@ -2572,83 +2547,83 @@ var nodeOpen = false,
                 site,
                 parentPath,
                 {
-                  success: function (parentItemTo) {
+                  success: function(parentItemTo) {
                     var copyCb = {
-                      success: function () {
+                      success: function() {
 
                         var pasteCb = {
-                          success: function (pasteResponse) {
+                          success: function(pasteResponse) {
 
                             var filePath = pasteResponse.status[0];
                             var extension = filePath.split('.')[filePath.split('.').length - 1];
 
                             var editCb = {
-                              success: function (newItem) {
+                              success: function(newItem) {
                                 refreshFn(parentItemTo.item, newItem.item);
                                 opCallBack.success();
                               },
-                              failure: function (errorResponse) {
+                              failure: function(errorResponse) {
                                 opCallBack.failure(errorResponse);
                               },
 
-                              cancelled: function () {
+                              cancelled: function() {
                                 refreshFn(parentItemTo.item, null);
-                              }
+                              },
                             };
 
-                            if (CStudioAuthoring.Utils.isEditableFormAsset(parentItemTo.item.uri)) {
+                            if(CStudioAuthoring.Utils.isEditableFormAsset(parentItemTo.item.uri)){
                               CStudioAuthoring.Operations.editContent(
                                 contentTO.contentType,
                                 CStudioAuthoringContext.site,
                                 filePath,
-                                '',
+                                "",
                                 filePath,
                                 false,
                                 editCb,
-                                []);
+                                new Array());
 
                             } else {
                               refreshFn(parentItemTo.item, null);
                             }
                           },
-                          failure: function (errorResponse) {
+                          failure: function(errorResponse) {
                             opCallBack.failure(errorResponse);
-                          }
+                          },
                         };
 
                         CStudioAuthoring.Service.pasteContentFromClipboard(site, parentItemTo.item.uri, pasteCb);
                       },
 
-                      failure: function (errorResponse) {
+                      failure: function(errorResponse) {
                         opCallBack.failure(errorResponse);
                       }
                     };
 
                     //This method doesn't seem to do the rght thing
                     //CStudioAuthoring.Clipboard.copyTree(contentTO, copyCb);
-                    var serviceUri = CStudioAuthoring.Service.copyServiceUrl + '?site=' + site;
-                    var copyData = '{ "item":[{ "uri": "' + contentTO.uri + '"}]}';
+                    var serviceUri = CStudioAuthoring.Service.copyServiceUrl + "?site=" + site;
+                    var copyData =  "{ \"item\":[{ \"uri\": \""+contentTO.uri+"\"}]}";
                     YAHOO.util.Connect.setDefaultPostHeader(false);
-                    YAHOO.util.Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
+                    YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
                     YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
                     YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), copyCb, copyData);
                   },
-                  failure: function () {
+                  failure: function() {
                   }
                 },
                 false,
                 false);
             }
-          });
+          })
         }
       },
 
       /**
        * create new template
        */
-      createNewTemplate: function (path, templateSaveCb) {
+      createNewTemplate: function(path, templateSaveCb) {
         var createTemplateDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(templateSaveCb, path);
           }
         };
@@ -2658,8 +2633,8 @@ var nodeOpen = false,
           path: path
         };
 
-        CStudioAuthoring.Module.requireModule('new-template-dialog',
-          '/static-assets/components/cstudio-dialogs/new-template.js',
+        CStudioAuthoring.Module.requireModule("new-template-dialog",
+          "/static-assets/components/cstudio-dialogs/new-template.js",
           createModuleConfig,
           createTemplateDialogCb);
       },
@@ -2667,9 +2642,9 @@ var nodeOpen = false,
       /**
        * create new script
        */
-      createNewScript: function (path, scriptSaveCb) {
+      createNewScript: function(path, scriptSaveCb) {
         var createScriptDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(scriptSaveCb, moduleConfig);
           }
         };
@@ -2679,8 +2654,8 @@ var nodeOpen = false,
           path: path
         };
 
-        CStudioAuthoring.Module.requireModule('new-script-dialog',
-          '/static-assets/components/cstudio-dialogs/new-script.js',
+        CStudioAuthoring.Module.requireModule("new-script-dialog",
+          "/static-assets/components/cstudio-dialogs/new-script.js",
           createModuleConfig,
           createScriptDialogCb);
       },
@@ -2688,17 +2663,16 @@ var nodeOpen = false,
       /**
        * open template
        */
-      openTemplateEditor: function (displayTemplate, channel, templateSaveCb, contentType, mode) {
+      openTemplateEditor: function(displayTemplate, channel, templateSaveCb, contentType, mode) {
         var loadTemplateEditorCb = {
-          moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
-            var editor = new moduleClass();
+          moduleLoaded: function(moduleName, moduleClass, moduleConfig) {                                                                     var editor = new moduleClass();
             editor.render(moduleConfig.displayTemplate, moduleConfig.channel, moduleConfig.cb, contentType, mode);
           }
-        };
+        }
 
-        CStudioAuthoring.Module.requireModule('cstudio-forms-template-editor',
-          '/static-assets/components/cstudio-forms/template-editor.js',
-          { displayTemplate: displayTemplate, channel: channel, cb: templateSaveCb },
+        CStudioAuthoring.Module.requireModule("cstudio-forms-template-editor",
+          "/static-assets/components/cstudio-forms/template-editor.js",
+          { displayTemplate: displayTemplate, channel: channel, cb: templateSaveCb},
           loadTemplateEditorCb, contentType, mode);
 
       },
@@ -2708,19 +2682,19 @@ var nodeOpen = false,
        * opens a dialog if needed or goes directly to the form if no
        * type selection is require (only one option
        */
-      createNewTaxonomy: function (path, formSaveCb) {
+      createNewTaxonomy: function(path, formSaveCb) {
 
         var callback = {
-          success: function (contentTypes) {
+          success: function(contentTypes) {
             if (contentTypes.types.length == 0) {
               CStudioAuthoring.Operations.showSimpleDialog(
-                'taxonomy-dialog',
+                "taxonomy-dialog",
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                CMgs.format(formsLangBundle, 'notification'),
-                CMgs.format(formsLangBundle, 'taxonomyError') + ' [' + site + ':' + path + ']',
+                CMgs.format(formsLangBundle, "notification"),
+                CMgs.format(formsLangBundle, "taxonomyError") + " [" + site + ":" + path + "]",
                 null, // use default button
                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
+                "studioDialog"
               );
             }
               //else if (contentTypes.types.length == 1) {
@@ -2728,17 +2702,16 @@ var nodeOpen = false,
             //}
             else {
               var selectTemplateCb = {
-                success: function (selectedType) {
+                success: function(selectedType) {
 
                   var createTaxonomyDialogCb = {
-                    moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-                      if (moduleName == 'dialog-create-taxonomy') {
-                        dialogClass.showDialog(
-                          moduleConfig.taxonomyType,
-                          moduleConfig.taxonomyName,
-                          path,
-                          moduleConfig.createTemplateCb);
-                      }
+                    moduleLoaded: function(moduleName, dialogClass, moduleConfig) {                                                     if(moduleName == "dialog-create-taxonomy") {
+                      dialogClass.showDialog(
+                        moduleConfig.taxonomyType,
+                        moduleConfig.taxonomyName,
+                        path,
+                        moduleConfig.createTemplateCb);
+                    }
                     }
                   };
 
@@ -2748,13 +2721,13 @@ var nodeOpen = false,
                     createTemplateCb: selectTemplateCb
                   };
 
-                  CStudioAuthoring.Module.requireModule('dialog-create-taxonomy',
-                    '/static-assets/components/cstudio-dialogs/create-taxonomy-item.js',
+                  CStudioAuthoring.Module.requireModule("dialog-create-taxonomy",
+                    "/static-assets/components/cstudio-dialogs/create-taxonomy-item.js",
                     createModuleConfig,
                     createTaxonomyDialogCb);
                 },
 
-                failure: function () {
+                failure: function() {
                   this.formSaveCb.failure();
                 },
 
@@ -2762,25 +2735,25 @@ var nodeOpen = false,
               };
 
               var selectTemplateDialogCb = {
-                moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+                moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
 
                   dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, false);
                 }
-              };
+              }
 
               var moduleConfig = {
                 contentTypes: contentTypes,
                 selectTemplateCb: selectTemplateCb
               };
 
-              CStudioAuthoring.Module.requireModule('dialog-select-taxonomy',
-                '/static-assets/components/cstudio-dialogs/select-taxonomy-type.js',
+              CStudioAuthoring.Module.requireModule("dialog-select-taxonomy",
+                "/static-assets/components/cstudio-dialogs/select-taxonomy-type.js",
                 moduleConfig,
                 selectTemplateDialogCb);
             }
           },
 
-          failure: function () {
+          failure: function() {
           }
         };
 
@@ -2792,32 +2765,31 @@ var nodeOpen = false,
       /**
        * approve content
        */
-      approveContent: function (site, contentItems) {
+      approveContent: function(site, contentItems) {
         CStudioAuthoring.Module.requireModule(
           'dialog-approve',
           '/static-assets/components/cstudio-dialogs/go-live.js', {
             contentItems: contentItems,
             site: site
           }, {
-            moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+            moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
               // in preview, this function undefined raises error -- unlike dashboard
               dialogClass.showDialog &&
               dialogClass.showDialog(moduleConfig.site, moduleConfig.contentItems);
-            }
-          });
+            } });
       },
 
       /**
        * approve-schedule content
        */
-      approveScheduleContent: function (site, contentItems) {
+      approveScheduleContent: function(site, contentItems) {
         CStudioAuthoring.Module.requireModule(
           'dialog-schedule-to-go-live',
           '/static-assets/components/cstudio-dialogs/schedule-to-go-live.js', {
             contentItems: contentItems,
             site: site
           }, {
-            moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+            moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
               // in preview, this function undefined raises error -- unlike dashboard
               dialogClass.showDialog && dialogClass.showDialog(moduleConfig.site, moduleConfig.contentItems);
             }
@@ -2827,18 +2799,18 @@ var nodeOpen = false,
       /**
        * reject content
        */
-      rejectContent: function (site, contentItems) {
+      rejectContent: function(site, contentItems) {
         var submitDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog && dialogClass.showDialog(moduleConfig.site, moduleConfig.contentItems);
           }
-        };
+        }
         var moduleConfig = {
           contentItems: contentItems,
           site: site
         };
-        CStudioAuthoring.Module.requireModule('dialog-reject',
-          '/static-assets/components/cstudio-dialogs/reject.js',
+        CStudioAuthoring.Module.requireModule("dialog-reject",
+          "/static-assets/components/cstudio-dialogs/reject.js",
           moduleConfig,
           submitDialogCb);
       },
@@ -2846,34 +2818,34 @@ var nodeOpen = false,
       /**
        * reload the page action for dialog box buttons.
        */
-      pageReload: function (flow, nodeName) {
+      pageReload: function(flow, nodeName){
 
-        if (flow) {
+        if(flow){
 
-          var panel = YDom.getElementsByClassName('yui-panel-container')[0];
-          var auxParentPath = '';
-          if (panel && (panel.style.visibility == 'visible' || panel.style.visibility == '') && flow != 'deleteSchedule') {
-            panel.style.visibility = 'hidden';
+          var panel = YDom.getElementsByClassName("yui-panel-container")[0];
+          var  auxParentPath = "";
+          if( panel && (panel.style.visibility == 'visible' || panel.style.visibility == '') && flow!="deleteSchedule"){
+            panel.style.visibility = "hidden";
           }
 
-          if (flow == 'deleteSchedule') {
-            if (CStudioAuthoringContext.isPreview
-              && CStudioAuthoringContext.isPreview == true
-              && (CStudioAuthoringContext.role === 'admin')) {
+          if(flow=="deleteSchedule") {
+            if(CStudioAuthoringContext.isPreview
+              && CStudioAuthoringContext.isPreview==true
+              && (CStudioAuthoringContext.role === "admin")) {
               var deletedPage = document.location.href;
-              var deletedNodeName = deletedPage.split('/')[deletedPage.split('/').length - 1];
-              if (deletedNodeName.lastIndexOf('&') != -1) {
-                deletedNodeName = deletedNodeName.split('&')[0];
+              var deletedNodeName = deletedPage.split("/")[deletedPage.split("/").length - 1];
+              if(deletedNodeName.lastIndexOf("&") != -1){
+                deletedNodeName = deletedNodeName.split("&")[0];
               }
-              deletedPage = deletedPage.replace(CStudioAuthoringContext.previewAppBaseUri, '');
-              var parentPath = '';
-              if (deletedPage.charAt(deletedPage.length - 1) == '/') {
+              deletedPage = deletedPage.replace(CStudioAuthoringContext.previewAppBaseUri, "");
+              var parentPath = "";
+              if(deletedPage.charAt(deletedPage.length - 1) == "/") {
                 deletedPage = deletedPage.substring(0, deletedPage.length - 1);
               }
-              parentPath = deletedPage.substring(0, deletedPage.lastIndexOf('/'));
-              parentPath = parentPath == '/studio/preview/#/?page=' ? parentPath + '/' : parentPath;
+              parentPath = deletedPage.substring(0, deletedPage.lastIndexOf("/"));
+              parentPath = parentPath == "/studio/preview/#/?page=" ? parentPath + "/" : parentPath;
               parentPath = CStudioAuthoringContext.previewAppBaseUri + parentPath;
-              if (deletedPage.lastIndexOf('/&') == -1 && nodeName == deletedNodeName) {
+              if(deletedPage.lastIndexOf("/&") == -1 && nodeName == deletedNodeName) {
                 document.location = parentPath;
               }
               return;
@@ -2882,7 +2854,7 @@ var nodeOpen = false,
 
         }
 
-        var tempMask = document.createElement('div');
+        var tempMask = document.createElement("div");
         tempMask.style.backgroundColor = '#ccc';
         tempMask.style.opacity = '0.3';
         tempMask.style.position = 'absolute';
@@ -2894,8 +2866,8 @@ var nodeOpen = false,
         tempMask.style.paddingTop = '300px';
         tempMask.style.textAlign = 'center';
 
-        var loadingImageEl = document.createElement('img');
-        loadingImageEl.src = contextPath + CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/treeview-loading.gif';
+        var loadingImageEl = document.createElement("img");
+        loadingImageEl.src = contextPath + CStudioAuthoringContext.baseUri + "/static-assets/themes/cstudioTheme/images/treeview-loading.gif";
         tempMask.appendChild(loadingImageEl);
 
         //document.body.appendChild(tempMask);
@@ -2906,16 +2878,15 @@ var nodeOpen = false,
       /**
        * Login
        */
-      loginDialog: function (cb) {
+      loginDialog: function(cb) {
         CStudioAuthoring.Module.requireModule(
           'login-dialog',
           '/static-assets/components/cstudio-dialogs/login-dialog.js', {
-            cb: cb
+            cb:cb
           }, {
-            moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+            moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
               dialogClass.showDialog(moduleConfig.cb);
-            }
-          });
+            } });
 
         var moduleConfig = {
           cb: cb
@@ -2923,19 +2894,19 @@ var nodeOpen = false,
 
       },
 
-      uploadAsset: function (site, path, isUploadOverwrite, uploadCb, fileTypes) {
+      uploadAsset: function(site, path, isUploadOverwrite, uploadCb, fileTypes) {
         CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb, fileTypes);
       },
 
       /**
        *  opens a dialog to upload an asset
        */
-      openUploadDialog: function (site, path, isUploadOverwrite, callback, fileTypes) {
+      openUploadDialog: function(site, path, isUploadOverwrite, callback, fileTypes) {
 
         var serviceUri = CStudioAuthoring.Service.writeContentServiceUrl;
 
         var openUploadDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(moduleConfig.site, moduleConfig.path, moduleConfig.serviceUri, moduleConfig.callback, moduleConfig.isUploadOverwrite, moduleConfig.fileTypes);
           }
         };
@@ -2947,26 +2918,26 @@ var nodeOpen = false,
           fileTypes: fileTypes,
           callback: callback,
           isUploadOverwrite: isUploadOverwrite
-        };
+        }
 
         CSA.Utils.addCss('/static-assets/libs/cropper/dist/cropper.css');
         CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
 
-        CStudioAuthoring.Module.requireModule('upload-dialog', '/static-assets/components/cstudio-dialogs/upload-asset-dialog.js', moduleConfig, openUploadDialogCb);
-        CStudioAuthoring.Module.requireModule('jquery-cropper', '/static-assets/libs/cropper/dist/cropper.js');
+        CStudioAuthoring.Module.requireModule("upload-dialog", "/static-assets/components/cstudio-dialogs/upload-asset-dialog.js", moduleConfig, openUploadDialogCb);
+        CStudioAuthoring.Module.requireModule("jquery-cropper", "/static-assets/libs/cropper/dist/cropper.js");
       },
 
-      cropperImage: function (site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
+      cropperImage: function(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
         CStudioAuthoring.Operations.openCropDialog(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback);
       },
 
       /**
        *  opens a dialog to crop an image
        */
-      openCropDialog: function (site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
+      openCropDialog: function(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
 
         var openCropperDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(moduleConfig.site, moduleConfig.message, moduleConfig.imageData, moduleConfig.imageWidth,
               moduleConfig.imageHeight, moduleConfig.aspectRatio, moduleConfig.repoImage, moduleConfig.callback);
           }
@@ -2978,31 +2949,31 @@ var nodeOpen = false,
           imageData: imageData,
           imageWidth: imageWidth,
           imageHeight: imageHeight,
-          aspectRatio: aspectRatio,
+          aspectRatio : aspectRatio,
           repoImage: repoImage,
           callback: callback
-        };
+        }
 
         CSA.Utils.addCss('/static-assets/libs/cropper/dist/cropper.css');
         CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
 
-        CStudioAuthoring.Module.requireModule('crop-dialog', '/static-assets/components/cstudio-dialogs/crop-dialog.js', moduleConfig, openCropperDialogCb);
-        CStudioAuthoring.Module.requireModule('jquery-cropper', '/static-assets/libs/cropper/dist/cropper.js');
+        CStudioAuthoring.Module.requireModule("crop-dialog", "/static-assets/components/cstudio-dialogs/crop-dialog.js", moduleConfig, openCropperDialogCb);
+        CStudioAuthoring.Module.requireModule("jquery-cropper", "/static-assets/libs/cropper/dist/cropper.js");
       },
 
-      uploadWebDAVAsset: function (site, path, profileId, uploadCb, fileTypes) {
+      uploadWebDAVAsset: function(site, path, profileId, uploadCb, fileTypes) {
         CStudioAuthoring.Operations.openWebDAVUploadDialog(site, path, profileId, uploadCb, fileTypes);
       },
 
       /**
        *  opens a dialog to upload an asset
        */
-      openWebDAVUploadDialog: function (site, path, profileId, callback, fileTypes) {
+      openWebDAVUploadDialog: function(site, path, profileId, callback, fileTypes) {
 
         var serviceUri = CStudioAuthoring.Service.writeWebDAVContentUri;
 
         var openUploadDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.path,
@@ -3020,26 +2991,26 @@ var nodeOpen = false,
           fileTypes: fileTypes,
           serviceUri: serviceUri,
           callback: callback
-        };
+        }
 
         CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
 
-        CStudioAuthoring.Module.requireModule('upload-webdav-dialog', '/static-assets/components/cstudio-dialogs/uploadWebDAV-dialog.js', moduleConfig, openUploadDialogCb);
+        CStudioAuthoring.Module.requireModule("upload-webdav-dialog", "/static-assets/components/cstudio-dialogs/uploadWebDAV-dialog.js", moduleConfig, openUploadDialogCb);
       },
 
-      uploadCMISAsset: function (site, path, repositoryId, uploadCb, fileTypes) {
+      uploadCMISAsset: function(site, path, repositoryId, uploadCb, fileTypes) {
         CStudioAuthoring.Operations.openCMISUploadDialog(site, path, repositoryId, uploadCb, fileTypes);
       },
 
       /**
        *  opens a dialog to upload an asset
        */
-      openCMISUploadDialog: function (site, path, repositoryId, callback, fileTypes) {
+      openCMISUploadDialog: function(site, path, repositoryId, callback, fileTypes) {
 
         var serviceUri = CStudioAuthoring.Service.writeCMISContentUri;
 
         var openUploadDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.path,
@@ -3057,21 +3028,21 @@ var nodeOpen = false,
           serviceUri: serviceUri,
           fileTypes: fileTypes,
           callback: callback
-        };
+        }
 
         CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
 
-        CStudioAuthoring.Module.requireModule('upload-cmis-dialog', '/static-assets/components/cstudio-dialogs/uploadCMIS-dialog.js', moduleConfig, openUploadDialogCb);
+        CStudioAuthoring.Module.requireModule("upload-cmis-dialog", "/static-assets/components/cstudio-dialogs/uploadCMIS-dialog.js", moduleConfig, openUploadDialogCb);
       },
 
-      uploadS3Asset: function (site, path, profileId, uploadCb, params) {
+      uploadS3Asset: function(site, path, profileId, uploadCb, params) {
         CStudioAuthoring.Operations.openS3UploadDialog(site, path, profileId, uploadCb, params);
       },
 
       /**
        *  opens a dialog to upload an asset
        */
-      openS3UploadDialog: function (site, path, profileId, callback, params) {
+      openS3UploadDialog: function(site, path, profileId, callback, params) {
         var params = params ? params : {};
         serviceUri = (
           (params && params.transcode)
@@ -3080,7 +3051,7 @@ var nodeOpen = false,
         );
 
         var openUploadDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(
               moduleConfig.site,
               moduleConfig.path,
@@ -3098,30 +3069,30 @@ var nodeOpen = false,
           serviceUri: serviceUri,
           callback: callback,
           params: params
-        };
+        }
 
         CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
 
-        CStudioAuthoring.Module.requireModule('upload-S3-dialog', '/static-assets/components/cstudio-dialogs/uploadS3-dialog.js', moduleConfig, openUploadDialogCb);
+        CStudioAuthoring.Module.requireModule("upload-S3-dialog", "/static-assets/components/cstudio-dialogs/uploadS3-dialog.js", moduleConfig, openUploadDialogCb);
       },
 
       /**
        * create a folder at a given location within the web project
        */
-      createFolder: function (site, path, callingWindow, callback) {
+      createFolder: function(site, path, callingWindow, callback) {
         CStudioAuthoring.Operations.openCreateNewFolderDialog(site, path, callingWindow, callback);
       },
 
       /**
        * open the create folder dialog
        */
-      openCreateNewFolderDialog: function (site, path, callingWindow, callback) {
-        if (path.lastIndexOf('.') > 0) {
-          path = path.substring(0, path.lastIndexOf('/'));
+      openCreateNewFolderDialog: function(site, path, callingWindow, callback) {
+        if (path.lastIndexOf(".") > 0) {
+          path = path.substring(0, path.lastIndexOf("/"));
         }
         var serviceUri = CStudioAuthoring.Service.createFolderServiceUrl;
         var openCreateFolderDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(moduleConfig.site, moduleConfig.path, moduleConfig.serviceUri, moduleConfig.callingWindow, moduleConfig.callback);
           }
         };
@@ -3132,28 +3103,28 @@ var nodeOpen = false,
           serviceUri: serviceUri,
           callingWindow: callingWindow,
           callback: callback
-        };
+        }
 
-        CStudioAuthoring.Module.requireModule('new-folder-name-dialog', '/static-assets/components/cstudio-dialogs/new-folder-name-dialog.js', moduleConfig, openCreateFolderDialogCb);
+        CStudioAuthoring.Module.requireModule("new-folder-name-dialog", "/static-assets/components/cstudio-dialogs/new-folder-name-dialog.js", moduleConfig, openCreateFolderDialogCb);
       },
 
       /**
        * rename a folder at a given location within the web project
        */
-      renameFolder: function (site, path, callingWindow, callback) {
+      renameFolder: function(site, path, callingWindow, callback) {
         CStudioAuthoring.Operations.openRenameFolderDialog(site, path, callingWindow, callback);
       },
 
       /**
        * open the create folder dialog
        */
-      openRenameFolderDialog: function (site, path, callingWindow, callback) {
-        if (path.lastIndexOf('.') > 0) {
-          path = path.substring(0, path.lastIndexOf('/'));
+      openRenameFolderDialog: function(site, path, callingWindow, callback) {
+        if (path.lastIndexOf(".") > 0) {
+          path = path.substring(0, path.lastIndexOf("/"));
         }
         var serviceUri = CStudioAuthoring.Service.renameFolderServiceUrl;
         var openCreateFolderDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.showDialog(callback, moduleConfig.path, moduleConfig.serviceUri, moduleConfig.callingWindow, moduleConfig.callback);
           }
         };
@@ -3164,57 +3135,57 @@ var nodeOpen = false,
           serviceUri: serviceUri,
           callingWindow: callingWindow,
           callback: callback
-        };
+        }
 
-        CStudioAuthoring.Module.requireModule('rename-folder-dialog', '/static-assets/components/cstudio-dialogs/rename-folder.js', moduleConfig, openCreateFolderDialogCb);
+        CStudioAuthoring.Module.requireModule("rename-folder-dialog", "/static-assets/components/cstudio-dialogs/rename-folder.js", moduleConfig, openCreateFolderDialogCb);
       },
 
       /**
        * handle macros in file paths
        */
-      processPathsForMacros: function (path, model, useUUID) {
+      processPathsForMacros: function(path, model, useUUID) {
 
 
-        if (path.indexOf('{objectId}') != -1) {
-          if (useUUID) {
-            path = path.replace('{objectId}', CStudioAuthoring.Utils.generateUUID());
-          } else {
-            path = path.replace('{objectId}', model['objectId']);
+        if(path.indexOf("{objectId}") != -1) {
+          if(useUUID){
+            path = path.replace("{objectId}", CStudioAuthoring.Utils.generateUUID());
+          }else{
+            path = path.replace("{objectId}", model["objectId"]);
           }
         }
 
-        if (path.indexOf('{objectGroupId}') != -1) {
-          path = path.replace('{objectGroupId}', model['objectGroupId']);
+        if(path.indexOf("{objectGroupId}") != -1) {
+          path = path.replace("{objectGroupId}", model["objectGroupId"]);
         }
 
-        if (path.indexOf('{objectGroupId2}') != -1) {
-          path = path.replace('{objectGroupId2}', model['objectGroupId'].substring(0, 2));
+        if(path.indexOf("{objectGroupId2}") != -1) {
+          path = path.replace("{objectGroupId2}", model["objectGroupId"].substring(0,2))
         }
 
         /* Date macros */
         var currentDate = new Date();
-        if (path.indexOf('{year}') != -1) {
-          path = path.replace('{year}', currentDate.getFullYear());
+        if(path.indexOf("{year}") != -1) {
+          path = path.replace("{year}", currentDate.getFullYear());
         }
 
-        if (path.indexOf('{month}') != -1) {
-          path = path.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
+        if(path.indexOf("{month}") != -1) {
+          path = path.replace("{month}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
         }
 
-        if (path.indexOf('{parentPath}') != -1) {
-          path = path.replace('{parentPath}', CStudioAuthoring.Utils.getQueryParameterByName('path').replace(/\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/, '$1'));
+        if(path.indexOf("{parentPath}") != -1) {
+          path = path.replace("{parentPath}", CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/, "$1"));
         }
 
-        if (path.indexOf('{yyyy}') != -1) {
-          path = path.replace('{yyyy}', currentDate.getFullYear());
+        if(path.indexOf("{yyyy}") != -1) {
+          path = path.replace("{yyyy}", currentDate.getFullYear());
         }
 
-        if (path.indexOf('{mm}') != -1) {
-          path = path.replace('{mm}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
+        if(path.indexOf("{mm}") != -1) {
+          path = path.replace("{mm}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
         }
 
-        if (path.indexOf('{dd}') != -1) {
-          path = path.replace('{dd}', ('0' + (currentDate.getDate())).slice(-2));
+        if(path.indexOf("{dd}") != -1) {
+          path = path.replace("{dd}", ("0" + (currentDate.getDate())).slice(-2));
         }
 
         return path;
@@ -3226,7 +3197,7 @@ var nodeOpen = false,
        * @param {*} cookieKey - cookey key of the tree that will be updated (depends of tree)
        * @param {*} path - path to be added into the tree cookie (state) -> item uri
        */
-      updateTreeCookiePath: function (treeName, cookieKey, path) {
+      updateTreeCookiePath: function(treeName, cookieKey, path){
         var
           url = path,
           treeCookieName,
@@ -3238,31 +3209,31 @@ var nodeOpen = false,
         treeCookie = storage.read(treeCookieName);
         treeCookie = treeCookie !== '' ? JSON.parse(treeCookie) : {};
 
-        if (treeCookie[cookieKey] && treeCookie[cookieKey].indexOf('root-folder') !== -1) {
-          treeCookie.sitewebsite = treeCookie.sitewebsite.splice(1, 0);
+        if(treeCookie[cookieKey] && treeCookie[cookieKey].indexOf("root-folder") !== -1){
+          treeCookie.sitewebsite = treeCookie.sitewebsite.splice(1,0);
         }
 
         // validate if is page and if has folder (ends with index.xml)
-        if (url.indexOf('index.xml') !== -1) {
+        if(url.indexOf("index.xml") !== -1){
           //remove everything after last-1 '/'
           parsedUrl = url.substr(0, url.lastIndexOf('/'));
           parsedUrl = parsedUrl.substr(0, parsedUrl.lastIndexOf('/'));
-        } else {
+        }else{
           //remove everything after last '/'
           parsedUrl = url.substr(0, url.lastIndexOf('/'));
         }
 
-        if (!treeCookie['root-folder']) {
+        if ( !treeCookie['root-folder'] ) {
           cookieRoot.push('root-folder');
           treeCookie['root-folder'] = cookieRoot;
         }
 
         // key doesn't exist in cookie
-        if (!treeCookie[cookieKey] && parsedUrl != '/site') {
+        if(!treeCookie[cookieKey] && parsedUrl != '/site'){
           treeCookie[cookieKey] = [];
         }
         // in entry doesn't exist in key
-        if (treeCookie[cookieKey] && !(treeCookie[cookieKey].includes(parsedUrl)) && parsedUrl != '/site') {
+        if(treeCookie[cookieKey] && !(treeCookie[cookieKey].includes(parsedUrl)) && parsedUrl != '/site'){
           var override = false,
             addToCookie = true,
             existingEntry;
@@ -3274,15 +3245,15 @@ var nodeOpen = false,
           for (var x = 0; x < treeCookie[cookieKey].length; x++) {
             existingEntry = treeCookie[cookieKey][x];
 
-            if (parsedUrl.indexOf(existingEntry) === 0) {
+            if ( parsedUrl.indexOf(existingEntry) === 0 ){
               // delete entry so it can be replaced
-              treeCookie[cookieKey] = treeCookie[cookieKey].filter(item => item !== existingEntry);
-            } else if (existingEntry.indexOf(parsedUrl) === 0) {
+              treeCookie[cookieKey] = treeCookie[cookieKey].filter(item => item !== existingEntry)
+            } else if ( existingEntry.indexOf(parsedUrl) === 0 ) {
               addToCookie = false;
             }
           }
 
-          if (addToCookie) {
+          if( addToCookie ) {
             treeCookie[cookieKey].push(parsedUrl);
           }
         }
@@ -3299,16 +3270,16 @@ var nodeOpen = false,
        * Performs an AJAX request with the given configuration
        * @param oRequest
        */
-      request: function (oRequest) {
+      request: function(oRequest){
         var Connect = YAHOO.util.Connect;
         if (oRequest.resetFormState && Connect._isFormSubmit) {
           Connect.resetFormState();
         }
         Connect.setDefaultPostHeader(oRequest.defaultPostHeader || false);
-        Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        Connect.initHeader("Content-Type", "application/json; charset=utf-8");
         Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         Connect.asyncRequest(
-          oRequest.method || 'GET',
+          oRequest.method || "GET",
           oRequest.url,
           oRequest.callback,
           oRequest.data);
@@ -3317,13 +3288,13 @@ var nodeOpen = false,
        * Reference to CStudioAuthoring.Service.request
        * @see CStudioAuthoring.Service.request
        */
-      _getView: function (oRequest) {
+      _getView: function(oRequest){
         var Connect = YAHOO.util.Connect;
         Connect.setDefaultPostHeader(oRequest.defaultPostHeader || false);
-        Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        Connect.initHeader("Content-Type", "application/json; charset=utf-8");
         Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         Connect.asyncRequest(
-          oRequest.method || 'GET',
+          oRequest.method || "GET",
           oRequest.url,
           oRequest.callback,
           oRequest.data);
@@ -3332,7 +3303,7 @@ var nodeOpen = false,
        * Private method for formating a URL with the context site and URI
        * @param url
        */
-      _formatURL: function (url) {
+      _formatURL: function(url){
         return CStudioAuthoring.StringUtils.keyFormat(url, {
           site: CStudioAuthoringContext.site,
           base: CStudioAuthoringContext.baseUri,
@@ -3341,11 +3312,11 @@ var nodeOpen = false,
       },
 
       getViewCommon: function (url, callback, version, site) {
-        if (version) {
+        if(version) {
           url += '?version={version}';
         }
-        if (site) {
-          url += '&site={site}';
+        if(site){
+          url += '&site={site}'
         }
 
         var srv = CStudioAuthoring.Service,
@@ -3360,15 +3331,15 @@ var nodeOpen = false,
 
       },
 
-      getHistoryView: function (callback) {
+      getHistoryView: function(callback) {
         CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/history.html', callback, true, true);
       },
 
-      getApproveView: function (callback) {
+      getApproveView: function(callback) {
         CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/approve.html', callback, true, true);
       },
 
-      getDependenciesView: function (callback) {
+      getDependenciesView: function(callback) {
         CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/dependencies.html', callback, true, true);
       },
 
@@ -3380,21 +3351,21 @@ var nodeOpen = false,
         CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/request-delete.html', callback, true, true);
       },
 
-      getSubmitForDeleteView: function (callback) {
+      getSubmitForDeleteView: function(callback) {
         CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/submit-for-delete.html', callback, true, true);
       },
 
-      getDeleteView: function (callback) {
+      getDeleteView: function(callback) {
         CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/delete.html', callback, true, true);
       },
 
-      getSchedulingPolicyView: function (callback) {
+      getSchedulingPolicyView: function(callback) {
         var srv = CStudioAuthoring.Service,
-          url = srv._formatURL('{base}/service/ui/workflow-actions/schedule-policy?version=' + CStudioAuthoring.UIBuildId + '&site={site}');
+          url = srv._formatURL("{base}/service/ui/workflow-actions/schedule-policy?version=" + CStudioAuthoring.UIBuildId + "&site={site}");
         srv._getView({
           url: url,
           callback: callback,
-          method: 'GET'
+          method: "GET"
         });
       },
 
@@ -3402,169 +3373,169 @@ var nodeOpen = false,
         CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/schedule.html', callback, true, true);
       },
 
-      getInContextEditView: function (callback) {
+      getInContextEditView: function(callback) {
         CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/in-context-edit.html', callback, true, false);
       },
 
-      getImageRequest: function (data) {
+      getImageRequest: function(data) {
         CSA.Service.getViewCommon(data.url, data.callback, false, false);
       },
 
-      getLoadItemsRequest: function (data) {
+      getLoadItemsRequest: function(data) {
         CSA.Service.getViewCommon(data.url, data.callback, false, false);
       },
 
       // constants
-      defaultNavContext: 'default',
+      defaultNavContext: "default",
 
       // UI (legacy pattern)
-      contextServiceUri: '/context-nav',
-      getComponentPreviewServiceUrl: '/crafter-controller/component',
+      contextServiceUri: "/context-nav",
+      getComponentPreviewServiceUrl: "/crafter-controller/component",
 
       // service uris
 
       // content services
       // READ OPS
-      getContentUri: '/api/1/services/api/1/content/get-content.json',
-      contentExistsUrl: '/api/1/services/api/1/content/content-exists.json',
-      lookupContentItemServiceUri: '/api/1/services/api/1/content/get-item.json',
-      getVersionHistoryServiceUrl: '/api/1/services/api/1/content/get-item-versions.json',
-      getConfigurationVersionHistoryServiceUrl: '/api/2/configuration/get_configuration_history',
-      lookupContentServiceUri: '/api/1/services/api/1/content/get-items-tree.json',
-      searchServiceUrl: '/api/2/search/search.json',
-      writeContentServiceUrl: '/api/1/services/api/1/content/write-content.json',
-      lookupContentTypeServiceUri: '/api/1/services/api/1/content/get-content-type.json',
-      allContentTypesForSite: '/api/1/services/api/1/content/get-content-types.json',
-      allowedContentTypesForPath: '/api/1/services/api/1/content/get-content-types.json',
-      retrieveSitesUrl: '/api/1/services/api/1/user/get-sites-3.json',
-      retrievePublishingChannelsUrl: '/api/1/services/api/1/deployment/get-available-publishing-channels.json',
-      getUiResource: '/api/1/services/api/1/server/get-ui-resource-override.json?resource=logo.jpg',
+      getContentUri: "/api/1/services/api/1/content/get-content.json",
+      contentExistsUrl: "/api/1/services/api/1/content/content-exists.json",
+      lookupContentItemServiceUri: "/api/1/services/api/1/content/get-item.json",
+      getVersionHistoryServiceUrl: "/api/1/services/api/1/content/get-item-versions.json",
+      getConfigurationVersionHistoryServiceUrl: "/api/2/configuration/get_configuration_history",
+      lookupContentServiceUri: "/api/1/services/api/1/content/get-items-tree.json",
+      searchServiceUrl: "/api/2/search/search.json",
+      writeContentServiceUrl: "/api/1/services/api/1/content/write-content.json",
+      lookupContentTypeServiceUri: "/api/1/services/api/1/content/get-content-type.json",
+      allContentTypesForSite: "/api/1/services/api/1/content/get-content-types.json",
+      allowedContentTypesForPath: "/api/1/services/api/1/content/get-content-types.json",
+      retrieveSitesUrl: "/api/1/services/api/1/user/get-sites-3.json",
+      retrievePublishingChannelsUrl: "/api/1/services/api/1/deployment/get-available-publishing-channels.json",
+      getUiResource: "/api/1/services/api/1/server/get-ui-resource-override.json?resource=logo.jpg",
 
-      getPagesServiceUrl: '/api/1/services/api/1/content/get-pages.json',
-      lookupFoldersServiceUri: '/api/1/services/api/1/content/get-pages.json', // NEED A SERVICE
+      getPagesServiceUrl: "/api/1/services/api/1/content/get-pages.json",
+      lookupFoldersServiceUri: "/api/1/services/api/1/content/get-pages.json", // NEED A SERVICE
 
-      getPublishStatusServiceUrl: '/api/1/services/api/1/publish/status.json',
-      startPublishStatusServiceUrl: '/api/1/services/api/1/publish/start.json',
-      stopPublishStatusServiceUrl: '/api/1/services/api/1/publish/stop.json',
+      getPublishStatusServiceUrl: "/api/1/services/api/1/publish/status.json",
+      startPublishStatusServiceUrl: "/api/1/services/api/1/publish/start.json",
+      stopPublishStatusServiceUrl: "/api/1/services/api/1/publish/stop.json",
 
       //CMIS
-      getCMISContentBySearchUri: '/api/2/cmis/search',
-      getCMISContentByBrowseUri: '/api/2/cmis/list',
-      getCMISCloneUri: '/api/2/cmis/clone',
-      writeCMISContentUri: '/api/2/cmis/upload',
+      getCMISContentBySearchUri: "/api/2/cmis/search",
+      getCMISContentByBrowseUri: "/api/2/cmis/list",
+      getCMISCloneUri: "/api/2/cmis/clone",
+      writeCMISContentUri: "/api/2/cmis/upload",
 
       //WEBDAV
-      getWebDAVContentByBrowseUri: '/api/2/webdav/list',
-      writeWebDAVContentUri: '/api/2/webdav/upload',
+      getWebDAVContentByBrowseUri: "/api/2/webdav/list",
+      writeWebDAVContentUri: "/api/2/webdav/upload",
 
       //S3
-      getS3ContentByBrowseUri: '/api/2/aws/s3/list',
-      writeS3ContentUri: '/api/2/aws/s3/upload.json',
-      videoTranscode: '/api/2/aws/mediaconvert/upload',
+      getS3ContentByBrowseUri: "/api/2/aws/s3/list",
+      writeS3ContentUri: "/api/2/aws/s3/upload.json",
+      videoTranscode: "/api/2/aws/mediaconvert/upload",
 
       //Box File
-      getBoxUrlUri: '/api/1/services/api/1/box/url.json',
+      getBoxUrlUri: "/api/1/services/api/1/box/url.json",
 
       // WRITE OPS
-      getRevertContentServiceUrl: '/api/1/services/api/1/content/revert-content.json',
-      unlockContentItemUrl: '/api/1/services/api/1/content/unlock-content.json',
-      changeContentTypeUrl: '/api/1/services/api/1/content/change-content-type.json',
-      submitDeleteContent: '/api/1/services/api/1/content/delete-content.json',
-      deleteContentUrl: '/api/1/services/api/1/workflow/go-delete.json',
-      createFolderServiceUrl: '/api/1/services/api/1/content/create-folder.json',
-      renameFolderServiceUrl: '/api/1/services/api/1/content/rename-folder.json',
+      getRevertContentServiceUrl: "/api/1/services/api/1/content/revert-content.json",
+      unlockContentItemUrl: "/api/1/services/api/1/content/unlock-content.json",
+      changeContentTypeUrl: "/api/1/services/api/1/content/change-content-type.json",
+      submitDeleteContent: "/api/1/services/api/1/content/delete-content.json",
+      deleteContentUrl: "/api/1/services/api/1/workflow/go-delete.json",
+      createFolderServiceUrl: "/api/1/services/api/1/content/create-folder.json",
+      renameFolderServiceUrl: "/api/1/services/api/1/content/rename-folder.json",
 
       // ORDER SERVICES
       // READ
-      getServiceOrderUrl: '/api/1/services/api/1/content/get-item-orders.json',
-      getNextOrderSequenceUrl: '/api/1/services/api/1/content/get-next-item-order.json',
+      getServiceOrderUrl: "/api/1/services/api/1/content/get-item-orders.json",
+      getNextOrderSequenceUrl: "/api/1/services/api/1/content/get-next-item-order.json",
 
       //WRITE
-      reorderServiceSubmitUrl: '/api/1/services/api/1/content/reorder-items.json',
+      reorderServiceSubmitUrl: "/api/1/services/api/1/content/reorder-items.json",
 
       // DEPLOYMENT SERVICES
       // READ OPS
-      getDeploymentHistoryServiceUrl: '/api/1/services/api/1/deployment/get-deployment-history.json',
-      getScheduledItemsServiceUrl: '/api/1/services/api/1/deployment/get-scheduled-items.json',
-      getDependenciesServiceUrl: '/api/1/services/api/1/dependency/get-dependencies.json',
+      getDeploymentHistoryServiceUrl: "/api/1/services/api/1/deployment/get-deployment-history.json",
+      getScheduledItemsServiceUrl: "/api/1/services/api/1/deployment/get-scheduled-items.json",
+      getDependenciesServiceUrl: "/api/1/services/api/1/dependency/get-dependencies.json",
 
       // Preview Services
-      previewSyncAllServiceUrl: '/api/1/services/api/1/preview/sync-site.json',
-      syncRepoServiceUrl: '/api/1/services/api/1/repo/sync-from-repo.json',
+      previewSyncAllServiceUrl: "/api/1/services/api/1/preview/sync-site.json",
+      syncRepoServiceUrl: "/api/1/services/api/1/repo/sync-from-repo.json",
 
       // Activity Services
-      getUserActivitiesServiceUrl: '/api/1/services/api/1/activity/get-user-activities.json',
+      getUserActivitiesServiceUrl: "/api/1/services/api/1/activity/get-user-activities.json",
 
       // Security Services
-      loginServiceUrl: '/api/1/services/api/1/security/login.json',
-      getPermissionsServiceUrl: '/api/1/services/api/1/security/get-user-permissions.json',
-      verifyAuthTicketUrl: '/api/1/services/api/1/user/validate-token.json',
-      getUserInfoServiceURL: '/api/2/users',
-      validateSessionUrl: '/api/1/services/api/1/security/validate-session.json',
-      logoutUrl: '/api/1/services/api/1/security/logout.json',
-      getLogoutInfoURL: '/api/2/users/me/logout/sso/url',
-      getActiveEnvironmentURL: '/api/2/ui/system/active_environment',
+      loginServiceUrl: "/api/1/services/api/1/security/login.json",
+      getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
+      verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
+      getUserInfoServiceURL: "/api/2/users",
+      validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
+      logoutUrl: "/api/1/services/api/1/security/logout.json",
+      getLogoutInfoURL: "/api/2/users/me/logout/sso/url",
+      getActiveEnvironmentURL: "/api/2/ui/system/active_environment",
 
 
       // Configuration Services
-      getConfigurationUrl: '/api/1/services/api/1/site/get-configuration.json',
+      getConfigurationUrl: "/api/1/services/api/1/site/get-configuration.json",
 
       // Workflow Services
-      getGoLiveQueueItemsServiceUrl: '/api/1/services/api/1/workflow/get-go-live-items.json',
-      getWorkflowAffectedPathsServiceUrl: '/api/1/services/api/1/workflow/get-workflow-affected-paths.json',
-      createWorkflowJobsServiceUrl: '/api/1/services/api/1/workflow/create-jobs.json',
-      getWorkflowJobsServiceUrl: '/api/1/services/api/1/workflow/get-active-jobs.json',
-      rejectContentServiceUrl: '/api/1/services/api/1/workflow/reject.json',
-      getGoLiveServiceUrl: '/api/1/services/api/1/workflow/go-live.json',
+      getGoLiveQueueItemsServiceUrl: "/api/1/services/api/1/workflow/get-go-live-items.json",
+      getWorkflowAffectedPathsServiceUrl: "/api/1/services/api/1/workflow/get-workflow-affected-paths.json",
+      createWorkflowJobsServiceUrl: "/api/1/services/api/1/workflow/create-jobs.json",
+      getWorkflowJobsServiceUrl: "/api/1/services/api/1/workflow/get-active-jobs.json",
+      rejectContentServiceUrl: "/api/1/services/api/1/workflow/reject.json",
+      getGoLiveServiceUrl: "/api/1/services/api/1/workflow/go-live.json",
 
       // Clipboard
-      copyServiceUrl: '/api/1/services/api/1/clipboard/copy-item.json',
-      copyContentToClipboardServiceUri: '/api/1/services/api/1/clipboard/copy-item.json',
-      cutContentToClipboardServiceUri: '/api/1/services/api/1/clipboard/cut-item.json',
-      pasteContentFromClipboardServiceUri: '/api/1/services/api/1/clipboard/paste-item.json',
-      getClipboardItemsServiceUri: '/api/1/services/api/1/clipboard/get-items.json',
-      duplicateContentServiceUri: '/api/1/services/api/1/clipboard/duplicate.json',
+      copyServiceUrl: "/api/1/services/api/1/clipboard/copy-item.json",
+      copyContentToClipboardServiceUri: "/api/1/services/api/1/clipboard/copy-item.json",
+      cutContentToClipboardServiceUri: "/api/1/services/api/1/clipboard/cut-item.json",
+      pasteContentFromClipboardServiceUri: "/api/1/services/api/1/clipboard/paste-item.json",
+      getClipboardItemsServiceUri: "/api/1/services/api/1/clipboard/get-items.json",
+      duplicateContentServiceUri: "/api/1/services/api/1/clipboard/duplicate.json",
 
       // Dependencies
-      lookupContentDependenciesServiceUri: '/api/1/services/api/1/dependency/get-dependencies.json?deletedep=true&',
+      lookupContentDependenciesServiceUri: "/api/1/services/api/1/dependency/get-dependencies.json?deletedep=true&",
 
       // Crop Image
-      cropImageServiceUri: '/api/1/services/api/1/content/crop-image.json',
+      cropImageServiceUri: "/api/1/services/api/1/content/crop-image.json",
 
       // Load Items
-      loadItemsServiceUri: '/api/1/services/api/1/dependency/get-dependencies.json',
+      loadItemsServiceUri: "/api/1/services/api/1/dependency/get-dependencies.json",
 
       // Publishing Channels
-      getAvailablePublishingChannelsServiceUri: '/api/1/services/api/1/deployment/get-available-publishing-channels.json',
+      getAvailablePublishingChannelsServiceUri: "/api/1/services/api/1/deployment/get-available-publishing-channels.json",
 
       // Rejection Reason
-      getRejectionReasonServiceUri: '/api/1/services/api/1/site/get-canned-message.json',
+      getRejectionReasonServiceUri: "/api/1/services/api/1/site/get-canned-message.json",
 
       // Global Menu
-      getGlobalMenuURL: '/api/2/ui/views/global_menu.json',
+      getGlobalMenuURL: "/api/2/ui/views/global_menu.json",
 
       // Quick Create
-      getQuickCreateURL: '/api/2/content/list_quick_create_content.json',
+      getQuickCreateURL: "/api/2/content/list_quick_create_content.json",
 
       // Plugin
-      getPluginURL: '/api/2/plugin/file',
+      getPluginURL: "/api/2/plugin/file",
 
       /**
        * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor
        * this method is used in preview overlay
        *
        */
-      lookupAuthoringRole: function (site, user, callback) {
+      lookupAuthoringRole: function(site, user, callback) {
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var contentResults = {};
             contentResults.roles = response;
             var roles = contentResults;
-            var role = 'contributor';
+            var role = "contributor";
             if (roles != undefined) {
               for (var i = 0; i < roles.length; i++) {
-                if (roles[i] == 'admin') {
-                  role = 'admin';
+                if (roles[i] == "admin") {
+                  role = "admin";
                   break;
                 }
               }
@@ -3573,7 +3544,7 @@ var nodeOpen = false,
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -3584,15 +3555,15 @@ var nodeOpen = false,
       /**
        * get domain name
        */
-      getDomainName: function (site) {
+      getDomainName: function(site) {
         CStudioAuthoring.Operations.showSimpleDialog(
-          'info-dialog',
+          "info-dialog",
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          CMgs.format(formsLangBundle, 'notification'),
-          CMgs.format(formsLangBundle, 'getDomainNameError'),
+          CMgs.format(formsLangBundle, "notification"),
+          CMgs.format(formsLangBundle, "getDomainNameError"),
           null, // use default button
           YAHOO.widget.SimpleDialog.ICON_INFO,
-          'studioDialog'
+          "studioDialog"
         );
 
       },
@@ -3600,32 +3571,32 @@ var nodeOpen = false,
       /**
        * add the appropriate base to the service
        */
-      createServiceUri: function (service) {
+      createServiceUri: function(service) {
         var uri = CStudioAuthoringContext.baseUri + service;
-        uri += (uri.indexOf('?') == -1) ? '?' : '&';
-        uri += 'nocache=' + new Date();
+        uri += (uri.indexOf("?") == -1) ? "?" : "&";
+        uri += "nocache=" + new Date();
 
         return uri;
       },
 
-      createEngineServiceUri: function (service) {
+      createEngineServiceUri: function(service) {
         return CStudioAuthoringContext.previewAppBaseUri + service;
       },
 
       /**
        * pretty Formatting for HTML markup
        */
-      prettyFormatHtmlMarkup: function (markup, callback) {
+      prettyFormatHtmlMarkup: function(markup, callback) {
         var html = markup;
         html = html.replace(/\s{2,}/g, ' ');
         html = html.replace(/\r/g, '');
         html = html.replace(/\n/g, '');
         html = html.replace(/\t/g, '');
 
-        var newHtml = '';
+        var newHtml = "";
         var tagStag = [];
 
-        var containerTags = ['p', 'ul', 'ol', 'li', 'div', 'b', 'table', 'tr', 'td', 'th'];
+        var containerTags = ['p','ul','ol','li','div','b', 'table','tr','td','th'];
         var inScript = false;
         var inComment = false;
         var inClosingTag = false;
@@ -3634,11 +3605,11 @@ var nodeOpen = false,
         var indent = 0;
 
         // function to determin if
-        var isContainingTagFn = function (tagName) {
+        var isContainingTagFn = function(tagName) {
           var retContainerTag = false;
 
-          for (var j = 0; j < containerTags.length; j++) {
-            if (tagName == containerTags[j]) {
+          for(var j=0; j<containerTags.length; j++) {
+            if(tagName == containerTags[j]) {
               retContainerTag = true;
               break;
             }
@@ -3647,41 +3618,44 @@ var nodeOpen = false,
           return retContainerTag;
         };
 
-        for (var i = 0; i < html.length; i++) {
-          var curChar = html.substring(i, i + 1);
+        for(var i=0; i<html.length; i++) {
+          var curChar = html.substring(i, i+1);
 
           // look for closings so we can add line breaks
-          if (curChar == '<' && inScript == false && inComment == false) {
+          if(curChar == '<' && inScript == false && inComment == false) {
             var spacePos;
             var bracketPos;
             var pos;
             var tagName;
 
             // parse tag name
-            if (html.substring(i, i + 2) == '</') {
+            if(html.substring(i, i+2) == '</') {
               spacePos = html.indexOf(' ', i);
               bracketPos = html.indexOf('>', i);
               pos = (spacePos != -1 && spacePos <= bracketPos) ? spacePos : bracketPos;
-              tagName = html.substring(pos, i + 2);
-            } else {
+              tagName = html.substring(pos, i+2);
+            }
+            else {
               spacePos = html.indexOf(' ', i);
               bracketPos = html.indexOf('>', i);
               pos = (spacePos <= bracketPos) ? spacePos : bracketPos;
-              tagName = html.substring(pos, i + 1);
+              tagName = html.substring(pos, i+1);
             }
 
-            if (html.substring(i, i + 2) == '</') {
+            if(html.substring(i, i+2) == '</') {
               inClosingTag = true;
 
-              if (isContainingTagFn(tagName)) {
+              if(isContainingTagFn(tagName)) {
                 indent--;
               }
-            } else {
+            }
+            else {
 
-              if (tagName == 'br') {
+              if(tagName == "br") {
                 inAtomTag = true;
-              } else {
-                if (isContainingTagFn(tagName)) {
+              }
+              else {
+                if(isContainingTagFn(tagName)) {
                   inContainerTag = true;
                   indent++;
                 }
@@ -3690,20 +3664,21 @@ var nodeOpen = false,
           }
 
           // add line breaks
-          if (curChar == '>'
-            && (tagName != 'a' && tagName != 'span')
+          if(curChar == '>'
+            && (tagName != "a" && tagName != "span")
             && (inClosingTag || inAtomTag || inContainerTag)) {
-            newHtml += curChar + '\r\n';
+            newHtml += curChar + "\r\n";
 
             // add indent
-            for (var k = 0; k < indent; k++) {
-              newHtml += '   ';
+            for(var k=0; k<indent; k++) {
+              newHtml +="   ";
             }
 
             inClosingTag = false;
             inAtomTag = false;
             inContainerTag = false;
-          } else {
+          }
+          else {
             newHtml += curChar;
           }
         }
@@ -3714,19 +3689,19 @@ var nodeOpen = false,
       /**
        * set the state of a given object
        */
-      setObjectState: function (site, path, state, callback) {
+      setObjectState: function(site,path,state,callback) {
 
         var serviceUri = this.setObjectStateServiceUrl;
-        serviceUri += '?site=' + site +
-          '&path=' + path +
-          '&state=' + state +
-          '&systemprocessing=false';
+        serviceUri += "?site=" + site+
+          "&path=" + path +
+          "&state=" + state +
+          "&systemprocessing=false";
 
         var serviceCallback = {
-          success: function (response) {
-            callback.success({ status: 'success' });
+          success: function(response) {
+            callback.success({ status: "success" });
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -3737,17 +3712,17 @@ var nodeOpen = false,
       /**
        * clean markuo
        */
-      cleanHtmlMarkup: function (markup, callback) {
+      cleanHtmlMarkup: function(markup, callback) {
 
         var serviceUri = this.cleanHtmlUrl;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var cleanMarkup = response.responseText;
             callback.success(cleanMarkup);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           },
 
@@ -3755,7 +3730,7 @@ var nodeOpen = false,
         };
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/xml; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, markup);
       },
@@ -3763,7 +3738,7 @@ var nodeOpen = false,
       /**
        * write content Asset (NON XML)
        */
-      writeContentAsset: function () {
+      writeContentAsset: function() {
         var serviceUri = this.writeContentAssetServiceUrl;
         // this method is not done.  upload asset is a form based api
         // this api will need to create a hidden form to make this api work
@@ -3773,7 +3748,7 @@ var nodeOpen = false,
       /**
        * this method exists for legacy reasons.  Do not call it, use the actual service instead
        */
-      createWriteServiceUrl: function (path, filename, oldPath, contentType, site, createFolders, draft, duplicate, unlock) {
+      createWriteServiceUrl: function(path, filename, oldPath, contentType, site, createFolders, draft, duplicate, unlock) {
         var url =
           this.writeContentServiceUrl +
           '?site=' + site +
@@ -3805,18 +3780,18 @@ var nodeOpen = false,
        * duplicate TRUE if you are duplicating an existing item
        * unlock TRUE if item should be unlocked after the write
        */
-      writeContent: function (path, filename, oldPath, content, contentType, site, createFolders, draft, duplicate, unlock, callback) {
+      writeContent: function(path, filename, oldPath, content, contentType, site, createFolders, draft, duplicate, unlock, callback) {
         var serviceUri = this.createWriteServiceUrl(path, filename, oldPath, contentType, site, createFolders, draft, duplicate, unlock);
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/xml; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), {
-          success: function (response) {
+          success: function(response) {
             var content = response.responseText;
             callback.success(content);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         }, content);
@@ -3825,21 +3800,21 @@ var nodeOpen = false,
       /**
        * get content for a specific field
        */
-      getContentFieldValue: function (itemPath, field, site, callback) {
+      getContentFieldValue: function(itemPath, field, site, callback) {
 
         var serviceUri = this.getContentFieldValueServiceUrl;
-        serviceUri += '?siteId=' + site;
-        serviceUri += '&contentPath=' + itemPath;
-        serviceUri += '&field=' + field;
+        serviceUri += "?siteId="+site;
+        serviceUri += "&contentPath="+itemPath;
+        serviceUri += "&field="+field;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var value = response.responseText;
             callback.success(value);
 
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           },
 
@@ -3849,26 +3824,26 @@ var nodeOpen = false,
         };
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/xml; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
       },
 
       /**
        * update content for a specific field
        */
-      updateContentFieldValue: function (itemPath, field, site, content, callback) {
+      updateContentFieldValue: function(itemPath, field, site, content, callback) {
 
         var serviceUri = this.updateContentFieldValueServiceUrl;
-        serviceUri += '?siteId=' + site;
-        serviceUri += '&contentPath=' + itemPath;
-        serviceUri += '&field=' + field;
+        serviceUri += "?siteId="+site;
+        serviceUri += "&contentPath="+itemPath;
+        serviceUri += "&field="+field;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success();
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           },
 
@@ -3879,7 +3854,7 @@ var nodeOpen = false,
         };
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/xml; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, content);
       },
@@ -3887,22 +3862,22 @@ var nodeOpen = false,
       /**
        * lookup configuration
        */
-      lookupConfigurtion: function (site, configPath, callback) {
+      lookupConfigurtion: function(site, configPath, callback) {
         var serviceUrl = this.getConfigurationUrl;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&path=' + configPath;
+        serviceUrl += "?site="+site;
+        serviceUrl += "&path=" + configPath;
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), {
-          success: function (response) {
-            var res = response.responseText || 'null';  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
+          success: function(response) {
+            var res = response.responseText || "null";  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
             callback.success(YAHOO.lang.JSON.parse(res));
-            try {
+            try{
               var
                 CMgs = CStudioAuthoring.Messages,
                 previewLangBundle = previewLangBundle
                   ? previewLangBundle
-                  : CMgs.getBundle('previewTools', CStudioAuthoringContext.lang);
+                  : CMgs.getBundle("previewTools", CStudioAuthoringContext.lang);
               CStudioAuthoring.Operations.translateContent(previewLangBundle);
-            } catch (err) {
+            }catch(err){
 
             }
 
@@ -3914,18 +3889,18 @@ var nodeOpen = false,
       /**
        * lookup configuration
        */
-      getConfiguration: function (site, configPath, callback) {
+      getConfiguration: function(site, configPath, callback) {
         var serviceUrl = this.getConfigurationUrl;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&path=' + configPath;
+        serviceUrl += "?site="+site;
+        serviceUrl += "&path=" + configPath;
 
         var serviceCallback = {
-          success: function (response) {
-            var res = response.responseText || 'null';  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
+          success: function(response) {
+            var res = response.responseText || "null";  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
             callback.success(YAHOO.lang.JSON.parse(res));
 
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -3935,7 +3910,7 @@ var nodeOpen = false,
       /**
        * login
        */
-      login: function (user, pass, callback) {
+      login: function(user, pass, callback) {
 
         var serviceUri = this.loginServiceUrl;
         // serviceUri += "?username="+user;
@@ -3947,17 +3922,17 @@ var nodeOpen = false,
         };
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success(response.responseText);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/xml; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, JSON.stringify(data));
       },
@@ -3965,16 +3940,16 @@ var nodeOpen = false,
       /**
        * unlock the content item
        */
-      unlockContentItem: function (site, path, callback) {
+      unlockContentItem: function(site, path, callback) {
         var serviceUrl = this.unlockContentItemUrl +
-          '?site=' + site +
-          '&path=' + encodeURI(path);
+          "?site=" + site +
+          "&path=" + encodeURI(path);
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success();
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure();
           }
         };
@@ -3985,36 +3960,35 @@ var nodeOpen = false,
        *  unlock the content item synchronous
        *  Used on unload event of the window
        */
-      unlockContentItemSync: function (site, path) {
+      unlockContentItemSync: function(site, path){
 
         var _self = this;
-
         function isLockedByUser(site, path) {
           var value = false, response, itemTO;
-          var serviceUrl = _self.lookupContentItemServiceUri + '?site=' + site + '&path=' + encodeURI(path) + '&populateDependencies=false';
+          var serviceUrl = _self.lookupContentItemServiceUri + "?site=" + site + "&path=" + encodeURI(path) + "&populateDependencies=false";
           var xhrObj = YConnect.createXhrObject();
-          xhrObj.conn.open('GET', _self.createServiceUri(serviceUrl), false);
+          xhrObj.conn.open("GET", _self.createServiceUri(serviceUrl), false);
           xhrObj.conn.send(null);
 
           response = xhrObj.conn.responseText;
-          if (response && response != '') {
-            itemTO = eval('(' + response + ')');
-            if (itemTO.item.lockOwner == CStudioAuthoringContext.user) {
+          if( response && response != "") {
+            itemTO = eval("(" + response + ")");
+            if ( itemTO.item.lockOwner == CStudioAuthoringContext.user) {
               value = true;
             }
           }
           return value;
         }
 
-        if (!isLockedByUser(site, path))
+        if ( !isLockedByUser(site, path))
           return;
 
         var serviceUrl = this.unlockContentItemUrl +
-          '?site=' + site +
-          '&path=' + encodeURI(path);
+          "?site=" + site +
+          "&path=" + encodeURI(path);
 
         var xhrObj = YConnect.createXhrObject();
-        xhrObj.conn.open('GET', this.createServiceUri(serviceUrl), false);
+        xhrObj.conn.open("GET", this.createServiceUri(serviceUrl), false);
         xhrObj.conn.send(null);
 
         return xhrObj.conn.responseText;
@@ -4023,18 +3997,18 @@ var nodeOpen = false,
       /**
        * given a site id and a path look up the available taxonomy types
        */
-      lookupAllowedTaxonomyTypesForPath: function (path, callback) {
+      lookupAllowedTaxonomyTypesForPath: function(path, callback) {
 
         CStudioAuthoring.Service.lookupGlobalConfigurtion(
-          '/taxonomies-config.xml',
+          "/taxonomies-config.xml",
 
           {
-            success: function (config) {
+            success: function(config) {
               this.callback.success(config);
 
             },
 
-            failure: function () {
+            failure: function() {
               this.callback.failure();
             },
 
@@ -4047,17 +4021,17 @@ var nodeOpen = false,
       /**
        * create taxonomy item
        */
-      createTaxonomyItem: function (path, type, title, createCb) {
+      createTaxonomyItem: function(path, type, title, createCb) {
         var serviceUrl = this.createTaxonomyItemUrl +
-          '?type=' + type +
-          '&name=' + title +
-          '&path=' + path;
+          "?type=" + type +
+          "&name=" + title +
+          "&path=" + path;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             createCb.success();
           },
-          failure: function (response) {
+          failure: function(response) {
             createCb.failure();
           }
         };
@@ -4069,21 +4043,21 @@ var nodeOpen = false,
       /**
        * update taxonomy
        */
-      updateTaxonomies: function (site, taxonomies, updateCb) {
+      updateTaxonomies: function(site, taxonomies, updateCb) {
         var serviceUrl = this.updateTaxonomyUrl +
-          '?site=' + site;
+          "?site="+site;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             updateCb.success();
           },
-          failure: function (response) {
+          failure: function(response) {
             updateCb.failure();
           }
         };
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, JSON.stringify(taxonomies));
       },
@@ -4091,21 +4065,21 @@ var nodeOpen = false,
       /**
        * update taxonomy
        */
-      updateTaxonomies: function (site, taxonomies, updateCb) {
+      updateTaxonomies: function(site, taxonomies, updateCb) {
         var serviceUrl = this.updateTaxonomyUrl +
-          '?site=' + site;
+          "?site="+site;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             updateCb.success();
           },
-          failure: function (response) {
+          failure: function(response) {
             updateCb.failure();
           }
         };
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, JSON.stringify(taxonomies));
       },
@@ -4113,30 +4087,28 @@ var nodeOpen = false,
       /**
        * change template functionality.
        */
-      changeContentType: function (site, contentPath, contentType, changeContentTypeCb) {
+      changeContentType: function(site, contentPath, contentType, changeContentTypeCb) {
         var serviceUrl = this.changeContentTypeUrl;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&path=' + contentPath;
-        serviceUrl += '&contentType=' + contentType;
+        serviceUrl += "?site=" + site;
+        serviceUrl += "&path=" + contentPath;
+        serviceUrl += "&contentType=" + contentType;
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             changeContentTypeCb.success(contentType);
             //window.location.reload();
           },
-          failure: function (response) {
+          failure: function(response) {
             CStudioAuthoring.Operations.showSimpleDialog(
-              'changeContTypeError-dialog',
+              "changeContTypeError-dialog",
               CStudioAuthoring.Operations.simpleDialogTypeINFO,
-              CMgs.format(formsLangBundle, 'notification'),
-              CMgs.format(formsLangBundle, 'changeContTypeError'),
-              [{
-                text: 'OK', handler: function () {
+              CMgs.format(formsLangBundle, "notification"),
+              CMgs.format(formsLangBundle, "changeContTypeError"),
+              [{ text: "OK",  handler:function(){
                   this.hide();
                   changeContentTypeCb.failure();
-                }, isDefault: false
-              }],
+                }, isDefault:false }],
               YAHOO.widget.SimpleDialog.ICON_BLOCK,
-              'studioDialog'
+              "studioDialog"
             );
           }
         };
@@ -4146,54 +4118,54 @@ var nodeOpen = false,
       /**
        * Constructs get-content service url with the given path as a parameter
        */
-      createGetContentServiceUri: function (path) {
+      createGetContentServiceUri: function(path) {
         return CStudioAuthoringContext.baseUri + this.getContentUri +
-          '?site=' + CStudioAuthoringContext.site +
-          '&path=' + encodeURI(path) +
-          '&edit=false' +
-          '&ticket=' + CStudioAuthoring.Utils.Cookies.readCookie('ccticket') +
-          '&nocache=' + new Date();
+          "?site=" + CStudioAuthoringContext.site +
+          "&path=" + encodeURI(path)+
+          "&edit=false" +
+          "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
+          "&nocache=" + new Date();
       },
       /**
        * check, if the content is edited by another user.
        */
-      checkContentStatus: function (path, callback) {
+      checkContentStatus : function(path,callback) {
         var serviceCallback = {
-          success: function (response) {
+          success : function(response) {
             callback.success(response);
           },
-          failure: function (response) {
+          failure : function(response) {
             callback.failure(response);
           }
         };
         var serviceUri = this.createServiceUri(this.getContentUri) +
-          '?site=' + CStudioAuthoringContext.site +
-          '&path=' + encodeURI(path) +
-          '&edit=true' +
-          '&ticket=' + CStudioAuthoring.Utils.Cookies.readCookie('ccticket') +
-          '&nocache=' + new Date();
+          "?site=" + CStudioAuthoringContext.site +
+          "&path=" + encodeURI(path) +
+          "&edit=true" +
+          "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
+          "&nocache=" + new Date();
 
-        YConnect.asyncRequest('GET', serviceUri, serviceCallback);
+        YConnect.asyncRequest('GET',serviceUri, serviceCallback);
       },
 
       /**
        *  Returns the item content
        *  If edit equals true, tries to lock the content
        */
-      getContent: function (path, edit, callback, encoding) {
+      getContent: function(path, edit, callback, encoding){
         var serviceUrl = (
           CStudioAuthoring.Service.getContentUri +
           `?site=${CStudioAuthoringContext.site}` +
           `&path=${encodeURI(path)}` +
           `&edit=${edit}` +
-          `&ticket=${CStudioAuthoring.Utils.Cookies.readCookie('ccticket')}` +
+          `&ticket=${CStudioAuthoring.Utils.Cookies.readCookie("ccticket")}` +
           `${(encoding != null) ? `&encoding=${encoding}` : ''}` +
           `&nocache=${Date.now()}`
         );
 
         YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), {
           success: function (content) {
-            var contentData = YAHOO.lang.JSON.parse(content.responseText);
+            var contentData = YAHOO.lang.JSON.parse(content.responseText)
             callback.success(contentData.content);
           },
           failure: function (err) {
@@ -4204,58 +4176,56 @@ var nodeOpen = false,
       /**
        * determine if content exists
        */
-      contentExists: function (path, callback) {
+      contentExists : function(path,callback) {
         var serviceCallback = {
-          success: function (response) {
+          success : function(response) {
             var result = YAHOO.lang.JSON.parse(response.responseText).content;
             callback.exists(result);
           },
-          failure: function (response) {
+          failure : function(response) {
             callback.failure(response);
           }
         };
-        var serviceUri = this.contentExistsUrl + '?site=' + CStudioAuthoringContext.site + '&path=' + path;
+        var serviceUri = this.contentExistsUrl + "?site=" + CStudioAuthoringContext.site + "&path=" + path;
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest('GET',this.createServiceUri(serviceUri), serviceCallback);
       },
 
       /**
        * pull component preview from preview server
        */
-      getComponentPreview: function (componentId, callback) {
+      getComponentPreview: function(componentId, callback) {
         var serviceUrl = this.getComponentPreviewServiceUrl;
         // adding to uid to prevent cached response
-        serviceUrl += '?path=' + componentId + '&uid=' + CStudioAuthoring.Utils.generateUUID() + '&preview=true';
+        serviceUrl += "?path=" + componentId + "&uid=" + CStudioAuthoring.Utils.generateUUID()+"&preview=true";
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             var result = response.responseText;
             callback.success(result);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
         var cObj = YConnect.asyncRequest('GET', serviceUrl, serviceCallback);
-        setTimeout(function () {
-          YConnect.abort(cObj, serviceCallback);
-        }, 20000);
+        setTimeout(function() { YConnect.abort(cObj, serviceCallback) },20000);
       },
       /**
        * copy content to clipboard
        */
-      copyContentToClipboard: function (site, contentId, contentType, callback) {
+      copyContentToClipboard: function(site, contentId, contentType, callback) {
         var serviceUrl = this.copyContentToClipboardServiceUri;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&user=' + CStudioAuthoringContext.user;
-        serviceUrl += '&contentId=' + contentId;
-        serviceUrl += '&contentType=content';
+        serviceUrl += "?site=" + site;
+        serviceUrl += "&user=" + CStudioAuthoringContext.user;
+        serviceUrl += "&contentId=" + contentId;
+        serviceUrl += "&contentType=content";
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4264,18 +4234,18 @@ var nodeOpen = false,
       /**
        * cut content to clipboard
        */
-      cutContentToClipboard: function (site, contentId, contentType, callback) {
+      cutContentToClipboard: function(site, contentId, contentType, callback) {
         var serviceUrl = this.cutContentToClipboardServiceUri;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&user=' + CStudioAuthoringContext.user;
-        serviceUrl += '&contentId=' + contentId;
-        serviceUrl += '&contentType=content';
+        serviceUrl += "?site=" + site;
+        serviceUrl += "&user=" + CStudioAuthoringContext.user;
+        serviceUrl += "&contentId=" + contentId;
+        serviceUrl += "&contentType=content";
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4284,30 +4254,28 @@ var nodeOpen = false,
       /**
        * copy content to clipboard
        */
-      pasteContentFromClipboard: function (site, toPathContentId, callback) {
+      pasteContentFromClipboard: function(site, toPathContentId, callback) {
         var serviceUrl = this.pasteContentFromClipboardServiceUri;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&parentPath=' + toPathContentId;
+        serviceUrl += "?site=" + site;
+        serviceUrl += "&parentPath=" + toPathContentId;
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
-            var errorResponse = eval('(' + response.responseText + ')');
+          failure: function(response) {
+            var errorResponse = eval("(" + response.responseText + ")");
             CStudioAuthoring.Operations.showSimpleDialog(
-              'pasteContentFromClipboardError-dialog',
+              "pasteContentFromClipboardError-dialog",
               CStudioAuthoring.Operations.simpleDialogTypeINFO,
-              CMgs.format(formsLangBundle, 'notification'),
+              CMgs.format(formsLangBundle, "notification"),
               errorResponse.error,
-              [{
-                text: 'OK', handler: function () {
+              [{ text: "OK",  handler:function(){
                   this.hide();
                   callback.failure(response);
-                }, isDefault: false
-              }],
+                }, isDefault:false }],
               YAHOO.widget.SimpleDialog.ICON_BLOCK,
-              'studioDialog'
+              "studioDialog"
             );
           }
         };
@@ -4316,37 +4284,37 @@ var nodeOpen = false,
       /**
        * get clipboard items
        */
-      getClipboardItems: function (site, callback) {
+      getClipboardItems: function(site, callback) {
         var serviceUrl = this.getClipboardItemsServiceUri;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&user=' + CStudioAuthoringContext.user;
+        serviceUrl += "?site=" + site;
+        serviceUrl += "&user=" + CStudioAuthoringContext.user;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
         YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), serviceCallback);
       },
 
-      previewServerSyncAll: function (site, callback) {
+      previewServerSyncAll: function(site, callback) {
         var serviceUrl = this.previewSyncAllServiceUrl;
-        serviceUrl += '?site=' + site;
+        serviceUrl += "?site=" + site;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = {};
-            if (jsonResponse.responseText != '') {
-              results = eval('(' + jsonResponse.responseText + ')');
+            if(jsonResponse.responseText != "") {
+              results = eval("(" + jsonResponse.responseText + ")");
             }
 
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4355,48 +4323,48 @@ var nodeOpen = false,
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback);
       },
 
-      syncFromRepo: function (site, callback) {
+      syncFromRepo: function(site, callback){
         var serviceUrl = this.syncRepoServiceUrl;
         var postData = {
-          'site_id': site
+          "site_id": site
         };
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             var results = {};
-            if ((jsonResponse.responseText != 'null') && (jsonResponse.responseText != '')) {
+            if((jsonResponse.responseText != "null")  && (jsonResponse.responseText != "")) {
               results = JSON.parse(jsonResponse.responseText);
             }
 
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, JSON.stringify(postData));
       },
       /**
        * crop image
        */
-      cropImage: function (site, path, left, top, height, width, callback) {
+      cropImage: function(site, path, left, top, height, width, callback) {
         var serviceUrl = this.cropImageServiceUri;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&path=' + path;
-        serviceUrl += '&t=' + top;
-        serviceUrl += '&l=' + left;
-        serviceUrl += '&h=' + height;
-        serviceUrl += '&w=' + width;
+        serviceUrl += "?site=" + site;
+        serviceUrl += "&path=" + path;
+        serviceUrl += "&t=" + top;
+        serviceUrl += "&l=" + left;
+        serviceUrl += "&h=" + height;
+        serviceUrl += "&w=" + width;
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4406,17 +4374,17 @@ var nodeOpen = false,
       /**
        * Rejection Reason
        */
-      getRejectionReason: function (locale, type, callback) {
+      getRejectionReason: function(locale, type, callback) {
         var serviceUrl = this.getRejectionReasonServiceUri;
-        serviceUrl += '?site=' + CStudioAuthoringContext.site;
-        serviceUrl += '&locale=' + locale;
-        serviceUrl += '&type=' + type;
+        serviceUrl += "?site=" + CStudioAuthoringContext.site;
+        serviceUrl += "&locale=" + locale;
+        serviceUrl += "&type=" + type;
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
 
           }
         };
@@ -4426,11 +4394,11 @@ var nodeOpen = false,
       /**
        * load items
        */
-      loadItems: function (callback, data) {
+      loadItems: function(callback, data) {
         var serviceUrl = this.loadItemsServiceUri;
-        serviceUrl += '?site=' + CStudioAuthoringContext.site;
+        serviceUrl += "?site=" + CStudioAuthoringContext.site;
         CStudioAuthoring.Service.request({
-          method: 'POST',
+          method: "POST",
           data: data,
           resetFormState: true,
           url: CStudioAuthoringContext.baseUri + serviceUrl,
@@ -4438,10 +4406,10 @@ var nodeOpen = false,
         });
       },
 
-      calculateDependencies: function (data, callback) {
+      calculateDependencies: function(data, callback) {
         var serviceUrl = '/api/1/services/api/1/dependency/calculate-dependencies.json' + '?site_id=' + CStudioAuthoringContext.site;
         CStudioAuthoring.Service.request({
-          method: 'POST',
+          method: "POST",
           data: data,
           resetFormState: true,
           url: CStudioAuthoringContext.baseUri + encodeURI(serviceUrl),
@@ -4450,34 +4418,34 @@ var nodeOpen = false,
 
       },
 
-      loadDependencies: function (site, path, callback) {
+      loadDependencies: function(site, path, callback) {
         var serviceUrl = '/api/1/services/api/1/dependency/get-simple-dependencies.json' + '?site=' + site + '&path=' + path;
 
         CStudioAuthoring.Service.request({
-          method: 'POST',
+          method: "POST",
           resetFormState: true,
           url: CStudioAuthoringContext.baseUri + encodeURI(serviceUrl),
           callback: callback
         });
       },
 
-      loadDependantItems: function (site, path, callback) {
+      loadDependantItems: function(site, path, callback) {
         var serviceUrl = '/api/1/services/api/1/dependency/get-dependant.json' + '?site=' + site + '&path=' + path;
 
         CStudioAuthoring.Service.request({
-          method: 'POST',
+          method: "POST",
           resetFormState: true,
           url: CStudioAuthoringContext.baseUri + encodeURI(serviceUrl),
           callback: callback
         });
       },
 
-      getGoLive: function (callback, data) {
+      getGoLive: function(callback, data) {
         var serviceUrl = this.getGoLiveServiceUrl;
-        serviceUrl += '?site=' + CStudioAuthoringContext.site;
-        serviceUrl += '&user=' + CStudioAuthoringContext.user;
+        serviceUrl += "?site=" + CStudioAuthoringContext.site;
+        serviceUrl += "&user="+CStudioAuthoringContext.user;
         CStudioAuthoring.Service.request({
-          method: 'POST',
+          method: "POST",
           data: data,
           resetFormState: true,
           url: CStudioAuthoringContext.baseUri + serviceUrl,
@@ -4485,26 +4453,26 @@ var nodeOpen = false,
         });
       },
 
-      getAvailablePublishingChannels: function (callback) {
+      getAvailablePublishingChannels: function(callback) {
         var serviceUrl = this.getAvailablePublishingChannelsServiceUri;
-        serviceUrl += '?site=' + CStudioAuthoringContext.site;
+        serviceUrl += "?site=" + CStudioAuthoringContext.site;
         CStudioAuthoring.Service.request({
-          method: 'GET',
+          method: "GET",
           resetFormState: true,
           url: CStudioAuthoringContext.baseUri + serviceUrl,
           callback: callback
         });
       },
 
-      getUserPermissions: function (site, path, callback) {
+      getUserPermissions: function(site, path, callback) {
         var serviceUrl = this.getPermissionsServiceUrl;
-        serviceUrl += '?site=' + site + '&path=' + encodeURI(path) + '&user=' + CStudioAuthoringContext.user;
+        serviceUrl += "?site=" + site + "&path=" + encodeURI(path) + "&user=" + CStudioAuthoringContext.user;
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4514,9 +4482,9 @@ var nodeOpen = false,
       /**
        * look at perms to see if there is a write in the group
        */
-      isWrite: function (permissions) {
+      isWrite:function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'write') {
+          if(permissions[i] == "write") {
             return true;
           }
         }
@@ -4524,9 +4492,9 @@ var nodeOpen = false,
         return false;
       },
 
-      validatePermission: function (permissions, permission) {
+      validatePermission: function(permissions, permission){
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == permission) {
+          if(permissions[i] == permission) {
             return true;
           }
         }
@@ -4534,8 +4502,8 @@ var nodeOpen = false,
         return false;
       },
 
-      createFlatMap: function (itemArray) {
-        var _pupulateMap = function (itemArray, map) {
+      createFlatMap:function(itemArray) {
+        var _pupulateMap = function(itemArray, map) {
           for (var i = 0; i < itemArray.length; i++) {
             var item = itemArray[i];
             map[item.uri] = item;
@@ -4543,13 +4511,13 @@ var nodeOpen = false,
               _pupulateMap(item.children, map);
             }
           }
-        };
+        }
         var map = {};
         _pupulateMap(itemArray, map);
         return map;
       },
-      getChildren: function (parentItem, flatMap) {
-        var children = [];
+      getChildren:function(parentItem, flatMap) {
+        var children = new Array();
         for (var key in flatMap) {
           var aItem = flatMap[key];
           if (aItem.mandatoryParent == parentItem.uri) {
@@ -4561,30 +4529,30 @@ var nodeOpen = false,
       /**
        * get go live items
        */
-      getGoLiveQueueItems: function (site, includeInprogressItems, sortBy, sortAscDesc, callback, filterByNumber) {
+      getGoLiveQueueItems: function(site, includeInprogressItems, sortBy, sortAscDesc, callback, filterByNumber) {
         callback.beforeServiceCall();
         var serviceUrl = this.getGoLiveQueueItemsServiceUrl;
-        serviceUrl += '?site=' + site;
+        serviceUrl += "?site=" + site;
         if (sortBy != null && sortBy != null) {
-          serviceUrl += '&sort=' + sortBy;
+          serviceUrl += "&sort=" + sortBy;
           if (sortAscDesc != undefined && sortAscDesc != null) {
-            serviceUrl += '&ascending=' + sortAscDesc;
+            serviceUrl += "&ascending=" + sortAscDesc;
           }
         }
         if (filterByNumber != null && filterByNumber != '') {
-          serviceUrl += '&num=' + filterByNumber;
+          serviceUrl += "&num=" + filterByNumber;
         }
         if (includeInprogressItems) {
-          serviceUrl += '&includeInProgress=true';
+          serviceUrl += "&includeInProgress=true";
         }
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap = CStudioAuthoring.Service.createFlatMap(results.documents);
             callback.success(results);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4593,35 +4561,35 @@ var nodeOpen = false,
       /**
        * get user activites items
        */
-      getUserActivitiesServices: function (site, user, sortBy, sortAscDesc, number, filterBy, hideLive, callback) {
+      getUserActivitiesServices: function(site, user, sortBy, sortAscDesc, number,filterBy, hideLive, callback) {
         callback.beforeServiceCall();
         var serviceUrl = this.getUserActivitiesServiceUrl;
-        serviceUrl += '?site=' + site;
+        serviceUrl += "?site=" + site;
         if (user != undefined && user != null) {
-          serviceUrl += '&user=' + user;
+          serviceUrl += "&user=" + user;
         }
         if (sortBy != null && sortBy != null) {
-          serviceUrl += '&sort=' + sortBy;
+          serviceUrl += "&sort=" + sortBy;
 
           if (sortAscDesc != undefined && sortAscDesc != null) {
-            serviceUrl += '&ascending=' + sortAscDesc;
+            serviceUrl += "&ascending=" + sortAscDesc;
           }
         }
         if (number != undefined && number != null) {
-          serviceUrl += '&num=' + number;
+          serviceUrl += "&num=" + number;
         }
         if (filterBy == undefined && filterBy == null) {
 
-          filterBy = 'page';
+          filterBy = "page";
         }
-        serviceUrl += '&filterType=' + filterBy;
-        serviceUrl += '&excludeLive=' + ((hideLive != undefined && hideLive != null) ? hideLive : false);
+        serviceUrl += "&filterType=" + filterBy;
+        serviceUrl += "&excludeLive=" + ((hideLive != undefined && hideLive != null) ? hideLive : false);
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4631,18 +4599,18 @@ var nodeOpen = false,
       /**
        * get user info
        */
-      getUserInfo: function (callback, user) {
+      getUserInfo: function(callback, user) {
         var serviceUrl = this.getUserInfoServiceURL;
         var user = !user ? 'me' : user;
-        serviceUrl += '/' + user;
+        serviceUrl += "/" + user;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
-            results = results.authenticatedUser;
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
+            results = results.authenticatedUser
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4652,31 +4620,31 @@ var nodeOpen = false,
       /**
        * get user roles
        */
-      getUserRoles: function (callback, user) {
+      getUserRoles: function(callback, user) {
         var serviceUrl = this.getUserInfoServiceURL,
           self = this;
         var user = !user ? 'me' : user;
-        serviceUrl += '/' + user + '/sites/' + CStudioAuthoringContext.site + '/roles';
+        serviceUrl += "/" + user +"/sites/" + CStudioAuthoringContext.site + "/roles";
 
-        var cacheRolesKey = CStudioAuthoringContext.site + '_Roles_' + CStudioAuthoringContext.user,
+        var cacheRolesKey = CStudioAuthoringContext.site+'_Roles_'+CStudioAuthoringContext.user,
           rolesCached;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = jsonResponse.responseText ? eval('(' + jsonResponse.responseText + ')') : jsonResponse;
-            if (!rolesCached) {
+          success: function(jsonResponse) {
+            var results = jsonResponse.responseText ? eval("(" + jsonResponse.responseText + ")") : jsonResponse;
+            if(!rolesCached){
               results = results.roles;
               cache.set(cacheRolesKey, results, CStudioAuthoring.Constants.CACHE_TIME_GET_ROLES);
               CStudioAuthoring.processing = false;
             }
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
-        var getInfo = function () {
+        var getInfo = function(){
           if (!CStudioAuthoring.processing) {
             rolesCached = cache.get(cacheRolesKey);
 
@@ -4687,28 +4655,26 @@ var nodeOpen = false,
               CStudioAuthoring.processing = true;
               YConnect.asyncRequest('GET', self.createServiceUri(serviceUrl), serviceCallback);
             }
-          } else {
-            setTimeout(function () {
-              getInfo();
-            }, 100);
+          }else{
+            setTimeout(function(){ getInfo(); }, 100);
           }
-        };
+        }
         getInfo();
       },
 
       /**
        * get global menu
        */
-      getGlobalMenu: function (callback) {
+      getGlobalMenu: function(callback) {
         var serviceUrl = this.getGlobalMenuURL;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             results = results.menuItems;
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4718,9 +4684,9 @@ var nodeOpen = false,
       /**
        * get Quick Create
        */
-      getQuickCreate: function (callback) {
+      getQuickCreate: function(callback) {
         var serviceUrl = this.getQuickCreateURL;
-        serviceUrl += '?siteId=' + CStudioAuthoringContext.site;
+        serviceUrl += "?siteId=" + CStudioAuthoringContext.site;
 
         CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUrl))
         .subscribe(
@@ -4738,23 +4704,23 @@ var nodeOpen = false,
       /**
        * get SSO logout info
        */
-      getSSOLogoutInfo: function (callback) {
+      getSSOLogoutInfo: function(callback) {
         var serviceUrl = this.getLogoutInfoURL;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             //delete results.result['entity'];
             var hasResult = results.hasOwnProperty('logoutUrl') ? true : false;
-            if (hasResult) {
+            if(hasResult){
               results = results.logoutUrl;
-            } else {
+            }else{
               results = false;
             }
             callback.success(results);
             results = results.result;
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4764,14 +4730,14 @@ var nodeOpen = false,
       /**
        * get Active Environment
        */
-      getActiveEnvironment: function (callback) {
+      getActiveEnvironment: function(callback) {
         var serviceUrl = this.getActiveEnvironmentURL;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
+          success: function(jsonResponse) {
             callback.success(jsonResponse);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4781,29 +4747,29 @@ var nodeOpen = false,
       /**
        * get scheduled items
        */
-      getScheduledItems: function (site, sortBy, sortAscDesc, filterBy, callback) {
+      getScheduledItems: function(site, sortBy, sortAscDesc,filterBy,callback) {
         callback.beforeServiceCall();
         var serviceUrl = this.getScheduledItemsServiceUrl;
-        serviceUrl += '?site=' + site;
+        serviceUrl += "?site=" + site;
         if (sortBy != null && sortBy != null) {
-          serviceUrl += '&sort=' + sortBy;
+          serviceUrl += "&sort=" + sortBy;
 
           if (sortAscDesc != undefined && sortAscDesc != null) {
-            serviceUrl += '&ascending=' + sortAscDesc;
+            serviceUrl += "&ascending=" + sortAscDesc;
           }
         }
         if (filterBy == undefined && filterBy == null) {
 
-          filterBy = 'page';
+          filterBy = "page";
         }
-        serviceUrl += '&filterType=' + filterBy;
+        serviceUrl += "&filterType=" + filterBy;
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4812,33 +4778,33 @@ var nodeOpen = false,
       /**
        * get recently deployed items
        */
-      getDeploymentHistory: function (site, sortBy, sortAscDesc, days, number, filterBy, callback) {
+      getDeploymentHistory: function(site, sortBy, sortAscDesc, days, number,filterBy, callback) {
         callback.beforeServiceCall();
         var serviceUrl = this.getDeploymentHistoryServiceUrl;
-        serviceUrl += '?site=' + site;
+        serviceUrl += "?site=" + site;
         if (days != undefined && days != null) {
-          serviceUrl += '&days=' + days;
+          serviceUrl += "&days=" + days;
         }
         if (sortBy != null && sortBy != null) {
-          serviceUrl += '&sort=' + sortBy;
+          serviceUrl += "&sort=" + sortBy;
           if (sortAscDesc != undefined && sortAscDesc != null) {
-            serviceUrl += '&ascending=' + sortAscDesc;
+            serviceUrl += "&ascending=" + sortAscDesc;
           }
         }
         if (number != undefined && number != null) {
-          serviceUrl += '&num=' + number;
+          serviceUrl += "&num=" + number;
         }
         if (filterBy == undefined && filterBy == null) {
 
-          filterBy = 'page';
+          filterBy = "page";
         }
-        serviceUrl += '&filterType=' + filterBy;
+        serviceUrl += "&filterType=" + filterBy;
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4848,23 +4814,23 @@ var nodeOpen = false,
       /**
        * revert content item
        */
-      revertContentItem: function (site, contentTO, version, callback) {
+      revertContentItem: function(site, contentTO, version, callback) {
 
         var serviceUrl = this.getRevertContentServiceUrl;
 
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&path=' + contentTO.uri;
-        serviceUrl += '&version=' + version;
+        serviceUrl += "?site=" + site;
+        serviceUrl += "&path=" + contentTO.uri;
+        serviceUrl += "&version=" + version;
 
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
-        };
+        }
 
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
       },
@@ -4872,20 +4838,20 @@ var nodeOpen = false,
       /**
        * get version history for given content path
        */
-      getVersionHistory: function (site, contentTO, callback) {
+      getVersionHistory: function(site, contentTO, callback) {
 
         var serviceUrl = this.getVersionHistoryServiceUrl;
-        serviceUrl += '?site=' + site;
+        serviceUrl += "?site=" + site;
 
-        serviceUrl += '&path=' + contentTO.uri;
-        serviceUrl += '&maxhistory=100';
+        serviceUrl += "&path=" + contentTO.uri;
+        serviceUrl += "&maxhistory=100";
 
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4896,21 +4862,21 @@ var nodeOpen = false,
       /**
        * get version history for given configuration path
        */
-      getConfigurationVersionHistory: function (site, configurationTO, callback) {
+      getConfigurationVersionHistory: function(site, configurationTO, callback) {
 
         var serviceUrl = this.getConfigurationVersionHistoryServiceUrl;
-        serviceUrl += '?siteId=' + site;
-        serviceUrl += '&module=' + configurationTO.module;
-        serviceUrl += '&path=' + configurationTO.path;
-        serviceUrl += '&environment=' + configurationTO.environment;
-        serviceUrl += '&maxhistory=100';
+        serviceUrl += "?siteId=" + site;
+        serviceUrl += "&module=" + configurationTO.module;
+        serviceUrl += "&path=" + configurationTO.path;
+        serviceUrl += "&environment=" + configurationTO.environment;
+        serviceUrl += "&maxhistory=100";
 
         var serviceCallback = {
-          success: function (jsonResponse) {
-            var results = eval('(' + jsonResponse.responseText + ')');
+          success: function(jsonResponse) {
+            var results = eval("(" + jsonResponse.responseText + ")");
             callback.success(results.history);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4921,30 +4887,30 @@ var nodeOpen = false,
       /**
        * get current version history for given content path
        */
-      getCurrentVersion: function (site, uri, callback) {
-        var contentTO = { 'uri': uri };
+      getCurrentVersion: function(site, uri, callback) {
+        var contentTO = { "uri" : uri };
 
         this.getVersionHistory(site, contentTO, {
-          success: function (response) {
+          success: function(response){
             callback.success(response.versions[0].versionNumber);
           }
-        });
+        })
       },
 
       /**
        * given a site id and a path look up the available content types
        */
-      deleteContentForPathService: function (site, path, callback) {
+      deleteContentForPathService: function(site, path, callback) {
         var serviceUrl = this.deleteContentForPathUrl;
-        serviceUrl += '?site=' + site;
-        serviceUrl += '&path=' + path;
+        serviceUrl += "?site=" + site;
+        serviceUrl += "&path=" + path;
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             if (callback) {
               callback.success();
             }
           },
-          failure: function (response) {
+          failure: function(response) {
             if (callback) {
               callback.failure(response);
             }
@@ -4955,14 +4921,14 @@ var nodeOpen = false,
       /**
        * Retrieve the content as a JSON object for a given path
        */
-      retrieveWcmMapContent: function (path, callback) {
-        var serviceUrl = this.wcmMapContentServiceUri + '?site=' + CStudioAuthoringContext.site + '&path=' + path;
+      retrieveWcmMapContent: function(path, callback) {
+        var serviceUrl = this.wcmMapContentServiceUri + "?site=" + CStudioAuthoringContext.site + "&path=" + path;
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             callback.success(JSON.parse(oResponse.responseText));
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -4971,15 +4937,15 @@ var nodeOpen = false,
       /**
        * retrieve the content for a given contextual nav context
        */
-      retrieveContextualNavContent: function (navContext, callback) {
+      retrieveContextualNavContent: function(navContext, callback) {
         navContext = (navContext) ? navContext : this.defaultNavContext;
-        var serviceUrl = this.contextServiceUri + '?site=' + CStudioAuthoringContext.site + '&context=' + navContext;
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), {
-          success: function (oResponse) {
+        var serviceUrl = this.contextServiceUri + "?site=" +  CStudioAuthoringContext.site + "&context=" + navContext;
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUrl), {
+          success: function(oResponse) {
             var navContent = oResponse.responseText;
             callback.success(navContent);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         });
@@ -4988,18 +4954,18 @@ var nodeOpen = false,
       /**
        * given a context, retrieve the site dropdown context
        */
-      retrieveContextNavConfiguration: function (context, callback) {
+      retrieveContextNavConfiguration: function(context, callback) {
         CStudioAuthoring.Service.lookupConfigurtion(
           CStudioAuthoringContext.site,
-          '/context-nav/contextual-nav.xml',
+          "/context-nav/contextual-nav.xml",
           {
-            success: function (config) {
-              if (!config.context.length) {
+            success: function(config) {
+              if(!config.context.length) {
                 this.callback.success(config.context);
               }
             },
 
-            failure: function () {
+            failure: function() {
               this.callback.failure();
             },
 
@@ -5011,31 +4977,34 @@ var nodeOpen = false,
       /**
        * given a context, retrieve the site dropdown context
        */
-      retrieveSiteDropdownConfiguration: function (context, callback) {
-        if (this.contextNavInitialized) {
+      retrieveSiteDropdownConfiguration: function(context, callback) {
+        if(this.contextNavInitialized) {
 
-          if (!this.contextNavConfig.contexts.length) {
+          if(!this.contextNavConfig.contexts.length) {
             callback.success(this.contextNavConfig.contexts.context);
-          } else {
+          }
+          else {
             callback.success(this.contextNavConfig.contexts[0]);
           }
-        } else {
+        }
+        else {
           CStudioAuthoring.Service.lookupConfigurtion(
             CStudioAuthoringContext.site,
-            '/context-nav/sidebar.xml',
+            "/context-nav/sidebar.xml",
             {
-              success: function (config) {
+              success: function(config) {
                 this.context.contextNavConfig = config;
                 this.context.contextNavInitialized = true;
 
-                if (!config.contexts.context.length) {
+                if(!config.contexts.context.length) {
                   this.callback.success(config.contexts.context);
-                } else {
+                }
+                else {
                   this.callback.success(config.contexts.context[0]);
                 }
               },
 
-              failure: function () {
+              failure: function() {
                 this.callback.failure();
               },
 
@@ -5048,27 +5017,27 @@ var nodeOpen = false,
       /**
        * finds the site-content menu root path from item-path
        */
-      getDropDownParentPathFromItemPath: function (dropdownConfig, path) {
+      getDropDownParentPathFromItemPath: function(dropdownConfig, path){
         var groups = dropdownConfig.groups,
           j, k, a, b, c, menuItems, modules;
 
-        if (!groups.length) {
-          groups = [];
+        if(!groups.length) {
+          groups = new Array();
           groups[0] = dropdownConfig.groups.group;
         }
 
         for (var i = 0, a = groups.length; i < a; i++) {
 
           menuItems = groups[i].menuItems;
-          if (!menuItems.length) {
-            menuItems = [];
+          if(!menuItems.length) {
+            menuItems = new Array();
             menuItems[0] = groups[i].menuItems.menuItem;
           }
 
           for (j = 0, b = menuItems.length; j < b; j++) {
             modules = menuItems[j].modulehooks;
-            if (!modules.length) {
-              modules = [];
+            if(!modules.length) {
+              modules = new Array();
               modules[0] = menuItems[j].modulehooks.moduleHook;
             }
 
@@ -5081,20 +5050,20 @@ var nodeOpen = false,
             }
           }
         }
-        return '';
+        return "";
       },
 
       /**
        * retrieve site-dropdown and match parent
        */
-      matchDropdownParentNode: function (path) {
-        var retPath = '';
-        this.retrieveSiteDropdownConfiguration('default', {
-          success: function (config) {
+      matchDropdownParentNode: function(path) {
+        var retPath = "";
+        this.retrieveSiteDropdownConfiguration("default", {
+          success: function(config) {
             retPath = CStudioAuthoring.Service.getDropDownParentPathFromItemPath(config, path);
           },
 
-          failure: function () {
+          failure: function() {
           },
 
           context: this
@@ -5105,7 +5074,7 @@ var nodeOpen = false,
       /**
        * content-menu parent path
        */
-      menuParentPathKeyFromItemUrl: function (path) {
+      menuParentPathKeyFromItemUrl: function(path) {
         return this.matchDropdownParentNode(path) + '-latest-opened-path';
       },
 
@@ -5113,76 +5082,72 @@ var nodeOpen = false,
       /**
        * retrieve list of channels for a given site
        */
-      retrievePublishingChannels: function (site, callback) {
-        var serviceUrl = this.retrievePublishingChannelsUrl + '?site=' + site;
+      retrievePublishingChannels: function(site, callback) {
+        var serviceUrl = this.retrievePublishingChannelsUrl + "?site="+site;
 
         var serviceCallback = {
-          success: function (response) {
-            var channels = eval('(' + response.responseText + ')');
+          success : function(response) {
+            var channels = eval("(" + response.responseText + ")");
 
             callback.success(channels);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUrl), serviceCallback);
       },
 
 
       /**
        * retrieve a list of sites and their metadata
        */
-      retrieveSitesList: function (callback) {
+      retrieveSitesList: function(callback) {
         var retSites = null;
         var serviceUrl = this.retrieveSitesUrl;
 
         var serviceCallback = {
-          success: function (response) {
-            var sitesModel = eval('(' + response.responseText + ')');
+          success : function(response) {
+            var sitesModel = eval("(" + response.responseText + ")");
             var menuModel = [];
 
-            if (sitesModel.length) {
-              for (var i = 0; i < sitesModel.length; i++) {
-                menuModel.push({
-                  name: sitesModel[i].name,
-                  siteId: sitesModel[i].siteId,
-                  link: '/preview#/?page=/&site=' + sitesModel[i].shortId
-                });
+            if(sitesModel.length) {
+              for(var i=0; i<sitesModel.length; i++) {
+                menuModel.push({name: sitesModel[i].name, siteId: sitesModel[i].siteId, link: "/preview#/?page=/&site="+ sitesModel[i].shortId});
               }
             }
 
             callback.success(menuModel);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUrl), serviceCallback);
       },
 
       /**
        * lookup Content item
        */
-      lookupContentItem: function (site, path, callback, isDraft, populateDependencies) {
+      lookupContentItem: function(site, path, callback, isDraft, populateDependencies) {
 
         // Path is decoded because it may come encoded or decoded. So, if not encoded, path stays the
         // same. Then, knowing that path is decoded, gets encoded. That way we avoid encoded paths to be
         // encoded again.
         path = decodeURI(path);
-        var serviceUri = this.lookupContentItemServiceUri + '?site=' + site + '&path=' + encodeURI(path);
+        var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + encodeURI(path);
         if (isDraft) {
-          serviceUri = serviceUri + '&draft=true';
+          serviceUri = serviceUri + "&draft=true";
         }
 
         if (populateDependencies != null && !populateDependencies) {
-          serviceUri = serviceUri + '&populateDependencies=false';
+          serviceUri = serviceUri + "&populateDependencies=false";
         }
-        serviceUri = serviceUri + '&nocache=' + new Date();
+        serviceUri = serviceUri + "&nocache="+new Date();
 
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), {
           success: function (response) {
@@ -5203,72 +5168,72 @@ var nodeOpen = false,
       /**
        * lookup folders
        */
-      lookupSiteFolders: function (site, path, depth, order, callback, populateDependencies) {
+      lookupSiteFolders: function(site, path, depth, order, callback, populateDependencies) {
 
-        if (depth) {
-          var serviceUri = this.lookupFoldersServiceUri + '?site=' + site + '&path=' + path + '&depth=' + depth + '&order=' + order;
-        } else {
-          var serviceUri = this.lookupFoldersServiceUri + '?site=' + site + '&path=' + path + '&order=' + order;
+        if(depth) {
+          var serviceUri = this.lookupFoldersServiceUri + "?site=" + site + "&path=" + path + "&depth=" + depth + "&order=" + order;
+        }else{
+          var serviceUri = this.lookupFoldersServiceUri + "?site=" + site + "&path=" + path + "&order=" + order;
         }
 
         if (populateDependencies != undefined && !populateDependencies) {
-          serviceUri = serviceUri + '&populateDependencies=false';
+          serviceUri = serviceUri + "&populateDependencies=false";
         }
 
         var serviceCallback = {
-          success: function (response) {
-            var contentResults = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var contentResults = eval("(" + response.responseText + ")");
 
             callback.success(contentResults, callback.argument);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response, callback.argument);
           }
         };
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
       /**
        * lookup pages
        */
-      lookupSiteContent: function (site, path, depth, order, callback) {
+      lookupSiteContent: function(site, path, depth, order, callback) {
 
-        var serviceUri = this.lookupContentServiceUri + '?site=' + site + '&path=' + path + '&depth=' + depth + '&order=' + order;
-        serviceUri = serviceUri + '&nocache=' + new Date();
+        var serviceUri = this.lookupContentServiceUri + "?site=" + site + "&path=" + path + "&depth=" + depth + "&order=" + order;
+        serviceUri = serviceUri + "&nocache="+new Date();
         serviceUri = encodeURI(serviceUri);
 
         var serviceCallback = {
-          success: function (response) {
-            var contentResults = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var contentResults = eval("(" + response.responseText + ")");
 
             callback.success(contentResults, callback.argument);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response, callback.argument);
           }
         };
 
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
       /**
        * create workflow jobs
        */
-      createWorkflowJobs: function (jobRequests, callback) {
+      createWorkflowJobs: function(jobRequests, callback) {
         var serviceUri = this.createWorkflowJobsServiceUrl;
 
         var serviceCallback = {
-          success: function (response) {
-            var targets = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var targets = eval("(" + response.responseText + ")");
 
             callback.success(targets);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5276,7 +5241,7 @@ var nodeOpen = false,
         var requestAsString = JSON.stringify(jobRequests);
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, requestAsString);
       },
@@ -5284,94 +5249,94 @@ var nodeOpen = false,
       /**
        * lookup translation jobs
        */
-      getWorkflowJobs: function (site, callback) {
+      getWorkflowJobs: function(site, callback) {
 
-        var serviceUri = this.getWorkflowJobsServiceUrl + '?site=' + site;
+        var serviceUri = this.getWorkflowJobsServiceUrl + "?site=" + site;
 
         var serviceCallback = {
-          success: function (response) {
-            var jobs = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var jobs = eval("(" + response.responseText + ")");
 
             callback.success(jobs);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
 
       /**
        * lookup user profile
        */
-      getSite: function (key, mappingKey, callback) {
+      getSite: function(key, mappingKey, callback) {
 
-        var serviceUri = this.getSiteServiceUrl + '?key=' + key;
+        var serviceUri = this.getSiteServiceUrl + "?key=" + key;
         if (mappingKey != undefined) {
-          serviceUri = serviceUrl + '&mappingKey=' + mappingKey;
+          serviceUri = serviceUrl + "&mappingKey=" + mappingKey;
         }
 
         var serviceCallback = {
-          success: function (response) {
-            var result = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var result = eval("(" + response.responseText + ")");
             callback.success(result.site);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
       /**
        * lookup publish status
        */
-      getPublishStatus: function (site, callback) {
+      getPublishStatus: function(site, callback) {
 
-        var serviceUri = this.getPublishStatusServiceUrl + '?site_id=' + site;
+        var serviceUri = this.getPublishStatusServiceUrl + "?site_id=" + site;
 
         var serviceCallback = {
-          success: function (response) {
-            var result = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var result = eval("(" + response.responseText + ")");
             callback.success(result);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
       /**
        * start publish status
        */
-      startPublishStatus: function (site, callback) {
+      startPublishStatus: function(site, callback) {
 
         var serviceUri = this.startPublishStatusServiceUrl;
 
         var serviceCallback = {
-          success: function (response) {
-            var result = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var result = eval("(" + response.responseText + ")");
             callback.success(result);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
-        var requestAsString = JSON.stringify({ 'site_id': site });
+        var requestAsString = JSON.stringify({"site_id":site});
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, requestAsString);
       },
@@ -5379,25 +5344,25 @@ var nodeOpen = false,
       /**
        * stop publish status
        */
-      stopPublishStatus: function (site, callback) {
+      stopPublishStatus: function(site, callback) {
 
         var serviceUri = this.stopPublishStatusServiceUrl;
 
         var serviceCallback = {
-          success: function (response) {
-            var result = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var result = eval("(" + response.responseText + ")");
             callback.success(result);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
-        var requestAsString = JSON.stringify({ 'site_id': site });
+        var requestAsString = JSON.stringify({"site_id":site});
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, requestAsString);
 
@@ -5406,33 +5371,33 @@ var nodeOpen = false,
       /**
        * lookup user profile
        */
-      lookupUserProfile: function (site, user, callback) {
+      lookupUserProfile: function(site, user, callback) {
 
-        var serviceUri = this.lookupUserProfileServiceUrl + '?site=' + site + '&user=' + user;
+        var serviceUri = this.lookupUserProfileServiceUrl + "?site=" + site + "&user=" + user;
 
         var serviceCallback = {
-          success: function (response) {
-            var contentResults = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var contentResults = eval("(" + response.responseText + ")");
 
-            contentResults.studioRole = (contentResults.contextual == 'SiteManager') ? 'admin' : 'contributor';
+            contentResults.studioRole = (contentResults.contextual == "SiteManager") ? "admin" : "contributor";
 
             callback.success(contentResults, callback.argument);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isCreateFolder: function (permissions) {
+      isCreateFolder: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'create folder') {
+          if(permissions[i] == "create folder") {
             return true;
           }
         }
@@ -5440,9 +5405,9 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isUserAllowed: function (permissions) {
+      isUserAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'not allowed') {
+          if(permissions[i] == "not allowed") {
             return false;
           }
         }
@@ -5450,9 +5415,9 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isDeleteAllowed: function (permissions) {
+      isDeleteAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'delete') {
+          if(permissions[i] == "delete"){
             return true;
           }
         }
@@ -5460,9 +5425,9 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isPublishAllowed: function (permissions) {
+      isPublishAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'publish') {
+          if(permissions[i] == "publish") {
             return true;
           }
         }
@@ -5470,9 +5435,9 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isCreateContentAllowed: function (permissions) {
+      isCreateContentAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'create content') {
+          if(permissions[i] == "create content") {
             return true;
           }
         }
@@ -5480,9 +5445,9 @@ var nodeOpen = false,
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
-      isChangeContentTypeAllowed: function (permissions) {
+      isChangeContentTypeAllowed: function(permissions) {
         for (var i = 0; i < permissions.length; i++) {
-          if (permissions[i] == 'change content type') {
+          if(permissions[i] == "change content type") {
             return true;
           }
         }
@@ -5492,7 +5457,7 @@ var nodeOpen = false,
       /**
        * lookup content type metadata
        */
-      lookupContentType: function (site, type, callback) {
+      lookupContentType: function(site, type, callback) {
         var serviceUri = this.lookupContentTypeServiceUri + '?site=' + site + '&type=' + type;
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), {
           success: function (oResponse) {
@@ -5513,27 +5478,28 @@ var nodeOpen = false,
       /**
        * given a site id returns the available All content types
        */
-      getAllContentTypesForSite: function (site, callback) {
+      getAllContentTypesForSite: function(site, callback) {
 
-        var serviceUri = this.allContentTypesForSite + '?site=' + site;
+        var serviceUri = this.allContentTypesForSite + "?site=" + site;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
-              var contentTypes = eval('(' + contentTypeJson + ')');
+              var contentTypes = eval("(" + contentTypeJson + ")");
 
-              if (!contentTypes.length) {
+              if(!contentTypes.length) {
                 contentTypes = [contentTypes];
               }
               callback.success(contentTypes);
-            } catch (err) {
+            }
+            catch(err) {
               callback.failure(err);
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5544,40 +5510,41 @@ var nodeOpen = false,
       /**
        * given a site id and a path look up the available content types
        */
-      lookupAllowedContentTypesForPath: function (site, path, callback) {
+      lookupAllowedContentTypesForPath: function(site, path, callback) {
 
         var CMgs = CStudioAuthoring.Messages;
-        var formsLangBundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
+        var formsLangBundle = CStudioAuthoring.Messages.getBundle("forms", CStudioAuthoringContext.lang);
 
-        var serviceUri = this.allowedContentTypesForPath + '?site=' + site;
+        var serviceUri = this.allowedContentTypesForPath + "?site=" + site;
 
-        if (path != CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES) {
-          if (!path.match('.xml$')) path = path + '/';
-          serviceUri += '&path=' + path;
+        if (path != CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES){
+          if (!path.match(".xml$")) path = path + "/";
+          serviceUri+= "&path=" + path;
         }
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
-              var contentTypes = eval('(' + contentTypeJson + ')');
+              var contentTypes = eval("(" + contentTypeJson + ")");
               callback.success(contentTypes);
-            } catch (err) {
+            }
+            catch(err) {
               CStudioAuthoring.Operations.showSimpleDialog(
-                'error-dialog',
+                "error-dialog",
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                CMgs.format(formsLangBundle, 'notification'),
-                CMgs.format(formsLangBundle, 'contentTypesEmpty'),
+                CMgs.format(formsLangBundle, "notification"),
+                CMgs.format(formsLangBundle, "contentTypesEmpty"),
                 null, // use default button
                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
+                "studioDialog"
               );
               callback.failure(err);
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5589,23 +5556,24 @@ var nodeOpen = false,
       /**
        * given a site id returns All searchable content types
        */
-      getAllSearchableContentTypesForSite: function (site, user, callback) {
+      getAllSearchableContentTypesForSite: function(site, user, callback) {
 
-        var serviceUri = this.allSearchableContentTypesForSite + '?site=' + site + '&user=' + user;
+        var serviceUri = this.allSearchableContentTypesForSite + "?site=" + site + "&user=" + user;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
-              var contentTypes = eval('(' + contentTypeJson + ')');
+              var contentTypes = eval("(" + contentTypeJson + ")");
               callback.success(contentTypes);
-            } catch (err) {
+            }
+            catch(err) {
               callback.failure(err);
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5617,24 +5585,24 @@ var nodeOpen = false,
       /**
        * given a list of items return the topdown dependencies
        */
-      lookupContentDependencies: function (site, contentItems, callback) {
-        var serviceUri = this.lookupContentDependenciesServiceUri + 'site=' + site;
+      lookupContentDependencies: function(site, contentItems, callback) {
+        var serviceUri = this.lookupContentDependenciesServiceUri + "site=" + site;
         //var dependencyXml = CStudioAuthoring.Utils.createContentItemsXml(contentItems);
         var dependencyJson = CStudioAuthoring.Utils.createContentItemsJson(contentItems);
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var respJson = oResponse.responseText;
             try {
-              var dependencies = eval('(' + respJson + ')');
+              var dependencies = eval("(" + respJson + ")");
               callback.success && callback.success(dependencies);
-            } catch (err) {
+            } catch(err) {
               callback.failure && callback.failure(err);
             }
           },
           failure: callback.failure
         };
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, dependencyJson);
       },
@@ -5643,9 +5611,9 @@ var nodeOpen = false,
       /**
        * given a site id and a path look up the available content types
        */
-      setWindowState: function (userId, pageId, widgetId, stateName, stateValue) {
+      setWindowState: function(userId, pageId, widgetId, stateName, stateValue) {
 
-        var stateId = userId + '-' + pageId + '-' + widgetId + '-' + stateName;
+        var stateId = userId + "-" + pageId + "-" + widgetId + "-" + stateName;
 
         localStorage.setItem(stateId, stateValue);
       },
@@ -5653,10 +5621,10 @@ var nodeOpen = false,
       /**
        * given a site id and a path look up the available content types
        */
-      getWindowState: function (userId, pageId, widgetId, stateName, callback) {
+      getWindowState: function(userId, pageId, widgetId, stateName, callback) {
 
-        var stateId = userId + '-' + pageId + '-' + widgetId + '-' + stateName;
-        var stateValue = '';
+        var stateId = userId + "-" + pageId + "-" + widgetId + "-" + stateName;
+        var stateValue = "";
 
         stateValue = localStorage.getItem(stateId);
 
@@ -5666,102 +5634,101 @@ var nodeOpen = false,
       /**
        * return all taxonomies
        */
-      getTaxonomies: function (site, callback) {
+      getTaxonomies: function(site, callback) {
         CStudioAuthoring.Operations.showSimpleDialog(
-          'notImplemented-dialog',
+          "notImplemented-dialog",
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          CMgs.format(formsLangBundle, 'notification'),
-          CMgs.format(formsLangBundle, 'notImplemented'),
-          [{
-            text: 'OK', handler: function () {
+          CMgs.format(formsLangBundle, "notification"),
+          CMgs.format(formsLangBundle, "notImplemented"),
+          [{ text: "OK",  handler:function(){
               this.hide();
               callback.failure();
-            }, isDefault: false
-          }],
+            }, isDefault:false }],
           YAHOO.widget.SimpleDialog.ICON_BLOCK,
-          'studioDialog'
+          "studioDialog"
         );
       },
 
       /**
        * retrieves a given taxonomy
        */
-      getTaxonomy: function (site, modelName, level, currentOnly, elementName, callback) {
+      getTaxonomy: function(site, modelName, level, currentOnly, elementName, callback) {
         var serviceUri = this.getTaxonomyServiceUrl +
-          '?site=' + site +
-          '&elementName=' + elementName +
-          '&format=json';
+          "?site=" + site +
+          "&elementName=" + elementName +
+          "&format=json";
 
         if (modelName && modelName != null) {
-          serviceUri += '&modelName=' + modelName;
+          serviceUri += "&modelName=" + modelName;
         }
 
         if (level) {
-          serviceUri += '&startLevel=' + level;
-          serviceUri += '&currentOnly=' + currentOnly;
+          serviceUri += "&startLevel=" + level;
+          serviceUri += "&currentOnly="+ currentOnly;
         }
 
         var serviceCallback = {
-          success: function (response) {
+          success : function(response) {
             this.callback.success(JSON.parse(response.responseText));
           },
-          failure: function (response) {
+          failure: function(response) {
             this.callback.failure(response);
           },
 
           callback: callback
         };
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
       /**
        * retrieves a possible status of a content
        */
-      getStatusList: function (site, callback) {
-        var serviceUri = this.getStatusListUrl + '?site=' + site;
+      getStatusList: function(site, callback) {
+        var serviceUri = this.getStatusListUrl + "?site=" + site;
         var serviceCallback = {
-          success: function (response) {
+          success : function(response) {
             callback.success(JSON.parse(response.responseText));
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
       /**
        * DEPRICATED, use getTaxonomy instead
        * Get Product & Version Data
        */
-      getModelData: function (site, modelName, callback) {
+      getModelData : function(site, modelName, callback) {
         CStudioAuthoring.Service.getTaxonomy(site, modelName, -1, false, callback);
       },
 
       /**
        * given a site id and a path retrive the navigation order
        */
-      reorderServiceRequest: function (site, path, order, callback) {
+      reorderServiceRequest: function(site, path, order, callback) {
 
-        if (!path.match('.xml$')) path = path + '/';
+        if (!path.match(".xml$")) path = path + "/";
 
-        var serviceUri = this.reorderServiceSubmitUrl + '?site=' + site + '&order=' + order + '&path=' + path;
+        var serviceUri = this.reorderServiceSubmitUrl + "?site=" + site + "&order=" + order + "&path=" + path;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
-              var contentTypes = eval('(' + contentTypeJson + ')');
+              var contentTypes = eval("(" + contentTypeJson + ")");
               callback.success(contentTypes);
-            } catch (err) {
+            }
+            catch(err) {
               callback.failure(err);
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5769,25 +5736,26 @@ var nodeOpen = false,
         YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getOrderServiceRequest: function (site, path, order, callback) {
+      getOrderServiceRequest: function(site, path, order, callback) {
 
-        if (!path.match('.xml$')) path = path + '/';
+        if (!path.match(".xml$")) path = path + "/";
 
-        var serviceUri = this.getServiceOrderUrl + '?site=' + site + '&order=' + order + '&path=' + path;
+        var serviceUri = this.getServiceOrderUrl + "?site=" + site + "&order=" + order + "&path=" + path;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
-              var contentTypes = eval('(' + contentTypeJson + ')');
+              var contentTypes = eval("(" + contentTypeJson + ")");
               callback.success(contentTypes);
-            } catch (err) {
+            }
+            catch(err) {
               callback.failure(err);
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5798,21 +5766,22 @@ var nodeOpen = false,
       /*
              * given a site path retrieves the next sequence order number
              */
-      getNextOrderSequenceRequest: function (site, path, callback) {
-        var serviceUri = this.getNextOrderSequenceUrl + '?site=' + site + '&parentpath=' + path;
+      getNextOrderSequenceRequest: function(site, path, callback){
+        var serviceUri = this.getNextOrderSequenceUrl + "?site=" + site + "&parentpath=" + path;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var nextValueJson = oResponse.responseText;
-            var nextValue = eval('(' + nextValueJson + ')');
+            var nextValue = eval("(" + nextValueJson + ")")
             try {
               callback.success(parseFloat(nextValue.nextValue));
-            } catch (err) {
+            }
+            catch(err) {
               callback.failure(err);
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5823,10 +5792,10 @@ var nodeOpen = false,
       /**
        *  create the panel on the call back of reorder service request
        */
-      reorderServiceCreatePanel: function (panelid, contentTypes, site, control) {
+      reorderServiceCreatePanel: function(panelid, contentTypes, site, control) {
 
         var createDialogOrder = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+          moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
             dialogClass.layout(moduleConfig);
             dialogClass.content(moduleConfig.id, moduleConfig.contentItems, moduleConfig);
             dialogClass.create(moduleConfig.id);
@@ -5840,30 +5809,31 @@ var nodeOpen = false,
           control: control
         };
 
-        CStudioAuthoring.Module.requireModule('dialog-nav-order', '/static-assets/components/cstudio-dialogs/page-nav-order-panel.js', moduleConfig, createDialogOrder);
+        CStudioAuthoring.Module.requireModule("dialog-nav-order", "/static-assets/components/cstudio-dialogs/page-nav-order-panel.js", moduleConfig, createDialogOrder);
       },
 
 
       /**
        * given a site id and a path , and order set the navigation
        */
-      reorderServiceSubmit: function (site, path, order, callback) {
+      reorderServiceSubmit: function(site, path, order, callback) {
 
-        var serviceUri = this.reorderServiceSubmitUrl + '?site=' + site + '&order=' + order + '&path=' + path;
+        var serviceUri = this.reorderServiceSubmitUrl + "?site=" + site + "&order=" + order + "&path=" + path;
 
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var contentTypeJson = oResponse.responseText;
 
             try {
-              var contentTypes = eval('(' + contentTypeJson + ')');
+              var contentTypes = eval("(" + contentTypeJson + ")");
               callback.success(contentTypes);
-            } catch (err) {
+            }
+            catch(err) {
               callback.failure(err);
             }
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
@@ -5874,33 +5844,33 @@ var nodeOpen = false,
       /**
        * renderContentPreview
        */
-      renderContentAssetPreview: function (nodeRef, callback) {
+      renderContentAssetPreview: function(nodeRef, callback) {
 
-        var serviceUri = this.renderContentPreviewUrl + '?nodeRef=' + nodeRef;
+        var serviceUri = this.renderContentPreviewUrl + "?nodeRef=" + nodeRef;
 
         var serviceCallback = {
-          success: function (response) {
+          success: function(response) {
             callback.success(response.responseText);
           },
 
-          failure: function (response) {
-            callback.failure('error retrieving content asset preview');
+          failure: function(response) {
+            callback.failure("error retrieving content asset preview");
           }
         };
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
       /**
        * returns a empty search context
        */
-      createSearchContext: function () {
+      createSearchContext: function() {
         return {
           searchTypes: [],
-          keywords: '',
+          keywords: "",
           filters: [],
           nonFilters: [],
-          sortBy: '',
+          sortBy: "",
           sortAscending: true,
           page: 1,
           pageSize: 20
@@ -5910,15 +5880,15 @@ var nodeOpen = false,
       /**
        * execute a search
        */
-      search: function (site, searchQuery, callback) {
+      search: function(site, searchQuery, callback) {
 
         var serviceUrl = this.searchServiceUrl;
-        serviceUrl += '?siteId=' + site,
+        serviceUrl += "?siteId=" + site,
           data = JSON.stringify(searchQuery);
 
         var searchCb = {
           success: function (response) {
-            var results = eval('(' + response.responseText + ')');
+            var results = eval("(" + response.responseText + ")");
             callback.success(results);
           },
           failure: function (response) {
@@ -5927,132 +5897,132 @@ var nodeOpen = false,
         };
 
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
-        YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUrl), searchCb, data);
+        YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUrl), searchCb, data);
 
       },
 
-      getCMISContentBySearch: function (site, repoId, path, searchTerm, callback) {
+      getCMISContentBySearch: function(site, repoId, path, searchTerm, callback) {
 
-        var serviceUri = this.getCMISContentBySearchUri + '?siteId=' + site + '&cmisRepoId=' + repoId + '&searchTerm=' + searchTerm + '&path=' + path;
-        serviceUri = serviceUri + '&nocache=' + new Date();
+        var serviceUri = this.getCMISContentBySearchUri + "?siteId=" + site + "&cmisRepoId=" + repoId + "&searchTerm=" + searchTerm + "&path=" + path;
+        serviceUri = serviceUri + "&nocache="+new Date();
 
         var serviceCallback = {
-          success: function (response) {
-            var contentResults = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var contentResults = eval("(" + response.responseText + ")");
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getCMISContentByBrowser: function (site, repoId, path, callback) {
+      getCMISContentByBrowser: function(site, repoId, path, callback) {
 
-        var serviceUri = this.getCMISContentByBrowseUri + '?siteId=' + site + '&cmisRepoId=' + repoId + '&path=' + path;
-        serviceUri = serviceUri + '&nocache=' + new Date();
+        var serviceUri = this.getCMISContentByBrowseUri + "?siteId=" + site + "&cmisRepoId=" + repoId + "&path=" + path;
+        serviceUri = serviceUri + "&nocache="+new Date();
 
         var serviceCallback = {
-          success: function (response) {
-            var contentResults = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var contentResults = eval("(" + response.responseText + ")");
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getWebDAVContentByBrowser: function (site, profileId, path, callback, filter) {
-        var serviceUri = this.getWebDAVContentByBrowseUri + '?siteId=' + site + '&profileId=' + profileId + '&path=' + path;
+      getWebDAVContentByBrowser: function(site, profileId, path, callback, filter) {
+        var serviceUri = this.getWebDAVContentByBrowseUri + "?siteId=" + site + "&profileId=" + profileId + "&path=" + path;
 
-        if (filter) {
-          serviceUri += '&type=' + filter;
+        if(filter){
+          serviceUri += "&type=" + filter;
         }
 
         var serviceCallback = {
-          success: function (response) {
-            var contentResults = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var contentResults = eval("(" + response.responseText + ")");
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getS3ContentByBrowser: function (site, profileId, path, callback, filter) {
-        var serviceUri = this.getS3ContentByBrowseUri + '?siteId=' + site + '&profileId=' + profileId;
+      getS3ContentByBrowser: function(site, profileId, path, callback, filter) {
+        var serviceUri = this.getS3ContentByBrowseUri + "?siteId=" + site + "&profileId=" + profileId;
 
-        if (path) {
-          serviceUri += '&path=' + path;
+        if(path){
+          serviceUri += "&path=" + path;
         }
 
-        if (filter) {
-          serviceUri += '&type=' + filter;
+        if(filter){
+          serviceUri += "&type=" + filter;
         }
 
         var serviceCallback = {
-          success: function (response) {
-            var contentResults = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var contentResults = eval("(" + response.responseText + ")");
             callback.success(contentResults);
           },
 
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
 
 
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      getBoxURL: function (site, profileId, fileId, filename, callback) {
-        var serviceUri = this.getBoxUrlUri + '?site=' + site + '&profileId=' + profileId + '&fileId=' + fileId + '&filename=' + filename;
+      getBoxURL: function(site, profileId, fileId, filename, callback) {
+        var serviceUri = this.getBoxUrlUri + "?site=" + site + "&profileId=" + profileId + "&fileId=" + fileId + "&filename=" + filename;
 
         var serviceCallback = {
-          success: function (response) {
-            var contentResults = eval('(' + response.responseText + ')');
+          success: function(response) {
+            var contentResults = eval("(" + response.responseText + ")");
             callback.success(contentResults);
           },
-          failure: function (response) {
+          failure: function(response) {
             callback.failure(response);
           }
         };
-        YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+        YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
       },
 
-      contentCloneCMIS: function (paramJson, callback) {
+      contentCloneCMIS: function(paramJson, callback){
         var serviceUri = this.getCMISCloneUri;
         var cloneJson = CStudioAuthoring.Utils.createContentItemsJson(paramJson);
         var serviceCallback = {
-          success: function (oResponse) {
+          success: function(oResponse) {
             var respJson = oResponse.responseText;
             try {
-              var clone = eval('(' + respJson + ')');
+              var clone = eval("(" + respJson + ")");
               callback.success && callback.success(clone);
-            } catch (err) {
+            } catch(err) {
               callback.failure && callback.failure(err);
             }
           },
           failure: callback.failure
         };
         YConnect.setDefaultPostHeader(false);
-        YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, JSON.stringify(paramJson));
       }
@@ -6062,31 +6032,32 @@ var nodeOpen = false,
     /**
      * given a list of items return the topdown dependencies
      */
-    lookupContentDependencies: function (site, contentItems, callback) {
+    lookupContentDependencies: function(site, contentItems, callback) {
 
-      var serviceUri = this.lookupContentDependencies + '?site=' + site;
+      var serviceUri = this.lookupContentDependencies + "?site=" + site;
 
       var dependencyXml = CStudioAuthoring.Utils.createContentItemsXml(contentItems);
 
       var serviceCallback = {
-        success: function (oResponse) {
+        success: function(oResponse) {
           var respJson = oResponse.responseText;
 
           try {
-            var dependencies = eval('(' + respJson + ')');
+            var dependencies = eval("(" + respJson + ")");
             callback.success(dependencies);
-          } catch (err) {
+          }
+          catch(err) {
             callback.failure(err);
           }
         },
 
-        failure: function (response) {
+        failure: function(response) {
           callback.failure(response);
         }
       };
 
       YConnect.setDefaultPostHeader(false);
-      YConnect.initHeader('Content-Type', 'application/xml; charset=utf-8');
+      YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
       YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
       YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, dependencyXml);
     },
@@ -6099,8 +6070,7 @@ var nodeOpen = false,
       _counter: 0,
       addedCss: [],
       addedJs: [],
-      noop: function () {
-      },
+      noop: function() {},
 
       /**
        * Verifies if the user has a specific permission
@@ -6127,7 +6097,7 @@ var nodeOpen = false,
       /**
        * Returns a page scope unique integer
        */
-      getScopedInt: function () {
+      getScopedInt: function() {
         return this._counter++;
       },
       /**
@@ -6137,8 +6107,8 @@ var nodeOpen = false,
        * @param prefix {String} A text to prepend to the unique ID
        * @return {String} A unique string within the page scope
        */
-      getScopedId: function (prefix) {
-        return [prefix || '', '_', this.getScopedInt()].join('');
+      getScopedId: function(prefix) {
+        return [prefix || "", "_", this.getScopedInt()].join("");
       },
       /**
        * Utility to iterate through arrays or objects. Returning
@@ -6149,7 +6119,7 @@ var nodeOpen = false,
        * @param iterator {Function} Function to execute upon each value in the array/object
        * @param context {Object} Inside the supplied iterator "this" will refer to it
        */
-      each: function (o, iterator, context) {
+      each: function(o, iterator, context) {
         if (YAHOO.lang.isArray(o)) {
           for (var i = 0, l = o.length; i < l; i++) {
             var r = iterator.call(context || o[i], i, o[i]);
@@ -6166,61 +6136,61 @@ var nodeOpen = false,
        * True if user agent has native JSON parsing support else false
        */
       nativeUAJSONSupport: (window.JSON && JSON.toString() == '[object JSON]'),
-      decode: function (jsonstring) {
+      decode: function(jsonstring){
         if (this.nativeUAJSONSupport) {
           return JSON.parse(jsonstring);
         } else {
-          return (eval('(' + jsonstring + ')'));
+          return ( eval("(" + jsonstring + ")") );
         }
       },
-      encode: function (object) {
+      encode: function(object) {
         if (this.nativeUAJSONSupport) {
           return JSON.stringify(object);
         } else {
           try {
             return YAHOO.lang.JSON.stringify(object);
           } catch (e) {
-            throw('CStudioAuthorig.Utils.encode: YAHOO.lang.JSON is missing');
+            throw("CStudioAuthorig.Utils.encode: YAHOO.lang.JSON is missing");
           }
         }
       },
-      isAdmin: function () {
-        return (CStudioAuthoringContext.role == 'admin');
+      isAdmin: function(){
+        return (CStudioAuthoringContext.role == "admin");
       },
-      getIconFWClasses: function (item) {
+      getIconFWClasses: function(item){
 
-        if (!item) return '';
+        if (!item) return "";
 
         var CSA = CStudioAuthoring,
-          classes = ['status-icon'],
+          classes = ["status-icon"],
           _each = CSA.Utils.each,
           dashed = CSA.StringUtils.toDashes,
           states = [
-            'submitted', 'inProgress', 'scheduled',
-            'deleted', 'disabled', 'asset',
-            'component', 'floating', 'document',
-            'submittedForDeletion', 'inFlight'
+            "submitted","inProgress","scheduled",
+            "deleted","disabled","asset",
+            "component","floating","document",
+            "submittedForDeletion", "inFlight"
           ],
           name;
 
-        _each(states, function (i, state) {
-          item[state] && classes.push(dashed(state));
+        _each(states, function(i, state){
+          item[state] && classes.push( dashed(state) );
         });
-        name = classes.join(' ');
+        name = classes.join(" ");
 
         if (CSA.Utils.isItemLocked(item)) {
-          name += '-lock';
+          name+="-lock";
         }
-        if (item.container && item.name != 'index.xml') {
-          name = 'status-icon folder';
-        }
-
-        if (item.container && item.name != 'index.xml') {
-          name = 'status-icon folder';
+        if(item.container && item.name != "index.xml") {
+          name="status-icon folder";
         }
 
-        if (item.isComponent && item.contentType !== 'folder') {
-          name = name + ' component';
+        if(item.container && item.name != "index.xml") {
+          name="status-icon folder";
+        }
+
+        if(item.isComponent && item.contentType !== 'folder') {
+          name= name + " component";
         }
 
         return name;
@@ -6228,23 +6198,25 @@ var nodeOpen = false,
 
       isItemLocked: function (item) {
         // TODO We need a better way of checking this
-        return (item.lockOwner != '');
+        return (item.lockOwner != "");
       },
 
       /**
        * get the width of the screen
        */
-      viewportWidth: function () {
+      viewportWidth: function() {
         var viewportwidth;
 
-        if (typeof window.innerWidth != 'undefined') {
+        if (typeof window.innerWidth != 'undefined'){
           viewportwidth = window.innerWidth;
-        } else if (typeof document.documentElement != 'undefined'
+        }
+        else if (typeof document.documentElement != 'undefined'
           && typeof document.documentElement.clientWidth != 'undefined'
           && document.documentElement.clientWidth != 0) {
 
           viewportwidth = document.documentElement.clientWidth;
-        } else {
+        }
+        else{
           viewportwidth = document.getElementsByTagName('body')[0].clientWidth;
         }
 
@@ -6254,7 +6226,7 @@ var nodeOpen = false,
       /**
        * fire the given callback when the given element becomes visible to the user
        */
-      registerEventOnIsVisible: function (el, callback) {
+      registerEventOnIsVisible: function(el, callback) {
 
         var y = Dom.getY(el);
 
@@ -6265,6 +6237,7 @@ var nodeOpen = false,
           true,
 
           YAHOO.util.CustomEvent.FLAT
+
         );
 
         o.subscribe(callback);
@@ -6281,7 +6254,7 @@ var nodeOpen = false,
 
           var view = parseInt(vpH + top);
 
-          if (view >= y) {
+          if ( view >= y ) {
 
             o.fire(view);
 
@@ -6302,36 +6275,35 @@ var nodeOpen = false,
        */
       addEventListener: (function () {
         if (window.addEventListener) {
-          return function (el, sType, fn, capture) {
+          return function(el, sType, fn, capture) {
             el.addEventListener(sType, fn, (capture));
           };
         } else if (window.attachEvent) {
-          return function (el, sType, fn, capture) {
-            el.attachEvent('on' + sType, fn);
+          return function(el, sType, fn, capture) {
+            el.attachEvent("on" + sType, fn);
           };
         } else {
-          return function () {
-          };
+          return function(){};
         }
       })(),
 
       /**
        * Remove all child nodes from an element
        */
-      emptyElement: function (el) {
-        while (el.hasChildNodes()) {
+      emptyElement: function(el) {
+        while ( el.hasChildNodes() ) {
           el.removeChild(el.firstChild);
         }
-
+        return;
       },
 
       /**
        * Remove all child nodes from an element that have a specific attribute value
        */
-      removeSpecificElements: function (el, attr) {
+      removeSpecificElements: function(el, attr) {
         var attrVal;
         if (el.hasChildNodes()) {
-          for (var i = 0; i < el.childNodes.length;) {
+          for (var i = 0; i < el.childNodes.length; ) {
             attrVal = el.childNodes[i].getAttribute(attr);
             if (!!attrVal) {
               // Attribute value is defined and it's not an empty string
@@ -6341,13 +6313,13 @@ var nodeOpen = false,
             }
           }
         }
-
+        return;
       },
 
       /**
        * utility method to check arrays for values
        */
-      arrayContains: function (value, array) {
+      arrayContains: function(value, array) {
         var i = array.length;
         while (i--) {
           if (array[i] == value) {
@@ -6361,7 +6333,7 @@ var nodeOpen = false,
       /**
        * Add parameters to any provided url : URL?message=Hello
        */
-      addURLParameter: function (url, parameterName, parameterValue) {
+      addURLParameter: function(url, parameterName, parameterValue) {
         var separator = (url.indexOf('?') !== -1) ? '&' : '?';
         return url + separator + parameterName + '=' + parameterValue;
       },
@@ -6369,21 +6341,21 @@ var nodeOpen = false,
       /**
        * dynamically add a javascript file
        */
-      addJavascript: function (script, cache, callback) {
+      addJavascript: function(script, cache, callback) {
         if (!this.arrayContains(script, this.addedJs)) {
 
           this.addedJs.push(script);
 
-          if (script.indexOf('http') == -1) {
+          if(script.indexOf("http") == -1) {
             script = CStudioAuthoringContext.baseUri + script;
-            script = this.addURLParameter(script, 'version', CStudioAuthoring.UIBuildId);
+            script = this.addURLParameter(script, "version", CStudioAuthoring.UIBuildId);
           }
 
           /*script = (script.indexOf("?")==-1)
                         ? script + "?nocache="+new Date()
                         : script + "&nocache="+new Date();*/
 
-          var headID = document.getElementsByTagName('head')[0];
+          var headID = document.getElementsByTagName("head")[0];
           var newScript = document.createElement('script');
           newScript.type = 'text/javascript';
           newScript.src = script;
@@ -6397,16 +6369,16 @@ var nodeOpen = false,
        * @param scriptName - script name including the .js extension
        * @return full script path (including protocol and server name) or null
        */
-      getScriptPath: function (scriptName) {
+      getScriptPath : function (scriptName) {
         var scripts = document.getElementsByTagName('SCRIPT'),
-          scriptName = scriptName.replace(/(.js)$/, '\\\$1'),
-          scriptNameRegExp = new RegExp(scriptName + '$'),
-          pathRegExp = new RegExp('(.*)' + scriptName + '$'),
+          scriptName = scriptName.replace(/(.js)$/, "\\\$1"),
+          scriptNameRegExp = new RegExp(scriptName + "$"),
+          pathRegExp = new RegExp("(.*)" + scriptName + "$"),
           path = null;
 
-        if (scripts && scripts.length > 0) {
-          for (var i in scripts) {
-            if (scripts[i].src && scripts[i].src.match(scriptNameRegExp)) {
+        if(scripts && scripts.length > 0) {
+          for(var i in scripts) {
+            if(scripts[i].src && scripts[i].src.match(scriptNameRegExp)) {
               path = scripts[i].src.replace(pathRegExp, '$1');
             }
           }
@@ -6416,19 +6388,19 @@ var nodeOpen = false,
       /**
        * dynamically add a css file
        */
-      addCss: function (css) {
+      addCss: function(css) {
         if (!this.arrayContains(css, this.addedCss)) {
 
           this.addedCss.push(css);
 
-          if (css.indexOf('http') == -1) {
+          if(css.indexOf("http") == -1) {
             css = CStudioAuthoringContext.baseUri + css + '?version=' + CStudioAuthoring.UIBuildId;
           }
 
-          css = (css.indexOf('?') == -1) ?
-            css + '?nocache=' + new Date() : css + '&nocache=' + new Date();
+          css = (css.indexOf("?")==-1) ?
+            css + "?nocache="+new Date() : css + "&nocache="+new Date();
 
-          var headID = document.getElementsByTagName('head')[0];
+          var headID = document.getElementsByTagName("head")[0];
           var cssNode = document.createElement('link');
           cssNode.type = 'text/css';
           cssNode.rel = 'stylesheet';
@@ -6440,18 +6412,18 @@ var nodeOpen = false,
       /**
        * generate uuid part
        */
-      generateUUIDPart: function () {
+      generateUUIDPart: function() {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
       },
       /**
        * generate pho UUID
        */
-      generateUUID: function () {
+      generateUUID: function() {
         return (this.generateUUIDPart() +
-          this.generateUUIDPart() + '-' +
-          this.generateUUIDPart() + '-' +
-          this.generateUUIDPart() + '-' +
-          this.generateUUIDPart() + '-' +
+          this.generateUUIDPart() + "-" +
+          this.generateUUIDPart() + "-" +
+          this.generateUUIDPart() + "-" +
+          this.generateUUIDPart() + "-" +
           this.generateUUIDPart() +
           this.generateUUIDPart() +
           this.generateUUIDPart());
@@ -6460,16 +6432,16 @@ var nodeOpen = false,
       /**
        * given a page or component path retrieves the parent path
        */
-      getParentPath: function (relativePath) {
+      getParentPath: function(relativePath){
         var parentPath = relativePath;
         if (relativePath) {
-          if (relativePath.lastIndexOf('.xml') > -1) {
-            var index = relativePath.lastIndexOf('/');
+          if (relativePath.lastIndexOf(".xml") > -1) {
+            var index = relativePath.lastIndexOf("/");
             if (index > 0) {
               var fileName = relativePath.substring(index + 1);
               var path = relativePath.substring(0, index);
-              if (fileName === 'index.xml') {
-                var secondIndex = path.lastIndexOf('/');
+              if (fileName === "index.xml") {
+                var secondIndex = path.lastIndexOf("/");
                 if (secondIndex > 0) {
                   path = path.substring(0, secondIndex);
                 }
@@ -6485,15 +6457,13 @@ var nodeOpen = false,
       /**
        * get parameters from url - returns map
        */
-      getUrlParams: function () {
+      getUrlParams: function(){
         var urlParams,
           match,
-          pl = /\+/g,  // Regex for replacing addition symbol with a space
+          pl     = /\+/g,  // Regex for replacing addition symbol with a space
           search = /([^&=]+)=?([^&]*)/g,
-          decode = function (s) {
-            return decodeURIComponent(s.replace(pl, ' '));
-          },
-          query = window.location.search.substring(1),
+          decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+          query  = window.location.search.substring(1),
           key,
           value;
 
@@ -6510,7 +6480,7 @@ var nodeOpen = false,
               valuesArray.push(urlParams[key]);
               valuesArray.push(value);
               urlParams[key] = valuesArray;
-            } else {
+            }else{
               urlParams[key].push(value);
             }
           } else {
@@ -6523,47 +6493,47 @@ var nodeOpen = false,
       /**
        * get query variable
        */
-      getQueryVariable: function (query, variable) {
-        variable = variable.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]');
-        var regexS = '[\\?&]' + variable + '=([^&#]*)';
+      getQueryVariable: function(query, variable) {
+        variable = variable.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regexS = "[\\?&]" + variable + "=([^&#]*)";
         var regex = new RegExp(regexS);
         var results = regex.exec(decodeURIComponent(query));
 
         if (results == null)
-          return '';
+          return "";
         else
           return results[1];
       },
 
-      getQueryParameterByName: function (name) {
-        name = name.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]');
-        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
+      getQueryParameterByName : function(name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
           results = regex.exec(location.search);
-        return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
       },
 
-      getQueryParameterURL: function (name) {
-        name = name.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]');
-        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
+      getQueryParameterURL : function(name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
           results = regex.exec(location.hash);
-        return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
       },
 
-      getQueryParameterURLParentWindow: function (name) {
-        name = name.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]');
-        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
+      getQueryParameterURLParentWindow : function(name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
           results = regex.exec(parent.window.location.hash);
-        return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
       },
 
-      replaceQueryParameterURL: function (url, param_name, new_value) {
+      replaceQueryParameterURL : function(url, param_name, new_value){
         var base = url.substr(0, url.indexOf('?'));
-        var query = url.substr(url.indexOf('?') + 1, url.length);
+        var query = url.substr(url.indexOf('?')+1, url.length);
         var a_query = query.split('&');
-        for (var i = 0; i < a_query.length; i++) {
+        for(var i=0; i < a_query.length; i++){
           var name = a_query[i].split('=')[0];
           var value = a_query[i].split('=')[1];
-          if (name == param_name) a_query[i] = param_name + '=' + new_value;
+          if (name == param_name) a_query[i] = param_name+'='+new_value;
         }
         return base + '?' + a_query.join('&');
       },
@@ -6571,36 +6541,38 @@ var nodeOpen = false,
       /**
        * format a date
        */
-      formatDateFromString: function (dateTime, timeFormat) {
+      formatDateFromString: function(dateTime, timeFormat) {
 
         try {
-          if (timeFormat != 'full') {
-            var updatedDateTime = '';
+          if(timeFormat != "full"){
+            var updatedDateTime = "";
 
-            if (dateTime != undefined && dateTime != '') {
+            if (dateTime != undefined && dateTime != "")
+            {
               var itemDateTime = dateTime.split('T');
-              var itemDate = itemDateTime[0].replace(/-/g, '/');
+              var itemDate = itemDateTime[0].replace(/-/g, "/");
               var itemTime = itemDateTime[1].split(':', 2);
-              var tt = '';
+              var tt = "";
 
               var simpleTimeFormatFlag = false;
               var tooltipformat = false;
-              if (timeFormat != undefined && timeFormat == 'tooltipformat') {
+              if (timeFormat != undefined && timeFormat == "tooltipformat") {
                 tooltipformat = true;
-              } else if ((timeFormat != undefined && timeFormat != '') || timeFormat == 'simpleformat') {
+              } else if ((timeFormat != undefined && timeFormat != "") || timeFormat == "simpleformat") {
                 simpleTimeFormatFlag = true;
               }
 
               if (itemTime[0] >= 12) {
-                tt = 'P';
+                tt = "P";
                 itemTime[0] = itemTime[0] - 12;
                 if (itemTime[0] == 0)
                   itemTime[0] = itemTime[0] + 12;
                 if (itemTime[0] < 10) {
-                  itemTime[0] = '0' + itemTime[0];
+                  itemTime[0] = "0" + itemTime[0];
                 }
-              } else {
-                tt = 'A';
+              }
+              else {
+                tt = "A";
                 if (itemTime[0] == 0)
                   itemTime[0] = 12;
               }
@@ -6611,28 +6583,28 @@ var nodeOpen = false,
               var y = myDate.getFullYear();
 
               if (m < 10)
-                m = '0' + m;
+                m = "0" + m;
 
               if (d < 10)
-                d = '0' + d;
+                d = "0" + d;
 
               if (simpleTimeFormatFlag) { // if simple time format pass mm/dd/yy format
 
-                var newDate = m + '/' + d + '/' + y;
+                var newDate = m + "/" + d + "/" + y;
                 updatedDateTime = newDate;
 
               } else if (tooltipformat) { //date format for tooltip
 
-                var year = y + '';
-                var newDate = (isNaN(m) ? m : parseInt(m, 10)) + '/' +
-                  (isNaN(d) ? d : parseInt(d, 10)) + '/' +
+                var year = y + "";
+                var newDate = (isNaN(m)?m:parseInt(m, 10)) + "/" +
+                  (isNaN(d)?d:parseInt(d, 10)) + "/" +
                   year.substr(2);
-                updatedDateTime = newDate + ' ' + itemTime[0] + ':' + itemTime[1] + '' + tt + '  ';
+                updatedDateTime = newDate + " " + itemTime[0] + ":" + itemTime[1] + "" + tt + "  ";
 
               } else {
 
-                var newDate = m + '/' + d;
-                updatedDateTime = newDate + ' ' + itemTime[0] + ':' + itemTime[1] + '' + tt + '  ';
+                var newDate = m + "/" + d;
+                updatedDateTime = newDate + " " + itemTime[0] + ":" + itemTime[1] + "" + tt + "  ";
 
               }
 
@@ -6644,20 +6616,20 @@ var nodeOpen = false,
               var y = myDate.getFullYear();
 
               if (m < 10)
-                m = '0' + m;
+                m = "0" + m;
 
               if (d < 10)
-                d = '0' + d;
+                d = "0" + d;
 
-              var newDate = m + '/' + d;
+              var newDate = m + "/" + d;
 
             }
 
             return updatedDateTime;
-          } else {
+          }else{
             var dateTime = new Date(dateTime),
-              weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-              months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+              weekdays = ["Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+              months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
               weekDay = weekdays[dateTime.getDay()],
               month = months[dateTime.getMonth()],
               day = dateTime.getDate(),
@@ -6669,25 +6641,26 @@ var nodeOpen = false,
               time,
               timezone = /\((.*)\)/.exec(dateTime.toString())[1];
 
-            if (hours >= 12) {
-              tt = 'PM';
+            if ( hours >= 12 ) {
+              tt = "PM";
               hours = hours - 12;
               if (hours == 0)
                 hours = hours + 12;
               if (hours < 10) {
-                hours = '0' + hours;
+                hours = "0" + hours;
               }
-            } else {
-              tt = 'AM';
+            }else{
+              tt = "AM";
               if (hours == 0)
                 hours = 12;
             }
 
-            time = hours + ':' + minutes + ':' + seconds + ' ' + tt;
+            time = hours + ":" + minutes + ":" + seconds + " " + tt;
 
-            return weekDay + ', ' + month + ' ' + day + ', ' + year + ', ' + time + ' ' + timezone;
+            return weekDay + ", " + month + " " + day + ", " + year + ", " + time + " " + timezone;
           }
-        } catch (err) {
+        }
+        catch(err) {
           return dateTime;
         }
       },
@@ -6695,28 +6668,28 @@ var nodeOpen = false,
       /**
        * format a date from UTC to config Date
        */
-      formatDateFromUTC: function (dateTime, newTimeZone, format) {
-        try {
-          var utcDate = moment.tz(dateTime, 'Etc/UTC'),
+      formatDateFromUTC: function(dateTime, newTimeZone, format) {
+        try{
+          var utcDate   = moment.tz(dateTime, "Etc/UTC"),
             newDate;
 
-          if (format === 'full') {
+          if(format === "full"){
             newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
-            newDate = newDate + ' (' + newTimeZone + ')';
-          } else {
-            if (format === 'large') {
+            newDate = newDate + " ("+newTimeZone+")";
+          }else{
+            if(format === "large"){
               newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY HH:mm:ss');
-            } else {
-              if (format === 'medium') {
+            }else{
+              if(format === "medium"){
                 newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
-              } else {
+              }else{
                 newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
               }
             }
 
           }
-          return newDate != 'Invalid date' ? newDate : '';
-        } catch (err) {
+          return newDate != "Invalid date" ? newDate : '';
+        }catch(err){
           console.log(err);
         }
 
@@ -6725,36 +6698,36 @@ var nodeOpen = false,
       /**
        * format a date to UTC
        */
-      parseDateToUTC: function (dateTime, newTimeZone, formatSize, format) {
-        try {
+      parseDateToUTC: function(dateTime, newTimeZone, formatSize, format) {
+        try{
           var currentDate = moment.tz(dateTime, format, newTimeZone),
             newDate;
 
-          if (formatSize === 'full') {
-            newDate = currentDate.clone().tz('Etc/UTC').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
-            newDate = newDate + ' (Etc/UTC)';
-          } else {
-            if (formatSize === 'large') {
-              newDate = currentDate.clone().tz('Etc/UTC').format('MM/DD/YYYY HH:mm:ss');
-            } else {
-              if (formatSize === 'medium') {
-                newDate = currentDate.clone().tz('Etc/UTC').format('MM/DD/YYYY hh:mm a');
-              } else {
-                newDate = currentDate.clone().tz('Etc/UTC').format('MM-DD hh:mm a');
+          if(formatSize === "full"){
+            newDate = currentDate.clone().tz("Etc/UTC").format('dddd, MMMM DD, YYYY, hh:mm:ss A');
+            newDate = newDate + " (Etc/UTC)";
+          }else{
+            if(formatSize === "large"){
+              newDate = currentDate.clone().tz("Etc/UTC").format('MM/DD/YYYY HH:mm:ss');
+            }else{
+              if(formatSize === "medium"){
+                newDate = currentDate.clone().tz("Etc/UTC").format('MM/DD/YYYY hh:mm a');
+              }else{
+                newDate = currentDate.clone().tz("Etc/UTC").format('MM-DD hh:mm a');
               }
             }
 
           }
-          return newDate != 'Invalid date' ? newDate : '';
-        } catch (err) {
+          return newDate != "Invalid date" ? newDate : '';
+        }catch(err){
           console.log(err);
         }
 
       },
 
-      formatDateFromStringNullToEmpty: function (dateTime, timeFormat) {
-        if ((dateTime == 'null') || (dateTime == null) || (dateTime == undefined) || (dateTime == ''))
-          return '';
+      formatDateFromStringNullToEmpty: function(dateTime, timeFormat) {
+        if ( (dateTime == "null") || (dateTime == null) || (dateTime == undefined) || (dateTime == "") )
+          return "";
         else
           return this.formatDateFromString(dateTime, timeFormat);
       },
@@ -6762,62 +6735,62 @@ var nodeOpen = false,
       /**
        * format date to ISO
        */
-      formatDateToISO: function (dateTime) {
+      formatDateToISO: function(dateTime) {
         return moment.parseZone(dateTime).toISOString();
       },
 
       /**
        * format date to Studio format
        */
-      formatDateToStudio: function (dateTime) {
-        var date = moment.parseZone(dateTime).format('MM/DD/YYYY HH:mm:ss') != 'Invalid date' ?
-          moment.parseZone(dateTime).format('MM/DD/YYYY HH:mm:ss') : dateTime;
+      formatDateToStudio: function(dateTime) {
+        var date = moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") != "Invalid date" ?
+          moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") : dateTime;
         return date;
       },
 
-      formatFileSize: function (size) {
-        var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-        return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+      formatFileSize: function(size){
+        var i = size == 0 ? 0 : Math.floor( Math.log(size) / Math.log(1024) );
+        return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
       },
 
       /**
        * create loading icon
        */
-      createLoadingIcon: function () {
-        var imgEl = document.createElement('i');
+      createLoadingIcon: function() {
+        var imgEl = document.createElement("i");
         imgEl.className += ' fa fa-spinner fa-spin fa-3x fa-fw loading';
-        imgEl.id = 'loadingElt';
+        imgEl.id = "loadingElt";
         document.body.appendChild(imgEl);
       },
 
       /**
        * remove loading icon
        */
-      removeLoadingIcon: function () {
-        var publishLoading = document.getElementById('loadingElt');
-        if (publishLoading) {
+      removeLoadingIcon: function() {
+        var publishLoading = document.getElementById("loadingElt");
+        if(publishLoading){
           publishLoading.parentNode.removeChild(publishLoading);
         }
       },
 
       // Get the date/time formatting for the time converting service
       getConvertFormat: function (includeDate) {
-        var format = (includeDate) ? 'MM/dd/yyyy%20HH:mm:ss' : 'HH:mm:ss';
+        var format = (includeDate) ? "MM/dd/yyyy%20HH:mm:ss" : "HH:mm:ss";
         return format;
       },
 
       // Get a date/time string to use with the time converting service
       getDateTimeString: function (date, time) {
         // There should always be a time value or else, we risk calculating the date value incorrectly; but, just in case ...
-        var dateTimeStr = (date) ? date + ((time) ? '%20' + time : '%2000:00:00') :
-          '' + time;
+        var dateTimeStr = (date) ? date + ((time) ? "%20" + time : "%2000:00:00") :
+          "" + time;
         return dateTimeStr;
       },
 
       /**
        * create yui based datepicker
        */
-      yuiCalendar: function (sourceElement, eventToFire, TargetElement, afterRender) {
+      yuiCalendar: function(sourceElement, eventToFire, TargetElement, afterRender) {
 
         //Dom.get("settime").checked = true;
 
@@ -6825,16 +6798,16 @@ var nodeOpen = false,
         over_cal = false; // flag for blur events
         targetField = Dom.get(TargetElement);
 
-        Event.addListener(sourceElement, eventToFire, function () {
+        Event.addListener(sourceElement, eventToFire, function() {
 
           //create a calendar outer container and apply styles to position absolute
-          var calendarContainer = document.createElement('div');
-          calendarContainer.id = 'calendarContainer';
-          calendarContainer.className = 'calendarContainer';
+          var calendarContainer = document.createElement("div");
+          calendarContainer.id = "calendarContainer";
+          calendarContainer.className = "calendarContainer";
 
           //create a wrapper to display the calendar
-          var calendarWrapper = document.createElement('div');
-          calendarWrapper.id = 'calendarWrapper';
+          var calendarWrapper = document.createElement("div");
+          calendarWrapper.id = "calendarWrapper";
 
           //append the wrapper inside the container
           calendarContainer.appendChild(calendarWrapper);
@@ -6843,11 +6816,11 @@ var nodeOpen = false,
           datePicker.parentNode.appendChild(calendarContainer);
 
           //init calendar
-          newCalendar = new YAHOO.widget.Calendar(sourceElement, 'calendarWrapper');
+          newCalendar = new YAHOO.widget.Calendar(sourceElement, "calendarWrapper");
           /** added to prevent past date selection*/
           var todaysDate = new Date();
-          todaysDate = (todaysDate.getMonth() + 1) + '/' + todaysDate.getDate() + '/' + todaysDate.getFullYear();
-          newCalendar.cfg.setProperty('mindate', todaysDate);
+          todaysDate = (todaysDate.getMonth()+ 1) + "/" + todaysDate.getDate()+"/" + todaysDate.getFullYear();
+          newCalendar.cfg.setProperty("mindate", todaysDate);
 
           //attach select event and listeners
           newCalendar.selectEvent.subscribe(getDate, targetField, true);
@@ -6860,11 +6833,11 @@ var nodeOpen = false,
           newCalendar.render();
 
           function setupListeners() {
-            Event.addListener('calendarContainer', 'mouseover', function () {
+            Event.addListener('calendarContainer', 'mouseover', function() {
               over_cal = true;
             });
 
-            Event.addListener('calendarContainer', 'mouseout', function () {
+            Event.addListener('calendarContainer', 'mouseout', function() {
               over_cal = false;
             });
           }
@@ -6879,19 +6852,19 @@ var nodeOpen = false,
           function getDate(type, args, obj) {
 
             var rowDate = args.toString();
-            var splitRowDate = rowDate.split(',');
+            var splitRowDate = rowDate.split(",");
             var selYear = splitRowDate[0];
             var selMonth = splitRowDate[1];
             var selDay = splitRowDate[2];
 
-            var selectedDate = selMonth + '/' + selDay + '/' + selYear;
+            var selectedDate = selMonth + "/" + selDay + "/" + selYear;
 
             targetField.value = selectedDate;
-            Dom.get('settime').checked = true;
-            Dom.get('datepicker').style.border = '1px solid #0176B1';
-            Dom.get('datepicker').style.color = '#000000';
-            Dom.get('timepicker').style.border = '1px solid #0176B1';
-            Dom.get('timepicker').style.color = '#000000';
+            Dom.get("settime").checked = true;
+            Dom.get("datepicker").style.border = "1px solid #0176B1";
+            Dom.get("datepicker").style.color = "#000000";
+            Dom.get("timepicker").style.border = "1px solid #0176B1";
+            Dom.get("timepicker").style.color = "#000000";
             //reset and hide calendar
             over_cal = false;
             hideCalendar();
@@ -6916,28 +6889,28 @@ var nodeOpen = false,
        * Return: the element (or false, if the element doesn't exist)
        */
 
-      initCursorPosition: function (elementId, events) {
+      initCursorPosition : function (elementId, events) {
 
         var getSelectionStart = function (o) {
           if (o.createTextRange) {
-            var r = document.selection.createRange().duplicate();
-            r.moveEnd('character', o.value.length);
-            if (r.text == '') return o.value.length;
-            return o.value.lastIndexOf(r.text);
-          } else return o.selectionStart;
+            var r = document.selection.createRange().duplicate()
+            r.moveEnd('character', o.value.length)
+            if (r.text == '') return o.value.length
+            return o.value.lastIndexOf(r.text)
+          } else return o.selectionStart
         };
 
         var addCursorPosListener = function (el, event) {
-          YEvent.addListener(el, event, function () {
+          YEvent.addListener(el, event, function(){
             var cursorPos = getSelectionStart(el);
             el.setAttribute('data-cursor', cursorPos);
           });
-        };
+        }
 
         var el = YDom.get(elementId);
 
         if (el) {
-          if (events.constructor.toString().indexOf('Array') != -1 &&
+          if (events.constructor.toString().indexOf("Array") != -1 &&
             events.length > 0) {
             for (var i = 0; i < events.length; i++) {
               addCursorPosListener(el, events[i]);
@@ -6954,9 +6927,9 @@ var nodeOpen = false,
        * that increse the input time
        */
 
-      textFieldTimeIncrementHelper: function (triggerEl, targetEl, event, keyCode) {
+      textFieldTimeIncrementHelper : function(triggerEl, targetEl, event, keyCode) {
 
-        var incrementHandler = function (type, args) {
+        var incrementHandler = function(type, args) {
 
           /* CSTUDIO-401: Removing default action when using arrow keys
                      if (args) {
@@ -6969,7 +6942,7 @@ var nodeOpen = false,
             timeValue = timePicker.value,
             cursorPosition;
 
-          if (timeValue != 'Time...' && timeValue != '') {
+          if( timeValue != 'Time...' && timeValue != ''){
             var timeValueArray = timeValue.split(/[: ]/),
               hourValue = timeValueArray[0],
               minuteValue = timeValueArray[1],
@@ -6978,52 +6951,52 @@ var nodeOpen = false,
 
             cursorPosition = timePicker.getAttribute('data-cursor');
 
-            if (cursorPosition > -1 && cursorPosition < 3) {
+            if( cursorPosition > -1 && cursorPosition < 3){
 
-              if (hourValue.charAt(0) == '0')
+              if(hourValue.charAt(0) == '0')
                 hourValue = hourValue.charAt(1);
 
-              hourValue = (parseInt(hourValue) % 12) + 1;
+              hourValue = (parseInt(hourValue)%12)+1;
 
-              if (hourValue.toString().length < 2)
-                hourValue = '0' + hourValue;
+              if(hourValue.toString().length < 2)
+                hourValue = "0"+hourValue;
               else
                 hourValue = hourValue.toString();
-            } else if (cursorPosition > 2 && cursorPosition < 6) {
+            }else if(cursorPosition > 2 && cursorPosition < 6){
 
-              if (minuteValue.charAt(0) == '0')
+              if(minuteValue.charAt(0) == '0')
                 minuteValue = minuteValue.charAt(1);
 
-              if (parseInt(minuteValue) == 59) {
-                minuteValue = (parseInt(minuteValue) % 59);
-              } else {
-                minuteValue = (parseInt(minuteValue) % 59) + 1;
+              if(parseInt(minuteValue) == 59){
+                minuteValue = (parseInt(minuteValue)%59);
+              }else{
+                minuteValue = (parseInt(minuteValue)%59)+1;
               }
 
-              if (minuteValue.toString().length < 2)
-                minuteValue = '0' + minuteValue;
+              if(minuteValue.toString().length < 2)
+                minuteValue =   "0"+minuteValue;
               else
                 minuteValue = minuteValue.toString();
 
-            } else if (cursorPosition > 5 && cursorPosition < 9) {
-              if (secondValue.charAt(0) == '0')
+            }else if(cursorPosition > 5 && cursorPosition < 9){
+              if(secondValue.charAt(0) == '0')
                 secondValue = secondValue.charAt(1);
 
-              if (parseInt(secondValue) == 59) {
-                secondValue = (parseInt(secondValue) % 59);
-              } else {
-                secondValue = (parseInt(secondValue) % 59) + 1;
+              if(parseInt(secondValue) == 59){
+                secondValue = (parseInt(secondValue)%59);
+              }else{
+                secondValue = (parseInt(secondValue)%59)+1;
               }
 
-              if (secondValue.toString().length < 2)
-                secondValue = '0' + secondValue;
+              if(secondValue.toString().length < 2)
+                secondValue =   "0"+secondValue;
               else
                 secondValue = secondValue.toString();
-            } else if (cursorPosition > 8) {
+            }else if(cursorPosition > 8){
               amPmValue = (amPmValue == 'a.m.') ? 'p.m.' : 'a.m.';
             }
 
-            timePicker.value = hourValue + ':' + minuteValue + ':' + secondValue + ' ' + amPmValue;
+            timePicker.value = hourValue+":"+minuteValue+":"+secondValue+" "+amPmValue;
           }
         };
 
@@ -7031,7 +7004,7 @@ var nodeOpen = false,
 
         if (keyCode) {
           // Add keyboard support, incomplete --CSTUDIO-401
-          klInc = new YAHOO.util.KeyListener(targetEl, { keys: keyCode }, incrementHandler);
+          klInc = new YAHOO.util.KeyListener(targetEl, { keys: keyCode}, incrementHandler);
           klInc.enable();
         }
       },
@@ -7041,9 +7014,9 @@ var nodeOpen = false,
        * that decrese the input time
        */
 
-      textFieldTimeDecrementHelper: function (triggerEl, targetEl, event, keyCode) {
+      textFieldTimeDecrementHelper : function(triggerEl, targetEl, event, keyCode) {
 
-        var decrementHandler = function (type, args) {
+        var decrementHandler = function(type, args) {
 
           /* CSTUDIO-401: Removing default action when using arrow keys
                      if (args) {
@@ -7056,7 +7029,7 @@ var nodeOpen = false,
             timeValue = timePicker.value,
             cursorPosition;
 
-          if (timeValue != 'Time...' && timeValue != '') {
+          if( timeValue != 'Time...' && timeValue != ''){
             var timeValueArray = timeValue.split(/[: ]/),
               hourValue = timeValueArray[0],
               minuteValue = timeValueArray[1],
@@ -7065,59 +7038,59 @@ var nodeOpen = false,
 
             cursorPosition = timePicker.getAttribute('data-cursor');
 
-            if (cursorPosition > -1 && cursorPosition < 3) {
+            if( cursorPosition > -1 && cursorPosition < 3){
 
-              if (hourValue.charAt(0) == '0')
+              if(hourValue.charAt(0) == '0')
                 hourValue = hourValue.charAt(1);
 
-              if (parseInt(hourValue) == 1) {
+              if(parseInt(hourValue) == 1){
                 hourValue = 12;
-              } else {
-                hourValue = (parseInt(hourValue) - 1) % 12;
+              }else{
+                hourValue = (parseInt(hourValue)-1)%12;
               }
 
-              if (hourValue.toString().length < 2)
-                hourValue = '0' + hourValue;
+              if(hourValue.toString().length < 2)
+                hourValue = "0"+hourValue;
               else
                 hourValue = hourValue.toString();
-            } else if (cursorPosition > 2 && cursorPosition < 6) {
+            }else if(cursorPosition > 2 && cursorPosition < 6){
 
-              if (minuteValue.charAt(0) == '0')
+              if(minuteValue.charAt(0) == '0')
                 minuteValue = minuteValue.charAt(1);
 
-              if (parseInt(minuteValue) == 0) {
+              if(parseInt(minuteValue) == 0){
                 minuteValue = 59;
-              } else {
-                minuteValue = (parseInt(minuteValue) - 1) % 59;
+              }else{
+                minuteValue = (parseInt(minuteValue)-1)%59;
               }
 
-              if (minuteValue.toString().length < 2)
-                minuteValue = '0' + minuteValue;
+              if(minuteValue.toString().length < 2)
+                minuteValue =   "0"+minuteValue;
               else
                 minuteValue = minuteValue.toString();
 
-            } else if (cursorPosition > 5 && cursorPosition < 9) {
-              if (secondValue.charAt(0) == '0')
+            }else if(cursorPosition > 5 && cursorPosition < 9){
+              if(secondValue.charAt(0) == '0')
                 secondValue = secondValue.charAt(1);
 
-              if (parseInt(secondValue) == 0) {
+              if(parseInt(secondValue) == 0){
                 secondValue = 59;
-              } else {
-                secondValue = (parseInt(secondValue) - 1) % 59;
+              }else{
+                secondValue = (parseInt(secondValue)-1)%59;
               }
 
-              if (secondValue.toString().length < 2)
-                secondValue = '0' + secondValue;
+              if(secondValue.toString().length < 2)
+                secondValue =   "0"+secondValue;
               else
                 secondValue = secondValue.toString();
-            } else if (cursorPosition > 8) {
-              if (amPmValue == 'a.m.')
+            }else if(cursorPosition > 8){
+              if(amPmValue == 'a.m.')
                 amPmValue = 'p.m.';
               else
                 amPmValue = 'a.m.';
             }
 
-            timePicker.value = hourValue + ':' + minuteValue + ':' + secondValue + ' ' + amPmValue;
+            timePicker.value = hourValue+":"+minuteValue+":"+secondValue+" "+amPmValue;
           }
         };
 
@@ -7125,7 +7098,7 @@ var nodeOpen = false,
 
         if (keyCode) {
           // Add keyboard support, incomplete --CSTUDIO-401
-          klDec = new YAHOO.util.KeyListener(targetEl, { keys: keyCode }, decrementHandler);
+          klDec = new YAHOO.util.KeyListener(targetEl, { keys: keyCode}, decrementHandler);
           klDec.enable();
         }
       },
@@ -7133,7 +7106,7 @@ var nodeOpen = false,
       /**
        * create timepicker that format the input time
        */
-      textFieldTimeHelper: function (sourceElement, eventToFire, targetElement) {
+      textFieldTimeHelper: function(sourceElement, eventToFire, targetElement) {
         //Dom.get("settime").checked = true;
         var Dom = YAHOO.util.Dom,
           Event = YAHOO.util.Event,
@@ -7144,54 +7117,54 @@ var nodeOpen = false,
           {
             re: /^now/i,
             example: new Array('now'),
-            handler: function () {
+            handler: function() {
               return new Date();
             }
           },
           // p.m.
           {
             re: /(\d{1,2}):(\d{1,2}):(\d{1,2})(?:p| p)/,
-            example: ['9:55:00 pm', '12:55:00 p.m.', '9:55:00 p', '11:5:10pm', '9:5:1p'],
-            handler: function (bits) {
+            example: new Array('9:55:00 pm', '12:55:00 p.m.', '9:55:00 p', '11:5:10pm', '9:5:1p'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               d.setHours(h);
               d.setMinutes(parseInt(bits[2], 10));
               d.setSeconds(parseInt(bits[3], 10));
-              return d + '~p.m.';
+              return d + "~p.m.";
             }
           },
           // p.m., no seconds
           {
             re: /(\d{1,2}):(\d{1,2})(?:p| p)/,
-            example: ['9:55 pm', '12:55 p.m.', '9:55 p', '11:5pm', '9:5p'],
-            handler: function (bits) {
+            example: new Array('9:55 pm', '12:55 p.m.', '9:55 p', '11:5pm', '9:5p'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               d.setHours(h);
               d.setMinutes(parseInt(bits[2], 10));
               d.setSeconds(0);
-              return d + '~p.m.';
+              return d + "~p.m.";
             }
           },
           // p.m., hour only
           {
             re: /(\d{1,2})(?:p| p)/,
-            example: ['9 pm', '12 p.m.', '9 p', '11pm', '9p'],
-            handler: function (bits) {
+            example: new Array('9 pm', '12 p.m.', '9 p', '11pm', '9p'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               d.setHours(h);
               d.setMinutes(0);
               d.setSeconds(0);
-              return d + '~p.m.';
+              return d + "~p.m.";
             }
           },
           // hh:mm:ss
           {
             re: /(\d{1,2}):(\d{1,2}):(\d{1,2})/,
-            example: ['9:55:00', '19:55:00', '19:5:10', '9:5:1', '9:55:00 a.m.', '11:55:00a'],
-            handler: function (bits) {
+            example: new Array('9:55:00', '19:55:00', '19:5:10', '9:5:1', '9:55:00 a.m.', '11:55:00a'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               if (h == 12) {
@@ -7200,14 +7173,14 @@ var nodeOpen = false,
               d.setHours(h);
               d.setMinutes(parseInt(bits[2], 10));
               d.setSeconds(parseInt(bits[3], 10));
-              return d + '~a.m.';
+              return d + "~a.m.";
             }
           },
           // hh:mm
           {
             re: /(\d{1,2}):(\d{1,2})/,
-            example: ['9:55', '19:55', '19:5', '9:55 a.m.', '11:55a'],
-            handler: function (bits) {
+            example: new Array('9:55', '19:55', '19:5', '9:55 a.m.', '11:55a'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               if (h == 12) {
@@ -7216,16 +7189,16 @@ var nodeOpen = false,
               d.setHours(h);
               d.setMinutes(parseInt(bits[2], 10));
               d.setSeconds(0);
-              return d + '~a.m.';
+              return d + "~a.m.";
             }
           },
           // hhmmss
           {
             re: /(\d{1,6})/,
-            example: ['9', '9a', '9am', '19', '1950', '195510', '0955'],
-            handler: function (bits) {
+            example: new Array('9', '9a', '9am', '19', '1950', '195510', '0955'),
+            handler: function(bits) {
               var d = new Date();
-              var h = bits[1].substring(0, 2);
+              var h = bits[1].substring(0, 2)
               var m = parseInt(bits[1].substring(2, 4), 10);
               var s = parseInt(bits[1].substring(4, 6), 10);
               if (isNaN(m)) {
@@ -7240,27 +7213,26 @@ var nodeOpen = false,
               d.setHours(parseInt(h, 10));
               d.setMinutes(parseInt(m, 10));
               d.setSeconds(parseInt(s, 10));
-              return d + '~a.m.';
+              return d + "~a.m.";
             }
           }
         ];
         var isShiftPlusTabPressed = false;
         var isTabPressed = false;
         // attach the event to call the main function
-        Event.addListener(sourceElement, eventToFire, function () {
+        Event.addListener(sourceElement, eventToFire, function() {
           //parse the value using patterns and retrive the date with format
           var inputTime = parseTimeString(this.value);
 
-          if (inputTime == undefined) {
+          if(inputTime == undefined) {
             CStudioAuthoring.Operations.showSimpleDialog(
-              'timeFormatError-dialog',
+              "timeFormatError-dialog",
               CStudioAuthoring.Operations.simpleDialogTypeINFO,
-              CMgs.format(formsLangBundle, 'notification'),
-              '( ' + this.value + ' ) ' + CMgs.format(formsLangBundle, 'timeFormatError'),
-              [{
-                text: 'OK', handler: function () {
+              CMgs.format(formsLangBundle, "notification"),
+              '( '+this.value+' ) ' + CMgs.format(formsLangBundle, "timeFormatError"),
+              [{ text: "OK",  handler:function(){
                   this.hide();
-                  Dom.get(targetElement).value = '';
+                  Dom.get(targetElement).value = "";
                   var oTimeIncBtn = Dom.get('timeIncrementButton');
                   if (!isShiftPlusTabPressed && isTabPressed && oTimeIncBtn) {
                     oTimeIncBtn.focus();
@@ -7272,29 +7244,27 @@ var nodeOpen = false,
                       isShiftPlusTabPressed = false;
                     }
                   }
-
-                }, isDefault: false
-              }],
+                  return;
+                }, isDefault:false }],
               YAHOO.widget.SimpleDialog.ICON_BLOCK,
-              'studioDialog'
+              "studioDialog"
             );
           } else {
-            var finalTimeFormat = inputTime.split('~');
+            var finalTimeFormat = inputTime.split("~");
             var timeStamp = setTimeStamp(new Date(finalTimeFormat[0]), finalTimeFormat[1]);
             //Check for 12 hours format time
-            var timeSplit = timeStamp.split(':');
+            var timeSplit = timeStamp.split(":");
             if (timeSplit.length == 3) {
               var hours = parseInt(timeSplit[0], 10);
               if (hours == 0 || hours > 12) {
                 CStudioAuthoring.Operations.showSimpleDialog(
-                  'timeFormatError-dialog',
+                  "timeFormatError-dialog",
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(formsLangBundle, 'notification'),
-                  '( ' + this.value + ' ) ' + CMgs.format(formsLangBundle, 'timeFormatError'),
-                  [{
-                    text: 'OK', handler: function () {
+                  CMgs.format(formsLangBundle, "notification"),
+                  '( '+this.value+' ) ' + CMgs.format(formsLangBundle, "timeFormatError"),
+                  [{ text: "OK",  handler:function(){
                       this.hide();
-                      Dom.get('timepicker').focus();
+                      Dom.get("timepicker").focus();
                       var oTimeIncBtn = Dom.get('timeIncrementButton');
                       if (!isShiftPlusTabPressed && isTabPressed && oTimeIncBtn) {
                         oTimeIncBtn.focus();
@@ -7306,11 +7276,10 @@ var nodeOpen = false,
                           isShiftPlusTabPressed = false;
                         }
                       }
-
-                    }, isDefault: false
-                  }],
+                      return;
+                    }, isDefault:false }],
                   YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
+                  "studioDialog"
                 );
               }
             }
@@ -7318,22 +7287,22 @@ var nodeOpen = false,
             Dom.get(targetElement).value = timeStamp;
           }
 
-        });
+        })
 
         //on focus of the target element clean the field
-        Event.addListener(targetElement, 'focus', function () {
-          Dom.get('settime').checked = true;
-          Dom.get('datepicker').style.border = '1px solid #0176B1';
-          Dom.get('datepicker').style.color = '#000000';
-          Dom.get('timepicker').style.border = '1px solid #0176B1';
-          Dom.get('timepicker').style.color = '#000000';
-          if (Dom.get(targetElement).value == 'Time...')
-            Dom.get(targetElement).value = '';
+        Event.addListener(targetElement, "focus", function() {
+          Dom.get("settime").checked = true;
+          Dom.get("datepicker").style.border = "1px solid #0176B1";
+          Dom.get("datepicker").style.color = "#000000";
+          Dom.get("timepicker").style.border = "1px solid #0176B1";
+          Dom.get("timepicker").style.color = "#000000";
+          if (Dom.get(targetElement).value == "Time...")
+            Dom.get(targetElement).value = "";
 
-        });
+        })
 
         //on focus of the target element clean the field
-        Event.addListener(targetElement, 'keypress', function (evt) {
+        Event.addListener(targetElement, "keypress", function(evt) {
           if (evt.shiftKey && evt.keyCode == 9) {
             isShiftPlusTabPressed = true;
           } else {
@@ -7344,7 +7313,7 @@ var nodeOpen = false,
           } else {
             isTabPressed = false;
           }
-        });
+        })
 
         //Parses a string to figure out the time it represents
         function parseTimeString(s) {
@@ -7386,18 +7355,19 @@ var nodeOpen = false,
       /**
        * return true if value starts with second valuie
        */
-      startsWith: function (value, startsWith) {
-        return (value.match('^' + startsWith) == startsWith);
+      startsWith: function(value, startsWith) {
+        return (value.match("^" + startsWith) == startsWith);
       },
 
       /**
        *  ends with
        */
-      endsWith: function (stringValue, match) {
+      endsWith: function(stringValue, match) {
 
         if (match != null) {
           return stringValue.length >= match.length && stringValue.substr(stringValue.length - match.length) == match;
-        } else {
+        }
+        else {
           return -1;
         }
       },
@@ -7405,18 +7375,18 @@ var nodeOpen = false,
       /**
        * close the current window
        */
-      closeWindow: function () {
-        window.open('', '_self');
+      closeWindow: function() {
+        window.open("", "_self");
         window.close();
       },
 
       /**
        * return the Y Position of an element
        */
-      getY: function (el) {
+      getY: function(el) {
         var val = 0;
 
-        while (el != null) {
+        while(el != null ) {
           val += el.offsetTop;
           el = el.offsetParent;
         }
@@ -7427,7 +7397,7 @@ var nodeOpen = false,
       /**
        * return the x,y coords of an element
        */
-      findPos: function (obj) {
+      findPos: function(obj) {
         var curleft = curtop = 0;
 
         if (obj.offsetParent) {
@@ -7438,7 +7408,7 @@ var nodeOpen = false,
           } while (obj = obj.offsetParent);
         }
 
-        return [curleft, curtop];
+        return [curleft,curtop];
       },
 
       /**
@@ -7446,13 +7416,13 @@ var nodeOpen = false,
        * original code: http://code.google.com/u/robnyman/
        * License: MIT
        */
-      getElementsByClassName: function (className, tag, elm) {
+      getElementsByClassName: function(className, tag, elm) {
 
         if (document.getElementsByClassName) {
           getElementsByClassName = function (className, tag, elm) {
             elm = elm || document;
             var elements = elm.getElementsByClassName(className),
-              nodeName = (tag) ? new RegExp('\\b' + tag + '\\b', 'i') : null,
+              nodeName = (tag) ? new RegExp("\\b" + tag + "\\b", "i") : null,
               returnElements = [],
               current;
             for (var i = 0, il = elements.length; i < il; i += 1) {
@@ -7463,42 +7433,45 @@ var nodeOpen = false,
             }
             return returnElements;
           };
-        } else if (document.evaluate) {
+        }
+        else if (document.evaluate) {
           getElementsByClassName = function (className, tag, elm) {
-            tag = tag || '*';
+            tag = tag || "*";
             elm = elm || document;
-            var classes = className.split(' '),
-              classesToCheck = '',
-              xhtmlNamespace = 'http://www.w3.org/1999/xhtml',
+            var classes = className.split(" "),
+              classesToCheck = "",
+              xhtmlNamespace = "http://www.w3.org/1999/xhtml",
               namespaceResolver = (document.documentElement.namespaceURI === xhtmlNamespace) ? xhtmlNamespace : null,
               returnElements = [],
               elements,
               node;
             for (var j = 0, jl = classes.length; j < jl; j += 1) {
-              classesToCheck += '[contains(concat(\' \', @class, \' \'), \' ' + classes[j] + ' \')]';
+              classesToCheck += "[contains(concat(' ', @class, ' '), ' " + classes[j] + " ')]";
             }
             try {
-              elements = document.evaluate('.//' + tag + classesToCheck, elm, namespaceResolver, 0, null);
-            } catch (e) {
-              elements = document.evaluate('.//' + tag + classesToCheck, elm, null, 0, null);
+              elements = document.evaluate(".//" + tag + classesToCheck, elm, namespaceResolver, 0, null);
+            }
+            catch (e) {
+              elements = document.evaluate(".//" + tag + classesToCheck, elm, null, 0, null);
             }
             while ((node = elements.iterateNext())) {
               returnElements.push(node);
             }
             return returnElements;
           };
-        } else {
+        }
+        else {
           getElementsByClassName = function (className, tag, elm) {
-            tag = tag || '*';
+            tag = tag || "*";
             elm = elm || document;
-            var classes = className.split(' '),
+            var classes = className.split(" "),
               classesToCheck = [],
-              elements = (tag === '*' && elm.all) ? elm.all : elm.getElementsByTagName(tag),
+              elements = (tag === "*" && elm.all) ? elm.all : elm.getElementsByTagName(tag),
               current,
               returnElements = [],
               match;
             for (var k = 0, kl = classes.length; k < kl; k += 1) {
-              classesToCheck.push(new RegExp('(^|\\s)' + classes[k] + '(\\s|$)'));
+              classesToCheck.push(new RegExp("(^|\\s)" + classes[k] + "(\\s|$)"));
             }
             for (var l = 0, ll = elements.length; l < ll; l += 1) {
               current = elements[l];
@@ -7523,14 +7496,14 @@ var nodeOpen = false,
       /**
        * return true if value is undefined, null or an empty string
        */
-      isEmpty: function (value) {
-        return (!value || value == null || value == '');
+      isEmpty: function(value) {
+        return (!value || value == null || value == "");
       },
 
       /**
        * given a list of content items, return an XML
        */
-      createContentItemsXml: function (contentItems) {
+      createContentItemsXml: function(contentItems) {
 
         var xmlString = '<items>';
 
@@ -7546,17 +7519,17 @@ var nodeOpen = false,
       /**
        * given a list of content items, return an json
        */
-      createContentItemsJson: function (contentItems) {
+      createContentItemsJson: function(contentItems) {
 
-        var itemsJson = '[ ';
+        var itemsJson = "[ ";
 
         for (var i = 0; i < contentItems.length; i++) {
           var itemJson;
-          if (i > 0) itemsJson = itemsJson + ',';
-          itemJson = '{ uri : "' + contentItems[i].uri + '" }';
-          itemsJson = itemsJson + ' ' + itemJson;
+          if (i > 0) itemsJson = itemsJson + ",";
+          itemJson = "{ uri : \"" + contentItems[i].uri + "\" }";
+          itemsJson = itemsJson + " " + itemJson;
         }
-        itemsJson = itemsJson + ' ]';
+        itemsJson = itemsJson + " ]";
         return itemsJson;
       },
 
@@ -7566,22 +7539,22 @@ var nodeOpen = false,
        * referenced the same way so building composite key allows us to have simple / common
        * approach to loading and storing content without concern for the type
        */
-      createContentTOId: function (contentTO) {
-        var id = (contentTO.id) ? contentTO.id : '';
-        var noderef = (contentTO.id) ? '' : ''; // this is hold over code from client, not 2.x
-        var uri = (contentTO.uri) ? contentTO.uri : '';
+      createContentTOId: function(contentTO) {
+        var id = (contentTO.id) ? contentTO.id : "";
+        var noderef = (contentTO.id) ? "" : ""; // this is hold over code from client, not 2.x
+        var uri = (contentTO.uri) ? contentTO.uri : "";
 
-        return id + '-' + noderef + '-' + uri;
+        return id + "-" + noderef + "-" + uri;
       },
 
       /**
        * get full name from search result content TO
        */
-      getAuthorFullNameFromContentTOItem: function (contentTOItem) {
-        var lastName = (!(CStudioAuthoring.Utils.isEmpty(contentTOItem.userLastName))) ? contentTOItem.userLastName : '';
-        var separator = (!(CStudioAuthoring.Utils.isEmpty(contentTOItem.userLastName))
-          && !(CStudioAuthoring.Utils.isEmpty(contentTOItem.userFirstName))) ? ', ' : '';
-        var firstName = (!(CStudioAuthoring.Utils.isEmpty(contentTOItem.userFirstName))) ? contentTOItem.userFirstName : '';
+      getAuthorFullNameFromContentTOItem: function(contentTOItem) {
+        var lastName = (!(CStudioAuthoring.Utils.isEmpty(contentTOItem.userLastName)))? contentTOItem.userLastName : "";
+        var separator = ( !(CStudioAuthoring.Utils.isEmpty(contentTOItem.userLastName))
+          && !(CStudioAuthoring.Utils.isEmpty(contentTOItem.userFirstName)) )? ", " : "";
+        var firstName = (!(CStudioAuthoring.Utils.isEmpty(contentTOItem.userFirstName)))? contentTOItem.userFirstName : "";
 
         return lastName + separator + firstName;
       },
@@ -7589,88 +7562,89 @@ var nodeOpen = false,
       /**
        * for a given tree node look up the last item
        */
-      getContentItemStatus: function (contentTO, navbarStatus) {
+      getContentItemStatus: function(contentTO, navbarStatus) {
 
-        var status = {};
-        status.string = '';
-        status.key = '';
+        var status = new Object();
+        status.string = "";
+        status.key = "";
 
         if (contentTO.deleted == true) {
-          status.string + CMgs.format(siteDropdownLangBundle, 'statusDeleted');
-          status.key = 'statusDeleted';
+          status.string + CMgs.format(siteDropdownLangBundle, "statusDeleted");
+          status.key = "statusDeleted";
           return status;
         } else if (contentTO.submittedForDeletion == true) {
-          if (contentTO.scheduled == true) {
-            status.string = status.string + CMgs.format(siteDropdownLangBundle, 'statusScheduledForDelete');
-            status.key = status.key + 'statusScheduledForDelete';
+          if(contentTO.scheduled ==  true){
+            status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusScheduledForDelete");
+            status.key = status.key + "statusScheduledForDelete";
           } else {
-            status.string = status.string + CMgs.format(siteDropdownLangBundle, 'statusSubmittedForDelete');
-            status.key = status.key + 'statusSubmittedForDelete';
+            status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusSubmittedForDelete");
+            status.key = status.key + "statusSubmittedForDelete";
           }
 
           //Disabled string not required in status to show on nav bar
           if (!navbarStatus && contentTO.disabled == true) {
-            status.string = status.string + ' ' + CMgs.format(siteDropdownLangBundle, 'statusAndDisabled');
-            status.key = status.key + ' ' + 'statusAndDisabled';
+            status.string = status.string + " " + CMgs.format(siteDropdownLangBundle, "statusAndDisabled");
+            status.key = status.key + " " + "statusAndDisabled";
           }
           return status;
         } else if (contentTO.inFlight == true) {
-          status.string = status.string + CMgs.format(siteDropdownLangBundle, 'statusProcessing');
-          status.key = status.key + 'statusProcessing';
+          status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusProcessing");
+          status.key = status.key + "statusProcessing";
           //Disabled string not required in status to show on nav bar
           if (!navbarStatus && contentTO.disabled == true) {
-            status.string = status.string + ' ' + CMgs.format(siteDropdownLangBundle, 'statusAndDisabled');
-            status.key = status.key + ' ' + 'statusAndDisabled';
+            status.string = status.string + " " + CMgs.format(siteDropdownLangBundle, "statusAndDisabled");
+            status.key = status.key + " " + "statusAndDisabled";
           }
           return status;
         } else if (contentTO.inProgress == true) {
-          status.string = status.string + CMgs.format(siteDropdownLangBundle, 'statusInProgress');
-          status.key = status.key + 'statusInProgress';
+          status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusInProgress");
+          status.key = status.key + "statusInProgress";
         } else if (contentTO.live == true) {
-          status.string = status.string + CMgs.format(siteDropdownLangBundle, 'statusLive');
-          status.key = status.key + 'statusLive';
+          status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusLive");
+          status.key = status.key + "statusLive";
         }
 
         if (contentTO.submitted == true) {
           if (contentTO.inProgress == true) {
-            status.string = '';
-            status.key = '';
-          } else {
+            status.string = "";
+            status.key = "";
+          }
+          else {
             if (status.string.length > 0) {
-              status.string = status.string + ' ' + CMgs.format(siteDropdownLangBundle, 'statusAnd') + ' ';
-              status.key = status.key + ' ';
+              status.string = status.string + " " +CMgs.format(siteDropdownLangBundle, "statusAnd") + " ";
+              status.key = status.key + " ";
             }
           }
 
-          status.string = status.string + CMgs.format(siteDropdownLangBundle, 'statusSubmitted');
-          status.key = status.key + 'statusSubmitted';
-          if (contentTO.submittedToEnvironment) {
-            status.string += ' - ' + contentTO.submittedToEnvironment.replace(/\b\w/g, l => l.toUpperCase());
+          status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusSubmitted");
+          status.key = status.key + "statusSubmitted";
+          if(contentTO.submittedToEnvironment) {
+            status.string += " - "+contentTO.submittedToEnvironment.replace(/\b\w/g, l => l.toUpperCase());
           }
         }
 
         if (contentTO.scheduled == true) {
           if (contentTO.inProgress == true) {
-            status.string = '';
-            status.key = '';
+            status.string = "";
+            status.key = "";
           }
 
           if (status.string.length > 0) {
-            status.string = status.string + ' ' + CMgs.format(siteDropdownLangBundle, 'statusAnd') + ' ';
-            status.key = status.key + ' ';
+            status.string = status.string + " " +CMgs.format(siteDropdownLangBundle, "statusAnd") + " ";
+            status.key = status.key + " ";
           }
 
-          status.string = status.string + CMgs.format(siteDropdownLangBundle, 'statusScheduled');
-          status.key = status.key + 'statusScheduled';
-          if (contentTO.submittedToEnvironment) {
-            status.string += ' - ' + contentTO.submittedToEnvironment.replace(/\b\w/g, l => l.toUpperCase());
+          status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusScheduled");
+          status.key = status.key + "statusScheduled";
+          if(contentTO.submittedToEnvironment) {
+            status.string += " - "+contentTO.submittedToEnvironment.replace(/\b\w/g, l => l.toUpperCase());
           }
 
-          if (contentTO.submitted && contentTO.scheduled) {
-            status.string = CMgs.format(siteDropdownLangBundle, 'statusSubmitted');
-            status.key = 'statusSubmitted';
-            if (contentTO.submittedToEnvironment) {
-              status.string += ' - ' + contentTO.submittedToEnvironment.replace(/\b\w/g, l => l.toUpperCase());
+          if(contentTO.submitted && contentTO.scheduled){
+            status.string = CMgs.format(siteDropdownLangBundle, "statusSubmitted");
+            status.key = "statusSubmitted";
+            if(contentTO.submittedToEnvironment) {
+              status.string += " - "+contentTO.submittedToEnvironment.replace(/\b\w/g, l => l.toUpperCase());
             }
           }
         }
@@ -7678,28 +7652,28 @@ var nodeOpen = false,
         //Disabled string not required in status to show on nav bar
         if (!navbarStatus && contentTO.disabled == true) {
           if (status.string.length > 0) {
-            status.string = status.string + ' ' + CMgs.format(siteDropdownLangBundle, 'statusAnd') + ' ';
-            status.key = status.key + ' ';
+            status.string = status.string + " " +CMgs.format(siteDropdownLangBundle, "statusAnd") + " ";
+            status.key = status.key + " ";
           }
 
-          status.string = status.string + CMgs.format(siteDropdownLangBundle, 'statusDisabled');
-          status.key = status.key + 'statusDisabled';
+          status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusDisabled");
+          status.key = status.key + "statusDisabled";
         }
 
-        if (status.string == '') {
-          status.string = CMgs.format(siteDropdownLangBundle, 'statusLive');
-          status.key = 'statusLive';
+        if (status.string == "") {
+          status.string = CMgs.format(siteDropdownLangBundle, "statusLive");
+          status.key = "statusLive";
         }
 
         return status;
       },
 
-      getContentItemWorkflowStatus: function (contentTO) {
+      getContentItemWorkflowStatus: function(contentTO){
         var statusObj = contentTO.statusObj,
           workflowIcons = CSA.Constants.WORKFLOWICONS,
-          statusClass = '';
+          statusClass = "";
 
-        if (!statusObj) {
+        if(!statusObj){
           statusObj = {
             deleted: contentTO.deleted,
             scheduled: contentTO.scheduled,
@@ -7712,36 +7686,36 @@ var nodeOpen = false,
           };
         }
 
-        if (statusObj.lockOwner && ('' !== statusObj.lockOwner)) {     //locked
-          statusClass = workflowIcons.locked + ' locked';
-        } else if (statusObj.inFlight) {      //processing
-          statusClass = workflowIcons.processing + ' fa-spin processing';
-        } else if (statusObj.submitted) {                   //in workflow - progress
-          statusClass = workflowIcons.inworkflow + ' in-workflow';
-        } else if (statusObj.scheduled) {     //scheduled
-          statusClass = workflowIcons.scheduled + ' el-scheduled';
-        } else if (contentTO.isNew) {          //never published
-          statusClass = workflowIcons.neverpublished + ' never-published';
-        } else if (statusObj.live) {          //live
-          statusClass = workflowIcons.live + ' live';
-        } else if (statusObj.deleted) {       //deleted
-          statusClass = workflowIcons.deleted + ' deleted';
-        } else if (statusObj.inProgress) {    //edited
-          statusClass = workflowIcons.edited + ' edited';
+        if(statusObj.lockOwner && ("" !== statusObj.lockOwner)){     //locked
+          statusClass = workflowIcons.locked + " locked";
+        }else if(statusObj.inFlight) {      //processing
+          statusClass = workflowIcons.processing + " fa-spin processing";
+        }else if(statusObj.submitted) {                   //in workflow - progress
+          statusClass = workflowIcons.inworkflow + " in-workflow";
+        }else if(statusObj.scheduled) {     //scheduled
+          statusClass = workflowIcons.scheduled + " el-scheduled";
+        }else if(contentTO.isNew){          //never published
+          statusClass = workflowIcons.neverpublished + " never-published";
+        }else if(statusObj.live) {          //live
+          statusClass = workflowIcons.live + " live";
+        }else if(statusObj.deleted) {       //deleted
+          statusClass = workflowIcons.deleted + " deleted";
+        }else if(statusObj.inProgress) {    //edited
+          statusClass = workflowIcons.edited + " edited";
         }
 
         return statusClass;
       },
 
-      isFont: function (treeNodeTO) {
-        var fontTypes = ['application/x-font-ttf', 'application/x-font-truetype', 'application/x-font-opentype',
-          'application/x-font-woff', 'application/x-font-woff2', 'application/vnd.ms-fontobject', 'application/font-sfnt',
-          'application/x-font-otf'];
+      isFont: function(treeNodeTO){
+        var fontTypes = ["application/x-font-ttf", "application/x-font-truetype", "application/x-font-opentype",
+          "application/x-font-woff", "application/x-font-woff2", "application/vnd.ms-fontobject", "application/font-sfnt",
+          "application/x-font-otf"];
 
         return fontTypes.indexOf(treeNodeTO.mimeType) > -1;
       },
 
-      getContentItemIcon: function (treeNodeTO) {
+      getContentItemIcon: function(treeNodeTO){
         var defaultIcons = CSA.Constants.MIMETYPES,
           customIcons = CSA.mimeTypes,
           mainIconClass,
@@ -7750,250 +7724,258 @@ var nodeOpen = false,
             icon: {}
           };
 
-        if (treeNodeTO.isAsset || 'unknown' === treeNodeTO.contentType) {     //assets - when outside from static assets folder isAsset
+        if(treeNodeTO.isAsset || "unknown" === treeNodeTO.contentType) {     //assets - when outside from static assets folder isAsset
           //         is false, so on unknown it's considered an asset
           var mimetype = treeNodeTO.mimeType;
           mimetype = mimetype ? mimetype : treeNodeTO.name;
 
           if (mimetype.match(/\bvideo\b/)) {
             mainIconClass = defaultIcons.video.class;
-          } else if (this.isFont(treeNodeTO)) {
+          }else if(this.isFont(treeNodeTO)){
             mainIconClass = defaultIcons.font.class;
-          } else if (mimetype.match(/\bimage\b/)) {
+          }else if(mimetype.match(/\bimage\b/)) {
             mainIconClass = defaultIcons.image.class;
-          } else if (mimetype.match(/\bpdf\b/)) {
+          }else if(mimetype.match(/\bpdf\b/)) {
             mainIconClass = defaultIcons.pdf.class;
-          } else if (mimetype.match(/\bpresentationml\b/)) {
+          }else if(mimetype.match(/\bpresentationml\b/)) {
             mainIconClass = defaultIcons.powerpoint.class;
-          } else if (mimetype.match(/\bwordprocessingml\b/)) {
+          }else if(mimetype.match(/\bwordprocessingml\b/)) {
             mainIconClass = defaultIcons.word.class;
-          } else if (mimetype.match(/\bspreadsheetml\b/)) {
+          }else if(mimetype.match(/\bspreadsheetml\b/)) {
             mainIconClass = defaultIcons.excel.class;
-          } else if (mimetype.match(/\bzip\b/)) {
+          }else if(mimetype.match(/\bzip\b/)) {
             mainIconClass = defaultIcons.zip.class;
-          } else if (mimetype.match(/\bjavascript\b/)) {
+          }else if(mimetype.match(/\bjavascript\b/)) {
             mainIconClass = defaultIcons.js.class;
-          } else if (mimetype.match(/\bgroovy\b/)) {
+          }else if(mimetype.match(/\bgroovy\b/)) {
             mainIconClass = defaultIcons.groovy.class;
-          } else if (mimetype.match(/\bcss\b/)) {
+          }else if(mimetype.match(/\bcss\b/)) {
             mainIconClass = defaultIcons.css.class;
-          } else if (mimetype.match(/\bfreemarker\b/)) {
+          }else if(mimetype.match(/\bfreemarker\b/)) {
             mainIconClass = defaultIcons.ftl.class;
-          } else {
+          }else{
             mainIconClass = defaultIcons.unknown.class;
           }
 
-          if (customIcons[mimetype]) {
-            if (customIcons[mimetype].class) {
+          if(customIcons[mimetype]){
+            if(customIcons[mimetype].class){
               mainIconClass = customIcons[mimetype].class;
             }
-            if (customIcons[mimetype].styles) {
+            if(customIcons[mimetype].styles){
               customStyle = customIcons[mimetype].styles;
             }
 
           }
 
-        } else {
+        }else{
           if (customIcons[treeNodeTO.contentType]) { //support any local overrides for content type styling
             mainIconClass = customIcons[treeNodeTO.contentType].class;
             customStyle = customIcons[treeNodeTO.contentType].style;
-          } else if (treeNodeTO.isComponent) {     //isLevelDescriptor - also component
+          } else if(treeNodeTO.isComponent) {     //isLevelDescriptor - also component
             mainIconClass = defaultIcons.component.class;
-          } else if (treeNodeTO.isPage) {
+          } else if(treeNodeTO.isPage) {
             if ((treeNodeTO.style && treeNodeTO.style.match(/\bfloating\b/)) || treeNodeTO.isFloating || treeNodeTO.floating) {
               mainIconClass = defaultIcons.floatingPage.class;
             } else {
               mainIconClass = defaultIcons.navPage.class;
             }
-          } else if (treeNodeTO.contentType && treeNodeTO.contentType.toLowerCase().indexOf('taxonomy') !== -1) {
+          } else if(treeNodeTO.contentType && treeNodeTO.contentType.toLowerCase().indexOf("taxonomy") !== -1) {
             mainIconClass = defaultIcons.taxonomy.class;
           }
         }
 
         iconConfig.icon.class = mainIconClass;
 
-        if (customStyle) {
+        if(customStyle){
           iconConfig.icon.styles = customStyle;
         }
 
         iconConfig.icon.stackedclass = this.getContentItemWorkflowStatus(treeNodeTO);
 
-        return CStudioAuthoring.Utils.createIcon(iconConfig, '', 'cs-item-icon');
+        return CStudioAuthoring.Utils.createIcon(iconConfig, "", "cs-item-icon");
       },
 
       /**
        * given a node, return the proper classes for the item's state
        */
-      getContentItemClassName: function (contentTO) {
+      getContentItemClassName: function(contentTO) {
 
-        var name = 'status-icon ';
+        var name = "status-icon ";
         if (contentTO.component != true) {
           if (contentTO.document == true)
-            name = name + ' document ';
+            name = name + " document ";
           else
-            name = name + 'page';
+            name = name + "page";
 
           if (contentTO.floating == true) {
-            name = name + ' floating ';
+            name = name + " floating ";
           }
-          if (contentTO.deleted == true || contentTO.submittedForDeletion == true) {
-            name = name + ' deleted ';
+          if (contentTO.deleted == true||contentTO.submittedForDeletion==true) {
+            name = name + " deleted ";
           }
-          if ((contentTO.submitted == true || contentTO.scheduled == true) && contentTO.floating == false) {
+          if ( (contentTO.submitted == true || contentTO.scheduled == true) && contentTO.floating == false) {
             if (contentTO.submitted == true) {
-              name = name + ' submitted ';
+              name = name + " submitted ";
             }
             if (contentTO.scheduled == true) {
-              name = name + ' scheduled ';
-            }
-          } else {
-            if (contentTO.deleted != true && contentTO.inProgress == true) {
-              name = name + ' in-progress ';
+              name = name + " scheduled ";
             }
           }
-        } else {
+          else {
+            if (contentTO.deleted != true && contentTO.inProgress == true) {
+              name = name + " in-progress ";
+            }
+          }
+        }
+        else {
           if (contentTO.container == true) {
-            name = ' parentFolder ';
-          } else {
+            name = " parentFolder ";
+          }
+          else {
             if (contentTO.component == true) {
-              name = name + ' component ';
-              if (contentTO.deleted == true || contentTO.submittedForDeletion) {
-                name = name + ' deleted ';
+              name = name + " component ";
+              if (contentTO.deleted == true||contentTO.submittedForDeletion) {
+                name = name + " deleted ";
               }
               if (contentTO.submitted == true || contentTO.scheduled == true) {
                 if (contentTO.submitted == true) {
-                  name = name + ' submitted ';
+                  name = name + " submitted ";
                 }
 
                 if (contentTO.scheduled == true) {
-                  name = name + ' scheduled ';
+                  name = name + " scheduled ";
                 }
-              } else {
+              }
+              else {
                 if (contentTO.deleted != true && contentTO.inProgress == true) {
-                  name = name + ' in-progress';
+                  name = name + " in-progress";
                 }
               }
             }
           }
         }
 
-        if (contentTO.lockOwner != '') {
-          name = name + '-lock';
+        if(contentTO.lockOwner != "") {
+          name = name + "-lock";
         }
 
 
-        name += ' acn';
+        name += " acn";
 
         if (contentTO.component != true) {
           if (contentTO.document == true)
-            name = name + '-document';
+            name = name + "-document";
           else
-            name = name + '-page';
+            name = name + "-page";
 
           if (contentTO.floating == true) {
-            name = name + '-floating';
+            name = name + "-floating";
           }
-          if (contentTO.deleted == true || contentTO.submittedForDeletion == true) {
-            name = name + '-deleted';
+          if (contentTO.deleted == true||contentTO.submittedForDeletion==true) {
+            name = name + "-deleted";
           }
-          if ((contentTO.submitted == true || contentTO.scheduled == true) && contentTO.floating == false) {
+          if ( (contentTO.submitted == true || contentTO.scheduled == true) && contentTO.floating == false) {
             if (contentTO.submitted == true) {
-              name = name + '-submitted';
+              name = name + "-submitted";
             }
             if (contentTO.scheduled == true) {
-              name = name + '-scheduled';
-            }
-          } else {
-            if (contentTO.deleted != true && contentTO.inProgress == true) {
-              name = name + '-progress';
+              name = name + "-scheduled";
             }
           }
-        } else {
+          else {
+            if (contentTO.deleted != true && contentTO.inProgress == true) {
+              name = name + "-progress";
+            }
+          }
+        }
+        else {
           if (contentTO.container == true) {
-            name = 'parentFolder';
-          } else {
+            name = "parentFolder";
+          }
+          else {
             if (contentTO.component == true) {
-              name = name + '-component';
-              if (contentTO.deleted == true || contentTO.submittedForDeletion) {
-                name = name + '-deleted';
+              name = name + "-component";
+              if (contentTO.deleted == true||contentTO.submittedForDeletion) {
+                name = name + "-deleted";
               }
               if (contentTO.submitted == true || contentTO.scheduled == true) {
                 if (contentTO.submitted == true) {
-                  name = name + '-submitted';
+                  name = name + "-submitted";
                 }
 
                 if (contentTO.scheduled == true) {
-                  name = name + '-scheduled';
+                  name = name + "-scheduled";
                 }
-              } else {
+              }
+              else {
                 if (contentTO.deleted != true && contentTO.inProgress == true) {
-                  name = name + '-progress';
+                  name = name + "-progress";
                 }
               }
             }
           }
         }
 
-        if (contentTO.lockOwner != '') {
-          name = name + '-lock';
+        if(contentTO.lockOwner != "") {
+          name = name + "-lock";
         }
 
         if (contentTO.disabled == true) {
-          name = name + ' strike-dashboard-item';
+          name = name + " strike-dashboard-item";
         }
 
         return name;
       },
 
       getScheduledDateTimeUI: function (dateValue, timeValue) {
-        var dateValueArray = dateValue.split('/');
-        var timeValueArray = timeValue.split(' ');
-        var timeSplit = timeValueArray[0].split(':');
+        var dateValueArray = dateValue.split("/");
+        var timeValueArray = timeValue.split(" ");
+        var timeSplit = timeValueArray[0].split(":");
 
-        var schedDate = new Date(dateValueArray[2], dateValueArray[0] - 1, dateValueArray[1], timeSplit[0], timeSplit[1], timeSplit[2], '');
+        var schedDate = new Date(dateValueArray[2], dateValueArray[0] - 1, dateValueArray[1], timeSplit[0], timeSplit[1], timeSplit[2], "");
 
         ///////////////////////////////////////////////////////////////////////////////////
         // getMonth is zero based, so adding 1 with it to show proper month in the html. //
         //////////////////////////////////////////////////////////////////////////////////
         var schedDateMonth = schedDate.getMonth() + 1;
         if (schedDateMonth < 10) {
-          schedDateMonth = '0' + schedDateMonth;
+          schedDateMonth = "0" + schedDateMonth;
         }
 
         var schedDateDay = schedDate.getDate();
         if (schedDateDay < 10) {
-          schedDateDay = '0' + schedDateDay;
+          schedDateDay = "0" + schedDateDay;
         }
 
-        var meridian = 'AM';
-        if (timeValueArray[1] == 'p.m.') {
-          meridian = 'PM';
+        var meridian = "AM";
+        if (timeValueArray[1] == "p.m.") {
+          meridian = "PM";
         }
 
         var hours = parseInt(timeSplit[0], 10);
         if (hours < 10) {
-          hours = '0' + hours;
+          hours = "0" + hours;
         }
 
         var mins = parseInt(timeSplit[1], 10);
         if (mins < 10) {
-          mins = '0' + mins;
+          mins = "0" + mins;
         }
 
-        var scheduledDate = schedDateMonth + '/' + schedDateDay + ' ' + hours + ':' + mins + ' ' + meridian;
+        var scheduledDate = schedDateMonth + '/' + schedDateDay + ' ' + hours + ":" + mins + " " + meridian;
 
         return scheduledDate;
       },
 
-      getTimeZoneConfig: function () {
+      getTimeZoneConfig: function (){
 
-        if (!studioTimeZone) {
+        if(!studioTimeZone) {
           CStudioAuthoring.Service.getConfiguration(
             CStudioAuthoringContext.site,
-            '/site-config.xml',
+            "/site-config.xml",
             {
               success: function (config) {
-                studioTimeZone = config['default-timezone'];
+                studioTimeZone = config["default-timezone"];
               }
             });
         }
@@ -8001,59 +7983,59 @@ var nodeOpen = false,
       },
 
       buildToolTip: function (itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate, icon) {
-        label = label.replace(new RegExp(' ', 'g'), '&nbsp;');
+        label = label.replace(new RegExp(" ", 'g'), "&nbsp;");
 
-        if (contentType.indexOf('/page/') != -1)
-          contentType = contentType.replace('/page/', '') + '&nbsp;(Page)';
+        if(contentType.indexOf("/page/") != -1)
+          contentType = contentType.replace("/page/", "") + "&nbsp;(Page)";
 
-        if (contentType.indexOf('/component/') != -1)
-          contentType = contentType.replace('/component/', '') + '&nbsp;(Component)';
+        if(contentType.indexOf("/component/") != -1)
+          contentType = contentType.replace("/component/", "") + "&nbsp;(Component)";
 
         var iconHTML = icon ? icon.outerHTML
-          : '<span class=\'{2}\'>';
+          : "<span class='{2}'>";
 
         var toolTipMarkup = [
-          '<table class=\'width300 acn-tooltip\'>',
-          '<tr>',
-          '<td class=\'acn-width280 acn-name\' colspan=\'2\'><strong>{1}</strong></td>',
-          '</tr>',
-          '<tr><td class=\'acn-width80\'><strong>Content&nbsp;Type:</strong> </td>',
-          '<td class=\'acn-width200\' style=\'text-transform: capitalize;\'>{8}</td>',
-          '<tr>'].join('');
+          "<table class='width300 acn-tooltip'>",
+          "<tr>",
+          "<td class='acn-width280 acn-name' colspan='2'><strong>{1}</strong></td>",
+          "</tr>",
+          "<tr><td class='acn-width80'><strong>Content&nbsp;Type:</strong> </td>",
+          "<td class='acn-width200' style='text-transform: capitalize;'>{8}</td>",
+          "<tr>"].join("");
 
-        if (status) {
+        if(status) {
           toolTipMarkup += [
-            '<tr><td class=\'acn-width83\'><strong>Status:</strong></td>',
-            '<td class=\'acn-width200\'>', iconHTML, '</span>',
-            '<span style=\'padding-left:2px;\'>{3}</span></td></tr>',
-            '</tr>'].join('');
+            "<tr><td class='acn-width83'><strong>Status:</strong></td>",
+            "<td class='acn-width200'>", iconHTML, "</span>",
+            "<span style='padding-left:2px;'>{3}</span></td></tr>",
+            "</tr>"].join("");
         }
 
-        if (modifier && modifier != null && modifier.trim() != '') {
+        if(modifier && modifier != null && modifier.trim() != "") {
           toolTipMarkup += [
-            '<td class=\'acn-width80\'><strong>Last Edited:</strong> </td>',
-            '<td class=\'acn-width200\'>{4}</td>',
-            '</tr><tr>',
-            '<td class=\'acn-width80\'><strong>Edited by:</strong> </td>',
-            '<td class=\'acn-width200\'>{5}</td>',
-            '</tr>'].join('');
+            "<td class='acn-width80'><strong>Last Edited:</strong> </td>",
+            "<td class='acn-width200'>{4}</td>",
+            "</tr><tr>",
+            "<td class='acn-width80'><strong>Edited by:</strong> </td>",
+            "<td class='acn-width200'>{5}</td>",
+            "</tr>"].join("");
         }
 
-        if ((lockOwner || '').trim() !== '') {
-          toolTipMarkup += [
-            '<tr>',
-            '<td class=\'acn-width80\'><strong>Locked by:</strong> </td>',
-            '<td class=\'acn-width200\'>{6}</td>',
-            '</tr>'].join('');
+        if ((lockOwner || "").trim() !== "") {
+          toolTipMarkup +=  [
+            "<tr>",
+            "<td class='acn-width80'><strong>Locked by:</strong> </td>",
+            "<td class='acn-width200'>{6}</td>",
+            "</tr>"].join("");
         }
 
         if (schedDate) {
-          toolTipMarkup += ['<tr>',
-            '<td class=\'acn-width80\'><strong>Scheduled:<strong> </td>',
-            '<td class=\'acn-width200\'>{7}</td></tr>'].join('');
+          toolTipMarkup +=  ["<tr>",
+            "<td class='acn-width80'><strong>Scheduled:<strong> </td>",
+            "<td class='acn-width200'>{7}</td></tr>"].join("");
         }
 
-        toolTipMarkup += '</table>';
+        toolTipMarkup += "</table>"
 
         return CStudioAuthoring.StringUtils.format(
           toolTipMarkup,
@@ -8069,32 +8051,32 @@ var nodeOpen = false,
           contentType);
       },
 
-      getTooltipContent: function (item) {
+      getTooltipContent: function(item) {
         var status = this.getContentItemStatus(item).string;
         var style = this.getIconFWClasses(item);
         var internalName = item.internalName;
         var contentType = item.contentType;
-        var label = '';
-        var formattedEditDate = '';
-        var modifier = '';
-        var fileName = '';
-        var formattedSchedDate = '';
-        var retTitle = '';
-        var itemNameLabel = 'Page';
-        var lockOwner = '';
+        var label = "";
+        var formattedEditDate = "";
+        var modifier = "";
+        var fileName = "";
+        var formattedSchedDate = "";
+        var retTitle = "";
+        var itemNameLabel = "Page";
+        var lockOwner = "";
 
         if (item.component) {
-          itemNameLabel = 'Component';
+          itemNameLabel = "Component";
         } else if (item.document) {
-          itemNameLabel = 'Document';
+          itemNameLabel = "Document";
         }
 
-        if (internalName == 'crafter-level-descriptor.level.xml') {
-          internalName = 'Section Defaults';
+        if (internalName == "crafter-level-descriptor.level.xml") {
+          internalName = "Section Defaults";
         }
 
         if (item.newFile) {
-          label = internalName + '*';
+          label = internalName + "*";
         } else {
           label = internalName;
         }
@@ -8109,36 +8091,36 @@ var nodeOpen = false,
 
         //spilt status and made it as comma seperated items.
         var statusStr = status;
-        if (status.indexOf(' and ') != -1) {
-          var statusArray = status.split(' and ');
-          if (statusArray && statusArray.length >= 2) {
-            statusStr = '';
-            for (var statusIdx = 0; statusIdx < statusArray.length; statusIdx++) {
+        if (status.indexOf(" and ") != -1) {
+          var statusArray = status.split(" and ");
+          if (statusArray &&  statusArray.length >= 2) {
+            statusStr = "";
+            for (var statusIdx=0; statusIdx<statusArray.length; statusIdx++) {
               if (statusIdx == (statusArray.length - 1)) {
                 statusStr += statusArray[statusIdx];
               } else {
-                statusStr += statusArray[statusIdx] + ', ';
+                statusStr += statusArray[statusIdx] + ", ";
               }
             }
           }
         }
 
         if (item.userFirstName != undefined && item.userLastName != undefined) {
-          modifier = item.userFirstName + ' ' + item.userLastName;
+          modifier = item.userFirstName + " " + item.userLastName;
         }
 
         if (item.lockOwner != undefined) {
           lockOwner = item.lockOwner;
         }
 
-        if (item.lastEditDateAsString != '' && item.lastEditDateAsString != undefined) {
-          formattedEditDate = this.formatDateFromString(item.lastEditDateAsString, 'tooltipformat');
-        } else if (item.eventDate != '' && item.eventDate != undefined) {
-          formattedEditDate = this.formatDateFromString(item.eventDate, 'tooltipformat');
+        if (item.lastEditDateAsString != "" && item.lastEditDateAsString != undefined) {
+          formattedEditDate = this.formatDateFromString(item.lastEditDateAsString, "tooltipformat");
+        } else if (item.eventDate != "" && item.eventDate != undefined) {
+          formattedEditDate = this.formatDateFromString(item.eventDate, "tooltipformat");
         }
 
         if (item.scheduled == true) {
-          formattedSchedDate = this.formatDateFromString(item.scheduledDate, 'tooltipformat');
+          formattedSchedDate = this.formatDateFromString(item.scheduledDate, "tooltipformat");
 
           retTitle = this.buildToolTip(itemNameLabel, label, contentType,
             style,
@@ -8149,7 +8131,7 @@ var nodeOpen = false,
             formattedSchedDate);
         } else {
 
-          retTitle = this.buildToolTip(itemNameLabel, label, contentType,
+          retTitle = this.buildToolTip(itemNameLabel, label,contentType,
             style,
             statusStr,
             formattedEditDate,
@@ -8159,61 +8141,61 @@ var nodeOpen = false,
         return retTitle;
       },
 
-      showLoadingImage: function (elementId) {
-        if (YDom.get(elementId + '-loading')) {
-          YDom.get(elementId + '-loading').style.display = 'block';
+      showLoadingImage: function(elementId) {
+        if (YDom.get(elementId + "-loading")) {
+          YDom.get(elementId + "-loading").style.display = "block";
         }
       },
 
-      hideLoadingImage: function (elementId) {
-        if (YDom.get(elementId + '-loading')) {
-          YDom.get(elementId + '-loading').style.display = 'none';
+      hideLoadingImage: function(elementId) {
+        if (YDom.get(elementId + "-loading")) {
+          YDom.get(elementId + "-loading").style.display = "none";
         }
       },
 
       /** takes String as param and escapes all JSON sensitive character in that String **/
-      escapeJSONSensitiveCharacter: function (str) {
+      escapeJSONSensitiveCharacter: function(str) {
         if (CStudioAuthoring.Utils.isEmpty(str))
           return str;
-        return str.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t').replace(/\f/g, '\\f').replace(/"/g, '\\"').replace(/'/g, '\\\'').replace(/\&/g, '\\&');
+        return str.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\f/g, "\\f").replace(/"/g,"\\\"").replace(/'/g,"\\\'").replace(/\&/g, "\\&");
       },
 
-      replaceWithASCIICharacter: function (str) {
+      replaceWithASCIICharacter: function(str) {
         if (CStudioAuthoring.Utils.isEmpty(str))
           return str;
-        return str.replace(/"/g, '&#34;');
+        return str.replace(/"/g, "&#34;");
       },
 
-      setDefaultFocusOn: function (focusedButton) {
+      setDefaultFocusOn: function(focusedButton) {
         if (!focusedButton) return;
         focusedButton.focus();
         /*
                  * after dialog rendered, default focused button outline style not displaying in firefox4
                  * This code block adds focus outline manually and on blur, we should remove added styles.
                  */
-        var oDiv = document.createElement('div');
-        oDiv.style.display = 'none';
-        var stylePrefix = '#none';
-        if (focusedButton.id != undefined && focusedButton.id != '') {
-          stylePrefix = '#' + focusedButton.id;
-        } else if (focusedButton.className != undefined && focusedButton.className != '') {
-          stylePrefix = '.' + focusedButton.className;
+        var oDiv = document.createElement("div");
+        oDiv.style.display="none";
+        var stylePrefix = "#none"
+        if (focusedButton.id != undefined && focusedButton.id != "") {
+          stylePrefix = "#" + focusedButton.id;
+        } else if (focusedButton.className != undefined && focusedButton.className != "") {
+          stylePrefix = "." + focusedButton.className;
         }
-        oDiv.innerHTML = '<style>' + stylePrefix + '::-moz-focus-inner { border:1px dotted; }</style>';
+        oDiv.innerHTML = "<style>" + stylePrefix + "::-moz-focus-inner { border:1px dotted; }</style>";
         focusedButton.parentNode.appendChild(oDiv);
         focusedButton.onblur = function (evt) {
           oDiv.parentNode.removeChild(oDiv);
           focusedButton.onblur = null;
-        };
+        }
       },
 
       //More configuration on https://notifyjs.com/
-      showNotification: function (message, positionx, positiony, type, originalx, originaly, classElt) {
+      showNotification: function(message, positionx, positiony, type, originalx, originaly, classElt){
         var globalPositionx = positionx ? positionx : 'top',
           globalPositiony = positiony ? positiony : 'right',
-          globalPosition = globalPositionx + ' ' + globalPositiony,
+          globalPosition = globalPositionx + " " + globalPositiony,
           type = type ? type : 'success',
-          currentClassElt = classElt ? ' ' + classElt : '';
+          currentClassElt = classElt ? " " + classElt: ""
         currentType = type + currentClassElt;
         originalx = originalx ? originalx : 0;
         originaly = originaly ? originaly : 0;
@@ -8228,47 +8210,47 @@ var nodeOpen = false,
         );
 
         var element;
-        if (classElt) {
-          element = $('.notifyjs-corner').has('.' + classElt);
-        } else {
-          element = $('.notifyjs-corner').has('.notifyjs-bootstrap-' + type);
+        if(classElt){
+          element = $(".notifyjs-corner").has( "."+classElt );
+        }else{
+          element = $(".notifyjs-corner").has( ".notifyjs-bootstrap-"+type );
         }
 
-        if (positionx == 'top') {
-          if ((positiony == 'left'))
-            element.css({ top: originalx + 'px', left: originaly + 'px' });
-          if ((positiony == 'right'))
-            element.css({ top: originalx + 'px', right: originaly + 'px' });
+        if(positionx == "top") {
+          if((positiony == "left"))
+            element.css({ top: originalx + "px", left: originaly + "px"});
+          if((positiony == "right"))
+            element.css({ top: originalx + "px", right: originaly + "px"});
         }
-        if (positionx == 'bottom') {
-          if ((positiony == 'left'))
-            element.css({ bottom: originalx + 'px', left: originaly + 'px' });
-          if ((positiony == 'right'))
-            element.css({ bottom: originalx + 'px', right: originaly + 'px' });
+        if(positionx == "bottom") {
+          if((positiony == "left"))
+            element.css({ bottom: originalx + "px", left: originaly + "px"});
+          if((positiony == "right"))
+            element.css({ bottom: originalx + "px", right: originaly + "px"});
         }
       },
 
-      isReviewer: function (cb) {
+      isReviewer: function(cb){
         var callback = {
-          success: function (data) {
+          success: function(data) {
             var roles = data,
               isRev = false,
               topRoles = false;
-            for (var i = 0; i < roles.length; i++) {
-              if (roles[i].toLocaleLowerCase() == 'admin' || roles[i].toLocaleLowerCase() == 'developer' ||
-                roles[i].toLocaleLowerCase() == 'publisher' || roles[i].toLocaleLowerCase() == 'author') {
+            for(var i=0; i<roles.length; i++){
+              if(roles[i].toLocaleLowerCase() == "admin" || roles[i].toLocaleLowerCase() == "developer" ||
+                roles[i].toLocaleLowerCase() == "publisher" || roles[i].toLocaleLowerCase() == "author"){
                 topRoles = true;
               }
-              if (roles[i].toLocaleLowerCase() == 'reviewer' && !topRoles) {
+              if(roles[i].toLocaleLowerCase() == "reviewer" && !topRoles){
                 isRev = true;
                 break;
-              } else {
+              }else{
                 isRev = false;
               }
             }
             cb(isRev);
           },
-          failure: function (response) {
+          failure: function(response) {
             console.log(response);
           }
         };
@@ -8279,36 +8261,36 @@ var nodeOpen = false,
       /**
        * Icons
        */
-      createIcon: function (conf, defaultIcon, containerClass) {
-        var iconContainer = document.createElement('div'),
-          iconElt = document.createElement('span'),
+      createIcon: function(conf, defaultIcon, containerClass){
+        var iconContainer = document.createElement("div"),
+          iconElt = document.createElement("span"),
           styles = conf && conf.icon ? conf.icon.styles : null;
-        YDom.addClass(iconContainer, 'icon-container');
-        if (!conf || !conf.icon || (conf && conf.icon && !conf.icon.stackedclass)) {
-          YDom.addClass(iconElt, 'status-icon mr9 fa');
+        YDom.addClass(iconContainer, "icon-container");
+        if(!conf || !conf.icon || (conf && conf.icon && !conf.icon.stackedclass)){
+          YDom.addClass(iconElt, "status-icon mr9 fa");
           YDom.addClass(iconElt, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
-        } else {
-          var icon1 = document.createElement('span'),
-            icon2 = document.createElement('span'),
+        }else{
+          var icon1 = document.createElement("span"),
+            icon2 = document.createElement("span"),
             icon1Size;
-          YDom.addClass(iconElt, 'status-icon mr9 studio-fa-stack');
-          YDom.addClass(icon1, 'fa studio-fa-stack-2x');
+          YDom.addClass(iconElt, "status-icon mr9 studio-fa-stack");
+          YDom.addClass(icon1, "fa studio-fa-stack-2x");
           YDom.addClass(icon1, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
-          YDom.addClass(icon2, 'fa studio-fa-stack-1x');
+          YDom.addClass(icon2, "fa studio-fa-stack-1x");
           YDom.addClass(icon2, conf.icon.stackedclass ? conf.icon.stackedclass : defaultIcon);
-          icon1Size = styles && styles['font-size'] ? styles['font-size'] : null;
-          if (icon1Size) {
-            icon2.style['font-size'] = (icon1Size.replace('px', '') - 4) + 'px';
+          icon1Size = styles && styles["font-size"] ? styles["font-size"] : null;
+          if(icon1Size){
+            icon2.style["font-size"] = (icon1Size.replace("px","") - 4) + "px";
           }
           iconElt.appendChild(icon1);
           iconElt.appendChild(icon2);
         }
 
-        if (containerClass) {
-          YDom.addClass(iconContainer, ' ' + containerClass);
+        if(containerClass){
+          YDom.addClass(iconContainer, " " + containerClass);
         }
 
-        if (styles) {
+        if(styles){
           for (var key in styles) {
             if (styles.hasOwnProperty(key)) {
               iconElt.style[key] = styles[key];
@@ -8322,21 +8304,21 @@ var nodeOpen = false,
       /**
        * Is Editable Form Asset
        */
-      isEditableFormAsset: function (uri) {
+      isEditableFormAsset: function(uri){
         //TODO: We should make this a MIME type and make the MIME types a constant
-        if (uri.indexOf('.ftl') != -1
-          || uri.indexOf('.css') != -1
-          || uri.indexOf('.js') != -1
-          || uri.indexOf('.groovy') != -1
-          || uri.indexOf('.txt') != -1
-          || uri.indexOf('.html') != -1
-          || uri.indexOf('.hbs') != -1
-          || uri.indexOf('.xml') != -1
-          || uri.indexOf('.tmpl') != -1
-          || uri.indexOf('.htm') != -1
+        if(uri.indexOf(".ftl") != -1
+          || uri.indexOf(".css")  != -1
+          || uri.indexOf(".js") != -1
+          || uri.indexOf(".groovy") != -1
+          || uri.indexOf(".txt") != -1
+          || uri.indexOf(".html") != -1
+          || uri.indexOf(".hbs") != -1
+          || uri.indexOf(".xml") != -1
+          || uri.indexOf(".tmpl") != -1
+          || uri.indexOf(".htm") != -1
         ) {
           return true;
-        } else {
+        }else{
           return false;
         }
       },
@@ -8348,16 +8330,16 @@ var nodeOpen = false,
        * @param type {string} Asset Mime type.
        * @param container {jQuery} The popup element
        */
-      previewAssetDialog: function (source, type) {
+      previewAssetDialog: function(source, type) {
         var $container = $('.cstudio-image-popup-overlay'),
           $mediaContainer,
           CMgs = CStudioAuthoring.Messages,
-          formsLangBundle = CStudioAuthoring.Messages.getBundle('previewTools', CStudioAuthoringContext.lang),
+          formsLangBundle = CStudioAuthoring.Messages.getBundle("previewTools", CStudioAuthoringContext.lang),
           destroy,
           clickHandler,
           escHandler;
 
-        if ($container.length === 0) {
+        if ( $container.length === 0 ) {
           $container = $(
             '<div class="cstudio-image-popup-overlay" style="display: none;">' +
             '<div class="cstudio-image-pop-up">' +
@@ -8375,7 +8357,7 @@ var nodeOpen = false,
         $mediaContainer = $container.find('.media-container');
         $container.removeClass('cstudio-video-popup-overlay');
 
-        if (type.match(/\bvideo\b/)) {
+        if ( type.match(/\bvideo\b/) ) {
           var playerOptions = {
               autoplay: true,
               controls: true,
@@ -8399,10 +8381,10 @@ var nodeOpen = false,
 
         $container.show();
 
-        destroy = function () {
+        destroy = function() {
           $(document).unbind('click', clickHandler);
           $(document).unbind('keyup', escHandler);
-        };
+        }
 
         clickHandler = function (e) {
           if (e.target !== this)
@@ -8410,17 +8392,17 @@ var nodeOpen = false,
 
           $container.remove();
           destroy();
-        };
+        }
 
         escHandler = function (e) {
-          if (e.keyCode === 27) {
+          if(e.keyCode === 27){
             $container.remove();
             destroy();
           }
-        };
+        }
 
         // Close - on button click
-        $container.one('click', '.close', function () {
+        $container.one('click', '.close', function(){
           $container.remove();
           destroy();
         });
@@ -8433,11 +8415,11 @@ var nodeOpen = false,
 
       },
 
-      decreaseFormDialog: function () {
-        if (window.frameElement) {
-          var id = window.frameElement.getAttribute('id').split('-editor-')[1];
-          if ($('#ice-body').length > 0 && $($('.studio-ice-container-' + id, parent.document)[0]).height() > 212) {
-            $($('.studio-ice-container-' + id, parent.document)[0]).height(212);
+      decreaseFormDialog: function(){
+        if( window.frameElement){
+          var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+          if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
+            $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
           }
         }
 
@@ -8450,89 +8432,89 @@ var nodeOpen = false,
 
           if (item.plugin != null) {
             name = item.plugin.name;
-            path = CStudioAuthoring.Service.getPluginURL + '?siteId=' + CStudioAuthoringContext.site;
+            path = CStudioAuthoring.Service.getPluginURL + "?siteId=" + CStudioAuthoringContext.site;
             prefix = name;
             if (item.plugin.type) {
-              path += '&type=' + item.plugin.type;
-            } else {
-              missingProp.push('Type');
+              path += "&type=" + item.plugin.type;
+            }else{
+              missingProp.push("Type");
             }
             if (item.plugin.name) {
-              path += '&name=' + name;
-            } else {
-              missingProp.push('Name');
+              path += "&name=" + name;
+            }else{
+              missingProp.push("Name");
             }
             if (item.plugin.filename) {
-              path += '&filename=' + item.plugin.filename;
-            } else {
-              missingProp.push('File name');
+              path += "&filename=" + item.plugin.filename;
+            }else{
+              missingProp.push("File name");
             }
             if (missingProp.length > 0) {
-              path = '';
+              path = "";
             }
 
           } else {
             name = item.name ? item.name : item;
-            path = url + name + '.js';
-            prefix = 'cstudio-forms-controls-' + name;
+            path = url + name + ".js";
+            prefix = "cstudio-forms-controls-" + name;
           }
 
-          return { 'path': path, 'prefix': prefix, 'name': name, 'missingProp': missingProp };
+          return { "path": path, "prefix": prefix, "name": name, "missingProp": missingProp  };
 
         },
 
         getPluginError: function (errorObject, CMgs, formsLangBundle) {
 
-          var message = '<div class=\'postfixErrorContainer\'>' + CMgs.format(formsLangBundle, 'pluginError') + '<ul>',
+          var message = "<div class='postfixErrorContainer'>" + CMgs.format(formsLangBundle, "pluginError") + "<ul>",
             propertiesMessage;
 
-          if (errorObject.control.length > 0) {
-            for (var i = 0; errorObject.control.length > i; i++) {
-              propertiesMessage = errorObject.control[i].length > 1 ? CMgs.format(formsLangBundle, 'propertiesMessage')
-                : CMgs.format(formsLangBundle, 'propertyMessage');
-              message += '<li>' + '' +
-                /***/'<strong>' + CMgs.format(formsLangBundle, 'control') + '</strong>' + errorObject.control[i].toString().replace(/,/g, ', ').replace(/,([^,]*)$/, ' and$1') +
+          if(errorObject.control.length > 0){
+            for(var i = 0; errorObject.control.length > i; i++  ){
+              propertiesMessage = errorObject.control[i].length > 1 ? CMgs.format(formsLangBundle, "propertiesMessage")
+                : CMgs.format(formsLangBundle, "propertyMessage");
+              message += "<li>" + "" +
+                /***/"<strong>" + CMgs.format(formsLangBundle, "control") + "</strong>"  + errorObject.control[i].toString().replace(/,/g, ", ") .replace(/,([^,]*)$/,' and$1') +
                 /***/propertiesMessage +
-                '</li>';
+                "</li>";
             }
           }
 
-          if (errorObject.datasource.length > 0) {
-            for (var i = 0; errorObject.datasource.length > i; i++) {
-              propertiesMessage = errorObject.datasource[i].length > 1 ? CMgs.format(formsLangBundle, 'propertiesMessage')
-                : CMgs.format(formsLangBundle, 'propertyMessage');
-              message += '<li>' +
-                /***/'<strong>' + CMgs.format(formsLangBundle, 'datasource') + '</strong>' + errorObject.datasource[i].toString().replace(/,/g, ', ').replace(/,([^,]*)$/, ' and$1') +
-                /***/propertiesMessage +
-                '</li>';
+          if(errorObject.datasource.length > 0){
+            for(var i = 0; errorObject.datasource.length > i; i++  ){
+              propertiesMessage = errorObject.datasource[i].length > 1 ? CMgs.format(formsLangBundle, "propertiesMessage")
+                : CMgs.format(formsLangBundle, "propertyMessage");
+              message += "<li>" +
+                /***/"<strong>" + CMgs.format(formsLangBundle, "datasource") + "</strong>"  + errorObject.datasource[i].toString().replace(/,/g, ", ").replace(/,([^,]*)$/,' and$1') +
+                /***/propertiesMessage  +
+                "</li>";
             }
           }
 
-          message += /**/'</ul>' +
-            /**/'<p class=\'descriptionMessage\' >' + CMgs.format(formsLangBundle, 'pluginErrorSolution') + '</p>' +
-            '</div>';
+          message += /**/"</ul>" +
+            /**/"<p class='descriptionMessage' >" + CMgs.format(formsLangBundle, "pluginErrorSolution") + "</p>" +
+            "</div>";
 
-          var $html = $('<div />', { html: message });
-          $html.find('a').attr('href', CStudioAuthoringContext.baseUri + '/site-config');
+          var $html = $('<div />',{html:message});
+          $html.find('a').attr("href", CStudioAuthoringContext.baseUri  + "/site-config");
 
           CStudioAuthoring.Operations.showSimpleDialog(
-            'errorPostfix-dialog',
+            "errorPostfix-dialog",
             CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(formsLangBundle, 'notification'),
+            CMgs.format(formsLangBundle, "notification"),
             $html.html(),
             null, // use default button
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
+            "studioDialog"
           );
         }
       }
 
     },
-    'Utils.Doc': {
+    "Utils.Doc": {
       /**
        * given a select object and a value, set the select box
        */
-      setSelectValue: function (selectEl, value) {
+      setSelectValue: function(selectEl, value) {
 
         if (selectEl) {
           for (var i = 0; i < selectEl.length; i++) {
@@ -8547,8 +8529,8 @@ var nodeOpen = false,
     /**
      * common sort query string parameter format
      **/
-    'Utils.formatSortKey': {
-      init: function (value) {
+    "Utils.formatSortKey": {
+      init: function(value) {
 
         switch (value) {
           case 'Page Name':
@@ -8580,12 +8562,12 @@ var nodeOpen = false,
      * Useful String manipulation utilities
      **/
     StringUtils: {
-      isString: function (value) {
-        return (Object.prototype.toString.call(value) === '[object String]');
+      isString: function(value) {
+        return (Object.prototype.toString.call(value) === "[object String]");
       },
-      format: function (format) {
+      format: function(format){
         var args = Array.prototype.slice.call(arguments, 1);
-        return (format.replace(/\{(\d+)\}/g, function (match, index) {
+        return (format.replace(/\{(\d+)\}/g, function(match, index){
           return args[index];
         }));
       },
@@ -8597,13 +8579,13 @@ var nodeOpen = false,
        * @param {Function} iterator The function that formats each placeholder
        * @returns {String} The formatted text
        */
-      advFormat: function (format, iterator) {
-        return (format.replace(/\{.*?\}/g, function (match, index) {
+      advFormat: function(format, iterator) {
+        return (format.replace(/\{.*?\}/g, function(match, index){
           return iterator(match.substr(1, match.length - 2), index);
         }));
       },
-      keyFormat: function (format, oHash) {
-        return this.advFormat(format, function (match) {
+      keyFormat: function(format, oHash) {
+        return this.advFormat(format, function(match){
           return oHash[match] || match;
         });
       },
@@ -8613,25 +8595,25 @@ var nodeOpen = false,
        * @param str {String} String to transfor
        * @param separator {String} the separator char
        */
-      toCamelcase: function (str, separator) {
-        !separator && (separator = '-');
+      toCamelcase: function(str, separator) {
+        !separator && (separator = "-");
         var parts = str.split(separator),
           len = parts.length;
         if (len == 1) return parts[0];
         var camel = [];
         camel.push((str.charAt(0) == separator) ? parts[0].charAt(0).toUpperCase() + parts[0].substring(1) : parts[0]);
         for (var i = 1; i < len; i++)
-          camel.push(parts[i].charAt(0).toUpperCase() + parts[i].substring(1));
-        return camel.join('');
+          camel.push( parts[i].charAt(0).toUpperCase() + parts[i].substring(1) );
+        return camel.join("");
       },
-      toDashes: function (str) {
+      toDashes: function(str) {
         return (str.replace(/::/g, '/')
         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
         .replace(/([a-z\d])([A-Z])/g, '$1-$2')
         .toLowerCase());
       },
-      truncate: function (str, size) {
-        return (str.length <= size) ? str : (str.substr(0, size - 3) + '...');
+      truncate: function(str, size) {
+        return (str.length <= size) ? str : (str.substr(0, size-3) + "...");
       }
     },
     /**
@@ -8651,20 +8633,20 @@ var nodeOpen = false,
        * @param {Number} hours In case cookie fallback needed, optionally specify a expiration time for the cookie in hours
        * @return The stored value
        **/
-      store: function (key, value, hours) {
-        if (this.ls) {
+      store: function(key, value, hours){
+        if ( this.ls ) {
           try {
             this.ls.setItem(key, value);
           } catch (e) {
-            if (e == QUOTA_EXCEEDED_ERR) {
+            if (e == QUOTA_EXCEEDED_ERR){
               CStudioAuthoring.Operations.showSimpleDialog(
-                'error-dialog',
+                "error-dialog",
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                CMgs.format(formsLangBundle, 'notification'),
-                CMgs.format(formsLangBundle, 'localStoreExceeded'),
+                CMgs.format(formsLangBundle, "notification"),
+                CMgs.format(formsLangBundle, "localStoreExceeded"),
                 null, // use default button
                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
+                "studioDialog"
               );
             }
             this.write(key, value, hours);
@@ -8680,12 +8662,12 @@ var nodeOpen = false,
        * @param {String} key The key to retrieve the associated value
        * @return The value associated to the key or an empty string
        **/
-      retrieve: function (key) {
+      retrieve: function(key){
         var value;
-        if (this.ls) {
+        if ( this.ls ) {
           value = this.ls.getItem(key);
         }
-        if (value === null || value === undefined) value = this.read(key);
+        if ( value === null || value === undefined ) value = this.read(key);
         return value;
       },
       /**
@@ -8693,13 +8675,13 @@ var nodeOpen = false,
        * @param {String} key The key to delete
        * @return The deleted value
        **/
-      del: function (key) {
+      del: function(key) {
         var value;
-        if (this.ls) {
+        if ( this.ls ) {
           value = this.ls.getItem(key);
           delete this.ls.removeItem(key);
         }
-        if (value === undefined) value = this.eliminate(key);
+        if( value === undefined ) value = this.eliminate(key);
         return value;
       },
       /**
@@ -8707,16 +8689,16 @@ var nodeOpen = false,
        * @param {String} name The name of the cookie to retrieve
        * @return The read value
        */
-      read: function (name) {
-        var cookieValue = '';
-        var search = (name + '=');
-        if (document.cookie.length > 0) {
+      read: function(name) {
+        var cookieValue = "";
+        var search = (name + "=");
+        if ( document.cookie.length > 0 ) {
           var offset = document.cookie.indexOf(search);
           if (offset != -1) {
             offset += search.length;
-            var end = document.cookie.indexOf(';', offset);
+            var end = document.cookie.indexOf(";", offset);
             if (end == -1) end = document.cookie.length;
-            cookieValue = decodeURIComponent(document.cookie.substring(offset, end));
+            cookieValue = decodeURIComponent(document.cookie.substring(offset, end))
           }
         }
         return cookieValue;
@@ -8728,19 +8710,19 @@ var nodeOpen = false,
        * @param {Number} hours Hours from the moment of registration
        * @return The stored value
        */
-      write: function (name, value, hours) {
+      write: function(name, value, hours) {
         var expire,
           domainVal;
-        if (hours) {
-          expire = (new Date((new Date()).getTime() + (hours * 3600000))).toGMTString();
+        if ( hours ) {
+          expire = (new Date( (new Date()).getTime() + (hours * 3600000) )).toGMTString();
         } else {
           // IE9 doesn't like an empty expire value (i.e. it won't create the cookie)
           // For IE9, creating a cookie with an expire value set to half an hour (0.5 hours)
-          expire = (YAHOO.env.ua.ie == 9) ? (new Date((new Date()).getTime() + CStudioAuthoring.Utils.Cookies.durationHours(0.5))).toGMTString() : '';
+          expire = (YAHOO.env.ua.ie == 9) ? (new Date( (new Date()).getTime() + CStudioAuthoring.Utils.Cookies.durationHours(0.5) )).toGMTString() : "";
         }
-        domainVal = (CStudioAuthoringContext.cookieDomain.indexOf('.') > -1) ? 'domain=' + CStudioAuthoringContext.cookieDomain : '';
+        domainVal = (CStudioAuthoringContext.cookieDomain.indexOf(".") > -1) ? "domain=" + CStudioAuthoringContext.cookieDomain : "";
         document.cookie = CStudioAuthoring.StringUtils.format(
-          '{0}={1}; expires={2}; path=/; ' + domainVal,
+          "{0}={1}; expires={2}; path=/; " + domainVal,
           name,
           encodeURIComponent(value),
           expire);
@@ -8751,34 +8733,34 @@ var nodeOpen = false,
        * @param {String} key The cookie name to delete
        * @return The eliminated value
        **/
-      eliminate: function (name) {
+      eliminate: function(name) {
         var value = this.read(name); // retrieve the value before deleting
-        this.write(name, '', -168); // Set expiration to a week before now
+        this.write(name, "", -168); // Set expiration to a week before now
         return value;
       }
     },
     /**
      * Collection of utilities for dealing with cookies
      */
-    'Utils.Cookies': {
+    "Utils.Cookies": {
       /**
        * given a unit, return enough millis for that unit of hours
        */
-      durationHours: function (unit) {
+      durationHours: function(unit) {
         // 60 * 60 * 1000 = 3600000
         return 3600000 * unit;
       },
       /**
        * given a unit, return enough millis for that unit of hours
        */
-      durationDays: function (unit) {
+      durationDays: function(unit) {
         // 24 * 60 * 60 * 1000 = 86400000
         return 86400000 * unit;
       },
       /**
        * write a cookie
        */
-      createCookie: function (name, value, duration) {
+      createCookie: function(name, value, duration) {
         var expires,
           date,
           domainVal;
@@ -8789,23 +8771,23 @@ var nodeOpen = false,
         } else {
           // IE doesn't like an empty expire value (i.e. it won't create the cookie)
           // For IE, creating a cookie with an expire value set to half an hour (0.5 hours)
-          expires = (YAHOO.env.ua.ie) ? (new Date((new Date()).getTime() + CStudioAuthoring.Utils.Cookies.durationHours(0.5))).toGMTString() : '';
+          expires = (YAHOO.env.ua.ie) ? (new Date( (new Date()).getTime() + CStudioAuthoring.Utils.Cookies.durationHours(0.5) )).toGMTString() : "";
         }
-        domainVal = (CStudioAuthoringContext.cookieDomain.indexOf('.') > -1) ? 'domain=' + CStudioAuthoringContext.cookieDomain : '';
-        if (expires) {
+        domainVal = (CStudioAuthoringContext.cookieDomain.indexOf(".") > -1) ? "domain=" + CStudioAuthoringContext.cookieDomain : "";
+        if(expires){
           document.cookie =
-            [name, '=', value, '; expires=', expires, '; path=/; ' + domainVal].join('');
-        } else {
+            [name, "=", value, "; expires=", expires, "; path=/; " + domainVal].join("");
+        }else{
           document.cookie =
-            [name, '=', value, '; path=/; ' + domainVal].join('');
+            [name, "=", value, "; path=/; " + domainVal].join("");
         }
 
       },
       /**
        * read a cookie
        */
-      readCookie: function (name) {
-        var nameEQ = name + '=';
+      readCookie: function(name) {
+        var nameEQ = name + "=";
         var ca = document.cookie.split(';');
         for (var i = 0; i < ca.length; i++) {
           var c = ca[i];
@@ -8817,35 +8799,36 @@ var nodeOpen = false,
       /**
        * destroy a cookie
        */
-      eraseCookie: function (name) {
-        var domainVal = (CStudioAuthoringContext.cookieDomain.indexOf('.') > -1) ? 'domain=' + CStudioAuthoringContext.cookieDomain : '';
-        document.cookie = name + '=null; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/; ' + domainVal;
+      eraseCookie: function(name) {
+        var domainVal = (CStudioAuthoringContext.cookieDomain.indexOf(".") > -1) ? "domain=" + CStudioAuthoringContext.cookieDomain : "";
+        document.cookie = name + "=null; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/; " + domainVal;
       }
     },
     /**
      * pass the correct parameter for sortAscDesc
      **/
-    'Utils.sortByAsc': {
-      init: function (sortBy, widgetId) {
+    "Utils.sortByAsc": {
+      init: function(sortBy, widgetId) {
 
         var previousSortedBy = YDom.get('sortedBy-' + widgetId).innerHTML;
         var previousSortType = YDom.get('sort-type-' + widgetId).innerHTML;
         var currentSortBy = (sortBy) ? sortBy : null;
 
         if (currentSortBy == null) return false;
-        currentSortBy = currentSortBy.replace('-' + widgetId, '');
+        currentSortBy = currentSortBy.replace("-" + widgetId, "");
 
         if (previousSortedBy == currentSortBy) {
 
-          if (previousSortType == 'true') {
-            currentSortType = 'false';
-          } else {
-            currentSortType = 'true';
+          if (previousSortType == "true") {
+            currentSortType = "false";
+          }
+          else {
+            currentSortType = "true";
           }
 
         } else {
 
-          currentSortType = 'false';
+          currentSortType = "false";
         }
 
         return currentSortType;
@@ -8859,11 +8842,10 @@ var nodeOpen = false,
       /**
        * create a new child form configuration
        */
-      createChildSearchConfig: function () {
-        return {
-          searchId: '',
-          searchUrl: '',
-          openAsTab: '',
+      createChildSearchConfig: function() {
+        return { searchId: "",
+          searchUrl: "",
+          openAsTab: "",
           saveCallback: null
         };
       },
@@ -8872,7 +8854,7 @@ var nodeOpen = false,
        * @param searchId name of search
        * @param value returned
        */
-      signalSearchClose: function (searchId, contentTOs) {
+      signalSearchClose: function(searchId, contentTOs) {
 
         var childSearchConfig = this.searches[searchId];
 
@@ -8882,10 +8864,10 @@ var nodeOpen = false,
        * open child search
        * @parm form configuration
        */
-      openChildSearch: function (childSearchConfig) {
+      openChildSearch: function(childSearchConfig) {
 
         if (this.searches == null) {
-          this.searches = [];
+          this.searches = new Array();
         }
 
         this.searches[childSearchConfig.searchId] = childSearchConfig;
@@ -8893,7 +8875,8 @@ var nodeOpen = false,
 
         if (childSearchConfig.openInSameWindow) {
           newWindow = document.location = childSearchConfig.searchUrl;
-        } else {
+        }
+        else {
 
           var newWindow;
           CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId); //TODO: test name on iframe
@@ -8910,15 +8893,15 @@ var nodeOpen = false,
       /**
        * create a new child form configuration
        */
-      createChildFormConfig: function () {
+      createChildFormConfig: function() {
         return {
-          formName: '',
-          formUrl: '',
-          openAsTab: '',
-          windowHeight: '',
-          windowWidth: '',
-          windowTitle: '',
-          windowName: '',
+          formName: "",
+          formUrl: "",
+          openAsTab: "",
+          windowHeight: "",
+          windowWidth: "",
+          windowTitle: "",
+          windowName: "",
           formSaveCallback: null
         };
       },
@@ -8927,10 +8910,10 @@ var nodeOpen = false,
        * @param formName name of form
        * @param value returned
        */
-      signalFormClose: function (formName, name, value) {
+      signalFormClose: function(formName, name, value) {
         var childFormConfig = this.forms[formName];
 
-        if (childFormConfig) {
+        if(childFormConfig) {
           childFormConfig.formSaveCallback.success(
             formName,
             name,
@@ -8941,7 +8924,7 @@ var nodeOpen = false,
       /*
              * @return formId : the form id if the form is open; if not, false
              */
-      getChildFormByName: function (windowName) {
+      getChildFormByName: function(windowName) {
         var form = null;
 
         if (this.forms) {
@@ -8959,13 +8942,13 @@ var nodeOpen = false,
        * open child form
        * @parm form configuration
        */
-      openChildForm: function (childFormConfig) {
+      openChildForm: function(childFormConfig) {
         this.forms = this.forms || {};
 
         var formId = childFormConfig.form;
         var childFormId;
 
-        if (childFormConfig.windowName == null || childFormConfig.windowName == '') {
+        if (childFormConfig.windowName == null || childFormConfig.windowName == "") {
           // formId is encoded such that any '/' or '-' are removed, since IE doesn't
           // accept these characters in a window name
           childFormConfig.windowName = encodePathToNumbers(formId);
@@ -8998,45 +8981,45 @@ var nodeOpen = false,
       title: document.title,
       currentWindowLocation: document.location,
 
-      init: function () {
+      init: function() {
 
-        if (typeof (CStudioAuthoringContext) == 'undefined') {
+        if (typeof(CStudioAuthoringContext) == "undefined") {
           YAHOO.lang.later(1000, this, CSA.WindowManagerProxy.init);
         } else {
 
-          if (!window.name || window.name == '') {
+          if (!window.name || window.name == "") {
             window.name = CStudioAuthoring.Utils.generateUUID();
           }
 
-          CSA.Utils.Cookies.eraseCookie('cstudio-main-window');
+          CSA.Utils.Cookies.eraseCookie("cstudio-main-window");
 
           // Check if user is to be notified.
-          this.notify = CSA.Utils.Cookies.readCookie('cstudio-preview-notify');
-          if (this.notify != null) {
+          this.notify = CSA.Utils.Cookies.readCookie("cstudio-preview-notify");
+          if(this.notify != null) {
 
-            CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-preview-notify');
+            CStudioAuthoring.Utils.Cookies.eraseCookie("cstudio-preview-notify");
             if (document.location.href.indexOf(CStudioAuthoringContext.authoringAppBaseUri) == -1) {
               // in some cases where common-api.js is not included in preview
               // this message shows up on the dashboard because the cookie does not get erased.
               // The basic assumption here is preview is not rooted below authoring url
-              YAHOO.lang.later(2000, this, function () {
+              YAHOO.lang.later(2000, this, function() {
                 CStudioAuthoring.Operations.showSimpleDialog(
-                  'previewLoaded-dialog',
+                  "previewLoaded-dialog",
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(formsLangBundle, 'notification'),
-                  CMgs.format(formsLangBundle, 'previewLoaded'),
+                  CMgs.format(formsLangBundle, "notification"),
+                  CMgs.format(formsLangBundle, "previewLoaded"),
                   null, // use default button
                   YAHOO.widget.SimpleDialog.ICON_INFO,
-                  'studioDialog'
+                  "studioDialog"
                 );
               });
             }
 
           }
 
-          YAHOO.lang.later(1000, this, function () {
+          YAHOO.lang.later(1000, this, function() {
 
-            var cookie = CSA.Utils.Cookies.readCookie('cstudio-main-window');
+            var cookie = CSA.Utils.Cookies.readCookie("cstudio-main-window");
             if (cookie != null) {
 
               var pieces = cookie.split('|');
@@ -9047,14 +9030,14 @@ var nodeOpen = false,
               var signalToWindowId = pieces[3];
 
               if (signalToWindowId == window.name && (this.lastKey == null || this.lastKey != key)) {
-                CStudioAuthoring.Utils.Cookies.createCookie('cstudio-main-window-location', loc);
+                CStudioAuthoring.Utils.Cookies.createCookie("cstudio-main-window-location",loc);
                 document.location = loc;
               }
 
               this.lastKey = key;
             }
 
-          }, [], 1000);
+          }, [],1000);
         }
       }
     },
@@ -9063,38 +9046,39 @@ var nodeOpen = false,
      * added service to get node icon.
      */
     IconService: {
-      getItemIcon: function (item) {
-        var itemIconClass = 'navPage';
+      getItemIcon : function (item) {
+        var itemIconClass = "navPage";
         if (item.document) {
-          itemIconClass = 'document';
+          itemIconClass = "document";
         } else if (item.floating) {
-          itemIconClass = 'ttFloating';
+          itemIconClass = "ttFloating";
         } else if (item.component) {
-          itemIconClass = 'ttComponent';
+          itemIconClass = "ttComponent";
         } else {
-          itemIconClass = 'tt';
+          itemIconClass = "tt";
         }
 
-        if (item.deleted || item.submittedForDeletion) {
-          itemIconClass += 'Deleted';
+        if (item.deleted||item.submittedForDeletion) {
+          itemIconClass += "Deleted";
         }
         if (item.submitted || item.scheduled) {
           if (item.submitted) {
-            itemIconClass += 'Submitted';
+            itemIconClass += "Submitted";
           }
           if (item.scheduled) {
-            itemIconClass += 'Scheduled';
+            itemIconClass += "Scheduled";
           }
-        } else if (!item.deleted && item.inProgress) {
-          itemIconClass += 'InProgress';
+        }
+        else if (!item.deleted && item.inProgress) {
+          itemIconClass += "InProgress";
         }
 
         // If no flag is set, then it should be live item
         if (!item.deleted && !item.submitted && !item.scheduled && !item.inProgress) {
-          itemIconClass = 'navPage';
+          itemIconClass = "navPage";
         }
 
-        itemIconClass += ' icon';
+        itemIconClass += " icon";
 
         return itemIconClass;
       }
@@ -9110,7 +9094,7 @@ var nodeOpen = false,
    *   add spacer between form and controls
    */
   CSA.register({
-    CommandToolbar: function (containerId, addSpacer) {
+    CommandToolbar: function(containerId, addSpacer) {
       this.init(containerId, addSpacer);
     }
   });
@@ -9118,29 +9102,29 @@ var nodeOpen = false,
    * initialize the form command toolbar
    * @param {String} id ID of the container element for the toolbar
    */
-  CSA.CommandToolbar.prototype.init = (function (id, addSpacer) {
+  CSA.CommandToolbar.prototype.init = (function(id, addSpacer) {
     this.container = document.getElementById(id);
     this.controlBox = null;
     if (this.container != null) {
       if (addSpacer == true) {
-        var formControlSpacer = document.createElement('div');
-        formControlSpacer.id = 'formBottomSpacer';
-        formControlSpacer.style.height = '30px';
+        var formControlSpacer = document.createElement("div");
+        formControlSpacer.id = "formBottomSpacer";
+        formControlSpacer.style.height = "30px";
         this.container.appendChild(formControlSpacer);
       }
 
-      var xformfooterWrapper = document.createElement('div');
-      xformfooterWrapper.id = 'xformfooterWrapper';
+      var xformfooterWrapper = document.createElement("div");
+      xformfooterWrapper.id = "xformfooterWrapper";
       this.container.appendChild(xformfooterWrapper);
 
-      var xformfooterheader = document.createElement('div');
-      xformfooterheader.id = 'xformfooterheader';
+      var xformfooterheader = document.createElement("div");
+      xformfooterheader.id = "xformfooterheader";
       xformfooterWrapper.appendChild(xformfooterheader);
 
-      var submissionControls = document.createElement('div');
-      submissionControls.id = 'submission-controls';
+      var submissionControls = document.createElement("div");
+      submissionControls.id = "submission-controls";
       this.controlBox = submissionControls;
-      YDom.addClass(this.controlBox, 'cstudio-form-controls-button-container');
+      YDom.addClass(this.controlBox, "cstudio-form-controls-button-container");
       xformfooterheader.appendChild(submissionControls);
     }
   });
@@ -9153,23 +9137,24 @@ var nodeOpen = false,
    * @param actionCallback
    *    function to be executed when button is pushed
    */
-  CSA.CommandToolbar.prototype.addControl = (function (controlId, label, actionCallback) {
+  CSA.CommandToolbar.prototype.addControl = (function(controlId, label, actionCallback) {
     if (this.controlBox != null) {
       //var buttonControl = document.createElement("button");
-      var buttonControl = document.createElement('input');
+      var buttonControl = document.createElement("input");
       buttonControl.id = controlId;
-      buttonControl.type = 'button';
-      buttonControl.className = 'cstudio-xform-button';
+      buttonControl.type = "button";
+      buttonControl.className = "cstudio-xform-button";
       //buttonControl.innerHTML = label;
       buttonControl.value = label;
-      YDom.addClass(buttonControl, 'cstudio-form-control-button ');
-      YDom.addClass(buttonControl, 'cstudio-button');
+      YDom.addClass(buttonControl, "cstudio-form-control-button ");
+      YDom.addClass(buttonControl, "cstudio-button");
       this.controlBox.appendChild(buttonControl);
 
-      buttonControl.onclick = function () {
-        if (actionCallback.click) {
+      buttonControl.onclick = function() {
+        if(actionCallback.click) {
           actionCallback.click();
-        } else {
+        }
+        else {
           actionCallback();
         }
       };
@@ -9182,14 +9167,13 @@ var nodeOpen = false,
    * @param controlId
    *    id of button
    */
-  CSA.CommandToolbar.prototype.disableControl = (function (controlId) {
+  CSA.CommandToolbar.prototype.disableControl = (function(controlId) {
     if (this.controlBox != null) {
       var buttonControl = document.getElementById(controlId);
 
       if (buttonControl != null) {
-        buttonControl.className = 'cstudio-xform-button-disabled';
-        buttonControl.onclick = function () {
-        };
+        buttonControl.className = "cstudio-xform-button-disabled";
+        buttonControl.onclick = function() {};
       }
     }
   });
@@ -9200,7 +9184,7 @@ var nodeOpen = false,
 
   /* Registering Request Timeout values for go live service request */
   CSA.register({
-    'Request.Timeout': {
+    "Request.Timeout": {
       GoLiveTimeout: 180000
     }
   });
@@ -9211,66 +9195,68 @@ var nodeOpen = false,
  * simple internationalization mechanism
  */
 CStudioAuthoring.Messages = CStudioAuthoring.Messages || {
-  bundles: {},
+  bundles: { },
 
-  registerBundle: function (namespace, lang, bundle) {
+  registerBundle: function(namespace, lang, bundle) {
     var M = CStudioAuthoring.Messages;
 
-    if (!M.bundles[namespace]) {
-      M.bundles[namespace] = {};
+    if(!M.bundles[namespace]) {
+      M.bundles[namespace] = { };
     }
 
     M.bundles[namespace][lang] = bundle;
   },
 
-  getBundle: function (namespace, lang) {
+  getBundle: function(namespace, lang) {
     var bundle;
     var M = CStudioAuthoring.Messages;
     var namespace = M.bundles[namespace];
-    if (namespace) {
+    if(namespace) {
       bundle = namespace[lang];
 
-      if (bundle && lang != 'en') {
+      if(bundle && lang != "en") {
         // fallback
-        bundle.fallbackBundle = namespace['en'];
-      } else {
-        bundle = namespace['en'];
+        bundle.fallbackBundle = namespace["en"];
+      }
+      else {
+        bundle = namespace["en"];
       }
     }
 
     return bundle;
   },
 
-  format: function (bundle, messageId, a, b, c, d, e, f, g) {
+  format: function(bundle, messageId, a, b, c, d, e, f, g) {
     var formattedMessage = messageId;
-    var spaceRegex = new RegExp(' ', 'g');
-    var starRegex = new RegExp('\\*', 'g');
+    var spaceRegex = new RegExp(" ", 'g');
+    var starRegex = new RegExp("\\*", 'g');
     var key = messageId.replace(spaceRegex, '');
     key = key.replace(starRegex, '');
 
-    if (bundle[key]) {
+    if(bundle[key]) {
       formattedMessage = bundle[key];
-    } else if (bundle.fallbackBundle && bundle.fallbackBundle[key]) {
+    }
+    else if(bundle.fallbackBundle && bundle.fallbackBundle[key]) {
       formattedMessage = bundle.fallbackBundle[key];
     }
 
-    if (a) formattedMessage = formattedMessage.replace('{0}', a);
-    if (b) formattedMessage = formattedMessage.replace('{1}', b);
-    if (c) formattedMessage = formattedMessage.replace('{2}', c);
-    if (d) formattedMessage = formattedMessage.replace('{3}', d);
-    if (e) formattedMessage = formattedMessage.replace('{4}', e);
-    if (f) formattedMessage = formattedMessage.replace('{5}', f);
-    if (g) formattedMessage = formattedMessage.replace('{6}', g);
+    if(a) formattedMessage = formattedMessage.replace("{0}", a);
+    if(b) formattedMessage = formattedMessage.replace("{1}", b);
+    if(c) formattedMessage = formattedMessage.replace("{2}", c);
+    if(d) formattedMessage = formattedMessage.replace("{3}", d);
+    if(e) formattedMessage = formattedMessage.replace("{4}", e);
+    if(f) formattedMessage = formattedMessage.replace("{5}", f);
+    if(g) formattedMessage = formattedMessage.replace("{6}", g);
 
 
     return formattedMessage;
   },
 
-  display: function (bundle, messageId, a, b, c, d, e, f, g) {
+  display: function(bundle, messageId, a, b, c, d, e, f, g) {
     var formattedMessage = CStudioAuthoring.Messages.format(bundle, messageId, a, b, c, d, e, f, g);
     document.write(formattedMessage);
   }
-};
+}
 
 CStudioAuthoring.InContextEdit = {
   messagesSubscription: null,
@@ -9511,17 +9497,17 @@ CStudioAuthoring.InContextEdit = {
           );
         };
 
-        editTemplateControlEl.onclick = function () {
+        editTemplateControlEl.onclick = function() {
           var contentType = contentTO.item.renderingTemplates[0].uri;
 
-          if (CStudioAuthoringContext.channel && CStudioAuthoringContext.channel != 'web') {
-            contentType = contentType.substring(0, contentType.lastIndexOf('.ftl')) +
-              '-' + CStudioAuthoringContext.channel + '.ftl';
+          if(CStudioAuthoringContext.channel && CStudioAuthoringContext.channel != "web") {
+            contentType = contentType.substring(0, contentType.lastIndexOf(".ftl")) +
+              "-" + CStudioAuthoringContext.channel + ".ftl";
           }
 
-          CStudioAuthoring.Operations.openTemplateEditor(contentType, 'default', onSaveCb, null, null);
+          CStudioAuthoring.Operations.openTemplateEditor(contentType, "default", onSaveCb, null ,null);
 
-        };
+        }
 
 
         controlBoxEl.appendChild(editControlEl);
@@ -9604,16 +9590,16 @@ CStudioAuthoring.InContextEdit = {
 };
 
 CStudioAuthoring.FilesDiff = {
-  autoSizeIceDialog: function (editorId) {
-    var el = document.getElementById('in-context-edit-editor-' + editorId);
-    var containerEl = document.getElementById('studio-ice-container-' + editorId);
-    if (!containerEl) return;
+  autoSizeIceDialog: function(editorId) {
+    var el = document.getElementById('in-context-edit-editor-'+editorId);
+    var containerEl = document.getElementById('studio-ice-container-'+editorId);
+    if(!containerEl) return;
 
     var height = YAHOO.util.Dom.getViewportHeight() - 90;
 
-    containerEl.style.height = height + 'px';
+    containerEl.style.height = height+'px';
     //el.style.height = height+'px';
-    window.scrollBy(0, 1);
+    window.scrollBy(0,1);
   }
 };
 
@@ -9647,26 +9633,26 @@ CStudioAuthoring.FilesDiff = {
     },
     isVisible;
 
-  var div = document.createElement('div'),
+  var div = document.createElement( "div" ),
     tds,
     trustOffsets;
 
-  div.innerHTML = '<table><tr><td style=\'padding:0;border:0;display:none\'></td><td>t</td></tr></table>';
-  tds = div.getElementsByTagName('td');
+  div.innerHTML = "<table><tr><td style='padding:0;border:0;display:none'></td><td>t</td></tr></table>";
+  tds = div.getElementsByTagName( "td" );
 
-  trustOffsets = (tds[0].offsetHeight === 0);
+  trustOffsets = (tds[ 0 ].offsetHeight === 0);
 
-  tds[0].style.display = '';
-  tds[1].style.display = 'none';
+  tds[ 0 ].style.display = "";
+  tds[ 1 ].style.display = "none";
 
-  trustOffsets = trustOffsets && (tds[0].offsetHeight === 0);
+  trustOffsets = trustOffsets && (tds[ 0 ].offsetHeight === 0);
 
   isVisible = function (element) {
     var width = element.offsetWidth,
       height = element.offsetHeight;
     return !(
       (width === 0 && height === 0) ||
-      (!trustOffsets && (element.style.display || getStyle('display') === 'none'))
+      (!trustOffsets && (element.style.display || getStyle("display") === "none"))
     );
   };
 
@@ -9693,7 +9679,7 @@ CStudioAuthoring.FilesDiff = {
 
           yAxisCondition = (y <= (viewportH + b)) && (b <= (y + _h));
 
-        if ((yAxisCondition) && !(elem._hasBeenNotified)) {
+        if ( (yAxisCondition) && !(elem._hasBeenNotified) ) {
 
           // trigger
           elem._hasBeenNotified = true;
@@ -9703,7 +9689,7 @@ CStudioAuthoring.FilesDiff = {
 
       }
     }
-  };
+  }
 
 
   CrafterStudioUtils.isVisible = isVisible;
@@ -9718,12 +9704,12 @@ CStudioAuthoring.FilesDiff = {
   };
   CrafterStudioUtils._addScrollListener = function () {
     if (!CrafterStudioUtils._addScrollListener.listeningScroll) {
-      Event.addListener(w, 'scroll', scroll);
+      Event.addListener(w, "scroll", scroll);
       CrafterStudioUtils._addScrollListener.listeningScroll = true;
     }
   };
   CrafterStudioUtils._removeScrollListener = function () {
-    Event.removeListener(w, 'scroll', scroll);
+    Event.removeListener(w, "scroll", scroll);
     CrafterStudioUtils._addScrollListener.listeningScroll = false;
   };
 
@@ -9739,32 +9725,31 @@ CStudioAuthoring.FilesDiff = {
   // Parameter 'win' of the anonymous function will be the object passed as parameter 'w'
   YAHOO.util.Event.onDOMReady(function (e, args, win) {
     //
-    if (!(!(window.ActiveXObject) && 'ActiveXObject' in window)) {
-      win.CStudioAuthoring.Utils.Cookies.createCookie('crafterSite', win.CStudioAuthoringContext.site);
+    if(!(!(window.ActiveXObject) && "ActiveXObject" in window)){
+      win.CStudioAuthoring.Utils.Cookies.createCookie("crafterSite", win.CStudioAuthoringContext.site);
     }
 
-    CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/mime-type.xml', {
-      success: function (data) {
+    CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, "/mime-type.xml", { success: function(data){
         var mimeTypes = {},     //object to be stored
           confMimeType,       //current mimeType json object from service
           mimeType,
           key;
 
-        if (data && data['mime-type']) {
-          var mimeTypes = data['mime-type'];
+        if (data && data["mime-type"]) {
+          var mimeTypes = data["mime-type"];
           if (!Array.isArray(mimeTypes)) {
             //support single values coming from SiteServiceImpl#createMap
             mimeTypes = [mimeTypes];
           }
-          for (var i = 0; i < mimeTypes.length; i++) {
+          for( var i = 0; i < mimeTypes.length; i++){
             confMimeType = mimeTypes[i];
             mimeType = {};
 
-            if (confMimeType.icon) {
-              if (confMimeType.icon.class) {
+            if(confMimeType.icon){
+              if(confMimeType.icon.class){
                 mimeType.class = confMimeType.icon.class;
               }
-              if (confMimeType.icon.styles) {
+              if(confMimeType.icon.styles){
                 mimeType.styles = confMimeType.icon.styles;
               }
             }
@@ -9774,8 +9759,7 @@ CStudioAuthoring.FilesDiff = {
         }
 
         CStudioAuthoring.mimeTypes = mimeTypes;
-      }
-    });
+      }});
 
     CStudioAuthoring.Utils.getTimeZoneConfig();
 
@@ -9792,7 +9776,7 @@ if(window.top === window.self) {
         success: function (config) {
 
           function authRedirect(authConfig) {
-            location = '/studio/#/login';
+            location = "/studio/#/login";
           }
 
           function authLoop(configObj) {
@@ -9803,15 +9787,15 @@ if(window.top === window.self) {
             serviceUri = CStudioAuthoring.Service.validateSessionUrl;
 
             var CMgs = CStudioAuthoring.Messages;
-            var formsLangBundle = CStudioAuthoring.Messages.getBundle('contextnav', CStudioAuthoringContext.lang);
+            var formsLangBundle = CStudioAuthoring.Messages.getBundle("contextnav", CStudioAuthoringContext.lang);
             var networkErrorMsg = CMgs.format(formsLangBundle, 'networkError');
 
             serviceCallback = {
               success: function (response) {
-                var resObj = response.responseText;
+                var resObj = response.responseText
                 var resJson = JSON.parse(resObj);
 
-                if (response.status == 200 && resJson.message == 'OK') {
+                if (response.status == 200 && resJson.message == "OK") {
                   // ticket is valid
                   setTimeout(function () {
                     authLoop(configObj);
@@ -9825,9 +9809,9 @@ if(window.top === window.self) {
                       }, delay);
                     }
                   };
-                  if (CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS) {
+                  if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
                     window.location = '/studio/#/login';
-                  } else {
+                  }else{
                     CStudioAuthoring.Operations.loginDialog(cb);
                   }
 
@@ -9843,15 +9827,15 @@ if(window.top === window.self) {
                       }, delay);
                     }
                   };
-                  if (CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS) {
+                  if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
                     window.location = '/studio/#/login';
-                  } else {
+                  }else{
                     CStudioAuthoring.Operations.loginDialog(cb);
                   }
 
 
                 } else {
-                  CStudioAuthoring.Utils.showNotification(networkErrorMsg, 'bottom', 'right', 'error', 0, 0, 'errorNotify');
+                  CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0, 0, "errorNotify");
                   setTimeout(function () {
                     authLoop(configObj);
                   }, delay);
@@ -9859,7 +9843,7 @@ if(window.top === window.self) {
               }
             };
 
-            YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), serviceCallback);
+            YConnect.asyncRequest("GET", CStudioAuthoring.Service.createServiceUri(serviceUri), serviceCallback);
 
           }
 
@@ -9874,10 +9858,10 @@ if(window.top === window.self) {
         failure: function () {
           throw new Error('Unable to read site configuration');
         }
-      };
+      }
 
       CStudioAuthoring.Service.lookupConfigurtion(
-        CStudioAuthoringContext.site, '/site-config.xml', authLoopCb);
+        CStudioAuthoringContext.site, "/site-config.xml", authLoopCb);
 
     } else {
       // The authentication loop cannot be started until CStudioAuthoringContext exists
