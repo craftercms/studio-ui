@@ -141,16 +141,12 @@ function PublishDialog(props: PublishDialogProps) {
 
   useEffect(getPublishingChannels, []);
   useEffect(() => {
-    function setRef() {
-      const result = (
-        Object.entries({ ...checkedItems, ...checkedSoftDep })
-        .filter(([key, value]) => value === true)
-        .map(([key]) => key)
-      );
-      setSelectedItems(result);
-    }
-
-    setRef();
+    const result = (
+      Object.entries({ ...checkedItems, ...checkedSoftDep })
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key)
+    );
+    setSelectedItems(result);
   }, [checkedItems, checkedSoftDep]);
 
   function getPublishingChannels() {
