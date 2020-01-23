@@ -873,7 +873,8 @@
 
         var dialogLoadedCb = {
           moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-            var cb = {
+            $('#openExistingInlineTarget').html('<div/>');
+            dialogClass.showDialog({
               success: function (type) {
                 $('#cstudio-admin-console-workarea').html(WORK_AREA_HTML);
                 context.openExistingItemRender(type);
@@ -882,15 +883,13 @@
 
               },
               close(didCreate) {
-                if (!didCreate && $('.content-types-landing-page').length) {
+                if (!didCreate && $('.site-config-landing-page').length) {
                   $('#openExistingInlineTarget').html('<div/>');
                   context.onOpenExistingClick(true);
                 }
               },
               context: moduleConfig.context
-            };
-
-            dialogClass.showDialog(cb, moduleConfig.context.config);
+            }, moduleConfig.context.config);
           }
         };
 
