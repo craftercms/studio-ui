@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
-import { useSelection, useStateResourceSelection } from "../../../utils/hooks";
+import { useDebouncedInput, useSelection, useStateResourceSelection } from "../../../utils/hooks";
 import { PagedEntityState } from "../../../models/GlobalState";
 import { nnou, pluckProps } from "../../../utils/object";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
@@ -27,13 +27,11 @@ import { createStyles, makeStyles } from "@material-ui/core";
 import ContentInstance from '../../../models/ContentInstance';
 import { PanelListItem } from "./PanelListItem";
 import List from "@material-ui/core/List";
-import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
   fetchComponentsByContentType
 } from "../../../state/actions/preview";
-import { Subject } from "rxjs";
 import { useDispatch } from "react-redux";
 import SearchBar from "../../../components/SearchBar";
 import EmptyState from "../../../components/SystemStatus/EmptyState";
@@ -151,7 +149,7 @@ interface ComponentResource {
 export default function BrowseComponentsPanel() {
 
   const classes = useStyles({});
-  const onSearch$ = useMemo(() => new Subject<string>(), []);
+  //const onSearch$ = useMemo(() => new Subject<string>(), []);
   const dispatch = useDispatch();
   const initialKeyword = useSelection(state => state.preview.components.query.keywords);
   const initialContentTypeFilter = useSelection(state => state.preview.components.contentTypeFilter);
@@ -189,15 +187,11 @@ export default function BrowseComponentsPanel() {
     dispatch(fetchComponentsByContentType(contentTypeFilter));
   }, [contentTypeFilter, dispatch]);
 
-  useEffect(() => {
-    const subscription = onSearch$.pipe(
-      debounceTime(400),
-      distinctUntilChanged()
-    ).subscribe((keywords: string) => {
-      dispatch(fetchComponentsByContentType(null, { keywords }));
-    });
-    return () => subscription.unsubscribe();
-  }, [dispatch, onSearch$]);
+  const onSearch = useMemo(() => (
+    (keywords: string) => dispatch(fetchComponentsByContentType(null, { keywords }))
+  ), [dispatch]);
+
+  const onSearch$ = useDebouncedInput(onSearch);
 
   function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     dispatch(fetchComponentsByContentType(null, { offset: newPage }));

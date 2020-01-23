@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { useActiveSiteId, useSelection, useStateResourceSelection } from "../../../utils/hooks";
+import { useActiveSiteId, useDebouncedInput, useSelection, useStateResourceSelection } from "../../../utils/hooks";
 import { MediaItem } from "../../../models/Search";
 import { createStyles, fade } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -26,9 +26,9 @@ import SearchBar from '../../../components/SearchBar';
 import { useDispatch, useSelector } from "react-redux";
 import GlobalState, { PagedEntityState } from "../../../models/GlobalState";
 import TablePagination from "@material-ui/core/TablePagination";
-import { fromEvent, interval, Subject } from "rxjs";
+import { fromEvent, interval } from "rxjs";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
-import { debounceTime, distinctUntilChanged, filter, mapTo, share, switchMap, takeUntil, tap } from "rxjs/operators";
+import { filter, mapTo, share, switchMap, takeUntil, tap } from "rxjs/operators";
 import { DRAWER_WIDTH, getHostToGuestBus } from "../previewContext";
 import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from "../../../state/actions/preview";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
@@ -152,7 +152,6 @@ interface AssetResource {
 
 export default function AssetsPanel() {
   const classes = assetsPanelStyles({});
-  const onSearch$ = useMemo(() => new Subject<string>(), []);
   const initialKeyword = useSelection(state => state.preview.assets.query.keywords);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [dragInProgress, setDragInProgress] = useState(false);
@@ -226,7 +225,6 @@ export default function AssetsPanel() {
     return () => subscription.unsubscribe();
   }, []);
 
-
   useEffect(() => {
     if (dragInProgress) {
       const dragover$ = fromEvent(elementRef.current, 'dragover').pipe(
@@ -256,15 +254,11 @@ export default function AssetsPanel() {
     }
   }, [dragInProgress]);
 
-  useEffect(() => {
-    const subscription = onSearch$.pipe(
-      debounceTime(400),
-      distinctUntilChanged()
-    ).subscribe((keywords: string) => {
-      dispatch(fetchAssetsPanelItems({ keywords }));
-    });
-    return () => subscription.unsubscribe();
-  }, [dispatch, onSearch$]);
+  const onSearch = useMemo(() => (
+    (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords }))
+  ), [dispatch]);
+
+  const onSearch$ = useDebouncedInput(onSearch);
 
   function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     dispatch(fetchAssetsPanelItems({ offset: newPage }));
