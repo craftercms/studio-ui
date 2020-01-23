@@ -51,15 +51,8 @@ const useStyles = makeStyles((theme: Theme) =>
         marginTop: '12px !important',
       }
     },
-    ActionButton: {
-      padding: '6px',
-      marginLeft: '5px'
-    },
-    InputLabel: {
-      position: 'relative'
-    },
-    PanelMargin: {
-      margin: '0 15px',
+    panelMargin: {
+      margin: '0 15px'
     },
     textField: {
       width: '100%',
@@ -152,7 +145,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     <ToolPanel title={translations.audiencesPanel}>
       {
         <>
-          <Grid className={classes.PanelMargin}>
+          <Grid className={classes.panelMargin}>
             {
               Object.keys(contentType.fields).map((fieldId: string) => {
                 const type = contentType.fields[fieldId].type;
