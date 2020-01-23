@@ -139,7 +139,7 @@ const translations = defineMessages({
     defaultMessage: 'Device Simulator'
   },
   browseComponentsPanel: {
-    id: 'craftercms.ice.browse.title',
+    id: 'craftercms.ice.browseComponents.title',
     defaultMessage: 'Browse Components'
   },
 });
@@ -196,7 +196,7 @@ const componentIconMap: any = {
   'craftercms.ice.audiences': EmojiPeopleRounded,
   'craftercms.ice.simulator': DevicesRounded,
   'craftercms.ice.ice': EditRounded,
-  'craftercms.ice.browse': ExtensionRounded,
+  'craftercms.ice.browseComponents': ExtensionRounded,
 };
 
 const componentMap: any = {
@@ -206,7 +206,7 @@ const componentMap: any = {
   'craftercms.ice.simulator': SimulatorPanel,
   'craftercms.ice.ice': ICEPanel,
   'craftercms.ice.editForm': EditFormPanel,
-  'craftercms.ice.browse': BrowseComponentsPanel
+  'craftercms.ice.browseComponents': BrowseComponentsPanel
 };
 
 export default function ToolsPanel() {

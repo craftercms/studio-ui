@@ -55,7 +55,7 @@ const reducer = createReducer<GlobalState['preview']>({
   hostSize: { width: null, height: null },
   showToolsPanel: true,
   previousTool: null,
-  selectedTool: 'craftercms.ice.browse',
+  selectedTool: 'craftercms.ice.components',
   tools: null,
   guest: null,
   assets: createEntityState({
@@ -324,7 +324,7 @@ const reducer = createReducer<GlobalState['preview']>({
   }),
   [BROWSE_SHARED_INSTANCE]: (state, { payload }) => ({
     ...state,
-    selectedTool: 'craftercms.ice.browse',
+    selectedTool: 'craftercms.ice.browseComponents',
     components: { ...state.components, contentTypeFilter: payload }
   }),
 });

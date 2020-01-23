@@ -45,31 +45,31 @@ import ContentType from "../../../models/ContentType";
 
 const translations = defineMessages({
   browse: {
-    id: 'craftercms.ice.browse.title',
+    id: 'craftercms.ice.browseComponents.title',
     defaultMessage: 'Browse components'
   },
   noResults: {
-    id: 'craftercms.ice.browse.noResults',
+    id: 'craftercms.ice.browseComponents.noResults',
     defaultMessage: ' No results found.'
   },
   previousPage: {
-    id: 'craftercms.ice.browse.previousPage',
+    id: 'craftercms.ice.browseComponents.previousPage',
     defaultMessage: 'previous page'
   },
   nextPage: {
-    id: 'craftercms.ice.browse.nextPage',
+    id: 'craftercms.ice.browseComponents.nextPage',
     defaultMessage: 'next page'
   },
   loading: {
-    id: 'craftercms.ice.browse.loading',
+    id: 'craftercms.ice.browseComponents.loading',
     defaultMessage: 'Loading'
   },
   selectContentType: {
-    id: 'craftercms.ice.browse.selectContentType',
+    id: 'craftercms.ice.browseComponents.selectContentType',
     defaultMessage: 'Select content type'
   },
   chooseContentType: {
-    id: 'craftercms.ice.browse.chooseContentType',
+    id: 'craftercms.ice.browseComponents.chooseContentType',
     defaultMessage: 'Please choose a content type.'
   }
 });
