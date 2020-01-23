@@ -22,7 +22,7 @@ import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
-import { ElasticParams, SearchResult } from "../../models/Search";
+import { ElasticParams, SearchResult } from '../../models/Search';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -211,24 +211,24 @@ export function updateAudiencesPanelModel(data): StandardAction {
   }
 }
 
-export function setActiveModel(): StandardAction {
+export function setActiveTargetingModel(): StandardAction {
   return {
     type: SET_ACTIVE_MODEL
   };
 }
 
-export function setActiveModelComplete(data): StandardAction {
+export function setActiveTargetingModelComplete(data): StandardAction {
   return {
     type: SET_ACTIVE_MODEL_COMPLETE,
     payload: data
-  }
+  };
 }
 
-export function setActiveModelFailed(error): StandardAction {
+export function setActiveTargetingModelFailed(error): StandardAction {
   return {
     type: SET_ACTIVE_MODEL_FAILED,
     payload: error
-  }
+  };
 }
 
 export const fetchAssetsPanelItems = createAction<Partial<ElasticParams>>(FETCH_ASSETS_PANEL_ITEMS);

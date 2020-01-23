@@ -246,7 +246,7 @@ function deserializeActiveTargetingModelData<T extends Object>(data: T, contentT
   };
 }
 
-export function setActiveModel(data): Observable<ActiveTargetingModel> {
+export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
   const model = reversePluckProps(data, 'craftercms');
 
   Object.keys(model).forEach(key => {

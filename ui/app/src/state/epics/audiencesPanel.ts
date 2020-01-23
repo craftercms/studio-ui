@@ -27,10 +27,13 @@ import {
   RELOAD_REQUEST,
   SET_ACTIVE_MODEL,
   SET_ACTIVE_MODEL_COMPLETE,
-  setActiveModelComplete as setActiveModelCompleteAction,
-  setActiveModelFailed
+  setActiveTargetingModelComplete as setActiveTargetingModelCompleteAction,
+  setActiveTargetingModelFailed
 } from '../actions/preview';
-import { getAudiencesPanelPayload, setActiveModel as setActiveModelService } from '../../services/configuration';
+import {
+  getAudiencesPanelPayload,
+  setActiveTargetingModel as setActiveTargetingModelService
+} from '../../services/configuration';
 import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
@@ -44,16 +47,16 @@ const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => 
   ))
 );
 
-const setActiveModel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
+const setActiveTargetingModel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(SET_ACTIVE_MODEL),
   withLatestFrom(state$),
-  switchMap(([, state]) => setActiveModelService(state.preview.audiencesPanel.model).pipe(
-    map(response => setActiveModelCompleteAction(response)),
-    catchAjaxError(setActiveModelFailed)
+  switchMap(([, state]) => setActiveTargetingModelService(state.preview.audiencesPanel.model).pipe(
+    map(response => setActiveTargetingModelCompleteAction(response)),
+    catchAjaxError(setActiveTargetingModelFailed)
   ))
 );
 
-const setActiveModelComplete: Epic = (action$) => action$.pipe(
+const setActiveTargetingModelComplete: Epic = (action$) => action$.pipe(
   ofType(SET_ACTIVE_MODEL_COMPLETE),
   tap(() => getHostToGuestBus().next({ type: RELOAD_REQUEST })),
   ignoreElements()
@@ -61,6 +64,6 @@ const setActiveModelComplete: Epic = (action$) => action$.pipe(
 
 export default [
   fetchAudiencesPanel,
-  setActiveModel,
-  setActiveModelComplete
+  setActiveTargetingModel,
+  setActiveTargetingModelComplete
 ] as Epic[];
