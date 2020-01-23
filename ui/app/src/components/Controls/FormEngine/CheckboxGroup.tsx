@@ -37,19 +37,11 @@ export default function CheckboxGroup(props: Control) {
   } = props;
   const classes = useStyles({});
 
-  const handleInputChange = (label?: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const valuesArray = Object.assign([], value);
-
-    if (e.target.checked) {
-      if (!(label in valuesArray)) {
-        valuesArray.push(label);
-      }
-    } else {
-      valuesArray.splice(valuesArray.indexOf(label), 1);
-    }
-
-    onChange(valuesArray);
-  };
+  const handleChange = (e) => onChange(
+    (e.target.checked)
+      ? value.concat(e.target.value)
+      : value.filter(val => val !== e.target.value)
+  );
 
   return (
     <FormControl className={classes.formControl}>
@@ -65,9 +57,10 @@ export default function CheckboxGroup(props: Control) {
             key={index}
             control={
               <Checkbox
+                value={possibleValue.value}
                 color="primary"
                 checked={value.includes(possibleValue.value)}
-                onChange={handleInputChange(possibleValue.value)}
+                onChange={handleChange}
                 disabled={disabled}
               />
             }
