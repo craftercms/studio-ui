@@ -34,7 +34,7 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = CStudioAuthoring.ContextualNav.Wcm
 
         var getUserInfoCallback = {
             success: function(response) {
-                showLogoutLink = response.authenticationType == CStudioAuthoring.Constants.AUTH_HEADERS ? false : true;
+                showLogoutLink = response.authenticationType == CStudioAuthoring.Constants.AUTH_HEADERS || response.authenticationType == CStudioAuthoring.Constants.SAML ? false : true;
                 if(!showLogoutLink) {
                     var callback = {
                         success: function (data) {

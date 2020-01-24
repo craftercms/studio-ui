@@ -258,6 +258,7 @@ var nodeOpen = false,
             },
             HEADERS: "headers",
             AUTH_HEADERS: "AUTH_HEADERS",
+            SAML: "SAML",
             DATASOURCE_URL: "/static-assets/components/cstudio-forms/data-sources/",
             CONTROL_URL: "/static-assets/components/cstudio-forms/controls/",
             GET_ALL_CONTENT_TYPES: "getAllContentType"
