@@ -57,10 +57,10 @@ const useStyles = makeStyles((theme: Theme) =>
     textField: {
       width: '100%',
     },
-    actionBTN:{
-      margin:'18px 0 80px 15px',
-      '& .MuiButton-contained':{
-        marginRight: '8px',
+    actionButton: {
+      margin: '18px 0 80px 15px',
+      '& .MuiButton-contained': {
+        marginRight: '8px'
       }
     },
     divider: {
@@ -172,7 +172,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
               })
             }
           </Grid>
-          <Grid className={classes.actionBTN}>
+          <Grid className={classes.actionButton}>
             <Button variant="contained" onClick={() => onChange(getDefaultModel(contentType))}>
               <FormattedMessage
                 id="audiencesPanel.defaults"
