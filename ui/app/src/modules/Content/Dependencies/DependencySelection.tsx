@@ -118,6 +118,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listItemIcon: {
     minWidth: '36px'
+  },
+  listItemTitle: {
+    '& h4': {
+      fontSize: '1rem',
+      margin: '0px',
+      padding: '0px',
+      fontWeight: 400
+    }
+  },
+  listItemPath: {
+    padding: '0px'
   }
 }));
 
@@ -432,13 +443,18 @@ function SelectionList(props: SelectionListProps) {
                   }
                   <ListItemText
                     id={labelId}
-                    primary={ item.internalName }
+                    primary={<h4>{item.internalName}</h4>}
+                    primaryTypographyProps={{
+                      className: classes.listItemTitle
+                    }}
                     secondary={
                       <React.Fragment>
-                        { item.uri }
+                        {item.uri}
                       </React.Fragment>
                     }
-
+                    secondaryTypographyProps={{
+                      className: classes.listItemPath
+                    }}
                   />
                 </ListItem>
               );
