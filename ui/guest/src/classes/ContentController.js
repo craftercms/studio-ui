@@ -226,15 +226,8 @@ export class ContentController {
 
     const models = this.getCachedModels();
     const model = models[modelId];
-    // A model with a field that hasn't been initialized with
-    // content may not have that field at all
-    let collection = ModelHelper.value(model, fieldId);
-    if (!collection) {
-      collection = [];
-    } else if (!Array.isArray(collection)) {
-      // e.g. A repeat group
-    }
-    const result = collection.slice(0);
+
+    const result = getResult(model, fieldId, targetIndex);
 
     // Create Item
     // const now = new Date().toISOString();
@@ -294,15 +287,7 @@ export class ContentController {
   insertInstance(modelId, fieldId, targetIndex, instance) {
     const models = this.getCachedModels();
     const model = models[modelId];
-    // A model with a field that hasn't been initialized with
-    // content may not have that field at all
-    let collection = ModelHelper.value(model, fieldId);
-    if (!collection) {
-      collection = [];
-    } else if (!Array.isArray(collection)) {
-      // e.g. A repeat group
-    }
-    const result = collection.slice(0);
+    const result = getResult(model, fieldId, targetIndex);
 
     // Insert in desired position
     result.splice(targetIndex, 0, instance.craftercms.id);
@@ -903,6 +888,19 @@ function reducer(lookupTable, model) {
 
   return lookupTable;
 
+}
+
+function getResult(model, fieldId, index) {
+  const isStringIndex = typeof index === 'string';
+  const parsedIndex = parseInt(popPiece(`${index}`), 10);
+
+  const collection = isStringIndex
+    ? ModelHelper.extractCollection(model, fieldId, index)
+    : ModelHelper.value(model, fieldId);
+
+  return collection
+    .slice(0, parsedIndex)
+    .concat(collection.slice(parsedIndex + 1));
 }
 
 export const contentController = new ContentController();
