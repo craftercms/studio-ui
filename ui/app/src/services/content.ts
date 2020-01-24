@@ -18,7 +18,7 @@
 import { get, post } from '../utils/ajax';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { createElements, fromString, getInnerHtml, serialize } from '../utils/xml';
+import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
 import {
   ContentType,
   ContentTypeField,
@@ -31,13 +31,14 @@ import {
 import { camelizeProps, nnou, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import { camelize, dataUriToBlob, popPiece, removeLastPiece } from '../utils/string';
+import { camelize, dataUriToBlob, objectIdFromPath, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance, { SearchContentInstance } from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from "../utils/auth";
+import { decodeHTML } from '../utils/content';
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -49,95 +50,70 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(map(fromString));
 }
 
-export function getContentInstance(site: string, path: string, contentTypesList: LookupTable<ContentType>): Observable<ContentInstance> {
-  // @ts-ignore
-  return getDOM(site, path).pipe(map(doc => {
-      const lookup = {};
-      parseContentXML(doc, path, contentTypesList, lookup);
-      // WIP
-      return Object.values(lookup)[0];
-      // return lookup;
-    }
-  ));
+export function getContentInstanceLookup(site: string, path: string, contentTypesLookup: LookupTable<ContentType>): Observable<LookupTable<ContentInstance>> {
+  return getDOM(site, path).pipe(
+    map(doc => parseContentXML(doc, path, contentTypesLookup, {}))
+  );
 }
 
 //sent an id compuesto?
-function parseElementByContentType(id: string, element: Element, contentTypesList: LookupTable<ContentType>, contentType: string, lookup: LookupTable<ContentInstance>) {
-  let tagName = element.tagName;
-  let type = contentTypesList[contentType].fields[tagName]?.type;
+function parseElementByContentType(element: Element, field: ContentTypeField, contentTypesLookup: LookupTable<ContentType>, lookup: LookupTable<ContentInstance>) {
+  const type = field ? field.type : null;
   switch (type) {
-    case 'repeat':
-      debugger;
-      Array.from(element.children).forEach((item) => {
-        Array.from(item.children).forEach((child) => {
-          let childTagName = child.tagName;
-          //social_media_links_o
-          //parseElementByContentType()
-          lookup[id][tagName][childTagName] = getInnerHtml(element);
-        })
+    case 'repeat': {
+      const array = [];
+      element.querySelectorAll(':scope > item').forEach((item) => {
+        const repeatItem = {};
+        item.querySelectorAll(':scope > *').forEach((fieldTag) => {
+          let fieldTagName = fieldTag.tagName;
+          repeatItem[fieldTagName] = parseElementByContentType(fieldTag, field.fields[fieldTagName], contentTypesLookup, lookup);
+        });
+        array.push(repeatItem);
       });
-      break;
-    case 'node-selector':
-      //lookup[id][tagName] = [...lookup[id][tagName], element.querySelector('objectId')];
-      break;
+      return array;
+    }
+    case 'node-selector': {
+      const array = [];
+      element.querySelectorAll(':scope > item').forEach((item) => {
+        const key = getInnerHtml(item.querySelector('key'));
+        const component = item.querySelector('component');
+        parseContentXML(component ? wrapElementInAuxDocument(component) : null, key, contentTypesLookup, lookup);
+        array.push(objectIdFromPath(key));
+      });
+      return array;
+    }
+
     case 'html':
-      //TODO:decode
-      lookup[id][tagName] = getInnerHtml(element);
-      break;
+      return decodeHTML(getInnerHtml(element));
     default:
-      lookup[id][tagName] = getInnerHtml(element);
-      break;
+      return getInnerHtml(element);
   }
 }
 
-function parseContentXML(doc: XMLDocument, path: string = null, contentTypesList: LookupTable<ContentType>, lookup: LookupTable<ContentInstance>): void {
-  const id = getInnerHtml(doc.querySelector('objectId'));
-  const contentType = getInnerHtml(doc.querySelector('content-type'));
+function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLookup: LookupTable<ContentType>, lookup: LookupTable<ContentInstance>): LookupTable<ContentInstance> {
+
+  const id = nnou(doc) ? getInnerHtml(doc.querySelector('objectId')) : objectIdFromPath(path);
+  const contentType = nnou(doc) ? getInnerHtml(doc.querySelector('content-type')) : null;
   lookup[id] = {
     craftercms: {
       id,
       path,
-      label: getInnerHtml(doc.querySelector('internal-name')),
+      label: nnou(doc) ? getInnerHtml(doc.querySelector('internal-name')) : null,
       locale: null,
-      dateCreated: getInnerHtml(doc.querySelector('createdDate_dt')),
-      dateModified: getInnerHtml(doc.querySelector('lastModifiedDate_dt')),
+      dateCreated: nnou(doc) ? getInnerHtml(doc.querySelector('createdDate_dt')) : null,
+      dateModified: nnou(doc) ? getInnerHtml(doc.querySelector('lastModifiedDate_dt')) : null,
       contentType
     }
   };
-  Array.from(doc.documentElement.children).forEach((element: Element) => {
-    if (!skippableList.includes(element.tagName)) {
-      //lookup[id][tagName] = parseElementByContentType(id, element, contentTypesList[contentType].fields[tagName].type, lookup)
-      parseElementByContentType(id, element, contentTypesList, contentType, lookup)
-    }
-  });
+  if (nnou(doc)) {
+    Array.from(doc.documentElement.children).forEach((element: Element) => {
+      if (!skippableList.includes(element.tagName)) {
+        lookup[id][element.tagName] = parseElementByContentType(element, contentTypesLookup[contentType].fields[element.tagName], contentTypesLookup, lookup)
+      }
+    });
+  }
 
-  console.log(lookup);
-  //   let element = doc.documentElement.children[0];
-  //   let tagName = element.tagName;
-  //   if (!skippableList.includes(tagName)) {
-  //     parseContent[tagName] = tagName.endsWith('_o') ? [] : getInnerHtml(element);
-  //     //parseContent[tagName] = parseContentXML(doc, path, {})
-  //   }
-
-
-  // getContentType()
-  //forEachChildren
-  // repeatField iteracion 2
-  // nodeselector, extrae ids, en array
-  // foreach nodeselector = ['123123','123123'] && parseContent(doc.component, loockup); //check if shared || embedded
-  // if (doc.documentElement.children.length) {
-  //   let element = doc.documentElement.children[0];
-  //   let tagName = element.tagName;
-  //   if (!skippableList.includes(tagName)) {
-  //     parseContent[tagName] = tagName.endsWith('_o') ? [] : getInnerHtml(element);
-  //     //parseContent[tagName] = parseContentXML(doc, path, {})
-  //   }
-  //   doc.documentElement.children[0].remove();
-  //   return parseContentXML(doc, path, parseContent);
-  // } else {
-  //   return parseContent;
-  // }
-
+  return lookup;
 }
 
 const skippableList = [
@@ -562,7 +538,7 @@ function performMutation(
 
       if (isEmbeddedTarget) {
         const component = doc.querySelector(`[id="${modelId}"]`);
-        const auxiliaryDocument = fromString(`<?xml version="1.0" encoding="UTF-8"?>${component.outerHTML}`);
+        const auxiliaryDocument = wrapElementInAuxDocument(component);
         mutation(auxiliaryDocument);
         updateModifiedDateElement(auxiliaryDocument);
         component.replaceWith(auxiliaryDocument.documentElement);
@@ -822,9 +798,9 @@ export function deleteItem(
   );
 }
 
-export function getContentByContentType(site: string, contentType: string, contentTypesList: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[], contentTypesList: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[] | string, contentTypesList: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance> {
+export function getContentByContentType(site: string, contentType: string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[], contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[] | string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance> {
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
@@ -845,13 +821,16 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
     switchMap(({ paths, count }) => zip(
       of(count),
       paths.length ? forkJoin(
-        paths.reduce<LookupTable<Observable<ContentInstance>>>((hash, path) => {
-          hash[path] = getContentInstance(site, path, contentTypesList);
-          return hash;
-        }, {})
-      ) : of({})
+        paths.reduce((array, path) => {
+          array.push(getContentInstanceLookup(site, path, contentTypesLookup));
+          return array;
+        }, []) as Array<Observable<LookupTable<ContentInstance>>>
+      ) : of([])
     )),
-    map(([count, lookup]) => ({ count, lookup }))
+    map(([count, array]) => ({
+      count,
+      lookup: array.reduce((hash, lookupTable) => Object.assign(hash, lookupTable), {})
+    }))
   );
 }
 

@@ -526,13 +526,3 @@ export function removeLastPiece(str, splitChar = '.') {
 export function popPiece(str, splitChar = '.') {
   return str.substr(str.lastIndexOf(splitChar) + 1);
 }
-
-function decodeHTML(html) {
-  var txt = document.createElement('textarea');
-  txt.innerHTML = html;
-  return txt.value;
-}
-
-export function stripEscapedHtmlTags(str) {
-  return decodeHTML(str).replace(/<[^>]*>/g, '');
-}

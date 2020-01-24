@@ -61,9 +61,9 @@ const translations = defineMessages({
     id: 'craftercms.ice.assets.nextPage',
     defaultMessage: 'next page'
   },
-  loading: {
-    id: 'craftercms.ice.assets.loading',
-    defaultMessage: 'Loading'
+  retrieveAssets: {
+    id: 'craftercms.ice.assets.retrieveAssets',
+    defaultMessage: 'Retrieving Site Assets'
   }
 });
 
@@ -282,7 +282,7 @@ export default function AssetsPanel() {
           <React.Suspense
             fallback={
               <LoadingState
-                title={formatMessage(translations.loading)}
+                title={formatMessage(translations.retrieveAssets)}
                 graphicProps={{ width: 150 }}
               />
             }

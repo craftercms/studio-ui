@@ -164,8 +164,7 @@ export default function BrowseComponentsPanel() {
     shouldReject: source => nnou(source.error),
     errorSelector: source => source.error,
     resultSelector: source => {
-
-      const items = source.page[source.pageNumber]?.map((id) => source.byId[id]) || [];
+      const items = source.page[source.pageNumber]?.map((id: string) => source.byId[id]).filter((item: ContentInstance) => item.craftercms.contentType === source.contentTypeFilter) || [];
       return {
         ...pluckProps(source, 'count', 'query.limit', 'pageNumber', 'contentTypeFilter'),
         items
