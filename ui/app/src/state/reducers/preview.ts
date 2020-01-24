@@ -35,9 +35,9 @@ import {
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
-  SET_ACTIVE_MODEL,
-  SET_ACTIVE_MODEL_COMPLETE,
-  SET_ACTIVE_MODEL_FAILED,
+  SET_ACTIVE_TARGETING_MODEL,
+  SET_ACTIVE_TARGETING_MODEL_COMPLETE,
+  SET_ACTIVE_TARGETING_MODEL_FAILED,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
@@ -66,7 +66,7 @@ const reducer = createReducer<GlobalState['preview']>({
   hostSize: { width: null, height: null },
   showToolsPanel: true,
   previousTool: null,
-  selectedTool: 'craftercms.ice.assets',
+  selectedTool: 'craftercms.ice.audiences',
   tools: null,
   guest: null,
   assets: createEntityState({
@@ -304,14 +304,14 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   }),
-  [SET_ACTIVE_MODEL]: (state, { payload }) => ({
+  [SET_ACTIVE_TARGETING_MODEL]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
-      isApplying: true,
+      isApplying: true
     }
   }),
-  [SET_ACTIVE_MODEL_COMPLETE]: (state, { payload }) => ({
+  [SET_ACTIVE_TARGETING_MODEL_COMPLETE]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
@@ -319,7 +319,7 @@ const reducer = createReducer<GlobalState['preview']>({
       applied: true
     }
   }),
-  [SET_ACTIVE_MODEL_FAILED]: (state, { payload }) => ({
+  [SET_ACTIVE_TARGETING_MODEL_FAILED]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,

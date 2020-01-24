@@ -25,8 +25,8 @@ import {
   fetchAudiencesPanelFormDefinitionComplete,
   fetchAudiencesPanelFormDefinitionFailed,
   RELOAD_REQUEST,
-  SET_ACTIVE_MODEL,
-  SET_ACTIVE_MODEL_COMPLETE,
+  SET_ACTIVE_TARGETING_MODEL,
+  SET_ACTIVE_TARGETING_MODEL_COMPLETE,
   setActiveTargetingModelComplete as setActiveTargetingModelCompleteAction,
   setActiveTargetingModelFailed
 } from '../actions/preview';
@@ -48,7 +48,7 @@ const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => 
 );
 
 const setActiveTargetingModel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(SET_ACTIVE_MODEL),
+  ofType(SET_ACTIVE_TARGETING_MODEL),
   withLatestFrom(state$),
   switchMap(([, state]) => setActiveTargetingModelService(state.preview.audiencesPanel.model).pipe(
     map(response => setActiveTargetingModelCompleteAction(response)),
@@ -57,7 +57,7 @@ const setActiveTargetingModel: Epic = (action$, state$: Observable<GlobalState>)
 );
 
 const setActiveTargetingModelComplete: Epic = (action$) => action$.pipe(
-  ofType(SET_ACTIVE_MODEL_COMPLETE),
+  ofType(SET_ACTIVE_TARGETING_MODEL_COMPLETE),
   tap(() => getHostToGuestBus().next({ type: RELOAD_REQUEST })),
   ignoreElements()
 );

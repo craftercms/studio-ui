@@ -81,9 +81,9 @@ export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM
 export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
 export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
-export const SET_ACTIVE_MODEL = 'SET_ACTIVE_MODEL';
-export const SET_ACTIVE_MODEL_COMPLETE = 'SET_ACTIVE_MODEL_COMPLETE';
-export const SET_ACTIVE_MODEL_FAILED = 'SET_ACTIVE_MODEL_FAILED';
+export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
+export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
+export const SET_ACTIVE_TARGETING_MODEL_FAILED = 'SET_ACTIVE_TARGETING_MODEL_FAILED';
 
 // endregion
 
@@ -213,20 +213,20 @@ export function updateAudiencesPanelModel(data): StandardAction {
 
 export function setActiveTargetingModel(): StandardAction {
   return {
-    type: SET_ACTIVE_MODEL
+    type: SET_ACTIVE_TARGETING_MODEL
   };
 }
 
 export function setActiveTargetingModelComplete(data): StandardAction {
   return {
-    type: SET_ACTIVE_MODEL_COMPLETE,
+    type: SET_ACTIVE_TARGETING_MODEL_COMPLETE,
     payload: data
   };
 }
 
 export function setActiveTargetingModelFailed(error): StandardAction {
   return {
-    type: SET_ACTIVE_MODEL_FAILED,
+    type: SET_ACTIVE_TARGETING_MODEL_FAILED,
     payload: error
   };
 }
