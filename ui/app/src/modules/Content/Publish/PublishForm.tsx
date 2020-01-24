@@ -158,11 +158,13 @@ const SelectInput = withStyles(() => createStyles({
 
 interface PublishFormProps {
   inputs: any;
+
   setInputs(state: any): any;
+
   showEmailCheckbox: boolean;
   publishingChannels: any[];
   publishingChannelsStatus: string;
-  getPublishingChannels: Function;
+  onPublishingChannelsFailRetry: Function;
   setSubmitDisabled: Function;
   classes?: any;
 }
@@ -177,7 +179,7 @@ function PublishForm(props: PublishFormProps) {
     showEmailCheckbox,
     publishingChannels,
     publishingChannelsStatus,
-    getPublishingChannels,
+    onPublishingChannelsFailRetry,
     setSubmitDisabled
   } = props;
 
@@ -298,7 +300,7 @@ function PublishForm(props: PublishFormProps) {
                   {formatMessage(messages[`environment${publishingChannelsStatus}`])}
                   {
                     publishingChannelsStatus === 'Error' &&
-                    <Link href="#" onClick={() => getPublishingChannels()}>
+                    <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
                       ({formatMessage(messages.environmentRetry)})
                     </Link>
                   }

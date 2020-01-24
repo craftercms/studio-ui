@@ -260,12 +260,14 @@ function PublishDialog(props: PublishDialogProps) {
     setApiState({ ...apiState, error: false, global: false });
   }
 
+  const onPublishingChannelsFailRetry = () => getPublishingChannels();
+
   return (
     <PublishDialogUI
       items={items}
       publishingChannels={publishingChannels}
       publishingChannelsStatus={publishingChannelsStatus}
-      getPublishingChannels={getPublishingChannels}
+      onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
       handleClose={handleClose}
       handleSubmit={handleSubmit}
       submitDisabled={submitDisabled}

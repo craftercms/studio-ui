@@ -103,7 +103,7 @@ interface PublishDialogUIProps {
   items: Item[];
   publishingChannels: any[];
   publishingChannelsStatus: string;
-  getPublishingChannels: Function;
+  onPublishingChannelsFailRetry: Function;
   handleClose: any;
   handleSubmit: any;
   submitDisabled: boolean;
@@ -135,7 +135,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
     items,
     publishingChannels,
     publishingChannelsStatus,
-    getPublishingChannels,
+    onPublishingChannelsFailRetry,
     handleClose,
     handleSubmit,
     submitDisabled,
@@ -206,7 +206,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
                     showEmailCheckbox={showEmailCheckbox}
                     publishingChannels={publishingChannels}
                     publishingChannelsStatus={publishingChannelsStatus}
-                    getPublishingChannels={getPublishingChannels}
+                    onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
                   />
                 </Grid>
               </Grid>
