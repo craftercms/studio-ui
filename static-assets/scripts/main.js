@@ -982,7 +982,10 @@
         authService.getCurrentUserData('me').then(
           function successCallback(response) {
             $scope.externallyManaged = response.data.authenticatedUser.externallyManaged;
-            $scope.showLogoutLink = response.data.authenticatedUser.authenticationType == Constants.AUTH_HEADERS || response.data.authenticatedUser.authenticationType == Constants.SAML ? false : true;
+            $scope.showLogoutLink = !(
+              response.data.authenticatedUser.authenticationType === Constants.AUTH_HEADERS || 
+              response.data.authenticatedUser.authenticationType === Constants.SAML
+            );
             if(!$scope.showLogoutLink) {
               authService.getSSOLogoutInfo()
                 .success(function (data) {
