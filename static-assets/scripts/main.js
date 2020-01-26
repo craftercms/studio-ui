@@ -453,6 +453,7 @@
     BULK_ENVIRONMENT: 'Live',
     HEADERS: 'headers',
     AUTH_HEADERS: "AUTH_HEADERS",
+    SAML: "SAML",
     AUDIT_TIMEZONE_COOKIE:"crafterStudioAuditTimezone",
     AUDIT_SYSTEM: "Studio Root",
     CRAFTER_LOGO: "/studio/static-assets/images/logo.svg"
@@ -981,7 +982,10 @@
         authService.getCurrentUserData('me').then(
           function successCallback(response) {
             $scope.externallyManaged = response.data.authenticatedUser.externallyManaged;
-            $scope.showLogoutLink = response.data.authenticatedUser.authenticationType == Constants.AUTH_HEADERS ? false : true;
+            $scope.showLogoutLink = !(
+              response.data.authenticatedUser.authenticationType === Constants.AUTH_HEADERS || 
+              response.data.authenticatedUser.authenticationType === Constants.SAML
+            );
             if(!$scope.showLogoutLink) {
               authService.getSSOLogoutInfo()
                 .success(function (data) {
