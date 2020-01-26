@@ -122,13 +122,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   listItemTitle: {
     '& h4': {
       fontSize: '1rem',
-      margin: '0px',
-      padding: '0px',
+      margin: 0,
+      padding: 0,
       fontWeight: 400
     }
   },
   listItemPath: {
-    padding: '0px'
+    padding: 0
   }
 }));
 
