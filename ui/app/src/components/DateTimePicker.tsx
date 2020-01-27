@@ -17,7 +17,7 @@
  *
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
