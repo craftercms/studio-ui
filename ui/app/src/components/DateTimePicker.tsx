@@ -23,15 +23,10 @@ import moment from 'moment-timezone';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import PublicIcon from '@material-ui/icons/Public';
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
-/* eslint-disable no-use-before-define */
+import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { getTimezones } from "../utils/datetime";
+import { getTimezones } from '../utils/datetime';
 
 interface DateTimePickerProps {
   onChange?: Function;

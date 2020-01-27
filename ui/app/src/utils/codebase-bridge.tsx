@@ -111,7 +111,8 @@ export function createCodebaseBridge() {
       Preview: lazy(() => import('../pages/Preview')),
       RequestPublishDialog: lazy(() => import('../modules/Content/Submit/RequestPublishDialog')),
       ApproveDialog: lazy(() => import('../modules/Content/Approve/ApproveDialog')),
-      ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav'))
+      ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav')),
+      EncryptTool: lazy(() => import('../components/EncryptTool'))
     },
 
     assets: {

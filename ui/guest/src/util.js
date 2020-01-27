@@ -523,3 +523,7 @@ export function removeLastPiece(str, splitChar = '.') {
 export function popPiece(str, splitChar = '.') {
   return str.substr(str.lastIndexOf(splitChar) + 1);
 }
+
+export function isBlank(str) {
+  return str === '';
+}
