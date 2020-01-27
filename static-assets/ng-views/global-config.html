@@ -1,39 +1,46 @@
-<div style="display: flex; place-content: center space-between" class="mb20">
-  <h1 class="mb0 mt0">{{ messages.title }}</h1>
-  <div>
-    <button class="btn btn-default" ng-disabled="!uiEnabled" ng-click="sample()">
-      {{ messages.viewSample }}
-    </button>
-  </div>
-</div>
+<div class="mainContainer">
+  <div class="mb20" style="display: flex; place-content: center space-between">
+    <header class="screen-title mb10">
+      <h1>{{ messages.title }}</h1>
+    </header>
 
-<div class="form-group" ng-style="{ opacity: uiEnabled ? 1 : 0.4 }">
-  <div
-    id="globalConfigAceEditor"
-    style="
-      min-height: 400px;
-      height: calc(100vh - 350px);
-      box-shadow: 0 0 5px rgba(0, 0, 0, .25);"
-  ></div>
-</div>
-<div class="form-group">
-  <div class="btn-group" uib-dropdown>
-    <button id="globalConfigSaveButton" ng-disabled="!uiEnabled" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">
-      {{ messages.save }}
-    </button>
-    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="globalConfigSaveButton" style="top: -150%">
-      <li role="menuitem"><a ng-click="save()">{{ messages.confirmSave }}</a></li>
-      <li role="menuitem"><a>{{ messages.cancel }}</a></li>
-    </ul>
+    <div>
+      <button class="btn btn-default" ng-click="sample()" ng-disabled="!uiEnabled">
+        {{ messages.viewSample }}
+      </button>
+    </div>
   </div>
-  <div class="btn-group" uib-dropdown>
-    <button ng-disabled="!uiEnabled" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
-      {{ messages.reset }}
-    </button>
-    <ul class="dropdown-menu" uib-dropdown-menu role="menu" style="top: -150%">
-      <li role="menuitem"><a ng-click="reset()">{{ messages.confirmReset }}</a></li>
-      <li role="menuitem"><a>{{ messages.cancel }}</a></li>
-    </ul>
+
+  <div class="form-group" ng-style="{ opacity: uiEnabled ? 1 : 0.4 }">
+    <div
+      id="globalConfigAceEditor"
+      style="
+        min-height: 400px;
+        height: calc(100vh - 350px);
+        box-shadow: 0 0 5px rgba(0, 0, 0, .25);"
+    ></div>
+  </div>
+  <div class="form-group">
+    <div class="btn-group" uib-dropdown>
+      <button class="btn btn-primary" id="globalConfigSaveButton" ng-disabled="!uiEnabled" ng-disabled="disabled"
+              type="button" uib-dropdown-toggle>
+        {{ messages.save }}
+      </button>
+      <ul aria-labelledby="globalConfigSaveButton" class="dropdown-menu" role="menu" style="top: -150%"
+          uib-dropdown-menu>
+        <li role="menuitem"><a ng-click="save()">{{ messages.confirmSave }}</a></li>
+        <li role="menuitem"><a>{{ messages.cancel }}</a></li>
+      </ul>
+    </div>
+    <div class="btn-group" uib-dropdown>
+      <button class="btn btn-default" ng-disabled="!uiEnabled" ng-disabled="disabled" type="button" uib-dropdown-toggle>
+        {{ messages.reset }}
+      </button>
+      <ul class="dropdown-menu" role="menu" style="top: -150%" uib-dropdown-menu>
+        <li role="menuitem"><a ng-click="reset()">{{ messages.confirmReset }}</a></li>
+        <li role="menuitem"><a>{{ messages.cancel }}</a></li>
+      </ul>
+    </div>
   </div>
 </div>
 

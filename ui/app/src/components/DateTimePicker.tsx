@@ -17,7 +17,7 @@
  *
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
@@ -262,7 +262,6 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           renderInput={params => (
             <TextField {...params} variant="outlined" fullWidth/>
           )}
-          disabled={disabled}
         />
       }
     </FormControl>

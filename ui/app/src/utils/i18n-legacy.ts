@@ -664,6 +664,10 @@ const globalMenuMessages = defineMessages({
     id: 'GlobalMenu.GlobalConfigEntryLabel',
     defaultMessage: 'Global Config'
   },
+  'home.globalMenu.encryptionTool': {
+    id: 'GlobalMenu.EncryptionTool',
+    defaultMessage: 'Encryption Tool'
+  },
   'home.about-us': {
     id: 'GlobalMenu.AboutUs',
     defaultMessage: 'About'

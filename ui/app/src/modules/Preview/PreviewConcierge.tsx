@@ -170,16 +170,20 @@ export function PreviewConcierge(props: any) {
             originalIndex,
             targetModelId,
             targetFieldId,
-            targetIndex
+            targetIndex,
+            originalParentModelId,
+            targetParentModelId
           } = payload;
           moveItem(
             site,
-            originalModelId,
+            originalParentModelId ? originalModelId : guest.models[originalModelId].craftercms.path,
             originalFieldId,
             originalIndex,
-            targetModelId,
+            targetParentModelId ? targetModelId : guest.models[targetModelId].craftercms.path,
             targetFieldId,
-            targetIndex
+            targetIndex,
+            originalParentModelId ? guest.models[originalParentModelId].craftercms.path : null,
+            targetParentModelId ? guest.models[targetParentModelId].craftercms.path : null
           ).subscribe(
             () => {
               setSnack({ message: 'Move operation completed.' });
