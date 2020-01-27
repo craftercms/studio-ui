@@ -148,6 +148,21 @@ export function appendStyleSheet() {
           }
         }
       },
+      '.craftercms-placeholder-spinner': {
+        animation: 'craftercms-placeholder-rotate 2s linear infinite',
+        '& .path': {
+          stroke: colors.blue,
+          animation: 'craftercms-placeholder-dash 1.5s ease-in-out infinite'
+        }
+      },
+      '@keyframes craftercms-placeholder-rotate': {
+        '100%': { transform: 'rotate(360deg)' }
+      },
+      '@keyframes craftercms-placeholder-dash': {
+        '0%': { strokeDasharray: '1, 150', strokeDashoffset: '0' },
+        '50%': { strokeDasharray: '90, 150', strokeDashoffset: '-35' },
+        '100%': { strokeDasharray: '90, 150', strokeDashoffset: '-124' }
+      }
     }
   });
 
@@ -156,3 +171,41 @@ export function appendStyleSheet() {
   return stylesheet;
 
 }
+
+//
+// .spinner {
+//   animation: rotate 2s linear infinite;
+//   z-index: 2;
+//   position: absolute;
+//   top: 50%;
+//   left: 50%;
+//   margin: -25px 0 0 -25px;
+//   width: 50px;
+//   height: 50px;
+//
+// & .path {
+//     stroke: hsl(210, 70, 75);
+//     stroke-linecap: round;
+//     animation: dash 1.5s ease-in-out infinite;
+//   }
+//
+// }
+// @keyframes rotate {
+//   100% {
+//     transform: rotate(360deg);
+// }
+// }
+// @keyframes dash {
+//   0% {
+//     stroke-dasharray: 1, 150;
+//   stroke-dashoffset: 0;
+// }
+//   50% {
+//     stroke-dasharray: 90, 150;
+//   stroke-dashoffset: -35;
+// }
+//   100% {
+//     stroke-dasharray: 90, 150;
+//   stroke-dashoffset: -124;
+// }
+// }
