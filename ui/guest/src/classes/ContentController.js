@@ -276,7 +276,15 @@ export class ContentController {
       }
     });
 
-    post(INSERT_COMPONENT_OPERATION, { modelId, fieldId, targetIndex, contentType, shared, instance });
+    post(INSERT_COMPONENT_OPERATION, {
+      modelId,
+      fieldId,
+      targetIndex,
+      contentType,
+      instance,
+      parentModelId: getParentModelId(modelId, models, this.children),
+      shared
+    });
 
     ContentController.operations$.next({
       type: INSERT_COMPONENT_OPERATION,

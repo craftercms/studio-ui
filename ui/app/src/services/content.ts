@@ -39,6 +39,14 @@ import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
 import { decodeHTML } from '../utils/content';
+import { fromPromise } from 'rxjs/internal-compatibility';
+
+export function getComponentInstanceHTML(path: string): Observable<string> {
+  return fromPromise(fetch(`/crafter-controller/component.html?path=${path}`)).pipe(
+    switchMap(response => response.text()),
+    map(response => response.replace(/<\!--.*?-->/g, ''))
+  );
+}
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -561,25 +569,20 @@ export function insertComponent(
   site: string,
   modelId: string,
   fieldId: string,
-  targetIndex: number,
+  targetIndex: string,
   contentType: ContentType,
   instance: ContentInstance,
+  parentModelId: string = null,
   shared = false
 ): Observable<any> {
-  return getDOM(site, modelId).pipe(
-    switchMap((doc) => {
-
-      const qs = {
-        site,
-        path: modelId,
-        unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector('file-name'))
-      };
+  return performMutation(
+    site,
+    modelId,
+    parentModelId,
+    doc => {
 
       const id = instance.craftercms.id;
-      // TODO: Hardcoded value. Retrieve properly.
-      const pathBase = shared ? `/site/components/${contentType.id.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '') : null;
-      const path = `${pathBase}/${id}.xml`;
+      const path = shared ? getComponentPath(id, instance.craftercms.contentType) : null;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
       const newItem = doc.createElement('item');
@@ -617,42 +620,95 @@ export function insertComponent(
         })
       });
 
-      let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+      insertItemOnDoc(doc, fieldId, targetIndex, newItem);
 
-      // Fields not initialized will not be present in the document
-      // and we'd rather need to create it.
-      if (nou(fieldNode)) {
-        fieldNode = doc.createElement(fieldId);
-        fieldNode.setAttribute('item-list', 'true');
-        doc.documentElement.appendChild(fieldNode);
-      }
-
-      // Since this operation only deals with components (i.e. no repeat groups)
-      // using `item` as a selector instead of a generic `> *` selection.
-      const itemList = fieldNode.querySelectorAll(`:scope > item`);
-
-      if (itemList.length === targetIndex) {
-        fieldNode.appendChild(newItem);
-      } else {
-        $(newItem).insertBefore(itemList[targetIndex]);
-      }
-
-      return post(
-        writeContentUrl(qs),
-        serialize(doc)
-      );
-
-    })
+    }
   );
+  // return getDOM(site, modelId).pipe(
+  //   switchMap((doc) => {
+  //
+  //     const qs = {
+  //       site,
+  //       path: modelId,
+  //       unlock: 'true',
+  //       fileName: getInnerHtml(doc.querySelector('file-name'))
+  //     };
+  //
+  //     const id = instance.craftercms.id;
+  //     const path = shared ? getComponentPath(id, instance.craftercms.contentType) : null;
+  //
+  //     // Create the new `item` that holds or references (embedded vs shared) the component.
+  //     const newItem = doc.createElement('item');
+  //
+  //     delete instance.fileName;
+  //     delete instance.internalName;
+  //
+  //     // Create the new component that will be either embedded into the parent's XML or
+  //     // shared stored on it's own.
+  //     const component = mergeContentDocumentProps('component', {
+  //       '@attributes': { id },
+  //       'content-type': contentType.id,
+  //       'display-template': contentType.displayTemplate,
+  //       'internal-name': instance.craftercms.label,
+  //       'file-name': `${id}.xml`,
+  //       'objectId': id,
+  //       'locale': instance.craftercms.locale,
+  //       ...reversePluckProps(instance, 'craftercms')
+  //     });
+  //
+  //     // Add the child elements into the `item` node
+  //     createElements(doc, newItem, {
+  //       '@attributes': {
+  //         // TODO: Hardcoded value. Fix.
+  //         datasource: shared ? 'sharedFeatures' : 'features',
+  //         ...(shared ? {} : { inline: true })
+  //       },
+  //       key: shared ? path : id,
+  //       value: instance.craftercms.label,
+  //       ...(shared ? {
+  //         include: path,
+  //         disableFlattening: 'false'
+  //       } : {
+  //         component
+  //       })
+  //     });
+  //
+  //     let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+  //
+  //     // Fields not initialized will not be present in the document
+  //     // and we'd rather need to create it.
+  //     if (nou(fieldNode)) {
+  //       fieldNode = doc.createElement(fieldId);
+  //       fieldNode.setAttribute('item-list', 'true');
+  //       doc.documentElement.appendChild(fieldNode);
+  //     }
+  //
+  //     // Since this operation only deals with components (i.e. no repeat groups)
+  //     // using `item` as a selector instead of a generic `> *` selection.
+  //     const itemList = fieldNode.querySelectorAll(`:scope > item`);
+  //
+  //     if (itemList.length === targetIndex) {
+  //       fieldNode.appendChild(newItem);
+  //     } else {
+  //       $(newItem).insertBefore(itemList[targetIndex]);
+  //     }
+  //
+  //     return post(
+  //       writeContentUrl(qs),
+  //       serialize(doc)
+  //     );
+  //
+  //   })
+  // );
 }
 
 export function insertInstance(
   site: string,
   modelId: string,
   fieldId: string,
-  targetIndex: number,
+  targetIndex: string | number,
   instance: ContentInstance,
-  parentModelId: string = null,
+  parentModelId: string = null
 ): Observable<any> {
   return performMutation(
     site,
@@ -660,9 +716,7 @@ export function insertInstance(
     parentModelId,
     doc => {
 
-      const id = instance.craftercms.id;
-      const pathBase = `/site/components/${instance.craftercms.contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
-      const path = `${pathBase}/${id}.xml`;
+      const path = getComponentPath(instance.craftercms.id, instance.craftercms.contentType);
 
       const newItem = doc.createElement('item');
 
@@ -677,21 +731,7 @@ export function insertInstance(
         disableFlattening: 'false'
       });
 
-      let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
-
-      if (nou(fieldNode)) {
-        fieldNode = doc.createElement(fieldId);
-        fieldNode.setAttribute('item-list', 'true');
-        doc.documentElement.appendChild(fieldNode);
-      }
-
-      const itemList = fieldNode.querySelectorAll(`:scope > item`);
-
-      if (itemList.length === targetIndex) {
-        fieldNode.appendChild(newItem);
-      } else {
-        $(newItem).insertBefore(itemList[targetIndex]);
-      }
+      insertItemOnDoc(doc, fieldId, targetIndex, newItem);
 
     }
   );
@@ -996,6 +1036,30 @@ function updateModifiedDateElement(doc: XMLDocument) {
   doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
 }
 
+function getComponentPath(id: string, contentType: string) {
+  const pathBase = `/site/components/${contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
+  return `${pathBase}/${id}.xml`;
+}
+
+function insertItemOnDoc(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node) {
+  let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
+  let index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
+
+  if (nou(fieldNode)) {
+    fieldNode = doc.createElement(fieldId);
+    fieldNode.setAttribute('item-list', 'true');
+    doc.documentElement.appendChild(fieldNode);
+  }
+
+  const itemList = fieldNode.querySelectorAll(`:scope > item`);
+
+  if (itemList.length === index) {
+    fieldNode.appendChild(newItem);
+  } else {
+    $(newItem).insertBefore(itemList[index]);
+  }
+}
+
 export function fetchPublishingChannels(site: string) {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`)
 }
@@ -1045,7 +1109,7 @@ export function uploadDataUrl(
     uppy.addFile({
       name: file.name,
       type: file.type,
-      data: blob,
+      data: blob
     });
   });
 }

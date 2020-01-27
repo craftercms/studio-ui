@@ -22,6 +22,8 @@ import {
   checkOutGuest,
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
+  COMPONENT_INSTANCE_HTML_REQUEST,
+  COMPONENT_INSTANCE_HTML_RESPONSE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
   DESKTOP_ASSET_DROP,
@@ -48,6 +50,7 @@ import {
 } from '../../state/actions/preview';
 import {
   deleteItem,
+  getComponentInstanceHTML,
   insertComponent,
   insertInstance,
   moveItem,
@@ -148,14 +151,15 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case INSERT_COMPONENT_OPERATION: {
-          const { modelId, fieldId, targetIndex, instance, shared } = payload;
+          const { modelId, fieldId, targetIndex, instance, parentModelId, shared } = payload;
           insertComponent(
             site,
-            guest.models[modelId].craftercms.path,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
             fieldId,
             targetIndex,
             contentTypes.find((o) => o.id === instance.craftercms.contentType),
             instance,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null,
             shared
           ).subscribe(
             () => {
@@ -296,6 +300,14 @@ export function PreviewConcierge(props: any) {
               });
             },
           );
+          break;
+        case COMPONENT_INSTANCE_HTML_REQUEST:
+          getComponentInstanceHTML(payload).subscribe((htmlString) => {
+            hostToGuest$.next({
+              type: COMPONENT_INSTANCE_HTML_RESPONSE,
+              payload: htmlString
+            });
+          });
           break;
       }
     });

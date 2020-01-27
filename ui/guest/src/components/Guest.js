@@ -552,7 +552,7 @@ export function Guest(props) {
         return true;
       });
 
-      // scrollToReceptacle(validatedReceptacles);
+      scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles.forEach(({ id }) => {
 
@@ -824,7 +824,7 @@ export function Guest(props) {
         contentController.insertComponent(
           record.modelId,
           record.fieldId,
-          targetIndex,
+          record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
           contentType
         );
       });
@@ -839,7 +839,7 @@ export function Guest(props) {
         contentController.insertInstance(
           record.modelId,
           record.fieldId,
-          targetIndex,
+          record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
           instance
         );
       });
