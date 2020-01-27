@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { LookupTable } from "./LookupTable";
+import ContentInstance from "./ContentInstance";
+
 export interface ElasticParams extends PaginationOptions {
   query?: string;
   keywords: string;
@@ -92,4 +95,9 @@ export interface SearchResult {
 export interface ComponentsContentTypeParams extends PaginationOptions {
   keywords?: string;
   type?: string;
+}
+
+export interface ContentInstancePage {
+  count: number;
+  lookup: LookupTable<ContentInstance>
 }

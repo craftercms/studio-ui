@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDebouncedInput, useSelection, useStateResourceSelection } from "../../../utils/hooks";
@@ -186,11 +186,11 @@ export default function BrowseComponentsPanel() {
     dispatch(fetchComponentsByContentType(contentTypeFilter));
   }, [contentTypeFilter, dispatch]);
 
-  const onSearch = useMemo(() => (
+  const onSearch = useCallback(() => (
     (keywords: string) => dispatch(fetchComponentsByContentType(null, { keywords }))
   ), [dispatch]);
 
-  const onSearch$ = useDebouncedInput(onSearch);
+  const onSearch$ = useDebouncedInput(onSearch, 400);
 
   function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     dispatch(fetchComponentsByContentType(null, { offset: newPage }));

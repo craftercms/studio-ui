@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
 import { useActiveSiteId, useDebouncedInput, useSelection, useStateResourceSelection } from "../../../utils/hooks";
@@ -252,13 +252,13 @@ export default function AssetsPanel() {
         dropSubscription.unsubscribe();
       };
     }
-  }, [dragInProgress]);
+  }, [dragInProgress, onDragDrop]);
 
-  const onSearch = useMemo(() => (
+  const onSearch = useCallback(() => (
     (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords }))
   ), [dispatch]);
 
-  const onSearch$ = useDebouncedInput(onSearch);
+  const onSearch$ = useDebouncedInput(onSearch, 400);
 
   function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     dispatch(fetchAssetsPanelItems({ offset: newPage }));

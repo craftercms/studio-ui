@@ -158,14 +158,14 @@ export function useOnMount(componentDidMount: EffectCallback) {
   useEffect(componentDidMount, []);
 }
 
-export function useDebouncedInput(observer: (keywords: string) => any) {
+export function useDebouncedInput(observer: (keywords: string) => any, time: number = 250) {
   const subject$Ref = useRef(new Subject<string>());
   useEffect(() => {
     const subscription = subject$Ref.current.pipe(
-      debounceTime(400),
+      debounceTime(time),
       distinctUntilChanged()
     ).subscribe(observer);
     return () => subscription.unsubscribe();
-  }, [observer]);
+  }, [observer, time]);
   return subject$Ref.current;
 }

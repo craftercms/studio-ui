@@ -17,12 +17,12 @@
 
 import { StandardAction } from '../../models/StandardAction';
 import ContentType from '../../models/ContentType';
-import ContentInstance, { SearchContentInstance } from '../../models/ContentInstance';
+import ContentInstance from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
-import { ComponentsContentTypeParams, ElasticParams, SearchResult } from "../../models/Search";
+import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from "../../models/Search";
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -201,7 +201,7 @@ export function fetchComponentsByContentType(contentTypeFilter?: string, options
   };
 }
 
-export const fetchComponentsByContentTypeComplete = createAction<SearchContentInstance>(FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE);
+export const fetchComponentsByContentTypeComplete = createAction<ContentInstancePage>(FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE);
 
 export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 

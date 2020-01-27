@@ -95,7 +95,7 @@ export function dataUriToBlob(dataURI: string) {
 }
 
 export function objectIdFromPath(path: string) {
-  return path.substr(path.lastIndexOf('/') + 1).replace(/\.xml/, '')
+  return path.substr(path.lastIndexOf('/') + 1).replace(/\.xml/, '');
 }
 
 export default {

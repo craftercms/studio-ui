@@ -32,9 +32,9 @@ import { camelizeProps, nnou, nou, pluckProps, reversePluckProps } from '../util
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import { camelize, dataUriToBlob, objectIdFromPath, popPiece, removeLastPiece } from '../utils/string';
-import ContentInstance, { SearchContentInstance } from '../models/ContentInstance';
+import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
-import { ComponentsContentTypeParams } from '../models/Search';
+import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from "../utils/auth";
@@ -659,12 +659,6 @@ export function insertInstance(
     modelId,
     parentModelId,
     doc => {
-      const qs = {
-        site,
-        path: modelId,
-        unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector('file-name'))
-      };
 
       const id = instance.craftercms.id;
       const pathBase = `/site/components/${instance.craftercms.contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
@@ -679,10 +673,8 @@ export function insertInstance(
         },
         key: path,
         value: instance.craftercms.label,
-        ...{
-          include: path,
-          disableFlattening: 'false'
-        }
+        include: path,
+        disableFlattening: 'false'
       });
 
       let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
@@ -701,10 +693,6 @@ export function insertInstance(
         $(newItem).insertBefore(itemList[targetIndex]);
       }
 
-      return post(
-        writeContentUrl(qs),
-        serialize(doc)
-      );
     }
   );
 }
@@ -798,9 +786,9 @@ export function deleteItem(
   );
 }
 
-export function getContentByContentType(site: string, contentType: string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[], contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[] | string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance> {
+export function getContentByContentType(site: string, contentType: string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<ContentInstancePage>;
+export function getContentByContentType(site: string, contentTypes: string[], contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<ContentInstancePage>;
+export function getContentByContentType(site: string, contentTypes: string[] | string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<ContentInstancePage> {
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }

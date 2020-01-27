@@ -44,8 +44,14 @@ import {
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
-import { ComponentsContentTypeParams, ElasticParams, MediaItem, SearchResult } from '../../models/Search';
-import ContentInstance, { SearchContentInstance } from "../../models/ContentInstance";
+import {
+  ComponentsContentTypeParams,
+  ContentInstancePage,
+  ElasticParams,
+  MediaItem,
+  SearchResult
+} from '../../models/Search';
+import ContentInstance from "../../models/ContentInstance";
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -303,7 +309,7 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   },
-  [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (state, { payload }: { payload: SearchContentInstance }) => {
+  [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (state, { payload }: { payload: ContentInstancePage }) => {
     let page = [...state.components.page];
     page[state.components.pageNumber] = Object.keys(payload.lookup);
     return {

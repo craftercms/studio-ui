@@ -1,5 +1,3 @@
-import { LookupTable } from "./LookupTable";
-
 /*
  * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
  *
@@ -35,7 +33,3 @@ export interface ContentInstance {
 
 export default ContentInstance;
 
-export interface SearchContentInstance {
-  count: number;
-  lookup: LookupTable<ContentInstance>
-}
