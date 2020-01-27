@@ -51,7 +51,7 @@ import {
   MediaItem,
   SearchResult
 } from '../../models/Search';
-import ContentInstance from "../../models/ContentInstance";
+import ContentInstance from '../../models/ContentInstance';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -265,14 +265,14 @@ const reducer = createReducer<GlobalState['preview']>({
     return nextState;
   },
   [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => {
-    let new_query = { ...state.assets.query, ...query };
+    let newQuery = { ...state.assets.query, ...query };
     return {
       ...state,
       assets: {
         ...state.assets,
         isFetching: true,
-        query: new_query,
-        pageNumber: Math.ceil(new_query.offset / new_query.limit),
+        query: newQuery,
+        pageNumber: Math.ceil(newQuery.offset / newQuery.limit)
       }
     }
   },
@@ -297,14 +297,14 @@ const reducer = createReducer<GlobalState['preview']>({
     assets: { ...state.assets, error: payload.response, isFetching: false }
   }),
   [FETCH_COMPONENTS_BY_CONTENT_TYPE]: (state, { payload: { contentTypeFilter, options } }: { payload: { contentTypeFilter: string[] | string, options?: ComponentsContentTypeParams } }) => {
-    let new_query = { ...state.components.query, ...options };
+    let newQuery = { ...state.components.query, ...options };
     return {
       ...state,
       components: {
         ...state.components,
         isFetching: true,
-        query: new_query,
-        pageNumber: Math.ceil(new_query.offset / new_query.limit),
+        query: newQuery,
+        pageNumber: Math.ceil(newQuery.offset / newQuery.limit),
         contentTypeFilter: contentTypeFilter ? contentTypeFilter : state.components.contentTypeFilter
       }
     }
