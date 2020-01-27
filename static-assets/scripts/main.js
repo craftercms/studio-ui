@@ -227,15 +227,24 @@
             }
           }
         })
-        .state('home.globalMenu.globalConfig', {
-          url: '/global-config',
-          views: {
-            contentTab: {
-              templateUrl: '/studio/static-assets/ng-views/global-config.html',
-              controller: 'GlobalConfigCtrl'
-            }
+      .state('home.globalMenu.globalConfig', {
+        url: '/global-config',
+        views: {
+          contentTab: {
+            templateUrl: '/studio/static-assets/ng-views/global-config.html',
+            controller: 'GlobalConfigCtrl'
           }
-        })
+        }
+      })
+      .state('home.globalMenu.encryptionTool', {
+        url: 'encryption-tool',
+        views: {
+          contentTab: {
+            templateUrl: '/studio/static-assets/ng-views/encrypt.html',
+            controller: 'EncryptionToolCtrl'
+          }
+        }
+      })
         .state('home.sites', {
           url: 'sites',
           views: {
@@ -444,6 +453,7 @@
     BULK_ENVIRONMENT: 'Live',
     HEADERS: 'headers',
     AUTH_HEADERS: "AUTH_HEADERS",
+    SAML: "SAML",
     AUDIT_TIMEZONE_COOKIE:"crafterStudioAuditTimezone",
     AUDIT_SYSTEM: "Studio Root",
     CRAFTER_LOGO: "/studio/static-assets/images/logo.svg"
@@ -499,11 +509,11 @@
         return user;
       };
 
-      this.getCurrentUserData = function(action) {
-        if(this.getUser()){
+      this.getCurrentUserData = function (action) {
+        if (this.getUser()) {
           return $http.get(userActions('/' + action));
         }
-      }
+      };
 
       this.removeUser = function() {
         $cookies['userSession'] = null;
@@ -528,7 +538,7 @@
       };
 
       this.changePassword = function (data) {
-        var requestData = {username: data.username, current: data.current, new: data.new}
+        var requestData = { username: data.username, current: data.current, new: data.new };
         return $http.post(userActions('/me/change_password'), requestData);
       };
 
@@ -597,20 +607,20 @@
         });
       };
 
-      this.getSitesPerUser = function(id, params) {
+      this.getSitesPerUser = function (id, params) {
         return $http.get(userActions(id + '/sites'), {
           params: params
         });
-      }
+      };
 
-      this.setCookie = function(cookieGenName, value, maxAge) {
-        var domainVal = (document.location.hostname.indexOf(".") > -1) ? "domain=" + document.location.hostname : "";
+      this.setCookie = function (cookieGenName, value, maxAge) {
+        var domainVal = (document.location.hostname.indexOf('.') > -1) ? 'domain=' + document.location.hostname : '';
         if (maxAge != null) {
-          document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal, "; max-age=", maxAge].join("");
+          document.cookie = [cookieGenName, '=', value, '; path=/; ', domainVal, '; max-age=', maxAge].join('');
         } else {
-          document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal].join("");
+          document.cookie = [cookieGenName, '=', value, '; path=/; ', domainVal].join('');
         }
-      }
+      };
 
       this.editSite = function (site) {
         me.setCookie('crafterSite', site.siteId);
@@ -832,7 +842,7 @@
               let isRegExpValid = new RegExp(generalRegExpWithoutGroups);
               if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
                 this.runValidation(scope, isValid, elt, 'groupsNotSupported', placement);
-              }else{
+              } else {
                 this.runValidation(scope, isValid, elt, 'noGroups', placement);
               }
             } catch (error) {
@@ -840,7 +850,7 @@
             }
           }
         }
-      }
+      };
 
       this.creatingPassValHTML = function (content, templateType) {
         var html = '<div class="password-popover">';
@@ -875,7 +885,7 @@
           });
           html += '</ul>';
         }
-        if (templateType === "groupsNotSupported" || templateType === "noGroups") {
+        if (templateType === 'groupsNotSupported' || templateType === 'noGroups') {
           if (isGeneralRegExpWithoutGroupsValid) {
             html += '<p class="password-popover--result password-popover--green"><span class="password-popover--list-icon fa fa-check-circle"></span>' + messages.validPassword + '</p>';
           } else {
@@ -885,7 +895,7 @@
         }
         html += '</div>';
         return { 'template': html, 'validPass': validPass };
-      }
+      };
 
       this.runValidation = function (scope, isValid, elt, staticTemplate, placement) {
         $("#" + elt)
@@ -911,7 +921,7 @@
             scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           });
-      }
+      };
 
       return this;
 
@@ -976,7 +986,10 @@
         authService.getCurrentUserData('me').then(
           function successCallback(response) {
             $scope.externallyManaged = response.data.authenticatedUser.externallyManaged;
-            $scope.showLogoutLink = response.data.authenticatedUser.authenticationType == Constants.AUTH_HEADERS ? false : true;
+            $scope.showLogoutLink = !(
+              response.data.authenticatedUser.authenticationType === Constants.AUTH_HEADERS || 
+              response.data.authenticatedUser.authenticationType === Constants.SAML
+            );
             if(!$scope.showLogoutLink) {
               authService.getSSOLogoutInfo()
                 .success(function (data) {
@@ -1097,13 +1110,13 @@
           homeState = 'home.globalMenu';
 
         // If current state = home, reload controller
-        if( currentState.indexOf(homeState) !== -1 ){
-          $state.go('home.globalMenu',{},{reload:true});
-        }else{
+        if (currentState.indexOf(homeState) !== -1) {
+          $state.go('home.globalMenu', {}, { reload: true });
+        } else {
           $state.go('home.globalMenu');
         }
 
-      }
+      };
 
       $scope.user = authService.getUser();
 
@@ -1149,7 +1162,7 @@
       }
 
       if(!(isChromium || isFirefox)){
-        $("body").addClass("iewarning")
+        $('body').addClass('iewarning');
         $scope.ieWarning = true;
       }
 
@@ -1256,19 +1269,19 @@
         authLoop();
       }
 
-      $scope.spinnerOverlay = function() {
+      $scope.spinnerOverlay = function () {
         return $uibModal.open({
           templateUrl: 'spinnerModal.html',
           backdrop: 'static',
           keyboard: false,
           size: 'sm',
-          windowClass: 'spinner-modal centered-dialog',
+          windowClass: 'spinner-modal centered-dialog'
         });
-      }
+      };
       $scope.validPass = false;
-      $scope.passwordRequirements = function() {
+      $scope.passwordRequirements = function () {
         passwordRequirements.init($scope, 'validPass', 'password', 'top');
-      }
+      };
 
       $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){
         if ($scope.isModified) {
@@ -1426,7 +1439,7 @@
           getResultsPage(1);
         });
 
-      }
+      };
 
       function addingRemoveProperty(siteId){
         for(var j=0; j<$scope.sites.length;j++){
@@ -1656,11 +1669,24 @@
 
           $scope.confirmationText = formatMessage(globalConfigMessages.unSavedConfirmation);
           $scope.confirmationTitle = formatMessage(globalConfigMessages.unSavedConfirmationTitle);
-          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
+          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
 
         }
       });
 
+    }
+  ]);
+
+  app.controller('EncryptionToolCtrl', [
+    '$scope',
+    function ($scope) {
+      const workarea = document.querySelector('#encryption-tool-view');
+      const el = document.createElement('div');
+
+      $(workarea).html('');
+      workarea.appendChild(el);
+
+      CrafterCMSNext.render(el, 'EncryptTool');
     }
   ]);
 
@@ -1769,7 +1795,7 @@
         }).error(function () {
           $scope.blueprints = [];
         });
-      };
+      }
 
       getBlueprints();
 
@@ -1989,47 +2015,47 @@
             i = -1;
           }
         }
-        if(!isPreviosBtn){
+        if (!isPreviosBtn) {
           $scope.previousStep.push($scope.currentStep);
         }
         $scope.currentStep = newStep;
-        if(newStep == 2){
+        if (newStep == 2) {
           $timeout(function () {
             $('#siteId')[0].focus();
           });
         }
-      }
+      };
 
-      $scope.getStepTemplate = function(){
+      $scope.getStepTemplate = function () {
         for (var i = 0; i < $scope.steps.length; i++) {
           if ($scope.currentStep == $scope.steps[i].step) {
             return $scope.steps[i].template;
           }
         }
-      }
+      };
 
-      $scope.gotoPreviousStep = function(){
+      $scope.gotoPreviousStep = function () {
         var previousStep = $scope.previousStep.slice(-1);
         $scope.previousStep.pop();
         $scope.gotoStep(previousStep, true);
-      }
+      };
 
-      $scope.removeHide = function() {
+      $scope.removeHide = function () {
 
         $timeout(function () {
           $('#wizard-content-container').removeClass('hide');
         }, 300, false);
 
-      }
+      };
 
-      $scope.flexSilderInit = function(flexslider, carousel) {
+      $scope.flexSilderInit = function (flexslider, carousel) {
         $timeout(function () {
-          $('#'+flexslider).flexslider({
-            animation: "slide",
+          $('#' + flexslider).flexslider({
+            animation: 'slide',
             controlNav: true
           });
         });
-      }
+      };
 
       $scope.cancelCreateDialog = function(eve) {
         $(document).off( "keyup");
@@ -2063,14 +2089,14 @@
       $rootScope.isFooter = false;
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
 
-      $scope.userInputChange = function() {
-        var lang = localStorage.getItem( credentials.username + '_crafterStudioLanguage');
+      $scope.userInputChange = function () {
+        var lang = localStorage.getItem(credentials.username + '_crafterStudioLanguage');
 
         if (lang) {
           $scope.langSelect = lang;
           $scope.selectAction(lang);
         }
-      }
+      };
 
       function login() {
 
@@ -2210,9 +2236,9 @@
         fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
       };
 
-      $scope.passwordRequirements = function() {
-        passwordRequirements.init($scope, "validPass", 'password', 'top');
-      }
+      $scope.passwordRequirements = function () {
+        passwordRequirements.init($scope, 'validPass', 'password', 'top');
+      };
 
       authService.validateToken({
         'token': $location.search().token,
