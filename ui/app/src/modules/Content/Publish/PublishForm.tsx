@@ -275,6 +275,7 @@ function PublishForm(props: PublishFormProps) {
         >
           <DateTimePicker
             onChange={dateTimePickerChange}
+            onError={() => setSubmitDisabled(true)}
             date={inputs.scheduledDateTime}
             timeZonePickerProps={{
               timezone: inputs.scheduledTimeZone
