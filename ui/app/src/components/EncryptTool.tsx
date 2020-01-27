@@ -144,7 +144,7 @@ const EncryptTool = () => {
       focus();
     }
   };
-  
+
   const clear = () => {
     setText('');
     setResult(null);
@@ -176,7 +176,7 @@ const EncryptTool = () => {
             type="text"
             ref={inputRef}
             className="well"
-            value={`\${enc:${result}\}`}
+            value={`\${enc:${result}}`}
             onClick={(e: any) => copyToClipboard(e.target, setOpenNotification)}
             style={{
               display: 'block',
