@@ -95,7 +95,6 @@ CStudioAuthoring.Module.requireModule(
 					CStudioForms.TemplateEditor.prototype = {
 						render: function(templatePath, channel, onSaveCb, contentType, mode) {
               var me = this;
-              var encoding = CStudioAuthoringContext.defaultEncoding;
 
               Promise.all([
                 CrafterCMSNext.services.configuration.getDOM(
@@ -104,7 +103,7 @@ CStudioAuthoring.Module.requireModule(
                   'studio'
                 ).toPromise(),
                 new Promise((resolve, reject) => {
-                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject }, encoding);
+                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject });
                 })
               ]).then(([xmlDoc, content]) => {
                 CStudioForms.TemplateEditor.config = xmlDoc;
@@ -568,7 +567,6 @@ CStudioAuthoring.Module.requireModule(
 											var value = aceEditor.getValue();
 											var path = templatePath.substring(0, templatePath.lastIndexOf("/"));
 											var filename = templatePath.substring(templatePath.lastIndexOf("/")+1);
-											var encoding = CStudioAuthoringContext.defaultEncoding;
 
 											var writeServiceUrl = "/api/1/services/api/1/content/write-content.json" +
 												"?site=" + CStudioAuthoringContext.site +
