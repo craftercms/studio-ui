@@ -31,13 +31,13 @@ import {
 import { camelizeProps, nnou, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import { camelize, dataUriToBlob, objectIdFromPath, popPiece, removeLastPiece } from '../utils/string';
+import { camelize, dataUriToBlob, isBlank, objectIdFromPath, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
-import { getRequestForgeryToken } from "../utils/auth";
+import { getRequestForgeryToken } from '../utils/auth';
 import { decodeHTML } from '../utils/content';
 
 export function getContent(site: string, path: string): Observable<string> {
@@ -748,11 +748,84 @@ export function moveItem(
   originalIndex: number,
   targetModelId: string,
   targetFieldId: string,
-  targetIndex: number
+  targetIndex: number,
+  originalParentModelId: string = null,
+  targetParentModelId: string = null
 ): Observable<any> {
-  return new Observable(() => {
-    throw new Error('Not implemented');
-  });
+  // TODO Warning: cannot perform as transaction whilst the UI is the one to do all this.
+  // const isOriginalEmbedded = nnou(originalParentModelId);
+  // const isTargetEmbedded = nnou(targetParentModelId);
+  if (
+    (originalModelId === targetModelId) ||
+    (originalParentModelId === targetParentModelId)
+  ) {
+    if ((originalParentModelId === targetParentModelId) && nnou(originalParentModelId)) {
+      debugger;
+    }
+    // Moving items between two fields of the same model...
+    return performMutation(
+      site,
+      originalModelId,
+      originalParentModelId,
+      (doc) => {
+
+        const item = extractNode(doc, originalFieldId, originalIndex);
+        const targetField = extractNode(doc, targetFieldId, removeLastPiece(`${targetIndex}`));
+        const targetFieldItems = targetField.querySelectorAll(':scope > item');
+
+        const parsedTargetIndex = parseInt(popPiece(`${targetIndex}`));
+        if (targetFieldItems.length === parsedTargetIndex) {
+          targetField.appendChild(item);
+        } else {
+          targetField.insertBefore(item, targetFieldItems[parsedTargetIndex]);
+        }
+
+      }
+    )
+  } else {
+    let removedItemHTML: string;
+    return performMutation(
+      site,
+      originalModelId,
+      originalParentModelId,
+      (doc) => {
+
+        const item: Element = extractNode(doc, originalFieldId, originalIndex);
+        const field: Element = extractNode(
+          doc,
+          originalFieldId,
+          removeLastPiece(`${originalIndex}`)
+        );
+
+        removedItemHTML = item.outerHTML;
+        field.removeChild(item);
+
+      }
+    ).pipe(
+      switchMap(() =>
+        performMutation(
+          site,
+          targetModelId,
+          targetParentModelId,
+          (doc) => {
+
+            const item: Element = extractNode(doc, targetFieldId, targetIndex);
+            const field: Element = extractNode(
+              doc,
+              targetFieldId,
+              removeLastPiece(`${targetIndex}`)
+            );
+
+            const auxElement = doc.createElement('hold');
+            auxElement.innerHTML = removedItemHTML;
+
+            field.insertBefore(auxElement.querySelector(':scope > item'), item);
+
+          }
+        )
+      )
+    );
+  }
 }
 
 export function deleteItem(
@@ -860,13 +933,17 @@ interface AnyObject {
 //   return null;
 // }
 
-function extractNode(doc, fieldId, index) {
-  const indexes = `${index}`.split('.').map(i => parseInt(i, 10));
-  const fields = fieldId.split('.');
-  let aux = doc.documentElement;
-  if (nou(index)) {
+function extractNode(doc: XMLDocument, fieldId: string, index: string | number) {
+  const indexes = (
+    (index === '' || nou(index))
+      ? []
+      : `${index}`.split('.').map(i => parseInt(i, 10))
+  );
+  let aux: any = doc.documentElement;
+  if (nou(index) || isBlank(`${index}`)) {
     return aux.querySelector(`:scope > ${fieldId}`);
   }
+  const fields = fieldId.split('.');
   if (indexes.length > fields.length) {
     // There's more indexes than fields
     throw new Error(
@@ -874,9 +951,9 @@ function extractNode(doc, fieldId, index) {
       `is ${indexes} and fields is ${fields}`
     );
   }
-  indexes.forEach((index, i) => {
+  indexes.forEach((_index, i) => {
     const field = fields[i];
-    aux = aux.querySelectorAll(`:scope > ${field} > item`)[index];
+    aux = aux.querySelectorAll(`:scope > ${field} > item`)[_index];
   });
   if (indexes.length === fields.length) {
     return aux;

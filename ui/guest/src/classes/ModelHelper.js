@@ -46,21 +46,25 @@ export class ModelHelper {
     return extractCollectionPiece(
       model,
       fieldId,
-      removeLastPiece(index)
+      removeLastPiece(`${index}`)
     );
   }
 
   static extractCollectionItem(model, fieldId, index) {
-    const indexPath = `${index}`.split('.').map(i => parseInt(i, 10));
-    const pieces = fieldId.split('.');
-    if (indexPath.length > pieces.length) {
+    const indexes = (
+      (index === '' || isNullOrUndefined(index))
+        ? []
+        : `${index}`.split('.').map(i => parseInt(i))
+    );
+    const fields = fieldId.split('.');
+    if (indexes.length > fields.length) {
       throw new Error(
         '[ModelHelper.extractCollectionItem] The number of indexes surpasses the number ' +
         `of nested properties on model id "${ModelHelper.prop(model, 'id')}", field id "${fieldId}". ` +
         `Supplied index path was ${index}. `
       );
     }
-    if (Math.abs(indexPath.length - pieces.length) > 1) {
+    if (Math.abs(indexes.length - fields.length) > 1) {
       throw new Error(
         '[ModelHelper.extractCollectionItem] The number of indexes and number of nested props mismatch ' +
         `by more than 1 on "${ModelHelper.prop(model, 'id')}", field id "${fieldId}". ` +
@@ -81,7 +85,14 @@ export class ModelHelper {
 }
 
 function extractCollectionPiece(model, fieldId, index) {
-  const indexes = `${index}`.split('.').map(i => parseInt(i, 10));
+  const indexes = (
+    (index === '' || isNullOrUndefined(index))
+      ? []
+      : `${index}`.split('.').map(i => parseInt(i, 10))
+  );
+  if (indexes.length === 0) {
+    return retrieveProperty(model, fieldId);
+  }
   const fields = fieldId.split('.');
   let aux = model;
   if (indexes.length > fields.length) {

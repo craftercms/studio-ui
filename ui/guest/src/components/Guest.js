@@ -552,7 +552,7 @@ export function Guest(props) {
         return true;
       });
 
-      scrollToReceptacle(validatedReceptacles);
+      // scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles.forEach(({ id }) => {
 
@@ -802,10 +802,12 @@ export function Guest(props) {
           contentController.moveItem(
             containerRecord.modelId,
             containerRecord.fieldId,
-            draggedElementIndex,
+            containerRecord.fieldId.includes('.')
+              ? `${containerRecord.index}.${draggedElementIndex}`
+              : draggedElementIndex,
             rec.modelId,
             rec.fieldId,
-            targetIndex
+            rec.fieldId.includes('.') ? `${rec.index}.${targetIndex}` : targetIndex
           );
         }, 20);
 
@@ -961,7 +963,7 @@ export function Guest(props) {
         type = 'video-picker';
       }
       const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
-      scrollToReceptacle(validatedReceptacles);
+      // scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles
         .forEach(({ id }) => {
@@ -1073,7 +1075,7 @@ export function Guest(props) {
         type = 'video-picker';
       }
       const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
-      scrollToReceptacle(validatedReceptacles);
+      // scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles
         .forEach(({ id }) => {

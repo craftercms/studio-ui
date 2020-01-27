@@ -34,6 +34,7 @@ import {
   notNullOrUndefined,
   pluckProps,
   popPiece,
+  removeLastPiece,
   reversePluckProps,
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
@@ -172,17 +173,17 @@ export class ContentController {
       [modelId]: model
     });
 
-    ContentController.operations$.next({
-      type: UPDATE_FIELD_VALUE_OPERATION,
-      args: { modelId, fieldId, index, value }
-    });
-
     post(UPDATE_FIELD_VALUE_OPERATION, {
       modelId,
       fieldId,
       index,
       value,
       parentModelId: getParentModelId(modelId, models, this.children)
+    });
+
+    ContentController.operations$.next({
+      type: UPDATE_FIELD_VALUE_OPERATION,
+      args: { modelId, fieldId, index, value }
     });
 
   }
@@ -210,12 +211,12 @@ export class ContentController {
       }
     });
 
+    post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
+
     ContentController.operations$.next({
       type: 'insert',
       args: arguments
     });
-
-    post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
 
   }
 
@@ -344,12 +345,12 @@ export class ContentController {
       }
     });
 
+    post(SORT_ITEM_OPERATION, { modelId, fieldId, currentIndex, targetIndex });
+
     ContentController.operations$.next({
       type: 'sort',
       args: arguments
     });
-
-    post(SORT_ITEM_OPERATION, { modelId, fieldId, currentIndex, targetIndex });
 
   }
 
@@ -364,45 +365,88 @@ export class ContentController {
 
     const models = this.getCachedModels();
 
+    // Parse indexes to clear out dot notation for nested repeat/collection items.
+    let originalIndexParsed = (typeof originalIndex === 'number') ? originalIndex : parseInt(popPiece(originalIndex));
+    let targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
+
+    const symmetricOriginal = (originalFieldId.split('.').length === `${originalIndex}`.split('.').length);
+    const symmetricTarget = (targetFieldId.split('.').length === `${targetIndex}`.split('.').length);
+
+    if (!symmetricOriginal) {
+      debugger
+    } else if (!symmetricTarget) {
+      debugger
+    }
+
     const currentModel = models[originalModelId];
-    const currentCollection = ModelHelper.value(currentModel, originalFieldId);
-    const result = currentCollection
-      .slice(0, originalIndex)
-      .concat(currentCollection.slice(originalIndex + 1));
+    const currentCollection = (
+      symmetricOriginal
+        ? ModelHelper.extractCollection(currentModel, originalFieldId, originalIndex)
+        : ModelHelper.extractCollectionItem(currentModel, originalFieldId, originalIndex)
+    );
+    // Remove item from original collection
+    const currentResult = currentCollection
+      .slice(0, originalIndexParsed)
+      .concat(currentCollection.slice(originalIndexParsed + 1));
 
     const targetModel = models[targetModelId];
-    const targetCollection = ModelHelper.value(targetModel, targetFieldId);
+    const targetCollection = (
+      symmetricTarget
+        ? ModelHelper.extractCollection(targetModel, targetFieldId, targetIndex)
+        : ModelHelper.extractCollectionItem(targetModel, targetFieldId, targetIndex)
+    );
+    // Insert item in target collection @ the desired position
     const targetResult = targetCollection.slice(0);
 
-    // Insert in desired position
-    targetResult.splice(targetIndex, 0, currentCollection[originalIndex]);
+    targetResult.splice(targetIndexParsed, 0, currentCollection[originalIndexParsed]);
+
+    const newOriginalModel = { ...currentModel };
+    const newTargetModel = (originalModelId === targetModelId) ? newOriginalModel : { ...targetModel };
+
+    // This should extract the object that contains the
+    // collection so the collection can be replaced with the new one with the modifications.
+    // This is for nested cases where there's something like `field_1.field_2`.
+    const getFieldItem = (model, field, index) => {
+      let item;
+      if (symmetricOriginal) {
+        item = ModelHelper.extractCollectionItem(
+          model,
+          removeLastPiece(`${field}`),
+          removeLastPiece(`${index}`)
+        );
+      } else {
+        debugger;
+      }
+      return item;
+    };
+
+    if (originalFieldId.includes('.')) {
+      let item = getFieldItem(newOriginalModel, originalFieldId, originalIndex);
+      item[popPiece(originalFieldId)] = targetResult;
+    } else {
+      newOriginalModel[originalFieldId] = currentResult;
+    }
+
+    if (
+      (targetModelId !== originalModelId) &&
+      (targetFieldId.includes('.'))
+    ) {
+      let item = getFieldItem(newTargetModel, targetFieldId, targetIndex);
+      item[popPiece(targetFieldId)] = targetResult;
+    } else {
+      newTargetModel[targetFieldId] = targetResult;
+    }
 
     ContentController.models$.next(
-      (originalModelId === targetModelId)
-        ? {
-          ...models,
-          [originalModelId]: {
-            ...currentModel,
-            [originalFieldId]: result,
-            [targetFieldId]: targetResult
-          }
-        } : {
-          ...models,
-          [originalModelId]: {
-            ...currentModel,
-            [originalFieldId]: result
-          },
-          [targetModelId]: {
-            ...targetModel,
-            [targetFieldId]: targetResult
-          }
-        }
+      (originalModelId === targetModelId) ? {
+        ...models,
+        [originalModelId]: newOriginalModel
+      } : {
+        ...models,
+        [originalModelId]: newOriginalModel,
+        [targetModelId]: newTargetModel
+      }
     );
-
-    ContentController.operations$.next({
-      type: 'move',
-      args: arguments
-    });
 
     post(MOVE_ITEM_OPERATION, {
       originalModelId,
@@ -410,7 +454,14 @@ export class ContentController {
       originalIndex,
       targetModelId,
       targetFieldId,
-      targetIndex
+      targetIndex,
+      originalParentModelId: getParentModelId(originalModelId, models, this.children),
+      targetParentModelId: getParentModelId(targetModelId, models, this.children)
+    });
+
+    ContentController.operations$.next({
+      type: 'move',
+      args: arguments
     });
 
   }
@@ -442,17 +493,17 @@ export class ContentController {
       }
     });
 
-    ContentController.operations$.next({
-      type: DELETE_ITEM_OPERATION,
-      args: arguments,
-      state: { item: collection[parsedIndex] }
-    });
-
     post(DELETE_ITEM_OPERATION, {
       modelId,
       fieldId,
       index,
       parentModelId: getParentModelId(modelId, models, this.children)
+    });
+
+    ContentController.operations$.next({
+      type: DELETE_ITEM_OPERATION,
+      args: arguments,
+      state: { item: collection[parsedIndex] }
     });
 
   }
@@ -576,7 +627,7 @@ export class ContentController {
 function getParentModelId(modelId, models, children) {
   return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
     ? findParentModelId(modelId, children, models)
-    : null
+    : null;
 }
 
 function findParentModelId(modelId, childrenMap, models) {
