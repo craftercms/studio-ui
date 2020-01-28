@@ -443,6 +443,7 @@
                 firstLabel: CMgs.format(langBundle, 'paginationFirst'),
                 lastLabel: CMgs.format(langBundle, 'paginationLast'),
                 pageChange: function(page){
+                  $('#searchSelectAll').prop('checked', false);
                     if(CStudioSearch.searchContext.currentPage != page){
                         CStudioSearch.searchContext.currentPage = page;
                         CStudioSearch.performSearch();
