@@ -312,8 +312,8 @@
         "SPLIT_VIEW": "Vista Dividida"
     },
     "clustering": {
-        "HEADER_LABEL": "Agrupar",
-        "USER_LABEL": "Agrupar",
+        "HEADER_LABEL": "Clúster",
+        "USER_LABEL": "Clúster",
         "NEW_CLUSTER": "Miembro Nuevo",
         "ID": "Id",
         "LOCAL_ADDRESS": "Dirección local",
