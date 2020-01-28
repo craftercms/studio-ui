@@ -627,7 +627,7 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
                 }
               }
               orderDefault_f
-              left__rail_o {
+              left_rail_o {
                 ...ContentIncludeWrapperFragment
               }
               header_o {
@@ -672,7 +672,7 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
                   }
                 }
                 orderDefault_f
-                left__rail_o {
+                left_rail_o {
                   ...ContentIncludeWrapperFragment
                 }
                 header_o {
@@ -722,7 +722,7 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
                 header_o {
                   ...ContentIncludeWrapperFragment
                 }
-                left__rail_o {
+                left_rail_o {
                   ...ContentIncludeWrapperFragment
                 }
                 hero_title_html

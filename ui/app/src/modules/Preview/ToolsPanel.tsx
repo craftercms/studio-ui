@@ -202,7 +202,7 @@ const componentMap: any = {
   'craftercms.ice.simulator': SimulatorPanel,
   'craftercms.ice.ice': ICEPanel,
   'craftercms.ice.editForm': EditFormPanel,
-  'craftercms.ice.receptacles': ReceptaclesPanel
+  'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel
 };
 
 export default function ToolsPanel() {

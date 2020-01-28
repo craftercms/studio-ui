@@ -22,6 +22,7 @@ import {
   checkOutGuest,
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
   DESKTOP_ASSET_DROP,
@@ -40,7 +41,6 @@ import {
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
   selectForEdit,
-  SET_CONTENT_TYPE_RECEPTACLES,
   setContentTypeReceptacles,
   setItemBeingDragged,
   SORT_ITEM_OPERATION,
@@ -266,8 +266,7 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
-        case SET_CONTENT_TYPE_RECEPTACLES: {
-          console.log(payload);
+        case CONTENT_TYPE_RECEPTACLES_RESPONSE: {
           dispatch(setContentTypeReceptacles(payload));
           break;
         }

@@ -17,28 +17,29 @@
 import React, { useEffect } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
-import { getHostToGuestBus } from "../previewContext";
-import { SHOW_RECEPTACLES_BY_CONTENT_TYPE } from "../../../state/actions/preview";
+import { getHostToGuestBus } from '../previewContext';
+import { listWelcomingReceptacles, REVEAL_CONTENT_TYPE_RECEPTACLES } from '../../../state/actions/preview';
 import { useSelection } from '../../../utils/hooks';
-import { createStyles, makeStyles } from "@material-ui/core";
+import { createStyles, makeStyles } from '@material-ui/core';
 import { Receptacle } from '../../../models/Receptacle';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import List from '@material-ui/core/List';
-import Avatar from "@material-ui/core/Avatar";
-import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import ContentType from "../../../models/ContentType";
+import Avatar from '@material-ui/core/Avatar';
+import MoveToInboxRounded from '@material-ui/icons/MoveToInboxRounded';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import ContentType from '../../../models/ContentType';
+import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({
   receptaclesPanel: {
-    id: 'craftercms.ice.receptacles.title',
+    id: 'craftercms.ice.contentTypeReceptacles.title',
     defaultMessage: 'Receptacles'
   },
   selectContentType: {
-    id: 'craftercms.ice.receptacles.selectContentType',
+    id: 'craftercms.ice.contentTypeReceptacles.selectContentType',
     defaultMessage: 'Select content type'
   },
 });
@@ -54,14 +55,15 @@ export default function ReceptaclesPanel() {
   const classes = useStyles({});
   const hostToGuest$ = getHostToGuestBus();
   const receptaclesBranch = useSelection(state => state.preview.receptacles);
-  const receptacles = receptaclesBranch.byId ? Object.values(receptaclesBranch.byId) : null;
+  const receptacles = receptaclesBranch.byId ? Object.values(receptaclesBranch.byId).filter((receptacle) => receptacle.contentType === receptaclesBranch.selectedContentType) : null;
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component') : null;
   const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('SHOW_RECEPTACLES_BY_CONTENT_TYPE');
-    showReceptaclesByContentType(receptaclesBranch.selectedContentType);
+    console.log('REVEAL_CONTENT_TYPE_RECEPTACLES');
+    revealContentTypeReceptacles(receptaclesBranch.selectedContentType);
   }, [receptaclesBranch.selectedContentType]);
 
   const onSelectedDropZone = (receptacle: Receptacle) => {
@@ -69,12 +71,13 @@ export default function ReceptaclesPanel() {
   };
 
   function handleSelectChange(value: string) {
-    showReceptaclesByContentType(value);
+    revealContentTypeReceptacles(value);
   }
 
-  const showReceptaclesByContentType = (contentType: string) => {
+  const revealContentTypeReceptacles = (contentType: string) => {
+    dispatch(listWelcomingReceptacles(contentType));
     hostToGuest$.next({
-      type: SHOW_RECEPTACLES_BY_CONTENT_TYPE,
+      type: REVEAL_CONTENT_TYPE_RECEPTACLES,
       payload: contentType
     });
   };
@@ -96,11 +99,11 @@ export default function ReceptaclesPanel() {
       </Select>
       <List>
         {
-          receptacles && receptacles.map((receptacle: Receptacle) =>
+          receptacles?.map((receptacle: Receptacle) =>
             <ListItem key={receptacle.id} button onClick={() => onSelectedDropZone(receptacle)}>
               <ListItemAvatar>
                 <Avatar>
-                  <MoveToInboxIcon/>
+                  <MoveToInboxRounded/>
                 </Avatar>
               </ListItemAvatar>
               <ListItemText

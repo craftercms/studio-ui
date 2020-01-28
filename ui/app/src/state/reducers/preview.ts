@@ -21,6 +21,7 @@ import {
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
@@ -33,7 +34,6 @@ import {
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
-  SET_CONTENT_TYPE_RECEPTACLES,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
@@ -284,10 +284,10 @@ const reducer = createReducer<GlobalState['preview']>({
   [LIST_WELCOMING_RECEPTACLES]: (state, { payload }) => ({
     ...state,
     previousTool: state.selectedTool,
-    selectedTool: 'craftercms.ice.receptacles',
+    selectedTool: 'craftercms.ice.contentTypeReceptacles',
     receptacles: { ...state.receptacles, selectedContentType: payload }
   }),
-  [SET_CONTENT_TYPE_RECEPTACLES]: (state, { payload }) => ({
+  [CONTENT_TYPE_RECEPTACLES_RESPONSE]: (state, { payload }) => ({
     ...state,
     receptacles: {
       ...state.receptacles,

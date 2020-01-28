@@ -169,7 +169,7 @@ export function ComponentsPanelUI(props) {
 
   const onMenuOptionClicked = () => setMenuContext(null);
 
-  const onListWelcomingReceptaclesClick = () => {
+  const onListReceptaclesClick = () => {
     dispatch(listWelcomingReceptacles(menuContext.contentType.id))
   };
 
@@ -196,7 +196,7 @@ export function ComponentsPanelUI(props) {
       >
         <MenuItem onClick={onMenuOptionClicked}>List in-page instances</MenuItem>
         <MenuItem onClick={onMenuOptionClicked}>Browse "shared" instances</MenuItem>
-        <MenuItem onClick={onListWelcomingReceptaclesClick}>List welcoming receptacles</MenuItem>
+        <MenuItem onClick={onListReceptaclesClick}>List receptacles</MenuItem>
       </Menu>
 
       <RubbishBin

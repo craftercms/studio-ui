@@ -22,7 +22,7 @@ import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
-import { ElasticParams, SearchResult } from "../../models/Search";
+import { ElasticParams, SearchResult } from '../../models/Search';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -53,8 +53,8 @@ export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
 export const RELOAD_REQUEST = 'RELOAD_REQUEST';
 export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
 export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
-export const SHOW_RECEPTACLES_BY_CONTENT_TYPE = 'SHOW_RECEPTACLES_BY_CONTENT_TYPE';
-export const SET_CONTENT_TYPE_RECEPTACLES = 'SET_CONTENT_TYPE_RECEPTACLES';
+export const REVEAL_CONTENT_TYPE_RECEPTACLES = 'REVEAL_CONTENT_TYPE_RECEPTACLES';
+export const CONTENT_TYPE_RECEPTACLES_RESPONSE = 'CONTENT_TYPE_RECEPTACLES_RESPONSE';
 
 // endregion
 
@@ -194,7 +194,7 @@ export const listWelcomingReceptacles = createAction<string>(LIST_WELCOMING_RECE
 
 export function setContentTypeReceptacles(receptacles): StandardAction {
   return {
-    type: SET_CONTENT_TYPE_RECEPTACLES,
+    type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
     payload: receptacles
   };
 }
