@@ -62,7 +62,6 @@ export function getContentInstanceLookup(site: string, path: string, contentType
   );
 }
 
-//sent an id compuesto?
 function parseElementByContentType(element: Element, field: ContentTypeField, contentTypesLookup: LookupTable<ContentType>, lookup: LookupTable<ContentInstance>) {
   const type = field ? field.type : null;
   switch (type) {
@@ -96,11 +95,11 @@ function parseElementByContentType(element: Element, field: ContentTypeField, co
   }
 }
 
-function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLookup: LookupTable<ContentType>, lookup: LookupTable<ContentInstance>): LookupTable<ContentInstance> {
+function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLookup: LookupTable<ContentType>, instanceLookup: LookupTable<ContentInstance>): LookupTable<ContentInstance> {
 
   const id = nnou(doc) ? getInnerHtml(doc.querySelector('objectId')) : objectIdFromPath(path);
   const contentType = nnou(doc) ? getInnerHtml(doc.querySelector('content-type')) : null;
-  lookup[id] = {
+  instanceLookup[id] = {
     craftercms: {
       id,
       path,
@@ -114,12 +113,12 @@ function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLook
   if (nnou(doc)) {
     Array.from(doc.documentElement.children).forEach((element: Element) => {
       if (!skippableList.includes(element.tagName)) {
-        lookup[id][element.tagName] = parseElementByContentType(element, contentTypesLookup[contentType].fields[element.tagName], contentTypesLookup, lookup)
+        instanceLookup[id][element.tagName] = parseElementByContentType(element, contentTypesLookup[contentType].fields[element.tagName], contentTypesLookup, instanceLookup)
       }
     });
   }
 
-  return lookup;
+  return instanceLookup;
 }
 
 const skippableList = [
