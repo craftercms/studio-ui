@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, getText, post } from '../utils/ajax';
+import { get, getText, post, postJSON } from '../utils/ajax';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
@@ -833,14 +833,11 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
-  return post(
+  return postJSON(
     `/studio/api/2/search/search.json?siteId=${site}`,
     {
       ...reversePluckProps(options, 'type'),
       filters: { 'content-type': contentTypes }
-    },
-    {
-      'Content-Type': 'application/json'
     }
   ).pipe(
     map<AjaxResponse, { count: number, paths: string[] }>(({ response }) => ({
