@@ -62,7 +62,7 @@ export function getContentInstanceLookup(site: string, path: string, contentType
   );
 }
 
-function parseElementByContentType(element: Element, field: ContentTypeField, contentTypesLookup: LookupTable<ContentType>, lookup: LookupTable<ContentInstance>) {
+function parseElementByContentType(element: Element, field: ContentTypeField, contentTypesLookup: LookupTable<ContentType>, instanceLookup: LookupTable<ContentInstance>) {
   const type = field ? field.type : null;
   switch (type) {
     case 'repeat': {
@@ -71,7 +71,7 @@ function parseElementByContentType(element: Element, field: ContentTypeField, co
         const repeatItem = {};
         item.querySelectorAll(':scope > *').forEach((fieldTag) => {
           let fieldTagName = fieldTag.tagName;
-          repeatItem[fieldTagName] = parseElementByContentType(fieldTag, field.fields[fieldTagName], contentTypesLookup, lookup);
+          repeatItem[fieldTagName] = parseElementByContentType(fieldTag, field.fields[fieldTagName], contentTypesLookup, instanceLookup);
         });
         array.push(repeatItem);
       });
@@ -82,7 +82,7 @@ function parseElementByContentType(element: Element, field: ContentTypeField, co
       element.querySelectorAll(':scope > item').forEach((item) => {
         const key = getInnerHtml(item.querySelector('key'));
         const component = item.querySelector('component');
-        parseContentXML(component ? wrapElementInAuxDocument(component) : null, key, contentTypesLookup, lookup);
+        parseContentXML(component ? wrapElementInAuxDocument(component) : null, key, contentTypesLookup, instanceLookup);
         array.push(objectIdFromPath(key));
       });
       return array;
@@ -112,7 +112,7 @@ function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLook
   };
   if (nnou(doc)) {
     Array.from(doc.documentElement.children).forEach((element: Element) => {
-      if (!skippableList.includes(element.tagName)) {
+      if (!systemPropsList.includes(element.tagName)) {
         instanceLookup[id][element.tagName] = parseElementByContentType(element, contentTypesLookup[contentType].fields[element.tagName], contentTypesLookup, instanceLookup)
       }
     });
@@ -121,7 +121,7 @@ function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLook
   return instanceLookup;
 }
 
-const skippableList = [
+const systemPropsList = [
   'content-type',
   'display-template',
   'no-template-required',
@@ -617,86 +617,10 @@ export function insertComponent(
         })
       });
 
-      insertItemOnDoc(doc, fieldId, targetIndex, newItem);
+      insertCollectionItem(doc, fieldId, targetIndex, newItem);
 
     }
   );
-  // return getDOM(site, modelId).pipe(
-  //   switchMap((doc) => {
-  //
-  //     const qs = {
-  //       site,
-  //       path: modelId,
-  //       unlock: 'true',
-  //       fileName: getInnerHtml(doc.querySelector('file-name'))
-  //     };
-  //
-  //     const id = instance.craftercms.id;
-  //     const path = shared ? getComponentPath(id, instance.craftercms.contentType) : null;
-  //
-  //     // Create the new `item` that holds or references (embedded vs shared) the component.
-  //     const newItem = doc.createElement('item');
-  //
-  //     delete instance.fileName;
-  //     delete instance.internalName;
-  //
-  //     // Create the new component that will be either embedded into the parent's XML or
-  //     // shared stored on it's own.
-  //     const component = mergeContentDocumentProps('component', {
-  //       '@attributes': { id },
-  //       'content-type': contentType.id,
-  //       'display-template': contentType.displayTemplate,
-  //       'internal-name': instance.craftercms.label,
-  //       'file-name': `${id}.xml`,
-  //       'objectId': id,
-  //       'locale': instance.craftercms.locale,
-  //       ...reversePluckProps(instance, 'craftercms')
-  //     });
-  //
-  //     // Add the child elements into the `item` node
-  //     createElements(doc, newItem, {
-  //       '@attributes': {
-  //         // TODO: Hardcoded value. Fix.
-  //         datasource: shared ? 'sharedFeatures' : 'features',
-  //         ...(shared ? {} : { inline: true })
-  //       },
-  //       key: shared ? path : id,
-  //       value: instance.craftercms.label,
-  //       ...(shared ? {
-  //         include: path,
-  //         disableFlattening: 'false'
-  //       } : {
-  //         component
-  //       })
-  //     });
-  //
-  //     let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
-  //
-  //     // Fields not initialized will not be present in the document
-  //     // and we'd rather need to create it.
-  //     if (nou(fieldNode)) {
-  //       fieldNode = doc.createElement(fieldId);
-  //       fieldNode.setAttribute('item-list', 'true');
-  //       doc.documentElement.appendChild(fieldNode);
-  //     }
-  //
-  //     // Since this operation only deals with components (i.e. no repeat groups)
-  //     // using `item` as a selector instead of a generic `> *` selection.
-  //     const itemList = fieldNode.querySelectorAll(`:scope > item`);
-  //
-  //     if (itemList.length === targetIndex) {
-  //       fieldNode.appendChild(newItem);
-  //     } else {
-  //       $(newItem).insertBefore(itemList[targetIndex]);
-  //     }
-  //
-  //     return post(
-  //       writeContentUrl(qs),
-  //       serialize(doc)
-  //     );
-  //
-  //   })
-  // );
 }
 
 export function insertInstance(
@@ -728,7 +652,7 @@ export function insertInstance(
         disableFlattening: 'false'
       });
 
-      insertItemOnDoc(doc, fieldId, targetIndex, newItem);
+      insertCollectionItem(doc, fieldId, targetIndex, newItem);
 
     }
   );
@@ -1038,7 +962,7 @@ function getComponentPath(id: string, contentType: string) {
   return `${pathBase}/${id}.xml`;
 }
 
-function insertItemOnDoc(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node) {
+function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node): void {
   let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
   let index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
 
