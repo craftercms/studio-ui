@@ -305,7 +305,7 @@ export function PreviewConcierge(props: any) {
           getComponentInstanceHTML(payload.path).subscribe((htmlString) => {
             hostToGuest$.next({
               type: COMPONENT_INSTANCE_HTML_RESPONSE,
-              payload: { response: htmlString, id: payload.date }
+              payload: { response: htmlString, id: payload.id }
             });
           });
           break;
