@@ -353,6 +353,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     ok: "Ok",
     yes: "Yes",
     no: "No",
+    openType: 'Open Type',
     submit:"Submit",
     loading:"Loading&hellip;",
     viewSample: "View Sample",
