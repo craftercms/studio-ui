@@ -88,25 +88,22 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
    */
   createDialog(path, selectTemplateCb, elem) {
 
+    var self = this;
     const isDialog = !elem;
 
-    YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
-
-    var self = this;
-
-    var newdiv = elem || YDom.get('cstudio-wcm-popup-div');
-    if (!newdiv) {
-      newdiv = document.createElement('div');
-      document.body.appendChild(newdiv);
+    var newDiv = elem;
+    if (!newDiv) {
+      newDiv = document.createElement('div');
+      document.body.appendChild(newDiv);
     }
 
     var divIdName = 'cstudio-wcm-popup-div';
     var CMgs = CStudioAuthoring.Messages;
     var formsLangBundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
 
-    newdiv.setAttribute('id', divIdName);
-    newdiv.className = 'yui-pe-content';
-    newdiv.innerHTML = (
+    newDiv.setAttribute('id', divIdName);
+    newDiv.className = 'yui-pe-content';
+    newDiv.innerHTML = (
       `<div class="contentTypePopupInner" id="ct_contentTypePopupInner">` +
       /**/`<div class="contentTypePopupContent" id="ct_contentTypePopupContent">` +
       /****/'<form name="contentFromWCM"> ' +
@@ -127,9 +124,9 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
       /********/'</div>' +
       /******/'</div>' +
       /******/'<div class="contentTypePopupBtn"> ' +
-      /********/'<input type="submit" class="btn btn-primary cstudio-xform-button ok" id="submitWCMPopup" value="' + CMgs.format(formsLangBundle, 'ok') + '">' +
+      /********/'<input type="submit" class="btn btn-primary cstudio-xform-button ok" id="submitWCMPopup" value="' + CMgs.format(formsLangBundle, 'openType') + '">' +
       (isDialog ?
-      /********/'<input type="submit" class="btn btn-default cstudio-xform-button cancel" id="closeWCMPopup" value="' + CMgs.format(formsLangBundle, 'cancel') + '">'
+      /********/'<input type="button" class="btn btn-default cstudio-xform-button cancel" id="closeWCMPopup" value="' + CMgs.format(formsLangBundle, 'cancel') + '">'
         : '') +
       /******/'</div>' +
       /****/'</form> ' +
@@ -165,8 +162,9 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
       }
     });
 
-    YAHOO.util.Event.addListener('submitWCMPopup', 'click', this.contentPopupSubmit, { self: this  });
-    YAHOO.util.Event.addListener('closeWCMPopup', 'click', function () {
+    YAHOO.util.Event.addListener('submitWCMPopup', 'click', this.contentPopupSubmit, { self: this });
+
+    $('#closeWCMPopup').click(function () {
       self.contentPopupCancel();
     });
 

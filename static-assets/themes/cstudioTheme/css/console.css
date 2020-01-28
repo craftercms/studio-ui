@@ -464,14 +464,38 @@ input[type="checkbox"].content-type-selector--checkbox {
   }
 }
 
-.content-types-landing-page {
+.site-config-landing-page {
   margin-top: 50px;
   padding: 0 20px;
   overflow: auto;
 }
 
-.content-types-landing-page .contentTypePopupInner {
+.site-config-landing-page .header-actions {
+  margin: 10px 0 5px 0;
+  padding: 10px 0 0 0;
+  border-top: 1px solid #eee;
+}
+
+.site-config-landing-page .contentTypePopupInner {
   border: none !important;
+}
+
+#openExistingInlineTarget .contentTypePopupHeader {
+  padding: 0 !important;
+  border: none;
+}
+
+#openExistingInlineTarget .contentTypePopupContent form > div {
+  padding: 0 !important;
+}
+
+#openExistingInlineTarget .contentTypeOuter {
+  border: none
+}
+
+#openExistingInlineTarget .contentTypePopupBtn {
+  float: left;
+  margin: 0 !important
 }
 
 .property-label {
