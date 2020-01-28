@@ -22,7 +22,7 @@ import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
-import { ElasticParams, SearchResult } from "../../models/Search";
+import { ElasticParams, SearchResult } from '../../models/Search';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -77,6 +77,13 @@ export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
 export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
 export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
 export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
+export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
+export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
+export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
+export const SET_ACTIVE_TARGETING_MODEL_FAILED = 'SET_ACTIVE_TARGETING_MODEL_FAILED';
 
 // endregion
 
@@ -178,6 +185,49 @@ export function setItemBeingDragged(active: boolean): StandardAction {
   return {
     type: SET_ITEM_BEING_DRAGGED,
     payload: active
+  };
+}
+
+export const fetchAudiencesPanelFormDefinition = createAction(FETCH_AUDIENCES_PANEL_FORM_DEFINITION);
+
+export function fetchAudiencesPanelFormDefinitionComplete(data): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
+    payload: data
+  }
+}
+
+export function fetchAudiencesPanelFormDefinitionFailed(error): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
+    payload: error
+  }
+}
+
+export function updateAudiencesPanelModel(data): StandardAction {
+  return {
+    type: UPDATE_AUDIENCES_PANEL_MODEL,
+    payload: data
+  }
+}
+
+export function setActiveTargetingModel(): StandardAction {
+  return {
+    type: SET_ACTIVE_TARGETING_MODEL
+  };
+}
+
+export function setActiveTargetingModelComplete(data): StandardAction {
+  return {
+    type: SET_ACTIVE_TARGETING_MODEL_COMPLETE,
+    payload: data
+  };
+}
+
+export function setActiveTargetingModelFailed(error): StandardAction {
+  return {
+    type: SET_ACTIVE_TARGETING_MODEL_FAILED,
+    payload: error
   };
 }
 
