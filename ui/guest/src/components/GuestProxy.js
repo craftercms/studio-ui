@@ -335,7 +335,7 @@ export function GuestProxy(props) {
             $spinner.remove();
             insertElement($component, $daddy, targetIndex);
             updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
-            //TODO:update register of all fields on the new
+            $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
           });
 
           post(COMPONENT_INSTANCE_HTML_REQUEST, { date, path: instance.craftercms.path });
