@@ -321,13 +321,16 @@ export function GuestProxy(props) {
 
           insertElement($spinner, $daddy, targetIndex);
 
+          const date = Date.now();
+
           message$.pipe(
-            filter((e) => e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE),
+            filter((e) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.date === date)),
             map(e => e.data),
             take(1)
           ).subscribe(function ({ payload }) {
-            const $component = $(payload);
-            $component.attr('data-craftercms-model-id', fieldId);
+            const $root = $('<div/>').html(payload.response);
+            const $component = ($root.children().length > 1) ? $root : $($root.children()[0]);
+            $component.attr('data-craftercms-model-id', modelId);
             $component.attr('data-craftercms-field-id', fieldId);
             $spinner.remove();
             insertElement($component, $daddy, targetIndex);
@@ -335,7 +338,7 @@ export function GuestProxy(props) {
             //TODO:update register of all fields on the new
           });
 
-          post(COMPONENT_INSTANCE_HTML_REQUEST, instance.craftercms.path);
+          post(COMPONENT_INSTANCE_HTML_REQUEST, { date, path: instance.craftercms.path });
 
           break;
         }

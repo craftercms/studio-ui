@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from '../utils/ajax';
+import { get, getText, post } from '../utils/ajax';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
@@ -39,12 +39,10 @@ import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
 import { decodeHTML } from '../utils/content';
-import { fromPromise } from 'rxjs/internal-compatibility';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
-  return fromPromise(fetch(`/crafter-controller/component.html?path=${path}`)).pipe(
-    switchMap(response => response.text()),
-    map(response => response.replace(/<\!--.*?-->/g, ''))
+  return getText(`/crafter-controller/component.html?path=${path}`).pipe(
+    map(({ response }) => response)
   );
 }
 

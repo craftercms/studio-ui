@@ -302,10 +302,10 @@ export function PreviewConcierge(props: any) {
           );
           break;
         case COMPONENT_INSTANCE_HTML_REQUEST:
-          getComponentInstanceHTML(payload).subscribe((htmlString) => {
+          getComponentInstanceHTML(payload.path).subscribe((htmlString) => {
             hostToGuest$.next({
               type: COMPONENT_INSTANCE_HTML_RESPONSE,
-              payload: htmlString
+              payload: { response: htmlString, date: payload.date }
             });
           });
           break;
