@@ -184,7 +184,6 @@ export default function AssetsPanel() {
     type: ASSET_DRAG_ENDED
   });
 
-  //useCallback(() => {},[])
   const onDragDrop = useCallback((e) => {
     const file = e.dataTransfer.files[0];
     if (!file) {
@@ -255,8 +254,8 @@ export default function AssetsPanel() {
     }
   }, [dragInProgress, onDragDrop]);
 
-  const onSearch = useCallback(() => (
-    (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords }))
+  const onSearch = useCallback((
+    (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 }))
   ), [dispatch]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
