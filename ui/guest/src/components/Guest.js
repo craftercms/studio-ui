@@ -488,7 +488,7 @@ export function Guest(props) {
         return true;
       });
 
-      scrollToReceptacle(validatedReceptacles);
+      //scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles.forEach(({ id }) => {
 
@@ -552,7 +552,7 @@ export function Guest(props) {
         return true;
       });
 
-      scrollToReceptacle(validatedReceptacles);
+      //scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles.forEach(({ id }) => {
 

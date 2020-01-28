@@ -31,14 +31,21 @@ import {
 import { camelizeProps, nnou, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import { camelize, dataUriToBlob, isBlank, objectIdFromPath, popPiece, removeLastPiece } from '../utils/string';
+import {
+  camelize,
+  dataUriToBlob,
+  decodeHTML,
+  isBlank,
+  objectIdFromPath,
+  popPiece,
+  removeLastPiece
+} from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { decodeHTML } from '../utils/content';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(

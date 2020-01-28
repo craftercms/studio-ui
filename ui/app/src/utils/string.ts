@@ -98,6 +98,12 @@ export function objectIdFromPath(path: string) {
   return path.substr(path.lastIndexOf('/') + 1).replace(/\.xml/, '');
 }
 
+export function decodeHTML(html: string): string {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+}
+
 export default {
   camelize,
   capitalize,
@@ -105,5 +111,7 @@ export default {
   dasherize,
   formatBytes,
   dataUriToBlob,
-  objectIdFromPath
+  objectIdFromPath,
+  decodeHTML
 };
+
