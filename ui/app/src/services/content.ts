@@ -573,7 +573,7 @@ export function insertComponent(
   site: string,
   modelId: string,
   fieldId: string,
-  targetIndex: string,
+  targetIndex: string | number,
   contentType: ContentType,
   instance: ContentInstance,
   parentModelId: string = null,
