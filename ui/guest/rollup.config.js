@@ -23,7 +23,9 @@ import replace from 'rollup-plugin-replace';
 
 import pkg from './package.json';
 
-const input = 'src/index.js';
+const input = 'src/index.tsx';
+
+const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
 const plugins = [
   replace({ 'process.env.NODE_ENV': '"production"' }),
@@ -37,9 +39,11 @@ const plugins = [
       'babel-plugin-transform-react-remove-prop-types',
       '@babel/plugin-proposal-optional-chaining',
       '@babel/plugin-proposal-class-properties'
-    ]
+    ],
+    extensions
   }),
   resolve({
+    extensions,
     mainFields: ['module', 'main', 'browser']
   }),
   commonjs({
