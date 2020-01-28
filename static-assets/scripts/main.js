@@ -983,7 +983,7 @@
           function successCallback(response) {
             $scope.externallyManaged = response.data.authenticatedUser.externallyManaged;
             $scope.showLogoutLink = !(
-              response.data.authenticatedUser.authenticationType === Constants.AUTH_HEADERS || 
+              response.data.authenticatedUser.authenticationType === Constants.AUTH_HEADERS ||
               response.data.authenticatedUser.authenticationType === Constants.SAML
             );
             if(!$scope.showLogoutLink) {
@@ -1327,7 +1327,7 @@
             );
 
             entry.label = label;
-            if (/globalMenu$/.test($window.location.href) && i < 1) {
+            if (i < 1) {    // Go to default view (first)
               $scope.view_tab = entry.tabName;
               $state.go(entry.id);
             }
