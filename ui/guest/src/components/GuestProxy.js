@@ -68,10 +68,18 @@ export function GuestProxy(props) {
 
     };
 
+    const appendIndex = (index, value) => {
+      return (typeof index === 'string') ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}` : index + value;
+    };
+
     const updateElementRegistrations = (collection, type, newIndex, oldIndex) => {
+      let originalNewIndex = newIndex;
+      let originalOldIndex = oldIndex;
+      newIndex = (typeof newIndex === 'string') ? parseInt(popPiece(newIndex)) : newIndex;
+      oldIndex = (typeof oldIndex === 'string') ? parseInt(popPiece(oldIndex)) : oldIndex;
       if (type === 'insert') {
         collection.slice(newIndex).forEach((el, i) => {
-          $(el).attr('data-craftercms-index', newIndex + i);
+          $(el).attr('data-craftercms-index', appendIndex(originalNewIndex, i));
           const pr = ElementRegistry.fromElement(el);
           pr && context.deregister(pr.id);
           registerElement(el);
@@ -79,15 +87,18 @@ export function GuestProxy(props) {
       } else if (type === 'move') {
         let from;
         let to;
+        let index;
         if (oldIndex < newIndex) {
           from = oldIndex;
           to = newIndex + 1;
+          index = originalOldIndex;
         } else {
           from = newIndex;
           to = oldIndex + 1;
+          index = originalNewIndex;
         }
         collection.slice(from, to).forEach((el, i) => {
-          $(el).attr('data-craftercms-index', from + i);
+          $(el).attr('data-craftercms-index', appendIndex(index, i));
           const pr = ElementRegistry.fromElement(el);
           pr && context.deregister(pr.id);
           registerElement(el);
