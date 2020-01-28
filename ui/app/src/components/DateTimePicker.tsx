@@ -30,6 +30,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getTimezones } from '../utils/datetime';
 import FormControl from '@material-ui/core/FormControl';
 import { nnou, nou } from '../utils/object';
+import { palette } from '../styles/theme';
 
 const translations = defineMessages({
   datePlaceholder: {
@@ -83,7 +84,7 @@ const dateTimePickerStyles = () => ({
   },
   pickerInput: {
     padding: '8px 12px',
-    backgroundColor: '#fff',
+    backgroundColor: palette.white,
     fontSize: '14px'
   },
   pickerButton: {
@@ -95,7 +96,7 @@ const dateTimePickerStyles = () => ({
     borderRadius: '4px',
     marginTop: '16px',
     position: 'relative' as 'relative',
-    backgroundColor: '#fff',
+    backgroundColor: palette.white,
     fontSize: '14px'
   },
   selectIcon: {
@@ -104,7 +105,7 @@ const dateTimePickerStyles = () => ({
   },
   autocompleteRoot: {
     marginTop: '16px',
-    backgroundColor: '#fff'
+    backgroundColor: palette.white
   },
   autocompleteInputRoot: {
     paddingTop: '4px !important',
@@ -237,7 +238,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
   }
 
   return (
-    <FormControl {...formControlProps}>
+    <FormControl {...formControlProps} fullWidth>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         {
           controls.includes('date') &&

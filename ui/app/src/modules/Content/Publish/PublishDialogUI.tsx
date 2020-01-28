@@ -93,9 +93,6 @@ const DialogActions = withStyles((theme: Theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(1),
-  },
-  showAllDeps: {
-
   }
 }))(MuiDialogActions);
 
@@ -244,9 +241,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
               error={apiState.errorResponse}
               onBack={handleErrorBack}
             />
-        )
+          )
       }
-
     </Dialog>
   )
 });

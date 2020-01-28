@@ -30,9 +30,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
 import Link from '@material-ui/core/Link';
-
 import DateTimePicker from '../../../components/DateTimePicker';
 import moment from 'moment';
+import { palette } from '../../../styles/theme';
 
 const messages = defineMessages({
   emailLabel: {
@@ -90,7 +90,7 @@ const useStyles = makeStyles(() => createStyles({
     marginBottom: '20px'
   },
   sectionLabel: {
-    color: '#000',
+    color: palette.black,
     width: '100%',
     fontSize: '16px'
   },
@@ -103,7 +103,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   selectInput: {
     padding: '10px 12px',
-    backgroundColor: '#fff'
+    backgroundColor: palette.white
   },
   environmentLoaderContainer: {
     paddingTop: '24px',
@@ -126,7 +126,7 @@ const useStyles = makeStyles(() => createStyles({
       height: '100%',
       top: '0',
       left: '7px',
-      backgroundColor: '#F2F2F7',
+      backgroundColor: palette.gray.light2,
       borderRadius: '5px'
     }
   },
@@ -145,7 +145,7 @@ const useStyles = makeStyles(() => createStyles({
     paddingBottom: 0
   },
   textField: {
-    backgroundColor: '#ffffff',
+    backgroundColor: palette.white,
     padding: 0
   }
 }));
@@ -290,7 +290,6 @@ function PublishForm(props: PublishFormProps) {
           {
             !publishingChannels &&
             <>
-
               <div className={classes.environmentLoaderContainer}>
                 <Typography
                   variant="body1"
