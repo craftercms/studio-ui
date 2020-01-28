@@ -48,7 +48,7 @@
                 if (e.which === 27) {
                     me.close();
                     window.removeEventListener('keydown', escKeyListener, false);
-                    Self.refreshNodes(oCurrentTextNode,false, false, null, null, true);
+                    CStudioAuthoring.ContextualNav.WcmRootFolder.refreshNodes(oCurrentTextNode,false, false, null, null, true);
                 }
             };
 
@@ -60,7 +60,7 @@
             }, false);
             elem.querySelector('a.close').addEventListener('click', function (e) {
                 me.close();
-                Self.refreshNodes(oCurrentTextNode,false, false, null, null, true);
+                CStudioAuthoring.ContextualNav.WcmRootFolder.refreshNodes(oCurrentTextNode,false, false, null, null, true);
             }, false);
 
             this.id = id;

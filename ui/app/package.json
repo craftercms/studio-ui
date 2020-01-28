@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.5.2",
     "@material-ui/icons": "^4.4.3",
+    "@material-ui/lab": "^4.0.0-alpha.39",
     "@types/graphql": "^14.5.0",
     "@types/jest": "24.0.23",
     "@types/js-cookie": "^2.2.2",
@@ -57,8 +58,9 @@
     ]
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.0",
-    "@babel/core": "^7.6.0",
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/runtime": "^7.8.3",
     "babel-plugin-react-intl": "5.1.11",
     "ncp": "^2.0.0",
     "node-sass": "^4.12.0",

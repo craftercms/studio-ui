@@ -328,6 +328,10 @@ const contentTypesMessages = defineMessages({
   siteConfigLandingMessage: {
     id: 'siteConfig.landingMessage',
     defaultMessage: 'Please choose a tool from the left.'
+  },
+  insertExpressionMessage: {
+    id: 'siteConfig.insertExpressionMessage',
+    defaultMessage: 'Insert Expression'
   }
 });
 
@@ -649,6 +653,10 @@ const globalMenuMessages = defineMessages({
     id: 'GlobalMenu.GlobalConfigEntryLabel',
     defaultMessage: 'Global Config'
   },
+  'home.globalMenu.encryptionTool': {
+    id: 'GlobalMenu.EncryptionTool',
+    defaultMessage: 'Encryption Tool'
+  },
   'home.about-us': {
     id: 'GlobalMenu.AboutUs',
     defaultMessage: 'About'
@@ -699,6 +707,33 @@ const adminConfigurationMessages = defineMessages({
   }
 });
 
+const encryptToolMessages = defineMessages({
+  pageTitle: {
+    id: 'encryptTool.pageTitle',
+    defaultMessage: 'Encryption Tool'
+  },
+  inputLabel: {
+    id: 'encryptTool.inputLabel',
+    defaultMessage: 'Raw Text'
+  },
+  buttonText: {
+    id: 'encryptTool.buttonText',
+    defaultMessage: 'Encrypt Text'
+  },
+  successMessage: {
+    id: 'encryptTool.successMessage',
+    defaultMessage: 'Encrypted text copied to clipboard.'
+  },
+  errorMessage: {
+    id: 'encryptTool.errorMessage',
+    defaultMessage: 'Text encryption failed. Please try again momentarily.'
+  },
+  clearResultButtonText: {
+    id: 'encryptTool.clearResultButtonText',
+    defaultMessage: 'Clear'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -724,5 +759,6 @@ export default {
   internalNameControlMessages,
   checkboxGroupControlMessages,
   globalMenuMessages,
-  adminConfigurationMessages
+  adminConfigurationMessages,
+  encryptToolMessages
 };

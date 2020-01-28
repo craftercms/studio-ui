@@ -63,16 +63,16 @@
         var workareaEl = document.getElementById('cstudio-admin-console-workarea');
 
         workareaEl.innerHTML = `
-          <section class="content-types-landing-page">
+          <section class="site-config-landing-page">
             <header class="page-header">
               <h1>${CMgs.format(langBundle, 'contentTypes')}</h1>
+              <div class="header-actions">
+                <button id="createNewContentTypeButton" class="btn btn-default">
+                  <i class="fa fa-plus-circle"></i>
+                  <span class="ng-binding">${CMgs.format(langBundle, 'createNewType')}</span>
+                </button>
+              </div>
             </header>
-            <div class="mt30 mb10">
-              <button id="createNewContentTypeButton" class="btn btn-default">
-                <i class="fa fa-plus-circle"></i>
-                <span class="ng-binding">${CMgs.format(langBundle, 'createNewType')}</span>
-              </button>
-            </div>
             <div id="openExistingInlineTarget"></div>
           </section>
         `;
@@ -785,10 +785,16 @@
 
             var selectTemplateDialogCb = {
               moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
+                $('#openExistingInlineTarget').html('<div/>');
                 if (inline) {
-                  $('#openExistingInlineTarget').html('<div/>');
-                  var element = document.querySelector('#openExistingInlineTarget div');
-                  dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, false, element);
+                  dialogClass.showDialog(
+                    moduleConfig.contentTypes,
+                    path,
+                    false,
+                    moduleConfig.selectTemplateCb,
+                    false,
+                    document.querySelector('#openExistingInlineTarget > div')
+                  );
                 } else {
                   dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, false);
                 }
@@ -804,7 +810,7 @@
               failure: function () {
               },
               close() {
-                if ($('.content-types-landing-page').length) {
+                if ($('.site-config-landing-page').length) {
                   onOpenExistingClick(true);
                 }
               },
@@ -867,7 +873,8 @@
 
         var dialogLoadedCb = {
           moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-            var cb = {
+            $('#openExistingInlineTarget').html('<div/>');
+            dialogClass.showDialog({
               success: function (type) {
                 $('#cstudio-admin-console-workarea').html(WORK_AREA_HTML);
                 context.openExistingItemRender(type);
@@ -876,15 +883,13 @@
 
               },
               close(didCreate) {
-                if (!didCreate && $('.content-types-landing-page').length) {
+                if (!didCreate && $('.site-config-landing-page').length) {
                   $('#openExistingInlineTarget').html('<div/>');
                   context.onOpenExistingClick(true);
                 }
               },
               context: moduleConfig.context
-            };
-
-            dialogClass.showDialog(cb, moduleConfig.context.config);
+            }, moduleConfig.context.config);
           }
         };
 
@@ -1388,7 +1393,7 @@
             CStudioAdminConsole.ignorePostfixFields = config['form-engine'] && config['form-engine']['ignore-postfix-fields'] ? config['form-engine']['ignore-postfix-fields'].field : [];
           }
         });
-    };
+    }
 
     /**
      * drag and drop controls
@@ -1773,81 +1778,91 @@
           let postfixDescription = CStudioAdminConsole.renderPostfixDescriptions()[renderPostfixes[i]] ?
             CStudioAdminConsole.renderPostfixDescriptions()[renderPostfixes[i]] : '';
 
-          xml += /**/'<tr>' +
-            /****/'<th>' + renderPostfixes[i] + '</th>' +
-            /****/'<td>' + postfixDescription + '</td>' +
-            /****/'<td>' +
-            /******/'<button onclick="CStudioAdminConsole.cleanPostfix("' + identifier + '", "' + type + '"); CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="' + renderPostfixes[i] + '" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">' +
-            /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>' +
-            /******/'</button>' +
-            /****/'</td>' +
-            /**/'</tr>';
+          xml +=
+            `<tr>` +
+            /**/`<th> ${renderPostfixes[i]} </th>` +
+            /**/`<td> ${postfixDescription} </td>` +
+            /**/`<td>` +
+            /****/`<button ` +
+            /******/`onclick="CStudioAdminConsole.cleanPostfix('${identifier}', '${type}'); CStudioAdminConsole.helpInsert(this, '${identifier}')" ` +
+            /******/`data-insert="${renderPostfixes[i]}" ` +
+            /******/`class="btn btn-default quick-create-help__insert-btn" ` +
+            /******/`type="button" ` +
+            /******/`aria-label="${formatMessage(contentTypesMessages.insertExpressionMessage)}" ` +
+            /******/`title="${formatMessage(contentTypesMessages.insertExpressionMessage)}"` +
+            /****/`>` +
+            /******/`<i class="fa fa-plus-circle" aria-hidden="true"></i>` +
+            /****/`</button>` +
+            /**/`</td>` +
+            `</tr>`
+
         }
         xml += '</table>';
+
         return xml;
 
       },
 
       renderQuickCreatePattern: function () {
         var identifier = '.label-destination-path-pattern';
-        return [
-          '<table class="quick-create-help">',
-          /**/'<tr>',
-          /****/'<th>{objectId}</th>',
-          /****/'<td>' + CMgs.format(langBundle, 'objectIdPattern') + '</td>',
-          /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{objectId}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-          /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-          /******/'</button>',
-          /****/'</td>',
-          /**/'</tr>',
-          /**/'<tr>',
-          /****/'<th>{year}</th>',
-          /****/'<td>' + CMgs.format(langBundle, 'yearPattern') + '</td>',
-          /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{year}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-          /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-          /******/'</button>',
-          /****/'</td>',
-          /**/'</tr>',
-          /**/'<tr>',
-          /****/'<th>{month}</th>',
-          /****/'<td>' + CMgs.format(langBundle, 'monthPattern') + '</td>',
-          /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{month}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-          /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-          /******/'</button>',
-          /****/'</td>',
-          /**/'</tr>',
-          /**/'<tr>',
-          /****/'<th>{yyyy}</th>',
-          /****/'<td>' + CMgs.format(langBundle, 'yyyyPattern') + '</td>',
-          /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{yyyy}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-          /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-          /******/'</button>',
-          /****/'</td>',
-          /**/'</tr>',
-          /**/'<tr>',
-          /****/'<th>{mm}</th>',
-          /****/'<td>' + CMgs.format(langBundle, 'mmPattern') + '</td>',
-          /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{mm}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-          /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-          /******/'</button>',
-          /****/'</td>',
-          /**/'</tr>',
-          /**/'<tr>',
-          /****/'<th>{dd}</th>',
-          /****/'<td>' + CMgs.format(langBundle, 'ddPattern') + '</td>',
-          /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{dd}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-          /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-          /******/'</button>',
-          /****/'</td>',
-          /**/'</tr>',
-          '</table>'
-        ].join('');
+
+        return `<table class="quick-create-help">` +
+          `<tr>` +
+          /**/`<th>{objectId}</th>` +
+          /**/`<td>${ CMgs.format(langBundle, 'objectIdPattern') }</td>` +
+          /**/`<td>` +
+          /****/`<button onclick="CStudioAdminConsole.helpInsert(this, '${identifier}')" data-insert="{objectId}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="${formatMessage(contentTypesMessages.insertExpressionMessage)}" title="${formatMessage(contentTypesMessages.insertExpressionMessage)}">` +
+          /******/`<i class="fa fa-plus-circle" aria-hidden="true"></i>` +
+          /****/`</button>` +
+          /**/`</td>` +
+          `</tr>` +
+          `<tr>` +
+          /**/`<th>{year}</th>` +
+          /**/`<td>${ CMgs.format(langBundle, 'yearPattern') }</td>` +
+          /**/`<td>` +
+          /****/`<button onclick="CStudioAdminConsole.helpInsert(this, '${identifier}')" data-insert="{year}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="${formatMessage(contentTypesMessages.insertExpressionMessage)}" title="${formatMessage(contentTypesMessages.insertExpressionMessage)}">` +
+          /******/`<i class="fa fa-plus-circle" aria-hidden="true"></i>` +
+          /****/`</button>` +
+          /**/`</td>` +
+          `</tr>` +
+          `<tr>` +
+          /**/`<th>{month}</th>` +
+          /**/`<td>${ CMgs.format(langBundle, 'monthPattern') }</td>` +
+          /**/`<td>` +
+          /****/`<button onclick="CStudioAdminConsole.helpInsert(this, '${identifier}')" data-insert="{month}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="${formatMessage(contentTypesMessages.insertExpressionMessage)}" title="${formatMessage(contentTypesMessages.insertExpressionMessage)}">` +
+          /******/`<i class="fa fa-plus-circle" aria-hidden="true"></i>` +
+          /****/`</button>` +
+          /**/`</td>` +
+          `</tr>` +
+          `<tr>` +
+          /**/`<th>{yyyy}</th>` +
+          /**/`<td>${ CMgs.format(langBundle, 'yyyyPattern') }</td>` +
+          /**/`<td>` +
+          /****/`<button onclick="CStudioAdminConsole.helpInsert(this, '${identifier}')" data-insert="{yyyy}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="${formatMessage(contentTypesMessages.insertExpressionMessage)}" title="${formatMessage(contentTypesMessages.insertExpressionMessage)}">` +
+          /******/`<i class="fa fa-plus-circle" aria-hidden="true"></i>` +
+          /****/`</button>` +
+          /**/`</td>` +
+          `</tr>` +
+          `<tr>` +
+          /**/`<th>{mm}</th>` +
+          /**/`<td>${ CMgs.format(langBundle, 'mmPattern') }</td>` +
+          /**/`<td>` +
+          /****/`<button onclick="CStudioAdminConsole.helpInsert(this, '${identifier}')" data-insert="{mm}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="${formatMessage(contentTypesMessages.insertExpressionMessage)}" title="${formatMessage(contentTypesMessages.insertExpressionMessage)}">` +
+          /******/`<i class="fa fa-plus-circle" aria-hidden="true"></i>` +
+          /****/`</button>` +
+          /**/`</td>` +
+          `</tr>` +
+          `<tr>` +
+          /**/`<th>{dd}</th>` +
+          /**/`<td>${ CMgs.format(langBundle, 'ddPattern') }</td>` +
+          /**/`<td>` +
+          /****/`<button onclick="CStudioAdminConsole.helpInsert(this, '${identifier}')" data-insert="{dd}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="${formatMessage(contentTypesMessages.insertExpressionMessage)}" title="${formatMessage(contentTypesMessages.insertExpressionMessage)}">` +
+          /******/`<i class="fa fa-plus-circle" aria-hidden="true"></i>` +
+          /****/`</button>` +
+          /**/`</td>` +
+          `</tr>` +
+        `</table>`;
+
       },
 
       renderFormPropertySheet: function (item, sheetEl) {
