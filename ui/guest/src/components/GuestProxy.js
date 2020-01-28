@@ -321,10 +321,10 @@ export function GuestProxy(props) {
 
           insertElement($spinner, $daddy, targetIndex);
 
-          const date = Date.now();
+          const id = Date.now();
 
           message$.pipe(
-            filter((e) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.id === date)),
+            filter((e) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.id === id)),
             map(e => e.data),
             take(1)
           ).subscribe(function ({ payload }) {
@@ -338,7 +338,7 @@ export function GuestProxy(props) {
             $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
           });
 
-          post(COMPONENT_INSTANCE_HTML_REQUEST, { id: date, path: instance.craftercms.path });
+          post(COMPONENT_INSTANCE_HTML_REQUEST, { id, path: instance.craftercms.path });
 
           break;
         }
