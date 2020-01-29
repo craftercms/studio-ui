@@ -21,9 +21,9 @@ import { Site } from './Site';
 import ContentType from './ContentType';
 import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
-import { ElasticParams, MediaItem } from "./Search";
+import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
-import { Receptacle } from "./Receptacle";
+import { ContentTypeReceptacle } from './ContentTypeReceptacle';
 
 export interface APIError {
   code?: number | string;
@@ -96,7 +96,7 @@ export interface GlobalState {
     assets: PagedEntityState<MediaItem>;
     receptacles: {
       selectedContentType: string;
-      byId: LookupTable<Receptacle>;
+      byId: LookupTable<ContentTypeReceptacle>;
     };
   }
 }

@@ -43,7 +43,8 @@ import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTilted';
 import {
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
-  listWelcomingReceptacles,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  selectTool,
   TRASHED
 } from '../../../state/actions/preview';
 import { usePreviewState, useStateResourceSelection } from '../../../utils/hooks';
@@ -170,7 +171,11 @@ export function ComponentsPanelUI(props) {
   const onMenuOptionClicked = () => setMenuContext(null);
 
   const onListReceptaclesClick = () => {
-    dispatch(listWelcomingReceptacles(menuContext.contentType.id))
+    dispatch(selectTool('craftercms.ice.contentTypeReceptacles'));
+    hostToGuest$.next({
+      type: CONTENT_TYPE_RECEPTACLES_REQUEST,
+      payload: menuContext.contentType.id
+    });
   };
 
   return (

@@ -14,7 +14,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-export interface Receptacle {
+export interface ContentTypeReceptacle {
   modelId: string;
   fieldId: string;
   label: string;

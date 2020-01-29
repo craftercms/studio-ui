@@ -53,7 +53,7 @@ export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
 export const RELOAD_REQUEST = 'RELOAD_REQUEST';
 export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
 export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
-export const REVEAL_CONTENT_TYPE_RECEPTACLES = 'REVEAL_CONTENT_TYPE_RECEPTACLES';
+export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUEST';
 export const CONTENT_TYPE_RECEPTACLES_RESPONSE = 'CONTENT_TYPE_RECEPTACLES_RESPONSE';
 
 // endregion
@@ -79,8 +79,6 @@ export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
 export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
 export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
 export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
-export const LIST_WELCOMING_RECEPTACLES = 'LIST_WELCOMING_RECEPTACLES';
-
 // endregion
 
 // region Action Creators
@@ -190,12 +188,17 @@ export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_AS
 
 export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
-export const listWelcomingReceptacles = createAction<string>(LIST_WELCOMING_RECEPTACLES);
+// export function getContentTypeReceptacles(contentType: string): StandardAction {
+//   return {
+//     type: CONTENT_TYPE_RECEPTACLES_REQUEST,
+//     payload: contentType
+//   };
+// }
 
-export function setContentTypeReceptacles(receptacles): StandardAction {
+export function setContentTypeReceptacles(payload): StandardAction {
   return {
     type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
-    payload: receptacles
+    payload
   };
 }
 

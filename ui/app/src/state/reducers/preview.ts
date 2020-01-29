@@ -29,7 +29,6 @@ import {
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
-  LIST_WELCOMING_RECEPTACLES,
   OPEN_TOOLS,
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
@@ -281,17 +280,12 @@ const reducer = createReducer<GlobalState['preview']>({
     ...state,
     assets: { ...state.assets, error: payload.response, isFetching: false }
   }),
-  [LIST_WELCOMING_RECEPTACLES]: (state, { payload }) => ({
-    ...state,
-    previousTool: state.selectedTool,
-    selectedTool: 'craftercms.ice.contentTypeReceptacles',
-    receptacles: { ...state.receptacles, selectedContentType: payload }
-  }),
   [CONTENT_TYPE_RECEPTACLES_RESPONSE]: (state, { payload }) => ({
     ...state,
     receptacles: {
       ...state.receptacles,
-      byId: { ...state.receptacles.byId, ...createLookupTable(payload) },
+      selectedContentType: payload.contentType,
+      byId: { ...state.receptacles.byId, ...createLookupTable(payload.receptacles) }
     }
   })
 });

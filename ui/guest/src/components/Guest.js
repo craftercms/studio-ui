@@ -22,6 +22,7 @@ import {
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
@@ -41,7 +42,6 @@ import {
   notNullOrUndefined,
   pluckProps,
   RELOAD_REQUEST,
-  REVEAL_CONTENT_TYPE_RECEPTACLES,
   TRASHED
 } from '../util';
 import { fromEvent, interval, Subject, zip } from 'rxjs';
@@ -1140,13 +1140,13 @@ export function Guest(props) {
           post({ type: GUEST_CHECK_OUT });
           return window.location.href = payload.url;
         }
-        case REVEAL_CONTENT_TYPE_RECEPTACLES: {
+        case CONTENT_TYPE_RECEPTACLES_REQUEST: {
           let receptacles = iceRegistry.getContentTypeReceptacles(payload).map((item) => {
             let { physicalRecordId } = ElementRegistry.compileDropZone(item.id);
             let { label } = ElementRegistry.getHoverData(physicalRecordId);
             return { modelId: item.modelId, fieldId: item.fieldId, label, id: physicalRecordId, contentType: payload };
           });
-          post({ type: CONTENT_TYPE_RECEPTACLES_RESPONSE, payload: receptacles });
+          post({ type: CONTENT_TYPE_RECEPTACLES_RESPONSE, payload: { contentType: payload, receptacles } });
           break;
         }
         default:

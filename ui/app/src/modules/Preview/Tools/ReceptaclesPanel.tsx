@@ -14,14 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../previewContext';
-import { listWelcomingReceptacles, REVEAL_CONTENT_TYPE_RECEPTACLES } from '../../../state/actions/preview';
 import { useSelection } from '../../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core';
-import { Receptacle } from '../../../models/Receptacle';
+import { ContentTypeReceptacle } from '../../../models/ContentTypeReceptacle';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -47,7 +46,10 @@ const translations = defineMessages({
 const useStyles = makeStyles((theme) => createStyles({
   select: {
     width: '100%',
-    marginTop: '15px'
+    padding: '15px',
+    '& > div': {
+      width: '100%'
+    }
   },
 }));
 
@@ -61,45 +63,46 @@ export default function ReceptaclesPanel() {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    console.log('REVEAL_CONTENT_TYPE_RECEPTACLES');
-    revealContentTypeReceptacles(receptaclesBranch.selectedContentType);
-  }, [receptaclesBranch.selectedContentType]);
+  // useEffect(() => {
+  //   console.log('REVEAL_CONTENT_TYPE_RECEPTACLES');
+  //   revealContentTypeReceptacles(receptaclesBranch.selectedContentType);
+  // }, [receptaclesBranch.selectedContentType]);
 
-  const onSelectedDropZone = (receptacle: Receptacle) => {
+  const onSelectedDropZone = (receptacle: ContentTypeReceptacle) => {
     console.log(receptacle);
   };
 
   function handleSelectChange(value: string) {
-    revealContentTypeReceptacles(value);
+    //revealContentTypeReceptacles(value);
   }
 
   const revealContentTypeReceptacles = (contentType: string) => {
-    dispatch(listWelcomingReceptacles(contentType));
-    hostToGuest$.next({
-      type: REVEAL_CONTENT_TYPE_RECEPTACLES,
-      payload: contentType
-    });
+    // dispatch(listWelcomingReceptacles(contentType));
+    // hostToGuest$.next({
+    //   type: CONTENT_TYPE_RECEPTACLES_REQUEST,
+    //   payload: contentType
+    // });
   };
 
   return (
     <ToolPanel title={translations.receptaclesPanel}>
-      <Select
-        value={receptaclesBranch.selectedContentType}
-        displayEmpty
-        className={classes.select}
-        onChange={(event: any) => handleSelectChange(event.target.value)}
-      >
-        <MenuItem value="" disabled>{formatMessage(translations.selectContentType)}</MenuItem>
-        {
-          contentTypes.map((contentType: ContentType, i: number) => {
-            return <MenuItem value={contentType.id} key={i}>{contentType.name}</MenuItem>
-          })
-        }
-      </Select>
+      <div className={classes.select}>
+        <Select
+          value={receptaclesBranch.selectedContentType || ''}
+          displayEmpty
+          onChange={(event: any) => handleSelectChange(event.target.value)}
+        >
+          <MenuItem value="" disabled>{formatMessage(translations.selectContentType)}</MenuItem>
+          {
+            contentTypes.map((contentType: ContentType, i: number) => {
+              return <MenuItem value={contentType.id} key={i}>{contentType.name}</MenuItem>
+            })
+          }
+        </Select>
+      </div>
       <List>
         {
-          receptacles?.map((receptacle: Receptacle) =>
+          receptacles?.map((receptacle: ContentTypeReceptacle) =>
             <ListItem key={receptacle.id} button onClick={() => onSelectedDropZone(receptacle)}>
               <ListItemAvatar>
                 <Avatar>
