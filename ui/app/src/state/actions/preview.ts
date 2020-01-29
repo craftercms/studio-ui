@@ -244,11 +244,6 @@ export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS
 
 export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 
-export function setContentTypeReceptacles(payload): StandardAction {
-  return {
-    type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
-    payload
-  };
-}
+export const setContentTypeReceptacles = createAction(CONTENT_TYPE_RECEPTACLES_RESPONSE);
 
 // endregion
