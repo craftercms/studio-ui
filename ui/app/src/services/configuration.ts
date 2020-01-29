@@ -16,9 +16,12 @@
  */
 
 import { get } from '../utils/ajax';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, pluck } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
 import { extractLocalizedElements, fromString, getInnerHtml, getInnerHtmlNumber } from '../utils/xml';
+import ContentType, { ContentTypeField } from '../models/ContentType';
+import { createLookupTable, reversePluckProps } from '../utils/object';
+import ContentInstance from '../models/ContentInstance';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -48,10 +51,26 @@ interface PreviewToolsConfig {
   modules: Array<PreviewToolsModuleDescriptor>;
 }
 
+interface ActiveTargetingModel {
+  id: string;
+
+  [prop: string]: string;
+}
+
+// region AudiencesPanelConfig
+
 const LegacyPanelIdMap: any = {
   'ice-tools-panel': 'craftercms.ice.ice',
   'component-panel': 'craftercms.ice.components',
-  'medium-panel': 'craftercms.ice.simulator'
+  'medium-panel': 'craftercms.ice.simulator',
+  'targeting': 'craftercms.ice.audiences'
+};
+
+const audienceTypesMap: any = {
+  'input': 'input',
+  'dropdown': 'dropdown',
+  'checkboxes': 'checkbox-group',
+  'datetime': 'date-time'
 };
 
 export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConfig> {
@@ -93,6 +112,152 @@ export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConf
       }
     })
   );
+}
+
+export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
+  return getRawContent(site, `/targeting/targeting-config.xml`, 'studio').pipe(
+    map((content) => {
+      try {
+        return JSON.parse(content);
+      } catch (e) {
+        // Not JSON, assuming XML
+        let audiencesPanelContentType: ContentType = {
+          id: 'audiencesPanelConfig',
+          name: 'Audiences Panel Config',
+          type: 'unknown',
+          quickCreate: null,
+          quickCreatePath: null,
+          displayTemplate: null,
+          sections: null,
+          fields: null,
+          dataSources: null,
+          mergeStrategy: null
+        };
+
+        const xml = fromString(content);
+        const properties = Array.from(xml.querySelectorAll('property')).map((elem) => {
+
+          const
+            name = getInnerHtml(elem.querySelector('name')),
+            label = getInnerHtml(elem.querySelector('label')),
+            type = getInnerHtml(elem.querySelector('type')),
+            hint = getInnerHtml(elem.querySelector('hint'));
+          let defaultValue: any = getInnerHtml(elem.querySelector('default_value'));
+
+          let possibleValues: ContentTypeField['values'];
+
+          if (elem.querySelectorAll('value').length > 0) {
+            possibleValues = Array.from(elem.querySelectorAll('value')).map((element) => {
+              const value = getInnerHtml(element);
+              return {
+                label: element.getAttribute('label') ?? value,
+                value: value
+              };
+            });
+          } else {
+            possibleValues = [];
+          }
+
+          if (type === 'checkboxes') {
+            defaultValue = defaultValue ? defaultValue.split(',') : [];
+          }
+
+          return {
+            id: name,
+            name: label,
+            type: audienceTypesMap[type] || type,
+            sortable: null,
+            validations: null,
+            defaultValue,
+            required: null,
+            fields: null,
+            values: possibleValues,
+            helpText: hint
+          };
+
+        });
+
+        audiencesPanelContentType.fields = createLookupTable(properties, 'id');
+
+        return audiencesPanelContentType;
+      }
+    })
+  );
+}
+
+// TODO: asses the location of profile methods.
+export function fetchActiveTargetingModel(site?: string): Observable<ContentInstance> {
+  return get(`/api/1/profile/get`).pipe(
+    map(response => {
+      const data = reversePluckProps(response.response, 'id');
+      const id = response.response.id ?? null;
+
+      return {
+        craftercms: {
+          id,
+          path: null,
+          label: null,
+          locale: null,
+          dateCreated: null,
+          dateModified: null,
+          contentType: null
+        },
+        ...data
+      };
+    })
+  );
+}
+
+export function getAudiencesPanelPayload(site: string): Observable<{ contentType: ContentType, model: ContentInstance }> {
+  return forkJoin({
+    data: fetchActiveTargetingModel(site),
+    contentType: getAudiencesPanelConfig(site)
+  }).pipe(
+    map(({ contentType, data }) => ({
+      contentType,
+      model: deserializeActiveTargetingModelData(data, contentType)
+    }))
+  );
+}
+
+function deserializeActiveTargetingModelData<T extends Object>(data: T, contentType: ContentType): ContentInstance {
+  const contentTypeFields = contentType.fields;
+
+  Object.keys(data).forEach((modelKey) => {
+    if (contentTypeFields[modelKey]) {
+      // if checkbox-group (Array)
+      if (contentTypeFields[modelKey].type === 'checkbox-group') {
+        data[modelKey] = data[modelKey] ? data[modelKey].split(',') : [];
+      }
+    }
+  });
+
+  return {
+    craftercms: {
+      id: '',
+      path: null,
+      label: null,
+      locale: null,
+      dateCreated: null,
+      dateModified: null,
+      contentType: null
+    },
+    ...data
+  };
+}
+
+export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
+  const model = reversePluckProps(data, 'craftercms');
+
+  Object.keys(model).forEach(key => {
+    if (Array.isArray(model[key])) {
+      model[key] = model[key].join(',');
+    }
+  });
+
+  const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val}`).join('&'));
+
+  return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
 }
 
 function parseSimulatorPanelConfig(element: Element) {

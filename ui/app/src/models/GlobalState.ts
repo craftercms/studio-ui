@@ -93,6 +93,14 @@ export interface GlobalState {
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
+    audiencesPanel: {
+      isFetching: boolean,
+      isApplying: boolean,
+      error: APIError,
+      contentType: ContentType,
+      model: ContentInstance,
+      applied: boolean
+    };
     components: PagedEntityState<ContentInstance>;
   }
 }

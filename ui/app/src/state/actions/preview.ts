@@ -86,6 +86,13 @@ export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED'
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
+export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
+export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
+export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
+export const SET_ACTIVE_TARGETING_MODEL_FAILED = 'SET_ACTIVE_TARGETING_MODEL_FAILED';
 
 // endregion
 
@@ -187,6 +194,49 @@ export function setItemBeingDragged(active: boolean): StandardAction {
   return {
     type: SET_ITEM_BEING_DRAGGED,
     payload: active
+  };
+}
+
+export const fetchAudiencesPanelFormDefinition = createAction(FETCH_AUDIENCES_PANEL_FORM_DEFINITION);
+
+export function fetchAudiencesPanelFormDefinitionComplete(data): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
+    payload: data
+  }
+}
+
+export function fetchAudiencesPanelFormDefinitionFailed(error): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
+    payload: error
+  }
+}
+
+export function updateAudiencesPanelModel(data): StandardAction {
+  return {
+    type: UPDATE_AUDIENCES_PANEL_MODEL,
+    payload: data
+  }
+}
+
+export function setActiveTargetingModel(): StandardAction {
+  return {
+    type: SET_ACTIVE_TARGETING_MODEL
+  };
+}
+
+export function setActiveTargetingModelComplete(data): StandardAction {
+  return {
+    type: SET_ACTIVE_TARGETING_MODEL_COMPLETE,
+    payload: data
+  };
+}
+
+export function setActiveTargetingModelFailed(error): StandardAction {
+  return {
+    type: SET_ACTIVE_TARGETING_MODEL_FAILED,
+    payload: error
   };
 }
 

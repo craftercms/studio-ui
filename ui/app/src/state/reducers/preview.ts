@@ -25,6 +25,9 @@ import {
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
+  FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
+  FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
+  FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
   FETCH_COMPONENTS_BY_CONTENT_TYPE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
@@ -36,11 +39,15 @@ import {
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
+  SET_ACTIVE_TARGETING_MODEL,
+  SET_ACTIVE_TARGETING_MODEL_COMPLETE,
+  SET_ACTIVE_TARGETING_MODEL_FAILED,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
-  TOOLS_LOADED
+  TOOLS_LOADED,
+  UPDATE_AUDIENCES_PANEL_MODEL
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
@@ -54,6 +61,15 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
+
+const audiencesPanelInitialState = {
+  isFetching: false,
+  isApplying: false,
+  error: null,
+  contentType: null,
+  model: null,
+  applied: false
+};
 
 const reducer = createReducer<GlobalState['preview']>({
   computedUrl: null,
@@ -75,6 +91,7 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   }) as PagedEntityState<MediaItem>,
+  audiencesPanel: audiencesPanelInitialState,
   components: createEntityState({
     page: [],
     query: {
@@ -259,11 +276,79 @@ const reducer = createReducer<GlobalState['preview']>({
     // if (state.guest) {
     //   nextState = { ...nextState, guest: null };
     // }
+
+    nextState = {
+      ...nextState,
+      audiencesPanel: audiencesPanelInitialState
+    };
+
     if (payload.nextUrl !== nextState.currentUrl) {
-      nextState = { ...nextState, currentUrl: payload.nextUrl };
+      nextState = {
+        ...nextState,
+        currentUrl: payload.nextUrl
+      };
     }
     return nextState;
   },
+  [FETCH_AUDIENCES_PANEL_FORM_DEFINITION]: (state) => ({
+    ...state,
+    audiencesPanel: {
+      ...state.audiencesPanel,
+      isFetching: true,
+      error: null
+    }
+  }),
+  [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE]: (state, { payload }) => {
+    return {
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        isFetching: false,
+        error: null,
+        contentType: payload.contentType,
+        model: payload.model
+      }
+    }
+  },
+  [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
+  }),
+  [UPDATE_AUDIENCES_PANEL_MODEL]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: {
+      ...state.audiencesPanel,
+      applied: false,
+      model: {
+        ...state.audiencesPanel.model,
+        ...payload
+      }
+    }
+  }),
+  [SET_ACTIVE_TARGETING_MODEL]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: {
+      ...state.audiencesPanel,
+      isApplying: true
+    }
+  }),
+  [SET_ACTIVE_TARGETING_MODEL_COMPLETE]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: {
+      ...state.audiencesPanel,
+      isApplying: false,
+      applied: true
+    }
+  }),
+  [SET_ACTIVE_TARGETING_MODEL_FAILED]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: {
+      ...state.audiencesPanel,
+      isApplying: false,
+      applied: false,
+      error: payload.response
+    }
+  }),
   [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => {
     let newQuery = { ...state.assets.query, ...query };
     return {

@@ -351,6 +351,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     ok: "Aceptar",
     yes: "Si",
     no: "No",
+    openType: 'Abrir Tipo',
     submit:"Enviar",
     loading:"Cargando&hellip;",
     viewSample: "Ver Ejemplo",
