@@ -19,6 +19,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   CHANGE_CURRENT_URL,
+  CLEAR_RECEPTACLES,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
@@ -371,6 +372,14 @@ const reducer = createReducer<GlobalState['preview']>({
       ...state.receptacles,
       selectedContentType: payload.contentType,
       byId: { ...state.receptacles.byId, ...createLookupTable(payload.receptacles) }
+    }
+  }),
+  [CLEAR_RECEPTACLES]: (state, { payload }) => ({
+    ...state,
+    receptacles: {
+      ...state.receptacles,
+      selectedContentType: null,
+      byId: null
     }
   })
 });

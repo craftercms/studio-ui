@@ -18,7 +18,7 @@ import React from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../previewContext';
-import { useSelection } from '../../../utils/hooks';
+import { useOnMount, useSelection } from '../../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core';
 import { ContentTypeReceptacle } from '../../../models/ContentTypeReceptacle';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -31,11 +31,17 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import ContentType from '../../../models/ContentType';
 import { useDispatch } from 'react-redux';
+import {
+  CLEAR_HIGHLIGHTED_RECEPTACLES,
+  clearReceptacles,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  SCROLL_TO_RECEPTACLE
+} from '../../../state/actions/preview';
 
 const translations = defineMessages({
   receptaclesPanel: {
     id: 'craftercms.ice.contentTypeReceptacles.title',
-    defaultMessage: 'Receptacles'
+    defaultMessage: '{name} Receptacles'
   },
   selectContentType: {
     id: 'craftercms.ice.contentTypeReceptacles.selectContentType',
@@ -59,33 +65,36 @@ export default function ReceptaclesPanel() {
   const receptaclesBranch = useSelection(state => state.preview.receptacles);
   const receptacles = receptaclesBranch.byId ? Object.values(receptaclesBranch.byId).filter((receptacle) => receptacle.contentType === receptaclesBranch.selectedContentType) : null;
   const contentTypesBranch = useSelection(state => state.contentTypes);
+  const selectedContentTypeName = contentTypesBranch.byId[receptaclesBranch.selectedContentType]?.name;
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component') : null;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   console.log('REVEAL_CONTENT_TYPE_RECEPTACLES');
-  //   revealContentTypeReceptacles(receptaclesBranch.selectedContentType);
-  // }, [receptaclesBranch.selectedContentType]);
+  useOnMount(() => {
+    return () => {
+      dispatch(clearReceptacles());
+      hostToGuest$.next({
+        type: CLEAR_HIGHLIGHTED_RECEPTACLES
+      });
+    }
+  });
 
   const onSelectedDropZone = (receptacle: ContentTypeReceptacle) => {
-    console.log(receptacle);
+    hostToGuest$.next({
+      type: SCROLL_TO_RECEPTACLE,
+      payload: receptacle
+    });
   };
 
   function handleSelectChange(value: string) {
-    //revealContentTypeReceptacles(value);
+    hostToGuest$.next({
+      type: CONTENT_TYPE_RECEPTACLES_REQUEST,
+      payload: value
+    });
   }
 
-  const revealContentTypeReceptacles = (contentType: string) => {
-    // dispatch(listWelcomingReceptacles(contentType));
-    // hostToGuest$.next({
-    //   type: CONTENT_TYPE_RECEPTACLES_REQUEST,
-    //   payload: contentType
-    // });
-  };
-
   return (
-    <ToolPanel title={translations.receptaclesPanel}>
+    <ToolPanel title={formatMessage(translations.receptaclesPanel, { name: selectedContentTypeName })}>
       <div className={classes.select}>
         <Select
           value={receptaclesBranch.selectedContentType || ''}
