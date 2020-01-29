@@ -224,7 +224,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     }
   };
 
-  const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
+  const handleTimezoneChange = (event: React.ChangeEvent<{}>, timezoneObj: any) => {
     const timezone = timezoneObj.timezoneName,
       updatedDateTime = moment.tz(dateMoment.format(), `${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`, timezone);
 
@@ -291,7 +291,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           options={timezones}
           getOptionLabel={(timezone: timezoneType) => (`${timezone.timezoneName} (GMT${timezone.timezoneOffset})`)}
           defaultValue={timezoneObj}
-          onChange={handleTimezoneChange()}
+          onChange={handleTimezoneChange}
           size="small"
           classes={{
             root: classes.autocompleteRoot,
