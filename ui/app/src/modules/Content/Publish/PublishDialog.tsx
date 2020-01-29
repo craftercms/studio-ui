@@ -89,8 +89,8 @@ export const selectAllDeps = (setChecked: Function, items: Item[]) => {
 
 export const paths = (checked: any) => (
   Object.entries({ ...checked })
-  .filter(([key, value]) => value === true)
-  .map(([key]) => key)
+    .filter(([key, value]) => value === true)
+    .map(([key]) => key)
 );
 
 interface PublishDialogProps {
