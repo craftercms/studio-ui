@@ -24,6 +24,7 @@ import { Item } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
+import { useActiveSiteId } from '../../../utils/hooks';
 
 const goLiveMessages = defineMessages({
   title: {
@@ -132,7 +133,8 @@ function PublishDialog(props: PublishDialogProps) {
   });
 
   const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
-  const siteId = useSelector<GlobalState, GlobalState['sites']>(state => state.sites).active;
+  // const siteId = useSelector<GlobalState, GlobalState['sites']>(state => state.sites).active;
+  const siteId = useActiveSiteId();
   const userSitesRoles: String[] = user.rolesBySite[siteId];    // TODO: check why is not working with editorial-ice
   const userRole = userSitesRoles.includes('admin') ? 'admin' : 'author';
   const submit = submitMap[userRole];
