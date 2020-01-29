@@ -154,8 +154,7 @@ function PublishDialog(props: PublishDialogProps) {
   function getPublishingChannels() {
     setPublishingChannelsStatus('Loading');
     setSubmitDisabled(true);
-    fetchPublishingChannels(siteId)
-    .subscribe(
+    fetchPublishingChannels(siteId).subscribe(
       ({ response }) => {
         setPublishingChannels(response.availablePublishChannels);
         setPublishingChannelsStatus('Success');
@@ -245,8 +244,7 @@ function PublishDialog(props: PublishDialogProps) {
 
   function showAllDependencies() {
     setShowDepsButton(false);
-    fetchDependencies(siteId, paths(checkedItems))
-    .subscribe(
+    fetchDependencies(siteId, paths(checkedItems)).subscribe(
       (response: any) => {
         setDeps({
           items1: response.response.items.hardDependencies,
