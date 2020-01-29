@@ -156,9 +156,13 @@ const SelectInput = withStyles(() => createStyles({
   }
 }))(InputBase);
 
+let schedulingTimeout;
+
 interface PublishFormProps {
   inputs: any;
+
   setInputs(state: any): any;
+
   showEmailCheckbox: boolean;
   publishingChannels: any[];
   publishingChannelsStatus: string;
@@ -203,13 +207,15 @@ function PublishForm(props: PublishFormProps) {
       setInputs({ ...inputs, [name]: inputValue });
 
       if (inputValue === 'now') {
-        setTimeout(() => {
+        schedulingTimeout = setTimeout(() => {
           setInputs({
             ...inputs,
             'scheduling': 'now',
             'scheduledDateTime': moment().format()
           });
         }, 2000);
+      } else {
+        clearTimeout(schedulingTimeout);
       }
     }
   };
