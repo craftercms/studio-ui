@@ -145,8 +145,8 @@ function PublishDialog(props: PublishDialogProps) {
   useEffect(() => {
     const result = (
       Object.entries({ ...checkedItems, ...checkedSoftDep })
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key)
+        .filter(([key, value]) => value)
+        .map(([key]) => key)
     );
     setSelectedItems(result);
   }, [checkedItems, checkedSoftDep]);
