@@ -23,6 +23,7 @@ import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
 import { ElasticParams, SearchResult } from '../../models/Search';
+import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -244,6 +245,6 @@ export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS
 
 export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 
-export const setContentTypeReceptacles = createAction(CONTENT_TYPE_RECEPTACLES_RESPONSE);
+export const setContentTypeReceptacles = createAction<{ contentType: string; receptacle: ContentTypeReceptacle; }>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
 
 // endregion
