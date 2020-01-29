@@ -280,7 +280,7 @@ function PublishDialog(props: PublishDialogProps) {
       dialog={dialog}
       setDialog={setDialog}
       open={open}
-      title={userRole === 'admin' ? formatMessage(goLiveMessages.title) : formatMessage(submitMessages.title)}
+      title={formatMessage(userRole === 'admin' ? goLiveMessages.title : submitMessages.title)}
       subtitle={userRole === 'admin' ? formatMessage(goLiveMessages.subtitle) : null}
       checkedItems={checkedItems}
       setCheckedItems={setChecked}
