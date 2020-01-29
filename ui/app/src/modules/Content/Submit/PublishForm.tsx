@@ -262,7 +262,15 @@ function PublishForm(props: PublishFormProps) {
           timeout={300}
           className={inputs.scheduling === 'custom' ? (classes.datePicker) : ''}
         >
-          <DateTimePicker onChange={dateTimePickerChange} timezone={inputs.scheduledTimeZone}/>
+          <DateTimePicker
+            onChange={dateTimePickerChange}
+            timeZonePickerProps={{
+              timezone: inputs.scheduledTimeZone
+            }}
+            datePickerProps={{
+              disablePast: true
+            }}
+          />
         </Collapse>
       </div>
 

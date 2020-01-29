@@ -79,6 +79,14 @@ export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
 export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
 export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
 export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
+export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
+export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
+export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
+export const SET_ACTIVE_TARGETING_MODEL_FAILED = 'SET_ACTIVE_TARGETING_MODEL_FAILED';
+
 // endregion
 
 // region Action Creators
@@ -182,18 +190,54 @@ export function setItemBeingDragged(active: boolean): StandardAction {
   };
 }
 
+export const fetchAudiencesPanelFormDefinition = createAction(FETCH_AUDIENCES_PANEL_FORM_DEFINITION);
+
+export function fetchAudiencesPanelFormDefinitionComplete(data): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
+    payload: data
+  }
+}
+
+export function fetchAudiencesPanelFormDefinitionFailed(error): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
+    payload: error
+  }
+}
+
+export function updateAudiencesPanelModel(data): StandardAction {
+  return {
+    type: UPDATE_AUDIENCES_PANEL_MODEL,
+    payload: data
+  }
+}
+
+export function setActiveTargetingModel(): StandardAction {
+  return {
+    type: SET_ACTIVE_TARGETING_MODEL
+  };
+}
+
+export function setActiveTargetingModelComplete(data): StandardAction {
+  return {
+    type: SET_ACTIVE_TARGETING_MODEL_COMPLETE,
+    payload: data
+  };
+}
+
+export function setActiveTargetingModelFailed(error): StandardAction {
+  return {
+    type: SET_ACTIVE_TARGETING_MODEL_FAILED,
+    payload: error
+  };
+}
+
 export const fetchAssetsPanelItems = createAction<Partial<ElasticParams>>(FETCH_ASSETS_PANEL_ITEMS);
 
 export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_ASSETS_PANEL_ITEMS_COMPLETE);
 
 export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
-
-// export function getContentTypeReceptacles(contentType: string): StandardAction {
-//   return {
-//     type: CONTENT_TYPE_RECEPTACLES_REQUEST,
-//     payload: contentType
-//   };
-// }
 
 export function setContentTypeReceptacles(payload): StandardAction {
   return {
