@@ -27,6 +27,7 @@ import {
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   fetchAssetsPanelItems,
+  fetchAudiencesPanelFormDefinition,
   fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -81,6 +82,7 @@ export function PreviewConcierge(props: any) {
   const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelection(state => state.env);
   const priorState = useRef({ site });
   const assets = useSelection(state => state.preview.assets);
+  const audiencesPanel = useSelection(state => state.preview.audiencesPanel);
 
   useOnMount(() => {
     const sub = beginGuestDetection(setSnack);
@@ -284,6 +286,16 @@ export function PreviewConcierge(props: any) {
       case 'craftercms.ice.assets':
         (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems(assets.query));
         break;
+      case 'craftercms.ice.audiences':
+        if (
+          !audiencesPanel.isFetching &&
+          nou(audiencesPanel.contentType) &&
+          nou(audiencesPanel.model) &&
+          nou(audiencesPanel.error)
+        ) {
+          dispatch(fetchAudiencesPanelFormDefinition());
+        }
+        break;
       case 'craftercms.ice.components':
         break;
     }
@@ -291,9 +303,9 @@ export function PreviewConcierge(props: any) {
     return () => {
       fetchSubscription && fetchSubscription.unsubscribe();
       guestToHostSubscription.unsubscribe();
-    }
+    };
 
-  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, audiencesPanel, XSRF_CONFIG_ARGUMENT]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {

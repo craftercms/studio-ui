@@ -37,10 +37,11 @@ CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent 
             (dom) => {
               let items = Array.from(dom.querySelectorAll('items > item'));
               items = items.map((item) => {
-                return {
-                  key: item.querySelector('key').innerHTML,
-                  value: item.querySelector('value').innerHTML
-                }
+                let values = {};
+                Array.from(item.children).map((child) => {
+                  values[child.tagName] = child.innerHTML;
+                });
+                return values;
               });
               _self.list = items;
               for(var j=0; j<_self.callbacks.length; j++) {

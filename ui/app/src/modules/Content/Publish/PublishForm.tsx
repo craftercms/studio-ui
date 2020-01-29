@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -126,7 +126,7 @@ const useStyles = makeStyles(() => createStyles({
       height: '100%',
       top: '0',
       left: '7px',
-      backgroundColor: palette.gray.light2,
+      backgroundColor: '#F2F2F7',
       borderRadius: '5px'
     }
   },
@@ -158,9 +158,7 @@ const SelectInput = withStyles(() => createStyles({
 
 interface PublishFormProps {
   inputs: any;
-
   setInputs(state: any): any;
-
   showEmailCheckbox: boolean;
   publishingChannels: any[];
   publishingChannelsStatus: string;
@@ -182,6 +180,16 @@ function PublishForm(props: PublishFormProps) {
     onPublishingChannelsFailRetry,
     setSubmitDisabled
   } = props;
+
+  useEffect(
+    () => {
+      if (publishingChannels && publishingChannels.length > 0) {
+        setInputs({ ...inputs, 'environment': publishingChannels[0].name });
+      }
+    },
+    // eslint-disable-next-line
+    [publishingChannels]
+  );
 
   const handleInputChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
@@ -279,6 +287,9 @@ function PublishForm(props: PublishFormProps) {
             date={inputs.scheduledDateTime}
             timeZonePickerProps={{
               timezone: inputs.scheduledTimeZone
+            }}
+            datePickerProps={{
+              disablePast: true
             }}
           />
         </Collapse>
