@@ -188,14 +188,16 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
 
   const handleDateChange = (name: string) => (newDate: Date | null) => {
     let updatedDateTime = moment(newDate);
+    const timeObj = timeMoment.toDate();
+    const dateObj = dateMoment.toDate();
 
     switch (name) {
       case 'scheduledDate':
         if (updatedDateTime._isValid) {
-          updatedDateTime.hours(timeMoment.toDate().getHours());
-          updatedDateTime.minutes(timeMoment.toDate().getMinutes());
-          updatedDateTime.seconds(timeMoment.toDate().getSeconds());
-          updatedDateTime.milliseconds(timeMoment.toDate().getMilliseconds());
+          updatedDateTime.hours(timeObj.getHours());
+          updatedDateTime.minutes(timeObj.getMinutes());
+          updatedDateTime.seconds(timeObj.getSeconds());
+          updatedDateTime.milliseconds(timeObj.getMilliseconds());
           datePickerProps?.onDateChange?.(updatedDateTime.format(datePickerProps.dateFormat));
           setPickerState({ ...pickerState, dateValid: true });
         } else {
@@ -205,9 +207,9 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
         break;
       case 'scheduledTime':
         if (updatedDateTime._isValid) {
-          updatedDateTime.date(dateMoment.toDate().getDate());
-          updatedDateTime.month(dateMoment.toDate().getMonth());
-          updatedDateTime.year(dateMoment.toDate().getFullYear());
+          updatedDateTime.date(dateObj.getDate());
+          updatedDateTime.month(dateObj.getMonth());
+          updatedDateTime.year(dateObj.getFullYear());
           timePickerProps?.onTimeChange?.(updatedDateTime.format(timePickerProps.timeFormat));
           setPickerState({ ...pickerState, timeValid: true });
         } else {
