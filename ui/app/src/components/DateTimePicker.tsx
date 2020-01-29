@@ -195,7 +195,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           updatedDateTime.hours(timeMoment.toDate().getHours());
           updatedDateTime.minutes(timeMoment.toDate().getMinutes());
           updatedDateTime.seconds(timeMoment.toDate().getSeconds());
-          updatedDateTime.milliseconds(timeMoment.toDate().getSeconds());
+          updatedDateTime.milliseconds(timeMoment.toDate().getMilliseconds());
           datePickerProps?.onDateChange?.(updatedDateTime.format(datePickerProps.dateFormat));
           setPickerState({ ...pickerState, dateValid: true });
         } else {
