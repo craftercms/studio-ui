@@ -79,7 +79,6 @@ export class ContentController {
   }
 
   computeChildren(model) {
-
     let childIds = [];
     const modelId = ModelHelper.prop(model, 'id');
     const children = this.children;
@@ -548,7 +547,7 @@ export class ContentController {
 
     const currentModels = ContentController.models$.value;
 
-    post(GUEST_MODELS_RECEIVED, responseModels);
+    //post(GUEST_MODELS_RECEIVED, responseModels);
 
     ContentController.contentTypes$.pipe(
       filter(hash => Object.values(hash).length !== 0),
@@ -557,6 +556,7 @@ export class ContentController {
       Object.values(responseModels).forEach((model) =>
         this.computeChildren(model)
       );
+      post(GUEST_MODELS_RECEIVED, { models: responseModels, childrenMap: this.children });
     });
 
     ContentController.models$.next(

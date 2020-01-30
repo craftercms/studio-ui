@@ -59,6 +59,7 @@ export interface GuestData {
   origin: string;
   location: string;
   models: LookupTable<ContentInstance>;
+  childrenMap: LookupTable<string[]>;
   modelId: string;
   selected: EditSelection[];
   itemBeingDragged: boolean;

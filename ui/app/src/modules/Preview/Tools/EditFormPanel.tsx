@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
@@ -23,7 +23,39 @@ import Typography from '@material-ui/core/Typography';
 import { ContentTypeHelper } from '../../../utils/helpers';
 import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { usePreviewState, useSelection } from '../../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../../utils/hooks';
+import { defineMessages, useIntl } from 'react-intl';
+import Button from '@material-ui/core/Button';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import { nnou } from '../../../utils/object';
+import { forEach } from '../../../utils/array';
+import { LookupTable } from '../../../models/LookupTable';
+
+const translations = defineMessages({
+  openComponentForm: {
+    id: 'craftercms.edit.openComponentForm',
+    defaultMessage: 'Open Component Form'
+  }
+});
+
+const styles = makeStyles(() => createStyles({
+  formWrapper: {
+    textAlign: 'center',
+    padding: '20px 0'
+  },
+  closeButton: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px'
+  },
+  iframe: {
+    height: '100%'
+  }
+}));
 
 function createBackHandler(dispatch) {
   const hostToGuest$ = getHostToGuestBus();
@@ -33,14 +65,42 @@ function createBackHandler(dispatch) {
   };
 }
 
+function findParentModelId(modelId: string, childrenMap: LookupTable<Array<string>>, models: any) {
+  const parentId = forEach(
+    Object.entries(childrenMap),
+    ([id, children]) => {
+      if (
+        nnou(children) &&
+        (id !== modelId) &&
+        children.includes(modelId)
+      ) {
+        return id;
+      }
+    },
+    null
+  );
+  return nnou(parentId)
+    // If it has a path, it is not embedded and hence the parent
+    // Otherwise, need to keep looking.
+    ? nnou(models[parentId].craftercms.path)
+      ? parentId
+      : findParentModelId(parentId, childrenMap, models)
+    // No parent found for this model
+    : null;
+}
+
 export default function EditFormPanel() {
 
   const dispatch = useDispatch();
-  const { guest: { selected, models } } = usePreviewState();
+  const { guest: { selected, models, childrenMap } } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
-
+  const site = useActiveSiteId();
+  const { formatMessage } = useIntl();
+  const classes = styles({});
   const onBack = createBackHandler(dispatch);
+  const [open, setOpen] = useState(false);
+  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
 
   useEffect(() => {
     const handler = (e) => {
@@ -68,18 +128,6 @@ export default function EditFormPanel() {
     )
   }
 
-  // modelId: string
-  // modelId: string, fieldId: string[]
-  // modelId: string, fieldId: string[], index: number
-
-  // Whole content type
-  // Group of fields (non-group) of a content type
-  // A field of type repeat group (an entire group) - no index, whole thing
-  // A field of type repeat group with index - only that item/index
-  // A set of fields of a repeat group
-  // Single field
-  // Set of fields
-
   const item = selected[0];
   const index = item.index;
   const model = models[item.modelId];
@@ -88,11 +136,59 @@ export default function EditFormPanel() {
 
   }
 
+  //selected Item data
+
+  //TODO: este es shared
+  // /studio/form?site=editorialviejo&form=/component/feature
+  // &path=/site/components/features/fbabf5a8-4bcb-411a-0242-a74f6e8e570c.xml
+  // &isInclude=null
+  // &iceComponent=true
+  // &edit=true
+  // &editorId=1c5da642-e7cb-e4d1-636d-c343ca04618a
+
+  const fieldId = item.fieldId[0];
+  const selectedId = (item.index !== undefined) ? model[fieldId][item.index] : item.modelId;
+  const path = models[selectedId].craftercms.path || false;
+  const contentTypeId = models[selectedId].craftercms.contentType;
+  let src = '';
+  if (path) {
+    src = `${AUTHORING_BASE}/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true&editorId=123`;
+  } else {
+    //we need to know who contains this [model.craftercms.id]
+    console.log(findParentModelId(model.craftercms.id, childrenMap, models));
+  }
+
+
+
   const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
   const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
     ? model.craftercms.label
     : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
-  const fields = item.fieldId.map((fieldId) => ContentTypeHelper.getField(contentType, fieldId));
+
+  // TODO: debemos abrir el form padre si es embedded
+  // /studio/form?site=editorialviejo&form=/page/home
+  // &path=/site/website/index.xml
+  // &isInclude=null
+  // & iceComponent=true
+  // &edit=true
+  // &editorId=8a8690ad-71ba-1b10-059f-6576d216a39a
+
+  // TODO: debemos abrir el form hijo
+  // /studio/form?site=editorialviejo&form=/component/feature
+  // &path=a89386c4-a205-2681-2db1-c3606f714411
+  // &isInclude=true
+  // &iceComponent=true
+  // &edit=true
+  // &editorId=dafdcd9d-3893-0a38-9c05-58b9083dabd0
+
+
+  function openEditForm() {
+    setOpen(true);
+  }
+
+  function handleClose() {
+    setOpen(false);
+  }
 
   return (
     <>
@@ -101,12 +197,21 @@ export default function EditFormPanel() {
         onBack={onBack}
         BackIcon={CloseRounded}
       >
-        <Typography variant="body1" component="ul">
-          {
-            fields.map((field) => <li key={field.id}>{field.name}</li>)
-          }
-        </Typography>
+        <div className={classes.formWrapper}>
+          <Button variant="outlined" color="primary"
+                  onClick={openEditForm}>{formatMessage(translations.openComponentForm)}</Button>
+        </div>
       </ToolPanel>
+      <Dialog fullScreen open={open} onClose={handleClose}>
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={handleClose}
+        >
+          <CloseIcon/>
+        </IconButton>
+        <iframe src={src} title='form' className={classes.iframe}/>
+      </Dialog>
     </>
   )
 }
