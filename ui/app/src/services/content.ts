@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from '../utils/ajax';
+import { get, getText, post, postJSON } from '../utils/ajax';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { createElements, fromString, getInnerHtml, serialize } from '../utils/xml';
+import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
 import {
   ContentType,
   ContentTypeField,
@@ -31,13 +31,27 @@ import {
 import { camelizeProps, nnou, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import { camelize, dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
+import {
+  camelize,
+  dataUriToBlob,
+  decodeHTML,
+  isBlank,
+  objectIdFromPath,
+  popPiece,
+  removeLastPiece
+} from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
-import { PaginationOptions } from '../models/Search';
+import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
+
+export function getComponentInstanceHTML(path: string): Observable<string> {
+  return getText(`/crafter-controller/component.html?path=${path}`).pipe(
+    map(({ response }) => response)
+  );
+}
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -48,6 +62,88 @@ export function getContent(site: string, path: string): Observable<string> {
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(map(fromString));
 }
+
+export function getContentInstanceLookup(site: string, path: string, contentTypesLookup: LookupTable<ContentType>): Observable<LookupTable<ContentInstance>> {
+  return getDOM(site, path).pipe(
+    map(doc => parseContentXML(doc, path, contentTypesLookup, {}))
+  );
+}
+
+function parseElementByContentType(element: Element, field: ContentTypeField, contentTypesLookup: LookupTable<ContentType>, instanceLookup: LookupTable<ContentInstance>) {
+  const type = field ? field.type : null;
+  switch (type) {
+    case 'repeat': {
+      const array = [];
+      element.querySelectorAll(':scope > item').forEach((item) => {
+        const repeatItem = {};
+        item.querySelectorAll(':scope > *').forEach((fieldTag) => {
+          let fieldTagName = fieldTag.tagName;
+          repeatItem[fieldTagName] = parseElementByContentType(fieldTag, field.fields[fieldTagName], contentTypesLookup, instanceLookup);
+        });
+        array.push(repeatItem);
+      });
+      return array;
+    }
+    case 'node-selector': {
+      const array = [];
+      element.querySelectorAll(':scope > item').forEach((item) => {
+        const key = getInnerHtml(item.querySelector('key'));
+        const component = item.querySelector('component');
+        parseContentXML(component ? wrapElementInAuxDocument(component) : null, key, contentTypesLookup, instanceLookup);
+        array.push(objectIdFromPath(key));
+      });
+      return array;
+    }
+
+    case 'html':
+      return decodeHTML(getInnerHtml(element));
+    default:
+      return getInnerHtml(element);
+  }
+}
+
+function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLookup: LookupTable<ContentType>, instanceLookup: LookupTable<ContentInstance>): LookupTable<ContentInstance> {
+
+  const id = nnou(doc) ? getInnerHtml(doc.querySelector('objectId')) : objectIdFromPath(path);
+  const contentType = nnou(doc) ? getInnerHtml(doc.querySelector('content-type')) : null;
+  instanceLookup[id] = {
+    craftercms: {
+      id,
+      path,
+      label: nnou(doc) ? getInnerHtml(doc.querySelector('internal-name')) : null,
+      locale: null,
+      dateCreated: nnou(doc) ? getInnerHtml(doc.querySelector('createdDate_dt')) : null,
+      dateModified: nnou(doc) ? getInnerHtml(doc.querySelector('lastModifiedDate_dt')) : null,
+      contentType
+    }
+  };
+  if (nnou(doc)) {
+    Array.from(doc.documentElement.children).forEach((element: Element) => {
+      if (!systemPropsList.includes(element.tagName)) {
+        instanceLookup[id][element.tagName] = parseElementByContentType(element, contentTypesLookup[contentType].fields[element.tagName], contentTypesLookup, instanceLookup)
+      }
+    });
+  }
+
+  return instanceLookup;
+}
+
+const systemPropsList = [
+  'content-type',
+  'display-template',
+  'no-template-required',
+  'merge-strategy',
+  'objectGroupId',
+  'objectId',
+  'file-name',
+  'folder-name',
+  'internal-name',
+  'disabled',
+  'createdDate',
+  'createdDate_dt',
+  'lastModifiedDate',
+  'lastModifiedDate_dt'
+];
 
 export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
   return get(`/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`).pipe(
@@ -454,7 +550,7 @@ function performMutation(
 
       if (isEmbeddedTarget) {
         const component = doc.querySelector(`[id="${modelId}"]`);
-        const auxiliaryDocument = fromString(`<?xml version="1.0" encoding="UTF-8"?>${component.outerHTML}`);
+        const auxiliaryDocument = wrapElementInAuxDocument(component);
         mutation(auxiliaryDocument);
         updateModifiedDateElement(auxiliaryDocument);
         component.replaceWith(auxiliaryDocument.documentElement);
@@ -477,25 +573,20 @@ export function insertComponent(
   site: string,
   modelId: string,
   fieldId: string,
-  targetIndex: number,
+  targetIndex: string | number,
   contentType: ContentType,
   instance: ContentInstance,
+  parentModelId: string = null,
   shared = false
 ): Observable<any> {
-  return getDOM(site, modelId).pipe(
-    switchMap((doc) => {
-
-      const qs = {
-        site,
-        path: modelId,
-        unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector('file-name'))
-      };
+  return performMutation(
+    site,
+    modelId,
+    parentModelId,
+    doc => {
 
       const id = instance.craftercms.id;
-      // TODO: Hardcoded value. Retrieve properly.
-      const pathBase = shared ? `/site/components/${contentType.id.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '') : null;
-      const path = `${pathBase}/${id}.xml`;
+      const path = shared ? getComponentPath(id, instance.craftercms.contentType) : null;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
       const newItem = doc.createElement('item');
@@ -533,32 +624,44 @@ export function insertComponent(
         })
       });
 
-      let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+      insertCollectionItem(doc, fieldId, targetIndex, newItem);
 
-      // Fields not initialized will not be present in the document
-      // and we'd rather need to create it.
-      if (nou(fieldNode)) {
-        fieldNode = doc.createElement(fieldId);
-        fieldNode.setAttribute('item-list', 'true');
-        doc.documentElement.appendChild(fieldNode);
-      }
+    }
+  );
+}
 
-      // Since this operation only deals with components (i.e. no repeat groups)
-      // using `item` as a selector instead of a generic `> *` selection.
-      const itemList = fieldNode.querySelectorAll(`:scope > item`);
+export function insertInstance(
+  site: string,
+  modelId: string,
+  fieldId: string,
+  targetIndex: string | number,
+  instance: ContentInstance,
+  parentModelId: string = null
+): Observable<any> {
+  return performMutation(
+    site,
+    modelId,
+    parentModelId,
+    doc => {
 
-      if (itemList.length === targetIndex) {
-        fieldNode.appendChild(newItem);
-      } else {
-        $(newItem).insertBefore(itemList[targetIndex]);
-      }
+      const path = getComponentPath(instance.craftercms.id, instance.craftercms.contentType);
 
-      return post(
-        writeContentUrl(qs),
-        serialize(doc)
-      );
+      const newItem = doc.createElement('item');
 
-    })
+      createElements(doc, newItem, {
+        '@attributes': {
+          // TODO: Hardcoded value. Fix.
+          datasource: 'sharedFeatures'
+        },
+        key: path,
+        value: instance.craftercms.label,
+        include: path,
+        disableFlattening: 'false'
+      });
+
+      insertCollectionItem(doc, fieldId, targetIndex, newItem);
+
+    }
   );
 }
 
@@ -724,30 +827,36 @@ export function deleteItem(
   );
 }
 
-export function getContentByContentType(site: string, contentType: string, options?: PaginationOptions): Observable<ContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[], options?: PaginationOptions): Observable<ContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[] | string, options?: PaginationOptions): Observable<ContentInstance> {
+export function getContentByContentType(site: string, contentType: string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<ContentInstancePage>;
+export function getContentByContentType(site: string, contentTypes: string[], contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<ContentInstancePage>;
+export function getContentByContentType(site: string, contentTypes: string[] | string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<ContentInstancePage> {
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
-  return post(
+  return postJSON(
     `/studio/api/2/search/search.json?siteId=${site}`,
     {
+      ...reversePluckProps(options, 'type'),
       filters: { 'content-type': contentTypes }
     }
   ).pipe(
-    map<any, ContentInstance>(({ response: { result: { items } } }) => items.map((item) => ({
-      craftercms: {
-        id: null,
-        path: item.path,
-        label: item.name,
-        locale: null,
-        dateCreated: null,
-        dateModified: item.lastModified,
-        contentType: null
-      }
-      // ...Search doesn't return all content props. Need to fetch separately 😞.
-    })))
+    map<AjaxResponse, { count: number, paths: string[] }>(({ response }) => ({
+      count: response.result.total,
+      paths: response.result.items.filter((item) => item.type === options.type).map((item) => item.path)
+    })),
+    switchMap(({ paths, count }) => zip(
+      of(count),
+      paths.length ? forkJoin(
+        paths.reduce((array, path) => {
+          array.push(getContentInstanceLookup(site, path, contentTypesLookup));
+          return array;
+        }, []) as Array<Observable<LookupTable<ContentInstance>>>
+      ) : of([])
+    )),
+    map(([count, array]) => ({
+      count,
+      lookup: array.reduce((hash, lookupTable) => Object.assign(hash, lookupTable), {})
+    }))
   );
 }
 
@@ -852,6 +961,30 @@ function updateModifiedDateElement(doc: XMLDocument) {
   doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
 }
 
+function getComponentPath(id: string, contentType: string) {
+  const pathBase = `/site/components/${contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
+  return `${pathBase}/${id}.xml`;
+}
+
+function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node): void {
+  let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
+  let index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
+
+  if (nou(fieldNode)) {
+    fieldNode = doc.createElement(fieldId);
+    fieldNode.setAttribute('item-list', 'true');
+    doc.documentElement.appendChild(fieldNode);
+  }
+
+  const itemList = fieldNode.querySelectorAll(`:scope > item`);
+
+  if (itemList.length === index) {
+    fieldNode.appendChild(newItem);
+  } else {
+    $(newItem).insertBefore(itemList[index]);
+  }
+}
+
 export function fetchPublishingChannels(site: string) {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`)
 }
@@ -901,7 +1034,7 @@ export function uploadDataUrl(
     uppy.addFile({
       name: file.name,
       type: file.type,
-      data: blob,
+      data: blob
     });
   });
 }

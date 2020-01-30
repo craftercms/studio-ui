@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ajax, AjaxError } from 'rxjs/ajax';
+import { ajax, AjaxError, AjaxResponse } from 'rxjs/ajax';
 import { catchError } from 'rxjs/operators';
 import { reversePluckProps } from './object';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { sessionTimeout } from '../state/actions/user';
 
 const HEADERS = {};
@@ -45,6 +45,14 @@ function mergeHeaders(headers: object = {}) {
 
 export function get(url: string, headers: object = {}) {
   return ajax.get(url, mergeHeaders(headers));
+}
+
+export function getText(url: string, headers?: object): Observable<AjaxResponse> {
+  return ajax({
+    url,
+    headers: mergeHeaders(headers),
+    responseType: 'text'
+  });
 }
 
 export function post(url: string, body: any, headers: object = {}) {

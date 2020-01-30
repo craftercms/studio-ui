@@ -101,6 +101,7 @@ export interface GlobalState {
       model: ContentInstance,
       applied: boolean
     };
+    components: PagedEntityState<ContentInstance>;
   }
 }
 

@@ -16,10 +16,19 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { FETCH_CONTENT_TYPES, fetchContentTypesComplete, fetchContentTypesFailed } from '../actions/preview';
+import {
+  FETCH_COMPONENTS_BY_CONTENT_TYPE,
+  FETCH_CONTENT_TYPES,
+  fetchComponentsByContentTypeComplete,
+  fetchComponentsByContentTypeFailed,
+  fetchContentTypesComplete,
+  fetchContentTypesFailed
+} from '../actions/preview';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { fetchContentTypes } from '../../services/content';
+import { fetchContentTypes, getContentByContentType } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
+import GlobalState from '../../models/GlobalState';
+import { Observable } from 'rxjs';
 
 const fetch: Epic = (action$, state$) => action$.pipe(
   ofType(FETCH_CONTENT_TYPES),
@@ -30,6 +39,16 @@ const fetch: Epic = (action$, state$) => action$.pipe(
   ))
 );
 
+const fetchComponentsByContentType: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
+  ofType(FETCH_COMPONENTS_BY_CONTENT_TYPE),
+  withLatestFrom(state$),
+  switchMap(([, state]) => getContentByContentType(state.sites.active, state.preview.components.contentTypeFilter, state.contentTypes.byId, state.preview.components.query).pipe(
+    map(fetchComponentsByContentTypeComplete),
+    catchAjaxError(fetchComponentsByContentTypeFailed)
+  ))
+);
+
 export default [
-  fetch
+  fetch,
+  fetchComponentsByContentType
 ] as Epic[];

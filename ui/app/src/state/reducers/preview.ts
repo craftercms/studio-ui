@@ -18,6 +18,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
+  BROWSE_COMPONENT_INSTANCES,
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
@@ -27,6 +28,9 @@ import {
   FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
   FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
   FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
+  FETCH_COMPONENTS_BY_CONTENT_TYPE,
+  FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE,
+  FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -47,7 +51,14 @@ import {
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
-import { ElasticParams, MediaItem, SearchResult } from '../../models/Search';
+import {
+  ComponentsContentTypeParams,
+  ContentInstancePage,
+  ElasticParams,
+  MediaItem,
+  SearchResult
+} from '../../models/Search';
+import ContentInstance from '../../models/ContentInstance';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -66,7 +77,7 @@ const reducer = createReducer<GlobalState['preview']>({
   hostSize: { width: null, height: null },
   showToolsPanel: true,
   previousTool: null,
-  selectedTool: 'craftercms.ice.audiences',
+  selectedTool: 'craftercms.ice.components',
   tools: null,
   guest: null,
   assets: createEntityState({
@@ -80,7 +91,17 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   }) as PagedEntityState<MediaItem>,
-  audiencesPanel: audiencesPanelInitialState
+  audiencesPanel: audiencesPanelInitialState,
+  components: createEntityState({
+    page: [],
+    query: {
+      keywords: '',
+      offset: 0,
+      limit: 10,
+      type: 'Component'
+    },
+    contentTypeFilter: ''
+  }) as PagedEntityState<ContentInstance>
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
     ...state,
@@ -329,14 +350,14 @@ const reducer = createReducer<GlobalState['preview']>({
     }
   }),
   [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => {
-    let new_query = { ...state.assets.query, ...query };
+    let newQuery = { ...state.assets.query, ...query };
     return {
       ...state,
       assets: {
         ...state.assets,
         isFetching: true,
-        query: new_query,
-        pageNumber: Math.ceil(new_query.offset / new_query.limit),
+        query: newQuery,
+        pageNumber: Math.ceil(newQuery.offset / newQuery.limit)
       }
     }
   },
@@ -359,7 +380,44 @@ const reducer = createReducer<GlobalState['preview']>({
   [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
     ...state,
     assets: { ...state.assets, error: payload.response, isFetching: false }
-  })
+  }),
+  [FETCH_COMPONENTS_BY_CONTENT_TYPE]: (state, { payload: { contentTypeFilter, options } }: { payload: { contentTypeFilter: string[] | string, options?: ComponentsContentTypeParams } }) => {
+    let newQuery = { ...state.components.query, ...options };
+    return {
+      ...state,
+      components: {
+        ...state.components,
+        isFetching: true,
+        query: newQuery,
+        pageNumber: Math.ceil(newQuery.offset / newQuery.limit),
+        contentTypeFilter: contentTypeFilter ? contentTypeFilter : state.components.contentTypeFilter
+      }
+    }
+  },
+  [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (state, { payload }: { payload: ContentInstancePage }) => {
+    let page = [...state.components.page];
+    page[state.components.pageNumber] = Object.keys(payload.lookup);
+    return {
+      ...state,
+      components: {
+        ...state.components,
+        byId: { ...state.components.byId, ...payload.lookup },
+        page,
+        count: payload.count,
+        isFetching: false,
+        error: null
+      }
+    }
+  },
+  [FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED]: (state, { payload }) => ({
+    ...state,
+    components: { ...state.components, error: payload.response, isFetching: false }
+  }),
+  [BROWSE_COMPONENT_INSTANCES]: (state, { payload }) => ({
+    ...state,
+    selectedTool: 'craftercms.ice.browseComponents',
+    components: { ...state.components, contentTypeFilter: payload }
+  }),
 });
 
 function minFrameSize(suggestedSize: number): number {

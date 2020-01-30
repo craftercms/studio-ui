@@ -17,10 +17,15 @@
 
 import React, { useEffect, useRef } from 'react';
 import {
+  COMPONENT_INSTANCE_HTML_REQUEST,
+  COMPONENT_INSTANCE_HTML_RESPONSE,
   DELETE_ITEM_OPERATION,
   forEach,
   INSERT_COMPONENT_OPERATION,
+  INSERT_INSTANCE_OPERATION,
   notNullOrUndefined,
+  popPiece,
+  removeLastPiece,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../util';
 import { useGuestContext } from './GuestContext';
@@ -29,8 +34,9 @@ import iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery/dist/jquery.slim';
 import contentController, { ContentController } from '../classes/ContentController';
 import { zip } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { ContentTypeHelper } from "../classes/ContentTypeHelper";
+import { filter, map, take } from 'rxjs/operators';
+import { ContentTypeHelper } from '../classes/ContentTypeHelper';
+import { message$, post } from '../communicator';
 
 export function GuestProxy(props) {
 
@@ -60,6 +66,65 @@ export function GuestProxy(props) {
 
       context.register({ element, modelId, fieldId, index, label });
 
+    };
+
+    const appendIndex = (index, value) => {
+      return (typeof index === 'string') ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}` : index + value;
+    };
+
+    const updateElementRegistrations = (collection, type, newIndex, oldIndex) => {
+      let originalNewIndex = newIndex;
+      let originalOldIndex = oldIndex;
+      newIndex = (typeof newIndex === 'string') ? parseInt(popPiece(newIndex)) : newIndex;
+      oldIndex = (typeof oldIndex === 'string') ? parseInt(popPiece(oldIndex)) : oldIndex;
+      if (type === 'insert') {
+        collection.slice(newIndex).forEach((el, i) => {
+          $(el).attr('data-craftercms-index', appendIndex(originalNewIndex, i));
+          const pr = ElementRegistry.fromElement(el);
+          pr && context.deregister(pr.id);
+          registerElement(el);
+        });
+      } else if (type === 'move') {
+        let from;
+        let to;
+        let index;
+        if (oldIndex < newIndex) {
+          from = oldIndex;
+          to = newIndex + 1;
+          index = originalOldIndex;
+        } else {
+          from = newIndex;
+          to = oldIndex + 1;
+          index = originalNewIndex;
+        }
+        collection.slice(from, to).forEach((el, i) => {
+          $(el).attr('data-craftercms-index', appendIndex(index, i));
+          const pr = ElementRegistry.fromElement(el);
+          pr && context.deregister(pr.id);
+          registerElement(el);
+        });
+      }
+    };
+
+    const getDropzoneElement = (modelId, fieldId, targetIndex) => {
+      const dropZoneId = iceRegistry.exists({
+        modelId,
+        fieldId,
+        index: fieldId.includes('.')
+          ? removeLastPiece(targetIndex)
+          : null
+      });
+      return $(ElementRegistry.fromICEId(dropZoneId).element);
+    };
+
+    const insertElement = ($element, $daddy, targetIndex) => {
+      const index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
+      const $siblings = $daddy.find('> *');
+      if ($siblings.length === index) {
+        $daddy.append($element);
+      } else {
+        $element.insertBefore($siblings.eq(index));
+      }
     };
 
     zip(
@@ -126,29 +191,7 @@ export function GuestProxy(props) {
           // Update attribute(s)
           // $el.attr('data-craftercms-index', newIndex);
 
-          forEach(
-            $el.parent().children(),
-            (el, i) => {
-
-              $(el).attr('data-craftercms-index', i);
-
-              const pr = ElementRegistry.fromElement(el);
-
-              context.deregister(pr.id);
-              registerElement(el);
-
-              if (
-                (newIndex > index && i >= newIndex) ||
-                (newIndex < index && i >= index)
-              ) {
-                console.log(
-                  `(newIndex > index && i >= newIndex) ${(newIndex > index && i >= newIndex)}`,
-                  `(newIndex < index && i >= index) ${(newIndex < index && i >= index)}`
-                );
-                return 'break';
-              }
-
-            });
+          updateElementRegistrations(Array.from($el.parent().children()), 'move', newIndex, index);
 
           // Re-register with updates
           // registerElement(phyRecord.element);
@@ -250,46 +293,63 @@ export function GuestProxy(props) {
         case INSERT_COMPONENT_OPERATION: {
           const { modelId, fieldId, targetIndex, contentType, instance, shared } = op.args;
 
-          const $clone = $(`[data-craftercms-field-id="${fieldId}"][data-craftercms-index]:first`).clone();
-
-          const processFields = function (instance, fields) {
-            Object.entries(fields).forEach(([id, field]) => {
-              switch (field.type) {
-                case 'repeat':
-                case 'node-selector': {
-                  throw new Error('Not implemented.');
+          const $daddy = getDropzoneElement(modelId, fieldId, targetIndex);
+          let $clone = $daddy.children(':first').clone();
+          if ($clone.length) {
+            const processFields = function (instance, fields) {
+              Object.entries(fields).forEach(([id, field]) => {
+                switch (field.type) {
+                  case 'repeat':
+                  case 'node-selector': {
+                    throw new Error('Not implemented.');
+                  }
+                  default:
+                    $clone.find(`[data-craftercms-field-id="${id}"]`).html(instance[id]);
                 }
-                default:
-                  $clone.find(`[data-craftercms-field-id="${id}"]`).html(instance[id]);
-              }
-            });
-          };
-
-          processFields(instance, contentType.fields);
-
-          const $daddy = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]:not([data-craftercms-index])`);
-
-          const $siblings = $daddy.find('> *');
-
-          if ($siblings.length === targetIndex) {
-            $daddy.append($clone);
+              });
+            };
+            processFields(instance, contentType.fields);
           } else {
-            $clone.insertBefore($siblings.eq(targetIndex));
+            $clone = $(`<div  data-craftercms-model-id="${modelId}" data-craftercms-field-id="${fieldId}">${instance.craftercms.label}</div>`);
           }
 
-          forEach(
-            $daddy.children(),
-            (el, i) => {
+          insertElement($clone, $daddy, targetIndex);
 
-              $(el).attr('data-craftercms-index', i);
+          updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
 
-              const pr = ElementRegistry.fromElement(el);
+          break;
+        }
+        case INSERT_INSTANCE_OPERATION: {
+          const { modelId, fieldId, targetIndex, instance } = op.args;
 
-              pr && context.deregister(pr.id);
-              registerElement(el);
+          const $spinner = $(`
+            <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+              <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
+            </svg>
+          `);
 
-            }
-          );
+          const $daddy = getDropzoneElement(modelId, fieldId, targetIndex);
+
+          insertElement($spinner, $daddy, targetIndex);
+
+          const id = Date.now();
+
+          message$.pipe(
+            filter((e) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.id === id)),
+            map(e => e.data),
+            take(1)
+          ).subscribe(function ({ payload }) {
+            const $root = $('<div/>').html(payload.response);
+            const $component = ($root.children().length > 1) ? $root : $($root.children()[0]);
+            $component.attr('data-craftercms-model-id', modelId);
+            $component.attr('data-craftercms-field-id', fieldId);
+            $spinner.remove();
+            insertElement($component, $daddy, targetIndex);
+            updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
+            $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
+          });
+
+          post(COMPONENT_INSTANCE_HTML_REQUEST, { id, path: instance.craftercms.path });
 
           break;
         }
