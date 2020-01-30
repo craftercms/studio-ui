@@ -71,6 +71,7 @@ const messages = defineMessages({
 
 interface ToolBarGlobalNavProps {
   authHeaders?: string;
+  authSaml?: string;
 }
 
 export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
@@ -82,13 +83,13 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const onAvatarClose = () => setAnchorAvatar(null);
   const onMenuClose = () => setAnchor(null);
   const [logoutInfo, setLogoutInfo] = useState({ url: null, show: false });
-  const { authHeaders = 'AUTH_HEADERS' } = props;
+  const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { AUTHORING_BASE } = useEnv();
 
   useOnMount(() => {
-    if (user.authType === authHeaders) {
+    if (user.authType === authHeaders || user.authType === authSaml) {
       getLogoutInfoURL().subscribe((response) => {
         setLogoutInfo({
           url: response.logoutUrl ?? false,
