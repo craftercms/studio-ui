@@ -443,9 +443,9 @@ export default function GlobalNav(props: GlobalNavProps) {
               </Typography>
               <nav className={classes.sitesApps}>
                 {
-                  menuItems.map((item, i) =>
+                  menuItems.map((item) =>
                     <Tile
-                      key={i}
+                      key={item.id}
                       title={formatMessage(messages[popPiece(camelize(item.id))])}
                       icon={item.icon}
                       link={getLink(item.id)}
