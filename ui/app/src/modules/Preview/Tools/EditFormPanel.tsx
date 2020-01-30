@@ -146,16 +146,44 @@ export default function EditFormPanel() {
   // &edit=true
   // &editorId=1c5da642-e7cb-e4d1-636d-c343ca04618a
 
+  debugger;
+  //this needs to be on one useEffect item dependency;
   const fieldId = item.fieldId[0];
   const selectedId = (item.index !== undefined) ? model[fieldId][item.index] : item.modelId;
   const path = models[selectedId].craftercms.path || false;
-  const contentTypeId = models[selectedId].craftercms.contentType;
-  let src = '';
+  let src = null;
+  let childSrc = null;
   if (path) {
+    const contentTypeId = models[selectedId].craftercms.contentType;
     src = `${AUTHORING_BASE}/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true&editorId=123`;
   } else {
+    //model.crafter.id === id of the parent?
+    //selectedId === id of the son
     //we need to know who contains this [model.craftercms.id]
-    console.log(findParentModelId(model.craftercms.id, childrenMap, models));
+    console.log(model.craftercms.id);
+    //console.log(childrenMap);
+    //console.log(findParentModelId(model.craftercms.id, childrenMap, models));
+    const parentPath = models[model.craftercms.id].craftercms.path;
+    const parentContentTypeId = models[model.craftercms.id].craftercms.contentType;
+    const childContentTypeId = models[selectedId].craftercms.contentType;
+    // TODO: debemos abrir el form padre si es embedded
+    // /studio/form?site=editorialviejo&form=/page/home
+    // &path=/site/website/index.xml
+    // &isInclude=null
+    // & iceComponent=true
+    // &edit=true
+    // &editorId=8a8690ad-71ba-1b10-059f-6576d216a39a
+
+    src = `${AUTHORING_BASE}/form?site=${site}&form=${parentContentTypeId}&path=${parentPath}&isInclude=null&iceComponent=true&edit=true&editorId=123`;
+
+    // TODO: debemos abrir el form hijo
+    // /studio/form?site=editorialviejo&form=/component/feature
+    // &path=a89386c4-a205-2681-2db1-c3606f714411
+    // &isInclude=true
+    // &iceComponent=true
+    // &edit=true
+    // &editorId=dafdcd9d-3893-0a38-9c05-58b9083dabd0
+    //childSrc = `${AUTHORING_BASE}/form?site=${site}&form=${childContentTypeId}&path=${selectedId}&isInclude=true&iceComponent=true&edit=true&editorId=123`;
   }
 
 
@@ -164,23 +192,6 @@ export default function EditFormPanel() {
   const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
     ? model.craftercms.label
     : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
-
-  // TODO: debemos abrir el form padre si es embedded
-  // /studio/form?site=editorialviejo&form=/page/home
-  // &path=/site/website/index.xml
-  // &isInclude=null
-  // & iceComponent=true
-  // &edit=true
-  // &editorId=8a8690ad-71ba-1b10-059f-6576d216a39a
-
-  // TODO: debemos abrir el form hijo
-  // /studio/form?site=editorialviejo&form=/component/feature
-  // &path=a89386c4-a205-2681-2db1-c3606f714411
-  // &isInclude=true
-  // &iceComponent=true
-  // &edit=true
-  // &editorId=dafdcd9d-3893-0a38-9c05-58b9083dabd0
-
 
   function openEditForm() {
     setOpen(true);
@@ -211,6 +222,16 @@ export default function EditFormPanel() {
           <CloseIcon/>
         </IconButton>
         <iframe src={src} title='form' className={classes.iframe}/>
+      </Dialog>
+      <Dialog fullScreen open={open && childSrc} onClose={handleClose}>
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={handleClose}
+        >
+          <CloseIcon/>
+        </IconButton>
+        <iframe src={childSrc} title='childForm' className={classes.iframe}/>
       </Dialog>
     </>
   )
