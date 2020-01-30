@@ -133,7 +133,6 @@ function PublishDialog(props: PublishDialogProps) {
   });
 
   const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
-  // const siteId = useSelector<GlobalState, GlobalState['sites']>(state => state.sites).active;
   const siteId = useActiveSiteId();
   const userSitesRoles: String[] = user.rolesBySite[siteId];
   const userRole = userSitesRoles.includes('admin') ? 'admin' : 'author';
