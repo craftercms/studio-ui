@@ -35,6 +35,8 @@ import {
   browseSharedInstance,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  selectTool,
   TRASHED
 } from '../../../state/actions/preview';
 import { usePreviewState, useStateResourceSelection } from '../../../utils/hooks';
@@ -42,7 +44,7 @@ import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { EntityState } from '../../../models/GlobalState';
 import { nnou } from '../../../utils/object';
 import { DraggablePanelListItem } from './DraggablePanelListItem';
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -154,6 +156,14 @@ export function ComponentsPanelUI(props) {
     dispatch(browseSharedInstance(menuContext.contentType.id))
   };
 
+  const onListReceptaclesClick = () => {
+    dispatch(selectTool('craftercms.ice.contentTypeReceptacles'));
+    hostToGuest$.next({
+      type: CONTENT_TYPE_RECEPTACLES_REQUEST,
+      payload: menuContext.contentType.id
+    });
+  };
+
   return (
     <>
       <List className={classes.root}>
@@ -178,7 +188,7 @@ export function ComponentsPanelUI(props) {
       >
         <MenuItem onClick={onMenuOptionClicked}>List in-page instances</MenuItem>
         <MenuItem onClick={onBrowseSharedInstancesClicked}>{formatMessage(translations.browse)}</MenuItem>
-        <MenuItem onClick={onMenuOptionClicked}>List welcoming receptacles</MenuItem>
+        <MenuItem onClick={onListReceptaclesClick}>List receptacles</MenuItem>
       </Menu>
 
       <RubbishBin

@@ -23,6 +23,7 @@ import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
 import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
+import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -59,6 +60,10 @@ export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
 export const BROWSE_COMPONENT_INSTANCES = 'BROWSE_COMPONENT_INSTANCES';
 export const COMPONENT_INSTANCE_HTML_REQUEST = 'COMPONENT_INSTANCE_HTML_REQUEST';
 export const COMPONENT_INSTANCE_HTML_RESPONSE = 'COMPONENT_INSTANCE_HTML_RESPONSE';
+export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUEST';
+export const CONTENT_TYPE_RECEPTACLES_RESPONSE = 'CONTENT_TYPE_RECEPTACLES_RESPONSE';
+export const SCROLL_TO_RECEPTACLE = 'SCROLL_TO_RECEPTACLE';
+export const CLEAR_HIGHLIGHTED_RECEPTACLES = 'CLEAR_HIGHLIGHTED_RECEPTACLES';
 
 // endregion
 
@@ -93,6 +98,7 @@ export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
 export const SET_ACTIVE_TARGETING_MODEL_FAILED = 'SET_ACTIVE_TARGETING_MODEL_FAILED';
+export const CLEAR_RECEPTACLES = 'CLEAR_RECEPTACLES';
 
 // endregion
 
@@ -258,5 +264,9 @@ export const fetchComponentsByContentTypeComplete = createAction<ContentInstance
 export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 
 export const browseSharedInstance = createAction<string>(BROWSE_COMPONENT_INSTANCES);
+
+export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
+
+export const setContentTypeReceptacles = createAction<{ contentType: string; receptacle: ContentTypeReceptacle; }>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
 
 // endregion

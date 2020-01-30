@@ -22,6 +22,7 @@ import {
   checkOutGuest,
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   COMPONENT_INSTANCE_HTML_REQUEST,
   COMPONENT_INSTANCE_HTML_RESPONSE,
   CONTENT_TYPES_RESPONSE,
@@ -45,6 +46,7 @@ import {
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
   selectForEdit,
+  setContentTypeReceptacles,
   setItemBeingDragged,
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
@@ -280,7 +282,7 @@ export function PreviewConcierge(props: any) {
           dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN));
           break;
         }
-        case DESKTOP_ASSET_DROP:
+        case DESKTOP_ASSET_DROP: {
           uploadDataUrl(
             site,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
@@ -303,6 +305,11 @@ export function PreviewConcierge(props: any) {
             },
           );
           break;
+        }
+        case CONTENT_TYPE_RECEPTACLES_RESPONSE: {
+          dispatch(setContentTypeReceptacles(payload));
+          break;
+        }
         case COMPONENT_INSTANCE_HTML_REQUEST:
           getComponentInstanceHTML(payload.path).subscribe((htmlString) => {
             hostToGuest$.next({
@@ -328,7 +335,7 @@ export function PreviewConcierge(props: any) {
       case 'craftercms.ice.assets':
         (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems());
         break;
-      case 'craftercms.ice.components':
+      case 'craftercms.ice.audiences':
         if (
           !audiencesPanel.isFetching &&
           nou(audiencesPanel.contentType) &&

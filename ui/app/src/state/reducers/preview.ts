@@ -20,8 +20,10 @@ import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   BROWSE_COMPONENT_INSTANCES,
   CHANGE_CURRENT_URL,
+  CLEAR_RECEPTACLES,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
@@ -101,7 +103,11 @@ const reducer = createReducer<GlobalState['preview']>({
       type: 'Component'
     },
     contentTypeFilter: ''
-  }) as PagedEntityState<ContentInstance>
+  }) as PagedEntityState<ContentInstance>,
+  receptacles: {
+    selectedContentType: null,
+    byId: null
+  }
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
     ...state,
@@ -418,6 +424,22 @@ const reducer = createReducer<GlobalState['preview']>({
     selectedTool: 'craftercms.ice.browseComponents',
     components: { ...state.components, contentTypeFilter: payload }
   }),
+  [CONTENT_TYPE_RECEPTACLES_RESPONSE]: (state, { payload }) => ({
+    ...state,
+    receptacles: {
+      ...state.receptacles,
+      selectedContentType: payload.contentType,
+      byId: { ...state.receptacles.byId, ...createLookupTable(payload.receptacles) }
+    }
+  }),
+  [CLEAR_RECEPTACLES]: (state, { payload }) => ({
+    ...state,
+    receptacles: {
+      ...state.receptacles,
+      selectedContentType: null,
+      byId: null
+    }
+  })
 });
 
 function minFrameSize(suggestedSize: number): number {

@@ -19,9 +19,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
+  CLEAR_HIGHLIGHTED_RECEPTACLES,
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
   DESKTOP_ASSET_DROP,
@@ -42,6 +45,7 @@ import {
   notNullOrUndefined,
   pluckProps,
   RELOAD_REQUEST,
+  SCROLL_TO_RECEPTACLE,
   TRASHED
 } from '../util';
 import { fromEvent, interval, Subject, zip } from 'rxjs';
@@ -552,7 +556,7 @@ export function Guest(props) {
         return true;
       });
 
-      //scrollToReceptacle(validatedReceptacles);
+      // scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles.forEach(({ id }) => {
 
@@ -566,10 +570,7 @@ export function Guest(props) {
 
       });
 
-      const highlighted = dropZones.reduce((object, { physicalRecordId: id }) => {
-        object[id] = ElementRegistry.getHoverData(id);
-        return object;
-      }, {});
+      const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
 
@@ -977,14 +978,7 @@ export function Guest(props) {
 
         });
 
-      const highlighted = dropZones
-        .reduce(
-          (object, { physicalRecordId: id }) => {
-            object[id] = ElementRegistry.getHoverData(id);
-            return object;
-          },
-          {}
-        );
+      const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
 
@@ -1089,14 +1083,7 @@ export function Guest(props) {
 
         });
 
-      const highlighted = dropZones
-        .reduce(
-          (object, { physicalRecordId: id }) => {
-            object[id] = ElementRegistry.getHoverData(id);
-            return object;
-          },
-          {}
-        );
+      const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
 
@@ -1228,6 +1215,48 @@ export function Guest(props) {
           post({ type: GUEST_CHECK_OUT });
           return window.location.href = payload.url;
         }
+        case CONTENT_TYPE_RECEPTACLES_REQUEST: {
+          const highlighted = {};
+          let receptacles = iceRegistry.getContentTypeReceptacles(payload).map((item) => {
+            let { physicalRecordId } = ElementRegistry.compileDropZone(item.id);
+            let highlight = ElementRegistry.getHoverData(physicalRecordId);
+            highlighted[physicalRecordId] = highlight;
+            return {
+              modelId: item.modelId,
+              fieldId: item.fieldId,
+              label: highlight.label,
+              id: item.id,
+              contentType: payload
+            };
+          });
+          setState({
+            dragContext: {
+              ...stateRef.current.dragContext,
+              inZone: false,
+            },
+            common: {
+              ...stateRef.current.common,
+              status: EditingStatus.SHOW_RECEPTACLES,
+              highlighted
+            }
+          });
+
+          post({ type: CONTENT_TYPE_RECEPTACLES_RESPONSE, payload: { contentType: payload, receptacles } });
+          break;
+        }
+        case SCROLL_TO_RECEPTACLE:
+          scrollToReceptacle([payload]);
+          break;
+        case CLEAR_HIGHLIGHTED_RECEPTACLES:
+          setState({
+            ...stateRef.current,
+            common: {
+              ...stateRef.current.common,
+              status: EditingStatus.LISTENING,
+              highlighted: {}
+            }
+          });
+          break;
         default:
           console.warn(`[message$] Unhandled host message "${type}".`);
       }
