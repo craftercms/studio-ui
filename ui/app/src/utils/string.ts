@@ -70,14 +70,6 @@ export function isBlank(str: string): boolean {
   return str === '';
 }
 
-export default {
-  camelize,
-  capitalize,
-  underscore,
-  dasherize,
-  formatBytes
-};
-
 export function dataUriToBlob(dataURI: string) {
   // convert base64 to raw binary data held in a string
   // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
@@ -101,3 +93,25 @@ export function dataUriToBlob(dataURI: string) {
   const blob = new Blob([ab], { type: mimeString });
   return blob;
 }
+
+export function objectIdFromPath(path: string) {
+  return path.substr(path.lastIndexOf('/') + 1).replace(/\.xml/, '');
+}
+
+export function decodeHTML(html: string): string {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+}
+
+export default {
+  camelize,
+  capitalize,
+  underscore,
+  dasherize,
+  formatBytes,
+  dataUriToBlob,
+  objectIdFromPath,
+  decodeHTML
+};
+

@@ -23,12 +23,15 @@ import {
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
+  COMPONENT_INSTANCE_HTML_REQUEST,
+  COMPONENT_INSTANCE_HTML_RESPONSE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   fetchAssetsPanelItems,
   fetchAudiencesPanelFormDefinition,
+  fetchComponentsByContentType,
   fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -37,6 +40,7 @@ import {
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSERT_COMPONENT_OPERATION,
+  INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
@@ -47,7 +51,16 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
-import { deleteItem, insertComponent, moveItem, sortItem, updateField, uploadDataUrl } from '../../services/content';
+import {
+  deleteItem,
+  getComponentInstanceHTML,
+  insertComponent,
+  insertInstance,
+  moveItem,
+  sortItem,
+  updateField,
+  uploadDataUrl
+} from '../../services/content';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
@@ -84,6 +97,7 @@ export function PreviewConcierge(props: any) {
   const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelection(state => state.env);
   const priorState = useRef({ site });
   const assets = useSelection(state => state.preview.assets);
+  const contentTypeComponents = useSelection(state => state.preview.components);
   const audiencesPanel = useSelection(state => state.preview.audiencesPanel);
 
   useOnMount(() => {
@@ -141,14 +155,15 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case INSERT_COMPONENT_OPERATION: {
-          const { modelId, fieldId, targetIndex, instance, shared } = payload;
+          const { modelId, fieldId, targetIndex, instance, parentModelId, shared } = payload;
           insertComponent(
             site,
-            guest.models[modelId].craftercms.path,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
             fieldId,
             targetIndex,
             contentTypes.find((o) => o.id === instance.craftercms.contentType),
             instance,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null,
             shared
           ).subscribe(
             () => {
@@ -161,6 +176,25 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
+        case INSERT_INSTANCE_OPERATION:
+          const { modelId, fieldId, targetIndex, instance, parentModelId } = payload;
+          insertInstance(
+            site,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            fieldId,
+            targetIndex,
+            instance,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null
+          ).subscribe(
+            () => {
+              setSnack({ message: 'Insert component operation completed.' });
+            },
+            (error) => {
+              console.error(`${type} failed`, error);
+              setSnack({ message: 'Sort operation failed.' });
+            }
+          );
+          break;
         case INSERT_ITEM_OPERATION: {
           setSnack({ message: 'Insert item operation not implemented.' });
           break;
@@ -276,6 +310,14 @@ export function PreviewConcierge(props: any) {
           dispatch(setContentTypeReceptacles(payload));
           break;
         }
+        case COMPONENT_INSTANCE_HTML_REQUEST:
+          getComponentInstanceHTML(payload.path).subscribe((htmlString) => {
+            hostToGuest$.next({
+              type: COMPONENT_INSTANCE_HTML_RESPONSE,
+              payload: { response: htmlString, id: payload.id }
+            });
+          });
+          break;
       }
     });
 
@@ -291,7 +333,7 @@ export function PreviewConcierge(props: any) {
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems(assets.query));
+        (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems());
         break;
       case 'craftercms.ice.audiences':
         if (
@@ -303,7 +345,9 @@ export function PreviewConcierge(props: any) {
           dispatch(fetchAudiencesPanelFormDefinition());
         }
         break;
-      case 'craftercms.ice.components':
+      case 'craftercms.ice.browseComponents':
+        (contentTypeComponents.contentTypeFilter && contentTypeComponents.isFetching === null && site && contentTypeComponents.error === null)
+        && dispatch(fetchComponentsByContentType());
         break;
     }
 
@@ -312,7 +356,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     };
 
-  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, audiencesPanel, XSRF_CONFIG_ARGUMENT]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT, contentTypeComponents, audiencesPanel]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {

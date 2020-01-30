@@ -102,6 +102,7 @@ export interface GlobalState {
       model: ContentInstance,
       applied: boolean
     };
+    components: PagedEntityState<ContentInstance>;
     receptacles: {
       selectedContentType: string;
       byId: LookupTable<ContentTypeReceptacle>;

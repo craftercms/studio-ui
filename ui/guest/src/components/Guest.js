@@ -25,6 +25,8 @@ import {
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
+  COMPONENT_INSTANCE_DRAG_ENDED,
+  COMPONENT_INSTANCE_DRAG_STARTED,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   EDIT_MODE_CHANGED,
@@ -446,7 +448,7 @@ export function Guest(props) {
 
       });
 
-      const highlighted = gethighlightedZones(dropZones);
+      const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
 
@@ -470,6 +472,69 @@ export function Guest(props) {
         }
       });
 
+    },
+
+    onHostInstanceDragStarted(instance) {
+      let players = [];
+      let siblings = [];
+      let containers = [];
+      let dropZones = [];
+
+      const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentType);
+
+      if (receptacles.length === 0) {
+        // TODO: If there are no receptacles, the component should it even be listed as an option (?)
+        return;
+      }
+
+      const validatedReceptacles = receptacles.filter((id) => {
+        // TODO: min/max count validations
+        return true;
+      });
+
+      //scrollToReceptacle(validatedReceptacles);
+
+      validatedReceptacles.forEach(({ id }) => {
+
+        const dropZone = ElementRegistry.compileDropZone(id);
+        dropZone.origin = null;
+        dropZones.push(dropZone);
+
+        siblings = siblings.concat(dropZone.children);
+        players = players.concat(dropZone.children).concat(dropZone.element);
+        containers.push(dropZone.element);
+
+      });
+
+      const highlighted = getHighlighted(dropZones);
+
+      fn.initializeSubjects();
+
+      setState({
+        dragContext: {
+          players,
+          siblings,
+          dropZones,
+          containers,
+          instance,
+          inZone: false,
+          dragged: null,
+          targetIndex: null,
+        },
+        common: {
+          ...stateRef.current.common,
+          status: EditingStatus.PLACING_DETACHED_COMPONENT,
+          highlighted,
+          register,
+          deregister,
+          onEvent
+        }
+      });
+
+    },
+
+    onHostInstanceDragEnd() {
+      fn.dragOk() && fn.onDragEnd();
     },
 
     onHostComponentDragStarted(contentType) {
@@ -505,7 +570,7 @@ export function Guest(props) {
 
       });
 
-      const highlighted = gethighlightedZones(dropZones);
+      const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
 
@@ -634,7 +699,9 @@ export function Guest(props) {
           break;
         }
         case EditingStatus.PLACING_DETACHED_COMPONENT: {
-          // TODO: Insert detached component
+          if (notNullOrUndefined(dragContext.targetIndex)) {
+            fn.insertInstance();
+          }
           break;
         }
         case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
@@ -758,13 +825,26 @@ export function Guest(props) {
         contentController.insertComponent(
           record.modelId,
           record.fieldId,
-          targetIndex,
+          record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
           contentType
         );
       });
 
     },
 
+    insertInstance() {
+      const { targetIndex, instance, dropZone } = stateRef.current.dragContext;
+      const record = iceRegistry.recordOf(dropZone.iceId);
+
+      setTimeout(() => {
+        contentController.insertInstance(
+          record.modelId,
+          record.fieldId,
+          record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+          instance
+        );
+      });
+    },
     // onDragEnd doesn't execute when dropping from Host
     // consider behaviour when running Host Guest-side
     /*onDragEnd*/
@@ -898,7 +978,7 @@ export function Guest(props) {
 
         });
 
-      const highlighted = gethighlightedZones(dropZones);
+      const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
 
@@ -1003,7 +1083,7 @@ export function Guest(props) {
 
         });
 
-      const highlighted = gethighlightedZones(dropZones);
+      const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
 
@@ -1083,15 +1163,11 @@ export function Guest(props) {
     }
   }
 
-  function gethighlightedZones(dropZones) {
-    return dropZones
-      .reduce(
-        (object, { physicalRecordId: id }) => {
-          object[id] = ElementRegistry.getHoverData(id);
-          return object;
-        },
-        {}
-      );
+  function getHighlighted(dropZones) {
+    return dropZones.reduce((object, { physicalRecordId: id }) => {
+      object[id] = ElementRegistry.getHoverData(id);
+      return object;
+    }, {});
   }
 
   // 1. Subscribes to accommodation messages and routes them.
@@ -1122,6 +1198,10 @@ export function Guest(props) {
           return fn.onHostComponentDragStarted(payload);
         case COMPONENT_DRAG_ENDED:
           return fn.onHostComponentDragEnd();
+        case COMPONENT_INSTANCE_DRAG_STARTED:
+          return fn.onHostInstanceDragStarted(payload);
+        case COMPONENT_INSTANCE_DRAG_ENDED:
+          return fn.onHostInstanceDragEnd();
         case TRASHED:
           return fn.onTrashDrop(payload);
         case CLEAR_SELECTED_ZONES:

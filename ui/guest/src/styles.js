@@ -148,6 +148,21 @@ export function appendStyleSheet() {
           }
         }
       },
+      '.craftercms-placeholder-spinner': {
+        animation: 'craftercms-placeholder-rotate 2s linear infinite',
+        '& .path': {
+          stroke: colors.blue,
+          animation: 'craftercms-placeholder-dash 1.5s ease-in-out infinite'
+        }
+      },
+      '@keyframes craftercms-placeholder-rotate': {
+        '100%': { transform: 'rotate(360deg)' }
+      },
+      '@keyframes craftercms-placeholder-dash': {
+        '0%': { strokeDasharray: '1, 150', strokeDashoffset: '0' },
+        '50%': { strokeDasharray: '90, 150', strokeDashoffset: '-35' },
+        '100%': { strokeDasharray: '90, 150', strokeDashoffset: '-124' }
+      }
     }
   });
 

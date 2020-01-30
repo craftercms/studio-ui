@@ -47,6 +47,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
+import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawer: {
@@ -137,7 +138,11 @@ const translations = defineMessages({
   publishingChannel: {
     id: 'craftercms.ice.simulator.title',
     defaultMessage: 'Device Simulator'
-  }
+  },
+  browseComponentsPanel: {
+    id: 'craftercms.ice.browseComponents.title',
+    defaultMessage: 'Browse Components'
+  },
 });
 
 function UnknownPanel(props: any) {
@@ -167,7 +172,6 @@ function ToolSelector() {
   const { tools } = usePreviewState();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
-
   return (
     (tools == null) ? (
       <LoadingState title="Loading..." graphicProps={{ width: 150 }}/>
@@ -192,7 +196,8 @@ const componentIconMap: any = {
   'craftercms.ice.assets': ImageRounded,
   'craftercms.ice.audiences': EmojiPeopleRounded,
   'craftercms.ice.simulator': DevicesRounded,
-  'craftercms.ice.ice': EditRounded
+  'craftercms.ice.ice': EditRounded,
+  'craftercms.ice.browseComponents': ExtensionRounded,
 };
 
 const componentMap: any = {
@@ -202,6 +207,7 @@ const componentMap: any = {
   'craftercms.ice.simulator': SimulatorPanel,
   'craftercms.ice.ice': ICEPanel,
   'craftercms.ice.editForm': EditFormPanel,
+  'craftercms.ice.browseComponents': BrowseComponentsPanel,
   'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel
 };
 
