@@ -31,13 +31,13 @@
     'ngAnimate'
   ]);
 
-  const i18n = CrafterCMSNext.i18n,
-        formatMessage = i18n.intl.formatMessage,
-        passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
-        globalConfigMessages = i18n.messages.globalConfigMessages,
-        words = i18n.messages.words,
-        profileSettingsMessages = i18n.messages.profileSettingsMessages,
-        globalMenuMessages = i18n.messages.globalMenuMessages;
+  let i18n = CrafterCMSNext.i18n,
+    formatMessage = i18n.intl.formatMessage,
+    passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
+    globalConfigMessages = i18n.messages.globalConfigMessages,
+    words = i18n.messages.words,
+    profileSettingsMessages = i18n.messages.profileSettingsMessages,
+    globalMenuMessages = i18n.messages.globalMenuMessages;
 
   app.run([
     '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
@@ -1068,10 +1068,6 @@
       $scope.selectActionLanguage = function(optSelected) {
         $scope.isModified = true;
         $scope.langSelected = optSelected;
-        if(optSelected) {
-          let loginSuccess = new CustomEvent('setlocale', { 'detail': optSelected });
-          document.dispatchEvent(loginSuccess);
-        }
       };
 
       $scope.setLangCookie = function() {
@@ -1318,8 +1314,12 @@
       function initGlobalMenu(data) {
         $scope.entities = data;
 
-        if($scope.entities.length > 1){
-          $scope.entities.forEach(function(entry, i) {
+        i18n = CrafterCMSNext.i18n;
+        formatMessage = i18n.intl.formatMessage;
+        globalMenuMessages = i18n.messages.globalMenuMessages;
+
+        if ($scope.entities.length > 1) {
+          $scope.entities.forEach(function (entry, i) {
             const label = (
               globalMenuMessages[entry.id]
                 ? formatMessage(globalMenuMessages[entry.id])
@@ -1332,12 +1332,16 @@
               $state.go(entry.id);
             }
           });
-        }else{
-          if($scope.entities.length > 0) {
+        } else {
+          if ($scope.entities.length > 0) {
             $state.go((data[0] || data.menuItems[0]).id.replace('globalMenu.', ''));
           }
         }
       }
+
+      document.addEventListener('setlocale', () => {
+        initGlobalMenu($rootScope.globalMenuData);
+      }, false);
     }
 
   ]);
