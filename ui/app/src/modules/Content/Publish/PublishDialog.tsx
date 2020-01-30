@@ -159,10 +159,6 @@ function PublishDialog(props: PublishDialogProps) {
         setPublishingChannels(response.availablePublishChannels);
         setPublishingChannelsStatus('Success');
         setSubmitDisabled(false);
-
-        if (response.availablePublishChannels.length > 0) {
-          setDialog({ ...dialog, 'environment': response.availablePublishChannels[0].name });
-        }
       },
       ({ response }) => {
         setPublishingChannelsStatus('Error');
