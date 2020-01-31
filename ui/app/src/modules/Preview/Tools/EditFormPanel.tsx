@@ -101,6 +101,25 @@ export default function EditFormPanel() {
   const onBack = createBackHandler(dispatch);
   const [open, setOpen] = useState(false);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const [src, setSrc] = useState(null);
+  const [childSrc, setChildSrc] = useState(null);
+
+  const item = selected[0];
+  const index = item.index;
+  const model = models[item.modelId];
+
+  const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
+  const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
+    ? model.craftercms.label
+    : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
+
+  function openEditForm() {
+    setOpen(true);
+  }
+
+  function handleClose() {
+    setOpen(false);
+  }
 
   useEffect(() => {
     const handler = (e) => {
@@ -111,6 +130,58 @@ export default function EditFormPanel() {
     document.addEventListener('keydown', handler, false);
     return () => document.removeEventListener('keydown', handler, false);
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log('here');
+    //TODO: este es shared
+    // /studio/form?site=editorialviejo&form=/component/feature
+    // &path=/site/components/features/fbabf5a8-4bcb-411a-0242-a74f6e8e570c.xml
+    // &isInclude=null
+    // &iceComponent=true
+    // &edit=true
+    // &editorId=1c5da642-e7cb-e4d1-636d-c343ca04618a
+
+    debugger;
+    //this needs to be on one useEffect item dependency;
+    const fieldId = item.fieldId[0];
+    const selectedId = (item.index !== undefined) ? model[fieldId][item.index] : item.modelId;
+    const path = models[selectedId].craftercms.path || false;
+    //let src = null;
+    //let childSrc = null;
+
+    //if the item is shared
+    if (path) {
+      const contentTypeId = models[selectedId].craftercms.contentType;
+      setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
+    } else {
+      //the items is inside of a component
+      let parentPath;
+      let parentContentTypeId;
+      let childContentTypeId;
+      if (model === models[selectedId]) {
+        let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
+        parentPath = models[parentId].craftercms.path;
+        parentContentTypeId = models[parentId].craftercms.contentType;
+        childContentTypeId = model.craftercms.contentType;
+      } else {
+        parentPath = models[model.craftercms.id].craftercms.path;
+        parentContentTypeId = models[model.craftercms.id].craftercms.contentType;
+        childContentTypeId = models[selectedId].craftercms.contentType;
+      }
+
+      setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${parentContentTypeId}&path=${parentPath}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
+      setChildSrc(`${AUTHORING_BASE}/form?site=${site}&form=${childContentTypeId}&path=${selectedId}&isInclude=true&iceComponent=true&edit=true&editorId=123`);
+
+      // TODO: debemos abrir el form hijo
+      // /studio/form?site=editorialviejo&form=/component/feature
+      // &path=a89386c4-a205-2681-2db1-c3606f714411
+      // &isInclude=true
+      // &iceComponent=true
+      // &edit=true
+      // &editorId=dafdcd9d-3893-0a38-9c05-58b9083dabd0
+    }
+
+  }, []);
 
   if (selected.length > 1) {
     // TODO: Implement Multi-mode...
@@ -128,77 +199,8 @@ export default function EditFormPanel() {
     )
   }
 
-  const item = selected[0];
-  const index = item.index;
-  const model = models[item.modelId];
-
   if (index != null) {
 
-  }
-
-  //selected Item data
-
-  //TODO: este es shared
-  // /studio/form?site=editorialviejo&form=/component/feature
-  // &path=/site/components/features/fbabf5a8-4bcb-411a-0242-a74f6e8e570c.xml
-  // &isInclude=null
-  // &iceComponent=true
-  // &edit=true
-  // &editorId=1c5da642-e7cb-e4d1-636d-c343ca04618a
-
-  debugger;
-  //this needs to be on one useEffect item dependency;
-  const fieldId = item.fieldId[0];
-  const selectedId = (item.index !== undefined) ? model[fieldId][item.index] : item.modelId;
-  const path = models[selectedId].craftercms.path || false;
-  let src = null;
-  let childSrc = null;
-  if (path) {
-    const contentTypeId = models[selectedId].craftercms.contentType;
-    src = `${AUTHORING_BASE}/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true&editorId=123`;
-  } else {
-    //model.crafter.id === id of the parent?
-    //selectedId === id of the son
-    //we need to know who contains this [model.craftercms.id]
-    console.log(model.craftercms.id);
-    //console.log(childrenMap);
-    //console.log(findParentModelId(model.craftercms.id, childrenMap, models));
-    const parentPath = models[model.craftercms.id].craftercms.path;
-    const parentContentTypeId = models[model.craftercms.id].craftercms.contentType;
-    const childContentTypeId = models[selectedId].craftercms.contentType;
-    // TODO: debemos abrir el form padre si es embedded
-    // /studio/form?site=editorialviejo&form=/page/home
-    // &path=/site/website/index.xml
-    // &isInclude=null
-    // & iceComponent=true
-    // &edit=true
-    // &editorId=8a8690ad-71ba-1b10-059f-6576d216a39a
-
-    src = `${AUTHORING_BASE}/form?site=${site}&form=${parentContentTypeId}&path=${parentPath}&isInclude=null&iceComponent=true&edit=true&editorId=123`;
-
-    // TODO: debemos abrir el form hijo
-    // /studio/form?site=editorialviejo&form=/component/feature
-    // &path=a89386c4-a205-2681-2db1-c3606f714411
-    // &isInclude=true
-    // &iceComponent=true
-    // &edit=true
-    // &editorId=dafdcd9d-3893-0a38-9c05-58b9083dabd0
-    //childSrc = `${AUTHORING_BASE}/form?site=${site}&form=${childContentTypeId}&path=${selectedId}&isInclude=true&iceComponent=true&edit=true&editorId=123`;
-  }
-
-
-
-  const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
-  const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
-    ? model.craftercms.label
-    : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
-
-  function openEditForm() {
-    setOpen(true);
-  }
-
-  function handleClose() {
-    setOpen(false);
   }
 
   return (
@@ -223,16 +225,19 @@ export default function EditFormPanel() {
         </IconButton>
         <iframe src={src} title='form' className={classes.iframe}/>
       </Dialog>
-      <Dialog fullScreen open={open && childSrc} onClose={handleClose}>
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={handleClose}
-        >
-          <CloseIcon/>
-        </IconButton>
-        <iframe src={childSrc} title='childForm' className={classes.iframe}/>
-      </Dialog>
+      {
+        childSrc &&
+        <Dialog fullScreen open={open} onClose={handleClose}>
+          <IconButton
+            aria-label="close"
+            className={classes.closeButton}
+            onClick={handleClose}
+          >
+            <CloseIcon/>
+          </IconButton>
+          <iframe src={childSrc} title='childForm' className={classes.iframe}/>
+        </Dialog>
+      }
     </>
   )
 }
