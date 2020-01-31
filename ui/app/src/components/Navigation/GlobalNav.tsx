@@ -16,34 +16,35 @@
  */
 
 import React, { ElementType, useEffect, useState } from 'react';
-import { defineMessages, useIntl } from "react-intl";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { palette } from "../../styles/theme";
-import { fetchSites } from "../../services/sites";
-import Popover from "@material-ui/core/Popover";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import SiteCard from "./SiteCard";
+import { defineMessages, useIntl } from 'react-intl';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { palette } from '../../styles/theme';
+import { fetchSites } from '../../services/sites';
+import Popover from '@material-ui/core/Popover';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { getDOM, getGlobalMenuItems } from '../../services/configuration';
-import ErrorState from "../SystemStatus/ErrorState";
+import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
 import DevicesIcon from '@material-ui/icons/Devices';
 import Link from '@material-ui/core/Link';
-import IconButton from "@material-ui/core/IconButton";
-import LoadingState from "../SystemStatus/LoadingState";
+import IconButton from '@material-ui/core/IconButton';
+import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { Observable, forkJoin } from "rxjs";
-import { LookupTable } from "../../models/LookupTable";
+import { forkJoin, Observable } from 'rxjs';
+import { LookupTable } from '../../models/LookupTable';
 import { useActiveSiteId, useEnv } from '../../utils/hooks';
 import { forEach } from '../../utils/array';
 import { getInnerHtml } from '../../utils/xml';
-import { createStyles } from "@material-ui/core";
+import { createStyles } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { changeSite } from '../../state/actions/sites';
+import { camelize, popPiece } from '../../utils/string';
 
 const tileStyles = makeStyles(() => createStyles({
   tile: {
@@ -70,9 +71,7 @@ const tileStyles = makeStyles(() => createStyles({
     fontSize: '35px !important',
     color: palette.gray.medium5
   },
-  tileTitle: {
-
-  }
+  tileTitle: {}
 }));
 
 const messages = defineMessages({
@@ -212,7 +211,7 @@ const globalNavUrlMapping = {
   'preview': '/preview',
   'about': '#/about-us',
   'legacy.preview': '/legacy/preview',
-  'siteConfig': '/site-config',
+  'siteConfig': '/site-config'
 };
 
 const siteMenuKeys = {
@@ -227,7 +226,7 @@ const globalNavStyles = makeStyles((theme) => createStyles({
     maxWidth: '820px',
     width: 'calc(100% - 32px)',
     maxHeight,
-    borderRadius: '20px',
+    borderRadius: '20px'
   },
   sitesPanel: {
     ...(
@@ -246,10 +245,10 @@ const globalNavStyles = makeStyles((theme) => createStyles({
   },
   title: {
     textTransform: 'uppercase',
-    fontWeight: 600,
+    fontWeight: 600
   },
   titleCard: {
-    marginBottom: '20px',
+    marginBottom: '20px'
   },
   sitesApps: {
     display: 'flex',
@@ -304,7 +303,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     {
       name: formatMessage(messages.dashboard),
       onClick: onDashboardClick
-    },
+    }
   ];
 
   function handleErrorBack() {
@@ -342,7 +341,7 @@ export default function GlobalNav(props: GlobalNavProps) {
         setMenuItems(globalMenuItemsResponse.response.menuItems);
         let roleFound = {
           [siteMenuKeys.dashboard]: false,
-          [siteMenuKeys.siteConfig]: false,
+          [siteMenuKeys.siteConfig]: false
         };
         if (xml) {
           forEach(
@@ -350,7 +349,7 @@ export default function GlobalNav(props: GlobalNavProps) {
             (module) => {
               if (getInnerHtml(module.querySelector('name')) === siteMenuKeys.siteConfig || getInnerHtml(module.querySelector('name')) === siteMenuKeys.dashboard) {
                 const roles = module.querySelectorAll('role');
-                roleFound[getInnerHtml(module.querySelector('name'))] = roles.length? forEach(
+                roleFound[getInnerHtml(module.querySelector('name'))] = roles.length ? forEach(
                   roles,
                   (role) => {
                     if (
@@ -385,11 +384,11 @@ export default function GlobalNav(props: GlobalNavProps) {
       classes={{ paper: classes.popover }}
       anchorOrigin={{
         vertical: 'bottom',
-        horizontal: 'right',
+        horizontal: 'right'
       }}
       transformOrigin={{
         vertical: 'top',
-        horizontal: 'right',
+        horizontal: 'right'
       }}
     >
       <IconButton
@@ -444,8 +443,13 @@ export default function GlobalNav(props: GlobalNavProps) {
               </Typography>
               <nav className={classes.sitesApps}>
                 {
-                  menuItems.map((item, i) =>
-                    <Tile key={i} title={item.label} icon={item.icon} link={getLink(item.id)}/>
+                  menuItems.map((item) =>
+                    <Tile
+                      key={item.id}
+                      title={formatMessage(messages[popPiece(camelize(item.id))])}
+                      icon={item.icon}
+                      link={getLink(item.id)}
+                    />
                   )
                 }
                 <Tile

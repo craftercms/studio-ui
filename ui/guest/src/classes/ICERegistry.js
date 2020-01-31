@@ -124,7 +124,7 @@ export class ICERegistry {
         if (
           record.modelId === data.modelId &&
           (data.fieldId == null || record.fieldId === data.fieldId) &&
-          (data.index == null || record.index === data.index)
+          (data.index == null || `${record.index}` === `${data.index}`)
         ) {
           return record.id;
         }

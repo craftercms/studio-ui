@@ -978,7 +978,8 @@
         .render(
           container,
           'ToolbarGlobalNav', {
-            authHeaders: Constants.AUTH_HEADERS
+            authHeaders: Constants.AUTH_HEADERS,
+            authSaml: Constants.SAML
           }
         );
 
@@ -987,7 +988,7 @@
           function successCallback(response) {
             $scope.externallyManaged = response.data.authenticatedUser.externallyManaged;
             $scope.showLogoutLink = !(
-              response.data.authenticatedUser.authenticationType === Constants.AUTH_HEADERS || 
+              response.data.authenticatedUser.authenticationType === Constants.AUTH_HEADERS ||
               response.data.authenticatedUser.authenticationType === Constants.SAML
             );
             if(!$scope.showLogoutLink) {

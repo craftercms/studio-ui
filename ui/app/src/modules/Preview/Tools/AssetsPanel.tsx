@@ -15,30 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { useActiveSiteId, useSelection, useStateResourceSelection } from "../../../utils/hooks";
-import { MediaItem } from "../../../models/Search";
-import { createStyles, fade } from "@material-ui/core";
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import { useActiveSiteId, useDebouncedInput, useSelection, useStateResourceSelection } from '../../../utils/hooks';
+import { MediaItem } from '../../../models/Search';
+import { createStyles, fade } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import SearchBar from '../../../components/SearchBar';
-import { useDispatch, useSelector } from "react-redux";
-import GlobalState, { PagedEntityState } from "../../../models/GlobalState";
-import TablePagination from "@material-ui/core/TablePagination";
-import { fromEvent, interval, Subject } from "rxjs";
-import LoadingState from "../../../components/SystemStatus/LoadingState";
-import { debounceTime, distinctUntilChanged, filter, mapTo, share, switchMap, takeUntil, tap } from "rxjs/operators";
-import { DRAWER_WIDTH, getHostToGuestBus } from "../previewContext";
-import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from "../../../state/actions/preview";
-import { ErrorBoundary } from "../../../components/ErrorBoundary";
+import { useDispatch, useSelector } from 'react-redux';
+import GlobalState, { PagedEntityState } from '../../../models/GlobalState';
+import TablePagination from '@material-ui/core/TablePagination';
+import { fromEvent, interval } from 'rxjs';
+import LoadingState from '../../../components/SystemStatus/LoadingState';
+import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
+import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../../state/actions/preview';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
-import EmptyState from "../../../components/SystemStatus/EmptyState";
+import EmptyState from '../../../components/SystemStatus/EmptyState';
 import UploadIcon from '@material-ui/icons/Publish';
-import { nnou, pluckProps } from "../../../utils/object";
-import { palette } from "../../../styles/theme";
-import { uploadDataUrl } from "../../../services/content";
+import { nnou, pluckProps } from '../../../utils/object';
+import { palette } from '../../../styles/theme';
+import { uploadDataUrl } from '../../../services/content';
 
 const translations = defineMessages({
   assetsPanel: {
@@ -53,10 +53,6 @@ const translations = defineMessages({
     id: 'craftercms.ice.assets.noResults',
     defaultMessage: ' No results found.'
   },
-  retrieveAssets: {
-    id: 'craftercms.ice.assets.retrieveAssets',
-    defaultMessage: 'Retrieving Site Assets'
-  },
   previousPage: {
     id: 'craftercms.ice.assets.previousPage',
     defaultMessage: 'previous page'
@@ -65,9 +61,9 @@ const translations = defineMessages({
     id: 'craftercms.ice.assets.nextPage',
     defaultMessage: 'next page'
   },
-  loading: {
-    id: 'craftercms.ice.assets.loading',
-    defaultMessage: 'Loading'
+  retrieveAssets: {
+    id: 'craftercms.ice.assets.retrieveAssets',
+    defaultMessage: 'Retrieving Site Assets'
   }
 });
 
@@ -156,7 +152,6 @@ interface AssetResource {
 
 export default function AssetsPanel() {
   const classes = assetsPanelStyles({});
-  const onSearch$ = useMemo(() => new Subject<string>(), []);
   const initialKeyword = useSelection(state => state.preview.assets.query.keywords);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [dragInProgress, setDragInProgress] = useState(false);
@@ -164,7 +159,7 @@ export default function AssetsPanel() {
   const dispatch = useDispatch();
   const resource = useStateResourceSelection<AssetResource, PagedEntityState<MediaItem>>(state => state.preview.assets, {
     shouldRenew: (source, resource) => resource.complete,
-    shouldResolve: source => (!source.isFetching) && nnou(source.byId),
+    shouldResolve: source => (!source.isFetching) && nnou(source.page[source.pageNumber]),
     shouldReject: source => nnou(source.error),
     errorSelector: source => source.error,
     resultSelector: source => {
@@ -189,7 +184,7 @@ export default function AssetsPanel() {
     type: ASSET_DRAG_ENDED
   });
 
-  const onDragDrop = (e) => {
+  const onDragDrop = useCallback((e) => {
     const file = e.dataTransfer.files[0];
     if (!file) {
       return;
@@ -217,7 +212,7 @@ export default function AssetsPanel() {
     };
     reader.readAsDataURL(file);
     setDragInProgress(false);
-  };
+  }, [XSRF_CONFIG_ARGUMENT, dispatch, site]);
 
   useEffect(() => {
     const subscription = fromEvent(elementRef.current, 'dragenter').pipe(
@@ -228,8 +223,7 @@ export default function AssetsPanel() {
       setDragInProgress(true);
     });
     return () => subscription.unsubscribe();
-  }, [onDragDrop]);
-
+  }, []);
 
   useEffect(() => {
     if (dragInProgress) {
@@ -258,17 +252,13 @@ export default function AssetsPanel() {
         dropSubscription.unsubscribe();
       };
     }
-  }, [dragInProgress]);
+  }, [dragInProgress, onDragDrop]);
 
-  useEffect(() => {
-    const subscription = onSearch$.pipe(
-      debounceTime(400),
-      distinctUntilChanged()
-    ).subscribe((keywords: string) => {
-      dispatch(fetchAssetsPanelItems({ keywords }));
-    });
-    return () => subscription.unsubscribe();
-  }, [dispatch, onSearch$]);
+  const onSearch = useCallback((
+    (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 }))
+  ), [dispatch]);
+
+  const onSearch$ = useDebouncedInput(onSearch, 400);
 
   function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     dispatch(fetchAssetsPanelItems({ offset: newPage }));
@@ -292,7 +282,7 @@ export default function AssetsPanel() {
           <React.Suspense
             fallback={
               <LoadingState
-                title={formatMessage(translations.loading)}
+                title={formatMessage(translations.retrieveAssets)}
                 graphicProps={{ width: 150 }}
               />
             }

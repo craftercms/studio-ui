@@ -17,9 +17,11 @@
 
 import { shallowEqual, useSelector } from 'react-redux';
 import GlobalState from '../models/GlobalState';
-import { EffectCallback, useEffect, useState } from 'react';
+import { EffectCallback, useEffect, useRef, useState } from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -154,4 +156,16 @@ export function useStateResource<ReturnType = any, SourceType = GlobalState>(
 
 export function useOnMount(componentDidMount: EffectCallback) {
   useEffect(componentDidMount, []);
+}
+
+export function useDebouncedInput(observer: (keywords: string) => any, time: number = 250) {
+  const subject$Ref = useRef(new Subject<string>());
+  useEffect(() => {
+    const subscription = subject$Ref.current.pipe(
+      debounceTime(time),
+      distinctUntilChanged()
+    ).subscribe(observer);
+    return () => subscription.unsubscribe();
+  }, [observer, time]);
+  return subject$Ref.current;
 }

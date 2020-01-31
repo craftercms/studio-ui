@@ -128,6 +128,10 @@ export function createElements(doc: XMLDocument, element: Element, data: object)
   });
 }
 
+export function wrapElementInAuxDocument(element: Element): XMLDocument {
+  return fromString(`<?xml version="1.0" encoding="UTF-8"?>${element.outerHTML}`);
+}
+
 export default {
   fromString,
   deserialize,
@@ -138,5 +142,6 @@ export default {
   extractLocalizedElements,
   commentless,
   findDocumentElement,
-  createElements
+  createElements,
+  wrapElementInAuxDocument
 };

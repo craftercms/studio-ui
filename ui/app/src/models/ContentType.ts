@@ -32,9 +32,11 @@ export interface ContentTypeField {
   validations: {
     contentTypes: string[];
   };
-  defaultValue: string
+  defaultValue: any;
   required: boolean;
   fields?: LookupTable<ContentTypeField>;
+  values?: { label: string, value: string }[];
+  helpText?: string;
   // localized: boolean;
   // disabled: boolean;
   // readonly: boolean;

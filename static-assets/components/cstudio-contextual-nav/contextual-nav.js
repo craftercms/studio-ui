@@ -58,7 +58,8 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
             .render(
               container,
               'ToolbarGlobalNav', {
-                authHeaders: CStudioAuthoring.Constants.AUTH_HEADERS
+                authHeaders: CStudioAuthoring.Constants.AUTH_HEADERS,
+                authSaml: CStudioAuthoring.Constants.SAML
               }
             );
           me.addResizeEventToNavbar();
