@@ -181,7 +181,7 @@ function PublishDialog(props: PublishDialogProps) {
   const handleClose = () => {
     setOpen(false);
 
-    //call externalClose fn
+    // call externalClose fn
     onClose();
   };
 
@@ -259,14 +259,12 @@ function PublishDialog(props: PublishDialogProps) {
     setApiState({ ...apiState, error: false, global: false });
   }
 
-  const onPublishingChannelsFailRetry = () => getPublishingChannels();
-
   return (
     <PublishDialogUI
       items={items}
       publishingChannels={publishingChannels}
       publishingChannelsStatus={publishingChannelsStatus}
-      onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
+      onPublishingChannelsFailRetry={getPublishingChannels}
       handleClose={handleClose}
       handleSubmit={handleSubmit}
       submitDisabled={submitDisabled}
