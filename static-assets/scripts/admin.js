@@ -243,7 +243,7 @@
       }
 
       this.getLogPreview = function(data){
-        return $http.get('/api/1/monitoring/log.json', {
+        return $http.get('/studio/engine/api/1/monitoring/log.json', {
           params: data
         });
       }
@@ -753,7 +753,8 @@
         }
 
         if(logType === 'preview') {
-          data.site = $location.search().site
+          data.site = $location.search().site;
+          data.crafterSite = data.site;
         }
 
         logService(data)
