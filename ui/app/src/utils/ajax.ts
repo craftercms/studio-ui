@@ -34,7 +34,7 @@ export function getGlobalHeaders() {
 }
 
 /* private */
-function mergeHeaders(headers: object = {}) {
+function mergeHeaders(headers: object = {}): object {
   if (headers === OMIT_GLOBAL_HEADERS) {
     return null;
   } else if (Object.values(headers).includes(OMIT_GLOBAL_HEADERS)) {
@@ -43,7 +43,7 @@ function mergeHeaders(headers: object = {}) {
   return Object.assign({}, HEADERS, headers);
 }
 
-export function get(url: string, headers: object = {}) {
+export function get(url: string, headers: object = {}): Observable<AjaxResponse> {
   return ajax.get(url, mergeHeaders(headers));
 }
 
@@ -55,23 +55,23 @@ export function getText(url: string, headers?: object): Observable<AjaxResponse>
   });
 }
 
-export function post(url: string, body: any, headers: object = {}) {
+export function post(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders(headers));
 }
 
-export function postJSON(url: string, body: any, headers: object = {}) {
+export function postJSON(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
 }
 
-export function patch(url: string, body: any, headers: object = {}) {
+export function patch(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.patch(url, body, mergeHeaders(headers));
 }
 
-export function put(url: string, body: any, headers: object = {}) {
+export function put(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.put(url, body, mergeHeaders(headers));
 }
 
-export function del(url: string, headers: object = {}) {
+export function del(url: string, headers: object = {}): Observable<AjaxResponse> {
   return ajax.delete(url, mergeHeaders(headers));
 }
 
@@ -97,6 +97,7 @@ export default {
   getGlobalHeaders,
   setGlobalHeaders,
   get,
+  getText,
   post,
   postJSON,
   patch,
