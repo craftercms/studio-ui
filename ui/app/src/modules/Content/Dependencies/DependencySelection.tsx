@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderColor: palette.gray.light5,
     height: 'calc(100% - 24px)',
     minHeight: '374px',
-    overflowY: 'scroll'
+    overflowY: 'hidden'
   },
   selectionListTitle: {
     margin: '6px auto 6px',

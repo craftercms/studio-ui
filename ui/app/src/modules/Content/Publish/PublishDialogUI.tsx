@@ -31,6 +31,7 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import ErrorState from '../../../components/SystemStatus/ErrorState';
 import { palette } from '../../../styles/theme';
+import LoadingState from '../../../components/SystemStatus/LoadingState';
 
 const dialogStyles = () => ({
   titleRoot: {
@@ -59,7 +60,14 @@ const dialogStyles = () => ({
     maxHeight: '586px',
     height: '100vh',
     padding: 0
-  }
+  },
+  loadingStateRoot: {
+    height: '100%',
+  },
+  loadingStateGraphic: {
+    flexGrow: 1,
+    padding: '50px 0'
+  },
 });
 
 const DialogTitle = withStyles(dialogStyles)((props: any) => {
@@ -179,34 +187,47 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
               subtitle={subtitle}
             />
             <DialogContent dividers>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
-                  <DependencySelection
-                    items={items}
-                    checked={checkedItems}
-                    setChecked={setCheckedItems}
-                    checkedSoftDep={checkedSoftDep}
-                    setCheckedSoftDep={setCheckedSoftDep}
-                    onClickSetChecked={onClickSetChecked}
-                    deps={deps}
-                    showDepsButton={showDepsButton}
-                    onSelectAllClicked={selectAllDeps}
-                    onSelectAllSoftClicked={selectAllSoft}
-                  />
-                </Grid>
+              {
+                !(apiState.submitting) &&
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
+                    <DependencySelection
+                      items={items}
+                      checked={checkedItems}
+                      setChecked={setCheckedItems}
+                      checkedSoftDep={checkedSoftDep}
+                      setCheckedSoftDep={setCheckedSoftDep}
+                      onClickSetChecked={onClickSetChecked}
+                      deps={deps}
+                      showDepsButton={showDepsButton}
+                      onSelectAllClicked={selectAllDeps}
+                      onSelectAllSoftClicked={selectAllSoft}
+                    />
+                  </Grid>
 
-                <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
-                  <PublishForm
-                    inputs={dialog}
-                    setInputs={setDialog}
-                    setSubmitDisabled={setSubmitDisabled}
-                    showEmailCheckbox={showEmailCheckbox}
-                    publishingChannels={publishingChannels}
-                    publishingChannelsStatus={publishingChannelsStatus}
-                    onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
-                  />
+                  <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
+                    <PublishForm
+                      inputs={dialog}
+                      setInputs={setDialog}
+                      setSubmitDisabled={setSubmitDisabled}
+                      showEmailCheckbox={showEmailCheckbox}
+                      publishingChannels={publishingChannels}
+                      publishingChannelsStatus={publishingChannelsStatus}
+                      onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
+                    />
+                  </Grid>
                 </Grid>
-              </Grid>
+              }
+              {
+                apiState.submitting &&
+                <LoadingState
+                  title={''}
+                  classes={{
+                    root: classes.loadingStateRoot,
+                    graphicRoot: classes.loadingStateGraphic
+                  }}
+                />
+              }
             </DialogContent>
             <DialogActions className={ classes.dialogActions }>
               <Button
