@@ -99,7 +99,10 @@ export default function EditFormPanel() {
   const { formatMessage } = useIntl();
   const classes = styles({});
   const onBack = createBackHandler(dispatch);
-  const [open, setOpen] = useState(false);
+  const [dialogs, setDialogs] = useState({
+    child: false,
+    parent: false
+  });
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const [src, setSrc] = useState(null);
   const [childSrc, setChildSrc] = useState(null);
@@ -114,11 +117,15 @@ export default function EditFormPanel() {
     : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
 
   function openEditForm() {
-    setOpen(true);
+    setDialogs({ ...dialogs, parent: true, child: childSrc ? false : false });
+    setTimeout(function () {
+      setDialogs({ ...dialogs, parent: true, child: childSrc ? true : false });
+    }, 3000);
+    //setDialogs({ ...dialogs, parent: true, child: childSrc ? true : false });
   }
 
-  function handleClose() {
-    setOpen(false);
+  function handleClose(type) {
+    setDialogs({ ...dialogs, [type]: false });
   }
 
   useEffect(() => {
@@ -141,7 +148,6 @@ export default function EditFormPanel() {
     // &edit=true
     // &editorId=1c5da642-e7cb-e4d1-636d-c343ca04618a
 
-    debugger;
     //this needs to be on one useEffect item dependency;
     const fieldId = item.fieldId[0];
     const selectedId = (item.index !== undefined) ? model[fieldId][item.index] : item.modelId;
@@ -172,13 +178,6 @@ export default function EditFormPanel() {
       setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${parentContentTypeId}&path=${parentPath}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
       setChildSrc(`${AUTHORING_BASE}/form?site=${site}&form=${childContentTypeId}&path=${selectedId}&isInclude=true&iceComponent=true&edit=true&editorId=123`);
 
-      // TODO: debemos abrir el form hijo
-      // /studio/form?site=editorialviejo&form=/component/feature
-      // &path=a89386c4-a205-2681-2db1-c3606f714411
-      // &isInclude=true
-      // &iceComponent=true
-      // &edit=true
-      // &editorId=dafdcd9d-3893-0a38-9c05-58b9083dabd0
     }
 
   }, []);
@@ -215,29 +214,26 @@ export default function EditFormPanel() {
                   onClick={openEditForm}>{formatMessage(translations.openComponentForm)}</Button>
         </div>
       </ToolPanel>
-      <Dialog fullScreen open={open} onClose={handleClose}>
+      <Dialog fullScreen open={dialogs.parent && true} onClose={() => handleClose('parent')}>
         <IconButton
           aria-label="close"
           className={classes.closeButton}
-          onClick={handleClose}
+          onClick={() => handleClose('parent')}
         >
           <CloseIcon/>
         </IconButton>
         <iframe src={src} title='form' className={classes.iframe}/>
       </Dialog>
-      {
-        childSrc &&
-        <Dialog fullScreen open={open} onClose={handleClose}>
-          <IconButton
-            aria-label="close"
-            className={classes.closeButton}
-            onClick={handleClose}
-          >
-            <CloseIcon/>
-          </IconButton>
-          <iframe src={childSrc} title='childForm' className={classes.iframe}/>
-        </Dialog>
-      }
+      <Dialog fullScreen open={dialogs.child} onClose={() => handleClose('child')}>
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={() => handleClose('child')}
+        >
+          <CloseIcon/>
+        </IconButton>
+        <iframe src={childSrc} title='childForm' className={classes.iframe}/>
+      </Dialog>
     </>
   )
 }

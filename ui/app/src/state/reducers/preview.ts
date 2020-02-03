@@ -220,13 +220,6 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state,
         guest: {
           ...state.guest,
-          selected: [
-            {
-              modelId: '8d7f21fa-5e09-00aa-8340-853b7db302da',
-              index: 5,
-              fieldId: ['features_o']
-            }
-          ],
           models: {
             ...state.guest.models,
             ...payload.models
