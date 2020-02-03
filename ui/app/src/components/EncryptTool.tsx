@@ -147,7 +147,7 @@ const EncryptTool = () => {
     if (text) {
       setFetching(true);
       setResult(null);
-      encryptService(encodeURI(text)).subscribe((encryptedText) => {
+      encryptService(encodeURIComponent(text)).subscribe((encryptedText) => {
         setFetching(false);
         setText('');
         setResult(encryptedText);
