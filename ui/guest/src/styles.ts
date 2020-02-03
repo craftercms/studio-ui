@@ -59,7 +59,7 @@ export function appendStyleSheet() {
     /* - - - - - - - - - - */
     yellow: '#FFCC00',
     yellowTint: '#FFD426',
-    yellowShade: '#A05A00',
+    yellowShade: '#A05A00'
   };
 
   jss.setup(preset());
@@ -71,7 +71,7 @@ export function appendStyleSheet() {
         outline: `2px solid ${colors.blueTint}`,
         '&:focus': {
           outline: `5px solid ${colors.blue}`
-        },
+        }
       },
       '[draggable="true"]': {
         'cursor': 'move !important'

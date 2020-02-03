@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -23,10 +23,10 @@ import {
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
-  CONTENT_TYPE_RECEPTACLES_REQUEST,
-  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   EDIT_MODE_CHANGED,
@@ -58,7 +58,7 @@ import { GuestContext } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
 import { ZoneMarker } from './ZoneMarker';
 import { DropMarker } from './DropMarker';
-import { appendStyleSheet } from '../styles';
+import { appendStyleSheet } from '../styles.ts';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
@@ -1347,37 +1347,44 @@ export function Guest(props) {
 
   return (
     isAuthoring ? (
-      <GuestContext.Provider value={stateRef.current.common}>
-        {children}
-        {
-          (stateRef.current.common.status !== EditingStatus.OFF) &&
-          <CrafterCMSPortal>
-            {
-              Object.values(stateRef.current.common.highlighted).map((highlight) =>
-                <ZoneMarker key={highlight.id} {...highlight} />
-              )
-            }
-            {
-              [
-                EditingStatus.SORTING_COMPONENT,
-                EditingStatus.PLACING_NEW_COMPONENT,
-                EditingStatus.PLACING_DETACHED_COMPONENT
-              ].includes(stateRef.current.common.status) &&
-              stateRef.current.dragContext.inZone &&
-              <DropMarker
-                onDropPosition={fn.onSetDropPosition}
-                dropZone={stateRef.current.dragContext.dropZone}
-                over={stateRef.current.dragContext.over}
-                prev={stateRef.current.dragContext.prev}
-                next={stateRef.current.dragContext.next}
-                coordinates={stateRef.current.dragContext.coordinates}
-              />
-            }
-          </CrafterCMSPortal>
-        }
-      </GuestContext.Provider>
-    ) : children
-  );
+      < GuestContext.Provider value = { stateRef.current.common } >
+      { children };
+  {
+    (stateRef.current.common.status !== EditingStatus.OFF) &&
+    < CrafterCMSPortal >
+    {
+      Object.values(stateRef.current.common.highlighted).map((highlight) =>
+        < ZoneMarker key = { highlight.id };
+    {...
+      highlight;
+    }
+    />;;;
+  )
+  }
+    {
+      [
+        EditingStatus.SORTING_COMPONENT,
+        EditingStatus.PLACING_NEW_COMPONENT,
+        EditingStatus.PLACING_DETACHED_COMPONENT
+      ].includes(stateRef.current.common.status) &&
+      stateRef.current.dragContext.inZone &&
+      < DropMarker;
+      onDropPosition = { fn.onSetDropPosition };
+      dropZone = { stateRef.current.dragContext.dropZone };
+      over = { stateRef.current.dragContext.over };
+      prev = { stateRef.current.dragContext.prev };
+      next = { stateRef.current.dragContext.next };
+      coordinates = { stateRef.current.dragContext.coordinates };
+      />;;
+    }
+  <
+    /CrafterCMSPortal>;;
+  }
+<
+  /GuestContext.Provider>;;;
+) :
+  children;
+)
 
 }
 

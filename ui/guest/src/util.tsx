@@ -83,11 +83,11 @@ export const EditingStatus = {
   SHOW_RECEPTACLES: 'SHOW_RECEPTACLES'
 };
 
-export function notNullOrUndefined(value) {
+export function notNullOrUndefined(value: any): boolean {
   return value != null;
 }
 
-export function isNullOrUndefined(value) {
+export function isNullOrUndefined(value: any): boolean {
   return value == null;
 }
 
@@ -95,13 +95,13 @@ export function not(condition) {
   return !condition;
 }
 
-export function sibling(element, next) {
+export function sibling(element: HTMLElement, next: boolean) {
   return (next)
     ? element.nextElementSibling
     : element.previousElementSibling;
 }
 
-export function forEach(array, fn, emptyReturnValue) {
+export function forEach(array: Array<any>, fn: Function, emptyReturnValue) {
   if (notNullOrUndefined(emptyReturnValue) && array.length === 0) {
     return emptyReturnValue;
   }
@@ -118,7 +118,7 @@ export function forEach(array, fn, emptyReturnValue) {
   return emptyReturnValue;
 }
 
-export function findComponentContainerFields(fields) {
+export function findComponentContainerFields(fields) {    // TODO: fields type? LookupTable<ContentTypeField>?
   if (!Array.isArray(fields)) {
     fields = Object.values(fields);
   }
@@ -148,7 +148,7 @@ export function findComponentContainerFields(fields) {
 //   });
 // }
 
-export function getDropMarkerPosition(args) {
+export function getDropMarkerPosition(args) {   // TODO: pending
   const
     {
       // refElement,
@@ -220,9 +220,9 @@ export function getDropMarkerPosition(args) {
 }
 
 // noinspection DuplicatedCode
-export function splitRect(rect, axis = X_AXIS) {
+export function splitRect(rect: any, axis = X_AXIS) {   // TODO: proper type
   // x, y, width, height, top, right, bottom, left
-  let rect1 = {}, rect2 = {};
+  let rect1: any = {}, rect2: any = {};
 
   // noinspection DuplicatedCode
   if (axis === X_AXIS) {

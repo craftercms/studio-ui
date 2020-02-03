@@ -17,7 +17,17 @@
 
 import React from 'react';
 
-export function Spinner(props) {
+interface SpinnerProps {
+  width: number;
+  height: number;
+  strokeWidth: number;
+  className: string;
+  strokeLineCap: 'round' | 'butt' | 'square' | 'inherit';
+  circleClassName: string;
+}
+
+
+export function Spinner(props: SpinnerProps) {
   return (
     <svg className={props.className}
          width={props.width}
