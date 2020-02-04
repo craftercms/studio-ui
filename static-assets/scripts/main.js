@@ -237,7 +237,7 @@
         }
       })
       .state('home.globalMenu.encryptionTool', {
-        url: 'encryption-tool',
+        url: '/encryption-tool',
         views: {
           contentTab: {
             templateUrl: '/studio/static-assets/ng-views/encrypt.html',

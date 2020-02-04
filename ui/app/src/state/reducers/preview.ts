@@ -453,7 +453,12 @@ const reducer = createReducer<GlobalState['preview']>({
     components: {
       ...state.components,
       isFetching: null,
-      contentTypeFilter: payload
+      contentTypeFilter: payload,
+      query: {
+        ...state.components.query,
+        offset: 0,
+        keywords: ''
+      }
     }
   })
 });
