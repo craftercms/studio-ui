@@ -708,7 +708,7 @@ var CStudioForms = CStudioForms || function() {
   );
 
   const sendMessage = (message) => {
-    window.top.CStudioAuthoring.InContextEdit.messageDialogs(message);
+    getTopLegacyWindow().CStudioAuthoring.InContextEdit.messageDialogs(message);
   };
 
   function parseDOM(content) {
@@ -1471,7 +1471,7 @@ var CStudioForms = CStudioForms || function() {
                     eventNS.data = itemTO.item;
                     eventNS.typeAction = '';
                     eventNS.oldPath = null;
-                    window.top.document.dispatchEvent(eventNS);
+                    getTopLegacyWindow().document.dispatchEvent(eventNS);
                     var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                     CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                   },
@@ -1755,6 +1755,10 @@ var CStudioForms = CStudioForms || function() {
               }
             }
           });
+          //why messages if we can use a new callback??
+          if(CStudioAuthoring.InContextEdit.getIceCallback(editorId).renderComplete) {
+            CStudioAuthoring.InContextEdit.getIceCallback(editorId).renderComplete()
+          };
           sendMessage({type: FORM_ENGINE_RENDER_COMPLETE});
         }
       });

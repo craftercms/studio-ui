@@ -42,7 +42,7 @@
 
     close: function() {
       var editorId = this.editorId;
-      var iframeEl = window.top.document.getElementById("in-context-edit-editor-"+editorId);
+      var iframeEl = getTopLegacyWindow().document.getElementById("in-context-edit-editor-"+editorId);
       iframeEl.parentNode.parentNode.style.display = "none";
     },
 
@@ -53,7 +53,7 @@
      * on error, display the issue and then close the dialog
      */
     initializeContent: function(item, field, site, isEdit, callback, $modal, aux, editorId, isFlattenedInclude) {
-      var iframeEl = window.top.document.getElementById('in-context-edit-editor-' + editorId);
+      var iframeEl = getTopLegacyWindow().document.getElementById('in-context-edit-editor-' + editorId);
       var dialogEl = document.getElementById('viewcontroller-in-context-edit-' + editorId + '_0_c');
       var dialogBodyEl = document.getElementById('viewcontroller-in-context-edit-' + editorId + '_0');
       aux = (aux) ? aux : {};
@@ -97,8 +97,8 @@
                 html.offsetHeight
               );
 
-              if (max > $(window.top).height()) {
-                max = $(window.top).height() - 100;
+              if (max > $(getTopLegacyWindow()).height()) {
+                max = $(getTopLegacyWindow()).height() - 100;
               }
 
               if (max > 350) {

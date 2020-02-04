@@ -957,7 +957,7 @@
         adminService.startPublishStatus(requestAsString)
           .success(function (data) {
             publish.getPublish(requestAsString);
-            window.top.postMessage('status-changed', '*');
+            getTopLegacyWindow().postMessage('status-changed', '*');
           })
           .error(function (err) {
             if(err.message){
@@ -974,7 +974,7 @@
         adminService.stopPublishStatus(requestAsString)
           .success(function (data) {
             publish.getPublish(requestAsString);
-            window.top.postMessage('status-changed', '*');
+            getTopLegacyWindow().postMessage('status-changed', '*');
           })
           .error(function (err) {
             if(err.message){

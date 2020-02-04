@@ -132,14 +132,6 @@ export default function EditFormPanel() {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log('here2');
-    //TODO: este es shared
-    // /studio/form?site=editorialviejo&form=/component/feature
-    // &path=/site/components/features/fbabf5a8-4bcb-411a-0242-a74f6e8e570c.xml
-    // &isInclude=null
-    // &iceComponent=true
-    // &edit=true
-    // &editorId=1c5da642-e7cb-e4d1-636d-c343ca04618a
 
     //this needs to be on one useEffect item dependency;
     const fieldId = item.fieldId[0];
@@ -151,8 +143,8 @@ export default function EditFormPanel() {
     //if the item is shared
     if (path) {
       const contentTypeId = models[selectedId].craftercms.contentType;
-      setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true`);
-      //setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
+      setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${path}`);
+      //setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true`);
     } else {
       //the items is inside of a component
       let parentPath;
@@ -169,10 +161,9 @@ export default function EditFormPanel() {
         childContentTypeId = models[selectedId].craftercms.contentType;
       }
 
-      setSrc(`${AUTHORING_BASE}/legacy/form`);
-
-      //setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${parentContentTypeId}&path=${parentPath}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
+      setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${parentPath}&isHidden=true&key=${selectedId}`);
       //setChildSrc(`${AUTHORING_BASE}/form?site=${site}&form=${childContentTypeId}&path=${selectedId}&isInclude=true&iceComponent=true&edit=true&editorId=123`);
+      //setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${parentContentTypeId}&path=${parentPath}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
 
     }
 
