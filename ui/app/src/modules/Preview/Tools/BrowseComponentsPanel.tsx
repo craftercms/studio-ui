@@ -137,7 +137,6 @@ const useStyles = makeStyles((theme) => createStyles({
   }
 }));
 
-
 interface ComponentResource {
   count: number;
   limit: number;
