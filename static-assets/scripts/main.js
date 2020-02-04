@@ -613,13 +613,8 @@
         });
       };
 
-      this.setCookie = function (cookieGenName, value, maxAge) {
-        var domainVal = (document.location.hostname.indexOf('.') > -1) ? 'domain=' + document.location.hostname : '';
-        if (maxAge != null) {
-          document.cookie = [cookieGenName, '=', value, '; path=/; ', domainVal, '; max-age=', maxAge].join('');
-        } else {
-          document.cookie = [cookieGenName, '=', value, '; path=/; ', domainVal].join('');
-        }
+      this.setCookie = function (cookieGenName, value) {
+        CrafterCMSNext.util.auth.setSiteCookie(cookieGenName, value);
       };
 
       this.editSite = function (site) {
@@ -630,8 +625,7 @@
       };
 
       this.goToDashboard = function (site) {
-
-        me.setCookie('crafterSite',site.siteId);
+        me.setCookie('crafterSite', site.siteId);
         $timeout(function () {
           $window.location.href = '/studio/site-dashboard';
         }, 0, false);
