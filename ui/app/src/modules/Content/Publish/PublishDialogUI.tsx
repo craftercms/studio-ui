@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,32 +12,31 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
  */
 
-import {Item} from "../../../models/Item";
-import {Theme, withStyles} from "@material-ui/core/styles";
-import Dialog from "@material-ui/core/Dialog";
-import Grid from "@material-ui/core/Grid";
-import DependencySelection from "../Dependencies/DependencySelection";
-import PublishForm from "./PublishForm";
-import Button from "@material-ui/core/Button";
-import {FormattedMessage} from "react-intl";
-import React from "react";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import MuiDialogActions from "@material-ui/core/DialogActions";
-import ErrorState from "../../../components/SystemStatus/ErrorState";
+import { Item } from '../../../models/Item';
+import { Theme, withStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import Grid from '@material-ui/core/Grid';
+import DependencySelection from '../Dependencies/DependencySelection';
+import PublishForm from './PublishForm';
+import Button from '@material-ui/core/Button';
+import { FormattedMessage } from 'react-intl';
+import React from 'react';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import ErrorState from '../../../components/SystemStatus/ErrorState';
+import { palette } from '../../../styles/theme';
 
 const dialogStyles = () => ({
   titleRoot: {
     margin: 0,
     padding: '13px 20px 11px',
-    background: '#fff'
+    background: palette.white
   },
   title: {
     display: 'flex',
@@ -50,9 +48,6 @@ const dialogStyles = () => ({
     fontSize: '14px',
     lineHeight: '18px',
     paddingRight: '35px'
-  },
-  closeIcon: {
-    padding: 0
   },
   dialogActions: {
     padding: '10px 22px'
@@ -90,7 +85,7 @@ const DialogTitle = withStyles(dialogStyles)((props: any) => {
 const DialogContent = withStyles((theme: Theme) => ({
   root: {
     padding: theme.spacing(2),
-    backgroundColor: '#FAFAFA'
+    backgroundColor: palette.gray.light0
   },
 }))(MuiDialogContent);
 
@@ -98,9 +93,6 @@ const DialogActions = withStyles((theme: Theme) => ({
   root: {
     margin: 0,
     padding: theme.spacing(1),
-  },
-  showAllDeps: {
-
   }
 }))(MuiDialogActions);
 
@@ -108,10 +100,12 @@ interface PublishDialogUIProps {
   items: Item[];
   publishingChannels: any[];
   publishingChannelsStatus: string;
-  getPublishingChannels: Function;
+  onPublishingChannelsFailRetry: Function;
   handleClose: any;
   handleSubmit: any;
   submitDisabled: boolean;
+  setSubmitDisabled: Function;
+  showDepsDisabled: boolean;
   dialog: any;
   setDialog: any;
   open: boolean;
@@ -138,10 +132,12 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
     items,
     publishingChannels,
     publishingChannelsStatus,
-    getPublishingChannels,
+    onPublishingChannelsFailRetry,
     handleClose,
     handleSubmit,
     submitDisabled,
+    setSubmitDisabled,
+    showDepsDisabled,
     dialog,
     setDialog,
     open,
@@ -203,10 +199,11 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
                   <PublishForm
                     inputs={dialog}
                     setInputs={setDialog}
+                    setSubmitDisabled={setSubmitDisabled}
                     showEmailCheckbox={showEmailCheckbox}
                     publishingChannels={publishingChannels}
                     publishingChannelsStatus={publishingChannelsStatus}
-                    getPublishingChannels={getPublishingChannels}
+                    onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
                   />
                 </Grid>
               </Grid>
@@ -215,7 +212,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
               <Button
                 color="primary"
                 onClick={ onClickShowAllDeps }
-                className={ classes.leftAlignedAction }
+                className={classes.leftAlignedAction}
+                disabled={showDepsDisabled}
               >
                 <FormattedMessage
                   id="publishDialog.showAllDependencies"
@@ -243,9 +241,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
               error={apiState.errorResponse}
               onBack={handleErrorBack}
             />
-        )
+          )
       }
-
     </Dialog>
   )
 });

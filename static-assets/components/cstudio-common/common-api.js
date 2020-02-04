@@ -838,7 +838,7 @@ var nodeOpen = false,
               let unmount;
               CrafterCMSNext.render(
                 container,
-                'ApproveDialog',
+                'PublishDialog',
                 {
                   onClose: (response) => {
                     if(response) {
@@ -878,7 +878,7 @@ var nodeOpen = false,
               let unmount;
               CrafterCMSNext.render(
                 container,
-                'RequestPublishDialog',
+                'PublishDialog',
                 {
                   onClose: (response) => {
                     if(response) {
