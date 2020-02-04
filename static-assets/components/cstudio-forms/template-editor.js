@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -95,7 +94,6 @@ CStudioAuthoring.Module.requireModule(
 					CStudioForms.TemplateEditor.prototype = {
 						render: function(templatePath, channel, onSaveCb, contentType, mode) {
               var me = this;
-              var encoding = CStudioAuthoringContext.defaultEncoding;
 
               Promise.all([
                 CrafterCMSNext.services.configuration.getDOM(
@@ -104,7 +102,7 @@ CStudioAuthoring.Module.requireModule(
                   'studio'
                 ).toPromise(),
                 new Promise((resolve, reject) => {
-                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject }, encoding);
+                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject });
                 })
               ]).then(([xmlDoc, content]) => {
                 CStudioForms.TemplateEditor.config = xmlDoc;
@@ -568,7 +566,6 @@ CStudioAuthoring.Module.requireModule(
 											var value = aceEditor.getValue();
 											var path = templatePath.substring(0, templatePath.lastIndexOf("/"));
 											var filename = templatePath.substring(templatePath.lastIndexOf("/")+1);
-											var encoding = CStudioAuthoringContext.defaultEncoding;
 
 											var writeServiceUrl = "/api/1/services/api/1/content/write-content.json" +
 												"?site=" + CStudioAuthoringContext.site +
@@ -582,7 +579,7 @@ CStudioAuthoring.Module.requireModule(
 												method: 'POST',
 												credentials: 'same-origin',
 												headers: {
-													'Content-Type': `text/plain; charset=${encoding}`,
+													'Content-Type': `text/plain; charset=utf-8`,
 													[CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken(),
 												},
 												body: value

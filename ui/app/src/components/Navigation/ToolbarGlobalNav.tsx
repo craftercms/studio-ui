@@ -36,8 +36,9 @@ const useStyles = makeStyles(() => ({
   avatarClickable: {
     cursor: 'pointer',
     textTransform: 'uppercase',
+    backgroundColor: palette.red.main,
     '&:hover': {
-      backgroundColor: palette.gray.medium3
+      backgroundColor: palette.red.shade
     }
   },
   bold: {

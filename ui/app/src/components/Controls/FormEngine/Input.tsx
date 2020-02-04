@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles(controlBaseStyles));
 export default function Input(props: Control) {
   const {
     field,
-    value,
+    value = '',
     onChange,
     disabled
   } = props;

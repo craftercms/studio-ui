@@ -18,29 +18,35 @@
 import Cookies from 'js-cookie';
 import { setGlobalHeaders } from './ajax';
 
-export function getRequestForgeryToken() {
+export function getRequestForgeryToken(): string {
   return Cookies.get('XSRF-TOKEN');
 }
 
-export function setRequestForgeryToken() {
+export function setRequestForgeryToken(): void {
   const token = getRequestForgeryToken();
   setGlobalHeaders({ 'X-XSRF-TOKEN': token });
 }
 
-export function setSiteCookie(name: string, value: string) {
+export function getCookieDomain(): string {
   let hostname = window.location.hostname;
   let domain = '';
   if (hostname.includes('.')) {
     domain = hostname.replace(/^(.*?)\./, '');
     domain = `.${domain.includes('.') ? domain : hostname}`
   }
+  return domain;
+}
+
+export function setSiteCookie(name: string, value: string): void {
   Cookies.set(name, value, {
-    domain,
+    domain: getCookieDomain(),
     path: '/'
   });
 }
 
 export default {
+  getCookieDomain,
   getRequestForgeryToken,
-  setRequestForgeryToken
+  setRequestForgeryToken,
+  setSiteCookie
 };

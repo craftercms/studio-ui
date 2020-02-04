@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
       }
     },
     panelMargin: {
-      margin: '0 15px'
+      margin: `${theme.spacing(1)}px`
     },
     textField: {
       width: '100%',
