@@ -18,28 +18,28 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
-import { useDebouncedInput, useSelection, useStateResourceSelection } from "../../../utils/hooks";
-import { PagedEntityState } from "../../../models/GlobalState";
-import { nnou, pluckProps } from "../../../utils/object";
-import { ErrorBoundary } from "../../../components/ErrorBoundary";
-import LoadingState from "../../../components/SystemStatus/LoadingState";
-import { createStyles, makeStyles } from "@material-ui/core";
+import { useDebouncedInput, useSelection, useStateResourceSelection } from '../../../utils/hooks';
+import { PagedEntityState } from '../../../models/GlobalState';
+import { nnou, pluckProps } from '../../../utils/object';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import LoadingState from '../../../components/SystemStatus/LoadingState';
+import { createStyles, makeStyles } from '@material-ui/core';
 import ContentInstance from '../../../models/ContentInstance';
-import { DraggablePanelListItem } from "./DraggablePanelListItem";
-import List from "@material-ui/core/List";
+import { DraggablePanelListItem } from './DraggablePanelListItem';
+import List from '@material-ui/core/List';
 import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
   fetchComponentsByContentType
-} from "../../../state/actions/preview";
-import { useDispatch } from "react-redux";
-import SearchBar from "../../../components/SearchBar";
-import EmptyState from "../../../components/SystemStatus/EmptyState";
-import TablePagination from "@material-ui/core/TablePagination";
-import { DRAWER_WIDTH, getHostToGuestBus } from "../previewContext";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import ContentType from "../../../models/ContentType";
+} from '../../../state/actions/preview';
+import { useDispatch } from 'react-redux';
+import SearchBar from '../../../components/SearchBar';
+import EmptyState from '../../../components/SystemStatus/EmptyState';
+import TablePagination from '@material-ui/core/TablePagination';
+import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import ContentType from '../../../models/ContentType';
 
 const translations = defineMessages({
   browse: {
@@ -137,7 +137,6 @@ const useStyles = makeStyles((theme) => createStyles({
   }
 }));
 
-
 interface ComponentResource {
   count: number;
   limit: number;
@@ -186,8 +185,8 @@ export default function BrowseComponentsPanel() {
     dispatch(fetchComponentsByContentType(contentTypeFilter));
   }, [contentTypeFilter, dispatch]);
 
-  const onSearch = useCallback(() => (
-    (keywords: string) => dispatch(fetchComponentsByContentType(null, { keywords }))
+  const onSearch = useCallback((
+    (keywords: string) => dispatch(fetchComponentsByContentType(null, { keywords, offset: 0 }))
   ), [dispatch]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);

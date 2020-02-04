@@ -139,6 +139,10 @@ const messages = defineMessages({
     id: 'GlobalMenu.GlobalConfigEntryLabel',
     defaultMessage: 'Global Config'
   },
+  encryptionTool: {
+    id: 'GlobalMenu.EncryptionToolEntryLabel',
+    defaultMessage: 'Encryption Tool'
+  },
   dashboard: {
     id: 'globalMenu.dashboard',
     defaultMessage: 'Dashboard'
