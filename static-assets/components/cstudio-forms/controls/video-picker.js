@@ -32,7 +32,7 @@ CStudioForms.Controls.VideoPicker = CStudioForms.Controls.VideoPicker ||
     this.validExtensions = ["MOV", "mov", "MP4", "mp4", "wmv", "WMV", "webm"];
     this.readonly = readonly;
     this.external = null;
-    this.supportedPostFixes = ["_s"];
+    this.supportedPostFixes = ['_s', '_o'];
 
     return this;
   };
