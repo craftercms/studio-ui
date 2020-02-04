@@ -282,16 +282,17 @@ const reducer = createReducer<GlobalState['preview']>({
       }
   ),
   [CHANGE_SITE]: (state, { payload }) => {
-    let nextState = state;
+
+    let nextState = {
+      ...state,
+      tools: null,
+      audiencesPanel: audiencesPanelInitialState
+    };
+
     // TODO: If there's a guest it would have checked out?
     // if (state.guest) {
     //   nextState = { ...nextState, guest: null };
     // }
-
-    nextState = {
-      ...nextState,
-      audiencesPanel: audiencesPanelInitialState
-    };
 
     if (payload.nextUrl !== nextState.currentUrl) {
       nextState = {
@@ -299,7 +300,9 @@ const reducer = createReducer<GlobalState['preview']>({
         currentUrl: payload.nextUrl
       };
     }
+
     return nextState;
+
   },
   [FETCH_AUDIENCES_PANEL_FORM_DEFINITION]: (state) => ({
     ...state,

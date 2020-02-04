@@ -30,9 +30,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
 import Link from '@material-ui/core/Link';
-
 import DateTimePicker from '../../../components/DateTimePicker';
 import moment from 'moment';
+import { palette } from '../../../styles/theme';
 
 const messages = defineMessages({
   emailLabel: {
@@ -90,7 +90,7 @@ const useStyles = makeStyles(() => createStyles({
     marginBottom: '20px'
   },
   sectionLabel: {
-    color: '#000',
+    color: palette.black,
     width: '100%',
     fontSize: '16px'
   },
@@ -103,7 +103,7 @@ const useStyles = makeStyles(() => createStyles({
   },
   selectInput: {
     padding: '10px 12px',
-    backgroundColor: '#fff'
+    backgroundColor: palette.white
   },
   environmentLoaderContainer: {
     paddingTop: '24px',
@@ -145,7 +145,7 @@ const useStyles = makeStyles(() => createStyles({
     paddingBottom: 0
   },
   textField: {
-    backgroundColor: '#ffffff',
+    backgroundColor: palette.white,
     padding: 0
   }
 }));
@@ -156,13 +156,18 @@ const SelectInput = withStyles(() => createStyles({
   }
 }))(InputBase);
 
+let schedulingTimeout;
+
 interface PublishFormProps {
   inputs: any;
+
   setInputs(state: any): any;
+
   showEmailCheckbox: boolean;
   publishingChannels: any[];
   publishingChannelsStatus: string;
-  getPublishingChannels: Function;
+  onPublishingChannelsFailRetry: Function;
+  setSubmitDisabled: Function;
   classes?: any;
 }
 
@@ -176,7 +181,8 @@ function PublishForm(props: PublishFormProps) {
     showEmailCheckbox,
     publishingChannels,
     publishingChannelsStatus,
-    getPublishingChannels
+    onPublishingChannelsFailRetry,
+    setSubmitDisabled
   } = props;
 
   useEffect(
@@ -194,10 +200,24 @@ function PublishForm(props: PublishFormProps) {
 
     if (e.target.type === 'checkbox') {
       setInputs({ ...inputs, [name]: e.target.checked });
-    } else if (e.target.type === 'radio' || e.target.type === 'textarea') {
-      setInputs({ ...inputs, [name]: e.target.value })
-    }
+    } else if (e.target.type === 'textarea') {
+      setInputs({ ...inputs, [name]: e.target.value });
+    } else if (e.target.type === 'radio') {
+      const inputValue = e.target.value;
+      setInputs({ ...inputs, [name]: inputValue });
 
+      if (inputValue === 'now') {
+        schedulingTimeout = setTimeout(() => {
+          setInputs({
+            ...inputs,
+            'scheduling': 'now',
+            'scheduledDateTime': moment().format()
+          });
+        }, 2000);
+      } else {
+        clearTimeout(schedulingTimeout);
+      }
+    }
   };
 
   const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -206,6 +226,11 @@ function PublishForm(props: PublishFormProps) {
 
   const dateTimePickerChange = (scheduledDateTime: moment.Moment) => {
     setInputs({ ...inputs, 'scheduledDateTime': scheduledDateTime.format() });
+    if (scheduledDateTime.toString() === 'Invalid date') {
+      setSubmitDisabled(true);
+    } else {
+      setSubmitDisabled(false);
+    }
   };
 
   return (
@@ -264,6 +289,8 @@ function PublishForm(props: PublishFormProps) {
         >
           <DateTimePicker
             onChange={dateTimePickerChange}
+            onError={() => setSubmitDisabled(true)}
+            date={inputs.scheduledDateTime}
             timeZonePickerProps={{
               timezone: inputs.scheduledTimeZone
             }}
@@ -280,7 +307,6 @@ function PublishForm(props: PublishFormProps) {
           {
             !publishingChannels &&
             <>
-
               <div className={classes.environmentLoaderContainer}>
                 <Typography
                   variant="body1"
@@ -291,7 +317,7 @@ function PublishForm(props: PublishFormProps) {
                   {formatMessage(messages[`environment${publishingChannelsStatus}`])}
                   {
                     publishingChannelsStatus === 'Error' &&
-                    <Link href="#" onClick={() => getPublishingChannels()}>
+                    <Link href="#" onClick={() => onPublishingChannelsFailRetry()}>
                       ({formatMessage(messages.environmentRetry)})
                     </Link>
                   }

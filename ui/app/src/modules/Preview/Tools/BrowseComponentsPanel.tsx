@@ -138,7 +138,6 @@ const useStyles = makeStyles((theme) => createStyles({
   }
 }));
 
-
 interface ComponentResource {
   count: number;
   limit: number;
@@ -181,8 +180,8 @@ export default function BrowseComponentsPanel() {
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
 
-  const onSearch = useCallback(() => (
-    (keywords: string) => dispatch(fetchComponentsByContentType(null, { keywords }))
+  const onSearch = useCallback((
+    (keywords: string) => dispatch(fetchComponentsByContentType(null, { keywords, offset: 0 }))
   ), [dispatch]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);

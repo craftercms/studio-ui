@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Item } from '../../../models/Item';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -27,12 +27,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-
 //imports for DependencySelectionDelete
-import { checkState, updateCheckedList, selectAllDeps, paths, onClickSetChecked } from "../Submit/RequestPublishDialog";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import {Theme} from "@material-ui/core/styles/createMuiTheme";
+import { checkState, onClickSetChecked, paths, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Button from '@material-ui/core/Button';
+import { palette } from '../../../styles/theme';
 
 interface DependencySelectionProps {
   items: Item[];
@@ -80,8 +80,9 @@ const CenterCircularProgress = withStyles({
 const useStyles = makeStyles((theme: Theme) => ({
   dependencySelection: {
     padding: '11px 12px',
-    backgroundColor: '#fff',
-    border: '1px solid rgba(0, 0, 0, .125)',
+    backgroundColor: palette.white,
+    border: '1px solid',
+    borderColor: palette.gray.light5,
     height: 'calc(100% - 24px)',
     minHeight: '374px',
     overflowY: 'scroll'
@@ -103,8 +104,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   bottomSection: {
     marginTop: '20px',
-    marginLeft: '10px',
-    color: '#777'
+    marginLeft: '10px'
   },
   circularProgressText: {
     position: 'relative',
@@ -118,6 +118,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listItemIcon: {
     minWidth: '36px'
+  },
+  listItemTitle: {
+    '& h4': {
+      fontSize: '1rem',
+      margin: 0,
+      padding: 0,
+      fontWeight: 400
+    }
+  },
+  listItemPath: {
+    padding: 0
   }
 }));
 
@@ -432,13 +443,18 @@ function SelectionList(props: SelectionListProps) {
                   }
                   <ListItemText
                     id={labelId}
-                    primary={ item.internalName }
+                    primary={<h4>{item.internalName}</h4>}
+                    primaryTypographyProps={{
+                      className: classes.listItemTitle
+                    }}
                     secondary={
                       <React.Fragment>
-                        { item.uri }
+                        {item.uri}
                       </React.Fragment>
                     }
-
+                    secondaryTypographyProps={{
+                      className: classes.listItemPath
+                    }}
                   />
                 </ListItem>
               );

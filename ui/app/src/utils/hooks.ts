@@ -17,7 +17,15 @@
 
 import { shallowEqual, useSelector } from 'react-redux';
 import GlobalState from '../models/GlobalState';
-import React, { EffectCallback, useEffect, useReducer, useRef, useState } from 'react';
+import React, {
+  Dispatch,
+  EffectCallback,
+  SetStateAction,
+  useEffect,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
@@ -46,7 +54,7 @@ export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>(state => state.env);
 }
 
-export function createResource<T = any>(factoryFn: () => Promise<T>) {
+export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
   let result, promise, resource, status = 'pending';
   promise = factoryFn().then(
     (response) => {
@@ -75,9 +83,9 @@ export function createResource<T = any>(factoryFn: () => Promise<T>) {
   return resource;
 }
 
-export function createResourceBundle() {
+export function createResourceBundle<T>(): [Resource<T>, (value?: unknown) => void, (reason?: any) => void] {
   let resolve, reject;
-  let promise = new Promise((resolvePromise, rejectPromise) => {
+  let promise = new Promise<T>((resolvePromise, rejectPromise) => {
     resolve = resolvePromise;
     reject = rejectPromise;
   });
@@ -131,7 +139,7 @@ export function useStateResource<ReturnType = any, SourceType = GlobalState>(
   }
 ): Resource<ReturnType> {
 
-  const [bundle, setBundle] = useState(createResourceBundle);
+  const [bundle, setBundle] = useState(() => createResourceBundle<ReturnType>());
   const [resource, resolve, reject] = bundle;
   const effectFn = () => {
     const { shouldRenew, shouldReject, shouldResolve, errorSelector, resultSelector } = checkers;
@@ -154,11 +162,11 @@ export function useStateResource<ReturnType = any, SourceType = GlobalState>(
 
 }
 
-export function useOnMount(componentDidMount: EffectCallback) {
+export function useOnMount(componentDidMount: EffectCallback): void {
   useEffect(componentDidMount, []);
 }
 
-export function useDebouncedInput(observer: (keywords: string) => any, time: number = 250) {
+export function useDebouncedInput(observer: (keywords: string) => any, time: number = 250): Subject<string> {
   const subject$Ref = useRef(new Subject<string>());
   useEffect(() => {
     const subscription = subject$Ref.current.pipe(
@@ -170,6 +178,6 @@ export function useDebouncedInput(observer: (keywords: string) => any, time: num
   return subject$Ref.current;
 }
 
-export function useSpreadState(initialState: any): [any, React.Dispatch<React.SetStateAction<any>>] {
+export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<S>>] {
   return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);
 }
