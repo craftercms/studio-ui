@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { fetchPublishingChannels } from '../../../services/content';
 import { goLive, submitToGoLive } from '../../../services/publishing';
@@ -24,7 +24,7 @@ import { Item } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
-import { useActiveSiteId } from '../../../utils/hooks';
+import { useActiveSiteId, useOnMount, useSpreadState } from '../../../utils/hooks';
 
 const goLiveMessages = defineMessages({
   title: {
@@ -114,10 +114,7 @@ function PublishDialog(props: PublishDialogProps) {
   } = props;
 
   const [open, setOpen] = React.useState(true);
-  const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), {
-    ...dialogInitialState,
-    scheduling
-  });
+  const [dialog, setDialog] = useSpreadState({ ...dialogInitialState, scheduling });
   const [publishingChannels, setPublishingChannels] = useState(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
   const [checkedItems, setCheckedItems] = useState<any>(checkState(items));   // selected deps
@@ -140,17 +137,18 @@ function PublishDialog(props: PublishDialogProps) {
 
   const { formatMessage } = useIntl();
 
-  useEffect(getPublishingChannels, []);
-  useEffect(() => {
-    const result = (
-      Object.entries({ ...checkedItems, ...checkedSoftDep })
-        .filter(([key, value]) => value)
-        .map(([key]) => key)
-    );
-    setSelectedItems(result);
-  }, [checkedItems, checkedSoftDep]);
+  const setSelectedItems = useCallback((items) => {
+    if (!items || items.length === 0) {
+      setSubmitDisabled(true);
+      setShowDepsDisabled(true);
+    } else {
+      setSubmitDisabled(false);
+      setShowDepsDisabled(false);
+    }
+    setDialog({ selectedItems: items });
+  }, [setDialog]);
 
-  function getPublishingChannels() {
+  const getPublishingChannels = useCallback(() => {
     setPublishingChannelsStatus('Loading');
     setSubmitDisabled(true);
     fetchPublishingChannels(siteId).subscribe(
@@ -164,19 +162,18 @@ function PublishDialog(props: PublishDialogProps) {
         setSubmitDisabled(true);
       }
     );
-  }
+  }, [siteId]);
 
-  const setSelectedItems = (items) => {
-    if (!items || items.length === 0) {
-      setSubmitDisabled(true);
-      setShowDepsDisabled(true);
-    } else {
-      setSubmitDisabled(false);
-      setShowDepsDisabled(false);
-    }
+  useOnMount(getPublishingChannels);
 
-    setDialog({ ...dialog, 'selectedItems': items });
-  };
+  useEffect(() => {
+    const result = (
+      Object.entries({ ...checkedItems, ...checkedSoftDep })
+        .filter(([key, value]) => value)
+        .map(([key]) => key)
+    );
+    setSelectedItems(result);
+  }, [checkedItems, checkedSoftDep, setSelectedItems]);
 
   const handleClose = () => {
     setOpen(false);
