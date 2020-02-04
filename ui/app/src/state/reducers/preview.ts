@@ -44,6 +44,7 @@ import {
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
   SET_ACTIVE_TARGETING_MODEL_FAILED,
+  SET_CONTENT_TYPE_FILTER,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
@@ -442,6 +443,14 @@ const reducer = createReducer<GlobalState['preview']>({
       ...state.receptacles,
       selectedContentType: null,
       byId: null
+    }
+  }),
+  [SET_CONTENT_TYPE_FILTER]: (state, { payload }) => ({
+    ...state,
+    components: {
+      ...state.components,
+      isFetching: null,
+      contentTypeFilter: payload
     }
   })
 });

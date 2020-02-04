@@ -17,7 +17,7 @@
 
 import { shallowEqual, useSelector } from 'react-redux';
 import GlobalState from '../models/GlobalState';
-import { EffectCallback, useEffect, useRef, useState } from 'react';
+import React, { EffectCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
@@ -168,4 +168,8 @@ export function useDebouncedInput(observer: (keywords: string) => any, time: num
     return () => subscription.unsubscribe();
   }, [observer, time]);
   return subject$Ref.current;
+}
+
+export function useSpreadState(initialState: any): [any, React.Dispatch<React.SetStateAction<any>>] {
+  return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);
 }

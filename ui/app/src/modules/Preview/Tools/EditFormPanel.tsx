@@ -99,10 +99,7 @@ export default function EditFormPanel() {
   const { formatMessage } = useIntl();
   const classes = styles({});
   const onBack = createBackHandler(dispatch);
-  const [dialogs, setDialogs] = useState({
-    child: false,
-    parent: false
-  });
+  const [open, setOpen] = useState(false);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const [src, setSrc] = useState(null);
   const [childSrc, setChildSrc] = useState(null);
@@ -117,15 +114,11 @@ export default function EditFormPanel() {
     : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
 
   function openEditForm() {
-    setDialogs({ ...dialogs, parent: true, child: childSrc ? false : false });
-    setTimeout(function () {
-      setDialogs({ ...dialogs, parent: true, child: childSrc ? true : false });
-    }, 3000);
-    //setDialogs({ ...dialogs, parent: true, child: childSrc ? true : false });
+    setOpen(true);
   }
 
-  function handleClose(type) {
-    setDialogs({ ...dialogs, [type]: false });
+  function handleClose() {
+    setOpen(false);
   }
 
   useEffect(() => {
@@ -139,7 +132,7 @@ export default function EditFormPanel() {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log('here');
+    console.log('here2');
     //TODO: este es shared
     // /studio/form?site=editorialviejo&form=/component/feature
     // &path=/site/components/features/fbabf5a8-4bcb-411a-0242-a74f6e8e570c.xml
@@ -158,7 +151,8 @@ export default function EditFormPanel() {
     //if the item is shared
     if (path) {
       const contentTypeId = models[selectedId].craftercms.contentType;
-      setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
+      setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true`);
+      //setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
     } else {
       //the items is inside of a component
       let parentPath;
@@ -175,8 +169,10 @@ export default function EditFormPanel() {
         childContentTypeId = models[selectedId].craftercms.contentType;
       }
 
-      setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${parentContentTypeId}&path=${parentPath}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
-      setChildSrc(`${AUTHORING_BASE}/form?site=${site}&form=${childContentTypeId}&path=${selectedId}&isInclude=true&iceComponent=true&edit=true&editorId=123`);
+      setSrc(`${AUTHORING_BASE}/legacy/form`);
+
+      //setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${parentContentTypeId}&path=${parentPath}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
+      //setChildSrc(`${AUTHORING_BASE}/form?site=${site}&form=${childContentTypeId}&path=${selectedId}&isInclude=true&iceComponent=true&edit=true&editorId=123`);
 
     }
 
@@ -214,25 +210,15 @@ export default function EditFormPanel() {
                   onClick={openEditForm}>{formatMessage(translations.openComponentForm)}</Button>
         </div>
       </ToolPanel>
-      <Dialog fullScreen open={dialogs.parent && true} onClose={() => handleClose('parent')}>
+      <Dialog fullScreen open={open} onClose={handleClose}>
         <IconButton
           aria-label="close"
           className={classes.closeButton}
-          onClick={() => handleClose('parent')}
+          onClick={handleClose}
         >
           <CloseIcon/>
         </IconButton>
-        <iframe src={src} title='form' className={classes.iframe}/>
-      </Dialog>
-      <Dialog fullScreen open={dialogs.child} onClose={() => handleClose('child')}>
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={() => handleClose('child')}
-        >
-          <CloseIcon/>
-        </IconButton>
-        <iframe src={childSrc} title='childForm' className={classes.iframe}/>
+        <iframe src={src} title='cstudio-embedded-legacy-form' className={classes.iframe}/>
       </Dialog>
     </>
   )

@@ -99,6 +99,7 @@ export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
 export const SET_ACTIVE_TARGETING_MODEL_FAILED = 'SET_ACTIVE_TARGETING_MODEL_FAILED';
 export const CLEAR_RECEPTACLES = 'CLEAR_RECEPTACLES';
+export const SET_CONTENT_TYPE_FILTER = 'SET_CONTENT_TYPE_FILTER';
 
 // endregion
 
@@ -268,5 +269,7 @@ export const browseSharedInstance = createAction<string>(BROWSE_COMPONENT_INSTAN
 export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 
 export const setContentTypeReceptacles = createAction<{ contentType: string; receptacle: ContentTypeReceptacle; }>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
+
+export const setContentTypeFilter = createAction<string>(SET_CONTENT_TYPE_FILTER);
 
 // endregion
