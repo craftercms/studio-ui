@@ -215,7 +215,8 @@ const globalNavUrlMapping = {
   'preview': '/preview',
   'about': '#/about-us',
   'legacy.preview': '/legacy/preview',
-  'siteConfig': '/site-config'
+  'siteConfig': '/site-config',
+  'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool'
 };
 
 const siteMenuKeys = {
