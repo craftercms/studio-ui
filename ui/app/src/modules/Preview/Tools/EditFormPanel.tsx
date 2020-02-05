@@ -133,30 +133,35 @@ export default function EditFormPanel() {
   }, [dispatch]);
 
   useOnMount(() => {
-    const fieldId = item.fieldId[0];
-    const selectedId = (item.index !== undefined) ? model[fieldId][item.index] : item.modelId;
-    const path = models[selectedId].craftercms.path || false;
+    try {
+      const fieldId = item.fieldId[0];
+      const selectedId = (item.index !== undefined) ? model[fieldId][item.index] : item.modelId;
+      const path = models[selectedId].craftercms.path || false;
 
-    //if the item is shared
-    if (path) {
-      setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${path}`);
-    } else {
-      let parentPath;
-      if (model === models[selectedId]) {
-        let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
-        parentPath = models[parentId].craftercms.path;
+      //if the item is shared
+      if (path) {
+        setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${path}`);
       } else {
-        parentPath = models[model.craftercms.id].craftercms.path;
+        let parentPath;
+        if (model === models[selectedId]) {
+          let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
+          parentPath = models[parentId].craftercms.path;
+        } else {
+          parentPath = models[model.craftercms.id].craftercms.path;
+        }
+        setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}`);
       }
-      setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}`);
+
+      window.addEventListener('message', (e) => {
+        if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_CLOSE) {
+          setOpen(false);
+          getHostToGuestBus().next({ type: RELOAD_REQUEST })
+        }
+      }, false);
+    } catch {
+      console.log('No supported yet.')
     }
 
-    window.addEventListener('message', (e) => {
-      if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_CLOSE) {
-        setOpen(false);
-        getHostToGuestBus().next({ type: RELOAD_REQUEST })
-      }
-    }, false);
 
   });
 
