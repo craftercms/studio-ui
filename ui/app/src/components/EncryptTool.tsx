@@ -23,7 +23,8 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import { green } from '@material-ui/core/colors';
+import ErrorIcon from '@material-ui/icons/Error';
+import { green, red } from '@material-ui/core/colors';
 
 const messages = defineMessages({
   pageTitle: {
@@ -63,6 +64,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   success: {
     backgroundColor: green[600]
   },
+  error: {
+    backgroundColor: red[600]
+  },
   icon: {
     fontSize: 20
   },
@@ -76,7 +80,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-function copyToClipboard(input: HTMLInputElement, setOpenNotification: Function) {
+const noficationInitialState = {
+  open: false,
+  variant: 'success'
+};
+
+function copyToClipboard(input: HTMLInputElement, notificationSettings: any, setNotificationSettings: Function) {
 
   /* Select the text field */
   input.select();
@@ -86,7 +95,7 @@ function copyToClipboard(input: HTMLInputElement, setOpenNotification: Function)
   /* Copy the text inside the text field */
   document.execCommand('copy');
 
-  setOpenNotification(true);
+  setNotificationSettings({ ...notificationSettings, open: true });
 
 }
 
@@ -96,11 +105,16 @@ function SnackbarContentWrapper(props: any) {
 
   return (
     <SnackbarContent
-      className={`${classes.success} ${classes.iconVariant}`}
-      aria-describedby="encryptToolSnackbar"
+      className={`${className} ${classes.iconVariant}`}
+      aria-describedby="client-snackbar"
       message={
-        <span id="encryptToolSnackbar" className={classes.message}>
-          <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`}/>
+        <span id="client-snackbar" className={classes.message}>
+          {
+            variant === 'success' ?
+              <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`}/>
+              :
+              <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`}/>
+          }
           {message}
         </span>
       }
@@ -120,7 +134,7 @@ const EncryptTool = () => {
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
   const [fetching, setFetching] = useState(null);
-  const [openNotification, setOpenNotification] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState(noficationInitialState);
 
   const { formatMessage } = useIntl();
 
@@ -133,18 +147,23 @@ const EncryptTool = () => {
     if (text) {
       setFetching(true);
       setResult(null);
-      encryptService(text).subscribe((encryptedText) => {
+      encryptService(encodeURIComponent(text)).subscribe((encryptedText) => {
         setFetching(false);
         setText('');
         setResult(encryptedText);
 
-        setTimeout(() => copyToClipboard(inputRef.current, setOpenNotification), 10);
+        setTimeout(() => copyToClipboard(inputRef.current, notificationSettings, setNotificationSettings), 10);
+      }, () => {
+        setNotificationSettings({
+          ...notificationSettings,
+          open: true,
+          variant: 'error'
+        });
       });
     } else {
       focus();
     }
   };
-  
   const clear = () => {
     setText('');
     setResult(null);
@@ -177,7 +196,7 @@ const EncryptTool = () => {
             ref={inputRef}
             className="well"
             value={`\${enc:${result}\}`}
-            onClick={(e: any) => copyToClipboard(e.target, setOpenNotification)}
+            onClick={(e: any) => copyToClipboard(e.target, notificationSettings, setNotificationSettings)}
             style={{
               display: 'block',
               width: '100%'
@@ -200,14 +219,15 @@ const EncryptTool = () => {
           vertical: 'top',
           horizontal: 'right'
         }}
-        open={openNotification}
+        open={notificationSettings.open}
         autoHideDuration={5000}
-        onClose={() => setOpenNotification(false)}
+        onClose={() => setNotificationSettings({ ...notificationSettings, open: false })}
       >
         <SnackbarContentWrapper
-          onClose={() => setOpenNotification(false)}
-          variant="success"
-          message={formatMessage(messages.successMessage)}
+          onClose={() => setNotificationSettings({ ...notificationSettings, open: false })}
+          variant={notificationSettings.variant}
+          className={notificationSettings.variant === 'success' ? classes.success : classes.error}
+          message={formatMessage(notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage)}
         />
       </Snackbar>
     </section>
