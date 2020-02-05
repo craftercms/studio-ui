@@ -64,6 +64,21 @@ export function retrieveProperty(object: object, prop: string): any {
   return (object == null) ? null : prop.split('.').reduce((value, prop) => value[prop], object);
 }
 
+export function setProperty(object: object, prop: string, value: any) {
+  if (object) {
+    const props = prop.split('.');
+    const propToSet = props.pop();
+    let target = retrieveProperty(object, props.join('.'));
+    if (!target) {
+      setProperty(object, props.join('.'), {});
+      target = retrieveProperty(object, props.join('.'));
+    }
+    target[propToSet] = value;
+    return true;
+  }
+  return false;
+}
+
 // Not Null Or Undefined (nnou)
 export function nnou(object: any): boolean {
   return object != null;
