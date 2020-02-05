@@ -32,6 +32,10 @@ import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { interval } from 'rxjs';
+import { getLogoutInfoURL } from '../../services/auth';
+import { pluck } from 'rxjs/operators';
+import { isBlank } from '../../utils/string';
+import { Typography } from '@material-ui/core';
 
 const translations = defineMessages({
   sessionExpired: {
@@ -55,8 +59,15 @@ const useStyles = makeStyles((theme) => createStyles({
   },
   title: {
     textAlign: 'center'
+  },
+  ssoAction: {
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column'
   }
 }));
+
+const SAML = 'SAML';
 
 export default function AuthMonitor() {
 
@@ -64,15 +75,30 @@ export default function AuthMonitor() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
-  const username = useSelection<string>(state => state.user.username);
+  const { username, authType } = useSelection(state => state.user);
   const authoringUrl = useSelection<string>(state => state.env.AUTHORING_BASE);
   const { active, error, isFetching } = useSelection(state => state.auth);
   const [password, setPassword] = useState<string>('');
+  const [logoutUrl, setLogoutUrl] = useState(authoringUrl);
+  const isSSO = (authType === SAML);
 
-  const onSubmit = () => dispatch(login({ username, password }));
-  const onClose = (e) => {
-    window.location.href = authoringUrl;
+  const onSubmit = () => {
+    if (isSSO) {
+      dispatch(validateSession());
+    } else {
+      !isBlank(password) && dispatch(login({ username, password }))
+    }
   };
+
+  const onClose = () => {
+    window.location.href = logoutUrl ?? authoringUrl;
+  };
+
+  useEffect(() => {
+    if (isSSO) {
+      getLogoutInfoURL().pipe(pluck('logoutUrl')).subscribe(setLogoutUrl);
+    }
+  }, [isSSO]);
 
   useEffect(() => {
     if (active) {
@@ -85,9 +111,9 @@ export default function AuthMonitor() {
   return (
     <Dialog
       open={!active}
-      aria-labelledby="craftecmsReLoginDialog"
+      aria-labelledby="craftercmsReLoginDialog"
     >
-      <DialogTitle id="craftecmsReLoginDialog" className={classes.title}>
+      <DialogTitle id="craftercmsReLoginDialog" className={classes.title}>
         <FormattedMessage
           id="authMonitor.dialogTitleText"
           defaultMessage="Session Expired"
@@ -110,47 +136,128 @@ export default function AuthMonitor() {
                   />
                 )
               }
-              <form onSubmit={onSubmit}>
-                <TextField
-                  fullWidth
-                  disabled
-                  type="email"
-                  value={username}
-                  className={classes.input}
-                  label={
-                    <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username"/>
-                  }
-                />
-                <PasswordTextField
-                  fullWidth
-                  autoFocus
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  label={
-                    <FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password"/>
-                  }
-                />
-                {/* This button is just to have the form submit when pressing enter. */}
-                <Button
-                  children=""
-                  type="submit"
-                  onClick={onSubmit}
-                  disabled={isFetching}
-                  style={{ display: 'none' }}
-                />
-              </form>
+              {
+                isSSO ? (
+                  <SSOForm
+                    username={username}
+                    isFetching={isFetching}
+                    onSubmit={onSubmit}
+                  />
+                ) :(
+                  <LogInForm
+                    username={username}
+                    isFetching={isFetching}
+                    onSubmit={onSubmit}
+                    password={password}
+                    onSetPassword={setPassword}
+                  />
+                )
+              }
             </>
           )
         }
       </DialogContent>
       <DialogActions className={classes.actions}>
-        <Button onClick={onClose} disabled={isFetching}>
+        <Button type="button" onClick={onClose} disabled={isFetching}>
           <FormattedMessage id="authMonitor.cancelButtonLabel" defaultMessage="Close Session"/>
         </Button>
-        <Button type="submit" onClick={onSubmit} color="primary" disabled={isFetching}>
-          <FormattedMessage id="authMonitor.submitButtonLabel" defaultMessage="Log In"/>
+        <Button type="button" onClick={onSubmit} color="primary" disabled={isFetching}>
+          {
+            isSSO
+              ? <FormattedMessage id="authMonitor.validateSessionButtonLabel" defaultMessage="Validate Session"/>
+              : <FormattedMessage id="authMonitor.loginButtonLabel" defaultMessage="Log In"/>
+          }
         </Button>
       </DialogActions>
     </Dialog>
+  );
+}
+
+function SSOForm(props) {
+  const { username, onSubmit, isFetching } = props;
+  const classes = useStyles({});
+  const onOpenLogin = () => {
+    window.open(
+      'http://authoring.sample.com:8080/studio/login/resume',
+      '_blank',
+      'toolbar=0,location=0,menubar=0,dependent=true'
+    );
+  };
+  return (
+    <form onSubmit={onSubmit}>
+      <TextField
+        fullWidth
+        disabled
+        type="email"
+        value={username}
+        className={classes.input}
+        label={
+          <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username"/>
+        }
+      />
+      <section className={classes.ssoAction}>
+        <Button
+          type="button"
+          color="primary"
+          variant="contained"
+          onClick={onOpenLogin}
+        >
+          <FormattedMessage id="authMonitor.openSSOLoginButtonLabel" defaultMessage="Open SSO Login Form"/>
+        </Button>
+        <Typography variant="caption">
+          <FormattedMessage
+            id="authMonitor.ssoOpenPopupMessage"
+            defaultMessage={
+              "Make sure pop ups are not blocked. Once you log in, come back to " +
+              "this window and click on `Validate Session` button below."
+            }
+          />
+        </Typography>
+      </section>
+      {/* This button is just to have the form submit when pressing enter. */}
+      <Button
+        children=""
+        type="submit"
+        onClick={onSubmit}
+        disabled={isFetching}
+        style={{ display: 'none' }}
+      />
+    </form>
+  );
+}
+
+function LogInForm(props) {
+  const { username, onSubmit, isFetching, onSetPassword, password } = props;
+  const classes = useStyles({});
+  return (
+    <form onSubmit={onSubmit}>
+      <TextField
+        fullWidth
+        disabled
+        type="email"
+        value={username}
+        className={classes.input}
+        label={
+          <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username"/>
+        }
+      />
+      <PasswordTextField
+        fullWidth
+        autoFocus
+        value={password}
+        onChange={(e) => onSetPassword(e.target.value)}
+        label={
+          <FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password"/>
+        }
+      />
+      {/* This button is just to have the form submit when pressing enter. */}
+      <Button
+        children=""
+        type="submit"
+        onClick={onSubmit}
+        disabled={isFetching}
+        style={{ display: 'none' }}
+      />
+    </form>
   );
 }

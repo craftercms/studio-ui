@@ -227,24 +227,24 @@
             }
           }
         })
-      .state('home.globalMenu.globalConfig', {
-        url: '/global-config',
-        views: {
-          contentTab: {
-            templateUrl: '/studio/static-assets/ng-views/global-config.html',
-            controller: 'GlobalConfigCtrl'
+        .state('home.globalMenu.globalConfig', {
+          url: '/global-config',
+          views: {
+            contentTab: {
+              templateUrl: '/studio/static-assets/ng-views/global-config.html',
+              controller: 'GlobalConfigCtrl'
+            }
           }
-        }
-      })
-      .state('home.globalMenu.encryptionTool', {
-        url: '/encryption-tool',
-        views: {
-          contentTab: {
-            templateUrl: '/studio/static-assets/ng-views/encrypt.html',
-            controller: 'EncryptionToolCtrl'
+        })
+        .state('home.globalMenu.encryptionTool', {
+          url: '/encryption-tool',
+          views: {
+            contentTab: {
+              templateUrl: '/studio/static-assets/ng-views/encrypt.html',
+              controller: 'EncryptionToolCtrl'
+            }
           }
-        }
-      })
+        })
         .state('home.sites', {
           url: 'sites',
           views: {
@@ -967,15 +967,13 @@
         $rootScope.isFooter = false;
       }
 
-      const container = document.querySelector('#toolbarGlobalNav');
-      CrafterCMSNext
-        .render(
-          container,
-          'ToolbarGlobalNav', {
-            authHeaders: Constants.AUTH_HEADERS,
-            authSaml: Constants.SAML
-          }
-        );
+      CrafterCMSNext.render(
+        '#toolbarGlobalNav',
+        'ToolbarGlobalNav', {
+          authHeaders: Constants.AUTH_HEADERS,
+          authSaml: Constants.SAML
+        }
+      );
 
       if(authService.getUser()){
         authService.getCurrentUserData('me').then(
@@ -1158,33 +1156,31 @@
       }
 
       $scope.reLogin = function() {
+        authService.login({
+          'username': $scope.user.username,
+          'password': $scope.user.reLoginPass
+        }).then(
+          function success(data) {
 
-        var data =  {
-          "username": $scope.user.username,
-          "password": $scope.user.reLoginPass
-        };
-
-        authService.login(data)
-          .then(function success(data) {
             window.reLoginModalOn = false;
             $scope.reLoginModal.close();
-            //fire event when the login is success
-            let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'logged'} });
+
+            // Fire event when the login is success
+            let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'logged' } });
             document.dispatchEvent(reLoginEvent);
-            setTimeout(function () {
-              authLoop();
-            }, $scope.authDelay);
 
-          }, function error(response){
+            authLoop();
+
+          },
+          function error(response) {
             $scope.reLoginError = {};
-
-            if(response.status == 401){
+            if (response.status == 401) {
               $scope.reLoginError.message = $translate.instant('dashboard.login.USER_PASSWORD_INVALID');
-            }else{
+            } else {
               $scope.reLoginError.message = $translate.instant('dashboard.login.LOGIN_ERROR');
             }
-
-          });
+          }
+        );
       };
 
       $scope.reLoginSignOut = function() {
@@ -1195,68 +1191,12 @@
         $scope.logout();
       };
 
-      function showReLoginModal() {
-        var modal = $uibModal.open({
-          templateUrl: 'reLoginModal.html',
-          backdrop: 'static',
-          keyboard: false,
-          size: 'sm',
-          scope: $scope,
-          windowClass: 'relogin-modal'
-        });
-
-        return modal;
-      }
-
       function authLoop() {
-        $scope.authDelay = 60000;
-        $scope.reLoginError = null;
-        var isInIframe = (window.location != window.parent.location) ? true : false;
-
-        if( !window.reLoginModalOn && !isInIframe && "login" !== $state.current.name ) {
-          window.reLoginModalOn = true;
-
-          authService.validateSession().then(
-            function successCallback(response) {
-              if (response.status == 200 && response.data.message == "OK") {
-                window.reLoginModalOn = false;
-                setTimeout(function () {
-                  authLoop();
-                }, $scope.authDelay);
-
-              }else{
-                if(authService.getUser().authenticationType == Constants.HEADERS){
-                  $state.go('login');
-                }else{
-                  $scope.reLoginModal = showReLoginModal();
-                }
-              }
-
-
-            }, function errorCallback(response) {
-              if (response.status == 401 || response.status == 301 ||
-                response.status == 302 || response.status == 0) {
-                if(authService.getUser().authenticationType == Constants.HEADERS){
-                  $state.go('login');
-                }else {
-                  //fire event when the reLogin is show up
-                  let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'reLogin'} });
-                  document.dispatchEvent(reLoginEvent);
-                  $scope.reLoginModal = showReLoginModal();
-                }
-
-              } else {
-                window.reLoginModalOn = false;
-                setTimeout(function () {
-                  authLoop();
-                }, $scope.authDelay);
-              }
-            }
-          );
-        }
+        const el = document.createElement('craftercms-auth-monitor');
+        CrafterCMSNext.render(el, 'AuthMonitor');
       }
 
-      if(authService.getUser()) {
+      if (authService.getUser()) {
         authLoop();
       }
 
@@ -1485,14 +1425,13 @@
         const onClose = () => {
           CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
         };
-        CrafterCMSNext
-          .render(
-            container,
-            'CreateSiteDialog',
-            {
-              onClose: onClose
-            }
-          );
+        CrafterCMSNext.render(
+          container,
+          'CreateSiteDialog',
+          {
+            onClose: onClose
+          }
+        );
       };
 
       if($scope.siteValidation){

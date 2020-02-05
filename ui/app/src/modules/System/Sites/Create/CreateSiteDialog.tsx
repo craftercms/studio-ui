@@ -94,7 +94,7 @@ const messages = defineMessages({
   },
   pleaseWait: {
     id: 'createSiteDialog.pleaseWait',
-    defaultMessage: 'Please wait while your site is being created..'
+    defaultMessage: 'Please wait while your site is being created.'
   },
   createInBackground: {
     id: 'createSiteDialog.createInBackground',
