@@ -167,6 +167,7 @@ interface PublishFormProps {
   publishingChannels: any[];
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
+  disabled: boolean;
   setSubmitDisabled: Function;
   classes?: any;
 }
@@ -182,7 +183,8 @@ function PublishForm(props: PublishFormProps) {
     publishingChannels,
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
-    setSubmitDisabled
+    setSubmitDisabled,
+    disabled = true
   } = props;
 
   useEffect(
@@ -248,6 +250,7 @@ function PublishForm(props: PublishFormProps) {
                 onChange={handleInputChange('emailOnApprove')}
                 value="emailOnApprove"
                 color="primary"
+                disabled={disabled}
               />
             }
           />
@@ -272,6 +275,7 @@ function PublishForm(props: PublishFormProps) {
             classes={{
               label: classes.formInputs
             }}
+            disabled={disabled}
           />
           <FormControlLabel
             value="custom"
@@ -280,6 +284,7 @@ function PublishForm(props: PublishFormProps) {
             classes={{
               label: classes.formInputs
             }}
+            disabled={disabled}
           />
         </RadioGroup>
         <Collapse
@@ -297,6 +302,7 @@ function PublishForm(props: PublishFormProps) {
             datePickerProps={{
               disablePast: true
             }}
+            disabled={disabled}
           />
         </Collapse>
       </div>
@@ -338,6 +344,7 @@ function PublishForm(props: PublishFormProps) {
               }}
               onChange={handleSelectChange('environment')}
               input={<SelectInput/>}
+              disabled={disabled}
             >
               {
                 publishingChannels.map((publishingChannel: any) =>
@@ -365,6 +372,7 @@ function PublishForm(props: PublishFormProps) {
         InputProps={{
           className: classes.textField
         }}
+        disabled={disabled}
       />
     </form>
   );

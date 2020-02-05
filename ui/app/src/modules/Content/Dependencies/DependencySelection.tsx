@@ -48,6 +48,7 @@ interface DependencySelectionProps {
   onSelectAllClicked: Function;
   onSelectAllSoftClicked: Function;
   onClickShowAllDeps? : any;
+  disabled?: boolean;
 }
 
 interface SelectionListProps {
@@ -60,6 +61,7 @@ interface SelectionListProps {
   displayItemTitle: boolean;
   checked?: any;
   setChecked?: Function;
+  disabled?: boolean;
 }
 
 interface ResultObject {
@@ -85,7 +87,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderColor: palette.gray.light5,
     height: 'calc(100% - 24px)',
     minHeight: '374px',
-    overflowY: 'scroll'
+    overflowY: 'hidden'
+  },
+  dependencySelectionDisabled: {
+    backgroundColor: palette.gray.light1,
   },
   selectionListTitle: {
     margin: '6px auto 6px',
@@ -144,14 +149,15 @@ export function DependencySelection(props: DependencySelectionProps) {
     onClickSetChecked,
     onSelectAllClicked,
     onSelectAllSoftClicked,
-    onClickShowAllDeps
+    onClickShowAllDeps,
+    disabled = false
   } = props;
 
   const classes = useStyles({});
 
   return (
     <>
-      <div className={ classes.dependencySelection }>
+      <div className={ `${classes.dependencySelection} ${ disabled ? classes.dependencySelectionDisabled : '' }` }>
         <SelectionList
           title={
             <FormattedMessage
@@ -165,6 +171,7 @@ export function DependencySelection(props: DependencySelectionProps) {
           displayItemTitle={true}
           checked={checked}
           setChecked={setChecked}
+          disabled={disabled}
         />
         {
           deps == null ? (null) : (
@@ -184,6 +191,7 @@ export function DependencySelection(props: DependencySelectionProps) {
                 }
                 uris={deps.items1}
                 displayItemTitle={false}
+                disabled={disabled}
               />
               <SelectionList
                 title={
@@ -204,6 +212,7 @@ export function DependencySelection(props: DependencySelectionProps) {
                 displayItemTitle={false}
                 checked={checkedSoftDep}
                 setChecked={setChecked}
+                disabled={disabled}
               />
             </>
           )
@@ -379,7 +388,17 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
 
 function SelectionList(props: SelectionListProps) {
 
-  const { title, subtitle, items, uris, onItemClicked, onSelectAllClicked, checked, setChecked } = props;
+  const {
+    title,
+    subtitle,
+    items,
+    uris,
+    onItemClicked,
+    onSelectAllClicked,
+    checked,
+    setChecked,
+    disabled = false
+  } = props;
 
   const classes = useStyles({});
 
@@ -438,6 +457,7 @@ function SelectionList(props: SelectionListProps) {
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ 'aria-labelledby': item.uri }}
+                        disabled={disabled}
                       />
                     </ListItemIcon>
                   }
@@ -490,6 +510,7 @@ function SelectionList(props: SelectionListProps) {
                           tabIndex={-1}
                           disableRipple
                           inputProps={{ 'aria-labelledby': uri }}
+                          disabled={disabled}
                         />
                       </ListItemIcon>
                     }

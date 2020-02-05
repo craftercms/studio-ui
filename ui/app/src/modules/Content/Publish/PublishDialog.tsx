@@ -125,6 +125,7 @@ function PublishDialog(props: PublishDialogProps) {
   const [showDepsDisabled, setShowDepsDisabled] = useState(false);
   const [apiState, setApiState] = useState({
     error: false,
+    submitting: false,
     global: false,
     errorResponse: null
   });
@@ -196,9 +197,12 @@ function PublishDialog(props: PublishDialogProps) {
       )
     };
 
+    setApiState({ ...apiState, submitting: true });
+
     submit(siteId, user.username, data).subscribe(
       (response) => {
         setOpen(false);
+        setApiState({ ...apiState, error: false, submitting: false });
         onClose(response);
       },
       (response) => {

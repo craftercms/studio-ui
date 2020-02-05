@@ -31,6 +31,7 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import ErrorState from '../../../components/SystemStatus/ErrorState';
 import { palette } from '../../../styles/theme';
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 const dialogStyles = () => ({
   titleRoot: {
@@ -59,6 +60,18 @@ const dialogStyles = () => ({
     maxHeight: '586px',
     height: '100vh',
     padding: 0
+  },
+  loadingStateRoot: {
+    height: '100%',
+  },
+  loadingStateGraphic: {
+    flexGrow: 1,
+    padding: '50px 0'
+  },
+  btnSpinner: {
+    marginLeft: 11,
+    marginRight: 11,
+    color: '#fff'
   }
 });
 
@@ -192,6 +205,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
                     showDepsButton={showDepsButton}
                     onSelectAllClicked={selectAllDeps}
                     onSelectAllSoftClicked={selectAllSoft}
+                    disabled={apiState.submitting}
                   />
                 </Grid>
 
@@ -204,6 +218,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
                     publishingChannels={publishingChannels}
                     publishingChannelsStatus={publishingChannelsStatus}
                     onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
+                    disabled={apiState.submitting}
                   />
                 </Grid>
               </Grid>
@@ -213,7 +228,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
                 color="primary"
                 onClick={ onClickShowAllDeps }
                 className={classes.leftAlignedAction}
-                disabled={showDepsDisabled}
+                disabled={showDepsDisabled || apiState.submitting}
               >
                 <FormattedMessage
                   id="publishDialog.showAllDependencies"
@@ -221,17 +236,27 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
                 />
               </Button>
 
-              <Button variant="contained" onClick={handleClose}>
+              <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
                 <FormattedMessage
                   id="requestPublishDialog.cancel"
                   defaultMessage={`Cancel`}
                 />
               </Button>
-              <Button variant="contained" autoFocus onClick={handleSubmit} color="primary" disabled={submitDisabled}>
-                <FormattedMessage
-                  id="requestPublishDialog.submit"
-                  defaultMessage={`Submit`}
-                />
+              <Button variant="contained" autoFocus onClick={handleSubmit} color="primary" disabled={submitDisabled || apiState.submitting}>
+                {
+                  apiState.submitting ?
+                  (
+                    <CircularProgress
+                      className={classes.btnSpinner}
+                      size={20}
+                    />
+                  ) : (
+                    <FormattedMessage
+                      id="requestPublishDialog.submit"
+                      defaultMessage={`Submit`}
+                    />
+                  )
+                }
               </Button>
             </DialogActions>
           </>
