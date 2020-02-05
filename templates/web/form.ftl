@@ -17,10 +17,13 @@
 
 <#include "/templates/system/common/versionInfo.ftl" />
 
-<!doctype>
+<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Crafter Studio</title>
+
+  <meta charset="utf-8"/>
+  <title>Crafter CMS - Content Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
   <link rel="stylesheet" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
   <link rel="stylesheet" href="/studio/static-assets/styles/forms-engine.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Item } from '../models/Item';
 import '../styles/dependency-selection.scss';
 import { withStyles } from '@material-ui/core/styles';
@@ -94,7 +94,7 @@ const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any
 
 const paths = (checked: any) => (
   Object.entries({ ...checked })
-    .filter(([key, value]) => value === true)
+    .filter(([, value]) => value)
     .map(([key]) => key)
 );
 
@@ -106,7 +106,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 
   const [deps, setDeps] = useState<ResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
-  const { items, siteId } = props;
+  const { items, siteId, onChange } = props;
   const [checked, _setChecked] = useState<any>(
     checkState(items)
   );
@@ -133,11 +133,38 @@ export function DependencySelection(props: DependencySelectionProps) {
     _setCheckedSoftDep(nextCheckedSoftDep);
   };
 
+  function selectAllSoft() {
+    setCheckedSoftDep(deps.items2, true);
+  }
+
+  function showAllDependencies() {
+    setShowDepsButton(false);
+    get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${paths(checked)}`)
+      .subscribe(
+        (response: any) => {
+          setDeps({
+            items1: response.response.items.hardDependencies,
+            items2: response.response.items.softDependencies
+          });
+        },
+        () => {
+          setDeps({
+            items1: [],
+            items2: []
+          });
+        }
+      );
+  }
+
   useEffect(
     () => {
-      setRef();
+      onChange(
+        Object.entries({ ...checked, ...checkedSoftDep })
+          .filter(([, value]) => value === true)
+          .map(([key]) => key)
+      );
     },
-    [checked, checkedSoftDep]
+    [checked, checkedSoftDep, onChange]
   );
 
   return (
@@ -158,7 +185,7 @@ export function DependencySelection(props: DependencySelectionProps) {
           setChecked={setChecked}
         />
         {
-          deps == null ? (null) : (
+          deps != null && (
             <>
               <SelectionList
                 title={
@@ -214,17 +241,18 @@ export function DependencySelection(props: DependencySelectionProps) {
               </span>
             </div>
           ) : (
-            showDepsButton ? (
+            showDepsButton && (
               <button
                 className="dependency-selection--nav-btn dependency-selection--show-all"
                 onClick={showAllDependencies}
+                disabled={Object.values(checked).filter(value => value).length === 0}
               >
                 <FormattedMessage
                   id="publishDialog.showAllDependencies"
                   defaultMessage={`Show All Dependencies`}
                 />
               </button>
-            ) : (null)
+            )
           )
         }
         <p>
@@ -237,43 +265,11 @@ export function DependencySelection(props: DependencySelectionProps) {
     </>
   );
 
-  function selectAllSoft() {
-    setCheckedSoftDep(deps.items2, true);
-  }
-
-  function setRef() {
-    const result = (
-      Object.entries({ ...checked, ...checkedSoftDep })
-        .filter(([key, value]) => value === true)
-        .map(([key]) => key)
-    );
-    props.onChange(result);
-  }
-
-  function showAllDependencies() {
-    setShowDepsButton(false);
-    get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${paths(checked)}`)
-      .subscribe(
-        (response: any) => {
-          setDeps({
-            items1: response.response.items.hardDependencies,
-            items2: response.response.items.softDependencies
-          });
-        },
-        () => {
-          setDeps({
-            items1: [],
-            items2: []
-          });
-        }
-      );
-  }
-
 }
 
 export function DependencySelectionDelete(props: DependencySelectionProps) {
   const [resultItems, setResultItems] = useState<ResultObject>();
-  const { items, siteId } = props;
+  const { items, siteId, onChange } = props;
   const [checked, _setChecked] = useState<any>(
     checkState(items)
   );
@@ -281,15 +277,44 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
   const setChecked = (uri: string[], isChecked: boolean) => {
     _setChecked(updateCheckedList(uri, isChecked, checked));
     setResultItems(null);
-  }
+  };
 
-  useEffect(
-    () => {
-      showAllDependencies();
-      setRef();
-    },
-    [checked]
+  const showAllDependencies = useCallback(
+    () => get(`/studio/api/2/content/get_delete_package?siteId=${siteId}&paths=${paths(checked)}`).subscribe(
+      (response: any) => {
+        setResultItems({
+          items1: response.response.items.childItems,
+          items2: response.response.items.dependentItems
+        });
+      },
+      () => {
+        setResultItems({
+          items1: [],
+          items2: []
+        });
+      }
+    ),
+    [checked, siteId]
   );
+
+  useEffect(() => {
+
+    const result = Object.entries({ ...checked })
+      .filter(([, value]) => value === true)
+      .map(([key]) => key);
+
+    if (result.length) {
+      showAllDependencies();
+    } else {
+      setResultItems({
+        items1: [],
+        items2: []
+      });
+    }
+
+    onChange(result);
+
+  }, [checked, onChange, showAllDependencies]);
 
   return (
     <>
@@ -310,7 +335,7 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
           setChecked={setChecked}
         />
         {
-          resultItems == null ? (null) : (
+          resultItems != null && (
             <>
               <SelectionList
                 title={
@@ -350,7 +375,7 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
       </div>
       <div className="dependency-selection--bottom-section">
         {
-          (resultItems == null) ? (
+          (resultItems == null) && (
             <div className="centerCircularProgress">
               <CenterCircularProgress/>
               <span className="dependency-selection--center-circular-progress-text">
@@ -360,37 +385,11 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
                 />
               </span>
             </div>
-          ) : (null)
+          )
         }
       </div>
     </>
-
   );
-
-  function setRef() {
-    const result = Object.entries({ ...checked })
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key);
-    props.onChange(result);
-  }
-
-  function showAllDependencies() {
-    get(`/studio/api/2/content/get_delete_package?siteId=${siteId}&paths=${paths(checked)}`)
-      .subscribe(
-        (response: any) => {
-          setResultItems({
-            items1: response.response.items.childItems,
-            items2: response.response.items.dependentItems
-          });
-        },
-        () => {
-          setResultItems({
-            items1: [],
-            items2: []
-          });
-        }
-      );
-  }
 
 }
 
@@ -404,15 +403,15 @@ function SelectionList(props: SelectionListProps) {
         {title}
       </h2>
       {
-        subtitle ? (
+        subtitle && (
           <span>
             {` • `}
             {subtitle}
           </span>
-        ) : (null)
+        )
       }
       {
-        onSelectAllClicked ? (
+        onSelectAllClicked && (
           <button className="dependency-selection--nav-btn dependency-selection--select-all"
                   onClick={() => onSelectAllClicked(setChecked, items)}>
             <FormattedMessage
@@ -420,45 +419,43 @@ function SelectionList(props: SelectionListProps) {
               defaultMessage={`Select All`}
             />
           </button>
-        ) : (null)
+        )
       }
       {
-        items ? (
-          items.map((item) => (
-            <div className="dependency-selection--section-dependencies" key={item.uri}>
+        items && items.map((item) => (
+          <div className="dependency-selection--section-dependencies" key={item.uri}>
+            {
+              onItemClicked && (
+                <div className="dependency-selection--checkbox">
+                  <BlueCheckbox
+                    checked={!!checked[item.uri]}
+                    onClick={(e) =>
+                      onItemClicked(e, item, setChecked, checked)
+                    }
+                    onChange={() => void 0}
+                    value={item.uri}
+                    color="primary"
+                  />
+                </div>
+              )
+            }
+            <div
+              className="dependency-selection--information"
+              onClick={(e) => onItemClicked(e, item, setChecked, checked)}>
               {
-                onItemClicked ? (
-                  <div className="dependency-selection--checkbox">
-                    <BlueCheckbox
-                      checked={!!checked[item.uri]}
-                      onClick={(e) =>
-                        onItemClicked(e, item, setChecked, checked)
-                      }
-                      onChange={(e) => void 0}
-                      value={item.uri}
-                      color="primary"
-                    />
+                displayItemTitle && (
+                  <div className="dependency-selection--information--internal-name">
+                    {item.internalName}
                   </div>
-                ) : (null)
+                )
               }
-              <div
-                className="dependency-selection--information"
-                onClick={(e) => onItemClicked(e, item, setChecked, checked)}>
-                {
-                  displayItemTitle ? (
-                    <div className="dependency-selection--information--internal-name">
-                      {item.internalName}
-                    </div>
-                  ) : (null)
-                }
-                <div className="dependency-selection--information--uri">&nbsp;{item.uri}</div>
-              </div>
+              <div className="dependency-selection--information--uri">&nbsp;{item.uri}</div>
             </div>
-          ))
-        ) : (null)
+          </div>
+        ))
       }
       {
-        uris ? (
+        uris && (
           <ul className="dependency-selection--list">
             {
               uris.map((uri: string) => (
@@ -474,7 +471,7 @@ function SelectionList(props: SelectionListProps) {
                     </div>
                     <div
                       className="dependency-selection--list--soft-item"
-                      onClick={(e) => onItemClicked([uri], !checked[uri], setChecked, checked)}>
+                      onClick={() => onItemClicked([uri], !checked[uri], setChecked, checked)}>
                       {uri}
                     </div>
                   </li>
@@ -484,7 +481,7 @@ function SelectionList(props: SelectionListProps) {
               ))
             }
           </ul>
-        ) : (null)
+        )
       }
     </div>
   );

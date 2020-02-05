@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useReducer, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { encrypt as encryptService } from '../services/security';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -80,12 +80,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const noficationInitialState = {
+const notificationInitialState = {
   open: false,
   variant: 'success'
 };
 
-function copyToClipboard(input: HTMLInputElement, notificationSettings: any, setNotificationSettings: Function) {
+function copyToClipboard(input: HTMLInputElement) {
 
   /* Select the text field */
   input.select();
@@ -94,8 +94,6 @@ function copyToClipboard(input: HTMLInputElement, notificationSettings: any, set
 
   /* Copy the text inside the text field */
   document.execCommand('copy');
-
-  setNotificationSettings({ ...notificationSettings, open: true });
 
 }
 
@@ -134,7 +132,11 @@ const EncryptTool = () => {
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
   const [fetching, setFetching] = useState(null);
-  const [notificationSettings, setNotificationSettings] = useState(noficationInitialState);
+  // TODO: useSpreadState hook once merged to 2019
+  const [notificationSettings, setNotificationSettings] = useReducer(
+    (state, nextState) => ({ ...state, ...nextState }),
+    notificationInitialState
+  );
 
   const { formatMessage } = useIntl();
 
@@ -147,31 +149,38 @@ const EncryptTool = () => {
     if (text) {
       setFetching(true);
       setResult(null);
-      encryptService(encodeURIComponent(text)).subscribe((encryptedText) => {
-        setFetching(false);
-        setText('');
-        setResult(encryptedText);
-
-        setTimeout(() => copyToClipboard(inputRef.current, notificationSettings, setNotificationSettings), 10);
-      }, () => {
-        setNotificationSettings({
-          ...notificationSettings,
-          open: true,
-          variant: 'error'
-        });
-      });
+      encryptService(encodeURIComponent(text)).subscribe(
+        (encryptedText) => {
+          setFetching(false);
+          setText('');
+          setResult(encryptedText);
+          setTimeout(() => {
+            copyToClipboard(inputRef.current);
+            setNotificationSettings({ open: true, variant: 'success' });
+          }, 10);
+        },
+        () => {
+          setNotificationSettings({
+            open: true,
+            variant: 'error'
+          });
+        }
+      );
     } else {
       focus();
     }
   };
+
   const clear = () => {
     setText('');
     setResult(null);
     focus();
   };
 
+  console.log(notificationSettings.open);
+
   return (
-    <section className="content-types-landing-page">
+    <form onSubmit={encrypt} className="site-config-landing-page">
       <header className={`${classes.header} page-header`} style={{ marginTop: 0 }}>
         <h1 className={classes.title}>{formatMessage(messages.pageTitle)}</h1>
       </header>
@@ -183,6 +192,7 @@ const EncryptTool = () => {
           onChange={(e) => setText(e.target.value)}
           className="form-control"
           id="encryptionToolRawText"
+          name="encryptionToolRawText"
           autoFocus
           disabled={fetching}
         />
@@ -195,8 +205,11 @@ const EncryptTool = () => {
             type="text"
             ref={inputRef}
             className="well"
-            value={`\${enc:${result}\}`}
-            onClick={(e: any) => copyToClipboard(e.target, notificationSettings, setNotificationSettings)}
+            value={`\${enc:${result}}`}
+            onClick={(e: any) => {
+              copyToClipboard(e.target);
+              setNotificationSettings({ open: true, variant: 'success' });
+            }}
             style={{
               display: 'block',
               width: '100%'
@@ -205,11 +218,11 @@ const EncryptTool = () => {
         </div>
       }
       <div className="form-group">
-        <button className="btn btn-primary" onClick={encrypt} disabled={fetching}>
+        <button type="submit" className="btn btn-primary" onClick={encrypt} disabled={fetching}>
           <span>{formatMessage(messages.buttonText)}</span>
         </button>
         {' '}
-        <button className="btn btn-default" onClick={clear} disabled={fetching}>
+        <button type="button" className="btn btn-default" onClick={clear} disabled={fetching}>
           <span>{formatMessage(messages.clearResultButtonText)}</span>
         </button>
       </div>
@@ -221,16 +234,18 @@ const EncryptTool = () => {
         }}
         open={notificationSettings.open}
         autoHideDuration={5000}
-        onClose={() => setNotificationSettings({ ...notificationSettings, open: false })}
+        onClose={() => {
+          setNotificationSettings({ open: false });
+        }}
       >
         <SnackbarContentWrapper
-          onClose={() => setNotificationSettings({ ...notificationSettings, open: false })}
+          onClose={() => setNotificationSettings({ open: false })}
           variant={notificationSettings.variant}
           className={notificationSettings.variant === 'success' ? classes.success : classes.error}
           message={formatMessage(notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage)}
         />
       </Snackbar>
-    </section>
+    </form>
   );
 };
 
