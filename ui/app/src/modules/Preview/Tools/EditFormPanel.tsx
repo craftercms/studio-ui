@@ -155,7 +155,7 @@ export default function EditFormPanel() {
       window.addEventListener('message', (e) => {
         if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_CLOSE) {
           setOpen(false);
-          getHostToGuestBus().next({ type: RELOAD_REQUEST })
+          if(e.data.refresh) getHostToGuestBus().next({ type: RELOAD_REQUEST })
         }
       }, false);
     } catch {

@@ -75,7 +75,7 @@
           true,
           {
             success: () => {
-              window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE' }, '*');
+              window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
             },
             failure: () => {
               console.log('failure');

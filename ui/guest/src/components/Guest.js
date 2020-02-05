@@ -23,10 +23,10 @@ import {
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
-  CONTENT_TYPE_RECEPTACLES_REQUEST,
-  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   EDIT_MODE_CHANGED,
@@ -712,7 +712,7 @@ export function Guest(props) {
               message$.pipe(
                 filter((e) =>
                   (e.data?.type === DESKTOP_ASSET_UPLOAD_COMPLETE) &&
-                  (e.data.id === file.name)
+                  (e.data.payload.id === file.name)
                 ),
                 map(e => e.data),
                 take(1)
