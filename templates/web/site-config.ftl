@@ -15,13 +15,14 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<#include "/templates/web/common/page-fragments/head.ftl" />
+    <#include "/templates/web/common/page-fragments/head.ftl" />
 
-    <title>Crafter Studio</title>
+    <meta charset="utf-8"/>
+    <title>Crafter CMS - Site Config</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/console.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 
