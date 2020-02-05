@@ -73,7 +73,6 @@
       switch (_message.type) {
         case 'FORM_ENGINE_RENDER_COMPLETE': {
           amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-          debugger;
           CStudioAuthoring.InContextEdit.messageDialogs({
             type: 'OPEN_CHILD_COMPONENT',
             key: message.embeddedItemId,

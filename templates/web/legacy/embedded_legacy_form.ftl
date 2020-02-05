@@ -33,10 +33,17 @@
     window.IS_LEGACY_TOP_WINDOW = true;
   </script>
   <style>
-    /*iframe {*/
-    /*  height: 100%;*/
-    /*  width: 100%;*/
-    /*}*/
+    .studio-ice-dialog {
+      z-index: 1035;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 200px;
+      width: 100%;
+      position: fixed;
+    }
+
     .studio-ice-dialog > .bd iframe {
       top: 0;
       left: 0;
@@ -54,73 +61,50 @@
 <script>
   var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   var site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
-  var key = CStudioAuthoring.Utils.getQueryVariable(location.search, 'key');
+  var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
   var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
-  //var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceComponent');
-  //var edit = CStudioAuthoring.Utils.getQueryVariable(location.search, 'edit');
 
-  // var editCb = {
-  //   success: function (contentTO, editorId, name, value, draft) {
-  //     if (CStudioAuthoringContext.isPreview) {
-  //       try {
-  //         CStudioAuthoring.Operations.refreshPreview();
-  //       } catch (err) {
-  //         if (!draft) {
-  //           this.callingWindow.location.reload(true);
-  //         }
-  //       }
-  //     }
-  //     if (CStudioAuthoringContext.isPreview || (!CStudioAuthoringContext.isPreview && !draft)) {
-  //       eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
-  //       eventNS.typeAction = '';
-  //       document.dispatchEvent(eventNS);
-  //     }
-  //   },
-  //   failure: function () {
-  //   }
-  // };
-
-  //if (isInclude === 'null') {
-    CStudioAuthoring.Service.lookupContentItem(
-      site,
-      path,
-      {
-        success: (contentTO) => {
-          CStudioAuthoring.Operations.performSimpleIceEdit(
-            contentTO.item,
-            '',
-            true,
-            {
-              success: () => {
-                console.log('success');
-              },
-              failure: () => {
-                console.log('failure');
-              },
-              renderComplete: () => {
-                console.log('renderComplete');
-                if(key) {
-                  debugger;
-                  CStudioAuthoring.InContextEdit.messageDialogs({
-                    type: 'OPEN_CHILD_COMPONENT',
-                    key: key,
-                    iceId: null,
-                    edit: true
-                  });
-                }
-              },
+  CStudioAuthoring.Service.lookupContentItem(
+    site,
+    path,
+    {
+      success: (contentTO) => {
+        CStudioAuthoring.Operations.performSimpleIceEdit(
+          contentTO.item,
+          '',
+          true,
+          {
+            success: () => {
+              window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE' }, '*');
             },
-            [{ defaultHeightWidth: true }],
-            null,
-            isHidden? false: false);
-        },
-        failure: (error) => {
-          console.log(error);
-        }
+            failure: () => {
+              console.log('failure');
+            },
+            cancelled: () => {
+              window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE' }, '*');
+            },
+            renderComplete: () => {
+              console.log('renderComplete');
+              if (modelId) {
+                CStudioAuthoring.InContextEdit.messageDialogs({
+                  type: 'OPEN_CHILD_COMPONENT',
+                  key: modelId,
+                  iceId: null,
+                  edit: true,
+                  aux: [{ defaultHeightWidth: true }]
+                });
+              }
+            },
+          },
+          [{ defaultHeightWidth: true }],
+          null,
+          isHidden ? true : false);
       },
-      false, false);
-
-  console.log(path);
+      failure: (error) => {
+        console.log(error);
+      }
+    },
+    false, false);
 </script>
 </body>
 </html>

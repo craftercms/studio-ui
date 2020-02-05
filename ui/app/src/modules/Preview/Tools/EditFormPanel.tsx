@@ -21,16 +21,19 @@ import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
 import { ContentTypeHelper } from '../../../utils/helpers';
-import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
+import {
+  CLEAR_SELECTED_ZONES,
+  clearSelectForEdit,
+  EMBEDDED_LEGACY_FORM_CLOSE,
+  RELOAD_REQUEST
+} from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../../utils/hooks';
+import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import { nnou } from '../../../utils/object';
 import { forEach } from '../../../utils/array';
 import { LookupTable } from '../../../models/LookupTable';
@@ -102,10 +105,8 @@ export default function EditFormPanel() {
   const [open, setOpen] = useState(false);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const [src, setSrc] = useState(null);
-  const [childSrc, setChildSrc] = useState(null);
 
   const item = selected[0];
-  const index = item.index;
   const model = models[item.modelId];
 
   const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
@@ -131,43 +132,33 @@ export default function EditFormPanel() {
     return () => document.removeEventListener('keydown', handler, false);
   }, [dispatch]);
 
-  useEffect(() => {
-
-    //this needs to be on one useEffect item dependency;
+  useOnMount(() => {
     const fieldId = item.fieldId[0];
     const selectedId = (item.index !== undefined) ? model[fieldId][item.index] : item.modelId;
     const path = models[selectedId].craftercms.path || false;
-    //let src = null;
-    //let childSrc = null;
 
     //if the item is shared
     if (path) {
-      const contentTypeId = models[selectedId].craftercms.contentType;
       setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${path}`);
-      //setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&form=${contentTypeId}&path=${path}&isInclude=null&iceComponent=true&edit=true`);
     } else {
-      //the items is inside of a component
       let parentPath;
-      let parentContentTypeId;
-      let childContentTypeId;
       if (model === models[selectedId]) {
         let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
         parentPath = models[parentId].craftercms.path;
-        parentContentTypeId = models[parentId].craftercms.contentType;
-        childContentTypeId = model.craftercms.contentType;
       } else {
         parentPath = models[model.craftercms.id].craftercms.path;
-        parentContentTypeId = models[model.craftercms.id].craftercms.contentType;
-        childContentTypeId = models[selectedId].craftercms.contentType;
       }
-
-      setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${parentPath}&isHidden=true&key=${selectedId}`);
-      //setChildSrc(`${AUTHORING_BASE}/form?site=${site}&form=${childContentTypeId}&path=${selectedId}&isInclude=true&iceComponent=true&edit=true&editorId=123`);
-      //setSrc(`${AUTHORING_BASE}/form?site=${site}&form=${parentContentTypeId}&path=${parentPath}&isInclude=null&iceComponent=true&edit=true&editorId=123`);
-
+      setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}`);
     }
 
-  }, []);
+    window.addEventListener('message', (e) => {
+      if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_CLOSE) {
+        setOpen(false);
+        getHostToGuestBus().next({ type: RELOAD_REQUEST })
+      }
+    }, false);
+
+  });
 
   if (selected.length > 1) {
     // TODO: Implement Multi-mode...
@@ -185,10 +176,6 @@ export default function EditFormPanel() {
     )
   }
 
-  if (index != null) {
-
-  }
-
   return (
     <>
       <ToolPanel
@@ -197,18 +184,16 @@ export default function EditFormPanel() {
         BackIcon={CloseRounded}
       >
         <div className={classes.formWrapper}>
-          <Button variant="outlined" color="primary"
-                  onClick={openEditForm}>{formatMessage(translations.openComponentForm)}</Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={openEditForm}
+          >
+            {formatMessage(translations.openComponentForm)}
+          </Button>
         </div>
       </ToolPanel>
       <Dialog fullScreen open={open} onClose={handleClose}>
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={handleClose}
-        >
-          <CloseIcon/>
-        </IconButton>
         <iframe src={src} title='cstudio-embedded-legacy-form' className={classes.iframe}/>
       </Dialog>
     </>
