@@ -108,10 +108,9 @@ function SnackbarContentWrapper(props: any) {
       message={
         <span id="client-snackbar" className={classes.message}>
           {
-            variant === 'success' ?
-              <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`}/>
-              :
-              <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`}/>
+            variant === 'success'
+              ? <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`}/>
+              : <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`}/>
           }
           {message}
         </span>
@@ -176,8 +175,6 @@ const EncryptTool = () => {
     setResult(null);
     focus();
   };
-
-  console.log(notificationSettings.open);
 
   return (
     <form onSubmit={encrypt} className="site-config-landing-page">
