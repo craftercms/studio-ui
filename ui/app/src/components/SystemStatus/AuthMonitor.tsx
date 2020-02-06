@@ -112,9 +112,14 @@ export default function AuthMonitor() {
       setState({ isFetching: true, error: null });
     }
     if (isSSO) {
-      validateSession().subscribe((active) => {
-        setState({ active: active, isFetching: false });
-      });
+      validateSession().subscribe(
+        (active) => {
+          setState({ active: active, isFetching: false });
+        },
+        () => {
+          setState({ isFetching: false });
+        }
+      );
       setSSOButtonClicked(false);
     } else {
       (!isBlank(password)) && login({ username, password }).subscribe(
