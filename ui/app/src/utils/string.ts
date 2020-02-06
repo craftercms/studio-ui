@@ -37,6 +37,10 @@ export function dasherize(str: string) {
   return str.replace(/_/g, '-');
 }
 
+export function isBlank(str: string): boolean {
+  return str === '';
+}
+
 export default {
   camelize,
   capitalize,
