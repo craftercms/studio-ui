@@ -20,7 +20,7 @@ import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
-import { ContentTypeHelper } from '../../../utils/helpers';
+import { ContentTypeHelper, ModelHelper } from '../../../utils/helpers';
 import {
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
@@ -135,10 +135,10 @@ export default function EditFormPanel() {
   useOnMount(() => {
     try {
       const fieldId = item.fieldId[0];
-      const selectedId = (item.index !== undefined) ? model[fieldId][item.index] : item.modelId;
-      const path = models[selectedId].craftercms.path || false;
+      var selectedId = ModelHelper.extractCollectionItem(model, fieldId, item.index);
+      selectedId = (typeof selectedId === 'string' && item.index !== undefined) ? selectedId : item.modelId;
+      const path = ModelHelper.prop(models[selectedId], 'path');
 
-      //if the item is shared
       if (path) {
         setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${path}`);
       } else {
@@ -155,14 +155,12 @@ export default function EditFormPanel() {
       window.addEventListener('message', (e) => {
         if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_CLOSE) {
           setOpen(false);
-          if(e.data.refresh) getHostToGuestBus().next({ type: RELOAD_REQUEST })
+          if (e.data.refresh) getHostToGuestBus().next({ type: RELOAD_REQUEST })
         }
       }, false);
     } catch {
       console.log('No supported yet.')
     }
-
-
   });
 
   if (selected.length > 1) {

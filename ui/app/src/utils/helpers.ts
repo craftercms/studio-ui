@@ -187,6 +187,10 @@ export class ModelHelper {
     )
   }
 
+  isEmbedded() {
+    return ModelHelper.isEmbedded(this.descriptor)
+  }
+
   prop(propName: string) {
     return ModelHelper.prop(
       this.descriptor,
