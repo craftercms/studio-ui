@@ -1223,6 +1223,9 @@
         globalMenuMessages = i18n.messages.globalMenuMessages;
 
         if ($scope.entities.length > 1) {
+          let defaultView = $scope.entities[0].id;  // default view (first)
+          const currentView = $state.current.name;
+
           $scope.entities.forEach(function (entry, i) {
             const label = (
               globalMenuMessages[entry.id]
@@ -1231,11 +1234,13 @@
             );
 
             entry.label = label;
-            if (i < 1) {    // Go to default view (first)
-              $scope.view_tab = entry.tabName;
-              $state.go(entry.id);
+
+            if (currentView === entry.id) {   // if current view is an entry of globalMenu -> set as defuault view
+              defaultView = entry.id;
             }
           });
+
+          $state.go(defaultView);
         } else {
           if ($scope.entities.length > 0) {
             $state.go((data[0] || data.menuItems[0]).id.replace('globalMenu.', ''));
