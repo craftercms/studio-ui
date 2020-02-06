@@ -1235,7 +1235,7 @@
 
             entry.label = label;
 
-            if (currentView === entry.id) {   // if current view is an entry of globalMenu -> set as defuault view
+            if (currentView === entry.id) {   // if current view is an entry of globalMenu -> set as default view
               defaultView = entry.id;
             }
           });
