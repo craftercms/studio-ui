@@ -16,7 +16,7 @@
  */
 
 import Cookies from 'js-cookie';
-import { setGlobalHeaders } from "./ajax";
+import { setGlobalHeaders } from './ajax';
 
 export function getRequestForgeryToken() {
   return Cookies.get('XSRF-TOKEN');
@@ -24,7 +24,7 @@ export function getRequestForgeryToken() {
 
 export function setRequestForgeryToken() {
   const token = Cookies.get('XSRF-TOKEN');
-  setGlobalHeaders({'X-XSRF-TOKEN': token});
+  setGlobalHeaders({ 'X-XSRF-TOKEN': token });
 }
 
 export default {

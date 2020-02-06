@@ -123,7 +123,7 @@
   "createSiteDialog.noBlueprints": "청사진이없는 곳",
   "createSiteDialog.noDescription": "설명이 제공되지 않았습니다",
   "createSiteDialog.noPushSite": "생성 후 사이트를 원격 Git 리포지토리로 푸시하지 마십시오",
-  "createSiteDialog.pleaseWait": "사이트가 생성되는 동안 잠시 기다려주십시오 ..",
+  "createSiteDialog.pleaseWait": "사이트가 생성되는 동안 잠시 기다려주십시오.",
   "createSiteDialog.privateBlueprints": "개인 청사진",
   "createSiteDialog.privateKey": "개인 키",
   "createSiteDialog.publicMarketplace": "공공 시장",

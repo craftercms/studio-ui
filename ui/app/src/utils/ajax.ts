@@ -18,6 +18,7 @@
 import { ajax } from 'rxjs/ajax';
 
 const HEADERS = {};
+export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 export const OMIT_GLOBAL_HEADERS = {};
 
 export function setGlobalHeaders(props: object) {

@@ -17,10 +17,10 @@
 
 import '../styles/index.scss';
 
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { PropsWithChildren, Suspense, useEffect, useState } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import { theme } from "../styles/theme";
+import { theme } from '../styles/theme';
 import { updateIntl } from '../utils/codebase-bridge';
 import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
@@ -59,13 +59,11 @@ function getCurrentLocale() {
   return locale ? locale : 'en';
 }
 
-function CrafterCMSNextBridge(props: any) {
+function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
+
   const [, update] = useState();
-  useEffect(() => {
-    const handler = (e: any) => update({});
-    document.addEventListener('setlocale', handler, false);
-    return () => document.removeEventListener('setlocale', handler, false);
-  }, [update]);
+
+  useEffect(() => setUpLocaleChangeListener(update), [update]);
 
   return (
     <RawIntlProvider value={intl}>
@@ -77,6 +75,12 @@ function CrafterCMSNextBridge(props: any) {
     </RawIntlProvider>
   );
 
+}
+
+function setUpLocaleChangeListener(update: Function) {
+  const handler = (e: any) => update({});
+  document.addEventListener('setlocale', handler, false);
+  return () => document.removeEventListener('setlocale', handler, false);
 }
 
 export default CrafterCMSNextBridge;

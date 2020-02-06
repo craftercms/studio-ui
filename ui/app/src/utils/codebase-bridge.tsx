@@ -105,7 +105,8 @@ export function createCodebaseBridge() {
       )),
       CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../components/PublishingQueue')),
-      EncryptTool: lazy(() => import('../components/EncryptTool'))
+      EncryptTool: lazy(() => import('../components/EncryptTool')),
+      AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor'))
     },
 
     assets: {
@@ -153,6 +154,8 @@ export function createCodebaseBridge() {
         container = document.querySelector(container);
       }
 
+      const element = container as Element;
+
       const Component: JSXElementConstructor<any> = (typeof component === 'string')
         ? Bridge.components[component]
         : component;
@@ -160,6 +163,10 @@ export function createCodebaseBridge() {
       return (
         new Promise((resolve, reject) => {
           try {
+            const unmount = (options: any) => {
+              ReactDOM.unmountComponentAtNode(element);
+              options.removeContainer && element.parentNode.removeChild(element);
+            };
             // @ts-ignore
             ReactDOM
               .render(
@@ -168,7 +175,19 @@ export function createCodebaseBridge() {
                   <Component {...props} />
                 </CrafterCMSNextBridge>,
                 container,
-                () => resolve()
+                () => resolve({
+                  unmount: (options: any) => {
+                    options = Object.assign({
+                      delay: false,
+                      removeContainer: false
+                    }, options || {});
+                    if (options.delay) {
+                      setTimeout(() => unmount(options), options.delay);
+                    } else {
+                      unmount(options);
+                    }
+                  }
+                })
               );
           } catch (e) {
             reject(e);
