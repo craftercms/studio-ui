@@ -87,6 +87,7 @@
               window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE' }, '*');
             },
             renderComplete: () => {
+              window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
               if (modelId) {
                 CStudioAuthoring.InContextEdit.messageDialogs({
                   type: 'OPEN_CHILD_COMPONENT',

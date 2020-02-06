@@ -25,6 +25,7 @@ import {
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
   EMBEDDED_LEGACY_FORM_CLOSE,
+  EMBEDDED_LEGACY_FORM_RENDERED,
   RELOAD_REQUEST
 } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
@@ -37,11 +38,23 @@ import Dialog from '@material-ui/core/Dialog';
 import { nnou } from '../../../utils/object';
 import { forEach } from '../../../utils/array';
 import { LookupTable } from '../../../models/LookupTable';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import LoadingState from '../../../components/SystemStatus/LoadingState';
+import clsx from 'clsx';
 
 const translations = defineMessages({
   openComponentForm: {
     id: 'craftercms.edit.openComponentForm',
     defaultMessage: 'Open Component Form'
+  },
+  contentForm: {
+    id: 'craftercms.edit.contentForm',
+    defaultMessage: 'Content Form'
+  },
+  loadingForm: {
+    id: 'craftercms.edit.loadingForm',
+    defaultMessage: 'Loading form...'
   }
 });
 
@@ -56,7 +69,18 @@ const styles = makeStyles(() => createStyles({
     right: '10px'
   },
   iframe: {
-    height: '100%'
+    height: '0',
+    border: 0,
+    '&.complete': {
+      height: '100%'
+    }
+  },
+  appBar: {
+    background: '#7e9dbb'
+  },
+  loadingRoot: {
+    height: 'calc(100% - 104px)',
+    justifyContent: 'center'
   }
 }));
 
@@ -105,6 +129,7 @@ export default function EditFormPanel() {
   const [open, setOpen] = useState(false);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const [src, setSrc] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const item = selected[0];
   const model = models[item.modelId];
@@ -136,7 +161,7 @@ export default function EditFormPanel() {
     try {
       const fieldId = item.fieldId[0];
       let selectedId;
-      if(fieldId) {
+      if (fieldId) {
         selectedId = ModelHelper.extractCollectionItem(model, fieldId, item.index);
         selectedId = (typeof selectedId === 'string' && item.index !== undefined) ? selectedId : item.modelId;
       } else {
@@ -162,6 +187,8 @@ export default function EditFormPanel() {
         if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_CLOSE) {
           setOpen(false);
           if (e.data.refresh) getHostToGuestBus().next({ type: RELOAD_REQUEST })
+        } else if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_RENDERED) {
+          setLoading(false);
         }
       }, false);
     } catch {
@@ -203,7 +230,23 @@ export default function EditFormPanel() {
         </div>
       </ToolPanel>
       <Dialog fullScreen open={open} onClose={handleClose}>
-        <iframe src={src} title='cstudio-embedded-legacy-form' className={classes.iframe}/>
+        <AppBar position="static" className={classes.appBar}>
+          <Toolbar>
+            <Typography variant="h6">
+              {formatMessage(translations.contentForm)}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        {
+          loading &&
+          <LoadingState
+            title={formatMessage(translations.loadingForm)}
+            graphicProps={{ width: 150 }}
+            classes={{ root: classes.loadingRoot }}
+          />
+        }
+        <iframe src={src} title='cstudio-embedded-legacy-form'
+                className={clsx(classes.iframe, !loading && 'complete')}/>
       </Dialog>
     </>
   )
