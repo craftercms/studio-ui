@@ -43,10 +43,6 @@ const translations = defineMessages({
   incorrectPasswordMessage: {
     id: 'authMonitor.incorrectPasswordMessage',
     defaultMessage: 'Incorrect password. Please try again.'
-  },
-  verifyingAuthMessage: {
-    id: 'authMonitor.verifyingAuthMessage',
-    defaultMessage: 'Verifying...'
   }
 });
 
@@ -171,7 +167,6 @@ export default function AuthMonitor() {
           isFetching ? (
             <LoadingState
               title=""
-              subtitle={formatMessage(translations.verifyingAuthMessage)}
               classes={{ graphic: classes.graphic }}
             />
           ) : (
