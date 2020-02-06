@@ -27,7 +27,6 @@ const epic: any[] = combineEpics.apply(this, [
   ...sites,
   ...contentTypes,
   ...assets,
-  ...contentTypes,
   ...audiencesPanel
 ]);
 

@@ -17,7 +17,7 @@
 
 import '../styles/index.scss';
 
-import React, { Suspense, useEffect, useLayoutEffect, useState } from 'react';
+import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from '../styles/theme';
@@ -29,7 +29,6 @@ import ko from '../translations/locales/ko.json';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
 import store from '../state/store';
-import AuthMonitor from './SystemStatus/AuthMonitor';
 
 const Locales: any = {
   en,
@@ -63,7 +62,7 @@ function getCurrentLocale() {
   return locale ? locale : 'en';
 }
 
-function CrafterCMSNextBridge(props: any) {
+function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
 
   const [, update] = useState();
 
@@ -77,7 +76,6 @@ function CrafterCMSNextBridge(props: any) {
           <Suspense fallback="">
             {props.children}
           </Suspense>
-          <AuthMonitor/>
         </ThemeProvider>
       </RawIntlProvider>
     </Provider>

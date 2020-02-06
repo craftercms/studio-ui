@@ -212,6 +212,7 @@ const globalNavUrlMapping = {
   'home.globalMenu.groups': '#/globalMenu/groups',
   'home.globalMenu.globalConfig': '#/globalMenu/global-config',
   'home.globalMenu.cluster': '#/globalMenu/cluster',
+  'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool',
   'preview': '/preview',
   'about': '#/about-us',
   'legacy.preview': '/legacy/preview',
@@ -521,4 +522,3 @@ function getLink(id: string) {
   const base = window.location.host.replace('3000', '8080');
   return `//${base}/studio${globalNavUrlMapping[id]}`;
 }
-

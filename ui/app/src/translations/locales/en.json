@@ -123,7 +123,7 @@
   "createSiteDialog.noBlueprints": "No Blueprints Where Found",
   "createSiteDialog.noDescription": "No description supplied",
   "createSiteDialog.noPushSite": "Don't push the site to a remote Git repository after creation",
-  "createSiteDialog.pleaseWait": "Please wait while your site is being created..",
+  "createSiteDialog.pleaseWait": "Please wait while your site is being created.",
   "createSiteDialog.privateBlueprints": "Private Blueprints",
   "createSiteDialog.privateKey": "Private Key",
   "createSiteDialog.publicMarketplace": "Public Marketplace",
