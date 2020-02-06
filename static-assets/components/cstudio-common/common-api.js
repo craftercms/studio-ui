@@ -9766,3 +9766,19 @@ if (getTopLegacyWindow() === window) {
   const el = document.createElement('craftercms-auth-monitor');
   CrafterCMSNext.render(el, 'AuthMonitor');
 }
+
+function getTopLegacyWindow(nextWindow) {
+  try {
+    if(nextWindow && nextWindow.IS_LEGACY_TOP_WINDOW) {
+      return nextWindow;
+    }
+    if(nextWindow) {
+      // if(nextWindow === window) return window;
+      return getTopLegacyWindow(nextWindow.parent)
+    } else {
+      return getTopLegacyWindow(window);
+    }
+  } catch {
+    return window.top
+  }
+}
