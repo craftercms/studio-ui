@@ -1710,7 +1710,6 @@ var CStudioForms = CStudioForms || function() {
                 const ds = message.ds || null;
                 const order = message.order != null ? message.order : null;
                 const contentType = message.contentType || parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
-                const aux = message.aux || [];
                 if(edit) {
                   CStudioAuthoring.Operations.performSimpleIceEdit(
                     { contentType: contentType, uri: key },
@@ -1724,7 +1723,7 @@ var CStudioForms = CStudioForms || function() {
                         sendMessage({type: FORM_CANCEL_REQUEST});
                       }
                     },
-                    aux,
+                    [],
                     true
                   );
                 } else {

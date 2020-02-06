@@ -135,8 +135,14 @@ export default function EditFormPanel() {
   useOnMount(() => {
     try {
       const fieldId = item.fieldId[0];
-      var selectedId = ModelHelper.extractCollectionItem(model, fieldId, item.index);
-      selectedId = (typeof selectedId === 'string' && item.index !== undefined) ? selectedId : item.modelId;
+      let selectedId;
+      if(fieldId) {
+        selectedId = ModelHelper.extractCollectionItem(model, fieldId, item.index);
+        selectedId = (typeof selectedId === 'string' && item.index !== undefined) ? selectedId : item.modelId;
+      } else {
+        selectedId = item.modelId;
+      }
+
       const path = ModelHelper.prop(models[selectedId], 'path');
 
       if (path) {

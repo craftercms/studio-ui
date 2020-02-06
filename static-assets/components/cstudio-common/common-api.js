@@ -1850,16 +1850,12 @@ var nodeOpen = false,
                     >
                     <div class="bd overlay" id="${id}"></div>
                     </div>
-              </div>`)
+              </div>`);
 
               if (aux && aux.length) {
                 for (var j = 0; j < aux.length; j++) {
                   if (aux[j].ontop) {
                     $modal.find('.studio-ice-dialog').css('z-index', 103000);
-                  }
-                  else if (aux[j].defaultHeightWidth) {
-                    $modal.find('.studio-ice-dialog').css('min-height', '100%');
-                    $modal.find('.studio-ice-dialog').css('width', '100%');
                   }
                 }
               }

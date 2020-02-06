@@ -39,7 +39,7 @@
       left: 0;
       right: 0;
       top: 0;
-      height: 200px;
+      height: 100% !important;
       width: 100%;
       position: fixed;
     }
@@ -54,6 +54,9 @@
       border: none;
       outline: none;
       position: absolute;
+    }
+    .overlay {
+
     }
   </style>
 </head>
@@ -84,19 +87,17 @@
               window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE' }, '*');
             },
             renderComplete: () => {
-              console.log('renderComplete');
               if (modelId) {
                 CStudioAuthoring.InContextEdit.messageDialogs({
                   type: 'OPEN_CHILD_COMPONENT',
                   key: modelId,
                   iceId: null,
-                  edit: true,
-                  aux: [{ defaultHeightWidth: true }]
+                  edit: true
                 });
               }
             },
           },
-          [{ defaultHeightWidth: true }],
+          [],
           null,
           isHidden ? true : false);
       },
