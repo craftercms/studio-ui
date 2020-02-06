@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,7 +30,8 @@
     'ngAnimate'
   ]);
 
-  let i18n = CrafterCMSNext.i18n,
+  let
+    i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
     globalConfigMessages = i18n.messages.globalConfigMessages,
@@ -76,24 +76,24 @@
             );
         }
 
-        if(toState.name.indexOf('users') !== -1 ){
+        if (toState.name.indexOf('users') !== -1) {
 
           var user = authService.getUser();
 
-          if(user && user.username) {
+          if (user && user.username) {
             var createSitePermissions = false;
             sitesService.getPermissions('', '/', user.username || user)
               .success(function (data) {
-                for(var i=0; i<data.permissions.length;i++){
-                  if(data.permissions[i]=='create-site'){
+                for (var i = 0; i < data.permissions.length; i++) {
+                  if (data.permissions[i] == 'create-site') {
                     createSitePermissions = true;
                   }
                 }
 
-                if(!createSitePermissions){
+                if (!createSitePermissions) {
                   $state.go('home.globalMenu');
                 }
-              })
+              });
           }
 
         }
@@ -107,11 +107,11 @@
           // if globalMenuItem exists => check if globalMenuMessages has the id, or use the label as docTitle
           if (globalMenuItem) {
             docTitle = globalMenuMessages[globalMenuItem.id]
-              ? `${ formatMessage(globalMenuMessages[globalMenuItem.id]) } - Crafter CMS`
-              : `${ globalMenuItem.label } - Crafter CMS`;
+              ? `${formatMessage(globalMenuMessages[globalMenuItem.id])} - Crafter CMS`
+              : `${globalMenuItem.label} - Crafter CMS`;
           } else {  // if not a globalMenuItem, use state id, if not in globalMenuMessages => just 'Crafter CMS'
             docTitle = globalMenuMessages[toState.name]
-              ? `${ formatMessage(globalMenuMessages[toState.name]) } - Crafter CMS`
+              ? `${formatMessage(globalMenuMessages[toState.name])} - Crafter CMS`
               : 'Crafter CMS';
           }
 
@@ -408,7 +408,7 @@
                 backdrop: 'static',
                 keyboard: false,
                 size: 'sm',
-                windowTopClass: "modal-top-override"
+                windowTopClass: 'modal-top-override'
               });
             }
           ],
@@ -446,17 +446,17 @@
     AUTH_SUCCESS: 'auth-success',
     PATH_IMG: '/images/',
     SERVICE: '/studio/api/1/services/api/1/',
-    SERVICE2:'/studio/api/2/',
+    SERVICE2: '/studio/api/2/',
     STUDIO_PATH: '/studio',
     MONITORING_PATH: 'monitoring/',
     SHOW_LOADER: 'show-loader',
     BULK_ENVIRONMENT: 'Live',
     HEADERS: 'headers',
-    AUTH_HEADERS: "AUTH_HEADERS",
-    SAML: "SAML",
-    AUDIT_TIMEZONE_COOKIE:"crafterStudioAuditTimezone",
-    AUDIT_SYSTEM: "Studio Root",
-    CRAFTER_LOGO: "/studio/static-assets/images/logo.svg"
+    AUTH_HEADERS: 'AUTH_HEADERS',
+    SAML: 'SAML',
+    AUDIT_TIMEZONE_COOKIE: 'crafterStudioAuditTimezone',
+    AUDIT_SYSTEM: 'Studio Root',
+    CRAFTER_LOGO: '/studio/static-assets/images/logo.svg'
   });
 
   app.service('authService', [
@@ -471,10 +471,10 @@
         user = JSON.parse(script.html());
       }
 
-      if(!user || user.username == ""){
-        if($cookies['userSession']){
+      if (!user || user.username == '') {
+        if ($cookies['userSession']) {
           user = JSON.parse($cookies[['userSession']]);
-        }else{
+        } else {
           user = null;
         }
       }
@@ -483,9 +483,9 @@
         return !!user;
       };
 
-      this.login = function(data) {
+      this.login = function (data) {
         return $http.post(security('login'), data).then(function (data) {
-          if(data.status == 200){
+          if (data.status == 200) {
             user = data.data;
             $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
             $cookies['userSession'] = JSON.stringify(user);
@@ -502,7 +502,7 @@
       };
 
       this.getSSOLogoutInfo = function () {
-        return $http.get(userActions("/me/logout/sso/url"));
+        return $http.get(userActions('/me/logout/sso/url'));
       };
 
       this.getUser = function () {
@@ -515,7 +515,7 @@
         }
       };
 
-      this.removeUser = function() {
+      this.removeUser = function () {
         $cookies['userSession'] = null;
       };
 
@@ -525,7 +525,7 @@
 
       this.forgotPassword = function (username) {
         return $http.get(userActions('/forgot_password'), {
-          params: { username : username }
+          params: { username: username }
         });
       };
 
@@ -542,25 +542,25 @@
         return $http.post(userActions('/me/change_password'), requestData);
       };
 
-      this.validateToken = function (data){
+      this.validateToken = function (data) {
         return $http.get(api('validate-token'), {
           params: { token: data.token }
         });
       };
 
-      this.validateSession = function() {
+      this.validateSession = function () {
         return $http.get(security('validate-session'));
       };
 
       function api(action, server, monitor) {
-        var api = "user/";
+        var api = 'user/';
 
-        if(server){
-          api = "server/";
+        if (server) {
+          api = 'server/';
         }
 
-        if(monitor){
-          api = "monitor/";
+        if (monitor) {
+          api = 'monitor/';
         }
 
         return Constants.SERVICE + api + action + '.json';
@@ -570,15 +570,15 @@
         return Constants.SERVICE2 + path + action;
       }
 
-      function security(action){
-        var api = "security/";
+      function security(action) {
+        var api = 'security/';
         return Constants.SERVICE + api + action + '.json';
       }
 
       function userActions(action) {
-        if(action){
+        if (action) {
           return Constants.SERVICE2 + 'users' + action;
-        }else{
+        } else {
           return Constants.SERVICE2 + 'users';
         }
 
@@ -595,13 +595,13 @@
 
       var me = this;
 
-      this.getSites = function(params) {
+      this.getSites = function (params) {
         return $http.get(api('get-per-user'), {
           params: params
         });
       };
 
-      this.getSite = function(id) {
+      this.getSite = function (id) {
         return $http.get(json('get-site'), {
           params: { siteId: id }
         });
@@ -632,62 +632,62 @@
       };
 
       this.create = function (site) {
-        return $http.post(api('create'),site);
+        return $http.post(api('create'), site);
       };
 
       this.exists = function (site) {
         return $http.get(api('exists'), {
-          params: { site: site.site}
+          params: { site: site.site }
         });
       };
 
-      this.removeSite = function(site) {
+      this.removeSite = function (site) {
         return $http.post(api('delete-site'), {
           siteId: site.siteId
         });
       };
 
-      this.getAvailableBlueprints = function() {
+      this.getAvailableBlueprints = function () {
         return $http.get(sitesApi('available_blueprints'));
       };
 
-      this.getPermissions = function(siteId, path, user){
+      this.getPermissions = function (siteId, path, user) {
         return $http.get(security('get-user-permissions'), {
-          params: { site: siteId,  path: path, user: user}
+          params: { site: siteId, path: path, user: user }
         });
       };
 
-      this.getAvailableLanguages = function(){
+      this.getAvailableLanguages = function () {
         return $http.get(server('get-available-languages'));
       };
 
-      this.getDocumentCookie = function(name) {
-        var value = "; " + document.cookie;
-        var parts = value.split("; " + name + "=");
-        if (parts.length == 2) return parts.pop().split(";").shift();
+      this.getDocumentCookie = function (name) {
+        var value = '; ' + document.cookie;
+        var parts = value.split('; ' + name + '=');
+        if (parts.length == 2) return parts.pop().split(';').shift();
       };
 
-      this.getLanguages = function(scope, setLang) {
+      this.getLanguages = function (scope, setLang) {
         var me = this;
         this.getAvailableLanguages()
           .success(function (data) {
-            var userCookieLang = scope.user ? localStorage.getItem( scope.user.username + '_crafterStudioLanguage') : null,
-              cookieLang = userCookieLang ? userCookieLang : localStorage.getItem( 'crafterStudioLanguage');
+            var userCookieLang = scope.user ? localStorage.getItem(scope.user.username + '_crafterStudioLanguage') : null,
+              cookieLang = userCookieLang ? userCookieLang : localStorage.getItem('crafterStudioLanguage');
 
-            if(cookieLang){
-              for(var i=0; i<data.length; i++){
-                if(data[i].id == cookieLang){
+            if (cookieLang) {
+              for (var i = 0; i < data.length; i++) {
+                if (data[i].id == cookieLang) {
                   scope.langSelect = data[i].id;
                   scope.langSelected = data[i].id;
                 }
               }
-            }else{
+            } else {
               scope.langSelect = data[0].id;
               scope.langSelected = data[0].id;
             }
             scope.languagesAvailable = data;
 
-            if(setLang){
+            if (setLang) {
               $translate.use(cookieLang);
             }
           })
@@ -698,21 +698,21 @@
 
       };
 
-      this.showLoaderProperty = function() {
+      this.showLoaderProperty = function () {
         var showLoader = false;
 
         return {
           getProperty: function () {
             return showLoader;
           },
-          setProperty: function(value) {
+          setProperty: function (value) {
             showLoader = value;
             $rootScope.$broadcast(Constants.SHOW_LOADER, value);
           }
         };
       };
 
-      this.getGlobalMenu = function(){
+      this.getGlobalMenu = function () {
         return $http.get(uiApi('global_menu'));
       };
 
@@ -733,17 +733,17 @@
       }
 
       function uiApi(action) {
-        return Constants.SERVICE2+ 'ui/views/' + action + '.json';
+        return Constants.SERVICE2 + 'ui/views/' + action + '.json';
       }
 
       function sitesApi(action) {
-        return Constants.SERVICE2+ 'sites/' + action + '.json';
+        return Constants.SERVICE2 + 'sites/' + action + '.json';
       }
 
       function userActions(action, params) {
-        if(params){
+        if (params) {
           return Constants.SERVICE2 + 'users/' + action + params;
-        }else {
+        } else {
           return Constants.SERVICE2 + 'users/' + action;
         }
       }
@@ -760,7 +760,7 @@
       var
         me = this,
         generalRegExp = passwordRequirementsRegex, // Global declared in entry.ftl, comes from FTL context.
-        generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ""),
+        generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ''),
         captureGroups = generalRegExp.match(/\(\?<.*?>.*?\)/g);
 
       const allowedChars = (
@@ -828,7 +828,7 @@
             let isRegExpValid = new RegExp(generalRegExp);
             if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
               this.runValidation(scope, isValid, elt, 'groupsSupported', placement);
-            }else{
+            } else {
               this.runValidation(scope, isValid, elt, 'noGroups', placement);
             }
           } catch (error) {
@@ -850,19 +850,19 @@
         var html = '<div class="password-popover">';
         var validPass = false;
         var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpWithoutGroups) : false;
-        if (templateType !== "noGroups") {
-          if (templateType === "groupsNotSupported") {
+        if (templateType !== 'noGroups') {
+          if (templateType === 'groupsNotSupported') {
             html += '<ul class="password-popover--list password-popover--static">';
-          }else{
+          } else {
             html += '<ul class="password-popover--list" >';
           }
           captureGroups.forEach(captureGroup => {
             let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
-            let captureGroupNameClean = captureGroupName[0].replace(/\?<|>/g, "");
+            let captureGroupNameClean = captureGroupName[0].replace(/\?<|>/g, '');
             html += '<li class="password-popover--list--item">';
-            if (templateType === "groupsSupported") {
+            if (templateType === 'groupsSupported') {
               let isValid;
-              if (captureGroupName[0].toLowerCase().indexOf('maxlength') > 0){
+              if (captureGroupName[0].toLowerCase().indexOf('maxlength') > 0) {
                 isValid = content ? content.match(`^${captureGroup}$`) : false;
               } else {
                 isValid = content ? content.match(captureGroup) : false;
@@ -892,7 +892,7 @@
       };
 
       this.runValidation = function (scope, isValid, elt, staticTemplate, placement) {
-        $("#" + elt)
+        $('#' + elt)
           .blur(function () {
             $(this).popover('destroy');
           })
@@ -926,6 +926,8 @@
     '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements', '$element',
     function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements, $element) {
 
+      let unmountAuthMonitor;
+
       $scope.langSelected = '';
       $scope.modalInstance = '';
       $scope.authenticated = authService.isAuthenticated();
@@ -947,7 +949,7 @@
         no: formatMessage(words.no),
       };
 
-      $scope.showModal = function(template, size, verticalCentered, styleClass){
+      $scope.showModal = function (template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
           windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
@@ -959,11 +961,11 @@
 
         return modalInstance;
       };
-      $scope.hideModal = function() {
+      $scope.hideModal = function () {
         $scope.confirmationModal.close();
       };
 
-      if($location.$$search.iframe){
+      if ($location.$$search.iframe) {
         $rootScope.isFooter = false;
       }
 
@@ -975,7 +977,7 @@
         }
       );
 
-      if(authService.getUser()){
+      if (authService.getUser()) {
         authService.getCurrentUserData('me').then(
           function successCallback(response) {
             $scope.externallyManaged = response.data.authenticatedUser.externallyManaged;
@@ -983,7 +985,7 @@
               response.data.authenticatedUser.authenticationType === Constants.AUTH_HEADERS ||
               response.data.authenticatedUser.authenticationType === Constants.SAML
             );
-            if(!$scope.showLogoutLink) {
+            if (!$scope.showLogoutLink) {
               authService.getSSOLogoutInfo()
                 .success(function (data) {
                   var result = data.logoutUrl ? true : false;
@@ -991,7 +993,7 @@
                     $scope.showLogoutLink = true;
                     $scope.logoutInfo.url = data.logoutUrl;
                   }
-                })
+                });
             }
           }, function errorCallback(response) {
           }
@@ -999,22 +1001,22 @@
       }
 
       function logout() {
-        if($scope.showLogoutLink){
+        if ($scope.showLogoutLink) {
           authService.logout();
-          if($scope.logoutInfo.url){
+          if ($scope.logoutInfo.url) {
             $window.location.href = $scope.logoutInfo.url;
-          }else {
+          } else {
+            unmountAuthMonitor && unmountAuthMonitor();
             $state.go('login');
           }
         }
-
       }
 
       function changePassword() {
         $scope.data.username = $scope.user.username;
         $translate.use($scope.langSelected);
 
-        if($scope.data.new == $scope.data.confirmation){
+        if ($scope.data.new == $scope.data.confirmation) {
           authService.changePassword($scope.data)
             .then(function (data) {
               $scope.error = $scope.message = null;
@@ -1042,19 +1044,19 @@
                 }, 1500, false);
 
               }
-            }, function(error){
+            }, function (error) {
               var errorResponse = error.data.response;
               $('#current').focus();
 
               if (errorResponse.code === 6003) {
                 $scope.error = $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') + '. ' +
-                  $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL')
+                  $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL');
               } else {
                 $scope.error = errorResponse.message + '. ' + errorResponse.remedialAction;
               }
             });
-        }else{
-          $scope.error = "Passwords don't match.";
+        } else {
+          $scope.error = 'Passwords don\'t match.';
         }
       }
 
@@ -1062,18 +1064,18 @@
 
       sitesService.getLanguages($scope);
 
-      $scope.selectActionLanguage = function(optSelected) {
+      $scope.selectActionLanguage = function (optSelected) {
         $scope.isModified = true;
         $scope.langSelected = optSelected;
       };
 
-      $scope.setLangCookie = function() {
+      $scope.setLangCookie = function () {
         try {
           $translate.use($scope.langSelected);
           // set max-age of language cookie to one year
           // set both cookies, on login (on user) it will get last selected
           localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-          localStorage.setItem( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
+          localStorage.setItem($scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
           let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
           document.dispatchEvent(loginSuccess);
 
@@ -1094,7 +1096,7 @@
         $rootScope.modalInstance.close();
       };
 
-      $scope.loadHomeState = function() {
+      $scope.loadHomeState = function () {
         var currentState = $state.current.name,
           homeState = 'home.globalMenu';
 
@@ -1109,15 +1111,15 @@
 
       $scope.user = authService.getUser();
 
-      if($scope.user && $scope.user.username) {
+      if ($scope.user && $scope.user.username) {
         sitesService.getPermissions('', '/', $scope.user.username || $scope.user)
           .success(function (data) {
-            for(var i=0; i<data.permissions.length;i++){
-              if(data.permissions[i]=='create-site'){
+            for (var i = 0; i < data.permissions.length; i++) {
+              if (data.permissions[i] == 'create-site') {
                 $scope.createSites = true;
               }
             }
-          })
+          });
       }
 
       $scope.data = { email: ($scope.user || { 'email': '' }).email };
@@ -1131,65 +1133,29 @@
         $scope.data.email = $scope.user.email;
       });
 
-      if(authService.getUser()) {
+      if (authService.getUser()) {
         authService.getStudioInfo().then(function (response) {
           $scope.aboutStudio = response.data.version;
-          $scope.versionNumber = response.data.version.packageVersion + "-" + response.data.version.packageBuild.substring(0, 6);
+          $scope.versionNumber = response.data.version.packageVersion + '-' + response.data.version.packageBuild.substring(0, 6);
         });
       }
 
       var isChromium = window.chrome,
         vendorName = window.navigator.vendor,
-        isOpera = window.navigator.userAgent.indexOf("OPR") > -1,
-        isIEedge = window.navigator.userAgent.indexOf("Edge") > -1;
+        isOpera = window.navigator.userAgent.indexOf('OPR') > -1,
+        isIEedge = window.navigator.userAgent.indexOf('Edge') > -1;
 
-      if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
+      if (isChromium !== null && isChromium !== undefined && vendorName === 'Google Inc.' && isOpera == false && isIEedge == false) {
         isChromium = true;
       } else {
         isChromium = false;
         var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
       }
 
-      if(!(isChromium || isFirefox)){
+      if (!(isChromium || isFirefox)) {
         $('body').addClass('iewarning');
         $scope.ieWarning = true;
       }
-
-      $scope.reLogin = function() {
-        authService.login({
-          'username': $scope.user.username,
-          'password': $scope.user.reLoginPass
-        }).then(
-          function success(data) {
-
-            window.reLoginModalOn = false;
-            $scope.reLoginModal.close();
-
-            // Fire event when the login is success
-            let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'logged' } });
-            document.dispatchEvent(reLoginEvent);
-
-            authLoop();
-
-          },
-          function error(response) {
-            $scope.reLoginError = {};
-            if (response.status == 401) {
-              $scope.reLoginError.message = $translate.instant('dashboard.login.USER_PASSWORD_INVALID');
-            } else {
-              $scope.reLoginError.message = $translate.instant('dashboard.login.LOGIN_ERROR');
-            }
-          }
-        );
-      };
-
-      $scope.reLoginSignOut = function() {
-        if(window.reLoginModalOn){
-          $scope.reLoginModal.close();
-          window.reLoginModalOn = false;
-        }
-        $scope.logout();
-      };
 
       function authLoop() {
         const el = document.createElement('craftercms-auth-monitor');
@@ -1214,18 +1180,18 @@
         passwordRequirements.init($scope, 'validPass', 'password', 'top');
       };
 
-      $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){
+      $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams, options) {
         if ($scope.isModified) {
           event.preventDefault();
 
-          $scope.confirmationAction = function() {
+          $scope.confirmationAction = function () {
             $scope.isModified = false;
             $state.go(toState.name);
           };
 
           $scope.confirmationText = $scope.messages.unSavedConfirmation;
           $scope.confirmationTitle = $scope.messages.unSavedConfirmationTitle;
-          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
+          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
 
         }
       });
@@ -1309,19 +1275,19 @@
       });
 
       $scope.sitesPag = {
-        sitesPerPage: $cookies.get("crafterStudioSitesPagination") ? parseInt($cookies.get("crafterStudioSitesPagination"), 10) : 15
+        sitesPerPage: $cookies.get('crafterStudioSitesPagination') ? parseInt($cookies.get('crafterStudioSitesPagination'), 10) : 15
       };
 
       $scope.totalSites = 0;
       $scope.defaultDelay = 500;
 
-      $scope.pageChanged = function(newPage) {
+      $scope.pageChanged = function (newPage) {
         getResultsPage(newPage);
         sitesService.setCookie('crafterStudioSitesPagination', $scope.sitesPag.sitesPerPage);
       };
 
-      function getSites (params) {
-        sitesService.getSitesPerUser('me',params)
+      function getSites(params) {
+        sitesService.getSitesPerUser('me', params)
           .success(function (data) {
             $scope.totalSites = data.total ? data.total : null;
             $scope.sites = data.sites;
@@ -1339,15 +1305,15 @@
 
       function getResultsPage(pageNumber) {
 
-        if(authService.getUser()){
+        if (authService.getUser()) {
           var params = {};
 
-          if($scope.totalSites && $scope.totalSites > 0) {
+          if ($scope.totalSites && $scope.totalSites > 0) {
             var offset = (pageNumber - 1) * $scope.sitesPag.sitesPerPage,
               limit = offset + $scope.sitesPag.sitesPerPage;
             params.offset = offset;
             params.limit = $scope.sitesPag.sitesPerPage;
-          }else{
+          } else {
             params.offset = 0;
             params.limit = $scope.sitesPag.sitesPerPage;
           }
@@ -1359,14 +1325,14 @@
 
       getResultsPage(1);
 
-      $scope.removeSiteSites = function (site){
+      $scope.removeSiteSites = function (site) {
 
         var modalInstance = $uibModal.open({
           templateUrl: 'removeConfirmation.html',
           controller: 'RemoveSiteCtrl',
           backdrop: 'static',
           keyboard: true,
-          windowClass: "studioMedium",
+          windowClass: 'studioMedium',
           resolve: {
             siteToRemove: function () {
               return site;
@@ -1380,19 +1346,19 @@
 
       };
 
-      function addingRemoveProperty(siteId){
-        for(var j=0; j<$scope.sites.length;j++){
-          if($scope.sites[j].siteId == siteId){
+      function addingRemoveProperty(siteId) {
+        for (var j = 0; j < $scope.sites.length; j++) {
+          if ($scope.sites[j].siteId == siteId) {
             $scope.sites[j].remove = true;
           }
         }
       }
 
-      function removePermissionPerSite(siteId){
+      function removePermissionPerSite(siteId) {
         sitesService.getPermissions(siteId, '/', $scope.user.username || $scope.user)
           .success(function (data) {
-            for(var i=0; i<data.permissions.length;i++){
-              if(data.permissions[i]=='delete'){
+            for (var i = 0; i < data.permissions.length; i++) {
+              if (data.permissions[i] == 'delete') {
                 addingRemoveProperty(siteId);
               }
             }
@@ -1401,17 +1367,17 @@
           });
       }
 
-      function isRemove(){
-        for(var j=0; j<$scope.sites.length;j++){
+      function isRemove() {
+        for (var j = 0; j < $scope.sites.length; j++) {
           removePermissionPerSite($scope.sites[j].siteId);
         }
       }
 
-      function createSitePermission(){
+      function createSitePermission() {
         sitesService.getPermissions('', '/', $scope.user.username || $scope.user)
           .success(function (data) {
-            for(var i=0; i<data.permissions.length;i++){
-              if(data.permissions[i]=='create-site'){
+            for (var i = 0; i < data.permissions.length; i++) {
+              if (data.permissions[i] == 'create-site') {
                 $scope.createSites = true;
               }
             }
@@ -1420,7 +1386,7 @@
           });
       }
 
-      $scope.createSitesDialog = function() {
+      $scope.createSitesDialog = function () {
         const container = document.getElementsByClassName('create-site-dialog-container')[0];
         const onClose = () => {
           CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
@@ -1434,7 +1400,7 @@
         );
       };
 
-      if($scope.siteValidation){
+      if ($scope.siteValidation) {
         $scope.adminModal = $uibModal.open({
           templateUrl: 'invalidSite.html',
           backdrop: 'static',
@@ -1479,7 +1445,7 @@
       let defaultValue = '';
       let sampleValue = '';
 
-      $scope.showModal = function(template, size, verticalCentered, styleClass){
+      $scope.showModal = function (template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
           windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
@@ -1491,7 +1457,7 @@
 
         return modalInstance;
       };
-      $scope.hideModal = function() {
+      $scope.hideModal = function () {
         $scope.confirmationModal.close();
       };
 
@@ -1504,7 +1470,7 @@
         theme: 'ace/theme/textmate',
       });
 
-      aceEditor.getSession().on('change', function() {
+      aceEditor.getSession().on('change', function () {
         globalConfig.isModified = true;
       });
 
@@ -1532,7 +1498,7 @@
             path: '/configuration/samples/sample-studio-config-override.yaml'
           }
         }).then((content) => {
-          sampleValue = content.data
+          sampleValue = content.data;
         });
       });
 
@@ -1596,11 +1562,11 @@
         digest && $scope.$apply();
       }
 
-      $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){
+      $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams, options) {
         if (globalConfig.isModified) {
           event.preventDefault();
 
-          $scope.confirmationAction = function() {
+          $scope.confirmationAction = function () {
             globalConfig.isModified = false;
             $state.go(toState.name);
           };
@@ -1659,7 +1625,7 @@
       $scope.siteToRemove = siteToRemove.siteId;
       $scope.confirmationSubmitDisabled = false;
 
-      function removeSiteSitesModal (site){
+      function removeSiteSitesModal(site) {
 
         sitesService.removeSite(site)
           .success(function (data) {
@@ -1715,7 +1681,7 @@
 
   app.controller('SiteCtrl', [
     '$scope', '$state', 'sitesService', '$timeout', '$window', '$uibModal', '$translate',
-    function ($scope, $state, sitesService,$timeout, $window, $uibModal, $translate) {
+    function ($scope, $state, sitesService, $timeout, $window, $uibModal, $translate) {
 
       // View models
       $scope.site = {};
@@ -1729,7 +1695,13 @@
       function getBlueprints() {
         sitesService.getAvailableBlueprints().success(function (data) {
           $scope.blueprints = data;
-          $scope.site = { siteId: '', siteName: '', description: '', blueprint: $scope.blueprints[0], search : "ElasticSearch"};
+          $scope.site = {
+            siteId: '',
+            siteName: '',
+            description: '',
+            blueprint: $scope.blueprints[0],
+            search: 'ElasticSearch'
+          };
         }).error(function () {
           $scope.blueprints = [];
         });
@@ -1747,9 +1719,9 @@
       $scope.$watch('site', getSite);
 
       function setSiteId() {
-        if ($scope.site.siteName != undefined){
+        if ($scope.site.siteName != undefined) {
           $scope.site.siteId = $scope.site.siteName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-        }else{
+        } else {
           $scope.site.siteId = '';
         }
         isValidSite();
@@ -1789,12 +1761,12 @@
       function isValidSite() {
         var patt = /(^0$)|(^0[0-9]+$)/i;
         var result = false;
-        if($scope.site.siteId) {
+        if ($scope.site.siteId) {
           $scope.site.siteId = $scope.site.siteId.replace(/(^-|_$)|[^a-zA-Z0-9-_]/g, '').toLowerCase();
           result = $scope.site.siteId.match(patt);
-          if(result){
+          if (result) {
             $scope.isNumValid = true;
-          }else{
+          } else {
             $scope.isNumValid = false;
           }
           sitesService.exists({
@@ -1803,7 +1775,7 @@
             $scope.isValid = data.exists;
 
           });
-        }else{
+        } else {
           $scope.isNumValid = false;
         }
       }
@@ -1811,7 +1783,7 @@
       function create() {
         $scope.modalInstance = null;
         $scope.createModalInstance = null;
-        $scope.error = "";
+        $scope.error = '';
         $scope.adminModal.close();
 
         $scope.createModalInstance = $uibModal.open({
@@ -1821,65 +1793,65 @@
           size: 'sm'
         });
 
-        var params = {site_id: $scope.site.siteId, description: $scope.site.description};
+        var params = { site_id: $scope.site.siteId, description: $scope.site.description };
 
         //$scope.site.isRemoteGit
-        if($scope.site.isRemoteGit){
-          if($scope.site.sandbox_branch){
+        if ($scope.site.isRemoteGit) {
+          if ($scope.site.sandbox_branch) {
             params.sandbox_branch = $scope.site.sandbox_branch;
           }
           params.use_remote = $scope.site.isRemoteGit;
           params.remote_name = $scope.site.name;
           params.remote_url = $scope.site.url;
-          if($scope.site.remote_branch){
+          if ($scope.site.remote_branch) {
             params.remote_branch = $scope.site.remote_branch;
           }
           params.single_branch = false;
-          params.authentication_type = !$scope.site.authentication ? "none" : $scope.site.authentication;
-          if($scope.site.authentication == "basic"){
+          params.authentication_type = !$scope.site.authentication ? 'none' : $scope.site.authentication;
+          if ($scope.site.authentication == 'basic') {
             params.remote_username = $scope.site.username;
             params.remote_password = $scope.site.password;
           }
-          if($scope.site.authentication == "token"){
-            if($scope.site.username){
+          if ($scope.site.authentication == 'token') {
+            if ($scope.site.username) {
               params.remote_username = $scope.site.username;
             }
             params.remote_token = $scope.site.token;
           }
-          if($scope.site.authentication == "key"){
+          if ($scope.site.authentication == 'key') {
             params.remote_private_key = $scope.site.key;
           }
-        }else{
+        } else {
           params.blueprint = $scope.site.blueprint;
-          if($scope.site.push_sandbox_branch){
+          if ($scope.site.push_sandbox_branch) {
             params.sandbox_branch = $scope.site.push_sandbox_branch;
           }
-          if($scope.site.push_site){
+          if ($scope.site.push_site) {
             params.use_remote = $scope.site.push_site;
             params.remote_name = $scope.site.push_name;
             params.remote_url = $scope.site.push_url;
-            if($scope.site.push_remote_branch){
+            if ($scope.site.push_remote_branch) {
               params.remote_branch = $scope.site.push_remote_branch;
             }
             params.single_branch = false;
-            params.authentication_type = !$scope.site.push_authentication ? "none" : $scope.site.push_authentication;
-            if($scope.site.push_authentication == "basic"){
+            params.authentication_type = !$scope.site.push_authentication ? 'none' : $scope.site.push_authentication;
+            if ($scope.site.push_authentication == 'basic') {
               params.remote_username = $scope.site.push_username;
               params.remote_password = $scope.site.push_password;
             }
-            if($scope.site.push_authentication == "token"){
-              if($scope.site.push_username){
+            if ($scope.site.push_authentication == 'token') {
+              if ($scope.site.push_username) {
                 params.remote_username = $scope.site.push_username;
               }
               params.remote_token = $scope.site.push_token;
             }
-            if($scope.site.push_authentication == "key"){
+            if ($scope.site.push_authentication == 'key') {
               params.remote_private_key = $scope.site.push_key;
             }
           }
 
         }
-        params.create_option = $scope.site.push_site ? "push" : "clone";
+        params.create_option = $scope.site.push_site ? 'push' : 'clone';
 
         sitesService.create(params)
           .success(function (data) {
@@ -1890,18 +1862,18 @@
           })
           .error(function (data, error) {
 
-            if(error == 401){
-              $state.go("login");
+            if (error == 401) {
+              $state.go('login');
               $scope.createModalInstance.close();
-            }else{
+            } else {
               $scope.createModalInstance.close();
               $scope.error = data.message;
               $scope.modalInstance = $uibModal.open({
-                templateUrl: "createSiteError.html",
-                backdrop: "static",
+                templateUrl: 'createSiteError.html',
+                backdrop: 'static',
                 keyboard: false,
-                size: "md",
-                controller: "ErrorCreateSiteCtrl",
+                size: 'md',
+                controller: 'ErrorCreateSiteCtrl',
                 resolve: {
                   errorToShow: function () {
                     return $scope.error;
@@ -1921,34 +1893,34 @@
         {
           step: 1,
           name: $translate.instant('dashboard.sites.create.CHOOSE_BLUEPRINT'),
-          template: "createSitesBlueprint"
+          template: 'createSitesBlueprint'
         },
         {
           step: 2,
-          name: $translate.instant('dashboard.sites.create.BASIC_INFORMATION') ,
-          template: "createSitesBasicInfo"
+          name: $translate.instant('dashboard.sites.create.BASIC_INFORMATION'),
+          template: 'createSitesBasicInfo'
         },
         {
           step: 3,
           name: $translate.instant('dashboard.sites.create.BASIC_DEVELOPER_INFORMATION'),
-          template: "createSitesBasicDevInfo"
+          template: 'createSitesBasicDevInfo'
         },
         {
           step: 4,
           name: $translate.instant('dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS'),
-          template: "createSitesAditionalDevOptions"
+          template: 'createSitesAditionalDevOptions'
         },
         {
           step: 5,
           name: $translate.instant('dashboard.sites.create.REVIEW_CREATE'),
-          template: "createSitesReviewCreate"
+          template: 'createSitesReviewCreate'
         }
       ];
 
       //Functions
-      $scope.gotoStep = function(newStep, isPreviosBtn) {
-        for(var i=0; i <= $scope.previousStep.length ; i++ ){
-          if($scope.previousStep[i] >= newStep){
+      $scope.gotoStep = function (newStep, isPreviosBtn) {
+        for (var i = 0; i <= $scope.previousStep.length; i++) {
+          if ($scope.previousStep[i] >= newStep) {
             $scope.previousStep.splice(i, 1);
             i = -1;
           }
@@ -1995,19 +1967,19 @@
         });
       };
 
-      $scope.cancelCreateDialog = function(eve) {
-        $(document).off( "keyup");
+      $scope.cancelCreateDialog = function (eve) {
+        $(document).off('keyup');
         $scope.adminModal.close();
       };
 
-      $(document).on('keyup',function(evt) {
-        if(evt.which == 13) {
-          var isRemoteGit = $scope.isRemoteGit ? "remoteGit" : "BPAvailable",
-            elt = $scope.getStepTemplate() + "-" + isRemoteGit + "-key";
+      $(document).on('keyup', function (evt) {
+        if (evt.which == 13) {
+          var isRemoteGit = $scope.isRemoteGit ? 'remoteGit' : 'BPAvailable',
+            elt = $scope.getStepTemplate() + '-' + isRemoteGit + '-key';
 
-          !$("." + elt).is(':disabled') ? $("." + elt).trigger( "click") : null;
+          !$('.' + elt).is(':disabled') ? $('.' + elt).trigger('click') : null;
         }
-        if(evt.which == 27) {
+        if (evt.which == 27) {
           $scope.cancelCreateDialog();
         }
       });
@@ -2091,7 +2063,7 @@
         angular.element(loginViewEl).css('opacity', 0);
       }
 
-      function removeHiddenClass(){
+      function removeHiddenClass() {
         var modalBackdrop = getModalBackdrop();
         angular.element(modalBackdrop).removeClass('hidden');
       }
@@ -2100,7 +2072,7 @@
 
       $scope.login = login;
 
-      $scope.$on('$stateChangeSuccess', function() {
+      $scope.$on('$stateChangeSuccess', function () {
         if ($state.current.name === 'login') {
           showModal();
         } else if ($state.current.name === 'login.recover') {
@@ -2108,7 +2080,7 @@
         }
       });
 
-      $scope.$on('$viewContentLoaded', function() {
+      $scope.$on('$viewContentLoaded', function () {
         if ($state.current.name === 'login.recover') {
           $timeout(hideModal, 50);
         }
@@ -2120,7 +2092,7 @@
 
       sitesService.getLanguages($scope);
 
-      $scope.selectAction = function(optSelected) {
+      $scope.selectAction = function (optSelected) {
         $scope.langSelected = optSelected;
         $translate.use($scope.langSelected);
       };
@@ -2139,18 +2111,18 @@
         //disable submit button and add spinner
         $scope.recoverProcessing = true;
 
-        authService.forgotPassword(credentials.username).success(function(data) {
-          if(data.response.message === 'OK') {
+        authService.forgotPassword(credentials.username).success(function (data) {
+          if (data.response.message === 'OK') {
             $scope.successMessage = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
             $scope.recoverSuccess = true;
           }
 
           $scope.recoverProcessing = false;
-        }).error(function(error, status) {
-          if(status == 500) {
-            var errorMessage = error.message + " - " + $translate.instant('dashboard.login.RECOVER_ERROR');
+        }).error(function (error, status) {
+          if (status == 500) {
+            var errorMessage = error.message + ' - ' + $translate.instant('dashboard.login.RECOVER_ERROR');
             $scope.error = errorMessage;
-          }else{
+          } else {
             $scope.error = error.message;
           }
 
@@ -2180,30 +2152,30 @@
 
       authService.validateToken({
         'token': $location.search().token,
-      }).then(function(data){
+      }).then(function (data) {
         $scope.validToken = true;
 
-        $scope.setPassword = function() {
+        $scope.setPassword = function () {
           authService.setPassword({
             'token': $location.search().token,
             'new': $scope.user.password
-          }).success(function(data) {
+          }).success(function (data) {
             $scope.error = null;
             $scope.successMessage = $translate.instant('dashboard.login.PASSWORD_UPDATED');
 
-            $timeout(function() {
+            $timeout(function () {
               $state.go('login');
             }, successDelay);
-          }).error(function(error){
+          }).error(function (error) {
             if (error.response.code === 6003) {
               $scope.error = $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') + '. ' +
-                $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL')
+                $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL');
             } else {
               $scope.error = error.reponse.message + '. ' + error.response.remedialAction;
             }
           });
         };
-      },function(error){
+      }, function (error) {
         $scope.validToken = false;
         //console.log(error.message);
       });
@@ -2264,19 +2236,19 @@
     }
   ]);
 
-  app.directive("compareTo", function() {
+  app.directive('compareTo', function () {
     return {
-      require: "ngModel",
+      require: 'ngModel',
       scope: {
-        otherModelValue: "=compareTo"
+        otherModelValue: '=compareTo'
       },
-      link: function(scope, element, attributes, ngModel) {
+      link: function (scope, element, attributes, ngModel) {
 
-        ngModel.$validators.compareTo = function(modelValue) {
+        ngModel.$validators.compareTo = function (modelValue) {
           return modelValue == scope.otherModelValue;
         };
 
-        scope.$watch("otherModelValue", function() {
+        scope.$watch('otherModelValue', function () {
           ngModel.$validate();
         });
       }
@@ -2290,7 +2262,7 @@
       link: function (scope, element, attr, ctrl) {
         function inputValue(val) {
           if (val) {
-            if(!val.replace){
+            if (!val.replace) {
               val = val.toString();
             }
             var digits = val.replace(/[^0-9]/g, '');
@@ -2299,10 +2271,11 @@
               ctrl.$setViewValue(digits);
               ctrl.$render();
             }
-            return parseInt(digits,10);
+            return parseInt(digits, 10);
           }
           return undefined;
         }
+
         ctrl.$parsers.push(inputValue);
       }
     };
@@ -2312,7 +2285,7 @@
     return {
       link: function (scope, element, attr) {
         attr.$observe('focusMe', function (value) {
-          if (value === "true") {
+          if (value === 'true') {
             $timeout(function () {
               element[0].focus();
             });
@@ -2328,13 +2301,13 @@
     };
   });
 
-  app.directive("stResetSearch", function() {
+  app.directive('stResetSearch', function () {
     return {
       restrict: 'EA',
       require: '^stTable',
-      link: function(scope, element, attrs, ctrl) {
-        return element.bind('click', function() {
-          return scope.$evalAsync(function() {
+      link: function (scope, element, attrs, ctrl) {
+        return element.bind('click', function () {
+          return scope.$evalAsync(function () {
             var tableState;
             tableState = ctrl.tableState();
             tableState.search.predicateObject = {};

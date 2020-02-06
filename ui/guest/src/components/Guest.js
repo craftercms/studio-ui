@@ -712,7 +712,7 @@ export function Guest(props) {
               message$.pipe(
                 filter((e) =>
                   (e.data?.type === DESKTOP_ASSET_UPLOAD_COMPLETE) &&
-                  (e.data.id === file.name)
+                  (e.data.payload.id === file.name)
                 ),
                 map(e => e.data),
                 take(1)

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEvent, useEffect, useReducer, useRef, useState } from 'react';
+import React, { MouseEvent, useEffect, useRef, useState } from 'react';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -61,7 +61,7 @@ import { backgroundColor } from '../../../../styles/theme';
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from "../../../../components/SearchBar";
-import { useEnv } from '../../../../utils/hooks';
+import { useEnv, useSpreadState } from '../../../../utils/hooks';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -318,11 +318,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
   const [disableEnforceFocus, setDisableEnforceFocus] = useState(false);
-  const [dialog, setDialog] = useState({
+  const [dialog, setDialog] = useSpreadState({
     open: true,
     inProgress: false
   });
-  const [apiState, setApiState] = useState({
+  const [apiState, setApiState] = useSpreadState({
     creatingSite: false,
     error: false,
     global: false,
@@ -332,7 +332,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     searchKey: '',
     searchSelected: false
   });
-  const [site, setSite] = useReducer((a, b) => ({ ...a, ...b }), siteInitialState);
+  const [site, setSite] = useSpreadState(siteInitialState);
   const classes = useStyles({});
   const finishRef = useRef(null);
   const { current: refts } = useRef<any>({});
@@ -411,7 +411,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           },
           ({ response }) => {
             if (response) {
-              setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+              setApiState({ creatingSite: false, error: true, errorResponse: response.response });
             }
           }
         ));
@@ -423,7 +423,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           },
           ({ response }) => {
             if (response) {
-              setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+              setApiState({ creatingSite: false, error: true, errorResponse: response.response });
             }
           }
         ));
@@ -442,11 +442,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     if ((reason === 'escapeKeyDown') && site.details.blueprint) {
       setSite({ details: { blueprint: null, index: null } });
     } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
-      setDialog({ ...dialog, inProgress: true });
+      setDialog({ inProgress: true });
     } else {
       //call externalClose fn
       props.onClose();
-      setDialog({ ...dialog, open: false, inProgress: false });
+      setDialog({ open: false, inProgress: false });
     }
   }
 
@@ -455,7 +455,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function onConfirmCancel() {
-    setDialog({ ...dialog, inProgress: false });
+    setDialog({ inProgress: false });
   }
 
   function isFormOnProgress() {
@@ -494,7 +494,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function handleErrorBack() {
-    setApiState({ ...apiState, error: false, global: false });
+    setApiState({ error: false, global: false });
   }
 
   function handleSearchClick() {
@@ -558,7 +558,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       }
     }
     if (site.selectedView === 2) {
-      setApiState({ ...apiState, creatingSite: true });
+      setApiState({ creatingSite: true });
       //it is a marketplace blueprint
       if (site.blueprint.source === 'GIT') {
         const marketplaceParams: MarketplaceSite = createMarketplaceParams();
@@ -665,7 +665,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         : createSite(site as CreateSiteMeta)
     ).subscribe(
       () => {
-        setApiState({ ...apiState, creatingSite: false });
+        setApiState({ creatingSite: false });
         handleClose();
         // TODO: API2 change point
         setSiteCookie(SITE_COOKIE, site.site_id);
@@ -674,11 +674,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       ({ response }) => {
         if (response) {
           if (fromMarketplace) {
-            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response, global: true });
+            setApiState({ creatingSite: false, error: true, errorResponse: response, global: true });
           } else {
             //TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
             const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response, global: true });
+            setApiState({ creatingSite: false, error: true, errorResponse: _response, global: true });
           }
         }
       }
@@ -703,7 +703,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           ({ response }) => {
             //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
             const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response });
+            setApiState({ creatingSite: false, error: true, errorResponse: _response });
           }
         );
     }
@@ -873,7 +873,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         )
       }
     </Dialog>
-  )
+  );
 }
 
 export default CreateSiteDialog;
