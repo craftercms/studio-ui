@@ -144,7 +144,7 @@ export default function AuthMonitor() {
   useEffect(() => {
     if (active) {
       setPassword('');
-      const sub = interval(5000).pipe(
+      const sub = interval(300000).pipe(
         switchMap(() => validateSession())
       ).subscribe((active) => {
         setState({ active: active });
