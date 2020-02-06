@@ -144,7 +144,7 @@ export default function AuthMonitor() {
   useEffect(() => {
     if (active) {
       setPassword('');
-      const sub = interval(300000).pipe(
+      const sub = interval(5000).pipe(
         switchMap(() => validateSession())
       ).subscribe((active) => {
         setState({ active: active });
@@ -152,6 +152,14 @@ export default function AuthMonitor() {
       return () => sub.unsubscribe();
     }
   }, [active]);
+
+  useEffect(() => {
+    fetch('/studio/api/2/users/me.json')
+      .then(response => response.json())
+      .then((data) => {
+        setState({ authType: data.authenticatedUser.authenticationType });
+      });
+  }, []);
 
   return (
     <Dialog
