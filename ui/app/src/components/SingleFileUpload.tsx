@@ -150,7 +150,7 @@ function SingleFileUpload(props: UppyProps) {
         <h5 className="single-file-upload--description">
           {description}
         </h5>
-        <div className="uppy-file-input-container"></div>
+        <div className="uppy-file-input-container"/>
         {
           fileName &&
           <em className={'single-file-upload--file-name ' + fileNameErrorClass}>{fileName}</em>

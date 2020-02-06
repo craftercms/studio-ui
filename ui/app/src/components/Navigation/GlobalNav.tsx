@@ -522,4 +522,3 @@ function getLink(id: string) {
   const base = window.location.host.replace('3000', '8080');
   return `//${base}/studio${globalNavUrlMapping[id]}`;
 }
-
