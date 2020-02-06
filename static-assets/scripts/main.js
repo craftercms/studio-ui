@@ -1073,6 +1073,8 @@
           // set both cookies, on login (on user) it will get last selected
           localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
           localStorage.setItem($scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
+          $scope.isModified = false;
+
           let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
           document.dispatchEvent(loginSuccess);
 
@@ -1080,7 +1082,6 @@
             position: 'top left',
             className: 'success'
           });
-          $scope.isModified = false;
         } catch (err) {
           $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
             position: 'top left',
