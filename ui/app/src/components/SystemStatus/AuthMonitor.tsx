@@ -108,14 +108,16 @@ export default function AuthMonitor() {
 
   const onSubmit = () => {
     setRequestForgeryToken();
-    setState({ isFetching: true, error: null });
+    if (isSSO || !isBlank(password)) {
+      setState({ isFetching: true, error: null });
+    }
     if (isSSO) {
       validateSession().subscribe((active) => {
         setState({ active: active, isFetching: false });
       });
       setSSOButtonClicked(false);
     } else {
-      !isBlank(password) && login({ username, password }).subscribe(
+      (!isBlank(password)) && login({ username, password }).subscribe(
         () => {
           setState({ active: true, isFetching: false });
         },
