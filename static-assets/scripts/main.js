@@ -1159,7 +1159,9 @@
 
       function authLoop() {
         const el = document.createElement('craftercms-auth-monitor');
-        CrafterCMSNext.render(el, 'AuthMonitor');
+        CrafterCMSNext.render(el, 'AuthMonitor').then(({ unmount }) => {
+          unmountAuthMonitor = unmount;
+        });
       }
 
       if (authService.getUser()) {
