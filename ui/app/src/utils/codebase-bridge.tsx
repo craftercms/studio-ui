@@ -97,7 +97,7 @@ export function createCodebaseBridge() {
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
       DependencySelection: lazy(() => import('../components/DependencySelection')),
-      DependecySelectionDelete: lazy(() => (
+      DependencySelectionDelete: lazy(() => (
         import('../components/DependencySelection')
         .then(module => ({
           default: module.DependencySelectionDelete
