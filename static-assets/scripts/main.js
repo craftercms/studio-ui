@@ -465,18 +465,12 @@
 
       var user = null;
       var script = $document[0].getElementById('user');
+      let unmountAuthMonitor;
 
       if (script) {
         script = angular.element(script);
         user = JSON.parse(script.html());
-      }
-
-      if (!user || user.username == '') {
-        if ($cookies['userSession']) {
-          user = JSON.parse($cookies[['userSession']]);
-        } else {
-          user = null;
-        }
+        authLoop();
       }
 
       this.isAuthenticated = function () {
@@ -487,8 +481,8 @@
         return $http.post(security('login'), data).then(function (data) {
           if (data.status == 200) {
             user = data.data;
+            authLoop();
             $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
-            $cookies['userSession'] = JSON.stringify(user);
           }
           return data.data;
         });
@@ -496,9 +490,8 @@
 
       this.logout = function () {
         $http.post(security('logout'), null);
+        unmountAuthMonitor && unmountAuthMonitor();
         user = null;
-
-        $cookies['userSession'] = null;
       };
 
       this.getSSOLogoutInfo = function () {
@@ -516,7 +509,7 @@
       };
 
       this.removeUser = function () {
-        $cookies['userSession'] = null;
+
       };
 
       this.getStudioInfo = function () {
@@ -582,6 +575,13 @@
           return Constants.SERVICE2 + 'users';
         }
 
+      }
+
+      function authLoop() {
+        const el = document.createElement('craftercms-auth-monitor');
+        CrafterCMSNext.render(el, 'AuthMonitor').then(({ unmount }) => {
+          unmountAuthMonitor = unmount;
+        });
       }
 
       return this;
@@ -931,8 +931,6 @@
     '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements', '$element',
     function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements, $element) {
 
-      let unmountAuthMonitor;
-
       $scope.langSelected = '';
       $scope.modalInstance = '';
       $scope.authenticated = authService.isAuthenticated();
@@ -1003,7 +1001,6 @@
           if ($scope.logoutInfo.url) {
             $window.location.href = $scope.logoutInfo.url;
           } else {
-            unmountAuthMonitor && unmountAuthMonitor();
             $state.go('login');
           }
         }
@@ -1152,17 +1149,6 @@
       if (!(isChromium || isFirefox)) {
         $('body').addClass('iewarning');
         $scope.ieWarning = true;
-      }
-
-      function authLoop() {
-        const el = document.createElement('craftercms-auth-monitor');
-        CrafterCMSNext.render(el, 'AuthMonitor').then(({ unmount }) => {
-          unmountAuthMonitor = unmount;
-        });
-      }
-
-      if (authService.getUser()) {
-        authLoop();
       }
 
       $scope.spinnerOverlay = function () {

@@ -53,7 +53,7 @@
             CrafterCMSNext
                 .render(
                     this.getComponent('.dependencies-display'),
-                    'DependecySelectionDelete',
+                    'DependencySelectionDelete',
                     {
                         onChange: (result) => {
                             this.result = result;
@@ -77,7 +77,7 @@
         afterSubmit: function(message, dataInf){
             var agent = new TemplateAgent(template),
                 body = agent.get("SUCCESS", {
-                    title: CMgs.format(formsLangBundle, "deletedTitle"), 
+                    title: CMgs.format(formsLangBundle, "deletedTitle"),
                     msg: CMgs.format(formsLangBundle, "deletedMessage")
                 }),
                 self = this;
@@ -115,7 +115,7 @@
                     url: CStudioAuthoring.Service.createServiceUri(
                         CStudioAuthoring.Service.deleteContentUrl +
                             "?deletedep=true&site=" +CStudioAuthoringContext.site+
-                            "&user="+CStudioAuthoringContext.user + "&submissionComment="+ 
+                            "&user="+CStudioAuthoringContext.user + "&submissionComment="+
                             _this.getComponent(".delete-submission-comment").value),
                     callback: {
                         success: function(oResponse) {
