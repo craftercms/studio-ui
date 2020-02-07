@@ -9762,7 +9762,7 @@ CStudioAuthoring.FilesDiff = {
 
 }) (window);
 
-if (getTopLegacyWindow() === window) {
+if (window.top === window) {
   const el = document.createElement('craftercms-auth-monitor');
   CrafterCMSNext.render(el, 'AuthMonitor');
 }
