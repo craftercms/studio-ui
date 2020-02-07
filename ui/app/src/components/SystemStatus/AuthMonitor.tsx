@@ -28,7 +28,7 @@ import LoadingState from '../LoadingState';
 import ErrorState from '../ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { interval } from 'rxjs';
-import { getLogoutInfoURL, login, validateSession } from '../../services/auth';
+import { getLogoutInfoURL, login, me, validateSession } from '../../services/auth';
 import { pluck, switchMap } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
@@ -43,6 +43,10 @@ const translations = defineMessages({
   incorrectPasswordMessage: {
     id: 'authMonitor.incorrectPasswordMessage',
     defaultMessage: 'Incorrect password. Please try again.'
+  },
+  postSSOLoginMismatch: {
+    id: 'authMonitor.postSSOLoginMismatchMessage',
+    defaultMessage: 'Looks like you\'ve logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed.'
   }
 });
 
@@ -115,6 +119,12 @@ export default function AuthMonitor() {
       validateSession().subscribe(
         (active) => {
           setState({ active: active, isFetching: false });
+          me().subscribe((user) => {
+            if (user.username !== username) {
+              alert(formatMessage(translations.postSSOLoginMismatch));
+              window.location.reload();
+            }
+          });
         },
         () => {
           setState({ isFetching: false });
