@@ -93,7 +93,10 @@
                   type: 'OPEN_CHILD_COMPONENT',
                   key: modelId,
                   iceId: null,
-                  edit: true
+                  edit: true,
+                  callback: {
+                    renderComplete: 'EMBEDDED_LEGACY_CHILD_FORM_RENDERED'
+                  }
                 });
               }
             },

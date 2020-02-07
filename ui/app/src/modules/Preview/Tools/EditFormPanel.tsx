@@ -24,6 +24,7 @@ import { ContentTypeHelper, ModelHelper } from '../../../utils/helpers';
 import {
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
+  EMBEDDED_LEGACY_CHILD_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_RENDERED,
   RELOAD_REQUEST
@@ -183,14 +184,21 @@ export default function EditFormPanel() {
         setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}`);
       }
 
-      window.addEventListener('message', (e) => {
+      const callback = (e) => {
         if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_CLOSE) {
           setOpen(false);
           if (e.data.refresh) getHostToGuestBus().next({ type: RELOAD_REQUEST })
-        } else if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_RENDERED) {
+        } else if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_RENDERED && path) {
+          setLoading(false);
+        } else if (e && e.data && e.data.type === EMBEDDED_LEGACY_CHILD_FORM_RENDERED && !path) {
           setLoading(false);
         }
-      }, false);
+      };
+
+      window.addEventListener('message', callback, false);
+      return () => {
+        window.removeEventListener('message', callback, false)
+      };
     } catch {
       console.log('No supported yet.')
     }
