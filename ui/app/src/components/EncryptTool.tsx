@@ -145,7 +145,8 @@ const EncryptTool = () => {
     toolRawTextInput.focus();
   };
 
-  const encrypt = () => {
+  const encrypt = (e: any) => {
+    e.preventDefault();
     if (text) {
       setRequestForgeryToken();
       setFetching(true);
