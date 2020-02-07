@@ -81,7 +81,7 @@ export function GuestProxy(props) {
       let originalOldIndex = oldIndex;
       newIndex = (typeof newIndex === 'string') ? parseInt(popPiece(newIndex)) : newIndex;
       oldIndex = (typeof oldIndex === 'string') ? parseInt(popPiece(oldIndex)) : oldIndex;
-      if (type === 'insert') {
+      if (type === 'insert' || type === 'delete') {
         collection.slice(newIndex).forEach((el, i) => {
           $(el).attr('data-craftercms-index', appendIndex(originalNewIndex, i));
           const pr = ElementRegistry.fromElement(el);
@@ -277,19 +277,7 @@ export function GuestProxy(props) {
           setTimeout(() => {
             const $daddy = $(phyRecord.element).parent();
             $(phyRecord.element).remove();
-            forEach(
-              $daddy.children(),
-              (el, i) => {
-
-                $(el).attr('data-craftercms-index', i);
-
-                const pr = ElementRegistry.fromElement(el);
-
-                context.deregister(pr.id);
-                registerElement(el);
-
-              }
-            );
+            updateElementRegistrations(Array.from($daddy.children()), 'delete', index);
           });
 
           break;
