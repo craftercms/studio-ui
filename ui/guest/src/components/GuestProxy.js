@@ -72,6 +72,10 @@ export function GuestProxy(props) {
       return (typeof index === 'string') ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}` : index + value;
     };
 
+    const generateIndex = (index, value) => {
+      return (typeof index === 'string') ? `${removeLastPiece(index)}.${value}` : value;
+    };
+
     const updateElementRegistrations = (collection, type, newIndex, oldIndex) => {
       let originalNewIndex = newIndex;
       let originalOldIndex = oldIndex;
@@ -84,7 +88,7 @@ export function GuestProxy(props) {
           pr && context.deregister(pr.id);
           registerElement(el);
         });
-      } else if (type === 'move') {
+      } else if (type === 'sort') {
         let from;
         let to;
         let index;
@@ -191,7 +195,7 @@ export function GuestProxy(props) {
           // Update attribute(s)
           // $el.attr('data-craftercms-index', newIndex);
 
-          updateElementRegistrations(Array.from($el.parent().children()), 'move', newIndex, index);
+          updateElementRegistrations(Array.from($el.parent().children()), 'sort', newIndex, index);
 
           // Re-register with updates
           // registerElement(phyRecord.element);
@@ -246,12 +250,12 @@ export function GuestProxy(props) {
             currentDropZonePhyRecord,
             targetDropZonePhyRecord
           ].forEach((record) => {
+            let newIndex = record === currentDropZonePhyRecord ? index : targetIndex;
             $(record.element).find('> [data-craftercms-index]').each((i, elem) => {
               ElementRegistry.deregister(ElementRegistry.fromElement(elem).id);
-
               $(elem).attr('data-craftercms-model-id', record.modelId);
               $(elem).attr('data-craftercms-field-id', record.fieldId);
-              $(elem).attr('data-craftercms-index', i);
+              $(elem).attr('data-craftercms-index', generateIndex(newIndex, i));
 
               registerElement(elem);
             });
