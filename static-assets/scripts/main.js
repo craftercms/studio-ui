@@ -470,6 +470,9 @@
       if (script) {
         script = angular.element(script);
         user = JSON.parse(script.html());
+      }
+
+      if (user && user.username !== '') {
         authLoop();
       }
 

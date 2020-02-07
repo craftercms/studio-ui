@@ -49,6 +49,12 @@ export function validateSession(): Observable<boolean> {
   );
 }
 
+export function me(): Observable<User> {
+  return get('/studio/api/2/users/me.json').pipe(
+    pluck('response', 'authenticatedUser')
+  );
+}
+
 export default {
   getLogoutInfoURL,
   logout,
