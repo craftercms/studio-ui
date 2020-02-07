@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { post } from '../utils/ajax';
+import { postJSON } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export function encrypt(text: string): Observable<string> {
-  return post(`/studio/api/2/security/encrypt.json`, { text }).pipe(
+  return postJSON(`/studio/api/2/security/encrypt.json`, { text }).pipe(
     map(({ response }) => response.item)
   );
 }
