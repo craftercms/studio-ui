@@ -158,14 +158,6 @@ export default function AuthMonitor() {
     }
   }, [active]);
 
-  useEffect(() => {
-    fetch('/studio/api/2/users/me.json')
-      .then(response => response.json())
-      .then((data) => {
-        setState({ authType: data.authenticatedUser.authenticationType });
-      });
-  }, []);
-
   return (
     <Dialog
       open={!active}
