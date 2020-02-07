@@ -526,7 +526,7 @@
     var siteChanged = false;
 
     if (hash.site) {
-      CStudioAuthoring.Utils.Cookies.createCookie('crafterSite', hash.site);
+      CrafterCMSNext.util.auth.setSiteCookie('crafterSite', hash.site);
       siteChanged = (site !== hash.site);
     }
 
