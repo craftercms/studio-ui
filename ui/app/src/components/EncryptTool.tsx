@@ -25,6 +25,7 @@ import { makeStyles, Theme } from '@material-ui/core/styles';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import { green, red } from '@material-ui/core/colors';
+import { setRequestForgeryToken } from '../utils/auth';
 
 const messages = defineMessages({
   pageTitle: {
@@ -146,6 +147,7 @@ const EncryptTool = () => {
 
   const encrypt = () => {
     if (text) {
+      setRequestForgeryToken();
       setFetching(true);
       setResult(null);
       encryptService(encodeURIComponent(text)).subscribe(
