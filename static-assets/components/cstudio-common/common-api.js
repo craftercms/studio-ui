@@ -1841,7 +1841,7 @@ var nodeOpen = false,
 
               isEdit = (typeof (isEdit) === 'undefined') ? true : isEdit;
 
-              var $modal = $(`<div ${openHidden? `style="visibility: hidden"`: ""}>
+              var $modal = $(`<div class="studio-form-modal" ${openHidden ? `style="visibility: hidden"` : ''}>
                    <div class="no-ice-mask"></div>
                     <div
                     class="studio-ice-dialog studio-ice-container-${editorId}"

@@ -87,15 +87,16 @@
               window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE' }, '*');
             },
             renderComplete: () => {
-              window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-              if (modelId) {
+              if (!modelId) {
+                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+              } else {
                 CStudioAuthoring.InContextEdit.messageDialogs({
                   type: 'OPEN_CHILD_COMPONENT',
                   key: modelId,
                   iceId: null,
                   edit: true,
                   callback: {
-                    renderComplete: 'EMBEDDED_LEGACY_CHILD_FORM_RENDERED'
+                    renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED'
                   }
                 });
               }

@@ -124,7 +124,7 @@ export class ModelHelper {
     return retrieveProperty(model, fieldId);
   }
 
-  static extractCollection(model, fieldId: string, index: string) {
+  static extractCollection(model, fieldId: string, index: string | number) {
     return extractCollectionPiece(
       model,
       fieldId,
@@ -132,7 +132,7 @@ export class ModelHelper {
     );
   }
 
-  static extractCollectionItem(model, fieldId: string, index: string) {
+  static extractCollectionItem(model, fieldId: string, index: string | number) {
     const indexes = (
       (index === '' || nou(index))
         ? []

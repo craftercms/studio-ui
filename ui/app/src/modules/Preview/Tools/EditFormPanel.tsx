@@ -24,7 +24,6 @@ import { ContentTypeHelper, ModelHelper } from '../../../utils/helpers';
 import {
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
-  EMBEDDED_LEGACY_CHILD_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_RENDERED
 } from '../../../state/actions/preview';
@@ -50,6 +49,14 @@ const translations = defineMessages({
     id: 'craftercms.edit.openComponentForm',
     defaultMessage: 'Open Component Form'
   },
+  editTemplate: {
+    id: 'craftercms.edit.editTemplate',
+    defaultMessage: 'Edit Template'
+  },
+  editController: {
+    id: 'craftercms.edit.editController',
+    defaultMessage: 'Edit Controller'
+  },
   contentForm: {
     id: 'craftercms.edit.contentForm',
     defaultMessage: 'Content Form'
@@ -63,7 +70,12 @@ const translations = defineMessages({
 const styles = makeStyles(() => createStyles({
   formWrapper: {
     textAlign: 'center',
-    padding: '20px 0'
+    padding: '20px 0',
+    display: 'flex',
+    flexDirection: 'column',
+    '& button': {
+      margin: '10px 20px'
+    }
   },
   closeButton: {
     position: 'absolute',
@@ -76,9 +88,6 @@ const styles = makeStyles(() => createStyles({
     '&.complete': {
       height: '100%'
     }
-  },
-  appBar: {
-    background: '#7e9dbb'
   },
   loadingRoot: {
     height: 'calc(100% - 104px)',
@@ -128,25 +137,70 @@ export default function EditFormPanel() {
   const { formatMessage } = useIntl();
   const classes = styles({});
   const onBack = createBackHandler(dispatch);
-  const [open, setOpen] = useState(false);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
-  const [src, setSrc] = useState(null);
+  const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const [dialogConfig, setDialogConfig] = useState({
+    open: false,
+    src: null
+  });
+  // const [src, setSrc] = useState(`${AUTHORING_BASE}/legacy/form?`);
   const [loading, setLoading] = useState(true);
 
   const item = selected[0];
   const model = models[item.modelId];
+  //let src = `${AUTHORING_BASE}/legacy/form?`;
 
   const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
   const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
     ? model.craftercms.label
     : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
 
-  function openEditForm() {
-    setOpen(true);
+  const fieldId = item.fieldId[0];
+  let selectedId;
+  if (fieldId) {
+    selectedId = ModelHelper.extractCollectionItem(model, fieldId, item.index);
+    selectedId = (typeof selectedId === 'string' && item.index !== undefined) ? selectedId : item.modelId;
+  } else {
+    selectedId = item.modelId;
+  }
+
+  const path = ModelHelper.prop(models[selectedId], 'path');
+  const ct = ModelHelper.prop(models[selectedId], 'contentType');
+
+  function openDialog(type: string) {
+    switch (type) {
+      case 'form': {
+        let src;
+        if (path) {
+          src = `${defaultSrc}site=${site}&path=${path}&type=form`;
+        } else {
+          let parentPath;
+          if (model === models[selectedId]) {
+            let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
+            parentPath = models[parentId].craftercms.path;
+          } else {
+            parentPath = models[model.craftercms.id].craftercms.path;
+          }
+          src = `${defaultSrc}site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}&type=form`;
+        }
+        setDialogConfig({ ...dialogConfig, open: true, src });
+        break;
+      }
+      case 'template': {
+        const selectedContentType = contentTypes.find((contentType) => contentType.id === ct);
+        const template = selectedContentType.displayTemplate;
+        console.log(template);
+        break;
+      }
+      case 'controller': {
+        console.log(ct);
+        break;
+      }
+    }
   }
 
   function handleClose() {
-    setOpen(false);
+    setDialogConfig({ ...dialogConfig, open: false, src: null });
   }
 
   useEffect(() => {
@@ -160,60 +214,29 @@ export default function EditFormPanel() {
   }, [dispatch]);
 
   useOnMount(() => {
-    try {
-      const fieldId = item.fieldId[0];
-      let selectedId;
-      if (fieldId) {
-        selectedId = ModelHelper.extractCollectionItem(model, fieldId, item.index);
-        selectedId = (typeof selectedId === 'string' && item.index !== undefined) ? selectedId : item.modelId;
-      } else {
-        selectedId = item.modelId;
-      }
+    console.log('subscription');
+    const messages = fromEvent(window, 'message').pipe(
+      filter((e: any) => e.data && e.data.type)
+    );
 
-      const path = ModelHelper.prop(models[selectedId], 'path');
-
-      if (path) {
-        setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${path}`);
-      } else {
-        let parentPath;
-        if (model === models[selectedId]) {
-          let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
-          parentPath = models[parentId].craftercms.path;
-        } else {
-          parentPath = models[model.craftercms.id].craftercms.path;
+    const messagesSubscription = messages.subscribe((e: any) => {
+      switch (e.data.type) {
+        case EMBEDDED_LEGACY_FORM_CLOSE: {
+          setDialogConfig({ ...dialogConfig, open: false, src: null });
+          break;
         }
-        setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}`);
-      }
-
-      const messages = fromEvent(window, 'message').pipe(
-        filter((e: any) => e.data && e.data.type)
-      );
-
-      const messagesSubscription = messages.subscribe((e: any) => {
-        switch (e.data.type) {
-          case EMBEDDED_LEGACY_FORM_CLOSE: {
-            setOpen(false);
-            break;
-          }
-          case EMBEDDED_LEGACY_FORM_RENDERED: {
-            if (path) setLoading(false);
-            break;
-          }
-          case EMBEDDED_LEGACY_CHILD_FORM_RENDERED: {
-            if (!path) setLoading(false);
-            break;
-          }
-          default:
-            break;
+        case EMBEDDED_LEGACY_FORM_RENDERED: {
+          setLoading(false);
+          break;
         }
-      });
+        default:
+          break;
+      }
+    });
 
-      return () => {
-        messagesSubscription.unsubscribe();
-      };
-    } catch {
-      console.log('Not supported yet.')
-    }
+    return () => {
+      messagesSubscription.unsubscribe();
+    };
   });
 
   if (selected.length > 1) {
@@ -243,16 +266,30 @@ export default function EditFormPanel() {
           <Button
             variant="outlined"
             color="primary"
-            onClick={openEditForm}
+            onClick={e => openDialog('form')}
           >
             {formatMessage(translations.openComponentForm)}
           </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={e => openDialog('template')}
+          >
+            {formatMessage(translations.editTemplate)}
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={e => openDialog('controller')}
+          >
+            {formatMessage(translations.editController)}
+          </Button>
         </div>
       </ToolPanel>
-      <Dialog fullScreen open={open} onClose={handleClose}>
-        <AppBar position="static" className={classes.appBar}>
+      <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
+        <AppBar position="static" color='default'>
           <Toolbar>
-            <Typography variant="h6">
+            <Typography variant="h6" color='textPrimary'>
               {formatMessage(translations.contentForm)}
             </Typography>
           </Toolbar>
@@ -266,7 +303,7 @@ export default function EditFormPanel() {
           />
         }
         <iframe
-          src={src}
+          src={dialogConfig.src}
           title="Embedded Legacy Form"
           className={clsx(classes.iframe, !loading && 'complete')}
         />
