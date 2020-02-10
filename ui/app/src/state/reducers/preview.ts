@@ -224,11 +224,7 @@ const reducer = createReducer<GlobalState['preview']>({
           ...state.guest,
           models: {
             ...state.guest.models,
-            ...payload.models
-          },
-          childrenMap: {
-            ...state.guest.childrenMap,
-            ...payload.childrenMap
+            ...payload
           }
         }
       };

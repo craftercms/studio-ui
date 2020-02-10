@@ -1765,9 +1765,6 @@ var CStudioForms = CStudioForms || function() {
               }
             }
           });
-          // if(CStudioAuthoring.InContextEdit.getIceCallback(editorId).renderComplete) {
-          //   CStudioAuthoring.InContextEdit.getIceCallback(editorId).renderComplete();
-          // }
           sendMessage({type: FORM_ENGINE_RENDER_COMPLETE});
         }
         if (CStudioAuthoring.InContextEdit.getIceCallback(editorId).renderComplete) {

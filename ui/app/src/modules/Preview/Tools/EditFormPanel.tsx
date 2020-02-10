@@ -26,8 +26,7 @@ import {
   clearSelectForEdit,
   EMBEDDED_LEGACY_CHILD_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_CLOSE,
-  EMBEDDED_LEGACY_FORM_RENDERED,
-  RELOAD_REQUEST
+  EMBEDDED_LEGACY_FORM_RENDERED
 } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../../utils/hooks';
@@ -43,6 +42,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
+import { fromEvent } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -184,20 +185,31 @@ export default function EditFormPanel() {
         setSrc(`${AUTHORING_BASE}/legacy/form?site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}`);
       }
 
-      const callback = (e) => {
-        if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_CLOSE) {
-          setOpen(false);
-          if (e.data.refresh) getHostToGuestBus().next({ type: RELOAD_REQUEST })
-        } else if (e && e.data && e.data.type === EMBEDDED_LEGACY_FORM_RENDERED && path) {
-          setLoading(false);
-        } else if (e && e.data && e.data.type === EMBEDDED_LEGACY_CHILD_FORM_RENDERED && !path) {
-          setLoading(false);
-        }
-      };
+      const messages = fromEvent(window, 'message').pipe(
+        filter((e: any) => e.data && e.data.type)
+      );
 
-      window.addEventListener('message', callback, false);
+      const messagesSubscription = messages.subscribe((e: any) => {
+        switch (e.data.type) {
+          case EMBEDDED_LEGACY_FORM_CLOSE: {
+            setOpen(false);
+            break;
+          }
+          case EMBEDDED_LEGACY_FORM_RENDERED: {
+            if (path) setLoading(false);
+            break;
+          }
+          case EMBEDDED_LEGACY_CHILD_FORM_RENDERED: {
+            if (!path) setLoading(false);
+            break;
+          }
+          default:
+            break;
+        }
+      });
+
       return () => {
-        window.removeEventListener('message', callback, false)
+        messagesSubscription.unsubscribe();
       };
     } catch {
       console.log('No supported yet.')
@@ -253,8 +265,11 @@ export default function EditFormPanel() {
             classes={{ root: classes.loadingRoot }}
           />
         }
-        <iframe src={src} title='cstudio-embedded-legacy-form'
-                className={clsx(classes.iframe, !loading && 'complete')}/>
+        <iframe
+          src={src}
+          title="Embedded Legacy Form"
+          className={clsx(classes.iframe, !loading && 'complete')}
+        />
       </Dialog>
     </>
   )
