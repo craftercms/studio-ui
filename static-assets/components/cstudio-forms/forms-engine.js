@@ -1711,7 +1711,7 @@ var CStudioForms = CStudioForms || function() {
                 const order = message.order != null ? message.order : null;
                 const contentType = message.contentType || parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
                 let callback = message.callback || {};
-                if (callback.renderComplete) {
+                if (typeof callback.renderComplete === 'string') {
                   let type = callback.renderComplete;
                   callback = {
                     renderComplete: function () {
