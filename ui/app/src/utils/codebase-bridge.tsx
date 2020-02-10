@@ -33,6 +33,8 @@ import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import babel from '../utils/babelHelpers-legacy';
+import security from '../services/security';
+import authService from '../services/auth';
 
 /**
  *
@@ -132,7 +134,9 @@ export function createCodebaseBridge() {
       sites,
       marketplace,
       publishing,
-      content
+      content,
+      auth: authService,
+      security
     },
 
     // Mechanics
