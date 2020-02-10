@@ -189,17 +189,7 @@ export function GuestProxy(props) {
             $el.insertBefore($targetSibling);
           }
 
-          // De register element
-          // context.deregister(phyRecord.id);
-
-          // Update attribute(s)
-          // $el.attr('data-craftercms-index', newIndex);
-
           updateElementRegistrations(Array.from($el.parent().children()), 'sort', newIndex, index);
-
-          // Re-register with updates
-          // registerElement(phyRecord.element);
-
           break;
 
         }
