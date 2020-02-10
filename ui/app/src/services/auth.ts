@@ -59,5 +59,6 @@ export default {
   getLogoutInfoURL,
   logout,
   login,
-  validateSession
+  validateSession,
+  me
 }
