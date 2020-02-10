@@ -971,6 +971,7 @@
       }
 
       const container = document.querySelector('#toolbarGlobalNav');
+      CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
       CrafterCMSNext.render(
         container,
         'ToolbarGlobalNav', {
