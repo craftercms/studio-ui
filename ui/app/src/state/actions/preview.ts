@@ -64,6 +64,7 @@ export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUES
 export const CONTENT_TYPE_RECEPTACLES_RESPONSE = 'CONTENT_TYPE_RECEPTACLES_RESPONSE';
 export const SCROLL_TO_RECEPTACLE = 'SCROLL_TO_RECEPTACLE';
 export const CLEAR_HIGHLIGHTED_RECEPTACLES = 'CLEAR_HIGHLIGHTED_RECEPTACLES';
+export const SET_CHILDREN_MAP = 'SET_CHILDREN_MAP';
 
 // endregion
 
@@ -274,5 +275,7 @@ export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 export const setContentTypeReceptacles = createAction<{ contentType: string; receptacle: ContentTypeReceptacle; }>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
 
 export const setContentTypeFilter = createAction<string>(SET_CONTENT_TYPE_FILTER);
+
+export const setChildrenMap = createAction<object>(SET_CHILDREN_MAP);
 
 // endregion

@@ -36,6 +36,7 @@ import {
   popPiece,
   removeLastPiece,
   reversePluckProps,
+  SET_CHILDREN_MAP,
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../util';
@@ -547,7 +548,7 @@ export class ContentController {
 
     const currentModels = ContentController.models$.value;
 
-    //post(GUEST_MODELS_RECEIVED, responseModels);
+    post(GUEST_MODELS_RECEIVED, responseModels);
 
     ContentController.contentTypes$.pipe(
       filter(hash => Object.values(hash).length !== 0),
@@ -556,7 +557,7 @@ export class ContentController {
       Object.values(responseModels).forEach((model) =>
         this.computeChildren(model)
       );
-      post(GUEST_MODELS_RECEIVED, { models: responseModels, childrenMap: this.children });
+      post(SET_CHILDREN_MAP, this.children);
     });
 
     ContentController.models$.next(

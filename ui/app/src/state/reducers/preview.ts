@@ -44,6 +44,7 @@ import {
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
   SET_ACTIVE_TARGETING_MODEL_FAILED,
+  SET_CHILDREN_MAP,
   SET_CONTENT_TYPE_FILTER,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
@@ -458,6 +459,16 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state.components.query,
         offset: 0,
         keywords: ''
+      }
+    }
+  }),
+  [SET_CHILDREN_MAP]: (state, { payload }) => ({
+    ...state,
+    guest: {
+      ...state.guest,
+      childrenMap: {
+        ...state.guest.childrenMap,
+        ...payload
       }
     }
   })
