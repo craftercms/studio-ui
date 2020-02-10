@@ -151,7 +151,7 @@ const EncryptTool = () => {
       setRequestForgeryToken();
       setFetching(true);
       setResult(null);
-      encryptService(encodeURIComponent(text)).subscribe(
+      encryptService(text).subscribe(
         (encryptedText) => {
           setFetching(false);
           setText('');
