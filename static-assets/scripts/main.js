@@ -1205,6 +1205,19 @@
           });
       }
 
+      function setLabels() {
+        i18n = CrafterCMSNext.i18n;
+        formatMessage = i18n.intl.formatMessage;
+        globalMenuMessages = i18n.messages.globalMenuMessages;
+        $scope.entities.forEach(function (entry, i) {
+          entry.label = (
+            globalMenuMessages[entry.id]
+              ? formatMessage(globalMenuMessages[entry.id])
+              : entry.label
+          );
+        });
+      }
+
       function initGlobalMenu(data) {
         $scope.entities = data;
 
@@ -1239,7 +1252,7 @@
       }
 
       document.addEventListener('setlocale', () => {
-        initGlobalMenu($rootScope.globalMenuData);
+        setLabels();
       }, false);
     }
 
