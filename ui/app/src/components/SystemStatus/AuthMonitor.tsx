@@ -46,6 +46,10 @@ const translations = defineMessages({
   incorrectPasswordMessage: {
     id: 'authMonitor.incorrectPasswordMessage',
     defaultMessage: 'Incorrect password. Please try again.'
+  },
+  postSSOLoginMismatch: {
+    id: 'authMonitor.postSSOLoginMismatchMessage',
+    defaultMessage: 'Looks like you\'ve logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed.'
   }
 });
 
