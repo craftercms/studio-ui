@@ -27,10 +27,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-//imports for DependencySelectionDelete
 import { checkState, onClickSetChecked, paths, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Button from '@material-ui/core/Button';
 import { palette } from '../../../styles/theme';
 
@@ -47,7 +45,7 @@ interface DependencySelectionProps {
   showDepsButton: boolean;
   onSelectAllClicked: Function;
   onSelectAllSoftClicked: Function;
-  onClickShowAllDeps? : any;
+  onClickShowAllDeps?: any;
   disabled?: boolean;
 }
 
@@ -79,7 +77,7 @@ const CenterCircularProgress = withStyles({
   }
 })(CircularProgress);
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   dependencySelection: {
     padding: '11px 12px',
     backgroundColor: palette.white,
@@ -90,7 +88,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     overflowY: 'hidden'
   },
   dependencySelectionDisabled: {
-    backgroundColor: palette.gray.light1,
+    backgroundColor: palette.gray.light1
   },
   selectionListTitle: {
     margin: '6px auto 6px',
@@ -157,7 +155,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 
   return (
     <>
-      <div className={ `${classes.dependencySelection} ${ disabled ? classes.dependencySelectionDisabled : '' }` }>
+      <div className={`${classes.dependencySelection} ${disabled ? classes.dependencySelectionDisabled : ''}`}>
         <SelectionList
           title={
             <FormattedMessage
@@ -218,12 +216,12 @@ export function DependencySelection(props: DependencySelectionProps) {
           )
         }
       </div>
-      <div className={ classes.bottomSection }>
+      <div className={classes.bottomSection}>
         {
           (deps == null && !showDepsButton) ? (
             <div className="centerCircularProgress">
               <CenterCircularProgress/>
-              <span className={ classes.circularProgressText }>
+              <span className={classes.circularProgressText}>
                 <FormattedMessage
                   id="publishDialog.loadingDependencies"
                   defaultMessage={`Loading Dependencies, please wait{ellipsis}`}
@@ -232,23 +230,24 @@ export function DependencySelection(props: DependencySelectionProps) {
               </span>
             </div>
           ) : (
-            // if no onClickShowAllDeps function defined, don't show button
-            (showDepsButton && onClickShowAllDeps ) ? (
+            // If no onClickShowAllDeps function defined, don't show button
+            (showDepsButton && onClickShowAllDeps) && (
               <Button
                 color="primary"
                 onClick={onClickShowAllDeps}
                 size="small"
-                className={ classes.showAllBtn }
+                className={classes.showAllBtn}
               >
                 <FormattedMessage
                   id="publishDialog.showAllDependencies"
                   defaultMessage={`Show All Dependencies`}
                 />
               </Button>
-            ) : (null)
+            )
           )
         }
-        { onClickShowAllDeps &&
+        {
+          onClickShowAllDeps &&
           <p>
             <FormattedMessage
               id="publishDialog.changesInSelection"
@@ -260,7 +259,6 @@ export function DependencySelection(props: DependencySelectionProps) {
     </>
   );
 }
-
 
 export function DependencySelectionDelete(props: DependencySelectionProps) {
   const [resultItems, setResultItems] = useState<ResultObject>();
@@ -280,7 +278,7 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
 
   return (
     <>
-      <div className={ classes.dependencySelection }>
+      <div className={classes.dependencySelection}>
 
         <SelectionList
           title={
@@ -318,7 +316,7 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
               <SelectionList
                 title={
                   <FormattedMessage
-                    id="deleteDialog.dependendtItems"
+                    id="deleteDialog.dependentItems"
                     defaultMessage={`Dependent Items`}
                   />
                 }
@@ -335,19 +333,19 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
           )
         }
       </div>
-      <div className={ classes.bottomSection }>
+      <div className={classes.bottomSection}>
         {
-          (resultItems == null) ? (
+          (resultItems == null) && (
             <div className="centerCircularProgress">
               <CenterCircularProgress/>
-              <span className={ classes.circularProgressText }>
+              <span className={classes.circularProgressText}>
                 <FormattedMessage
                   id="deleteDialog.uploadingDepenedents"
                   defaultMessage={`Updating dependents, please wait...`}
                 />
               </span>
             </div>
-          ) : (null)
+          )
         }
       </div>
     </>
@@ -404,7 +402,7 @@ function SelectionList(props: SelectionListProps) {
 
   return (
     <div>
-      <Typography variant="h2" component="h2" className={ classes.selectionListTitle }>
+      <Typography variant="h2" component="h2" className={classes.selectionListTitle}>
         {title}
       </Typography>
       {
@@ -421,7 +419,7 @@ function SelectionList(props: SelectionListProps) {
             color="primary"
             onClick={() => onSelectAllClicked(setChecked, items)}
             size="small"
-            className={ classes.selectAllBtn }
+            className={classes.selectAllBtn}
           >
             <FormattedMessage
               id="common.selectAll"
@@ -432,24 +430,24 @@ function SelectionList(props: SelectionListProps) {
       }
       {
         items &&
-        <List className={ classes.selectionList }>
+        <List className={classes.selectionList}>
           {
             items.map((item: Item) => {
               const labelId = `checkbox-list-label-${item.uri}`;
 
               return (
                 <ListItem
-                  className={ classes.listItem }
+                  className={classes.listItem}
                   key={item.uri}
                   role={undefined}
-                  {... (onItemClicked ? {
+                  {...(onItemClicked ? {
                     button: true,
                     onClick: (e) => onItemClicked(e, item, setChecked, checked)
-                  }: null) }
+                  } : null)}
                 >
                   {
                     onItemClicked &&
-                    <ListItemIcon className={ classes.listItemIcon }>
+                    <ListItemIcon className={classes.listItemIcon}>
                       <Checkbox
                         color="primary"
                         edge="start"
@@ -491,18 +489,18 @@ function SelectionList(props: SelectionListProps) {
 
                 return (
                   <ListItem
-                    className={ classes.listItem }
+                    className={classes.listItem}
                     key={uri}
                     role={undefined}
                     dense
-                    {... (onItemClicked ? {
+                    {...(onItemClicked ? {
                       button: true,
                       onClick: () => onItemClicked([uri], !checked[uri], setChecked, checked)
-                    }: null)}
+                    } : null)}
                   >
                     {
                       onItemClicked &&
-                      <ListItemIcon className={ classes.listItemIcon }>
+                      <ListItemIcon className={classes.listItemIcon}>
                         <Checkbox
                           color="primary"
                           edge="start"
@@ -516,7 +514,7 @@ function SelectionList(props: SelectionListProps) {
                     }
                     <ListItemText
                       id={labelId}
-                      primary={ uri }
+                      primary={uri}
 
                     />
                   </ListItem>

@@ -435,7 +435,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         subscriptions.forEach(sub => sub.unsubscribe());
       }
     },
-    [tab, filteredBlueprints, filteredMarketplace, search, site, blueprints, marketplace, apiState, formatMessage]
+    [apiState.error, blueprints, formatMessage, marketplace, setApiState, site.selectedView, tab]
   );
 
   function handleClose(event?: any, reason?: string) {

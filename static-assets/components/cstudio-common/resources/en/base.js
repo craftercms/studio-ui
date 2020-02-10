@@ -444,14 +444,14 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     approveDialogOriginalSchedule: "Original Schedule",
     approveDialogSubmissionComment: "Submission Comment",
     approveDialogSelectedScheduling: "Selected Item Scheduling",
-    approveDialogItemsLiveNow: "Items should go live now.",
-    approveDialogItemsLiveDate: "Items go live on a specific date &amp; time",
+    approveDialogItemsLiveNow: "Items should be published now.",
+    approveDialogItemsLiveDate: "Items should be published on a specific date &amp; time",
     approveDialogPublishContent: "Publish Content",
     approveDialogPublishingOptions: "Publishing Options",
     approveDialogBroadcastUpdate: "Broadcast content update",
 
     requestApproveDialogTitle: "Request Publish",
-    requestApproveDialogSubTitle: "When would you like the checked item(s) to go live?",
+    requestApproveDialogSubTitle: "When would you like the checked item(s) to be published?",
     requestApproveDialogEmailMe: "Email me when items are approved for publish.",
 
     itemsForPublish:"Items to Publish",

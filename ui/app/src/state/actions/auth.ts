@@ -37,7 +37,7 @@ export const LOG_OUT_COMPLETE = 'LOG_OUT_COMPLETE';
 export const LOG_OUT_FAILED = 'LOG_OUT_FAILED';
 
 export const logout = createAction(LOG_OUT);
-export const logoutComplete = createAction(LOG_OUT_COMPLETE);
+export const logoutComplete = createAction<boolean>(LOG_OUT_COMPLETE);
 export const logoutFailed = createAction(LOG_OUT_FAILED);
 
 // endregion
@@ -49,7 +49,7 @@ export const VALIDATE_SESSION_COMPLETE = 'VALIDATE_SESSION_COMPLETE';
 export const VALIDATE_SESSION_FAILED = 'VALIDATE_SESSION_FAILED';
 
 export const validateSession = createAction(VALIDATE_SESSION);
-export const validateSessionComplete = createAction(VALIDATE_SESSION_COMPLETE);
+export const validateSessionComplete = createAction<boolean>(VALIDATE_SESSION_COMPLETE);
 export const validateSessionFailed = createAction(VALIDATE_SESSION_FAILED);
 
 // endregion

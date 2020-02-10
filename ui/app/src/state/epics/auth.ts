@@ -44,7 +44,6 @@ const login: Epic<StandardAction, StandardAction, GlobalState> = (action$) => ac
 const logout: Epic = (action$) => action$.pipe(
   ofType(LOG_OUT),
   switchMap(() => auth.logout().pipe(
-    // @ts-ignore
     map(logoutComplete),
     catchAjaxError(logoutFailed)
   ))
@@ -53,7 +52,6 @@ const logout: Epic = (action$) => action$.pipe(
 const validateSession: Epic = (action$) => action$.pipe(
   ofType(VALIDATE_SESSION),
   switchMap(() => auth.validateSession().pipe(
-    // @ts-ignore
     map(validateSessionComplete),
     catchAjaxError(validateSessionFailed)
   ))
