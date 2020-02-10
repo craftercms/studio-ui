@@ -2092,10 +2092,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@prettier/plugin-xml@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@prettier/plugin-xml/-/plugin-xml-0.7.0.tgz#881e70bd2ce361fb55b5a84462e31763212ed394"
-  integrity sha512-n1DU/gWrqVhTG+wk+evEDt/Xqs95XVETEf2L4oI6YHP7zWvjiW2WHOiFJgkhbrzs0wOxqqJEJo6FUOKEjTYLrw==
+"@prettier/plugin-xml@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@prettier/plugin-xml/-/plugin-xml-0.7.1.tgz#6cd4e206c81ec98cc5f33da62a3ad6c7f418507c"
+  integrity sha512-QgBsHskrsLeKBkzuFcAKAPOma6YDs93Wx+XTY6/MX3qSOcC6u5bKmhxb0xWXybB+RpgM9xhekAOCjZ8qO7xgZg==
   dependencies:
     "@xml-tools/parser" "^1.0.1"
     prettier ">=1.10"
