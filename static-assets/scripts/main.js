@@ -1073,6 +1073,8 @@
           // set both cookies, on login (on user) it will get last selected
           localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
           localStorage.setItem($scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
+          $scope.isModified = false;
+
           let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
           document.dispatchEvent(loginSuccess);
 
@@ -1080,7 +1082,6 @@
             position: 'top left',
             className: 'success'
           });
-          $scope.isModified = false;
         } catch (err) {
           $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
             position: 'top left',
@@ -1204,6 +1205,19 @@
           });
       }
 
+      function setLabels() {
+        i18n = CrafterCMSNext.i18n;
+        formatMessage = i18n.intl.formatMessage;
+        globalMenuMessages = i18n.messages.globalMenuMessages;
+        $scope.entities.forEach(function (entry, i) {
+          entry.label = (
+            globalMenuMessages[entry.id]
+              ? formatMessage(globalMenuMessages[entry.id])
+              : entry.label
+          );
+        });
+      }
+
       function initGlobalMenu(data) {
         $scope.entities = data;
 
@@ -1212,6 +1226,9 @@
         globalMenuMessages = i18n.messages.globalMenuMessages;
 
         if ($scope.entities.length > 1) {
+          let defaultView = $scope.entities[0].id;  // default view (first)
+          const currentView = $state.current.name;
+
           $scope.entities.forEach(function (entry, i) {
             const label = (
               globalMenuMessages[entry.id]
@@ -1220,11 +1237,13 @@
             );
 
             entry.label = label;
-            if (i < 1) {    // Go to default view (first)
-              $scope.view_tab = entry.tabName;
-              $state.go(entry.id);
+
+            if (currentView === entry.id) {   // if current view is an entry of globalMenu -> set as default view
+              defaultView = entry.id;
             }
           });
+
+          $state.go(defaultView);
         } else {
           if ($scope.entities.length > 0) {
             $state.go((data[0] || data.menuItems[0]).id.replace('globalMenu.', ''));
@@ -1233,7 +1252,7 @@
       }
 
       document.addEventListener('setlocale', () => {
-        initGlobalMenu($rootScope.globalMenuData);
+        setLabels();
       }, false);
     }
 
