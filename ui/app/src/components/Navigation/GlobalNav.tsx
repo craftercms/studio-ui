@@ -454,6 +454,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                       title={formatMessage(messages[popPiece(camelize(item.id))])}
                       icon={item.icon}
                       link={getLink(item.id)}
+                      onClick={onMenuClose}
                     />
                   )
                 }
@@ -510,7 +511,7 @@ export default function GlobalNav(props: GlobalNavProps) {
           </Grid>
         ) : (
           <div className={classes.loadingContainer}>
-            <LoadingState title=''/>
+            <LoadingState title=""/>
           </div>
         )
       }

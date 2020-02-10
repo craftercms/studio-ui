@@ -488,13 +488,16 @@ function moduleLoaded() {
           if (items.length) {
             editor.setOption('readOnly', true);
             editor.container.style.opacity = .5;
-            // Not sure this is supported in all relatively relevant
-            // browsers, test and change or simply change this syntax to es5
-            const { rxjs: { forkJoin, operators: { map } }, util: { ajax } } = CrafterCMSNext;
+            const {
+              rxjs: { forkJoin, operators: { map } },
+              services: { security },
+              util: { auth: { setRequestForgeryToken } }
+            } = CrafterCMSNext;
+            setRequestForgeryToken();
             forkJoin(
               items.map(({ tag, text }) =>
-                ajax.get(`/studio/api/2/security/encrypt.json?text=${text}`).pipe(
-                  map(({ response }) => ({ tag, text: response.item }))
+                security.encrypt(text).pipe(
+                  map((text) => ({ tag, text }))
                 )
               )
             ).subscribe(

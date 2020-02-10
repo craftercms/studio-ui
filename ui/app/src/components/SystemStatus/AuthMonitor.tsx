@@ -36,11 +36,20 @@ import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
+import { setRequestForgeryToken } from '../../utils/auth';
 
 const translations = defineMessages({
   sessionExpired: {
     id: 'authMonitor.sessionExpiredMessage',
     defaultMessage: 'Your session has expired. Please log back in.'
+  },
+  incorrectPasswordMessage: {
+    id: 'authMonitor.incorrectPasswordMessage',
+    defaultMessage: 'Incorrect password. Please try again.'
+  },
+  postSSOLoginMismatch: {
+    id: 'authMonitor.postSSOLoginMismatchMessage',
+    defaultMessage: 'Looks like you\'ve logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed.'
   }
 });
 
@@ -83,6 +92,7 @@ export default function AuthMonitor() {
   const styles: CSSProperties = isFetching ? { visibility: 'hidden' } : {};
 
   const onSubmit = () => {
+    setRequestForgeryToken();
     if (isSSO) {
       dispatch(validateSession());
       setSSOButtonClicked(false);
@@ -234,7 +244,7 @@ function SSOForm(props: SSOFormProps) {
   );
 }
 
-type LogInForm = PropsWithChildren<{
+type LogInFormProps = PropsWithChildren<{
   username: string;
   password: string;
   isFetching: boolean;
@@ -242,7 +252,7 @@ type LogInForm = PropsWithChildren<{
   onSetPassword: Function;
 }>;
 
-function LogInForm(props: LogInForm) {
+function LogInForm(props: LogInFormProps) {
   const { username, onSubmit, isFetching, onSetPassword, password } = props;
   const classes = useStyles({});
   return (

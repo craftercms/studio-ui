@@ -2,9 +2,8 @@
  * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +15,7 @@
  */
 
 import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
-import { catchError, map, pluck } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Credentials, User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
@@ -25,8 +24,10 @@ export function getLogoutInfoURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
 }
 
-export function logout() {
-  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON);
+export function logout(): Observable<boolean> {
+  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON).pipe(
+    mapTo(true)
+  );
 }
 
 export function login(credentials: Credentials): Observable<User> {
@@ -50,9 +51,16 @@ export function validateSession(): Observable<boolean> {
   );
 }
 
+export function me(): Observable<User> {
+  return get('/studio/api/2/users/me.json').pipe(
+    pluck('response', 'authenticatedUser')
+  );
+}
+
 export default {
   getLogoutInfoURL,
   logout,
   login,
-  validateSession
+  validateSession,
+  me
 }

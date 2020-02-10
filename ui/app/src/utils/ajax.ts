@@ -25,15 +25,20 @@ const HEADERS = {};
 export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 export const OMIT_GLOBAL_HEADERS = {};
 
-export function setGlobalHeaders(props: object) {
+export function setGlobalHeaders(props: object): void {
   Object.assign(HEADERS, props);
 }
 
-export function getGlobalHeaders() {
+export function removeGlobalHeaders(...headersToDelete: string[]): void {
+  headersToDelete.forEach((header) => {
+    delete HEADERS[header];
+  });
+}
+
+export function getGlobalHeaders(): object {
   return { ...HEADERS };
 }
 
-/* private */
 function mergeHeaders(headers: object = {}): object {
   if (headers === OMIT_GLOBAL_HEADERS) {
     return null;
@@ -96,6 +101,7 @@ export default {
   OMIT_GLOBAL_HEADERS,
   getGlobalHeaders,
   setGlobalHeaders,
+  removeGlobalHeaders,
   get,
   getText,
   post,
