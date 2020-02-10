@@ -178,6 +178,6 @@ export function useDebouncedInput(observer: (keywords: string) => any, time: num
   return subject$Ref.current;
 }
 
-export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<S>>] {
+export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<Partial<S>>>] {
   return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);
 }

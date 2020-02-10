@@ -29,7 +29,6 @@ import ko from '../translations/locales/ko.json';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
 import store from '../state/store';
-import AuthMonitor from './SystemStatus/AuthMonitor';
 
 const Locales: any = {
   en,

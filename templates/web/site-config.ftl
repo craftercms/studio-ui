@@ -20,9 +20,9 @@
 <head>
   <#include "/templates/web/common/page-fragments/head.ftl" />
 
-    <meta charset="utf-8"/>
-    <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8"/>
+  <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/console.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 

@@ -979,7 +979,7 @@
         }
       );
 
-      if(authService.getUser()){
+      if (authService.getUser()) {
         authService.getCurrentUserData('me').then(
           function successCallback(response) {
             $scope.externallyManaged = response.data.authenticatedUser.externallyManaged;

@@ -56,7 +56,6 @@ eventCM.initEvent("crafter.create.contenMenu", true, true);
 var nodeOpen = false,
     studioTimeZone = null;
 
-
 (function(undefined){
 
     // Private functions
