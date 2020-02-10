@@ -4704,26 +4704,23 @@ var nodeOpen = false,
              * get SSO logout info
              */
             getSSOLogoutInfo: function(callback) {
-                var serviceUrl = this.getLogoutInfoURL;
-
-                var serviceCallback = {
-                    success: function(jsonResponse) {
-                        var results = eval("(" + jsonResponse.responseText + ")");
-                        //delete results.result['entity'];
-                        var hasResult = results.hasOwnProperty('logoutUrl') ? true : false;
-                        if(hasResult){
-                            results = results.logoutUrl;
-                        }else{
-                            results = false;
-                        }
-                        callback.success(results);
-                        results = results.result;
-                    },
-                    failure: function(response) {
-                        callback.failure(response);
-                    }
-                };
-                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+              var serviceUrl = this.getLogoutInfoURL;
+              YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), {
+                success: function (jsonResponse) {
+                  var results = eval('(' + jsonResponse.responseText + ')');
+                  var hasResult = results.hasOwnProperty('logoutUrl') ? true : false;
+                  if (hasResult) {
+                    results = results.logoutUrl;
+                  } else {
+                    results = false;
+                  }
+                  callback.success(results);
+                  results = results ? results.result : results;
+                },
+                failure: function (response) {
+                  callback.failure(response);
+                }
+              });
             },
 
             /**
@@ -9766,105 +9763,7 @@ CStudioAuthoring.FilesDiff = {
 
 }) (window);
 
-if(window.top === window.self) {
-    (function startAuthLoop() {
-
-        if (typeof CStudioAuthoringContext != 'undefined') {
-
-            var authLoopCb = {
-                success: function (config) {
-
-                    function authRedirect(authConfig) {
-                        location = "/studio/#/login";
-                    }
-
-                    function authLoop(configObj) {
-                        var serviceUri,
-                            serviceCallback,
-                            delay = 60000;  // poll once every minute
-
-                        serviceUri = CStudioAuthoring.Service.validateSessionUrl;
-
-                        var CMgs = CStudioAuthoring.Messages;
-                        var formsLangBundle = CStudioAuthoring.Messages.getBundle("contextnav", CStudioAuthoringContext.lang);
-                        var networkErrorMsg = CMgs.format(formsLangBundle, 'networkError');
-
-                        serviceCallback = {
-                            success: function (response) {
-                                var resObj = response.responseText
-                                var resJson = JSON.parse(resObj);
-
-                                if (response.status == 200 && resJson.message == "OK") {
-                                    // ticket is valid
-                                    setTimeout(function () {
-                                        authLoop(configObj);
-                                    }, delay);
-                                } else {
-                                    //ticket is invalid
-                                    var cb = {
-                                        success: function (response) {
-                                            setTimeout(function () {
-                                                authLoop(configObj);
-                                            }, delay);
-                                        }
-                                    };
-                                    if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
-                                        window.location = '/studio/#/login';
-                                    }else{
-                                        CStudioAuthoring.Operations.loginDialog(cb);
-                                    }
-
-                                }
-                            },
-                            failure: function (response) {
-                                if (response.status == 401 || response.status == 301 ||
-                                    response.status == 302 || response.status == 0) {
-                                    var cb = {
-                                        success: function (response) {
-                                            setTimeout(function () {
-                                                authLoop(configObj);
-                                            }, delay);
-                                        }
-                                    };
-                                    if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
-                                        window.location = '/studio/#/login';
-                                    }else{
-                                        CStudioAuthoring.Operations.loginDialog(cb);
-                                    }
-
-
-                                } else {
-                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0, 0, "errorNotify");
-                                    setTimeout(function () {
-                                        authLoop(configObj);
-                                    }, delay);
-                                }
-                            }
-                        };
-
-                        YConnect.asyncRequest("GET", CStudioAuthoring.Service.createServiceUri(serviceUri), serviceCallback);
-
-                    }
-
-                    // Start the authentication loop
-                    if (config.authentication) {
-                        authLoop(config.authentication);
-                    } else {
-                        authLoop(null);
-                    }
-                },
-
-                failure: function () {
-                    throw new Error('Unable to read site configuration');
-                }
-            }
-
-            CStudioAuthoring.Service.lookupConfigurtion(
-                CStudioAuthoringContext.site, "/site-config.xml", authLoopCb);
-
-        } else {
-            // The authentication loop cannot be started until CStudioAuthoringContext exists
-            setTimeout(startAuthLoop, 1000);
-        }
-    })();
+if (window.top === window) {
+  const el = document.createElement('craftercms-auth-monitor');
+  CrafterCMSNext.render(el, 'AuthMonitor');
 }

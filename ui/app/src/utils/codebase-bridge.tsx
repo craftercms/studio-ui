@@ -35,6 +35,8 @@ import messages, { translateElements } from './i18n-legacy';
 import { nou } from './object';
 import ErrorState from '../components/SystemStatus/ErrorState';
 import babel from '../utils/babelHelpers-legacy';
+import security from '../services/security';
+import authService from '../services/auth';
 
 /**
  *
@@ -99,7 +101,7 @@ export function createCodebaseBridge() {
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
       DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
-      DependecySelectionDelete: lazy(() => (
+      DependencySelectionDelete: lazy(() => (
         import('../modules/Content/Dependencies/DependencySelection')
           .then(module => ({
             default: module.DependencySelectionDelete
@@ -111,7 +113,8 @@ export function createCodebaseBridge() {
       Preview: lazy(() => import('../pages/Preview')),
       PublishDialog: lazy(() => import('../modules/Content/Publish/PublishDialog')),
       ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav')),
-      EncryptTool: lazy(() => import('../components/EncryptTool'))
+      EncryptTool: lazy(() => import('../components/EncryptTool')),
+      AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor'))
     },
 
     assets: {
@@ -137,7 +140,9 @@ export function createCodebaseBridge() {
       sites,
       marketplace,
       publishing,
-      content
+      content,
+      auth: authService,
+      security
     },
 
     // Mechanics

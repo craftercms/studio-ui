@@ -249,12 +249,12 @@ export function DependencySelection(props: DependencySelectionProps) {
           )
         }
         { onClickShowAllDeps &&
-          <p>
-            <FormattedMessage
-              id="publishDialog.changesInSelection"
-              defaultMessage={`Changes in the selection of items to publish will require "all dependencies" to be recalculated.`}
-            />
-          </p>
+        <p>
+          <FormattedMessage
+            id="publishDialog.changesInSelection"
+            defaultMessage={`Changes in the selection of items to publish will require "all dependencies" to be recalculated.`}
+          />
+        </p>
         }
       </div>
     </>
