@@ -581,10 +581,14 @@
       }
 
       function authLoop() {
-        const el = document.createElement('craftercms-auth-monitor');
-        CrafterCMSNext.render(el, 'AuthMonitor').then(({ unmount }) => {
-          unmountAuthMonitor = unmount;
-        });
+        // Site config embeds several angular views on an iframe.
+        // This is to avoid duplicate login dialogs.
+        if (window.top === window) {
+          const el = document.createElement('craftercms-auth-monitor');
+          CrafterCMSNext.render(el, 'AuthMonitor').then(({ unmount }) => {
+            unmountAuthMonitor = unmount;
+          });
+        }
       }
 
       return this;
