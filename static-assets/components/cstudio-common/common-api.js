@@ -9769,16 +9769,15 @@ if (window.top === window) {
 
 function getTopLegacyWindow(nextWindow) {
   try {
-    if(nextWindow && nextWindow.IS_LEGACY_TOP_WINDOW) {
+    if (nextWindow === window.top) return nextWindow;
+    else if (nextWindow && nextWindow.IS_LEGACY_TOP_WINDOW) {
       return nextWindow;
-    }
-    if(nextWindow) {
-      // if(nextWindow === window) return window;
-      return getTopLegacyWindow(nextWindow.parent)
+    } else if (nextWindow) {
+      return getTopLegacyWindow(nextWindow.parent);
     } else {
       return getTopLegacyWindow(window);
     }
   } catch {
-    return window.top
+    return window.top;
   }
 }
