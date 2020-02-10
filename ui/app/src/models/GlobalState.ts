@@ -51,7 +51,7 @@ export interface PagedEntityState<T = any> extends EntityState<T> {
 export interface EditSelection {
   modelId: string;
   fieldId: string[];
-  index: string;
+  index: string | number;
 }
 
 export interface GuestData {

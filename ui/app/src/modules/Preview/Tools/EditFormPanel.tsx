@@ -212,7 +212,7 @@ export default function EditFormPanel() {
         messagesSubscription.unsubscribe();
       };
     } catch {
-      console.log('No supported yet.')
+      console.log('Not supported yet.')
     }
   });
 
