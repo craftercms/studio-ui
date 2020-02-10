@@ -36,6 +36,7 @@ import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
+import { setRequestForgeryToken } from '../../utils/auth';
 
 const translations = defineMessages({
   sessionExpired: {
@@ -87,6 +88,7 @@ export default function AuthMonitor() {
   const styles: CSSProperties = isFetching ? { visibility: 'hidden' } : {};
 
   const onSubmit = () => {
+    setRequestForgeryToken();
     if (isSSO) {
       dispatch(validateSession());
       setSSOButtonClicked(false);
