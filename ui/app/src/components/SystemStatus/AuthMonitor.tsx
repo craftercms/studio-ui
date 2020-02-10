@@ -238,7 +238,7 @@ function SSOForm(props: SSOFormProps) {
   );
 }
 
-type LogInForm = PropsWithChildren<{
+type LogInFormProps = PropsWithChildren<{
   username: string;
   password: string;
   isFetching: boolean;
@@ -246,7 +246,7 @@ type LogInForm = PropsWithChildren<{
   onSetPassword: Function;
 }>;
 
-function LogInForm(props: LogInForm) {
+function LogInForm(props: LogInFormProps) {
   const { username, onSubmit, isFetching, onSetPassword, password } = props;
   const classes = useStyles({});
   return (

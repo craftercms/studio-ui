@@ -43,7 +43,6 @@ export function minify(xml: string) {
 
 export function beautify(xml: string, options?: any) {
   return prettier.format(xml, {
-    // @ts-ignore
     parser: 'xml',
     plugins: [prettierXmlPlugin],
     ...options
