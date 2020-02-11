@@ -18,7 +18,12 @@
 import React, { useEffect, useState } from 'react';
 import { Markers } from '../classes/Markers';
 
-export function ZoneMarker(props) {
+interface ZoneMarkerProps {
+  rect: any;
+  label: string;
+}
+
+export function ZoneMarker(props: ZoneMarkerProps) {
 
   const //
     { rect, label } = props,
