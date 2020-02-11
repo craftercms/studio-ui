@@ -24,15 +24,15 @@
   <script src="/studio/static-assets/yui/json/json-min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/yui/yahoo/yahoo-min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/jquery/dist/jquery-3.4.1.min.js"></script>
-    <#include "/templates/web/common/page-fragments/studio-context.ftl" />
+  <#include "/templates/web/common/page-fragments/studio-context.ftl" />
   <script src="/studio/static-assets/components/cstudio-common/common-api.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <#include "/templates/web/common/js-next-scripts.ftl" />
-
-    <#-- Lang resources -->
-    <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
+  <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <#include "/templates/web/common/js-next-scripts.ftl" />
+  <#-- Lang resources -->
+  <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
   <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
@@ -43,14 +43,14 @@
   </script>
   <style>
     .studio-ice-dialog {
-      z-index: 1035;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      top: 0;
+      margin-left: auto !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      top: 0 !important;
       height: 100% !important;
-      width: 100%;
-      position: fixed;
+      width: 100% !important;
+      position: fixed !important;
     }
     .studio-ice-dialog > .bd iframe {
       top: 0;

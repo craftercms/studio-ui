@@ -64,7 +64,7 @@ const translations = defineMessages({
   },
   loadingForm: {
     id: 'craftercms.edit.loadingForm',
-    defaultMessage: 'Loading form...'
+    defaultMessage: 'Loading...'
   }
 });
 

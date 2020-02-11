@@ -551,9 +551,9 @@ CStudioAuthoring.Module.requireModule(
                     if (!aceEditor.isModified) {
                       e.stopPropagation();
                       cancelEdit();
-                    }
-                    if (onSaveCb.cancelled) {
-                      onSaveCb.cancelled();
+                      if (onSaveCb.cancelled) {
+                        onSaveCb.cancelled();
+                      }
                     }
                   });
 

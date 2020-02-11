@@ -1549,9 +1549,9 @@ var CStudioForms = CStudioForms || function() {
                     },
                     {
                       text: CMgs.format(formsLangBundle, 'no'), handler: function () {
-                        if (iceWindowCallback && iceWindowCallback.cancelled) {
-                          iceWindowCallback.cancelled();
-                        }
+                        // if (iceWindowCallback && iceWindowCallback.cancelled) {
+                        //   iceWindowCallback.cancelled();
+                        // }
                         this.destroy();
                       }, isDefault: true
                     }
