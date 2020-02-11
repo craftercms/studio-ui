@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 
 export default function CrafterCMSPortal(props) {
@@ -23,8 +23,8 @@ export default function CrafterCMSPortal(props) {
   const portalRef = useRef(document.createElement('craftercms-portal'));
 
   useLayoutEffect(() => {
-    const body = document.body;
-    const portal = portalRef.current;
+    const body: HTMLElement = document.body;
+    const portal: HTMLElement = portalRef.current;
     body.appendChild(portal);
     return () => {
       body.removeChild(portal);
