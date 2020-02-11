@@ -1561,7 +1561,7 @@ var nodeOpen = false,
                     }
 
                     var Topics = crafter.studio.preview.Topics;
-                    window.location = '/studio/preview/#/?page='+url+'&site='+CStudioAuthoringContext.site;
+                    window.location = '/studio/legacy/preview/#/?page='+url+'&site='+CStudioAuthoringContext.site;
                 }
 
             },
