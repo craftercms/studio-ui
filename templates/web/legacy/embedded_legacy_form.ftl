@@ -29,6 +29,15 @@
   <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <#include "/templates/web/common/js-next-scripts.ftl" />
+
+    <#-- Lang resources -->
+    <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
+  <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="${path}de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+
   <script>
     window.IS_LEGACY_TOP_WINDOW = true;
   </script>
@@ -43,7 +52,6 @@
       width: 100%;
       position: fixed;
     }
-
     .studio-ice-dialog > .bd iframe {
       top: 0;
       left: 0;
@@ -55,8 +63,12 @@
       outline: none;
       position: absolute;
     }
-    .overlay {
 
+    #cstudio-template-editor-container {
+      border: 0;
+      padding-top: 20px;
+      background: #f8f8f8;
+      box-shadow: none;
     }
   </style>
 </head>
@@ -64,53 +76,79 @@
 <script>
   var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   var site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
-  var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
-  var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
+  var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
+  CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
-  CStudioAuthoring.Service.lookupContentItem(
-    site,
-    path,
-    {
-      success: (contentTO) => {
-        CStudioAuthoring.Operations.performSimpleIceEdit(
-          contentTO.item,
-          '',
-          true,
-          {
-            success: () => {
-              window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
-            },
-            failure: () => {
-              console.log('failure');
-            },
-            cancelled: () => {
-              window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE' }, '*');
-            },
-            renderComplete: () => {
-              if (!modelId) {
-                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-              } else {
-                CStudioAuthoring.InContextEdit.messageDialogs({
-                  type: 'OPEN_CHILD_COMPONENT',
-                  key: modelId,
-                  iceId: null,
-                  edit: true,
-                  callback: {
-                    renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED'
+  switch (type) {
+    case 'form': {
+      var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
+      var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
+
+      CStudioAuthoring.Service.lookupContentItem(
+        site,
+        path,
+        {
+          success: (contentTO) => {
+            CStudioAuthoring.Operations.performSimpleIceEdit(
+              contentTO.item,
+              '',
+              true,
+              {
+                success: () => {
+                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
+                },
+                failure: () => {
+                  console.log('failure');
+                },
+                cancelled: () => {
+                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE' }, '*');
+                },
+                renderComplete: () => {
+                  if (!modelId) {
+                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                  } else {
+                    CStudioAuthoring.InContextEdit.messageDialogs({
+                      type: 'OPEN_CHILD_COMPONENT',
+                      key: modelId,
+                      iceId: null,
+                      edit: true,
+                      callback: {
+                        renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED'
+                      }
+                    });
                   }
-                });
-              }
-            },
+                },
+              },
+              [],
+              null,
+              !!isHidden);
           },
-          [],
-          null,
-          isHidden ? true : false);
-      },
-      failure: (error) => {
-        console.log(error);
-      }
-    },
-    false, false);
+          failure: (error) => {
+            console.log(error);
+          }
+        },
+        false, false);
+      break;
+    }
+    case 'editor': {
+      CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
+        success: function () {
+          window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
+        },
+        failure: function () {
+          console.log('failure');
+        },
+        cancelled: function () {
+          window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false }, '*');
+        },
+        renderComplete: function () {
+          window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+        },
+        callingWindow: window
+      }, null, null);
+      break;
+    }
+  }
 </script>
 </body>
 </html>

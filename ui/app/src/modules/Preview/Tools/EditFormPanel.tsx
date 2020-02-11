@@ -43,6 +43,7 @@ import LoadingState from '../../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { popPiece } from '../../../utils/string';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -165,7 +166,7 @@ export default function EditFormPanel() {
   }
 
   const path = ModelHelper.prop(models[selectedId], 'path');
-  const ct = ModelHelper.prop(models[selectedId], 'contentType');
+  const selectedContentType = ModelHelper.prop(models[selectedId], 'contentType');
 
   function openDialog(type: string) {
     switch (type) {
@@ -187,13 +188,18 @@ export default function EditFormPanel() {
         break;
       }
       case 'template': {
-        const selectedContentType = contentTypes.find((contentType) => contentType.id === ct);
-        const template = selectedContentType.displayTemplate;
-        console.log(template);
+        const template = contentTypes.find((contentType) => contentType.id === selectedContentType).displayTemplate;
+        setDialogConfig({ ...dialogConfig, open: true, src: `${defaultSrc}site=${site}&path=${template}&type=editor` });
         break;
       }
       case 'controller': {
-        console.log(ct);
+        let pageName = popPiece(selectedContentType, '/');
+        let groovyPath = `/scripts/pages/${pageName}.groovy`;
+        setDialogConfig({
+          ...dialogConfig,
+          open: true,
+          src: `${defaultSrc}site=${site}&path=${groovyPath}&type=editor`
+        });
         break;
       }
     }
@@ -214,7 +220,6 @@ export default function EditFormPanel() {
   }, [dispatch]);
 
   useOnMount(() => {
-    console.log('subscription');
     const messages = fromEvent(window, 'message').pipe(
       filter((e: any) => e.data && e.data.type)
     );
@@ -277,13 +282,16 @@ export default function EditFormPanel() {
           >
             {formatMessage(translations.editTemplate)}
           </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={e => openDialog('controller')}
-          >
-            {formatMessage(translations.editController)}
-          </Button>
+          {
+            (selectedContentType.includes('/page')) &&
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={e => openDialog('controller')}
+            >
+              {formatMessage(translations.editController)}
+            </Button>
+          }
         </div>
       </ToolPanel>
       <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>

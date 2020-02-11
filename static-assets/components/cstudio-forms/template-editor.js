@@ -109,7 +109,6 @@ CStudioAuthoring.Module.requireModule(
                 if ( xmlDoc ) {
                   me.addSnippets(xmlDoc);
                 }
-
                 me.renderTemplateEditor(templatePath, content, onSaveCb, contentType, mode);
               }).catch(error => {
                 const errorMsg = error.responseText
@@ -553,11 +552,17 @@ CStudioAuthoring.Module.requireModule(
                       e.stopPropagation();
                       cancelEdit();
                     }
+                    if (onSaveCb.cancelled) {
+                      onSaveCb.cancelled();
+                    }
                   });
 
 									$('#template-editor-cancel-button + .dropdown-menu .confirm').on('click', function(e) {
 									  e.preventDefault();
                     cancelEdit();
+                    if (onSaveCb.cancelled) {
+                      onSaveCb.cancelled();
+                    }
                   });
 
 									if(isWrite == true) {
@@ -591,12 +596,16 @@ CStudioAuthoring.Module.requireModule(
 											});
 										};
 									}
-
+                  if (onSaveCb.renderComplete) {
+                    onSaveCb.renderComplete();
+                  }
 								},
 								failure: function() {
-
-								}
-							}
+                  if (onSaveCb.failure) {
+                    onSaveCb.failure();
+                  }
+                }
+              };
 
 							CStudioAuthoring.Service.getUserPermissions(
 								CStudioAuthoringContext.site,
