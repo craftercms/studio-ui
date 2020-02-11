@@ -25,7 +25,7 @@ import {
 } from './util';
 
 message$.pipe(
-  filter((e) => (e.data?.type) != null),
+  filter((e: any) => (e.data?.type) != null),   // TODO: set proper type
   map(e => e.data)
 ).subscribe(function ({ type, payload }) {
   switch (type) {

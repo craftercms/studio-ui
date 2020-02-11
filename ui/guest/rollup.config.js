@@ -115,7 +115,7 @@ export default [
   },
   /* UMD build for preview landing controller */
   {
-    input: 'src/index.preview.js',
+    input: 'src/index.preview.ts',
     external,
     plugins,
     output: {
