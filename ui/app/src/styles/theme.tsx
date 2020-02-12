@@ -79,14 +79,6 @@ export const themeOptions: ThemeOptions = {
     },
     // type: 'dark'
   },
-  zIndex: {
-    mobileStepper: 770,
-    appBar: 847,
-    drawer: 924,
-    modal: 1000,
-    snackbar: 1078,
-    tooltip: 1155
-  },
   overrides: {
     MuiFormLabel: {
       root: {
