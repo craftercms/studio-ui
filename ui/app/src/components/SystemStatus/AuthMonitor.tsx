@@ -97,7 +97,7 @@ export default function AuthMonitor() {
       dispatch(validateSession());
       setSSOButtonClicked(false);
     } else {
-      !isBlank(password) && dispatch(login({ username, password }))
+      !isBlank(password) && dispatch(login({ username, password }));
     }
   };
 
