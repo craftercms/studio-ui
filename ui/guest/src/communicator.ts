@@ -33,9 +33,9 @@ export const post = useBroadcastChannel
   ? (type, payload) => broadcastChannel.postMessage((typeof type === 'object') ? type : { type, payload })
   : (type, payload) => window.parent.postMessage((typeof type === 'object') ? type : { type, payload }, '*');
 
-export function fromTopic(type) {
+export function fromTopic(type: string) {
   return message$.pipe(
-    filter((e) => e.data?.type === type),
+    filter((e: any) => e.data?.type === type),    // TODO: e type
     map(e => e.data)
   );
 }
