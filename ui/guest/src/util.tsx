@@ -20,7 +20,7 @@ import { Markers } from './classes/Markers';
 import { fromEvent, interval } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 
-export const foo = () => void null;
+export const foo = (...args: any[]) => void null;
 export const
   X_AXIS = 'X',
   Y_AXIS = 'Y',

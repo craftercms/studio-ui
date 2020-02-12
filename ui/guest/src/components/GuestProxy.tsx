@@ -48,7 +48,7 @@ export function GuestProxy(props) {
 
   useEffect(() => {
 
-    const registerElement = (element: HTMLElement) => {
+    const registerElement = (element: Element) => {
 
       let
         modelId = element.getAttribute('data-craftercms-model-id'),
@@ -72,7 +72,7 @@ export function GuestProxy(props) {
       return (typeof index === 'string') ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}` : index + value;
     };
 
-    const updateElementRegistrations = (collection: HTMLElement[], type: string, newIndex: string | number, oldIndex: string | number): void => {
+    const updateElementRegistrations = (collection: HTMLElement[], type: string, newIndex: string | number, oldIndex?: string | number): void => {
       let originalNewIndex = newIndex;
       let originalOldIndex = oldIndex;
       newIndex = (typeof newIndex === 'string') ? parseInt(popPiece(newIndex)) : newIndex;
@@ -335,7 +335,7 @@ export function GuestProxy(props) {
           const id = Date.now();
 
           message$.pipe(
-            filter((e) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.id === id)),
+            filter((e: any) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.id === id)), // TODO: e type
             map(e => e.data),
             take(1)
           ).subscribe(function ({ payload }) {
@@ -388,21 +388,21 @@ export function GuestProxy(props) {
     if (context.editable !== persistence.editable) {
 
       persistence.editable && Object.values(persistence.editable).forEach(({ element }) =>
-        $(element).attr('contenteditable', false).removeAttr('contenteditable')
+        $(element).attr('contenteditable', 'false').removeAttr('contenteditable')
       );
 
       persistence.editable = context.editable;
 
       persistence.editable && Object.values(persistence.editable).forEach(({ element }) => {
         (persistence.editable === null) && (persistence.editable = []);
-        $(element).attr('contenteditable', true);
+        $(element).attr('contenteditable', 'true');
       });
 
     }
 
     if (notNullOrUndefined(persistence.draggable)) {
       $(persistence.draggable)
-        .attr('draggable', false)
+        .attr('draggable', 'false')
         .removeAttr('draggable');
     }
 
@@ -415,7 +415,7 @@ export function GuestProxy(props) {
           // but the context draggable table hasn't been cleaned up.
           if (record != null) {
             persistence.draggable = record.element;
-            $(record.element).attr('draggable', true);
+            $(record.element).attr('draggable', 'true');
           }
         }
       }
