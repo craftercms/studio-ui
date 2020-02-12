@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -123,7 +124,7 @@ export function useICE(props) {
 
   // region Ref
 
-  function ref(element) {
+  function ref(element: HTMLElement) {
     clearTimeout(persistence.refTimeout);
 
     try {
@@ -171,7 +172,7 @@ export function useICE(props) {
 
   // endregion
 
-  function onClick(e) {
+  function onClick(e: Event) {
     if (onEvent(e, persistence.id)) {
       handlers.onClick(e);
     }
@@ -179,13 +180,13 @@ export function useICE(props) {
 
   // region MouseOver Events
 
-  function onMouseOver(e) {
+  function onMouseOver(e: Event) {
     if (onEvent(e, persistence.id)) {
       handlers.onMouseOver(e);
     }
   }
 
-  function onMouseOut(e) {
+  function onMouseOut(e: Event) {
     if (onEvent(e, persistence.id)) {
       handlers.onMouseOut(e);
     }
@@ -195,31 +196,31 @@ export function useICE(props) {
 
   // region Dragging Events
 
-  function onDragStart(e) {
+  function onDragStart(e: Event) {
     if (onEvent(e, persistence.id)) {
       handlers.onDragStart(e);
     }
   }
 
-  function onDragOver(e) {
+  function onDragOver(e: Event) {
     if (onEvent(e, persistence.id)) {
       handlers.onDragOver(e);
     }
   }
 
-  function onDrop(e) {
+  function onDrop(e: Event) {
     if (onEvent(e, persistence.id)) {
       handlers.onDrop(e);
     }
   }
 
-  function onDragEnd(e) {
+  function onDragEnd(e: Event) {
     if (onEvent(e, persistence.id)) {
       handlers.onDragEnd(e);
     }
   }
 
-  function onDragLeave(e) {
+  function onDragLeave(e: Event) {
     if (onEvent(e, persistence.id)) {
       handlers.onDragLeave(e);
     }
