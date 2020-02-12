@@ -17,16 +17,32 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  findClosestRect, foo,
+  findClosestRect,
+  foo,
+  forEach,
   getDropMarkerPosition,
   getInRectStats,
   HORIZONTAL,
   notNullOrUndefined,
+  splitRect,
   VERTICAL,
-  forEach, splitRect, X_AXIS, Y_AXIS
+  X_AXIS,
+  Y_AXIS
 } from '../util';
 
-export function DropMarker(props) {
+interface DropMarkerProps {
+  over: any;
+  prev: ClientRect;
+  next: ClientRect;
+  dropZone: any;
+  coordinates: {
+    x: number,
+    y: number
+  };
+  onDropPosition: Function;
+}
+
+export function DropMarker(props: DropMarkerProps) {
 
   const //
     {
