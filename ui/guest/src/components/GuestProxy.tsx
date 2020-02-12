@@ -48,12 +48,12 @@ export function GuestProxy(props) {
 
   useEffect(() => {
 
-    const registerElement = (element) => {
+    const registerElement = (element: HTMLElement) => {
 
       let
         modelId = element.getAttribute('data-craftercms-model-id'),
         fieldId = element.getAttribute('data-craftercms-field-id'),
-        index = element.getAttribute('data-craftercms-index'),
+        index: string | number = element.getAttribute('data-craftercms-index'),
         label = element.getAttribute('data-craftercms-label');
 
       if (notNullOrUndefined(index) && !index.includes('.')) {
@@ -68,11 +68,11 @@ export function GuestProxy(props) {
 
     };
 
-    const appendIndex = (index, value) => {
+    const appendIndex = (index: string | number, value: number) => {
       return (typeof index === 'string') ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}` : index + value;
     };
 
-    const updateElementRegistrations = (collection, type, newIndex, oldIndex) => {
+    const updateElementRegistrations = (collection: HTMLElement[], type: string, newIndex: string | number, oldIndex: string | number): void => {
       let originalNewIndex = newIndex;
       let originalOldIndex = oldIndex;
       newIndex = (typeof newIndex === 'string') ? parseInt(popPiece(newIndex)) : newIndex;
@@ -106,7 +106,7 @@ export function GuestProxy(props) {
       }
     };
 
-    const getDropzoneElement = (modelId, fieldId, targetIndex) => {
+    const getDropzoneElement = (modelId: string, fieldId: string, targetIndex: string): JQuery => {
       const dropZoneId = iceRegistry.exists({
         modelId,
         fieldId,
@@ -117,7 +117,7 @@ export function GuestProxy(props) {
       return $(ElementRegistry.fromICEId(dropZoneId).element);
     };
 
-    const insertElement = ($element, $daddy, targetIndex) => {
+    const insertElement = ($element: JQuery, $daddy: JQuery, targetIndex: string | number): void => {
       const index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
       const $siblings = $daddy.find('> *');
       if ($siblings.length === index) {
@@ -136,7 +136,7 @@ export function GuestProxy(props) {
         .forEach(registerElement)
     );
 
-    const handler = (e) => {
+    const handler = (e: Event) => {
       let record = ElementRegistry.fromElement(e.currentTarget);
       if (notNullOrUndefined(record)) {
         if (['click', 'dblclick'].includes(e.type)) {
