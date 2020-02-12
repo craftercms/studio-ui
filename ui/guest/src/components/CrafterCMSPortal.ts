@@ -24,7 +24,7 @@ export default function CrafterCMSPortal(props) {
 
   useLayoutEffect(() => {
     const body: HTMLElement = document.body;
-    const portal: HTMLElement = portalRef.current;
+    const portal = portalRef.current;
     body.appendChild(portal);
     return () => {
       body.removeChild(portal);
