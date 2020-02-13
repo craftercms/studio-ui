@@ -500,7 +500,7 @@ export function addClickListener(element, type, handler) {    //TODO: pending
       takeUntil(interval(300)),
       take(1)
     )),
-    filter((e) => (
+    filter((e: any) => (    // TODO: proper type
       e.target.hasAttribute('data-craftercms-model-id') ||
       forEach(e.path, (el) => (
         (

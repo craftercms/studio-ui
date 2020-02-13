@@ -23,10 +23,10 @@ import {
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
-  CONTENT_TYPE_RECEPTACLES_REQUEST,
-  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   EDIT_MODE_CHANGED,
@@ -70,6 +70,17 @@ const escape$ = fromEvent(document, 'keydown').pipe(
   filter(e => e.keyCode === 27)
 );
 
+interface GuestProps {
+  path: string;
+  styles: any;      //TODO: pending type
+  modelId: string;
+  children: any;
+  documentDomain: string;
+  isAuthoring: boolean;
+  scrollElement: string;
+  editModeOnIndicatorClass: string;
+}
+
 // TODO:
 // - add "modePreview" and bypass all
 export function Guest(props) {
@@ -86,9 +97,13 @@ export function Guest(props) {
     scrollElement = 'html, body',
     editModeOnIndicatorClass = 'craftercms-ice-on'
   } = props;
+
   const { current: persistence } = useRef({
     contentReady: false,
-    mouseOverTimeout: null
+    mouseOverTimeout: null,
+    dragover$: null,
+    scrolling$: null,
+    onScroll: null
   });
 
   const [, forceUpdate] = useState({});
@@ -196,7 +211,7 @@ export function Guest(props) {
     },
 
     /*onClick*/
-    click(e, record) {
+    click(e: Event, record) {   // TODO: record type
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
@@ -358,7 +373,7 @@ export function Guest(props) {
       }
     },
 
-    dblclick(e, record) {
+    dblclick(e: Event, record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
         setState({
@@ -376,7 +391,7 @@ export function Guest(props) {
     },
 
     /*onMouseOver*/
-    mouseover(e, record) {
+    mouseover(e: Event, record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         clearTimeout(persistence.mouseOverTimeout);
         e.stopPropagation();
@@ -398,7 +413,7 @@ export function Guest(props) {
     },
 
     /*onMouseOut*/
-    mouseout(e) {
+    mouseout(e: Event) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         e.stopPropagation();
         clearTimeout(persistence.mouseOverTimeout);
@@ -410,7 +425,7 @@ export function Guest(props) {
     },
 
     /*onDragStart*/
-    dragstart(e, physicalRecord) {
+    dragstart(e, physicalRecord) {    // TODO: DragStartEvent not matching
       e.stopPropagation();
       (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', null);
 

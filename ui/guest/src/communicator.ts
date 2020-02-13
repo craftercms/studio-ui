@@ -30,8 +30,8 @@ const broadcastChannel = useBroadcastChannel
 export const message$ = fromEvent(useBroadcastChannel ? broadcastChannel : window, 'message').pipe(share());
 
 export const post = useBroadcastChannel
-  ? (type, payload) => broadcastChannel.postMessage((typeof type === 'object') ? type : { type, payload })
-  : (type, payload) => window.parent.postMessage((typeof type === 'object') ? type : { type, payload }, '*');
+  ? (type, payload?) => broadcastChannel.postMessage((typeof type === 'object') ? type : { type, payload })
+  : (type, payload?) => window.parent.postMessage((typeof type === 'object') ? type : { type, payload }, '*');
 
 export function fromTopic(type: string) {
   return message$.pipe(
