@@ -50,6 +50,20 @@ export function getPreviewURLFromPath(baseUrl: string, path: string) {
   return `${baseUrl}${url}`;
 }
 
+export function getQueryVariable(query: string, variable: string) {
+  variable = variable.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + variable + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(decodeURIComponent(query));
+
+  if (results == null)
+    return "";
+  else
+    return results[1];
+}
+
 export default {
-  getPathFromPreviewURL
+  getPathFromPreviewURL,
+  getPreviewURLFromPath,
+  getQueryVariable
 };

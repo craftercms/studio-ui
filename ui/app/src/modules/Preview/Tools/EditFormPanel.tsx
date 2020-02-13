@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
@@ -24,11 +24,12 @@ import { ContentTypeHelper, ModelHelper } from '../../../utils/helpers';
 import {
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
+  EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_RENDERED
 } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../../utils/hooks';
+import { useActiveSiteId, useOnMount, usePreviewState, useSelection, useSpreadState } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -38,12 +39,14 @@ import { nnou } from '../../../utils/object';
 import { forEach } from '../../../utils/array';
 import { LookupTable } from '../../../models/LookupTable';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { popPiece } from '../../../utils/string';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import { getQueryVariable } from '../../../utils/path';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -61,6 +64,14 @@ const translations = defineMessages({
   contentForm: {
     id: 'craftercms.edit.contentForm',
     defaultMessage: 'Content Form'
+  },
+  template: {
+    id: 'craftercms.edit.template',
+    defaultMessage: 'Template'
+  },
+  controller: {
+    id: 'craftercms.edit.controller',
+    defaultMessage: 'Controller'
   },
   loadingForm: {
     id: 'craftercms.edit.loadingForm',
@@ -140,12 +151,14 @@ export default function EditFormPanel() {
   const onBack = createBackHandler(dispatch);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
-  const [dialogConfig, setDialogConfig] = useState({
+  const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
-    src: null
+    src: null,
+    type: null
   });
   // const [src, setSrc] = useState(`${AUTHORING_BASE}/legacy/form?`);
   const [loading, setLoading] = useState(true);
+  const iframeRef = useRef(null);
 
   const item = selected[0];
   const model = models[item.modelId];
@@ -168,12 +181,11 @@ export default function EditFormPanel() {
   const path = ModelHelper.prop(models[selectedId], 'path');
   const selectedContentType = ModelHelper.prop(models[selectedId], 'contentType');
 
-  function openDialog(type: string) {
+  function getSrc(type: string) {
     switch (type) {
       case 'form': {
-        let src;
         if (path) {
-          src = `${defaultSrc}site=${site}&path=${path}&type=form`;
+          return `${defaultSrc}site=${site}&path=${path}&type=form`;
         } else {
           let parentPath;
           if (model === models[selectedId]) {
@@ -182,31 +194,38 @@ export default function EditFormPanel() {
           } else {
             parentPath = models[model.craftercms.id].craftercms.path;
           }
-          src = `${defaultSrc}site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}&type=form`;
+          return `${defaultSrc}site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}&type=form`;
         }
-        setDialogConfig({ ...dialogConfig, open: true, src });
-        break;
       }
       case 'template': {
         const template = contentTypes.find((contentType) => contentType.id === selectedContentType).displayTemplate;
-        setDialogConfig({ ...dialogConfig, open: true, src: `${defaultSrc}site=${site}&path=${template}&type=editor` });
-        break;
+        return `${defaultSrc}site=${site}&path=${template}&type=template`;
       }
       case 'controller': {
         let pageName = popPiece(selectedContentType, '/');
         let groovyPath = `/scripts/pages/${pageName}.groovy`;
-        setDialogConfig({
-          ...dialogConfig,
-          open: true,
-          src: `${defaultSrc}site=${site}&path=${groovyPath}&type=editor`
-        });
-        break;
+        return `${defaultSrc}site=${site}&path=${groovyPath}&type=controller`;
       }
     }
   }
 
+  function openDialog(type: string) {
+    setDialogConfig(
+      {
+        open: true,
+        src: getSrc(type),
+        type
+      });
+  }
+
   function handleClose() {
-    setDialogConfig({ ...dialogConfig, open: false, src: null });
+    setDialogConfig({ open: false, src: null });
+  }
+
+  function handleTabChange(event: React.ChangeEvent<{}>, type: string) {
+    setDialogConfig({ type });
+    setLoading(true);
+    iframeRef.current.contentWindow.postMessage({ type: EDIT_FORM_CHANGE_TAB, tab: type, path: getQueryVariable(getSrc(type), 'path') }, '*');
   }
 
   useEffect(() => {
@@ -227,15 +246,14 @@ export default function EditFormPanel() {
     const messagesSubscription = messages.subscribe((e: any) => {
       switch (e.data.type) {
         case EMBEDDED_LEGACY_FORM_CLOSE: {
-          setDialogConfig({ ...dialogConfig, open: false, src: null });
+          setDialogConfig({ open: false, src: null });
+          setLoading(true);
           break;
         }
         case EMBEDDED_LEGACY_FORM_RENDERED: {
           setLoading(false);
           break;
         }
-        default:
-          break;
       }
     });
 
@@ -296,11 +314,14 @@ export default function EditFormPanel() {
       </ToolPanel>
       <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
         <AppBar position="static" color='default'>
-          <Toolbar>
-            <Typography variant="h6" color='textPrimary'>
-              {formatMessage(translations.contentForm)}
-            </Typography>
-          </Toolbar>
+          <Tabs value={dialogConfig.type} onChange={handleTabChange} aria-label="simple tabs example">
+            <Tab value="form" label={formatMessage(translations.contentForm)} disabled={loading}/>
+            <Tab value="template" label={formatMessage(translations.template)} disabled={loading}/>
+            {
+              (selectedContentType.includes('/page')) &&
+              <Tab value="controller" label={formatMessage(translations.controller)} disabled={loading}/>
+            }
+          </Tabs>
         </AppBar>
         {
           loading &&
@@ -311,6 +332,7 @@ export default function EditFormPanel() {
           />
         }
         <iframe
+          ref={iframeRef}
           src={dialogConfig.src}
           title="Embedded Legacy Form"
           className={clsx(classes.iframe, !loading && 'complete')}

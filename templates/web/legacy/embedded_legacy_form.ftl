@@ -24,15 +24,15 @@
   <script src="/studio/static-assets/yui/json/json-min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/yui/yahoo/yahoo-min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/jquery/dist/jquery-3.4.1.min.js"></script>
-  <#include "/templates/web/common/page-fragments/studio-context.ftl" />
+    <#include "/templates/web/common/page-fragments/studio-context.ftl" />
   <script src="/studio/static-assets/components/cstudio-common/common-api.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <#include "/templates/web/common/js-next-scripts.ftl" />
-  <#-- Lang resources -->
-  <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
+    <#include "/templates/web/common/js-next-scripts.ftl" />
+    <#-- Lang resources -->
+    <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
   <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
@@ -51,7 +51,9 @@
       height: 100% !important;
       width: 100% !important;
       position: fixed !important;
+      border: none !important;
     }
+
     .studio-ice-dialog > .bd iframe {
       top: 0;
       left: 0;
@@ -79,76 +81,126 @@
   var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
-  switch (type) {
-    case 'form': {
-      var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
-      var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
-
-      CStudioAuthoring.Service.lookupContentItem(
-        site,
-        path,
-        {
-          success: (contentTO) => {
-            CStudioAuthoring.Operations.performSimpleIceEdit(
-              contentTO.item,
-              '',
-              true,
-              {
-                success: () => {
-                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
-                },
-                failure: () => {
-                  console.log('failure');
-                },
-                cancelled: () => {
-                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE' }, '*');
-                },
-                renderComplete: () => {
-                  if (!modelId) {
-                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                  } else {
-                    CStudioAuthoring.InContextEdit.messageDialogs({
-                      type: 'OPEN_CHILD_COMPONENT',
-                      key: modelId,
-                      iceId: null,
-                      edit: true,
-                      callback: {
-                        renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED'
-                      }
-                    });
-                  }
-                },
-              },
-              [],
-              null,
-              !!isHidden);
-          },
-          failure: (error) => {
-            console.log(error);
+  const changeTab = (e) => {
+    if (e.data.type === 'EDIT_FORM_CHANGE_TAB') {
+      let tab = e.data.tab;
+      let path = e.data.path;
+      switch (tab) {
+        case 'form': {
+          if($('.studio-form-modal').length){
+            $('#cstudio-template-editor-container-modal').hide();
+            $('.studio-form-modal').show();
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+          }else {
+            openDialog(tab, path);
           }
-        },
-        false, false);
-      break;
+          break;
+        }
+        case 'template': {
+          if($('#cstudio-template-editor-container-modal.template').length) {
+            //$('#cstudio-template-editor-container-modal.controller').hide();
+            $('.studio-form-modal').hide();
+            $('#cstudio-template-editor-container-modal.template').show();
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+          }else {
+            $('#cstudio-template-editor-container-modal').remove();
+            openDialog(tab, path);
+          }
+          break;
+        }
+        case 'controller': {
+          if($('#cstudio-template-editor-container-modal.controller').length) {
+            //$('#cstudio-template-editor-container-modal.template').hide();
+            $('.studio-form-modal').hide();
+            $('#cstudio-template-editor-container-modal.controller').show();
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+          }else {
+            $('#cstudio-template-editor-container-modal').remove();
+            openDialog(tab, path);
+          }
+          break;
+        }
+      }
     }
-    case 'editor': {
-      CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
-        success: function () {
-          window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
-        },
-        failure: function () {
-          console.log('failure');
-        },
-        cancelled: function () {
-          window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false }, '*');
-        },
-        renderComplete: function () {
-          window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-        },
-        callingWindow: window
-      }, null, null);
-      break;
+  };
+
+  window.addEventListener('message', changeTab, false);
+
+  function openDialog(type, path) {
+    switch (type) {
+      case 'form': {
+        var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
+        var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
+
+        CStudioAuthoring.Service.lookupContentItem(
+          site,
+          path,
+          {
+            success: (contentTO) => {
+              CStudioAuthoring.Operations.performSimpleIceEdit(
+                contentTO.item,
+                '',
+                true,
+                {
+                  success: () => {
+                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
+                  },
+                  failure: () => {
+                    console.log('failure');
+                  },
+                  cancelled: () => {
+                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false }, '*');
+                  },
+                  renderComplete: () => {
+                    if (!modelId) {
+                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                    } else {
+                      CStudioAuthoring.InContextEdit.messageDialogs({
+                        type: 'OPEN_CHILD_COMPONENT',
+                        key: modelId,
+                        iceId: null,
+                        edit: true,
+                        callback: {
+                          renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED'
+                        }
+                      });
+                    }
+                  },
+                },
+                [],
+                null,
+                !!isHidden);
+            },
+            failure: (error) => {
+              console.log(error);
+            }
+          },
+          false, false);
+        break;
+      }
+      case 'controller':
+      case 'template': {
+        CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
+          success: function () {
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
+          },
+          failure: function () {
+            console.log('failure');
+          },
+          cancelled: function () {
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false }, '*');
+          },
+          renderComplete: function () {
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+          },
+          id: type,
+          callingWindow: window
+        }, null, null);
+        break;
+      }
     }
   }
+  openDialog(type, path);
 </script>
 </body>
 </html>
