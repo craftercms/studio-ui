@@ -37,7 +37,7 @@ export function login(credentials: Credentials): Observable<User> {
 
 export function validateSession(): Observable<boolean> {
   return get('/studio/api/1/services/api/1/security/validate-session.json').pipe(
-    map(({ response }) => response.data.active)
+    map(({ response }) => response.active)
   );
 }
 
