@@ -66,11 +66,11 @@
       position: absolute;
     }
 
-    #cstudio-template-editor-container {
-      border: 0;
-      padding-top: 20px;
-      background: #f8f8f8;
-      box-shadow: none;
+    .cstudio-template-editor-container {
+      border: 0 !important;
+      padding-top: 20px !important;
+      background: #f8f8f8 !important;
+      box-shadow: none !important;
     }
   </style>
 </head>
@@ -87,35 +87,33 @@
       let path = e.data.path;
       switch (tab) {
         case 'form': {
-          if($('.studio-form-modal').length){
-            $('#cstudio-template-editor-container-modal').hide();
+          $('.cstudio-template-editor-container-modal').hide();
+          if ($('.studio-form-modal').length) {
             $('.studio-form-modal').show();
             window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-          }else {
+          } else {
             openDialog(tab, path);
           }
           break;
         }
         case 'template': {
-          if($('#cstudio-template-editor-container-modal.template').length) {
-            //$('#cstudio-template-editor-container-modal.controller').hide();
-            $('.studio-form-modal').hide();
-            $('#cstudio-template-editor-container-modal.template').show();
+          $('.cstudio-template-editor-container-modal.controller').hide();
+          $('.studio-form-modal').hide();
+          if ($('.cstudio-template-editor-container-modal.template').length) {
+            $('.cstudio-template-editor-container-modal.template').show();
             window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-          }else {
-            $('#cstudio-template-editor-container-modal').remove();
+          } else {
             openDialog(tab, path);
           }
           break;
         }
         case 'controller': {
-          if($('#cstudio-template-editor-container-modal.controller').length) {
-            //$('#cstudio-template-editor-container-modal.template').hide();
-            $('.studio-form-modal').hide();
-            $('#cstudio-template-editor-container-modal.controller').show();
+          $('.cstudio-template-editor-container-modal.template').hide();
+          $('.studio-form-modal').hide();
+          if ($('.cstudio-template-editor-container-modal.controller').length) {
+            $('.cstudio-template-editor-container-modal.controller').show();
             window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-          }else {
-            $('#cstudio-template-editor-container-modal').remove();
+          } else {
             openDialog(tab, path);
           }
           break;
@@ -191,7 +189,7 @@
             window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false }, '*');
           },
           renderComplete: function () {
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab: type }, '*');
           },
           id: type,
           callingWindow: window
@@ -200,6 +198,7 @@
       }
     }
   }
+
   openDialog(type, path);
 </script>
 </body>

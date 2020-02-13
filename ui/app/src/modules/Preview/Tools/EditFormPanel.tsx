@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
@@ -154,21 +154,21 @@ export default function EditFormPanel() {
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
     src: null,
-    type: null
+    type: null,
+    inProgress: true
   });
-  // const [src, setSrc] = useState(`${AUTHORING_BASE}/legacy/form?`);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useSpreadState({
+    form: true,
+    template: true,
+    controller: true
+  });
   const iframeRef = useRef(null);
-
   const item = selected[0];
   const model = models[item.modelId];
-  //let src = `${AUTHORING_BASE}/legacy/form?`;
-
   const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
   const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
     ? model.craftercms.label
     : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
-
   const fieldId = item.fieldId[0];
   let selectedId;
   if (fieldId) {
@@ -223,9 +223,12 @@ export default function EditFormPanel() {
   }
 
   function handleTabChange(event: React.ChangeEvent<{}>, type: string) {
-    setDialogConfig({ type });
-    setLoading(true);
-    iframeRef.current.contentWindow.postMessage({ type: EDIT_FORM_CHANGE_TAB, tab: type, path: getQueryVariable(getSrc(type), 'path') }, '*');
+    setDialogConfig({ type, inProgress: loading[type] });
+    iframeRef.current.contentWindow.postMessage({
+      type: EDIT_FORM_CHANGE_TAB,
+      tab: type,
+      path: getQueryVariable(getSrc(type), 'path')
+    }, '*');
   }
 
   useEffect(() => {
@@ -246,12 +249,14 @@ export default function EditFormPanel() {
     const messagesSubscription = messages.subscribe((e: any) => {
       switch (e.data.type) {
         case EMBEDDED_LEGACY_FORM_CLOSE: {
-          setDialogConfig({ open: false, src: null });
-          setLoading(true);
+          setDialogConfig({ open: false, src: null, inProgress: true });
+          setLoading({ form: true, controller: true, template: true });
           break;
         }
         case EMBEDDED_LEGACY_FORM_RENDERED: {
-          setLoading(false);
+          let tab = e.data.tab || 'form';
+          setDialogConfig({ inProgress: false });
+          setLoading({ [tab]: false });
           break;
         }
       }
@@ -315,16 +320,17 @@ export default function EditFormPanel() {
       <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
         <AppBar position="static" color='default'>
           <Tabs value={dialogConfig.type} onChange={handleTabChange} aria-label="simple tabs example">
-            <Tab value="form" label={formatMessage(translations.contentForm)} disabled={loading}/>
-            <Tab value="template" label={formatMessage(translations.template)} disabled={loading}/>
+            <Tab value="form" label={formatMessage(translations.contentForm)} disabled={dialogConfig.inProgress}/>
+            <Tab value="template" label={formatMessage(translations.template)} disabled={dialogConfig.inProgress}/>
             {
               (selectedContentType.includes('/page')) &&
-              <Tab value="controller" label={formatMessage(translations.controller)} disabled={loading}/>
+              <Tab value="controller" label={formatMessage(translations.controller)}
+                   disabled={dialogConfig.inProgress}/>
             }
           </Tabs>
         </AppBar>
         {
-          loading &&
+          (dialogConfig.inProgress && dialogConfig.open) &&
           <LoadingState
             title={formatMessage(translations.loadingForm)}
             graphicProps={{ width: 150 }}
@@ -335,7 +341,7 @@ export default function EditFormPanel() {
           ref={iframeRef}
           src={dialogConfig.src}
           title="Embedded Legacy Form"
-          className={clsx(classes.iframe, !loading && 'complete')}
+          className={clsx(classes.iframe, !dialogConfig.inProgress && 'complete')}
         />
       </Dialog>
     </>

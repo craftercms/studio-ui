@@ -25,34 +25,34 @@
    -moz-box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.3)
 }
 
-#cstudio-template-editor-container-modal {
+.cstudio-template-editor-container-modal {
 	position: fixed;
 	left: 0px;
 	top: 0px;
 	width:100%;
 	height:100%;
-	z-index: 1000000;   
-	background-color: rgba(200,200,200,0.6); 
+	z-index: 1000000;
+	background-color: rgba(200,200,200,0.6);
 }
 
-#cstudio-template-editor-container {
+.cstudio-template-editor-container {
     height: 100%;
     margin: auto;
     min-height: 80%;
     width: 100%;
 }
 
-#template-editor-toolbar{
+.template-editor-toolbar{
   height: 61px;
   background: #f8f8f8;
   border-bottom: 1px solid #e7e7e7;
 }
 
-#template-editor-toolbar-variable{
+.template-editor-toolbar-variable{
   padding: 2px 0 0 45px;
 }
 
-#template-editor-toolbar-variable #fileName{
+.template-editor-toolbar-variable .fileName{
     font-weight: bold;
     color: #6d90b2;
     font-size: 16px;
@@ -60,14 +60,15 @@
     padding-bottom: 0;
 }
 
-#template-editor-toolbar-variable label{
+.template-editor-toolbar-variable label{
   margin-right: 15px;
 }
 
-#template-editor-toolbar-variable select{
+.template-editor-toolbar-variable select{
   height: 30px;
 }
-#template-editor-toolbar-variable #addButtonVar{
+
+.template-editor-toolbar-variable .addButtonVar{
     margin-left: 17px;
     margin-top: 2px;
     padding: 4px 8px;
@@ -75,13 +76,12 @@
     bottom: 1px;
 }
 
-
-#editor-container {
+.editor-container {
 	height: 100%;
   padding-bottom: 118px;
 }
 
-#editor-container textarea {
+.editor-container textarea {
 	height: 100%;
 	resize: none;
 	width: 100%;
@@ -89,13 +89,13 @@
     font-family: monospace, sans-serif;
 }
 
-#editor-container pre {
+.editor-container pre {
     height: 100%;
 	resize: none;
 	width: 100%;
 }
 
-#template-editor-button-container {
+.template-editor-button-container {
 	position: fixed;
     width: 100%;
     height: 58px;
@@ -105,13 +105,13 @@
     z-index: 17;
 }
 
-#template-editor-button-container .edit-buttons-container{
+.template-editor-button-container .edit-buttons-container{
   margin: 12px auto 0 auto;
   width: 400px;
   text-align: center;
 }
 
-#template-editor-button-container .edit-buttons-container.viewer{
+.template-editor-button-container .edit-buttons-container.viewer{
     width: 58px;
 }
 
@@ -120,14 +120,14 @@
     text-align: center;
 }
 
-#template-editor-update-button{
+.template-editor-update-button{
      margin-right: 15px;
 }
 
 .CodeMirror-scroll.cm-s-default > div { text-align: left; }
 .CodeMirror-lines { color: #111; font-size: 13px; line-height: 14px;}  /* default text color */
 
-#cstudio-form-readonly-banner{
+.cstudio-form-readonly-banner{
     background-color: #3399CC;
     border-bottom: 1px solid #115F85;
     color: white;
