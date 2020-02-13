@@ -57,19 +57,18 @@
           authService.validateSession()
             .then(
               function (response) {
-                if (toState.name.indexOf('login') !== -1) {
+                if (response.data && response.data.active) {
                   var user = authService.getUser() || {};
                   if (user.authenticationType === Constants.HEADERS) {
                     $state.go('home.globalMenu');
                   }
-                }
-              },
-              function (e) {
-                authService.removeUser();
-                if (toState.name.indexOf('login') === -1 && e.status !== 500) {
-                  if (toState.name.indexOf('reset') === -1) {
-                    event.preventDefault();
-                    $state.go('login');
+                } else {
+                  authService.removeUser();
+                  if (toState.name.indexOf('login')) {
+                    if (toState.name.indexOf('reset') === -1) {
+                      event.preventDefault();
+                      $state.go('login');
+                    }
                   }
                 }
               }
