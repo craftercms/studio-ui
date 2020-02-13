@@ -318,7 +318,6 @@ var CStudioForms = CStudioForms || function() {
     },
 
     _onChange: function() {
-
     },
 
     getLabel: function() {
@@ -706,6 +705,19 @@ var CStudioForms = CStudioForms || function() {
     filter(event => event.data && event.data.type),
     map(event => event.data)
   );
+
+  const getCustomsCallbacks = (callback) => {
+    let processedCallbacks = {};
+    Object.keys(callback).forEach((cb)=>{
+      if (typeof callback[cb] === 'string') {
+        let type = callback[cb];
+        processedCallbacks[cb] = function () {
+          getTopLegacyWindow().top.postMessage({ type }, '*');
+        };
+      }
+    })
+    return processedCallbacks;
+  };
 
   const sendMessage = (message) => {
     getTopLegacyWindow().CStudioAuthoring.InContextEdit.messageDialogs(message);
@@ -1514,6 +1526,11 @@ var CStudioForms = CStudioForms || function() {
               }
             }
           }
+          // calling pendingChanges cb if present
+          if (flag && iceWindowCallback && iceWindowCallback.pendingChanges) {
+            iceWindowCallback.pendingChanges();
+          }
+
           if (showWarnMsg && (flag || repeatEdited)) {
             var dialogEl = document.getElementById('closeUserWarning');
             if (!dialogEl) {
@@ -1711,14 +1728,7 @@ var CStudioForms = CStudioForms || function() {
                 const order = message.order != null ? message.order : null;
                 const contentType = message.contentType || parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
                 let callback = message.callback || {};
-                if (typeof callback.renderComplete === 'string') {
-                  let type = callback.renderComplete;
-                  callback = {
-                    renderComplete: function () {
-                      getTopLegacyWindow().top.postMessage({ type }, '*');
-                    }
-                  };
-                }
+                callback = getCustomsCallbacks(callback);
                 if(edit) {
                   CStudioAuthoring.Operations.performSimpleIceEdit(
                     { contentType: contentType, uri: key },

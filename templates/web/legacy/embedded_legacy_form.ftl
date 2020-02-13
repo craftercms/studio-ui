@@ -90,7 +90,7 @@
           $('.cstudio-template-editor-container-modal').hide();
           if ($('.studio-form-modal').length) {
             $('.studio-form-modal').show();
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab }, '*');
           } else {
             openDialog(tab, path);
           }
@@ -101,7 +101,7 @@
           $('.studio-form-modal').hide();
           if ($('.cstudio-template-editor-container-modal.template').length) {
             $('.cstudio-template-editor-container-modal.template').show();
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab }, '*');
           } else {
             openDialog(tab, path);
           }
@@ -112,7 +112,7 @@
           $('.studio-form-modal').hide();
           if ($('.cstudio-template-editor-container-modal.controller').length) {
             $('.cstudio-template-editor-container-modal.controller').show();
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab }, '*');
           } else {
             openDialog(tab, path);
           }
@@ -141,13 +141,13 @@
                 true,
                 {
                   success: () => {
-                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
+                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
                   },
                   failure: () => {
                     console.log('failure');
                   },
                   cancelled: () => {
-                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false }, '*');
+                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
                   },
                   renderComplete: () => {
                     if (!modelId) {
@@ -159,11 +159,15 @@
                         iceId: null,
                         edit: true,
                         callback: {
-                          renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED'
+                          renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
+                          pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
                         }
                       });
                     }
                   },
+                  pendingChanges: () => {
+                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
+                  }
                 },
                 [],
                 null,
@@ -180,16 +184,19 @@
       case 'template': {
         CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
           success: function () {
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true }, '*');
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
           },
           failure: function () {
             console.log('failure');
           },
           cancelled: function () {
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false }, '*');
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
           },
           renderComplete: function () {
             window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab: type }, '*');
+          },
+          onPendingChanges: function() {
+            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
           },
           id: type,
           callingWindow: window

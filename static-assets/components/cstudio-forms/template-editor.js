@@ -274,6 +274,7 @@ CStudioAuthoring.Module.requireModule(
 
                       aceEditor.getSession().on('change', function() {
                         aceEditor.isModified = true;
+                        onSaveCb.onPendingChanges();
                       });
 
 											return aceEditor;
@@ -545,7 +546,7 @@ CStudioAuthoring.Module.requireModule(
 										}
 
 										YAHOO.util.Connect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(cancelEditServiceUrl), cancelEditCb);
-									}
+									};
 
                   $(modalEl).find('.template-editor-cancel-button').on('click', function(e) {
                     if (!aceEditor.isModified) {

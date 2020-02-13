@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
@@ -26,10 +26,11 @@ import {
   clearSelectForEdit,
   EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
+  EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
   EMBEDDED_LEGACY_FORM_RENDERED
 } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useOnMount, usePreviewState, useSelection, useSpreadState } from '../../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection, useSpreadState } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -47,6 +48,7 @@ import { popPiece } from '../../../utils/string';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { getQueryVariable } from '../../../utils/path';
+import CreateIcon from '@material-ui/icons/Create';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -104,6 +106,11 @@ const styles = makeStyles(() => createStyles({
   loadingRoot: {
     height: 'calc(100% - 104px)',
     justifyContent: 'center'
+  },
+  edited: {
+    width: '12px',
+    height: '12px',
+    marginLeft: '5px'
   }
 }));
 
@@ -139,6 +146,17 @@ function findParentModelId(modelId: string, childrenMap: LookupTable<Array<strin
     : null;
 }
 
+function getPendingChanges(changes: object, currentTab: string): Array<string> {
+  let hasPendingChanges = [];
+  Object.keys(changes).forEach((key) => {
+    if (changes[key].pendingChanges && key !== currentTab) {
+      console.log('has pending changes on', key);
+      hasPendingChanges.push(key);
+    }
+  });
+  return hasPendingChanges;
+}
+
 export default function EditFormPanel() {
 
   const dispatch = useDispatch();
@@ -157,11 +175,13 @@ export default function EditFormPanel() {
     type: null,
     inProgress: true
   });
-  const [loading, setLoading] = useSpreadState({
-    form: true,
-    template: true,
-    controller: true
+
+  const [tabsState, setTabsState] = useSpreadState({
+    form: { loaded: false, pendingChanges: false },
+    template: { loaded: false, pendingChanges: false },
+    controller: { loaded: false, pendingChanges: false }
   });
+
   const iframeRef = useRef(null);
   const item = selected[0];
   const model = models[item.modelId];
@@ -181,7 +201,7 @@ export default function EditFormPanel() {
   const path = ModelHelper.prop(models[selectedId], 'path');
   const selectedContentType = ModelHelper.prop(models[selectedId], 'contentType');
 
-  function getSrc(type: string) {
+  const getSrc = useCallback((type: string) => {
     switch (type) {
       case 'form': {
         if (path) {
@@ -207,7 +227,7 @@ export default function EditFormPanel() {
         return `${defaultSrc}site=${site}&path=${groovyPath}&type=controller`;
       }
     }
-  }
+  }, [childrenMap, contentTypes, defaultSrc, model, models, path, selectedContentType, selectedId, site]);
 
   function openDialog(type: string) {
     setDialogConfig(
@@ -222,14 +242,16 @@ export default function EditFormPanel() {
     setDialogConfig({ open: false, src: null });
   }
 
-  function handleTabChange(event: React.ChangeEvent<{}>, type: string) {
-    setDialogConfig({ type, inProgress: loading[type] });
-    iframeRef.current.contentWindow.postMessage({
-      type: EDIT_FORM_CHANGE_TAB,
-      tab: type,
-      path: getQueryVariable(getSrc(type), 'path')
-    }, '*');
-  }
+  const handleTabChange = useCallback(
+    (event: React.ChangeEvent<{}>, type: string) => {
+      let inProgress = !tabsState[type].loaded;
+      setDialogConfig({ type, inProgress});
+      iframeRef.current.contentWindow.postMessage({
+        type: EDIT_FORM_CHANGE_TAB,
+        tab: type,
+        path: getQueryVariable(getSrc(type), 'path')
+      }, '*');
+    }, [getSrc, setDialogConfig, tabsState]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -241,23 +263,40 @@ export default function EditFormPanel() {
     return () => document.removeEventListener('keydown', handler, false);
   }, [dispatch]);
 
-  useOnMount(() => {
+  useEffect(() => {
     const messages = fromEvent(window, 'message').pipe(
       filter((e: any) => e.data && e.data.type)
     );
 
     const messagesSubscription = messages.subscribe((e: any) => {
+      let tab = e.data.tab || 'form';
       switch (e.data.type) {
         case EMBEDDED_LEGACY_FORM_CLOSE: {
-          setDialogConfig({ open: false, src: null, inProgress: true });
-          setLoading({ form: true, controller: true, template: true });
+          let hasPendingChanges = getPendingChanges(tabsState, tab);
+          if (hasPendingChanges.length) {
+            setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
+            handleTabChange(null, hasPendingChanges[0]);
+          }else {
+            setDialogConfig({ open: false, src: null, inProgress: true });
+            setTabsState({
+              form: { loaded: false, pendingChanges: false },
+              template: { loaded: false, pendingChanges: false },
+              controller: { loaded: false, pendingChanges: false }
+            });
+          }
           break;
         }
         case EMBEDDED_LEGACY_FORM_RENDERED: {
-          let tab = e.data.tab || 'form';
-          setDialogConfig({ inProgress: false });
-          setLoading({ [tab]: false });
+          if (dialogConfig.inProgress) {
+            setDialogConfig({ inProgress: false });
+          }
+          setTabsState({ [tab]: { loaded: true, pendingChanges: tabsState[tab].pendingChanges } });
           break;
+        }
+        case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
+          if (tabsState[tab].pendingChanges === false) {
+            setTabsState({ [tab]: { loaded: true, pendingChanges: true } });
+          }
         }
       }
     });
@@ -265,7 +304,7 @@ export default function EditFormPanel() {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  });
+  }, [handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig]);
 
   if (selected.length > 1) {
     // TODO: Implement Multi-mode...
@@ -319,13 +358,42 @@ export default function EditFormPanel() {
       </ToolPanel>
       <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
         <AppBar position="static" color='default'>
-          <Tabs value={dialogConfig.type} onChange={handleTabChange} aria-label="simple tabs example">
-            <Tab value="form" label={formatMessage(translations.contentForm)} disabled={dialogConfig.inProgress}/>
-            <Tab value="template" label={formatMessage(translations.template)} disabled={dialogConfig.inProgress}/>
+          <Tabs value={dialogConfig.type} onChange={handleTabChange} aria-label="simple tabs example" centered>
+            <Tab
+              value="form"
+              label={
+                <div>
+                  {formatMessage(translations.contentForm)}
+                  {tabsState.form.pendingChanges &&
+                  <CreateIcon className={classes.edited}/>}
+                </div>
+              }
+              disabled={dialogConfig.inProgress}
+            />
+            <Tab
+              value="template"
+              label={
+                <div>
+                  {formatMessage(translations.template)}
+                  {tabsState.template.pendingChanges &&
+                  <CreateIcon className={classes.edited}/>}
+                </div>
+              }
+              disabled={dialogConfig.inProgress}
+            />
             {
               (selectedContentType.includes('/page')) &&
-              <Tab value="controller" label={formatMessage(translations.controller)}
-                   disabled={dialogConfig.inProgress}/>
+              <Tab
+                value="controller"
+                label={
+                  <div>
+                    {formatMessage(translations.controller)}
+                    {tabsState.controller.pendingChanges &&
+                    <CreateIcon className={classes.edited}/>}
+                  </div>
+                }
+                disabled={dialogConfig.inProgress}
+              />
             }
           </Tabs>
         </AppBar>

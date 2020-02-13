@@ -51,7 +51,7 @@ export function getPreviewURLFromPath(baseUrl: string, path: string) {
 }
 
 export function getQueryVariable(query: string, variable: string) {
-  variable = variable.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  variable = variable.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
   var regexS = "[\\?&]" + variable + "=([^&#]*)";
   var regex = new RegExp(regexS);
   var results = regex.exec(decodeURIComponent(query));
