@@ -56,6 +56,7 @@ eventCM.initEvent("crafter.create.contenMenu", true, true);
 var nodeOpen = false,
     studioTimeZone = null;
 
+
 (function(undefined){
 
     // Private functions
@@ -581,8 +582,8 @@ var nodeOpen = false,
 
                     //set z-index to 101 so that dialog will display over context nav bar
                     if (setZIndex && dialogue.element && dialogue.element.style.zIndex != "") {
-                        dialogue.element.style.zIndex = "102000";
-                        dialogue.mask.style.zIndex = "101000";
+                        dialogue.element.style.zIndex = "1020";
+                        dialogue.mask.style.zIndex = "1010";
                     }
                 };
                 var params = ["component-dialogue"];
@@ -696,7 +697,7 @@ var nodeOpen = false,
                 }
             },
 
-            deleteContent: function(items, requestDelete, callback) {
+            deleteContent: function(items, requestDelete) {
                 var controller, view;
                 if(requestDelete == true) {
                     controller = "viewcontroller-submitfordelete";
@@ -722,11 +723,11 @@ var nodeOpen = false,
                         (function (items) {
                             _self.on("submitComplete", function (evt, args) {
                                 var reloadFn = function () {
+                                    //window.location.reload();
                                     eventNS.data = items;
                                     eventNS.typeAction = "";
                                     eventNS.oldPath = null;
                                     document.dispatchEvent(eventNS);
-                                    callback && callback();
                                 };
                                 dialogue.hideEvent.subscribe(reloadFn);
                                 dialogue.destroyEvent.subscribe(reloadFn);
@@ -829,26 +830,14 @@ var nodeOpen = false,
           },
 
             approveCommon: function (site, items, approveType) {
-              const _self = this;
-              const container = ($('<div class="approve-dialog-container"/>').appendTo('body'))[0];
-              const user = CStudioAuthoringContext.user;
-              const scheduling = approveType ? 'custom': 'now';
-
-              let unmount;
-              CrafterCMSNext.render(
-                container,
-                'PublishDialog',
-                {
-                  onClose: (response) => {
-                    if(response) {
-                      _self.reloadItems(items, response);
+                CSA.Operations._showDialogueView({
+                    fn: CSA.Service.getApproveView,
+                    controller: 'viewcontroller-approve',
+                    callback: function(dialogue) {
+                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
+                        this.loadItems(items, dialogue);
                     }
-                    unmount({ delay: 300, removeContainer: true });
-                  },
-                  items,
-                  scheduling
-                }
-              ).then(done => unmount = done.unmount);
+                }, true, '800px', approveType);
 
             },
 
@@ -870,57 +859,14 @@ var nodeOpen = false,
             },
 
             submitContent: function(site, items) {
-              const _self = this;
-              const container = ($('<div class="request-publish-container"/>').appendTo('body'))[0];
-              const user = CStudioAuthoringContext.user;
-
-              let unmount;
-              CrafterCMSNext.render(
-                container,
-                'PublishDialog',
-                {
-                  onClose: (response) => {
-                    if(response) {
-                      _self.reloadItems(items, response);
+                CSA.Operations._showDialogueView({
+                    fn: CSA.Service.getRequestPublishView,
+                    controller: 'viewcontroller-requestpublish',
+                    callback: function(dialogue) {
+                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
+                        this.loadItems(items, dialogue);
                     }
-                    unmount({ delay: 300, removeContainer: true });
-                  },
-                  items: items,
-                }
-              ).then(done => unmount = done.unmount);
-            },
-
-            reloadItems: function(items, args) {
-              var entities = { 'entities': [] };
-
-              if (typeof items === 'string' || items instanceof String) {
-                entities.entities.push({ 'item': items });
-              } else {
-                $.each(items, function () {
-                  entities.entities.push({ 'item': this.uri });
-                });
-              }
-
-              eventNS.data = items;
-              eventNS.typeAction = "publish";
-              CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), {
-                success: function(response) {
-                  var dependenciesObj = JSON.parse(response.responseText).entities,
-                    dependencies = [];
-
-                  // add dependencies and their own dependencies
-                  $.each(dependenciesObj, function(){
-                    dependencies.push(this.item);
-                    $.each(this.dependencies, function(){
-                      dependencies.push(this.item);
-                    });
-                  });
-
-                  eventNS.dependencies = dependencies;
-                  document.dispatchEvent(eventNS);
-                  eventNS.dependencies = null;
-                }
-              });
+                }, true, '800px');
             },
 
             /**
