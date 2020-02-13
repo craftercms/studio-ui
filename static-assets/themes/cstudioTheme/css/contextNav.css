@@ -146,15 +146,15 @@ body .mask {
 }
 
 .yui-dialog.inc-zindex {
-  z-index: 100104 !important;
+  z-index: 1040 !important;
 }
 
 .yui-dialog.login-dialog {
-  z-index: 105000 !important;
+  z-index: 1050 !important;
 }
 
 body .mask.login-dialog-mask {
-  z-index: 104009 !important;
+  z-index: 1040 !important;
 }
 
 body .mask#expandComponentError_mask {
@@ -168,7 +168,7 @@ div[id*="expandComponentError"].yui-dialog {
 .cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"],
 .cstudio-dialogue[id^="viewcontroller-approve"], .cstudio-dialogue[id^="viewcontroller-delete"],
 .cstudio-dialogue[id^="viewcontroller-requestpublish"] {
-  z-index: 102000 !important;
+  z-index: 1020 !important;
 }
 
 .yui-dialog .yui-overlay.yui-panel {
