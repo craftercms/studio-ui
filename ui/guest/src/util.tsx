@@ -91,7 +91,7 @@ export function isNullOrUndefined(value: any): boolean {
   return value == null;
 }
 
-export function not(condition) {
+export function not(condition: boolean): boolean {
   return !condition;
 }
 
@@ -118,7 +118,7 @@ export function forEach(array: any[], fn: Function, emptyReturnValue?) {
   return emptyReturnValue;
 }
 
-export function findComponentContainerFields(fields) {   // TODO: fields type? LookupTable<ContentTypeField>?
+export function findComponentContainerFields(fields) {   // TODO: fields type? be defined as a model?
   if (!Array.isArray(fields)) {
     fields = Object.values(fields);
   }
@@ -219,7 +219,7 @@ export function getDropMarkerPosition(args) {   //TODO: pending
 }
 
 // noinspection DuplicatedCode
-export function splitRect(rect, axis = X_AXIS) {   //TODO: pending types
+export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
   // x, y, width, height, top, right, bottom, left
   let rect1: any = {}, rect2: any = {};
 
@@ -274,7 +274,8 @@ export function splitRect(rect, axis = X_AXIS) {   //TODO: pending types
   return [rect1, rect2];
 }
 
-export function insertDropMarker({ $dropMarker, insertPosition, refElement }) {
+export function insertDropMarker({ $dropMarker, insertPosition, refElement }:
+                                   { $dropMarker: JQuery, insertPosition: string, refElement: any }): void {   // TODO: pending refElement type
   if (insertPosition === 'after') {
     $dropMarker.insertAfter(refElement);
   } else {
@@ -282,7 +283,7 @@ export function insertDropMarker({ $dropMarker, insertPosition, refElement }) {
   }
 }
 
-export function getDistanceBetweenPoints(p1, p2) {
+export function getDistanceBetweenPoints(p1, p2): number {     // TODO: p1, p2 types
   const div = document.createElement('div');
 
   return Math.sqrt(
@@ -291,7 +292,7 @@ export function getDistanceBetweenPoints(p1, p2) {
   );
 }
 
-export function findClosestRect(parentRect, subRects, coordinates) {
+export function findClosestRect(parentRect: DOMRect, subRects: DOMRect[], coordinates: { x: number, y: number }): number {
   let //
     index = -1,
     distances = []
@@ -324,7 +325,7 @@ export function findClosestRect(parentRect, subRects, coordinates) {
   return index;
 }
 
-export function getChildArrangement(children, childrenRects, selfRect) {
+export function getChildArrangement(children: HTMLElement[], childrenRects: DOMRect[], selfRect: DOMRect): string {
   if (children.length === 0) {
     // If width is big enough, we may assume it may potentially have multiple
     // columns and HORIZONTAL arrangement may be better guess; however,
@@ -371,7 +372,7 @@ export function getChildArrangement(children, childrenRects, selfRect) {
   return alignedTop ? HORIZONTAL : VERTICAL;
 }
 
-export function getInRectStats(rect, coordinates, tolerancePercents = TOLERANCE_PERCENTS) {
+export function getInRectStats(rect: DOMRect, coordinates: { x: number, y: number }, tolerancePercents: { x: number, y: number } = TOLERANCE_PERCENTS) {    // TODO return type from model?
   const
     percents = Markers.getRelativePointerPositionPercentages(
       coordinates,
@@ -415,7 +416,7 @@ export function getInRectStats(rect, coordinates, tolerancePercents = TOLERANCE_
   };
 }
 
-export function pluckProps(source, ...props) {
+export function pluckProps(source: object, ...props: string[]): object {
   const object = {};
   if (isNullOrUndefined(source)) {
     return object;
@@ -428,7 +429,7 @@ export function pluckProps(source, ...props) {
   return object;
 }
 
-export function reversePluckProps(source, ...props) {
+export function reversePluckProps(source: object, ...props: string[]): object {
   const object = {};
   if (isNullOrUndefined(source)) {
     return object;
@@ -441,11 +442,11 @@ export function reversePluckProps(source, ...props) {
   return object;
 }
 
-export function capitalize(str) {
+export function capitalize(str: string): string {
   return `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
 }
 
-export function retrieveProperty(object, prop) {
+export function retrieveProperty(object: object, prop: string): any {
   return (object == null)
     ? null
     : (!prop)
@@ -453,7 +454,7 @@ export function retrieveProperty(object, prop) {
       : prop.split('.').reduce((value, prop) => value[prop], object);
 }
 
-export function setProperty(object, prop, value) {
+export function setProperty(object: object, prop: string, value: any): boolean {
   if (object) {
     const props = prop.split('.');
     const propToSet = props.pop();
@@ -468,10 +469,10 @@ export function setProperty(object, prop, value) {
   return false;
 }
 
-export function createLookupTable(list, idProp = 'id') {
+export function createLookupTable<T>(list: T[], idProp: string = 'id') {  //TODO: define lookupTable to set return type
   const table = {};
   list.forEach((item) => {
-    table[retrieveProperty(item, idProp)] = item;
+    table[retrieveProperty(item as any, idProp)] = item;
   });
   return table;
 }
@@ -486,7 +487,7 @@ export function createLookupTable(list, idProp = 'id') {
 // delegate on the document (i.e. the event as bubbled all the way up).
 // Would need to add additional logic to set the delegation in a way that
 // events can still be stopped (see jQuery).
-export function addClickListener(element, type, handler) {
+export function addClickListener(element, type, handler) {    //TODO: pending
 
   if (element === document) {
     // TODO: set up as delegate, control event propagation & stopping accordingly
@@ -513,7 +514,7 @@ export function addClickListener(element, type, handler) {
 
 }
 
-export function isElementInView(element, fullyInView) {
+export function isElementInView(element: HTMLElement, fullyInView: boolean): boolean {
   var pageTop = $(window).scrollTop();
   var pageBottom = pageTop + $(window).height();
   var elementTop = $(element).offset().top;
@@ -526,14 +527,14 @@ export function isElementInView(element, fullyInView) {
   }
 }
 
-export function removeLastPiece(str, splitChar = '.') {
+export function removeLastPiece(str: string, splitChar: string = '.'): string {
   return str.substr(0, str.lastIndexOf(splitChar));
 }
 
-export function popPiece(str, splitChar = '.') {
+export function popPiece(str: string, splitChar: string = '.'): string {
   return str.substr(str.lastIndexOf(splitChar) + 1);
 }
 
-export function isBlank(str) {
+export function isBlank(str: string): boolean {
   return str === '';
 }

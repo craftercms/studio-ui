@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react';
 import { Markers } from '../classes/Markers';
 
 interface ZoneMarkerProps {
-  rect: any;
+  rect: DOMRect;
   label: string;
 }
 
