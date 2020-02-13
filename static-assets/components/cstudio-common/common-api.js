@@ -7980,8 +7980,12 @@ var nodeOpen = false,
             buildToolTip: function (itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate, icon) {
                 label = label.replace(new RegExp(" ", 'g'), "&nbsp;");
 
+              if (!contentType) {
+                contentType = '';
+              }
+
                 if(contentType.indexOf("/page/") != -1)
-                contentType = contentType.replace("/page/", "") + "&nbsp;(Page)";
+                  contentType = contentType.replace("/page/", "") + "&nbsp;(Page)";
 
                 if(contentType.indexOf("/component/") != -1)
                 contentType = contentType.replace("/component/", "") + "&nbsp;(Component)";
