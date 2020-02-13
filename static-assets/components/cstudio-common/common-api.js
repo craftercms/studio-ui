@@ -581,8 +581,8 @@ var nodeOpen = false,
 
                     //set z-index to 101 so that dialog will display over context nav bar
                     if (setZIndex && dialogue.element && dialogue.element.style.zIndex != "") {
-                        dialogue.element.style.zIndex = "102000";
-                        dialogue.mask.style.zIndex = "101000";
+                        dialogue.element.style.zIndex = "1020";
+                        dialogue.mask.style.zIndex = "1010";
                     }
                 };
                 var params = ["component-dialogue"];
@@ -3470,7 +3470,6 @@ var nodeOpen = false,
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
             getUserInfoServiceURL: "/api/2/users",
-            validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
             getLogoutInfoURL: "/api/2/users/me/logout/sso/url",
             getActiveEnvironmentURL: "/api/2/ui/system/active_environment",

@@ -129,6 +129,8 @@ export function AddressBar(props: AddressBarProps) {
     (url) && setInternalUrl(url);
   }, [url]);
 
+  const onSiteChangeInternal = (value) => !isBlank(value) && (value !== site) && onSiteChange(value);
+
   return (
     <>
       <IconButton className={classes.iconButton} aria-label="search">
@@ -144,7 +146,7 @@ export function AddressBar(props: AddressBarProps) {
         <Select
           value={site}
           classes={{ select: classes.input }}
-          onChange={(e: any) => !isBlank(e.target.value) && onSiteChange(e.target.value)}
+          onChange={({ target: { value } }) => onSiteChangeInternal(value)}
           displayEmpty
         >
           {
