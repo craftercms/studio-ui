@@ -1314,6 +1314,7 @@ var CStudioForms = CStudioForms || function() {
                     var previewUrl = CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
                     path = entityId;
                     var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
+                    var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
 
                     setButtonsEnabled(true);
                     sendMessage({type: CHILD_FORM_DRAFT_COMPLETE});
@@ -1325,10 +1326,9 @@ var CStudioForms = CStudioForms || function() {
                       window.parent.CStudioAuthoring.editDisabled = [];
                     }
 
-                    if (iceWindowCallback) {
+                    if (iceWindowCallback && iceWindowCallback.success) {
                       var value = form.model['internal-name'];
                       var name = entityId;
-                      var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
 
                       contentTO.initialModel = CStudioForms.initialModel;
                       contentTO.updatedModel = CStudioForms.updatedModel;
@@ -1343,7 +1343,6 @@ var CStudioForms = CStudioForms || function() {
                         CStudioAuthoring.Operations.refreshPreview();
                       }
                     } else {
-                      var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                       if (draft) {
                         CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                         CStudioAuthoring.Operations.refreshPreview();
