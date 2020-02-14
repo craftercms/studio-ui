@@ -114,7 +114,7 @@ export default function AuthMonitor() {
   useEffect(() => {
     if (active) {
       setPassword('');
-      const sub = interval(300000).subscribe(() => dispatch(validateSession()));
+      const sub = interval(60000).subscribe(() => dispatch(validateSession()));
       return () => sub.unsubscribe();
     }
   }, [active, dispatch]);
