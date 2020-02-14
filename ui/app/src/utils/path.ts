@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { parse } from 'query-string';
+
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string) {
   let pagePath = previewURL;
@@ -43,23 +45,16 @@ export function getPathFromPreviewURL(previewURL: string) {
 
 export function getPreviewURLFromPath(baseUrl: string, path: string) {
   let url = '';
-  if(path.endsWith('.xml')) {
+  if (path.endsWith('.xml')) {
     url.replace('.xml', '.html');
   }
-  url.replace('/site/website','');
+  url.replace('/site/website', '');
   return `${baseUrl}${url}`;
 }
 
 export function getQueryVariable(query: string, variable: string) {
-  variable = variable.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
-  var regexS = "[\\?&]" + variable + "=([^&#]*)";
-  var regex = new RegExp(regexS);
-  var results = regex.exec(decodeURIComponent(query));
-
-  if (results == null)
-    return "";
-  else
-    return results[1];
+  let qs = parse(query);
+  return qs[variable] || null;
 }
 
 export default {

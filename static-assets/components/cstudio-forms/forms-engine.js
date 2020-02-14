@@ -434,10 +434,11 @@ var CStudioForms = CStudioForms || function() {
   /**
    * Section base class
    */
-  var CStudioFormSection = function(owner, containerEl) {
+  var CStudioFormSection = function(owner, containerEl, iceWindowCallback) {
     this.fields = [];
     this.owner = owner;
     this.containerEl = containerEl;
+    this.iceWindowCallback = iceWindowCallback;
     return this;
   };
 
@@ -516,6 +517,13 @@ var CStudioForms = CStudioForms || function() {
           YAHOO.util.Dom.addClass(indicatorEl, 'cstudio-form-section-valid');
           YAHOO.util.Dom.addClass(indicatorEl, 'fa-check');
         }
+      }
+    },
+
+    pendingChanges: function () {
+      if (this.iceWindowCallback && this.iceWindowCallback.pendingChanges) {
+        let callback = getCustomCallback(this.iceWindowCallback.pendingChanges);
+        callback();
       }
     }
   };
@@ -706,16 +714,22 @@ var CStudioForms = CStudioForms || function() {
     map(event => event.data)
   );
 
+  const getCustomCallback = (callback) => {
+    if (typeof callback === 'string') {
+      let type = callback;
+      return function () {
+        getTopLegacyWindow().top.postMessage({ type }, '*');
+      };
+    } else {
+      return callback;
+    }
+  };
+
   const getCustomsCallbacks = (callback) => {
     let processedCallbacks = {};
-    Object.keys(callback).forEach((cb)=>{
-      if (typeof callback[cb] === 'string') {
-        let type = callback[cb];
-        processedCallbacks[cb] = function () {
-          getTopLegacyWindow().top.postMessage({ type }, '*');
-        };
-      }
-    })
+    Object.keys(callback).forEach((cb) => {
+      processedCallbacks[cb] = getCustomCallback(callback[cb]);
+    });
     return processedCallbacks;
   };
 
@@ -1113,12 +1127,8 @@ var CStudioForms = CStudioForms || function() {
       $(form.containerEl).on('change','.datum',() => {
         var flag = isModified();
         if (flag && iceWindowCallback && iceWindowCallback.pendingChanges) {
-          if (typeof iceWindowCallback.pendingChanges === 'string') {
-            let type = iceWindowCallback.pendingChanges;
-            getTopLegacyWindow().top.postMessage({ type }, '*');
-          } else {
-            iceWindowCallback.pendingChanges();
-          }
+          let callback = getCustomCallback(iceWindowCallback.pendingChanges);
+          callback();
         }
       });
 
@@ -1548,7 +1558,8 @@ var CStudioForms = CStudioForms || function() {
 
           // calling pendingChanges cb if present
           if (flag && iceWindowCallback && iceWindowCallback.pendingChanges) {
-            iceWindowCallback.pendingChanges();
+            let callback = getCustomCallback(iceWindowCallback.pendingChanges);
+            callback();
           }
 
           if (showWarnMsg && (flag || repeatEdited)) {
@@ -1586,9 +1597,6 @@ var CStudioForms = CStudioForms || function() {
                     },
                     {
                       text: CMgs.format(formsLangBundle, 'no'), handler: function () {
-                        // if (iceWindowCallback && iceWindowCallback.cancelled) {
-                        //   iceWindowCallback.cancelled();
-                        // }
                         this.destroy();
                       }, isDefault: true
                     }
@@ -1892,6 +1900,8 @@ var CStudioForms = CStudioForms || function() {
 
       var formDef = form.definition;
       form.sectionsMap = [];
+      var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+      var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
 
       for(var i=0; i < formDef.sections.length; i++) {
         var section = formDef.sections[i];
@@ -1899,7 +1909,7 @@ var CStudioForms = CStudioForms || function() {
         var sectionContainerEl = document.getElementById(section.id+"-container");
         var sectionEl = document.getElementById(section.id+"-body-controls");
 
-        var formSection = new CStudioFormSection(form, sectionContainerEl);
+        var formSection = new CStudioFormSection(form, sectionContainerEl, iceWindowCallback);
         form.sectionsMap[section.title] = formSection;
         form.sections[form.sections.length] = formSection;
 

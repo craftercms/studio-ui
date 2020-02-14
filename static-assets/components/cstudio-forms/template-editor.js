@@ -425,10 +425,8 @@ CStudioAuthoring.Module.requireModule(
 															meta: "Crafter Studio"
 														};
 													}));
-
 												}
 											};
-											// aceEditor.completers = [staticWordCompleter]
 											langTools.addCompleter(customCompleter);
 										}
 										else if(templatePath.indexOf(".ftl") != -1) {
@@ -438,8 +436,6 @@ CStudioAuthoring.Module.requireModule(
 											var customCompleter = {
 												getCompletions: function(editor, session, pos, prefix, callback) {
 													callback(null, Object.keys(variableOpts).map(function(key, index) {
-														// console.log(variableOpts[key].value);
-
 														return {
 															caption: variableOpts[key].label,
 															value: variableOpts[key].value,
@@ -448,8 +444,7 @@ CStudioAuthoring.Module.requireModule(
 													}));
 
 												}
-											}
-											// aceEditor.completers = [staticWordCompleter]
+											};
 											langTools.addCompleter(customCompleter);
 										}
 
@@ -474,7 +469,6 @@ CStudioAuthoring.Module.requireModule(
 											var addButton = document.createElement("button");
 											addButton.className = "addButtonVar btn btn-primary";
 											addButton.innerHTML = "Add Code";
-											//addButton.className = "btn btn-primary";
 											templateEditorToolbarVarElt.appendChild(addButton);
 
 											if(contentType && contentType !== ""){
