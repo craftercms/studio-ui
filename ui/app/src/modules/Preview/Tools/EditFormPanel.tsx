@@ -146,15 +146,14 @@ function findParentModelId(modelId: string, childrenMap: LookupTable<Array<strin
     : null;
 }
 
-function getPendingChanges(changes: object, currentTab: string): Array<string> {
-  let hasPendingChanges = [];
+function filterBy(filter: string, changes: object, currentTab: string): Array<string> {
+  let array = [];
   Object.keys(changes).forEach((key) => {
-    if (changes[key].pendingChanges && key !== currentTab) {
-      console.log('has pending changes on', key);
-      hasPendingChanges.push(key);
+    if (changes[key][filter] && key !== currentTab) {
+      array.push(key);
     }
   });
-  return hasPendingChanges;
+  return array;
 }
 
 export default function EditFormPanel() {
@@ -245,7 +244,7 @@ export default function EditFormPanel() {
   const handleTabChange = useCallback(
     (event: React.ChangeEvent<{}>, type: string) => {
       let inProgress = !tabsState[type].loaded;
-      setDialogConfig({ type, inProgress});
+      setDialogConfig({ type, inProgress });
       iframeRef.current.contentWindow.postMessage({
         type: EDIT_FORM_CHANGE_TAB,
         tab: type,
@@ -272,11 +271,11 @@ export default function EditFormPanel() {
       let tab = e.data.tab || 'form';
       switch (e.data.type) {
         case EMBEDDED_LEGACY_FORM_CLOSE: {
-          let hasPendingChanges = getPendingChanges(tabsState, tab);
-          if (hasPendingChanges.length) {
+          let hasSomeLoaded = filterBy('loaded', tabsState, tab);
+          if (hasSomeLoaded.length) {
             setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
-            handleTabChange(null, hasPendingChanges[0]);
-          }else {
+            handleTabChange(null, hasSomeLoaded[0]);
+          } else {
             setDialogConfig({ open: false, src: null, inProgress: true });
             setTabsState({
               form: { loaded: false, pendingChanges: false },

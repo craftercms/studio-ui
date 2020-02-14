@@ -1035,6 +1035,8 @@ var CStudioForms = CStudioForms || function() {
       var contentType = CStudioAuthoring.Utils.getQueryVariable(location.search, "form");
       var path = CStudioAuthoring.Utils.getQueryVariable(location.search, "path");
       var edit = CStudioAuthoring.Utils.getQueryVariable(location.search, "edit");
+      var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+      var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
       try {
         if(window.opener) {
           window.previewTargetWindowId = (window.opener.previewTargetWindowId)
@@ -1107,6 +1109,18 @@ var CStudioForms = CStudioForms || function() {
 
       form.definition.pageLocation = this._getPageLocation(path);
       form.containerEl = document.getElementById("formContainer");
+
+      $(form.containerEl).on('change','.datum',() => {
+        var flag = isModified();
+        if (flag && iceWindowCallback && iceWindowCallback.pendingChanges) {
+          if (typeof iceWindowCallback.pendingChanges === 'string') {
+            let type = iceWindowCallback.pendingChanges;
+            getTopLegacyWindow().top.postMessage({ type }, '*');
+          } else {
+            iceWindowCallback.pendingChanges();
+          }
+        }
+      });
 
       this._loadDatasources(form, function(loaded, notLoaded){
 
@@ -1502,6 +1516,22 @@ var CStudioForms = CStudioForms || function() {
           });
         };
 
+        isModified = function () {
+          let flag = false;
+          if (form.sections.length) {
+            for (var j = 0; j < form.sections.length; j++) {
+              if (form.sections[j].fields.length) {
+                for (var i = 0; i < form.sections[j].fields.length; i++) {
+                  if (form.sections[j].fields[i].edited == true) {
+                    flag = true;
+                  }
+                }
+              }
+            }
+          }
+          return flag;
+        };
+
         var cancelFn = function () {
           if (iceWindowCallback && iceWindowCallback.refresh) {
             iceWindowCallback.refresh();
@@ -1514,18 +1544,8 @@ var CStudioForms = CStudioForms || function() {
             window.parent.CStudioAuthoring.editDisabled = [];
           }
 
-          var flag = false;
-          if (form.sections.length) {
-            for (var j = 0; j < form.sections.length; j++) {
-              if (form.sections[j].fields.length) {
-                for (var i = 0; i < form.sections[j].fields.length; i++) {
-                  if (form.sections[j].fields[i].edited == true) {
-                    flag = true;
-                  }
-                }
-              }
-            }
-          }
+          var flag = isModified();
+
           // calling pendingChanges cb if present
           if (flag && iceWindowCallback && iceWindowCallback.pendingChanges) {
             iceWindowCallback.pendingChanges();

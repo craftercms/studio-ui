@@ -195,7 +195,7 @@
           renderComplete: function () {
             window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab: type }, '*');
           },
-          onPendingChanges: function() {
+          pendingChanges: function() {
             window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
           },
           id: type,
