@@ -61,6 +61,8 @@ import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
+import { Asset, ContentType, Record } from '../models/ContentType';
+import { ContentInstance } from '../models/ContentInstance';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -72,7 +74,7 @@ const escape$ = fromEvent(document, 'keydown').pipe(
 
 interface GuestProps {
   path: string;
-  styles: any;      //TODO: pending type
+  styles: any;
   modelId: string;
   children: any;
   documentDomain: string;
@@ -83,7 +85,7 @@ interface GuestProps {
 
 // TODO:
 // - add "modePreview" and bypass all
-export function Guest(props) {
+export function Guest(props: GuestProps) {
 
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
@@ -211,7 +213,7 @@ export function Guest(props) {
     },
 
     /*onClick*/
-    click(e: Event, record) {   // TODO: record type
+    click(e: Event, record: Record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
@@ -226,7 +228,7 @@ export function Guest(props) {
 
             (type === 'html') && plugins.push('quickbars');
 
-            // eslint-disable-next-line no-undef
+            // @ts-ignore
             if (!tinymce) {
               return alert('Looks like tinymce is not added on the page. Please add tinymce on to the page to enable editing.');
             }
@@ -236,7 +238,7 @@ export function Guest(props) {
               $(record.element).css('display', 'inline-block');
             }
 
-            // eslint-disable-next-line no-undef
+            // @ts-ignore
             tinymce.init({
               mode: 'none',
               target: record.element,
@@ -373,7 +375,7 @@ export function Guest(props) {
       }
     },
 
-    dblclick(e: Event, record) {
+    dblclick(e: Event, record: Record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
         setState({
@@ -391,7 +393,7 @@ export function Guest(props) {
     },
 
     /*onMouseOver*/
-    mouseover(e: Event, record) {
+    mouseover(e: Event, record: Record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         clearTimeout(persistence.mouseOverTimeout);
         e.stopPropagation();
@@ -425,7 +427,8 @@ export function Guest(props) {
     },
 
     /*onDragStart*/
-    dragstart(e, physicalRecord) {    // TODO: DragStartEvent not matching
+    dragstart(e, physicalRecord: Record) {    // TODO: DragStartEvent not matching
+
       e.stopPropagation();
       (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', null);
 
@@ -489,7 +492,7 @@ export function Guest(props) {
 
     },
 
-    onHostInstanceDragStarted(instance) {
+    onHostInstanceDragStarted(instance: ContentInstance) {
       let players = [];
       let siblings = [];
       let containers = [];
@@ -552,7 +555,7 @@ export function Guest(props) {
       fn.dragOk() && fn.onDragEnd();
     },
 
-    onHostComponentDragStarted(contentType) {
+    onHostComponentDragStarted(contentType: ContentType) {
 
       let players = [];
       let siblings = [];
@@ -616,7 +619,7 @@ export function Guest(props) {
       fn.dragOk() && fn.onDragEnd();
     },
 
-    dragover(e, record) {
+    dragover(e: DragEvent, record: Record) {
       let element = record.element;
       if (
         fn.dragOk() &&
@@ -628,7 +631,7 @@ export function Guest(props) {
       }
     },
 
-    onDragOver(e, physicalRecord) {
+    onDragOver(e: DragEvent, physicalRecord: Record) {
       const dragContext = stateRef.current.dragContext;
       if (persistence.scrolling$.value) {
         return null;
@@ -668,7 +671,7 @@ export function Guest(props) {
 
     },
 
-    drop(e, record) {
+    drop(e, record: Record) {
       if (fn.dragOk()) {
         e.preventDefault();
         e.stopPropagation();
@@ -676,7 +679,7 @@ export function Guest(props) {
       }
     },
 
-    onDrop(e, record) {
+    onDrop(e, record: Record) {
 
       const state = stateRef.current;
       const status = state.common.status;
@@ -723,7 +726,7 @@ export function Guest(props) {
           if (stateRef.current.dragContext.inZone) {
             const file = e.originalEvent.dataTransfer.files[0];
             const reader = new FileReader();
-            reader.onload = (function (aImg) {
+            reader.onload = (function (aImg: HTMLImageElement) {
               message$.pipe(
                 filter((e) =>
                   (e.data?.type === DESKTOP_ASSET_UPLOAD_COMPLETE) &&
@@ -863,7 +866,7 @@ export function Guest(props) {
     // onDragEnd doesn't execute when dropping from Host
     // consider behaviour when running Host Guest-side
     /*onDragEnd*/
-    dragend(e) {
+    dragend(e: Event) {
       if (fn.dragOk()) {
         e.stopPropagation();
         post({ type: INSTANCE_DRAG_ENDED });
@@ -965,7 +968,7 @@ export function Guest(props) {
       });
     },
 
-    onAssetDragStarted(asset) {
+    onAssetDragStarted(asset: Asset) {
       let
         players = [],
         siblings = [],
@@ -1070,7 +1073,7 @@ export function Guest(props) {
       });
     },
 
-    onDesktopAssetDragStarted(asset) {
+    onDesktopAssetDragStarted(asset: Asset) {
       let
         players = [],
         siblings = [],
@@ -1128,11 +1131,11 @@ export function Guest(props) {
     return ElementRegistry.register(payload);
   }
 
-  function deregister(id) {
+  function deregister(id: string) {
     return ElementRegistry.deregister(id);
   }
 
-  function onEvent(event, dispatcher) {
+  function onEvent(event: Event, dispatcher) {
     if (
       persistence.contentReady &&
       stateRef.current.common.inEditMode
