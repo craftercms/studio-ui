@@ -138,11 +138,7 @@
 body .mask {
   background-color: rgb(68, 68, 68) !important;
   opacity: 0.5 !important;
-  /* z-index: 1031!important; */
-}
-
-.yui-dialog {
-  /* z-index: 100102!important; */
+  z-index: 1031;
 }
 
 .yui-dialog.inc-zindex {
@@ -168,7 +164,7 @@ div[id*="expandComponentError"].yui-dialog {
 .cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"],
 .cstudio-dialogue[id^="viewcontroller-approve"], .cstudio-dialogue[id^="viewcontroller-delete"],
 .cstudio-dialogue[id^="viewcontroller-requestpublish"] {
-  z-index: 1020 !important;
+  z-index: 1030 !important;
 }
 
 .yui-dialog .yui-overlay.yui-panel {

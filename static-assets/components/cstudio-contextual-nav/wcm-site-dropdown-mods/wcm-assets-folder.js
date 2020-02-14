@@ -363,7 +363,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         trigger: "acn-dropdown-menu-wrapper",
         shadow: false,
         lazyload: true,
-        zIndex: 100000
+        zIndex: 1030
       }
     );
 
