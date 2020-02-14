@@ -19,6 +19,9 @@ import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
 import { fromEvent, interval } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
+import { Coordinates, DropMarkerPositionArgs } from './models/Positioning';
+import { LookupTable } from './models/LookupTable';
+import { ContentTypeField } from './models/ContentType';
 
 export const foo = (...args: any[]) => void null;
 export const
@@ -118,7 +121,7 @@ export function forEach(array: any[], fn: Function, emptyReturnValue?) {
   return emptyReturnValue;
 }
 
-export function findComponentContainerFields(fields) {   // TODO: fields type? be defined as a model?
+export function findComponentContainerFields(fields: LookupTable<ContentTypeField> | ContentTypeField[]) {
   if (!Array.isArray(fields)) {
     fields = Object.values(fields);
   }
@@ -148,7 +151,7 @@ export function findComponentContainerFields(fields) {   // TODO: fields type? b
 //   });
 // }
 
-export function getDropMarkerPosition(args) {   //TODO: pending
+export function getDropMarkerPosition(args: DropMarkerPositionArgs) {
   const
     {
       // refElement,
@@ -275,7 +278,7 @@ export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
 }
 
 export function insertDropMarker({ $dropMarker, insertPosition, refElement }:
-                                   { $dropMarker: JQuery, insertPosition: string, refElement: any }): void {   // TODO: pending refElement type
+                                   { $dropMarker: JQuery, insertPosition: string, refElement: HTMLElement | JQuery | string }): void {
   if (insertPosition === 'after') {
     $dropMarker.insertAfter(refElement);
   } else {
@@ -283,7 +286,7 @@ export function insertDropMarker({ $dropMarker, insertPosition, refElement }:
   }
 }
 
-export function getDistanceBetweenPoints(p1, p2): number {     // TODO: p1, p2 types
+export function getDistanceBetweenPoints(p1: Coordinates, p2: Coordinates): number {
   const div = document.createElement('div');
 
   return Math.sqrt(
@@ -292,7 +295,7 @@ export function getDistanceBetweenPoints(p1, p2): number {     // TODO: p1, p2 t
   );
 }
 
-export function findClosestRect(parentRect: DOMRect, subRects: DOMRect[], coordinates: { x: number, y: number }): number {
+export function findClosestRect(parentRect: DOMRect, subRects: DOMRect[], coordinates: Coordinates): number {
   let //
     index = -1,
     distances = []
@@ -372,7 +375,7 @@ export function getChildArrangement(children: HTMLElement[], childrenRects: DOMR
   return alignedTop ? HORIZONTAL : VERTICAL;
 }
 
-export function getInRectStats(rect: DOMRect, coordinates: { x: number, y: number }, tolerancePercents: { x: number, y: number } = TOLERANCE_PERCENTS) {    // TODO return type from model?
+export function getInRectStats(rect: DOMRect, coordinates: Coordinates, tolerancePercents: Coordinates = TOLERANCE_PERCENTS) {
   const
     percents = Markers.getRelativePointerPositionPercentages(
       coordinates,
@@ -469,7 +472,7 @@ export function setProperty(object: object, prop: string, value: any): boolean {
   return false;
 }
 
-export function createLookupTable<T>(list: T[], idProp: string = 'id') {  //TODO: define lookupTable to set return type
+export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTable {
   const table = {};
   list.forEach((item) => {
     table[retrieveProperty(item as any, idProp)] = item;
@@ -487,7 +490,7 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id') {  //TODO
 // delegate on the document (i.e. the event as bubbled all the way up).
 // Would need to add additional logic to set the delegation in a way that
 // events can still be stopped (see jQuery).
-export function addClickListener(element, type, handler) {    //TODO: pending
+export function addClickListener(element: HTMLElement | Document, type, handler) {    //TODO: pending
 
   if (element === document) {
     // TODO: set up as delegate, control event propagation & stopping accordingly
@@ -514,7 +517,7 @@ export function addClickListener(element, type, handler) {    //TODO: pending
 
 }
 
-export function isElementInView(element: HTMLElement, fullyInView: boolean): boolean {
+export function isElementInView(element: HTMLElement, fullyInView?: boolean): boolean {
   var pageTop = $(window).scrollTop();
   var pageBottom = pageTop + $(window).height();
   var elementTop = $(element).offset().top;
