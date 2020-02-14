@@ -20,6 +20,7 @@ import {
   changeCurrentUrl,
   checkInGuest,
   checkOutGuest,
+  CHILDREN_MAP_UPDATE,
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
   COMPONENT_INSTANCE_HTML_REQUEST,
@@ -46,7 +47,6 @@ import {
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
   selectForEdit,
-  SET_CHILDREN_MAP,
   setChildrenMap,
   setContentTypeReceptacles,
   setItemBeingDragged,
@@ -321,7 +321,7 @@ export function PreviewConcierge(props: any) {
           });
           break;
         }
-        case SET_CHILDREN_MAP: {
+        case CHILDREN_MAP_UPDATE: {
           dispatch(setChildrenMap(payload));
           break;
         }

@@ -20,6 +20,7 @@ import { ajax } from 'rxjs/ajax';
 import { filter, map, share, take } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import {
+  CHILDREN_MAP_UPDATE,
   CONTENT_TYPES_RESPONSE,
   createLookupTable,
   DELETE_ITEM_OPERATION,
@@ -36,7 +37,6 @@ import {
   popPiece,
   removeLastPiece,
   reversePluckProps,
-  SET_CHILDREN_MAP,
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../util';
@@ -557,7 +557,7 @@ export class ContentController {
       Object.values(responseModels).forEach((model) =>
         this.computeChildren(model)
       );
-      post(SET_CHILDREN_MAP, this.children);
+      post(CHILDREN_MAP_UPDATE, this.children);
     });
 
     ContentController.models$.next(

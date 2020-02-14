@@ -20,6 +20,7 @@ import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   BROWSE_COMPONENT_INSTANCES,
   CHANGE_CURRENT_URL,
+  CHILDREN_MAP_UPDATE,
   CLEAR_RECEPTACLES,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
@@ -44,7 +45,6 @@ import {
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
   SET_ACTIVE_TARGETING_MODEL_FAILED,
-  SET_CHILDREN_MAP,
   SET_CONTENT_TYPE_FILTER,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
@@ -458,7 +458,7 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   }),
-  [SET_CHILDREN_MAP]: (state, { payload }) => ({
+  [CHILDREN_MAP_UPDATE]: (state, { payload }) => ({
     ...state,
     guest: {
       ...state.guest,
