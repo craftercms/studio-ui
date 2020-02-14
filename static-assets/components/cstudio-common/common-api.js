@@ -1800,7 +1800,7 @@ var nodeOpen = false,
               if (aux && aux.length) {
                 for (var j = 0; j < aux.length; j++) {
                   if (aux[j].ontop) {
-                    $modal.find('.studio-ice-dialog').css('z-index', 103000);
+                    $modal.find('.studio-ice-dialog').css('z-index', 1030);
                   }
                 }
               }
