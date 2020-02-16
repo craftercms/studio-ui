@@ -1827,6 +1827,7 @@ var nodeOpen = false,
             },
 
             performSimpleIceEdit: function (item, field, isEdit, callback, aux, isFlattenedInclude, openHidden) {
+              let topWindow = getTopLegacyWindow();
               var editorId = CStudioAuthoring.Utils.generateUUID();
 
               if (callback) {
@@ -1871,18 +1872,18 @@ var nodeOpen = false,
                 }
               });
 
-              $modal.appendTo(getTopLegacyWindow().document.body);
+              $modal.appendTo(topWindow.document.body);
 
               animator.fadeIn();
 
               CSA.Env.Loader.use(controller, function () {
 
-                getTopLegacyWindow().studioFormZorder = (getTopLegacyWindow().studioFormZorder) ? getTopLegacyWindow().studioFormZorder + 1 : 9999;
+                topWindow.studioFormZorder = (topWindow.studioFormZorder) ? topWindow.studioFormZorder + 1 : 9999;
                 var template = (
                   '<iframe ' +
                   /**/'id="in-context-edit-editor-' + editorId + '" ' +
                   /**/'frameborder="0" ' +
-                  /**/'style="z-index:' + getTopLegacyWindow().studioFormZorder + ';" ' +
+                  /**/'style="z-index:' + topWindow.studioFormZorder + ';" ' +
                   /**/'onload="CStudioAuthoring.InContextEdit.autoSizeIceDialog();"' +
                   '>' +
                   '</iframe>'
@@ -1922,12 +1923,12 @@ var nodeOpen = false,
                     grid: [10000, 1],
                     create: function (event, ui) {},
                     start: function (event, ui) {
-                      $('#engineWindow', getTopLegacyWindow().document).css('pointer-events', 'none');
-                      $('#in-context-edit-editor-' + editorId, getTopLegacyWindow().document).css('pointer-events', 'none');
+                      $('#engineWindow', topWindow.document).css('pointer-events', 'none');
+                      $('#in-context-edit-editor-' + editorId, topWindow.document).css('pointer-events', 'none');
                     },
                     stop: function (event, ui) {
-                      $('#engineWindow', getTopLegacyWindow().document).css('pointer-events', 'auto');
-                      $('#in-context-edit-editor-' + editorId, getTopLegacyWindow().document).css('pointer-events', 'auto');
+                      $('#engineWindow', topWindow.document).css('pointer-events', 'auto');
+                      $('#in-context-edit-editor-' + editorId, topWindow.document).css('pointer-events', 'auto');
                     },
                     handles: 'e, s, se'
                   });
@@ -1937,14 +1938,14 @@ var nodeOpen = false,
             },
 
             openDiff: function(site, path, version, versionTO, escaped) {
-
-                getTopLegacyWindow().studioFormZorder= (getTopLegacyWindow().studioFormZorder) ? getTopLegacyWindow().studioFormZorder + 1 : 9999;
+              let topWindow = getTopLegacyWindow();
+              topWindow.studioFormZorder= (topWindow.studioFormZorder) ? topWindow.studioFormZorder + 1 : 9999;
                 var id = CSA.Utils.getScopedId(),
                     animator,
                     editorId =  CStudioAuthoring.Utils.generateUUID(),
                     $modal = $('<div><div class="no-ice-mask"></div><div class="studio-ice-dialog studio-ice-container" id="studio-ice-container-' + editorId + '" style="display:none;"><div class="bd"></div></div></div>'),
-                    template = '<iframe name="diffDialog" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+getTopLegacyWindow().studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>',
-                    parentEl = getTopLegacyWindow().document.body,
+                    template = '<iframe name="diffDialog" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+topWindow.studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>',
+                    parentEl = topWindow.document.body,
                     diffUrl;
 
                 animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
@@ -1987,6 +1988,7 @@ var nodeOpen = false,
             },
 
             _openIframe: function(url, name) {
+              let topWindow = getTopLegacyWindow();
                 var id = CSA.Utils.getScopedId(),
                     animator,
                     editorId =  CStudioAuthoring.Utils.generateUUID(),
@@ -2000,8 +2002,8 @@ var nodeOpen = false,
                                 '   </div>' +
                                 '</div>',
                     $modal = $(modalTpl),
-                    template = '<iframe name="'+ name +'" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+getTopLegacyWindow().studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>',
-                    parentEl = getTopLegacyWindow().document.body;
+                    template = '<iframe name="'+ name +'" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+topWindow.studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>',
+                    parentEl = topWindow.document.body;
 
                 animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
 
@@ -2011,12 +2013,12 @@ var nodeOpen = false,
                             minHeight: 50,
                             grid: [10000, 1],
                             start: function(event, ui) {
-                                $('#engineWindow', getTopLegacyWindow().document).css('pointer-events','none');
-                                $("#in-context-edit-editor-"+editorId, getTopLegacyWindow().document).css('pointer-events','none').height('');
+                                $('#engineWindow', topWindow.document).css('pointer-events','none');
+                                $("#in-context-edit-editor-"+editorId, topWindow.document).css('pointer-events','none').height('');
                             },
                             stop: function( event, ui ) {
-                                $('#engineWindow', getTopLegacyWindow().document).css('pointer-events','auto');
-                                $("#in-context-edit-editor-"+editorId, getTopLegacyWindow().document).css('pointer-events','auto');
+                                $('#engineWindow', topWindow.document).css('pointer-events','auto');
+                                $("#in-context-edit-editor-"+editorId, topWindow.document).css('pointer-events','auto');
                             }
                         });
                     }, 1000);
@@ -9260,8 +9262,9 @@ CStudioAuthoring.InContextEdit = {
   messagesSubscription: null,
 
   messageDialogs: (message) => {
+    let topWindow = getTopLegacyWindow();
     amplify.publish('FORM_ENGINE_MESSAGE_POSTED', message);
-    (getTopLegacyWindow().iceDialogs) && getTopLegacyWindow().iceDialogs.forEach(({ iframe }) => {
+    (topWindow.iceDialogs) && topWindow.iceDialogs.forEach(({ iframe }) => {
       iframe &&
       iframe.contentWindow &&
       iframe.contentWindow.postMessage(message, location.origin);
@@ -9269,38 +9272,41 @@ CStudioAuthoring.InContextEdit = {
   },
 
   registerDialog: function (editorId, context) {
-    const iframe = getTopLegacyWindow().document.getElementById(`in-context-edit-editor-${editorId}`);
-    if (!getTopLegacyWindow().iceDialogs) {
-      getTopLegacyWindow().iceDialogs = [];
+    let topWindow = getTopLegacyWindow();
+    const iframe = topWindow.document.getElementById(`in-context-edit-editor-${editorId}`);
+    if (!topWindow.iceDialogs) {
+      topWindow.iceDialogs = [];
     }
-    getTopLegacyWindow().iceDialogs.push({ key: editorId, value: context, iframe });
+    topWindow.iceDialogs.push({ key: editorId, value: context, iframe });
   },
 
   registerIceCallback: function(editorId, callback) {
-    if(!getTopLegacyWindow().iceCallback) {
-      getTopLegacyWindow().iceCallback = [];
+    let topWindow = getTopLegacyWindow();
+    if(!topWindow.iceCallback) {
+      topWindow.iceCallback = [];
     }
 
-    getTopLegacyWindow().iceCallback[editorId] = callback;
-    getTopLegacyWindow().iceCallback[getTopLegacyWindow().iceCallback.length] = {key: editorId, value: callback };
+    topWindow.iceCallback[editorId] = callback;
+    topWindow.iceCallback[topWindow.iceCallback.length] = {key: editorId, value: callback };
   },
 
   getIceCallback: function(editorId) {
-
+    let topWindow = getTopLegacyWindow();
     var iceWindowCallback;
 
-    if(getTopLegacyWindow().iceCallback) {
-      iceWindowCallback = getTopLegacyWindow().iceCallback[editorId];
+    if(topWindow.iceCallback) {
+      iceWindowCallback = topWindow.iceCallback[editorId];
     }
 
     return iceWindowCallback;
   },
 
   unstackDialog: function (editorId) {
-    if (getTopLegacyWindow().iceDialogs) {
-      let dialog = getTopLegacyWindow().iceDialogs.find(dialog => dialog.key === editorId);
+    let topWindow = getTopLegacyWindow();
+    if (topWindow.iceDialogs) {
+      let dialog = topWindow.iceDialogs.find(dialog => dialog.key === editorId);
       if(dialog) {
-        getTopLegacyWindow().iceDialogs = getTopLegacyWindow().iceDialogs.filter((dialog) => dialog.key !== editorId);
+        topWindow.iceDialogs = topWindow.iceDialogs.filter((dialog) => dialog.key !== editorId);
         dialog.value.end();
         return true;
       }else {
