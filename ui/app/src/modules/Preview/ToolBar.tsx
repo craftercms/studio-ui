@@ -31,14 +31,7 @@ import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 import CustomMenu from '../../components/Icons/CustomMenu';
-import {
-  changeCurrentUrl,
-  closeTools,
-  EMBEDDED_LEGACY_FORM_CLOSE,
-  EMBEDDED_LEGACY_FORM_RENDERED,
-  openTools,
-  RELOAD_REQUEST
-} from '../../state/actions/preview';
+import { changeCurrentUrl, closeTools, openTools, RELOAD_REQUEST } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { changeSite } from '../../state/actions/sites';
 import { Site } from '../../models/Site';
@@ -46,24 +39,12 @@ import { LookupTable } from '../../models/LookupTable';
 import { useActiveSiteId, useEnv, usePreviewState, useSelection, useSpreadState } from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank, popPiece } from '../../utils/string';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Menu } from '@material-ui/core';
 import { palette } from '../../styles/theme';
-import Dialog from '@material-ui/core/Dialog';
-import LoadingState from '../../components/SystemStatus/LoadingState';
-import clsx from 'clsx';
-import { fromEvent } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 
 const foo = () => void 0;
-
-
-const translations = defineMessages({
-  loading: {
-    id: 'craftercms.edit.loadingForm',
-    defaultMessage: 'Loading...'
-  }
-});
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   toolBar: {
@@ -159,7 +140,6 @@ export function AddressBar(props: AddressBarProps) {
   const { guest } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
-  const { formatMessage } = useIntl();
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
   const [dialogConfig, setDialogConfig] = useSpreadState({
@@ -169,35 +149,9 @@ export function AddressBar(props: AddressBarProps) {
     inProgress: true
   });
 
-  const messages = fromEvent(window, 'message').pipe(
-    filter((e: any) => e.data && e.data.type)
-  );
-
   useEffect(() => {
     (url) && setInternalUrl(url);
   }, [url]);
-
-  useEffect(() => {
-    if(dialogConfig.open) {
-      const messagesSubscription = messages.subscribe((e: any) => {
-        switch (e.data.type) {
-          case EMBEDDED_LEGACY_FORM_CLOSE: {
-            setDialogConfig({ open: false, src: null, inProgress: true });
-            break;
-          }
-          case EMBEDDED_LEGACY_FORM_RENDERED: {
-            if (dialogConfig.inProgress) {
-              setDialogConfig({ inProgress: false });
-            }
-            break;
-          }
-        }
-      });
-      return () => {
-        messagesSubscription.unsubscribe();
-      };
-    }
-  }, [dialogConfig, messages, setDialogConfig]);
 
   const onSiteChangeInternal = (value) => !isBlank(value) && (value !== site) && onSiteChange(value);
 
@@ -209,21 +163,27 @@ export function AddressBar(props: AddressBarProps) {
     setAnchorEl(null);
   };
 
+  const getPath = (type: string) => {
+    switch (type) {
+      case 'form': {
+        return guest.models[guest.modelId].craftercms.path;
+      }
+      case 'template': {
+        return contentTypes.find((contentType) => contentType.id === guest.models[guest.modelId].craftercms.contentType).displayTemplate;
+      }
+      case 'controller': {
+        let pageName = popPiece(guest.models[guest.modelId].craftercms.contentType, '/');
+        return `/scripts/pages/${pageName}.groovy`;
+      }
+    }
+  };
+
   const handleEdit = (type: string) => {
     handleClose();
-    let path;
-    if(type === 'form') {
-      path = guest.models[guest.modelId].craftercms.path;
-    } else if (type === 'template') {
-      path = contentTypes.find((contentType) => contentType.id === guest.models[guest.modelId].craftercms.contentType).displayTemplate;
-    } else {
-      let pageName = popPiece(guest.models[guest.modelId].craftercms.contentType, '/');
-      path = `/scripts/pages/${pageName}.groovy`;
-    }
     setDialogConfig(
       {
         open: true,
-        src: `${defaultSrc}site=${site}&path=${path}&type=${type}`,
+        src: `${defaultSrc}site=${site}&path=${getPath(type)}&type=${type}`,
         type
       });
   };
@@ -293,22 +253,10 @@ export function AddressBar(props: AddressBarProps) {
         <MenuItem onClick={() => handleEdit('template')}>Edit Template</MenuItem>
         <MenuItem onClick={() => handleEdit('controller')}>Edit Controller</MenuItem>
       </Menu>
-      <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
-        {
-          (dialogConfig.inProgress && dialogConfig.open) &&
-          <LoadingState
-            title={formatMessage(translations.loading)}
-            graphicProps={{ width: 150 }}
-            classes={{ root: classes.loadingRoot }}
-          />
-        }
-        <iframe
-
-          src={dialogConfig.src}
-          title="Embedded Legacy Form"
-          className={clsx(classes.iframe, !dialogConfig.inProgress && 'complete')}
-        />
-      </Dialog>
+      {
+        dialogConfig.open &&
+        <EmbeddedLegacyEditors dialogConfig={dialogConfig} setDialogConfig={setDialogConfig} getPath={getPath}/>
+      }
     </>
   );
 }

@@ -18,7 +18,7 @@ import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import CreateIcon from '@material-ui/core/SvgIcon/SvgIcon';
+import CreateIcon from '@material-ui/icons/Create';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -98,7 +98,7 @@ export default function EmbeddedLegacyEditors(props) {
   );
 
   const handleClose = () => {
-    setDialogConfig({ open: false, src: null });
+    setDialogConfig({ open: false, src: null, type: null, inProgress: true });
   };
 
   const handleTabChange = useCallback(
@@ -108,7 +108,7 @@ export default function EmbeddedLegacyEditors(props) {
       iframeRef.current.contentWindow.postMessage({
         type: EDIT_FORM_CHANGE_TAB,
         tab: type,
-        path: getPath(type) //getQueryVariable(getSrc(type), 'path')
+        path: getPath(type)
       }, '*');
     }, [getPath, setDialogConfig, tabsState]);
 
@@ -123,12 +123,12 @@ export default function EmbeddedLegacyEditors(props) {
               setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
               handleTabChange(null, hasSomeLoaded[0]);
             } else {
-              setDialogConfig({ open: false, src: null, inProgress: true });
-              setTabsState({
-                form: { loaded: false, pendingChanges: false },
-                template: { loaded: false, pendingChanges: false },
-                controller: { loaded: false, pendingChanges: false }
-              });
+              setDialogConfig({ open: false, src: null, type: null, inProgress: true });
+              // setTabsState({
+              //   form: { loaded: false, pendingChanges: false },
+              //   template: { loaded: false, pendingChanges: false },
+              //   controller: { loaded: false, pendingChanges: false }
+              // });
             }
             break;
           }
@@ -150,7 +150,7 @@ export default function EmbeddedLegacyEditors(props) {
         messagesSubscription.unsubscribe();
       };
     }
-  }, [handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig]);
+  }, [handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig, messages]);
 
 
   return (
