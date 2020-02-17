@@ -21,6 +21,9 @@ import contentController from './ContentController';
 import { take } from 'rxjs/operators';
 import { ContentTypeHelper } from './ContentTypeHelper';
 import { ModelHelper } from './ModelHelper';
+import { Record } from '../models/ContentType';
+import { RegistryEntry } from '../models/Registry';
+import { LookupTable } from '../models/LookupTable';
 
 let seq = 0;
 
@@ -29,7 +32,7 @@ export class ElementRegistry {
   static db = {};
   static registry = {};
 
-  static get(id) {
+  static get(id: string) {
     const record = this.db[id];
     record && isNullOrUndefined(record.label) && this.setLabel(record);
     return record;
@@ -37,7 +40,7 @@ export class ElementRegistry {
 
   // TODO: Unknown field names go by ignored. Trace the registration point to warn...
   // developers about field names that aren't found in the content type
-  static setLabel(record) {
+  static setLabel(record: Record) {
     const labels = [];
     const models = contentController.getCachedModels();
     record.iceIds.forEach((iceId) => {
@@ -116,7 +119,7 @@ export class ElementRegistry {
 
   }
 
-  static completeDeferredRegistration(id) {
+  static completeDeferredRegistration(id: number): void {
 
     const { db, registry } = this;
     const { element, modelId, index, label, fieldId: fieldIds, iceIds } = db[id];
@@ -137,7 +140,7 @@ export class ElementRegistry {
 
   }
 
-  static deregister(id) {
+  static deregister(id: string): Record {
     const record = this.db[id];
     if (notNullOrUndefined(record)) {
       const { iceIds } = record;
@@ -149,7 +152,7 @@ export class ElementRegistry {
     return record;
   }
 
-  static getDraggable(id) {
+  static getDraggable(id: string): string {
     const record = this.get(id);
     return forEach(
       record.iceIds,
@@ -162,7 +165,7 @@ export class ElementRegistry {
     );
   }
 
-  static getHoverData(id) {
+  static getHoverData(id: string) {
     const record = this.get(id);
     return {
       id,
@@ -171,24 +174,24 @@ export class ElementRegistry {
     };
   }
 
-  static getRect(id) {
+  static getRect(id: string): DOMRect {
     return this.get(id).element.getBoundingClientRect();
   }
 
-  static fromICEId(iceId) {
+  static fromICEId(iceId: string): RegistryEntry {
     return this.registry[iceId];
     // return Object.values(this.db).find(({ iceIds }) => {
     //   return iceIds.includes(iceId);
     // });
   }
 
-  static compileDropZone(iceId) {
+  static compileDropZone(iceId: string) {
 
     const physicalRecord = this.fromICEId(iceId);
     const physicalRecordId = physicalRecord.id;
     const element = physicalRecord.element;
-    const children = Array.from(element.children);
-    const childrenRects = children.map((child) => child.getBoundingClientRect());
+    const children: Element[] = Array.from(element.children);
+    const childrenRects = children.map((child: Element) => child.getBoundingClientRect());
     const rect = element.getBoundingClientRect();
 
     return {
@@ -203,7 +206,7 @@ export class ElementRegistry {
 
   }
 
-  static getSiblingRects(id) {
+  static getSiblingRects(id: string): LookupTable<DOMRect> {
     let
       record = this.get(id),
       element = record.element,
@@ -232,7 +235,7 @@ export class ElementRegistry {
 
   }
 
-  static fromElement(element) {
+  static fromElement(element: Element): Record {
     const db = this.db;
     return forEach(
       Object.values(db),
@@ -244,7 +247,7 @@ export class ElementRegistry {
     );
   }
 
-  static hasElement(element) {
+  static hasElement(element: Element) {
     return forEach(
       Object.values(this.db),
       (record) => {

@@ -50,7 +50,6 @@ export interface ContentTypeSection {
 export interface DataSource {
   id: string;
   name: string;
-
   [prop: string]: any;
 }
 
@@ -74,7 +73,7 @@ export interface Record {
   index: number;
   label: string;
   fieldId: string | string[];
-  iceIds: number | number[];
+  iceIds: number[];
   complete: boolean;
 }
 

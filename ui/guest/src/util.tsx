@@ -328,7 +328,7 @@ export function findClosestRect(parentRect: DOMRect, subRects: DOMRect[], coordi
   return index;
 }
 
-export function getChildArrangement(children: HTMLElement[], childrenRects: DOMRect[], selfRect: DOMRect): string {
+export function getChildArrangement(children: Element[], childrenRects: DOMRect[], selfRect: DOMRect): string {
   if (children.length === 0) {
     // If width is big enough, we may assume it may potentially have multiple
     // columns and HORIZONTAL arrangement may be better guess; however,

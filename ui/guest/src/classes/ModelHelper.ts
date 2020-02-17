@@ -16,11 +16,12 @@
  */
 
 import { isNullOrUndefined, removeLastPiece, retrieveProperty, setProperty } from '../util';
+import { ContentInstance } from '../models/ContentInstance';
 
 const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
 
 export class ModelHelper {
-  static prop(model, propName) {
+  static prop(model: ContentInstance, propName: string) {
     if (model == null) {
       return null;
     } else if (systemPropList.includes(propName)) {
@@ -29,7 +30,7 @@ export class ModelHelper {
     return retrieveProperty(model, propName);
   }
 
-  static value(model, fieldId, newValue) {
+  static value(model: ContentInstance, fieldId: string, newValue: string) {
     // TODO: GraphQL transforms names as left-rail_o to left__rail_o.
     // This transform is potentially unreliable. We should discuss approach.
     const cleanFieldId = fieldId.replace(/-/g, '__');
@@ -42,7 +43,7 @@ export class ModelHelper {
     return retrieveProperty(model, fieldId);
   }
 
-  static extractCollection(model, fieldId, index) {
+  static extractCollection(model: ContentInstance, fieldId: string, index: number) {
     return extractCollectionPiece(
       model,
       fieldId,
@@ -50,7 +51,7 @@ export class ModelHelper {
     );
   }
 
-  static extractCollectionItem(model, fieldId, index) {
+  static extractCollectionItem(model: ContentInstance, fieldId: string, index: number | string) {
     const indexes = (
       (index === '' || isNullOrUndefined(index))
         ? []
@@ -75,16 +76,16 @@ export class ModelHelper {
     return extractCollectionPiece(model, fieldId, index);
   }
 
-  static getContentTypeId(model) {
+  static getContentTypeId(model: ContentInstance): string {
     return model?.craftercms?.contentType;
   }
 
-  static isEmbedded(model) {
+  static isEmbedded(model: ContentInstance): boolean {
     return isNullOrUndefined(ModelHelper.prop(model, 'path'));
   }
 }
 
-function extractCollectionPiece(model, fieldId, index) {
+function extractCollectionPiece(model: ContentInstance, fieldId: string, index: number | string) {
   const indexes = (
     (index === '' || isNullOrUndefined(index))
       ? []
