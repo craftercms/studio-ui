@@ -28,7 +28,7 @@ import LoadingState from '../LoadingState';
 import ErrorState from '../ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { interval } from 'rxjs';
-import { getLogoutInfoURL, login, me, validateSession } from '../../services/auth';
+import { getLogoutInfoURL, login, logout, me, validateSession } from '../../services/auth';
 import { pluck, switchMap } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
@@ -147,7 +147,11 @@ export default function AuthMonitor() {
   };
 
   const onClose = () => {
-    window.location.href = logoutUrl ?? authoringUrl;
+    const redirect = () => (window.location.href = logoutUrl ?? authoringUrl);
+    logout().subscribe(redirect, (e) => {
+      console.error(e);
+      redirect();
+    });
   };
 
   useEffect(() => {
