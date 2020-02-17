@@ -140,7 +140,7 @@ export class ElementRegistry {
 
   }
 
-  static deregister(id: string): Record {
+  static deregister(id: string | number): Record {
     const record = this.db[id];
     if (notNullOrUndefined(record)) {
       const { iceIds } = record;
@@ -235,7 +235,7 @@ export class ElementRegistry {
 
   }
 
-  static fromElement(element: Element): Record {
+  static fromElement(element: Element | EventTarget): Record {
     const db = this.db;
     return forEach(
       Object.values(db),

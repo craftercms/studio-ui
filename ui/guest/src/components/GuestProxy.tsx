@@ -37,6 +37,7 @@ import { zip } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { ContentTypeHelper } from '../classes/ContentTypeHelper';
 import { message$, post } from '../communicator';
+import { ContentTypeField } from '../models/ContentType';
 
 export function GuestProxy(props) {
 
@@ -72,7 +73,7 @@ export function GuestProxy(props) {
       return (typeof index === 'string') ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}` : index + value;
     };
 
-    const updateElementRegistrations = (collection: HTMLElement[], type: string, newIndex: string | number, oldIndex?: string | number): void => {
+    const updateElementRegistrations = (collection: Element[] | HTMLElement[], type: string, newIndex: string | number, oldIndex?: string | number): void => {
       let originalNewIndex = newIndex;
       let originalOldIndex = oldIndex;
       newIndex = (typeof newIndex === 'string') ? parseInt(popPiece(newIndex)) : newIndex;
@@ -106,7 +107,7 @@ export function GuestProxy(props) {
       }
     };
 
-    const getDropzoneElement = (modelId: string, fieldId: string, targetIndex: string): JQuery => {
+    const getDropzoneElement = (modelId: string, fieldId: string, targetIndex: string): JQuery<Element> => {
       const dropZoneId = iceRegistry.exists({
         modelId,
         fieldId,
@@ -296,7 +297,7 @@ export function GuestProxy(props) {
           const $daddy = getDropzoneElement(modelId, fieldId, targetIndex);
           let $clone = $daddy.children(':first').clone();
           if ($clone.length) {
-            const processFields = function (instance, fields) {
+            const processFields = function (instance, fields: ContentTypeField) {
               Object.entries(fields).forEach(([id, field]) => {
                 switch (field.type) {
                   case 'repeat':
@@ -387,8 +388,9 @@ export function GuestProxy(props) {
 
     if (context.editable !== persistence.editable) {
 
-      persistence.editable && Object.values(persistence.editable).forEach(({ element }) =>
-        $(element).attr('contenteditable', 'false').removeAttr('contenteditable')
+      persistence.editable && Object.values(persistence.editable).forEach(({ element }) => {
+          $(element).attr('contenteditable', 'false').removeAttr('contenteditable')
+        }
       );
 
       persistence.editable = context.editable;
