@@ -15,40 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
 import { ContentTypeHelper, ModelHelper } from '../../../utils/helpers';
-import {
-  CLEAR_SELECTED_ZONES,
-  clearSelectForEdit,
-  EDIT_FORM_CHANGE_TAB,
-  EMBEDDED_LEGACY_FORM_CLOSE,
-  EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
-  EMBEDDED_LEGACY_FORM_RENDERED
-} from '../../../state/actions/preview';
+import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection, useSpreadState } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
-import Dialog from '@material-ui/core/Dialog';
 import { nnou } from '../../../utils/object';
 import { forEach } from '../../../utils/array';
 import { LookupTable } from '../../../models/LookupTable';
-import AppBar from '@material-ui/core/AppBar';
-import LoadingState from '../../../components/SystemStatus/LoadingState';
-import clsx from 'clsx';
-import { fromEvent } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { popPiece } from '../../../utils/string';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import { getQueryVariable } from '../../../utils/path';
-import CreateIcon from '@material-ui/icons/Create';
+import EmbeddedLegacyEditors from '../EmbeddedLegacyEditors';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -62,22 +47,6 @@ const translations = defineMessages({
   editController: {
     id: 'craftercms.edit.editController',
     defaultMessage: 'Edit Controller'
-  },
-  contentForm: {
-    id: 'craftercms.edit.contentForm',
-    defaultMessage: 'Content Form'
-  },
-  template: {
-    id: 'craftercms.edit.template',
-    defaultMessage: 'Template'
-  },
-  controller: {
-    id: 'craftercms.edit.controller',
-    defaultMessage: 'Controller'
-  },
-  loadingForm: {
-    id: 'craftercms.edit.loadingForm',
-    defaultMessage: 'Loading...'
   }
 });
 
@@ -95,22 +64,6 @@ const styles = makeStyles(() => createStyles({
     position: 'absolute',
     top: '10px',
     right: '10px'
-  },
-  iframe: {
-    height: '0',
-    border: 0,
-    '&.complete': {
-      height: '100%'
-    }
-  },
-  loadingRoot: {
-    height: 'calc(100% - 104px)',
-    justifyContent: 'center'
-  },
-  edited: {
-    width: '12px',
-    height: '12px',
-    marginLeft: '5px'
   }
 }));
 
@@ -146,16 +99,6 @@ function findParentModelId(modelId: string, childrenMap: LookupTable<Array<strin
     : null;
 }
 
-function filterBy(filter: string, changes: object, currentTab: string): Array<string> {
-  let array = [];
-  Object.keys(changes).forEach((key) => {
-    if (changes[key][filter] && key !== currentTab) {
-      array.push(key);
-    }
-  });
-  return array;
-}
-
 export default function EditFormPanel() {
 
   const dispatch = useDispatch();
@@ -175,13 +118,6 @@ export default function EditFormPanel() {
     inProgress: true
   });
 
-  const [tabsState, setTabsState] = useSpreadState({
-    form: { loaded: false, pendingChanges: false },
-    template: { loaded: false, pendingChanges: false },
-    controller: { loaded: false, pendingChanges: false }
-  });
-
-  const iframeRef = useRef(null);
   const item = selected[0];
   const model = models[item.modelId];
   const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
@@ -237,20 +173,7 @@ export default function EditFormPanel() {
       });
   }
 
-  function handleClose() {
-    setDialogConfig({ open: false, src: null });
-  }
-
-  const handleTabChange = useCallback(
-    (event: React.ChangeEvent<{}>, type: string) => {
-      let inProgress = !tabsState[type].loaded;
-      setDialogConfig({ type, inProgress });
-      iframeRef.current.contentWindow.postMessage({
-        type: EDIT_FORM_CHANGE_TAB,
-        tab: type,
-        path: getQueryVariable(getSrc(type), 'path')
-      }, '*');
-    }, [getSrc, setDialogConfig, tabsState]);
+  const getPath = (type) => getQueryVariable(getSrc(type), 'path');
 
   useEffect(() => {
     const handler = (e) => {
@@ -261,49 +184,6 @@ export default function EditFormPanel() {
     document.addEventListener('keydown', handler, false);
     return () => document.removeEventListener('keydown', handler, false);
   }, [dispatch]);
-
-  useEffect(() => {
-    const messages = fromEvent(window, 'message').pipe(
-      filter((e: any) => e.data && e.data.type)
-    );
-
-    const messagesSubscription = messages.subscribe((e: any) => {
-      let tab = e.data.tab || 'form';
-      switch (e.data.type) {
-        case EMBEDDED_LEGACY_FORM_CLOSE: {
-          let hasSomeLoaded = filterBy('loaded', tabsState, tab);
-          if (hasSomeLoaded.length) {
-            setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
-            handleTabChange(null, hasSomeLoaded[0]);
-          } else {
-            setDialogConfig({ open: false, src: null, inProgress: true });
-            setTabsState({
-              form: { loaded: false, pendingChanges: false },
-              template: { loaded: false, pendingChanges: false },
-              controller: { loaded: false, pendingChanges: false }
-            });
-          }
-          break;
-        }
-        case EMBEDDED_LEGACY_FORM_RENDERED: {
-          if (dialogConfig.inProgress) {
-            setDialogConfig({ inProgress: false });
-          }
-          setTabsState({ [tab]: { loaded: true, pendingChanges: tabsState[tab].pendingChanges } });
-          break;
-        }
-        case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
-          if (tabsState[tab].pendingChanges === false) {
-            setTabsState({ [tab]: { loaded: true, pendingChanges: true } });
-          }
-        }
-      }
-    });
-
-    return () => {
-      messagesSubscription.unsubscribe();
-    };
-  }, [handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig]);
 
   if (selected.length > 1) {
     // TODO: Implement Multi-mode...
@@ -355,62 +235,7 @@ export default function EditFormPanel() {
           }
         </div>
       </ToolPanel>
-      <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
-        <AppBar position="static" color='default'>
-          <Tabs value={dialogConfig.type} onChange={handleTabChange} aria-label="simple tabs example" centered>
-            <Tab
-              value="form"
-              label={
-                <div>
-                  {formatMessage(translations.contentForm)}
-                  {tabsState.form.pendingChanges &&
-                  <CreateIcon className={classes.edited}/>}
-                </div>
-              }
-              disabled={dialogConfig.inProgress}
-            />
-            <Tab
-              value="template"
-              label={
-                <div>
-                  {formatMessage(translations.template)}
-                  {tabsState.template.pendingChanges &&
-                  <CreateIcon className={classes.edited}/>}
-                </div>
-              }
-              disabled={dialogConfig.inProgress}
-            />
-            {
-              (selectedContentType.includes('/page')) &&
-              <Tab
-                value="controller"
-                label={
-                  <div>
-                    {formatMessage(translations.controller)}
-                    {tabsState.controller.pendingChanges &&
-                    <CreateIcon className={classes.edited}/>}
-                  </div>
-                }
-                disabled={dialogConfig.inProgress}
-              />
-            }
-          </Tabs>
-        </AppBar>
-        {
-          (dialogConfig.inProgress && dialogConfig.open) &&
-          <LoadingState
-            title={formatMessage(translations.loadingForm)}
-            graphicProps={{ width: 150 }}
-            classes={{ root: classes.loadingRoot }}
-          />
-        }
-        <iframe
-          ref={iframeRef}
-          src={dialogConfig.src}
-          title="Embedded Legacy Form"
-          className={clsx(classes.iframe, !dialogConfig.inProgress && 'complete')}
-        />
-      </Dialog>
+      <EmbeddedLegacyEditors dialogConfig={dialogConfig} setDialogConfig={setDialogConfig} getPath={getPath} showController={selectedContentType.includes('/page')}/>
     </>
   )
 }

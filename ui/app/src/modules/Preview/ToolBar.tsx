@@ -21,7 +21,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import KeyboardArrowDownRounded from '@material-ui/icons/KeyboardArrowDownRounded';
@@ -34,6 +34,8 @@ import CustomMenu from '../../components/Icons/CustomMenu';
 import {
   changeCurrentUrl,
   closeTools,
+  EMBEDDED_LEGACY_FORM_CLOSE,
+  EMBEDDED_LEGACY_FORM_RENDERED,
   openTools,
   RELOAD_REQUEST
 } from '../../state/actions/preview';
@@ -41,12 +43,27 @@ import { useDispatch } from 'react-redux';
 import { changeSite } from '../../state/actions/sites';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, useEnv, usePreviewState, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, usePreviewState, useSelection, useSpreadState } from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
-import { isBlank } from '../../utils/string';
-import { FormattedMessage } from 'react-intl';
+import { isBlank, popPiece } from '../../utils/string';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { Menu } from '@material-ui/core';
+import { palette } from '../../styles/theme';
+import Dialog from '@material-ui/core/Dialog';
+import LoadingState from '../../components/SystemStatus/LoadingState';
+import clsx from 'clsx';
+import { fromEvent } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 const foo = () => void 0;
+
+
+const translations = defineMessages({
+  loading: {
+    id: 'craftercms.edit.loadingForm',
+    defaultMessage: 'Loading...'
+  }
+});
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   toolBar: {
@@ -91,8 +108,22 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   globalNavSection: {
     display: 'flex',
     alignItems: 'center'
+  },
+  separator : {
+    borderTop: `1px solid ${palette.gray.light3}`,
+    borderBottom: `1px solid ${palette.gray.light3}`
+  },
+  iframe: {
+    height: '0',
+    border: 0,
+    '&.complete': {
+      height: '100%'
+    }
+  },
+  loadingRoot: {
+    height: 'calc(100% - 104px)',
+    justifyContent: 'center'
   }
-
 }));
 
 function createOnEnter(handler, argument: 'value' | 'event' = 'event') {
@@ -124,12 +155,78 @@ export function AddressBar(props: AddressBarProps) {
   } = props;
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const { guest } = usePreviewState();
+  const contentTypesBranch = useSelection(state => state.contentTypes);
+  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
+  const { formatMessage } = useIntl();
+  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const [dialogConfig, setDialogConfig] = useSpreadState({
+    open: false,
+    src: null,
+    type: null,
+    inProgress: true
+  });
+
+  const messages = fromEvent(window, 'message').pipe(
+    filter((e: any) => e.data && e.data.type)
+  );
 
   useEffect(() => {
     (url) && setInternalUrl(url);
   }, [url]);
 
+  useEffect(() => {
+    if(dialogConfig.open) {
+      const messagesSubscription = messages.subscribe((e: any) => {
+        switch (e.data.type) {
+          case EMBEDDED_LEGACY_FORM_CLOSE: {
+            setDialogConfig({ open: false, src: null, inProgress: true });
+            break;
+          }
+          case EMBEDDED_LEGACY_FORM_RENDERED: {
+            if (dialogConfig.inProgress) {
+              setDialogConfig({ inProgress: false });
+            }
+            break;
+          }
+        }
+      });
+      return () => {
+        messagesSubscription.unsubscribe();
+      };
+    }
+  }, [dialogConfig, messages, setDialogConfig]);
+
   const onSiteChangeInternal = (value) => !isBlank(value) && (value !== site) && onSiteChange(value);
+
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleEdit = (type: string) => {
+    handleClose();
+    let path;
+    if(type === 'form') {
+      path = guest.models[guest.modelId].craftercms.path;
+    } else if (type === 'template') {
+      path = contentTypes.find((contentType) => contentType.id === guest.models[guest.modelId].craftercms.contentType).displayTemplate;
+    } else {
+      let pageName = popPiece(guest.models[guest.modelId].craftercms.contentType, '/');
+      path = `/scripts/pages/${pageName}.groovy`;
+    }
+    setDialogConfig(
+      {
+        open: true,
+        src: `${defaultSrc}site=${site}&path=${path}&type=${type}`,
+        type
+      });
+  };
 
   return (
     <>
@@ -178,9 +275,40 @@ export function AddressBar(props: AddressBarProps) {
           <KeyboardArrowDownRounded/>
         </IconButton>
       </Paper>
-      <IconButton className={classes.iconButton} aria-label="search">
+      <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <MoreVertRounded/>
       </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={() => handleEdit('form')}>Edit</MenuItem>
+        <MenuItem onClick={handleClose}>Schedule</MenuItem>
+        <MenuItem onClick={handleClose}>Publish</MenuItem>
+        <MenuItem onClick={handleClose}>Dependencies</MenuItem>
+        <MenuItem onClick={handleClose}>Delete</MenuItem>
+        <MenuItem onClick={handleClose} className={classes.separator}>Info Sheet</MenuItem>
+        <MenuItem onClick={() => handleEdit('template')}>Edit Template</MenuItem>
+        <MenuItem onClick={() => handleEdit('controller')}>Edit Controller</MenuItem>
+      </Menu>
+      <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
+        {
+          (dialogConfig.inProgress && dialogConfig.open) &&
+          <LoadingState
+            title={formatMessage(translations.loading)}
+            graphicProps={{ width: 150 }}
+            classes={{ root: classes.loadingRoot }}
+          />
+        }
+        <iframe
+
+          src={dialogConfig.src}
+          title="Embedded Legacy Form"
+          className={clsx(classes.iframe, !dialogConfig.inProgress && 'complete')}
+        />
+      </Dialog>
     </>
   );
 }
@@ -194,7 +322,7 @@ export default function ToolBar() {
   const {
     guest,
     currentUrl,
-    showToolsPanel
+    showToolsPanel,
   } = usePreviewState();
   let addressBarUrl = guest?.url ?? currentUrl;
   if (addressBarUrl === PREVIEW_LANDING_BASE) {
