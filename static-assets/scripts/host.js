@@ -332,7 +332,7 @@
 
     dialog.render();
     dialog.show();
-    dialog.cfg.setProperty('zIndex', 100001); // Update the z-index value to make it go over the site content nav
+    dialog.cfg.setProperty('zIndex', 1040); // Update the z-index value to make it go over the site content nav
 
     YAHOO.util.Event.addListener('cancelButton', 'click', function () {
       dialog.destroy();
