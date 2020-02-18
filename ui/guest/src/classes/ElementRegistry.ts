@@ -178,7 +178,7 @@ export class ElementRegistry {
     return this.get(id).element.getBoundingClientRect();
   }
 
-  static fromICEId(iceId: string): RegistryEntry {
+  static fromICEId(iceId: string | number): RegistryEntry {
     return this.registry[iceId];
     // return Object.values(this.db).find(({ iceIds }) => {
     //   return iceIds.includes(iceId);

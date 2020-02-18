@@ -278,7 +278,7 @@ export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
 }
 
 export function insertDropMarker({ $dropMarker, insertPosition, refElement }:
-                                   { $dropMarker: JQuery, insertPosition: string, refElement: HTMLElement | JQuery | string }): void {
+                                   { $dropMarker: JQuery<any>, insertPosition: string, refElement: Element | HTMLElement | JQuery | string }): void {
   if (insertPosition === 'after') {
     $dropMarker.insertAfter(refElement);
   } else {
@@ -328,7 +328,7 @@ export function findClosestRect(parentRect: DOMRect, subRects: DOMRect[], coordi
   return index;
 }
 
-export function getChildArrangement(children: Element[], childrenRects: DOMRect[], selfRect: DOMRect): string {
+export function getChildArrangement(children: Element[], childrenRects: DOMRect[], selfRect?: DOMRect): string {
   if (children.length === 0) {
     // If width is big enough, we may assume it may potentially have multiple
     // columns and HORIZONTAL arrangement may be better guess; however,

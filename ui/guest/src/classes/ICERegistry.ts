@@ -26,6 +26,9 @@ import {
 } from '../util';
 import { ContentTypeHelper } from './ContentTypeHelper';
 import { ModelHelper } from './ModelHelper';
+import { ContentInstance } from '../models/ContentInstance';
+import { ContentType, ContentTypeField, Record } from '../models/ContentType';
+import { LookupTable } from '../models/LookupTable';
 
 export class ICERegistry {
 
@@ -33,9 +36,9 @@ export class ICERegistry {
   static contentReady = false;
 
   /* private */
-  registry = { /* [id]: { modelId, fieldId, index } */ };
+  registry: LookupTable<Record> = { /* [id]: { modelId, fieldId, index } */ };
 
-  register(data) {
+  register(data: Record) {
 
     // For consistency, set `fieldId` and `index` props
     // to null for records that don't include those values
@@ -102,7 +105,7 @@ export class ICERegistry {
 
   }
 
-  deregister(id) {
+  deregister(id: number): Record {
     const
       registry = this.registry,
       record = registry[id];
@@ -115,7 +118,7 @@ export class ICERegistry {
     return record;
   }
 
-  exists(data) {
+  exists(data: Record): number {
     const records = Object.values(this.registry);
     const lastIndex = records.length - 1;
     return forEach(
@@ -136,7 +139,7 @@ export class ICERegistry {
     );
   }
 
-  recordOf(id) {
+  recordOf(id: string | number): Record {
     return this.registry[id];
   }
 
@@ -149,7 +152,7 @@ export class ICERegistry {
     );
   }
 
-  isRepeatGroupItem(id) {
+  isRepeatGroupItem(id: string): boolean {
     const { field, index } = this.getReferentialEntries(id);
     return (
       // If there's no field, it's a root item (component, page)
@@ -167,7 +170,7 @@ export class ICERegistry {
     );
   }
 
-  getMediaReceptacles(type) {
+  getMediaReceptacles(type: string) {
     const receptacles = [];
     forEach(
       Object.values(this.registry),
@@ -181,7 +184,7 @@ export class ICERegistry {
     return receptacles;
   }
 
-  getRecordReceptacles(id) {
+  getRecordReceptacles(id: string) {
     const record = this.recordOf(id);
     const { index, field, fieldId, model } = this.getReferentialEntries(record);
     if (isNullOrUndefined(index)) {
@@ -204,7 +207,7 @@ export class ICERegistry {
     }
   }
 
-  getRepeatGroupItemReceptacles(record) {
+  getRepeatGroupItemReceptacles(record: Record) {
     const entries = this.getReferentialEntries(record);
     return Object.values(this.registry)
       .filter((rec) =>
@@ -218,12 +221,12 @@ export class ICERegistry {
       .map((rec) => rec.id);
   }
 
-  getComponentItemReceptacles(record) {
+  getComponentItemReceptacles(record: Record) {
     const contentType = this.getReferentialEntries(record).contentType;
     return this.getContentTypeReceptacles(contentType).map((rec) => rec.id);
   }
 
-  getContentTypeReceptacles(contentType) {
+  getContentTypeReceptacles(contentType: string | ContentType) {
     const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
     return Object.values(this.registry).filter((record) => {
       const { fieldId, index } = record;
@@ -278,7 +281,7 @@ export class ICERegistry {
   //   }
   // }
 
-  getReferentialEntries(record) {
+  getReferentialEntries(record: string | Record) {
     record = typeof record === 'object' ? record : this.recordOf(record);
     const
       model = contentController.getCachedModel(record.modelId),
@@ -294,11 +297,11 @@ export class ICERegistry {
     };
   }
 
-  getRecordField(record) {
+  getRecordField(record: Record) {
     return this.getReferentialEntries(record).field;
   }
 
-  isMovable(recordId) {
+  isMovable(recordId: Record) {
 
     // modeId -> the main/parent model id or a sub model id
     // fieldId -> repeatGroup or array
@@ -466,7 +469,7 @@ export class ICERegistry {
 
 }
 
-export function findContainerField(model, fields, modelId) {
+export function findContainerField(model: ContentInstance, fields: ContentTypeField[], modelId: string): ContentTypeField {
   return forEach(fields, (field) => {
     const value = ModelHelper.value(model, field.id);
     if (field.type === 'node-selector' && (value === modelId || value.includes(modelId))) {

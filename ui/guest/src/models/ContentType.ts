@@ -67,14 +67,15 @@ export interface ContentType {
 }
 
 export interface Record {
-  id: number;
-  element: HTMLElement | HTMLImageElement;
   modelId: string;
   index: number;
-  label: string;
-  fieldId: string | string[];
-  iceIds: number[];
-  complete: boolean;
+  fieldId?: string;
+  id?: number;
+  element?: HTMLElement | HTMLImageElement;
+  label?: string;
+  iceIds?: number[];
+  complete?: boolean;
+  refCount?: number;
 }
 
 export interface Asset {

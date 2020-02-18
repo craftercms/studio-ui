@@ -118,7 +118,7 @@ export function GuestProxy(props) {
       return $(ElementRegistry.fromICEId(dropZoneId).element);
     };
 
-    const insertElement = ($element: JQuery, $daddy: JQuery, targetIndex: string | number): void => {
+    const insertElement = ($element: JQuery<any>, $daddy: JQuery<any>, targetIndex: string | number): void => {
       const index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
       const $siblings = $daddy.find('> *');
       if ($siblings.length === index) {
@@ -159,7 +159,7 @@ export function GuestProxy(props) {
       .on('click', '[data-craftercms-model-id]', handler)
       .on('dblclick', '[data-craftercms-model-id]', handler);
 
-    const sub = ContentController.operations.subscribe((op) => {
+    const sub = ContentController.operations.subscribe((op: any) => {
       switch (op.type) {
         case 'sort': {
 
