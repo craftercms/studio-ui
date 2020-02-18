@@ -1916,7 +1916,7 @@ var nodeOpen = false,
                 }, 1000);
 
                 $modal.find('.bd').html(template).end().appendTo(parentEl);
-                $modal.find('.studio-ice-container').css('z-index', 104000);
+                $modal.find('.studio-ice-container').css('z-index', 1040);
 
                 $('body').on("diff-end", function () {
                     $modal.remove();
