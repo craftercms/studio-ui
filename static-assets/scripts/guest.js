@@ -40,6 +40,8 @@ crafterDefine('guest', [
     pointerControllerVar,
     iceToolsOn = false;
 
+  window.studioICERepaint = iceRepaint;
+
   return {
     init: init,
     iceRepaint: iceRepaint,
@@ -247,8 +249,6 @@ crafterDefine('guest', [
   function iceRepaint() {
     clearSetTimeout(Constants.TIME_RESIZE);
   }
-
-  window.studioICERepaint = iceRepaint;
 
   function initIceRegions_resizeIceRegions_handler(message) {
     if (!message) {
