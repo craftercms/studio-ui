@@ -16,19 +16,19 @@
  */
 
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import Button from '@material-ui/core/Button';
-import React, { useState } from 'react';
+import Button from "@material-ui/core/Button";
+import React, { useState } from "react";
 import Popover from '@material-ui/core/Popover';
-import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
-import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
-import { CurrentFilters } from '../models/publishing';
+import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
+import { defineMessages, useIntl } from "react-intl";
+import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Radio from "@material-ui/core/Radio";
+import { CurrentFilters } from "../models/publishing";
 import SearchIcon from '@material-ui/icons/Search';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import { Theme } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {

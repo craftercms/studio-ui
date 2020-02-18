@@ -24,7 +24,7 @@ import Fab from '@material-ui/core/Fab';
 import crack from '../assets/full-crack.svg';
 import { defineMessages, useIntl } from 'react-intl';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { createStyles } from '@material-ui/core/styles';
+import { createStyles } from '@material-ui/core';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
