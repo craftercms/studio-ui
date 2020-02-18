@@ -43,7 +43,7 @@ export class ModelHelper {
     return retrieveProperty(model, fieldId);
   }
 
-  static extractCollection(model: ContentInstance, fieldId: string, index: number) {
+  static extractCollection(model: ContentInstance, fieldId: string, index: number | string) {
     return extractCollectionPiece(
       model,
       fieldId,
