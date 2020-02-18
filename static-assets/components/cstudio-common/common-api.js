@@ -580,10 +580,11 @@ var nodeOpen = false,
                     dialogue.render(document.body);
                     dialogue.centreY();
 
+                    console.log('este??');
                     //set z-index to 101 so that dialog will display over context nav bar
                     if (setZIndex && dialogue.element && dialogue.element.style.zIndex != "") {
-                        dialogue.element.style.zIndex = "1020";
-                        dialogue.mask.style.zIndex = "1010";
+                        dialogue.element.style.setProperty("z-index", "1041", "important");
+                        dialogue.mask.style.zIndex = "1031";
                     }
                 };
                 var params = ["component-dialogue"];
@@ -1800,7 +1801,7 @@ var nodeOpen = false,
               if (aux && aux.length) {
                 for (var j = 0; j < aux.length; j++) {
                   if (aux[j].ontop) {
-                    $modal.find('.studio-ice-dialog').css('z-index', 1030);
+                    $modal.find('.studio-ice-dialog').css('z-index', 1042);
                   }
                 }
               }
