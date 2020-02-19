@@ -17,15 +17,22 @@
     border-radius: 4px;
     padding: 5px 10px 10px;
 
-    &> div {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    & > div {
       text-align: right;
-        .close {
-          float: none;
-          border: none;
-          background: transparent;
-          box-shadow: none;
-          font-size: 20px;
-          font-weight: normal;
+
+      .close {
+        float: none;
+        border: none;
+        background: transparent;
+        box-shadow: none;
+        font-size: 20px;
+        font-weight: normal;
           padding: 0;
           line-height: 12px;
           padding-bottom: 7px;
@@ -39,19 +46,12 @@
 
     img, video.html-video {
       border-radius: 6px;
-        max-width: 700px;
-        background-color: #fff;
+      max-width: 700px;
+      background-color: #fff;
     }
 
     video.html-video {
       max-width: 600px;
     }
-  }
-
-  &:before{
-    content: "";
-      display: inline-block;
-       vertical-align: middle;
-      height: 100%;
   }
 }
