@@ -31,8 +31,8 @@
 	top: 0px;
 	width:100%;
 	height:100%;
-	z-index: 1000000;   
-	background-color: rgba(200,200,200,0.6); 
+	z-index: 1040;
+	background-color: rgba(200,200,200,0.6);
 }
 
 #cstudio-template-editor-container {
@@ -138,9 +138,9 @@
     text-align: center;
     top: 0;
     width: 100%;
-    z-index: 99999999;
+    z-index: 1045;
 }
 
 .ace_editor.ace_autocomplete {
-    z-index: 9999999 !important;
+    z-index: 1050 !important;
 }

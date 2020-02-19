@@ -830,7 +830,7 @@ body, tbody {
   border: none;
   border-radius: 6px;
   background: white;
-  z-index: 99999;
+  z-index: 1032;
   box-shadow: none;
 }
 
