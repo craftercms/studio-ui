@@ -36,13 +36,22 @@ import { useDispatch } from 'react-redux';
 import { changeSite } from '../../state/actions/sites';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, useEnv, usePreviewState, useSelection, useSpreadState } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useEnv,
+  usePreviewGuest,
+  usePreviewState,
+  useSelection,
+  useSpreadState
+} from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank, popPiece } from '../../utils/string';
 import { FormattedMessage } from 'react-intl';
 import { Menu } from '@material-ui/core';
 import { palette } from '../../styles/theme';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
+import { getContentItem } from '../../services/content';
+import PublishDialog from '../Content/Publish/PublishDialog';
 
 const foo = () => void 0;
 
@@ -137,7 +146,7 @@ export function AddressBar(props: AddressBarProps) {
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
   const [anchorEl, setAnchorEl] = useState(null);
-  const { guest } = usePreviewState();
+  const guest = usePreviewGuest();
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
@@ -148,6 +157,26 @@ export function AddressBar(props: AddressBarProps) {
     type: null,
     inProgress: true
   });
+
+  const [publishDialog, setPublishDialog] = useSpreadState({
+    open: false,
+    items: null,
+    scheduling: null
+  });
+
+
+  useEffect(() => {
+    if (guest && guest.models) {
+      getContentItem(site, guest.models[guest.modelId].craftercms.path).subscribe(
+        (item) => {
+          setPublishDialog({ items: [item] })
+        },
+        (error) => {
+          console.log(error)
+        }
+      );
+    }
+  }, [guest, site]);
 
   useEffect(() => {
     (url) && setInternalUrl(url);
@@ -163,8 +192,9 @@ export function AddressBar(props: AddressBarProps) {
     setAnchorEl(null);
   };
 
-  const getPath = (type: string) => {
+  const getPath = (type?: string) => {
     switch (type) {
+      case 'publish':
       case 'form': {
         return guest.models[guest.modelId].craftercms.path;
       }
@@ -175,17 +205,35 @@ export function AddressBar(props: AddressBarProps) {
         let pageName = popPiece(guest.models[guest.modelId].craftercms.contentType, '/');
         return `/scripts/pages/${pageName}.groovy`;
       }
+      default: {
+        return guest.models[guest.modelId].craftercms.path;
+      }
     }
   };
 
   const handleEdit = (type: string) => {
     handleClose();
-    setDialogConfig(
-      {
-        open: true,
-        src: `${defaultSrc}site=${site}&path=${getPath(type)}&type=${type}`,
-        type
-      });
+    switch (type) {
+      case 'publish': {
+        setPublishDialog({ open: true, scheduling: 'now' });
+        break;
+      }
+      case 'form':
+      case 'template':
+      case 'controller': {
+        setDialogConfig(
+          {
+            open: true,
+            src: `${defaultSrc}site=${site}&path=${getPath(type)}&type=${type}`,
+            type
+          });
+        break;
+      }
+    }
+  };
+
+  const onClosePublish = () => {
+    setPublishDialog({ open: false, scheduling: null });
   };
 
   return (
@@ -246,7 +294,10 @@ export function AddressBar(props: AddressBarProps) {
       >
         <MenuItem onClick={() => handleEdit('form')}>Edit</MenuItem>
         <MenuItem onClick={handleClose}>Schedule</MenuItem>
-        <MenuItem onClick={handleClose}>Publish</MenuItem>
+        {
+          (publishDialog.items && !publishDialog.items[0].lockOwner) &&
+          <MenuItem onClick={() => handleEdit('publish')}>Publish</MenuItem>
+        }
         <MenuItem onClick={handleClose}>Dependencies</MenuItem>
         <MenuItem onClick={handleClose}>Delete</MenuItem>
         <MenuItem onClick={handleClose} className={classes.separator}>Info Sheet</MenuItem>
@@ -256,6 +307,10 @@ export function AddressBar(props: AddressBarProps) {
       {
         dialogConfig.open &&
         <EmbeddedLegacyEditors dialogConfig={dialogConfig} setDialogConfig={setDialogConfig} getPath={getPath}/>
+      }
+      {
+        publishDialog.open &&
+        <PublishDialog scheduling={publishDialog.scheduling} items={publishDialog.items} onClose={onClosePublish}/>
       }
     </>
   );
