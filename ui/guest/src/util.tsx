@@ -517,7 +517,7 @@ export function addClickListener(element: HTMLElement | Document, type, handler)
 
 }
 
-export function isElementInView(element: HTMLElement, fullyInView?: boolean): boolean {
+export function isElementInView(element: HTMLElement | Element, fullyInView?: boolean): boolean {
   var pageTop = $(window).scrollTop();
   var pageBottom = pageTop + $(window).height();
   var elementTop = $(element).offset().top;

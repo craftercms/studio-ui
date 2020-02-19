@@ -24,6 +24,7 @@ export interface DropMarkerPositionArgs {
   insertPosition: string;
   refElementRect: DOMRect;
   nextOrPrevRect: DOMRect;
+  refElement: Element;
 }
 
 export interface Highlight {

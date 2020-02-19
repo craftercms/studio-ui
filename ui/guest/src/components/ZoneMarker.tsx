@@ -19,8 +19,10 @@ import React, { useEffect, useState } from 'react';
 import { Markers } from '../classes/Markers';
 
 interface ZoneMarkerProps {
-  rect: DOMRect;
-  label: string;
+  rect?: DOMRect;
+  label?: string;
+  id?: number;
+  key?: number;
 }
 
 export function ZoneMarker(props: ZoneMarkerProps) {

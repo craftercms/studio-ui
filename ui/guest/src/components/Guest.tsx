@@ -68,19 +68,19 @@ import { ContentInstance } from '../models/ContentInstance';
 // import tinymce from 'tinymce';
 
 const clearAndListen$ = new Subject();
-const escape$ = fromEvent(document, 'keydown').pipe(
+const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
   filter(e => e.keyCode === 27)
 );
 
 interface GuestProps {
-  path: string;
-  styles: any;
   modelId: string;
-  children: any;
   documentDomain: string;
-  isAuthoring: boolean;
-  scrollElement: string;
-  editModeOnIndicatorClass: string;
+  path?: string;
+  styles?: any;
+  children?: any;
+  isAuthoring?: boolean;
+  scrollElement?: string;
+  editModeOnIndicatorClass?: string;
 }
 
 // TODO:
@@ -161,7 +161,7 @@ export function Guest(props: GuestProps) {
     initializeSubjects() {
 
       const
-        dragover$ = new Subject(),
+        dragover$ = new Subject<{ e: DragEvent, record: Record }>(),
         scrolling$ = new Subject();
 
       persistence.dragover$ = dragover$;
@@ -1211,7 +1211,7 @@ export function Guest(props: GuestProps) {
         case ASSET_DRAG_STARTED:
           return fn.onAssetDragStarted(payload);
         case ASSET_DRAG_ENDED:
-          return fn.onAssetDragEnded(payload);
+          return fn.onAssetDragEnded();
         case COMPONENT_DRAG_STARTED:
           return fn.onHostComponentDragStarted(payload);
         case COMPONENT_DRAG_ENDED:
@@ -1221,7 +1221,7 @@ export function Guest(props: GuestProps) {
         case COMPONENT_INSTANCE_DRAG_ENDED:
           return fn.onHostInstanceDragEnd();
         case TRASHED:
-          return fn.onTrashDrop(payload);
+          return fn.onTrashDrop();
         case CLEAR_SELECTED_ZONES:
           fn.clearAndListen();
           break;

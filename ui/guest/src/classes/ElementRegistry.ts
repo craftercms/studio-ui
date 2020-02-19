@@ -32,7 +32,7 @@ export class ElementRegistry {
   static db = {};
   static registry = {};
 
-  static get(id: string) {
+  static get(id: number) {
     const record = this.db[id];
     record && isNullOrUndefined(record.label) && this.setLabel(record);
     return record;
@@ -152,7 +152,7 @@ export class ElementRegistry {
     return record;
   }
 
-  static getDraggable(id: string): string {
+  static getDraggable(id: number): string {
     const record = this.get(id);
     return forEach(
       record.iceIds,
@@ -165,7 +165,7 @@ export class ElementRegistry {
     );
   }
 
-  static getHoverData(id: string) {
+  static getHoverData(id: number) {
     const record = this.get(id);
     return {
       id,
@@ -174,7 +174,7 @@ export class ElementRegistry {
     };
   }
 
-  static getRect(id: string): DOMRect {
+  static getRect(id: number): DOMRect {
     return this.get(id).element.getBoundingClientRect();
   }
 
@@ -185,7 +185,7 @@ export class ElementRegistry {
     // });
   }
 
-  static compileDropZone(iceId: string) {
+  static compileDropZone(iceId: number | string) {
 
     const physicalRecord = this.fromICEId(iceId);
     const physicalRecordId = physicalRecord.id;
@@ -206,7 +206,7 @@ export class ElementRegistry {
 
   }
 
-  static getSiblingRects(id: string): LookupTable<DOMRect> {
+  static getSiblingRects(id: number): LookupTable<DOMRect> {
     let
       record = this.get(id),
       element = record.element,

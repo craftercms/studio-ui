@@ -68,7 +68,7 @@ export interface ContentType {
 
 export interface Record {
   modelId: string;
-  index: number;
+  index?: number;
   fieldId?: string;
   id?: number;
   element?: HTMLElement | HTMLImageElement;

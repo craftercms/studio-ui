@@ -29,16 +29,14 @@ import {
   X_AXIS,
   Y_AXIS
 } from '../util';
+import { Coordinates } from '../models/Positioning';
 
 interface DropMarkerProps {
   over: any;
-  prev: ClientRect;
-  next: ClientRect;
+  prev: DOMRect;
+  next: DOMRect;
   dropZone: any;
-  coordinates: {
-    x: number,
-    y: number
-  };
+  coordinates: Coordinates;
   onDropPosition: Function;
 }
 
@@ -66,6 +64,7 @@ export function DropMarker(props: DropMarkerProps) {
   useEffect(dragOver, [prev, next, coordinates.x, coordinates.y]);
 
   return (
+    // @ts-ignore
     <craftercms-drop-marker
       style={style}
       class={`${dropZone.arrangement === HORIZONTAL ? VERTICAL : HORIZONTAL}`}

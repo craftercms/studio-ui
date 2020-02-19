@@ -281,7 +281,7 @@ export class ICERegistry {
   //   }
   // }
 
-  getReferentialEntries(record: string | Record) {
+  getReferentialEntries(record: string | number | Record) {
     record = typeof record === 'object' ? record : this.recordOf(record);
     const
       model = contentController.getCachedModel(record.modelId),

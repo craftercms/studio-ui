@@ -18,7 +18,7 @@
 import jss from 'jss';
 import preset from 'jss-preset-default';
 
-export function appendStyleSheet() {
+export function appendStyleSheet(styles) {
 
   const colors = {
     blue: '#007AFF',
