@@ -50,7 +50,7 @@ import { FormattedMessage } from 'react-intl';
 import { Menu } from '@material-ui/core';
 import { palette } from '../../styles/theme';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
-import { getContentItem } from '../../services/content';
+import { getItem } from '../../services/content';
 import PublishDialog from '../Content/Publish/PublishDialog';
 
 const foo = () => void 0;
@@ -160,23 +160,23 @@ export function AddressBar(props: AddressBarProps) {
 
   const [publishDialog, setPublishDialog] = useSpreadState({
     open: false,
-    items: null,
+    item: null,
     scheduling: null
   });
 
 
   useEffect(() => {
     if (guest && guest.models) {
-      getContentItem(site, guest.models[guest.modelId].craftercms.path).subscribe(
+      getItem(site, guest.models[guest.modelId].craftercms.path).subscribe(
         (item) => {
-          setPublishDialog({ items: [item] })
+          setPublishDialog({ item })
         },
         (error) => {
           console.log(error)
         }
       );
     }
-  }, [guest, site]);
+  }, [guest, setPublishDialog, site]);
 
   useEffect(() => {
     (url) && setInternalUrl(url);
@@ -214,6 +214,10 @@ export function AddressBar(props: AddressBarProps) {
   const handleEdit = (type: string) => {
     handleClose();
     switch (type) {
+      case 'schedule': {
+        setPublishDialog({ open: true, scheduling: 'custom' });
+        break;
+      }
       case 'publish': {
         setPublishDialog({ open: true, scheduling: 'now' });
         break;
@@ -232,8 +236,9 @@ export function AddressBar(props: AddressBarProps) {
     }
   };
 
-  const onClosePublish = () => {
-    setPublishDialog({ open: false, scheduling: null });
+  const onClosePublish = (response) => {
+    setPublishDialog({ open: false, scheduling: null, item:{...publishDialog.item, isLive: true} });
+    //getHostToGuestBus().next({ type: RELOAD_REQUEST });
   };
 
   return (
@@ -293,9 +298,12 @@ export function AddressBar(props: AddressBarProps) {
         onClose={handleClose}
       >
         <MenuItem onClick={() => handleEdit('form')}>Edit</MenuItem>
-        <MenuItem onClick={handleClose}>Schedule</MenuItem>
         {
-          (publishDialog.items && !publishDialog.items[0].lockOwner) &&
+          (!publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
+          <MenuItem onClick={() => handleEdit('schedule')}>Schedule</MenuItem>
+        }
+        {
+          (!publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
           <MenuItem onClick={() => handleEdit('publish')}>Publish</MenuItem>
         }
         <MenuItem onClick={handleClose}>Dependencies</MenuItem>
@@ -310,7 +318,7 @@ export function AddressBar(props: AddressBarProps) {
       }
       {
         publishDialog.open &&
-        <PublishDialog scheduling={publishDialog.scheduling} items={publishDialog.items} onClose={onClosePublish}/>
+        <PublishDialog scheduling={publishDialog.scheduling} items={[publishDialog.item]} onClose={onClosePublish}/>
       }
     </>
   );

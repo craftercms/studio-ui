@@ -29,10 +29,12 @@ import {
   EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
-  EMBEDDED_LEGACY_FORM_RENDERED
+  EMBEDDED_LEGACY_FORM_RENDERED,
+  RELOAD_REQUEST
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { getHostToGuestBus } from './previewContext';
 
 const translations = defineMessages({
   contentForm: {
@@ -124,11 +126,9 @@ export default function EmbeddedLegacyEditors(props) {
               handleTabChange(null, hasSomeLoaded[0]);
             } else {
               setDialogConfig({ open: false, src: null, type: null, inProgress: true });
-              // setTabsState({
-              //   form: { loaded: false, pendingChanges: false },
-              //   template: { loaded: false, pendingChanges: false },
-              //   controller: { loaded: false, pendingChanges: false }
-              // });
+              if (e.data.refresh) {
+                getHostToGuestBus().next({ type: RELOAD_REQUEST });
+              }
             }
             break;
           }

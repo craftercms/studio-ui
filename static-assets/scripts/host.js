@@ -567,8 +567,10 @@
 
     path = path.replace('//', '/');
 
+    console.log(path);
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
       success: function (content) {
+        console.log('soy yo');
         CStudioAuthoring.SelectedContent.setContent(content.item);
         selectContentSet(content.item, false);
       }
@@ -623,6 +625,7 @@
   function selectStudioContent(site, url) {
     CStudioAuthoring.Service.lookupContentItem(site, url, {
       success: function (content) {
+        console.log('maybe yo');
         if (content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, true);
