@@ -110,7 +110,9 @@ export default function AuthMonitor() {
   const [ssoButtonClicked, setSSOButtonClicked] = useState(false);
   const styles: CSSProperties = isFetching ? { visibility: 'hidden' } : {};
 
-  const onSubmit = () => {
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
     setRequestForgeryToken();
     if (isSSO || !isBlank(password)) {
       setState({ isFetching: true, error: null });
@@ -175,6 +177,7 @@ export default function AuthMonitor() {
   return (
     <Dialog
       open={!active}
+      id="authMonitorDialog"
       aria-labelledby="craftercmsReLoginDialog"
     >
       <DialogTitle id="craftercmsReLoginDialog" className={classes.title} style={styles}>
@@ -230,8 +233,13 @@ export default function AuthMonitor() {
         <Button type="button" onClick={onClose} disabled={isFetching}>
           <FormattedMessage id="authMonitor.logOutButtonLabel" defaultMessage="Log Out"/>
         </Button>
-        <Button type="button" onClick={onSubmit} color="primary" disabled={isFetching}
-                variant={ssoButtonClicked ? 'contained' : 'text'}>
+        <Button
+          type="button"
+          color="primary"
+          onClick={onSubmit}
+          disabled={isFetching}
+          variant={ssoButtonClicked ? 'contained' : 'text'}
+        >
           {
             isSSO
               ? <FormattedMessage id="authMonitor.validateSessionButtonLabel" defaultMessage="Resume"/>

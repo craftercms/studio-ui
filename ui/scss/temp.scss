@@ -2837,8 +2837,7 @@ span.acn-canned-search {
   -o-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   -webkit-box-shadow:  0 5px 15px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  z-index: 99999;
-  //max-height: 500px;
+  z-index: 1030;
 
   .persona-container{
     max-height: 463px;
@@ -2963,7 +2962,7 @@ span.acn-canned-search {
 }
 
 #cstudio-emulate {
-  z-index: 99999;
+  z-index: 1030;
 }
 
 .yui-carousel-content {
@@ -3037,7 +3036,7 @@ span.acn-canned-search {
 **/
 
 .full-screen-overlay {
-  z-index: 99999;
+  z-index: 1031;
   background: rgba(50, 50, 50, .8);
   position: fixed;
   top: 0;
