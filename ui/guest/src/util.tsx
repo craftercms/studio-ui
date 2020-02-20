@@ -17,7 +17,7 @@
 
 import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
-import { fromEvent, interval } from 'rxjs';
+import { fromEvent, interval, Subscription } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Coordinates, DropMarkerPositionArgs } from './models/Positioning';
 import { LookupTable } from './models/LookupTable';
@@ -490,7 +490,7 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
 // delegate on the document (i.e. the event as bubbled all the way up).
 // Would need to add additional logic to set the delegation in a way that
 // events can still be stopped (see jQuery).
-export function addClickListener(element: HTMLElement | Document, type, handler) {    //TODO: pending
+export function addClickListener(element: HTMLElement | Document, type: string, handler: (e: Event) => any): Subscription {
 
   if (element === document) {
     // TODO: set up as delegate, control event propagation & stopping accordingly
@@ -518,10 +518,10 @@ export function addClickListener(element: HTMLElement | Document, type, handler)
 }
 
 export function isElementInView(element: HTMLElement | Element, fullyInView?: boolean): boolean {
-  var pageTop = $(window).scrollTop();
-  var pageBottom = pageTop + $(window).height();
-  var elementTop = $(element).offset().top;
-  var elementBottom = elementTop + $(element).height();
+  const pageTop = $(window).scrollTop();
+  const pageBottom = pageTop + $(window).height();
+  const elementTop = $(element).offset().top;
+  const elementBottom = elementTop + $(element).height();
 
   if (fullyInView === true) {
     return ((pageTop < elementTop) && (pageBottom > elementBottom));

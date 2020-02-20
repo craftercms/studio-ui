@@ -16,10 +16,11 @@
  */
 
 import $ from 'jquery/dist/jquery.slim';
+import { Coordinates } from '../models/Positioning';
 
 const TOLERANCE_PERCENTS = { x: 5, y: 5 };
 
-function capitalize(str) {
+function capitalize(str: string): string {
   return `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
 }
 
@@ -32,7 +33,7 @@ export class Markers {
   static draggedElement = null;
   static draggedComponent = null;
 
-  static initDragAndDrop(element, mousePosition) {
+  static initDragAndDrop(element: HTMLElement, mousePosition: DOMRect) {
 
     // If no valid element hovered
     if (!element) {
@@ -104,7 +105,7 @@ export class Markers {
             mousePosition.y
           );
           this.selectPlacement(
-            positionAndElement.el,
+            positionAndElement.el,    // TODO: TODO!
             percents,
             mousePosition
           );
@@ -152,7 +153,7 @@ export class Markers {
 
   }
 
-  static markZone(element) {
+  static markZone(element: HTMLElement) {
 
     // If no valid element hovered
     if (!element) {
@@ -171,11 +172,11 @@ export class Markers {
 
   // Checks that an element is not getting dragged
   // inside of one of his children
-  static hierarchyOk(dragged, draggedOver) {
+  static hierarchyOk(dragged: HTMLElement, draggedOver: HTMLElement): boolean {
     return !Markers.isChildOrSelf(dragged, draggedOver);
   }
 
-  static isChildOrSelf(element, potentialChildOrSelf) {
+  static isChildOrSelf(element: HTMLElement, potentialChildOrSelf: HTMLElement): boolean {
     if (element === potentialChildOrSelf) {
       return true;
     } else {
@@ -183,7 +184,7 @@ export class Markers {
     }
   }
 
-  static isChildOf(element, potentialChild) {
+  static isChildOf(element: HTMLElement, potentialChild: HTMLElement): boolean {
     if (element) {
       const children = Array.from(element.querySelectorAll('*'));
       if (children.includes(potentialChild)) {
@@ -193,12 +194,12 @@ export class Markers {
     return false;
   }
 
-  static highlightElement(element) {
+  static highlightElement(element: HTMLElement) {
     const $element = $(element);
-    return this.insertZoneMarker($element, 'inside');
+    return this.insertZoneMarker($element, 'inside');   //TODO : return type
   }
 
-  static getRelativePointerPositionPercentages(mousePosition, rect) {
+  static getRelativePointerPositionPercentages(mousePosition: Coordinates, rect: DOMRect): Coordinates {
 
     const
       x = (
@@ -221,7 +222,7 @@ export class Markers {
     return { x, y };
   }
 
-  static selectPlacement($element, mousePercents, mousePosition) {
+  static selectPlacement($element: JQuery, mousePercents: Coordinates, mousePosition?: DOMRect): void {
     if (mousePosition) {
       mousePercents = this.getRelativePointerPositionPercentages(
         $element[0].getBoundingClientRect(),
@@ -247,7 +248,7 @@ export class Markers {
 
   }
 
-  static place($element, where) {
+  static place($element: JQuery, where: string): void {
     const $dropMarker = this.createDropMaker();
     switch (where) {
       case 'inside': {
@@ -312,7 +313,7 @@ export class Markers {
     }
   }
 
-  static isInlineElement($el) {
+  static isInlineElement($el: JQuery): boolean {
     return (
       $el.css('display') === 'inline' ||
       $el.css('display') === 'inline-flex' ||
@@ -320,7 +321,7 @@ export class Markers {
     );
   }
 
-  static isVoidElement($element) {
+  static isVoidElement($element: JQuery): boolean {
     const VOID_ELEMENTS = [
       'i',
       'area',
@@ -347,14 +348,14 @@ export class Markers {
     return $element.is(selector);
   }
 
-  static calculateDistance(elementData, mouseX, mouseY) {
+  static calculateDistance(elementData: DOMRect, mouseX: number, mouseY: number) {
     return Math.sqrt(
       Math.pow(elementData.x - mouseX, 2) +
       Math.pow(elementData.y - mouseY, 2)
     );
   }
 
-  static findValidParent($element, direction) {
+  static findValidParent($element: JQuery, direction: string): JQuery {
     let elementRect, $parentElement, parentElemRect, result;
     do {
       if ($element.is('body')) {
@@ -372,14 +373,14 @@ export class Markers {
     } while (true);
   }
 
-  static findNearestElement($container, clientX, clientY) {
+  static findNearestElement($container: JQuery, clientX: number, clientY: number): any {
 
     let
       previousElData = null,
-      $children = $container.children(':not(.craftercms-drop-marker,[craftercms-zone-marker])');
+      $children: JQuery = $container.children(':not(.craftercms-drop-marker,[craftercms-zone-marker])');
 
     if ($children.length > 0) {
-      $children.each(function () {
+      $children.each(function (): any {
         if ($(this).is('.craftercms-drop-marker')) {
           return;
         }
@@ -468,15 +469,15 @@ export class Markers {
 
   }
 
-  static createDropMaker() {
+  static createDropMaker(): JQuery {
     return $('<span class="craftercms-drop-marker"/>');
   }
 
-  static removeDropMarkers() {
+  static removeDropMarkers(): void {
     $('.craftercms-drop-marker').remove();
   }
 
-  static insertDropMarker($element, position, $dropMarker) {
+  static insertDropMarker($element: JQuery, position: string, $dropMarker: JQuery): void {
     if (!$dropMarker) {
       $dropMarker = this.createDropMaker();
     }
@@ -504,7 +505,7 @@ export class Markers {
     }
   }
 
-  static createZoneMarker() {
+  static createZoneMarker(): JQuery {
     return $(
       '<div craftercms-zone-marker>' +
       /**/'<span craftercms-zone-marker-label/>' +
@@ -512,11 +513,11 @@ export class Markers {
     );
   }
 
-  static removeZoneMarkers() {
+  static removeZoneMarkers(): void {
     $('[craftercms-zone-marker]').remove();
   }
 
-  static insertZoneMarker($element, position) {
+  static insertZoneMarker($element: JQuery, position: string): JQuery {
     const $zoneMarker = this.createZoneMarker();
     if ($element.is('html,body')) {
       position = 'inside';
@@ -571,7 +572,7 @@ export class Markers {
     return $zoneMarker;
   }
 
-  static setZoneMarkerRect($marker, $element, extra) {
+  static setZoneMarkerRect($marker: JQuery, $element: JQuery, extra?: number): void {
     const //
       rect = $element.get(0).getBoundingClientRect(),
       markerStyle = Markers.getZoneMarkerStyle(rect, extra),
@@ -586,7 +587,7 @@ export class Markers {
     }
   }
 
-  static getZoneMarkerLabelStyle(rect) {
+  static getZoneMarkerLabelStyle(rect: DOMRect) {
     const $body = $('body');
     return ((rect.top + $body.scrollTop()) <= 0) ? {
       top: 0,
@@ -596,7 +597,7 @@ export class Markers {
     } : {};
   }
 
-  static getZoneMarkerStyle(rect, padding = 0) {
+  static getZoneMarkerStyle(rect: DOMRect, padding: number = 0) {
     const $window = $(window);
     return {
       height: rect.height + padding,
@@ -614,8 +615,8 @@ export class Markers {
     };
   }
 
-  static getZoneLabel($element, type = 'user') {
-    // eslint-disable-next-line
+  static getZoneLabel($element: JQuery, type: string = 'user'): string {
+    // @ts-ignore
     const zone = DOMController.getZoneFor($element[0]);
     if (zone) {
       return zone.label;
