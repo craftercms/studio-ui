@@ -109,14 +109,8 @@ export default function ContentTree() {
     } else if (nodes.type === 'component') {
       Icon = Component;
     }
-    const label = <div>
-      <Icon/>
-      {
-        nodes.name
-      }
-    </div>;
     return (
-      <TreeItem key={nodes.id} nodeId={nodes.id} label={label} icon={nodes.id === 'root' ? <Page/> : undefined}>
+      <TreeItem key={nodes.id} nodeId={nodes.id} label={<div><Icon/>{nodes.name}</div>}>
         {Array.isArray(nodes.children) ? nodes.children.map(node => renderTree(node)) : null}
       </TreeItem>
     )
