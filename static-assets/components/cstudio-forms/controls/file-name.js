@@ -371,10 +371,11 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         var myButtons = [
           {
             text: 'Cancel',
+            isDefault: true,
             handler: function () {
               this.destroy();
-            },
-            isDefault: true
+              $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
+            }
           },
           {
             text: 'OK',
@@ -383,6 +384,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
               _self.inputEl.focus();
               editFileNameEl.style.display = 'none';
               this.destroy();
+              $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
             }
           }
         ];
