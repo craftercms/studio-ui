@@ -306,6 +306,7 @@ export function AddressBar(props: AddressBarProps) {
           (!publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
           <MenuItem onClick={() => handleEdit('publish')}>Publish</MenuItem>
         }
+        <MenuItem onClick={handleClose}>History</MenuItem>
         <MenuItem onClick={handleClose}>Dependencies</MenuItem>
         <MenuItem onClick={handleClose}>Delete</MenuItem>
         <MenuItem onClick={handleClose} className={classes.separator}>Info Sheet</MenuItem>
