@@ -1516,51 +1516,57 @@ var CStudioForms = CStudioForms || function() {
           if (showWarnMsg && (flag || repeatEdited)) {
             var dialogEl = document.getElementById('closeUserWarning');
             if (!dialogEl) {
-              var dialog = new YAHOO.widget.SimpleDialog('closeUserWarning',
-                {
-                  width: '300px', fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
-                  text: message, icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-                  constraintoviewport: true,
-                  buttons: [
-                    {
-                      text: CMgs.format(formsLangBundle, 'yes'), handler: function () {
-                        if (iceWindowCallback && iceWindowCallback.cancelled) {
-                          iceWindowCallback.cancelled();
-                        }
-                        sendMessage({type: FORM_CANCEL});
-                        this.destroy();
-                        var entityId = buildEntityIdFn(null);
-                        showWarnMsg = false;
+              var dialog = new YAHOO.widget.SimpleDialog('closeUserWarning', {
+                width: '300px',
+                fixedcenter: true,
+                visible: false,
+                draggable: false,
+                close: false,
+                modal: true,
+                text: message,
+                icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+                constraintoviewport: true,
+                buttons: [
+                  {
+                    text: CMgs.format(formsLangBundle, 'yes'), handler: function () {
+                      if (iceWindowCallback && iceWindowCallback.cancelled) {
+                        iceWindowCallback.cancelled();
+                      }
+                      sendMessage({ type: FORM_CANCEL });
+                      this.destroy();
+                      var entityId = buildEntityIdFn(null);
+                      showWarnMsg = false;
 
-                        var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
-                        if (path && path.indexOf('.xml') != -1) {
-                          unlockBeforeCancel(path);
-                        } else {
-                          _notifyServer = false;
-                          var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                          CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                      var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
+                      if (path && path.indexOf('.xml') != -1) {
+                        unlockBeforeCancel(path);
+                      } else {
+                        _notifyServer = false;
+                        var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                        CStudioAuthoring.InContextEdit.unstackDialog(editorId);
 
-                          if (path == '/site/components/page') {
-                            CStudioAuthoring.Operations.refreshPreview();
-                          }
+                        if (path == '/site/components/page') {
+                          CStudioAuthoring.Operations.refreshPreview();
                         }
-                      }, isDefault: false
-                    },
-                    {
-                      text: CMgs.format(formsLangBundle, 'no'), handler: function () {
-                        if (iceWindowCallback && iceWindowCallback.cancelled) {
-                          iceWindowCallback.cancelled();
-                        }
-                        this.destroy();
-                      }, isDefault: true
-                    }
-                  ]
-                });
+                      }
+                    }, isDefault: false
+                  },
+                  {
+                    text: CMgs.format(formsLangBundle, 'no'), handler: function () {
+                      if (iceWindowCallback && iceWindowCallback.cancelled) {
+                        iceWindowCallback.cancelled();
+                      }
+                      this.destroy();
+                    }, isDefault: true
+                  }
+                ]
+              });
               dialog.setHeader(CMgs.format(formsLangBundle, 'cancelDialogHeader'));
               dialog.render(document.body);
               dialogEl = document.getElementById('closeUserWarning');
               dialogEl.dialog = dialog;
             }
+            $(document).trigger('CloseFormWithChangesUserWarningDialogShown');
             dialogEl.dialog.show();
           } else {
             if (iceWindowCallback && iceWindowCallback.cancelled) {
