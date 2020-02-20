@@ -16,16 +16,8 @@
  */
 
 import { shallowEqual, useSelector } from 'react-redux';
-import GlobalState from '../models/GlobalState';
-import {
-  Dispatch,
-  EffectCallback,
-  SetStateAction,
-  useEffect,
-  useReducer,
-  useRef,
-  useState
-} from 'react';
+import GlobalState, { GuestData } from '../models/GlobalState';
+import { Dispatch, EffectCallback, SetStateAction, useEffect, useReducer, useRef, useState } from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
@@ -48,6 +40,10 @@ export function useActiveSiteId(): string {
 
 export function usePreviewState(): GlobalState['preview'] {
   return useSelector<GlobalState, GlobalState['preview']>(state => state.preview);
+}
+
+export function usePreviewGuest(): GuestData {
+  return useSelector<GlobalState, GuestData>(state => state.preview.guest);
 }
 
 export function useEnv(): GlobalState['env'] {
