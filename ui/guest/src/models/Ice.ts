@@ -23,7 +23,7 @@ export interface IceZone {
   label?: string;
   id?: number;
   index?: number;
-  recordIds?: string[];
+  recordIds?: string[] | number[];
   contentType?: ContentType;
 }
 

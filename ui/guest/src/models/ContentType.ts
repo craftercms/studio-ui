@@ -67,8 +67,8 @@ export interface ContentType {
 }
 
 export interface Record {
-  modelId: string;
-  index?: number;
+  modelId?: string;
+  index?: number | string;
   fieldId?: string;
   id?: number;
   element?: Element;

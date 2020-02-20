@@ -272,10 +272,10 @@ export function GuestProxy(props) {
           // Immediate removal of the element causes the dragend event not
           // to fire leaving the state corrupt - in a state of "SORTING".
           setTimeout(() => {
-            const $daddy = $(phyRecord.element).parent();
+            const $daddy: JQuery<Element> = $(phyRecord.element).parent();
             $(phyRecord.element).remove();
             forEach(
-              $daddy.children(),
+              $daddy.children().toArray(),
               (el, i) => {
 
                 $(el).attr('data-craftercms-index', i);
@@ -336,7 +336,7 @@ export function GuestProxy(props) {
           const id = Date.now();
 
           message$.pipe(
-            filter((e: any) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.id === id)), // TODO: e type
+            filter((e: MessageEvent) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.id === id)),
             map(e => e.data),
             take(1)
           ).subscribe(function ({ payload }) {
@@ -356,7 +356,7 @@ export function GuestProxy(props) {
         }
         case UPDATE_FIELD_VALUE_OPERATION:
           const { modelId, fieldId, index = 0, value } = op.args;
-          const updatedField = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`);
+          const updatedField: JQuery<any> = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`);
           const model = contentController.getCachedModel(modelId);
           const contentType = contentController.getCachedContentType(model.craftercms.contentType);
           const fieldType = ContentTypeHelper.getField(contentType, fieldId).type;
@@ -388,14 +388,14 @@ export function GuestProxy(props) {
 
     if (context.editable !== persistence.editable) {
 
-      persistence.editable && Object.values(persistence.editable).forEach(({ element }) => {
+      persistence.editable && Object.values(persistence.editable).forEach(({ element }: any) => {
           $(element).attr('contenteditable', 'false').removeAttr('contenteditable')
         }
       );
 
       persistence.editable = context.editable;
 
-      persistence.editable && Object.values(persistence.editable).forEach(({ element }) => {
+      persistence.editable && Object.values(persistence.editable).forEach(({ element }: any) => {
         (persistence.editable === null) && (persistence.editable = []);
         $(element).attr('contenteditable', 'true');
       });

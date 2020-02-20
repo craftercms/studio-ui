@@ -184,7 +184,7 @@ export class ICERegistry {
     return receptacles;
   }
 
-  getRecordReceptacles(id: string) {
+  getRecordReceptacles(id: string | number) {
     const record = this.recordOf(id);
     const { index, field, fieldId, model } = this.getReferentialEntries(record);
     if (isNullOrUndefined(index)) {
@@ -352,7 +352,7 @@ export class ICERegistry {
       }
       const record = this.getReferentialEntries(records[i]);
       if (isNullOrUndefined(record.field)) {
-        if (notNullOrUndefined(records.index)) {
+        if (notNullOrUndefined(record.index)) {
           // Collection item record. Cannot be the container.
 
         } else {

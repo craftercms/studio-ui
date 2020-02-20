@@ -162,7 +162,7 @@ export function Guest(props: GuestProps) {
 
       const
         dragover$ = new Subject<{ e: DragEvent, record: Record }>(),
-        scrolling$ = new Subject();
+        scrolling$ = new Subject<boolean>();
 
       persistence.dragover$ = dragover$;
       persistence.scrolling$ = scrolling$;

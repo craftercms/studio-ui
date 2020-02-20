@@ -503,7 +503,7 @@ export function addClickListener(element: HTMLElement | Document, type: string, 
       takeUntil(interval(300)),
       take(1)
     )),
-    filter((e: any) => (    // TODO: proper type
+    filter((e: any) => (
       e.target.hasAttribute('data-craftercms-model-id') ||
       forEach(e.path, (el) => (
         (

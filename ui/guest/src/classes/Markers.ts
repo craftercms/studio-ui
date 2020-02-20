@@ -105,7 +105,7 @@ export class Markers {
             mousePosition.y
           );
           this.selectPlacement(
-            positionAndElement.el,    // TODO: TODO!
+            positionAndElement.el,
             percents,
             mousePosition
           );
@@ -194,9 +194,9 @@ export class Markers {
     return false;
   }
 
-  static highlightElement(element: HTMLElement) {
+  static highlightElement(element: HTMLElement): JQuery {
     const $element = $(element);
-    return this.insertZoneMarker($element, 'inside');   //TODO : return type
+    return this.insertZoneMarker($element, 'inside');
   }
 
   static getRelativePointerPositionPercentages(mousePosition: Coordinates, rect: DOMRect): Coordinates {
