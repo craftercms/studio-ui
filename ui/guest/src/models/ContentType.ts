@@ -71,7 +71,7 @@ export interface Record {
   index?: number;
   fieldId?: string;
   id?: number;
-  element?: HTMLElement | HTMLImageElement;
+  element?: Element;
   label?: string;
   iceIds?: number[];
   complete?: boolean;

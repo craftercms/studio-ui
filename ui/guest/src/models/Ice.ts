@@ -43,3 +43,14 @@ export interface Stats {
   originDropZone: any;
   draggedElementIndex: any;
 }
+
+export interface DropZone {
+  element: Element;
+  children: Element[];
+  iceId: string | number;
+  physicalRecordId: number;
+  rect: DOMRect;
+  arrangement: string;
+  childrenRects: DOMRect[];
+  origin?: any;
+}

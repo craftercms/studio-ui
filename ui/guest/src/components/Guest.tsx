@@ -644,7 +644,7 @@ export function Guest(props: GuestProps) {
           { next, prev } =
             // No point finding siblings for the drop zone element
             stateRef.current.dragContext.containers.includes(element)
-              ? {}
+              ? { next: null, prev: null }
               : ElementRegistry.getSiblingRects(physicalRecord.id);
 
         setState({
@@ -752,7 +752,7 @@ export function Guest(props: GuestProps) {
                 });
                 aImg.src = event.target.result;
               };
-            })(record.element);
+            })(record.element as HTMLImageElement);
             fn.onDragEnd();
             reader.readAsDataURL(file);
           }
@@ -1073,7 +1073,7 @@ export function Guest(props: GuestProps) {
       });
     },
 
-    onDesktopAssetDragStarted(asset: Asset) {
+    onDesktopAssetDragStarted(asset: DataTransferItem) {
       let
         players = [],
         siblings = [],
@@ -1327,7 +1327,7 @@ export function Guest(props: GuestProps) {
   }, [modelId, path]);
 
   useEffect(() => {
-    const subscription = fromEvent(document, 'dragenter').pipe(
+    const subscription = fromEvent<DragEvent>(document, 'dragenter').pipe(
       filter((e) => e.dataTransfer?.types.includes('Files'))
     ).subscribe((e) => {
       e.preventDefault();
@@ -1371,7 +1371,7 @@ export function Guest(props: GuestProps) {
           (stateRef.current.common.status !== EditingStatus.OFF) &&
           <CrafterCMSPortal>
             {
-              Object.values(stateRef.current.common.highlighted).map((highlight) =>
+              Object.values(stateRef.current.common.highlighted).map((highlight: any) =>
                 <ZoneMarker key={highlight.id} {...highlight} />
               )
             }

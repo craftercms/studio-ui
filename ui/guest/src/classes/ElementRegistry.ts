@@ -24,6 +24,7 @@ import { ModelHelper } from './ModelHelper';
 import { Record } from '../models/ContentType';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '../models/LookupTable';
+import { DropZone } from '../models/Ice';
 
 let seq = 0;
 
@@ -185,7 +186,7 @@ export class ElementRegistry {
     // });
   }
 
-  static compileDropZone(iceId: number | string) {
+  static compileDropZone(iceId: number | string): DropZone {
 
     const physicalRecord = this.fromICEId(iceId);
     const physicalRecordId = physicalRecord.id;
