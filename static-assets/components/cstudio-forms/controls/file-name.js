@@ -37,7 +37,7 @@ CStudioForms.Controls.FileName = CStudioForms.Controls.FileName ||
     }
 
 YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
-    
+
     getFixedId: function() {
         return "file-name";
     },
@@ -227,7 +227,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         // we need to make the general layout of a control inherit from common
         // you should be able to override it -- but most of the time it wil be the same
         containerEl.id = this.id;
-        
+
         var titleEl = document.createElement("span");
 
         YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
@@ -323,76 +323,91 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     },
 
-    _renderEdit: function(containerEl){
-    	var _self = this;
-        if (CStudioAuthoring.Utils.getQueryVariable(location.search, "edit") && this.readonly == false ){
-            var editFileNameEl = document.createElement("div");
-            YAHOO.util.Dom.addClass(editFileNameEl, 'cstudio-form-control-filename-edit');
-            var editFileNameBtn = document.createElement("input");
-            editFileNameBtn.type="button";
-            editFileNameBtn.value="Edit";
-            YAHOO.util.Dom.addClass(editFileNameBtn, 'cstudio-button');
-            editFileNameEl.appendChild(editFileNameBtn);
-            containerEl.appendChild(editFileNameEl);
+  _renderEdit: function (containerEl) {
+    var _self = this;
+    if (CStudioAuthoring.Utils.getQueryVariable(location.search, 'edit') && this.readonly == false) {
+      var editFileNameEl = document.createElement('div');
+      YAHOO.util.Dom.addClass(editFileNameEl, 'cstudio-form-control-filename-edit');
+      var editFileNameBtn = document.createElement('input');
+      editFileNameBtn.type = 'button';
+      editFileNameBtn.value = 'Edit';
+      YAHOO.util.Dom.addClass(editFileNameBtn, 'cstudio-button');
+      editFileNameEl.appendChild(editFileNameBtn);
+      containerEl.appendChild(editFileNameEl);
 
-            this.inputEl.disabled=true;
+      this.inputEl.disabled = true;
 
-            var createWarningDialog = function(){
-                var dialogEl = document.getElementById("changeNameWar");
-                if(!dialogEl) {
-                    var dialog = new YAHOO.widget.SimpleDialog("changeNameWar",
-                        {
-                            width: "440px", fixedcenter: true, visible: false, draggable: false, close: true,
-                            modal: true, icon: YAHOO.widget.SimpleDialog.ICON_WARN, constraintoviewport: true
-                        });
+      var createWarningDialog = function () {
 
-                    var viewDependenciesLink = document.createElement("a");
-                    viewDependenciesLink.innerHTML="here";
-                    viewDependenciesLink.onclick = function() {
-                        window.parent.CStudioAuthoring.Operations.viewDependencies(
-                            window.parent.CStudioAuthoringContext.site,
-                            window.parent.CStudioAuthoring.SelectedContent.getSelectedContent(),
-                            false,
-                            'depends-on-me'
-                        );
-                    };
+        var dialog = new YAHOO.widget.SimpleDialog('changeNameWar', {
+          width: '440px',
+          fixedcenter: true,
+          visible: false,
+          draggable: false,
+          close: true,
+          modal: true,
+          icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+          constraintoviewport: true
+        });
 
-                    dialog.setHeader("Warning");
-                    dialog.setBody("Changing this value may result in broken references and links.</br></br>" +
-                        "<span>To view the content that references this content, click </span>");
-                    dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
+        var viewDependenciesLink = document.createElement('a');
+        viewDependenciesLink.innerHTML = 'here';
+        viewDependenciesLink.onclick = function () {
+          window.parent.CStudioAuthoring.Operations.viewDependencies(
+            window.parent.CStudioAuthoringContext.site,
+            window.parent.CStudioAuthoring.SelectedContent.getSelectedContent(),
+            false,
+            'depends-on-me'
+          );
+        };
 
-                    var handleYes = function() {
-                        _self.inputEl.disabled = false;
-                        _self.inputEl.focus();
-                        editFileNameEl.style.display='none';
-                        this.hide();
-                    };
-                    var handleNo = function() {
-                        this.hide();
-                    };
-                    var myButtons = [
-                        { text:"Cancel", handler: handleNo, isDefault:true},
-                        { text: "OK", handler: handleYes }
-                    ];
+        dialog.setHeader('Warning');
+        dialog.setBody(
+          'Changing this value may result in broken references and links.</br></br>' +
+          '<span>To view the content that references this content, click </span>'
+        );
+        dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
 
-                    dialog.cfg.queueProperty("buttons", myButtons);
-                    dialog.render(document.body);
-                    dialogEl = document.getElementById("changeNameWar");
-                    dialogEl.dialog = dialog;
-                }
+        var myButtons = [
+          {
+            text: 'Cancel',
+            handler: function () {
+              this.destroy();
+            },
+            isDefault: true
+          },
+          {
+            text: 'OK',
+            handler: function () {
+              _self.inputEl.disabled = false;
+              _self.inputEl.focus();
+              editFileNameEl.style.display = 'none';
+              this.destroy();
+            }
+          }
+        ];
 
-                dialogEl.dialog.show();
-            };
+        dialog.cfg.queueProperty('buttons', myButtons);
+        dialog.render(document.body);
+        dialog.show();
 
-            YAHOO.util.Event.on(editFileNameBtn, 'click', function(){
-                _self.form.setFocusedField(_self);
-            	if(_self.showWarnOnEdit){
-                    createWarningDialog();
-            	}
-            });
+        function onEscape(e) {
+          dialog.destroy();
+          $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
         }
-    },
+
+        $(document).on('CloseFormWithChangesUserWarningDialogShown', onEscape);
+
+      };
+
+      YAHOO.util.Event.on(editFileNameBtn, 'click', function () {
+        _self.form.setFocusedField(_self);
+        if (_self.showWarnOnEdit) {
+          createWarningDialog();
+        }
+      });
+    }
+  },
 
     getValue: function() {
         return this.value;
