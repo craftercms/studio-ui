@@ -97,14 +97,14 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
     var newdiv = YDom.get("cstudio-wcm-popup-div");
-    if (newdiv === undefined) {
-      newdiv = document.createElement("div");
+    if (newdiv === undefined || newdiv === null) {
+      newdiv = document.createElement('div');
       document.body.appendChild(newdiv);
     }
 
     var divIdName = "cstudio-wcm-popup-div";
-    newdiv.setAttribute("id", divIdName);
-    newdiv.className = "yui-pe-content";
+    newdiv.setAttribute('id', divIdName);
+    newdiv.className = 'yui-pe-content';
 
     var imgObj = this.calculateAspectRatioFit(this.originalWidth, this.originalHeight, window.innerWidth - 10, window.innerHeight - 20),
       imgWidth = imgObj.width,
