@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ajax } from 'rxjs/ajax';
+import { ajax, AjaxResponse } from 'rxjs/ajax';
+import { Observable } from 'rxjs';
 
 const HEADERS = {};
+export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 export const OMIT_GLOBAL_HEADERS = {};
 
 export function setGlobalHeaders(props: object) {
@@ -43,6 +45,10 @@ export function get(url: string, headers: object = {}) {
 
 export function post(url: string, body: any, headers: object = {}) {
   return ajax.post(url, body, mergeHeaders(headers));
+}
+
+export function postJSON(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
+  return ajax.post(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
 }
 
 export function patch(url: string, body: any, headers: object = {}) {

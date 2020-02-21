@@ -265,7 +265,7 @@ CStudioAuthoring.Dialogs.DialogCopy = CStudioAuthoring.Dialogs.DialogCopy || (fu
 
         dialog.render();
         dialog.show();
-        dialog.cfg.setProperty("zIndex", 100001); // Update the z-index value to make it go over the site content nav
+        dialog.cfg.setProperty("zIndex", 1000); // Update the z-index value to make it go over the site content nav
 
         $("#cstudio-wcm-popup-div").on("keyup", function(e) {
             if (e.keyCode == 10 || e.keyCode == 13) {	// enter

@@ -15,37 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Typography from "@material-ui/core/Typography";
+import React from 'react';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import Fab from "@material-ui/core/Fab";
-import crack from "../assets/full-crack.svg";
-import { defineMessages, useIntl } from "react-intl";
+import Fab from '@material-ui/core/Fab';
+import crack from '../assets/full-crack.svg';
+import { defineMessages, useIntl } from 'react-intl';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import { createStyles } from '@material-ui/core';
+import clsx from 'clsx';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => createStyles({
   errorView: {
-    height: '100%',
-    background: (props:any) => props.background,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     padding: '40px'
   },
-  gearContainer: {
-    flexGrow: 1,
-    display: 'flex',
-    justifyContent: 'center'
+  graphic: {
+    maxWidth: '100%'
   },
   title: {
     marginTop: '20px',
     marginBottom: '10px'
   },
   paragraph: {
-    marginTop: '10px',
+    textAlign: 'center',
+    marginTop: '10px'
   },
   link: {
     color: theme.palette.text.secondary,
@@ -61,58 +60,85 @@ const useStyles = makeStyles((theme: Theme) => ({
     left: '40px',
     top: '35px',
     '&:hover': {
-      backgroundColor: '#FFFFFF',
-    },
+      backgroundColor: '#FFFFFF'
+    }
   }
 }));
 
 interface ErrorStateProps {
-  onBack?(event: any): any,
-  background?: string,
-  error: {
-    code: string,
-    documentationUrl?: string,
-    message: string,
-    remedialAction: string
-  },
+  graphicUrl?: string;
+
+  onBack?(event: any): any;
+
+  classes?: {
+    root?: string;
+    graphic?: string;
+  };
+  error: any;
 }
 
 const messages = defineMessages({
   moreInfo: {
     id: 'common.moreInfo',
     defaultMessage: 'More info'
+  },
+  error: {
+    id: 'common.error',
+    defaultMessage: 'Error'
   }
 });
 
+function nnou(target: any) {
+  return target != null;
+}
 
 export default function ErrorState(props: ErrorStateProps) {
-  const classes = useStyles({background: props.background || 'inherit'});
-  const {error, onBack} = props;
-  const {formatMessage} = useIntl();
-  const {code, documentationUrl, message, remedialAction} = error;
+  const classes = useStyles({});
+  const propClasses = Object.assign({
+    root: '',
+    graphic: ''
+  }, props.classes || {});
+  const { error, onBack, graphicUrl = crack } = props;
+  const { formatMessage } = useIntl();
+  const { title, code, documentationUrl, message, remedialAction } = error;
 
   return (
-    <div className={classes.errorView}>
-      <img src={crack} alt=""/>
-      <Typography variant="h5" component="h1" className={classes.title} color={'textSecondary'}>
-        Error {code}
-      </Typography>
-      <Typography variant="subtitle1" component="p" color={'textSecondary'}>
-        {message}. {remedialAction}
+    <div className={clsx(classes.errorView, propClasses.root)}>
+      <img className={clsx(classes.graphic, propClasses?.graphic)} src={graphicUrl} alt=""/>
+      {
+        (nnou(code) || nnou(title)) &&
+        <Typography variant="h5" component="h2" className={classes.title} color={'textSecondary'}>
+          {nnou(code) ? `${formatMessage(messages.error)}${code ? ` ${code}` : ''}` : ''}
+          {nnou(code) && nnou(title) && ': '}
+          {title}
+        </Typography>
+      }
+      <Typography variant="subtitle1" component="p" color="textSecondary" className={classes.paragraph}>
+        {
+          (message) +
+          (message.endsWith('.') ? '' : '.') +
+          (remedialAction ? ` ${remedialAction}` : '') +
+          (remedialAction ? (remedialAction.endsWith('.') ? '' : '.') : '')
+        }
       </Typography>
       {
         documentationUrl &&
         <Typography variant="subtitle1" component="p" className={classes.paragraph}>
-            <a className={classes.link} href={documentationUrl}
-               target={'blank'}>{formatMessage(messages.moreInfo)}<OpenInNewIcon/></a>
+          <a
+            className={classes.link}
+            href={documentationUrl}
+            target={'blank'}>
+            {formatMessage(messages.moreInfo)}
+            <OpenInNewIcon/>
+          </a>
         </Typography>
       }
       {
         onBack &&
         <Fab aria-label="back" className={classes.circleBtn} onClick={onBack}>
-            <ArrowBackIcon/>
+          <ArrowBackIcon/>
         </Fab>
       }
     </div>
-  )
+  );
 }

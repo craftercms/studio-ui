@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -103,7 +102,7 @@ CStudioAuthoring.Module.requireModule(
                   'studio'
                 ).toPromise(),
                 new Promise((resolve, reject) => {
-                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject }, false);
+                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject });
                 })
               ]).then(([xmlDoc, content]) => {
                 CStudioForms.TemplateEditor.config = xmlDoc;
@@ -561,15 +560,6 @@ CStudioAuthoring.Module.requireModule(
                     cancelEdit();
                   });
 
-									var saveSvcCb = {
-										success: function() {
-											modalEl.parentNode.removeChild(modalEl);
-											onSaveCb.success();
-										},
-										failure: function() {
-										}
-									};
-
 									if(isWrite == true) {
 										var saveEl = document.getElementById('template-editor-update-button');
 										saveEl.onclick = function() {
@@ -585,10 +575,20 @@ CStudioAuthoring.Module.requireModule(
 												"&user=" + CStudioAuthoringContext.user +
 												"&unlock=true";
 
-											YAHOO.util.Connect.setDefaultPostHeader(false);
-											YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
-											YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
-											YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(writeServiceUrl), saveSvcCb, value);
+											fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
+												method: 'POST',
+												credentials: 'same-origin',
+												headers: {
+													'Content-Type': `text/plain; charset=utf-8`,
+													[CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken(),
+												},
+												body: value
+											}).then(res => res.json()).then((data) => {
+												if (data && data.result && data.result.success) {
+													modalEl.parentNode.removeChild(modalEl);
+													onSaveCb.success();
+												}
+											});
 										};
 									}
 

@@ -2343,7 +2343,7 @@ CStudioAuthoringContext.site,
                                   close:false,
                                   constraintoviewport : true,
                                   underlay:"none",
-                                  zIndex: 100000
+                                  zIndex: 1000
                                 });
 
                 dialog.render();

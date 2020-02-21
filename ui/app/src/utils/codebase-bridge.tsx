@@ -28,10 +28,13 @@ import sites from '../services/sites';
 import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
-import { Subject, fromEvent } from 'rxjs';
+import { forkJoin, fromEvent, Subject } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
+import babel from '../utils/babelHelpers-legacy';
+import security from '../services/security';
+import authService from '../services/auth';
 
 /**
  *
@@ -87,6 +90,7 @@ export function createCodebaseBridge() {
     rxjs: {
       Subject,
       fromEvent,
+      forkJoin,
       operators: { filter, map, take }
     },
 
@@ -95,14 +99,16 @@ export function createCodebaseBridge() {
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
       DependencySelection: lazy(() => import('../components/DependencySelection')),
-      DependecySelectionDelete: lazy(() => (
+      DependencySelectionDelete: lazy(() => (
         import('../components/DependencySelection')
-          .then(module => ({
-            default: module.DependencySelectionDelete
-          }))
+        .then(module => ({
+          default: module.DependencySelectionDelete
+        }))
       )),
       CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
-      PublishingQueue: lazy(() => import('../components/PublishingQueue'))
+      PublishingQueue: lazy(() => import('../components/PublishingQueue')),
+      EncryptTool: lazy(() => import('../components/EncryptTool')),
+      AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor'))
     },
 
     assets: {
@@ -114,6 +120,7 @@ export function createCodebaseBridge() {
       path,
       string,
       auth,
+      babel
     },
 
     i18n: {
@@ -127,7 +134,9 @@ export function createCodebaseBridge() {
       sites,
       marketplace,
       publishing,
-      content
+      content,
+      auth: authService,
+      security
     },
 
     // Mechanics
@@ -149,6 +158,8 @@ export function createCodebaseBridge() {
         container = document.querySelector(container);
       }
 
+      const element = container as Element;
+
       const Component: JSXElementConstructor<any> = (typeof component === 'string')
         ? Bridge.components[component]
         : component;
@@ -156,6 +167,10 @@ export function createCodebaseBridge() {
       return (
         new Promise((resolve, reject) => {
           try {
+            const unmount = (options: any) => {
+              ReactDOM.unmountComponentAtNode(element);
+              options.removeContainer && element.parentNode.removeChild(element);
+            };
             // @ts-ignore
             ReactDOM
               .render(
@@ -164,7 +179,19 @@ export function createCodebaseBridge() {
                   <Component {...props} />
                 </CrafterCMSNextBridge>,
                 container,
-                () => resolve()
+                () => resolve({
+                  unmount: (options: any) => {
+                    options = Object.assign({
+                      delay: false,
+                      removeContainer: false
+                    }, options || {});
+                    if (options.delay) {
+                      setTimeout(() => unmount(options), options.delay);
+                    } else {
+                      unmount(options);
+                    }
+                  }
+                })
               );
           } catch (e) {
             reject(e);

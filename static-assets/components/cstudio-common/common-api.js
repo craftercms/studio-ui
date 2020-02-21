@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -258,6 +257,7 @@ var nodeOpen = false,
             },
             HEADERS: "headers",
             AUTH_HEADERS: "AUTH_HEADERS",
+            SAML: "SAML",
             DATASOURCE_URL: "/static-assets/components/cstudio-forms/data-sources/",
             CONTROL_URL: "/static-assets/components/cstudio-forms/controls/",
             GET_ALL_CONTENT_TYPES: "getAllContentType"
@@ -582,8 +582,8 @@ var nodeOpen = false,
 
                     //set z-index to 101 so that dialog will display over context nav bar
                     if (setZIndex && dialogue.element && dialogue.element.style.zIndex != "") {
-                        dialogue.element.style.zIndex = "102000";
-                        dialogue.mask.style.zIndex = "101000";
+                        dialogue.element.style.setProperty("z-index", "1040", "important");
+                        dialogue.mask.style.zIndex = "1030";
                     }
                 };
                 var params = ["component-dialogue"];
@@ -1463,7 +1463,7 @@ var nodeOpen = false,
             getPreviewUrl: function(contentTO, useAppBase, noReplaceExtension) {
                 var url = "";
                 var baseUri = (useAppBase === false) ? '' : CStudioAuthoringContext.previewAppBaseUri;
-                var filename = escape((contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name);
+                var filename = encodeURI((contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name);
                 if (CStudioAuthoring.Utils.endsWith(filename, ".xml")) {
                     url = baseUri + contentTO.browserUri;
 
@@ -1474,7 +1474,7 @@ var nodeOpen = false,
                     }
 
                 } else {
-                    url = baseUri + escape(contentTO.uri);
+                    url = baseUri + encodeURI(contentTO.uri);
                 }
                 return url;
             },
@@ -1800,7 +1800,7 @@ var nodeOpen = false,
               if (aux && aux.length) {
                 for (var j = 0; j < aux.length; j++) {
                   if (aux[j].ontop) {
-                    $modal.find('.studio-ice-dialog').css('z-index', 103000);
+                    $modal.find('.studio-ice-dialog').css('z-index', 1042);
                   }
                 }
               }
@@ -1916,7 +1916,7 @@ var nodeOpen = false,
                 }, 1000);
 
                 $modal.find('.bd').html(template).end().appendTo(parentEl);
-                $modal.find('.studio-ice-container').css('z-index', 104000);
+                $modal.find('.studio-ice-container').css('z-index', 1040);
 
                 $('body').on("diff-end", function () {
                     $modal.remove();
@@ -3416,7 +3416,6 @@ var nodeOpen = false,
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
             getUserInfoServiceURL: "/api/2/users",
-            validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
             getLogoutInfoURL: "/api/2/users/me/logout/sso/url",
             getActiveEnvironmentURL: "/api/2/ui/system/active_environment",
@@ -4098,24 +4097,24 @@ var nodeOpen = false,
              *  If edit equals true, tries to lock the content
              */
             getContent: function(path, edit, callback){
-                var serviceUrl = CStudioAuthoring.Service.getContentUri
-                    + "?site=" + CStudioAuthoringContext.site
-                    + "&path=" + escape(path) +
-                    "&edit=" + edit +
-                    "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
-                    "&nocache=" + new Date();
+              var serviceUrl = (
+                CStudioAuthoring.Service.getContentUri +
+                `?site=${CStudioAuthoringContext.site}` +
+                `&path=${encodeURI(path)}` +
+                `&edit=${edit}` +
+                `&ticket=${CStudioAuthoring.Utils.Cookies.readCookie("ccticket")}` +
+                `&nocache=${Date.now()}`
+              );
 
-                var serviceCallback = {
-                    success: function(content) {
-                        var contentData = YAHOO.lang.JSON.parse(content.responseText)
-                        callback.success(contentData.content);
-                    },
-                    failure: function(err) {
-                        callback.failure(err);
-                    }
-                };
-
-                YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), serviceCallback);
+              YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), {
+                success: function (content) {
+                  var contentData = YAHOO.lang.JSON.parse(content.responseText)
+                  callback.success(contentData.content);
+                },
+                failure: function (err) {
+                  callback.failure(err);
+                }
+              });
             },
             /**
              * determine if content exists
@@ -4410,7 +4409,7 @@ var nodeOpen = false,
 
             getUserPermissions: function(site, path, callback) {
                 var serviceUrl = this.getPermissionsServiceUrl;
-                serviceUrl += "?site=" + site + "&path=" + escape(path) + "&user=" + CStudioAuthoringContext.user;
+                serviceUrl += "?site=" + site + "&path=" + encodeURI(path) + "&user=" + CStudioAuthoringContext.user;
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
@@ -4649,26 +4648,23 @@ var nodeOpen = false,
              * get SSO logout info
              */
             getSSOLogoutInfo: function(callback) {
-                var serviceUrl = this.getLogoutInfoURL;
-
-                var serviceCallback = {
-                    success: function(jsonResponse) {
-                        var results = eval("(" + jsonResponse.responseText + ")");
-                        //delete results.result['entity'];
-                        var hasResult = results.hasOwnProperty('logoutUrl') ? true : false;
-                        if(hasResult){
-                            results = results.logoutUrl;
-                        }else{
-                            results = false;
-                        }
-                        callback.success(results);
-                        results = results.result;
-                    },
-                    failure: function(response) {
-                        callback.failure(response);
-                    }
-                };
-                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+              var serviceUrl = this.getLogoutInfoURL;
+              YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), {
+                success: function (jsonResponse) {
+                  var results = eval('(' + jsonResponse.responseText + ')');
+                  var hasResult = results.hasOwnProperty('logoutUrl') ? true : false;
+                  if (hasResult) {
+                    results = results.logoutUrl;
+                  } else {
+                    results = false;
+                  }
+                  callback.success(results);
+                  results = results ? results.result : results;
+                },
+                failure: function (response) {
+                  callback.failure(response);
+                }
+              });
             },
 
             /**
@@ -5079,8 +5075,11 @@ var nodeOpen = false,
              */
             lookupContentItem: function(site, path, callback, isDraft, populateDependencies) {
 
-                path = unescape(path);
-                var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + escape(path);
+                // Path is decoded because it may come encoded or decoded. So, if not encoded, path stays the
+                // same. Then, knowing that path is decoded, gets encoded. That way we avoid encoded paths to be
+                // encoded again.
+                path = decodeURI(path);
+                var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + encodeURI(path);
                 if (isDraft) {
                     serviceUri = serviceUri + "&draft=true";
                 }
@@ -5141,7 +5140,7 @@ var nodeOpen = false,
              */
             lookupSiteContent: function(site, path, depth, order, callback) {
 
-                var serviceUri = this.lookupContentServiceUri + "?site=" + site + "&path=" + escape(path) + "&depth=" + depth + "&order=" + order;
+                var serviceUri = this.lookupContentServiceUri + "?site=" + site + "&path=" + path + "&depth=" + depth + "&order=" + order;
                 serviceUri = serviceUri + "&nocache="+new Date();
                 serviceUri = encodeURI(serviceUri);
 
@@ -7926,8 +7925,12 @@ var nodeOpen = false,
             buildToolTip: function (itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate, icon) {
                 label = label.replace(new RegExp(" ", 'g'), "&nbsp;");
 
+              if (!contentType) {
+                contentType = '';
+              }
+
                 if(contentType.indexOf("/page/") != -1)
-                contentType = contentType.replace("/page/", "") + "&nbsp;(Page)";
+                  contentType = contentType.replace("/page/", "") + "&nbsp;(Page)";
 
                 if(contentType.indexOf("/component/") != -1)
                 contentType = contentType.replace("/component/", "") + "&nbsp;(Component)";
@@ -8254,7 +8257,10 @@ var nodeOpen = false,
                 || uri.indexOf(".txt") != -1
                 || uri.indexOf(".html") != -1
                 || uri.indexOf(".hbs") != -1
-                || uri.indexOf(".xml") != -1) {
+                || uri.indexOf(".xml") != -1
+                || uri.indexOf(".tmpl") != -1
+                || uri.indexOf(".htm") != -1
+                ) {
                 return true;
             }else{
                 return false;
@@ -9705,105 +9711,7 @@ CStudioAuthoring.FilesDiff = {
 
 }) (window);
 
-if(window.top === window.self) {
-    (function startAuthLoop() {
-
-        if (typeof CStudioAuthoringContext != 'undefined') {
-
-            var authLoopCb = {
-                success: function (config) {
-
-                    function authRedirect(authConfig) {
-                        location = "/studio/#/login";
-                    }
-
-                    function authLoop(configObj) {
-                        var serviceUri,
-                            serviceCallback,
-                            delay = 60000;  // poll once every minute
-
-                        serviceUri = CStudioAuthoring.Service.validateSessionUrl;
-
-                        var CMgs = CStudioAuthoring.Messages;
-                        var formsLangBundle = CStudioAuthoring.Messages.getBundle("contextnav", CStudioAuthoringContext.lang);
-                        var networkErrorMsg = CMgs.format(formsLangBundle, 'networkError');
-
-                        serviceCallback = {
-                            success: function (response) {
-                                var resObj = response.responseText
-                                var resJson = JSON.parse(resObj);
-
-                                if (response.status == 200 && resJson.message == "OK") {
-                                    // ticket is valid
-                                    setTimeout(function () {
-                                        authLoop(configObj);
-                                    }, delay);
-                                } else {
-                                    //ticket is invalid
-                                    var cb = {
-                                        success: function (response) {
-                                            setTimeout(function () {
-                                                authLoop(configObj);
-                                            }, delay);
-                                        }
-                                    };
-                                    if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
-                                        window.location = '/studio/#/login';
-                                    }else{
-                                        CStudioAuthoring.Operations.loginDialog(cb);
-                                    }
-
-                                }
-                            },
-                            failure: function (response) {
-                                if (response.status == 401 || response.status == 301 ||
-                                    response.status == 302 || response.status == 0) {
-                                    var cb = {
-                                        success: function (response) {
-                                            setTimeout(function () {
-                                                authLoop(configObj);
-                                            }, delay);
-                                        }
-                                    };
-                                    if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
-                                        window.location = '/studio/#/login';
-                                    }else{
-                                        CStudioAuthoring.Operations.loginDialog(cb);
-                                    }
-
-
-                                } else {
-                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0, 0, "errorNotify");
-                                    setTimeout(function () {
-                                        authLoop(configObj);
-                                    }, delay);
-                                }
-                            }
-                        };
-
-                        YConnect.asyncRequest("GET", CStudioAuthoring.Service.createServiceUri(serviceUri), serviceCallback);
-
-                    }
-
-                    // Start the authentication loop
-                    if (config.authentication) {
-                        authLoop(config.authentication);
-                    } else {
-                        authLoop(null);
-                    }
-                },
-
-                failure: function () {
-                    throw new Error('Unable to read site configuration');
-                }
-            }
-
-            CStudioAuthoring.Service.lookupConfigurtion(
-                CStudioAuthoringContext.site, "/site-config.xml", authLoopCb);
-
-        } else {
-            // The authentication loop cannot be started until CStudioAuthoringContext exists
-            setTimeout(startAuthLoop, 1000);
-        }
-    })();
+if (window.top === window) {
+  const el = document.createElement('craftercms-auth-monitor');
+  CrafterCMSNext.render(el, 'AuthMonitor');
 }

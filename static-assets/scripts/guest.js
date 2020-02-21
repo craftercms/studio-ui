@@ -40,9 +40,12 @@ crafterDefine('guest', [
     pointerControllerVar,
     iceToolsOn = false;
 
+  window.studioICERepaint = iceRepaint;
+
   return {
     init: init,
     iceRepaint: iceRepaint,
+    repaintPencils: repaintPencils,
     reportNavigation: reportNavigation
   };
 
@@ -117,10 +120,13 @@ crafterDefine('guest', [
       removeICERegions();
     });
 
+    // Enable pencils, calls an event that renders the pencils (visual, no model in between)
     communicator.on(Topics.ICE_TOOLS_ON, function (message) {
       iceToolsOn = true;
       initICERegions();
     });
+
+    communicator.on(Topics.REPAINT_PENCILS, repaintPencils);
 
     communicator.on(Topics.ICE_TOOLS_REGIONS, function (message) {
       var elt = document.querySelectorAll('[data-studio-ice' + message.label + '="' + message.region + '"]')[0];
@@ -136,28 +142,6 @@ crafterDefine('guest', [
       } else {
         alert("Region " + message.region + " could not be found");
       }
-    });
-
-    communicator.on(Topics.ICE_TOOLS_INDICATOR, function (message) {
-      var flag = false;
-      var compElement = $("[data-studio-ice-target='" + message.iceRef + "']");
-      $('.studio-ice-indicator').each(function (index) {
-        if ($(this).data("studioIceTrigger") == message.iceRef) {
-          flag = true;
-        }
-      });
-
-      if (!flag && compElement.is(':visible')) {
-        var aux = $(crafter.String('<i class="studio-ice-indicator fa fa-pencil f18 icon-yellow" data-studio-ice-trigger="%@"></i>').fmt(message.iceRef)).css({
-          top: message.position.top,
-          left: message.position.left
-        });
-        if (message.class) {
-          aux.addClass(message.class);
-        }
-        aux.appendTo('body');
-      }
-
     });
 
     communicator.on(Topics.INIT_ICE_REGIONS, initIceRegions_resizeIceRegions_handler);
@@ -179,20 +163,19 @@ crafterDefine('guest', [
 
     communicator.publish(Topics.IS_REVIEWER);
 
+    // ICE zone highlighting on hover
     $document.on('mouseover', '.studio-ice-indicator', function (e) {
 
       var $i = $(this),
-        $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger'))),
-        iceId = $e.data('studio-ice-indicator');
+          $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger')));
 
       initOverlay($e);
 
-    });
-
-    $document.on('mouseout', '.studio-ice-indicator', function (e) {
+    }).on('mouseout', '.studio-ice-indicator', function (e) {
       overlay.hide();
     });
 
+    // Event on pencil click, publishes ICE_ZONE_ON, which opens the form
     $document.on('click', '.studio-ice-indicator', function (e) {
       let pencilClasses =  'fa-pencil icon-yellow';
       let spinnerClases = 'fa-spinner fa-spin icon-default';
@@ -267,8 +250,6 @@ crafterDefine('guest', [
     clearSetTimeout(Constants.TIME_RESIZE);
   }
 
-  window.studioICERepaint = iceRepaint;
-
   function initIceRegions_resizeIceRegions_handler(message) {
     if (!message) {
       iceToolsOn && initICERegions();
@@ -312,29 +293,42 @@ crafterDefine('guest', [
 
   }
 
-  function initICETarget(elem) {
-    var $elem = $(elem);
-    $elem.removeData();
-    var position = $elem.offset(),
-      iceRef = $elem.data('studioIce') + '-' + count++,
-      path = $elem.data('studioIcePath'),
-      params = {
-        path: path,
-        iceRef: iceRef,
-        position: position
-      };
+  // Rendering of a single pencil based on an element
+  function renderICESection(elem) {
+    const $elem = $(elem),
+          position = $elem.offset(),
+          iceRef = $elem.data('studioIce') + '-' + count++;
 
     $elem.attr('data-studio-ice-target', iceRef);
 
-    communicator.publish(Topics.ICE_ZONES, params);
+    let flag = false;
+    const compElement = $("[data-studio-ice-target='" + iceRef + "']");
+    // if element exists -> set flag true to avoid re-rendering
+    $('.studio-ice-indicator').each(function () {
+      if ($(this).data("studioIceTrigger") == iceRef) {
+        flag = true;
+      }
+    });
+
+    if (!flag && compElement.is(':visible')) {
+      const aux = $(crafter.String('<i class="studio-ice-indicator fa fa-pencil f18 icon-yellow" data-studio-ice-trigger="%@"></i>').fmt(iceRef))
+        .css({
+          top: position.top,
+          left: position.left
+        });
+      aux.appendTo('body');
+    }
   }
 
+  // Rendering of the pencils, no model involved at this moment
   function initICERegions() {
     removeICERegions();
     var elems = document.querySelectorAll('[data-studio-ice]');
 
     for (var i = 0; i < elems.length; ++i) {
-      initICETarget(elems[i]);
+      // Renders a single pencil based on the element's props.
+      renderICESection(elems[i]);
+
       if (elems[i].getAttribute("data-studio-ice-label")) {
         elems[i].setAttribute("data-studio-ice-label", elems[i].getAttribute("data-studio-ice-label").replace(/ /g, "__"));
       }
@@ -344,6 +338,12 @@ crafterDefine('guest', [
   function removeICERegions() {
     if ($('.studio-ice-indicator').length > 0) {
       $('.studio-ice-indicator').remove();
+    }
+  }
+
+  function repaintPencils() {
+    if (iceToolsOn) {
+      initICERegions();
     }
   }
 

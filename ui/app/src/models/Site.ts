@@ -52,6 +52,11 @@ export interface SiteState {
   blueprintFields?: {
     [key: string]: string;
   };
+  expanded: {
+    basic: boolean,
+    token: boolean,
+    key: boolean
+  }
 }
 
 export interface Site {

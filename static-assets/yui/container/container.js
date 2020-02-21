@@ -5743,10 +5743,10 @@ version: 2.6.0
          * @param {Event} e The DOM event object
          */
         _onElementFocus : function(e){
-
+            var authDialog = document.getElementById('authMonitorDialog');
             var target = Event.getTarget(e);
 
-            if (target !== this.element && !Dom.isAncestor(this.element, target) && _currentModal == this) {
+            if (!authDialog && target !== this.element && !Dom.isAncestor(this.element, target) && _currentModal == this) {
                 try {
                     if (this.firstElement) {
                         this.firstElement.focus();

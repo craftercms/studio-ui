@@ -324,8 +324,15 @@ const contentTypesMessages = defineMessages({
   fileManager: {
     id: 'contentType.fileManager',
     defaultMessage: 'File Manager'
+  },
+  siteConfigLandingMessage: {
+    id: 'siteConfig.landingMessage',
+    defaultMessage: 'Please choose a tool from the left.'
+  },
+  insertExpressionMessage: {
+    id: 'siteConfig.insertExpressionMessage',
+    defaultMessage: 'Insert Expression'
   }
-
 });
 
 const targetingDialog = defineMessages({
@@ -529,7 +536,6 @@ const browseCMISMessages = defineMessages({
   }
 });
 
-
 const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
@@ -572,6 +578,162 @@ const dragAndDropMessages = defineMessages({
   }
 });
 
+const internalNameControlMessages = defineMessages({
+  label: {
+    id: 'internalNameControl.label',
+    defaultMessage: 'Internal Name'
+  },
+  displaySize: {
+    id: 'internalNameControl.displaySize',
+    defaultMessage: 'Display Size'
+  },
+  maxLength: {
+    id: 'internalNameControl.maxLength',
+    defaultMessage: 'Max Length'
+  }
+});
+
+const checkboxGroupControlMessages = defineMessages({
+  datasource: {
+    id: 'checkboxGroupControl.datasource',
+    defaultMessage: 'Data Source'
+  },
+  showSelectAll: {
+    id: 'checkboxGroupControl.showSelectAll',
+    defaultMessage: 'Show "Select All"'
+  },
+  listDirection: {
+    id: 'checkboxGroupControl.listDirection',
+    defaultMessage: 'List Direction'
+  },
+  horizontal: {
+    id: 'checkboxGroupControl.horizontal',
+    defaultMessage: 'Horizonal'
+  },
+  vertical: {
+    id: 'checkboxGroupControl.vertical',
+    defaultMessage: 'Vertical'
+  },
+  readonly: {
+    id: 'checkboxGroupControl.readonly',
+    defaultMessage: 'Read Only'
+  }
+});
+
+const globalMenuMessages = defineMessages({
+  'home.globalMenu.sites': {
+    id: 'GlobalMenu.SitesEntryLabel',
+    defaultMessage: 'Sites'
+  },
+  'home.globalMenu.users': {
+    id: 'GlobalMenu.UsersEntryLabel',
+    defaultMessage: 'Users'
+  },
+  'home.globalMenu.groups': {
+    id: 'GlobalMenu.GroupsEntryLabel',
+    defaultMessage: 'Groups'
+  },
+  'home.globalMenu.cluster': {
+    id: 'GlobalMenu.ClusterEntryLabel',
+    defaultMessage: 'Cluster'
+  },
+  'home.globalMenu.audit': {
+    id: 'GlobalMenu.AuditEntryLabel',
+    defaultMessage: 'Audit'
+  },
+  'home.globalMenu.logging-levels': {
+    id: 'GlobalMenu.LoggingLevelsEntryLabel',
+    defaultMessage: 'Logging Levels'
+  },
+  'home.globalMenu.log-console': {
+    id: 'GlobalMenu.LogConsoleEntryLabel',
+    defaultMessage: 'Log Console'
+  },
+  'home.globalMenu.globalConfig': {
+    id: 'GlobalMenu.GlobalConfigEntryLabel',
+    defaultMessage: 'Global Config'
+  },
+  'home.globalMenu.encryptionTool': {
+    id: 'GlobalMenu.EncryptionTool',
+    defaultMessage: 'Encryption Tool'
+  },
+  'home.about-us': {
+    id: 'GlobalMenu.AboutUs',
+    defaultMessage: 'About'
+  },
+  'home.settings': {
+    id: 'GlobalMenu.Settings',
+    defaultMessage: 'Account Management'
+  },
+  'login': {
+    id: 'GlobalMenu.Login',
+    defaultMessage: 'Login'
+  },
+  'login.recover': {
+    id: 'GlobalMenu.Recover',
+    defaultMessage: 'Password Recovery'
+  }
+});
+
+const adminConfigurationMessages = defineMessages({
+  encryptMarked: {
+    id: 'adminConfigurations.encryptMarked',
+    defaultMessage: 'Encrypt Marked'
+  },
+  encryptError: {
+    id: 'adminConfigurations.encryptError',
+    defaultMessage: 'An error has occurred attempting to encrypt items.'
+  },
+  noEncryptItems: {
+    id: 'adminConfigurations.noEncryptItems',
+    defaultMessage: 'No items to encrypt were found in XML markup. Add attribute `encrypted=""` to mark for encryption.'
+  },
+  allEncrypted: {
+    id: 'adminConfigurations.allEncrypted',
+    defaultMessage: 'All marked items are already encrypted. The `encrypted` attribute should have a blank value to be marked for encryption (e.g. `encrypted=""`)'
+  },
+  xmlContainsErrors: {
+    id: 'adminConfigurations.xmlContainsErrors',
+    defaultMessage: 'The XML document contains errors: {errors}'
+  },
+  encryptionDetail: {
+    id: 'adminConfigurations.encryptionDetail',
+    defaultMessage: '"{name}" with value "{value}"'
+  },
+  pendingEncryptions: {
+    id: 'adminConfigurations.pendingEncryptions',
+    defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t}' +
+                    'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
+  }
+});
+
+const encryptToolMessages = defineMessages({
+  pageTitle: {
+    id: 'encryptTool.pageTitle',
+    defaultMessage: 'Encryption Tool'
+  },
+  inputLabel: {
+    id: 'encryptTool.inputLabel',
+    defaultMessage: 'Raw Text'
+  },
+  buttonText: {
+    id: 'encryptTool.buttonText',
+    defaultMessage: 'Encrypt Text'
+  },
+  successMessage: {
+    id: 'encryptTool.successMessage',
+    defaultMessage: 'Encrypted text copied to clipboard.'
+  },
+  errorMessage: {
+    id: 'encryptTool.errorMessage',
+    defaultMessage: 'Text encryption failed. Please try again momentarily.'
+  },
+  clearResultButtonText: {
+    id: 'encryptTool.clearResultButtonText',
+    defaultMessage: 'Clear'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -593,5 +755,10 @@ export default {
   siteComponentDSMessages,
   formEngineMessages,
   browseCMISMessages,
-  dragAndDropMessages
+  dragAndDropMessages,
+  internalNameControlMessages,
+  checkboxGroupControlMessages,
+  globalMenuMessages,
+  adminConfigurationMessages,
+  encryptToolMessages
 };
