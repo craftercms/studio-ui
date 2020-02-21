@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,10 +15,9 @@
  */
 
 import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
-import { catchError, map, mapTo, pluck } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { map, mapTo, pluck } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Credentials, User } from '../models/User';
-import { AjaxError } from 'rxjs/ajax';
 
 export function getLogoutInfoURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
@@ -40,14 +39,7 @@ export function login(credentials: Credentials): Observable<User> {
 
 export function validateSession(): Observable<boolean> {
   return get('/studio/api/1/services/api/1/security/validate-session.json').pipe(
-    map(({ response }) => response.message === 'OK'),
-    catchError((error: AjaxError) => {
-      if (error.status === 401) {
-        return of(false);
-      } else {
-        throw error;
-      }
-    })
+    map(({ response }) => response.active)
   );
 }
 
