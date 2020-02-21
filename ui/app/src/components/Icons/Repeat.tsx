@@ -17,12 +17,11 @@
 import React from 'react';
 import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 
-export default function Union(props: SvgIconProps) {
+export default function Repeat(props: SvgIconProps) {
   return (
     <SvgIcon {...props}>
-      <path
-        d="M7.39516 4.24916V4.74916H7.89516H9.82948H10.3295V4.24916V1.31641H14.0891V4.24916V4.74916H14.5891H16.3672V10.6835H1.37402V4.74916H3.13001H3.63001V4.24916V1.31641H7.39516V4.24916Z"
-        stroke="#5AC8FA"/>
+      <circle cx="12.126" cy="12.2466" r="9.31986" stroke="black" strokeWidth="1.08199"/>
+      <path d="M10.8305 10.709V11.148H11.2695H12.968H13.407V10.709V8.13386H16.7082V10.709V11.148H17.1472H18.7085V16.3588H5.54353V11.148H7.0854H7.52443V10.709V8.13386H10.8305V10.709Z" stroke="black" strokeWidth="0.878068"/>
     </SvgIcon>
   );
 }

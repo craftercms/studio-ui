@@ -820,6 +820,12 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
                 content_o {
                   ...ContentIncludeWrapperFragment
                 }
+                randomrg_o {
+                  item {
+                    namebonito_s
+                    namefeo_s
+                  }
+                }
               }
               ... on taxonomy {
                 items {

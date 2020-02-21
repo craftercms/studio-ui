@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core';
@@ -25,11 +25,13 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import { usePreviewGuest, useSelection } from '../../../utils/hooks';
 import { ContentType } from '../../../models/ContentType';
 import Page from '../../../components/Icons/Page';
-import Union from '../../../components/Icons/Union';
+import Field from '../../../components/Icons/Field';
 import Component from '../../../components/Icons/Component';
 import NodeSelector from '../../../components/Icons/NodeSelector';
 import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
+import Repeat from '../../../components/Icons/Repeat';
+import iconStyles from '../../../styles/icon';
 
 const translations = defineMessages({
   contentTree: {
@@ -39,78 +41,150 @@ const translations = defineMessages({
 });
 
 const useStyles = makeStyles((theme) => createStyles({
-  root: {}
+  root: {},
+  icon: {
+    ...iconStyles
+  },
+  treeItemIconContainer: {
+    display: 'none'
+  },
+  treeItemRoot: {
+    "&:focus > .MuiTreeItem-content": {
+      background: 'none'
+    },
+    "&:hover > .MuiTreeItem-content": {
+      background: 'none'
+    }
+  },
+  treeItemContent: {
+    padding: '10px 8px',
+  },
+  treeItemGroup: {
+    //marginLeft: '12px'
+  },
+  treeItemExpanded: {
+
+  },
+  treeItemLabel: {
+    display: 'flex',
+    '& p': {
+      marginTop: 0,
+      marginLeft: '5px',
+      overflow: 'hidden',
+      'display': '-webkit-box',
+      '-webkit-line-clamp': 1,
+      '-webkit-box-orient': 'vertical',
+      marginBottom: 0,
+      wordBreak: 'break-all'
+    }
+  },
 }));
 
 interface RenderTree {
   id: string;
   name: string;
-  children?: RenderTree[];
+  children: RenderTree[];
   type: string;
+  modelId?: string;
+}
+
+function getNodeSelectorChildren(array: ContentInstance, parentName: string, parentId) {
+  return {
+    id: `${parentId}${Math.random() * 1000}`,
+    name: `${parentName}: ${array.craftercms.label}`,
+    type: 'component',
+    modelId: `${array.craftercms.id}`
+  };
+}
+
+function getChildren(array: ContentInstance, contentType: any, models: LookupTable<ContentInstance>, contentTypes: ContentType[]) {
+  let children = [];
+  Object.keys(array).forEach((key) => {
+    if(key === 'craftercms') return;
+    const { type, name, id } = contentType.fields[key];
+    let subChildren = [];
+    if (type === 'node-selector' && array[key].length) {
+      array[key].forEach((id) => {
+        let parentName = contentTypes.find((contentType) => contentType.id === models[id].craftercms.contentType).name;
+        subChildren.push(getNodeSelectorChildren(models[id], parentName, id));
+      });
+    } else if (type === 'repeat') {
+      array[key].forEach((item) => {
+        subChildren = getChildren(item, contentType.fields[key], models, contentTypes);
+      });
+    }
+    children.push({
+      id: `${id}${Math.random() * 1000}`,
+      name,
+      type,
+      children: subChildren
+    });
+  });
+  return children;
 }
 
 export default function ContentTree() {
   const classes = useStyles({});
   const guest = usePreviewGuest();
   const contentTypesBranch = useSelection(state => state.contentTypes);
-  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
+  const contentTypes = useMemo(
+    () => contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null,
+    [contentTypesBranch.byId]
+  );
   const [expanded, setExpanded] = React.useState<string[]>(['root']);
-  var data = {
+  const [data, setData] = React.useState({
     id: null,
     name: null,
     children: [],
     type: null
-  };
+  });
 
-  if (guest?.modelId && guest?.models && contentTypes) {
-
-    let parent = guest.models[guest.modelId];
-    let contentType = contentTypes.find((contentType) => contentType.id === parent.craftercms.contentType);
-    data.id = 'root';
-    data.name = parent.craftercms.label;
-    data.children = getChildren(parent, contentType, guest.models);
-    data.type = contentType.type;
-  }
-
-  function getNodeSelectorChildren(array: ContentInstance, parentName: string, parentId) {
-    return {
-      id: `${array.craftercms.id}_${parentId}`,
-      name: `${parentName}: ${array.craftercms.label}`,
-      type: 'component'
-    };
-  }
-
-  function getChildren(array: ContentInstance, contentType: ContentType, models: LookupTable<ContentInstance>) {
-    let children = [];
-    Object.keys(array).slice(1).forEach((key) => {
-      const { type, name, id } = contentType.fields[key];
-      let subChildren = [];
-      if (type === 'node-selector' && array[key].length) {
-        array[key].forEach((id) => {
-          subChildren.push(getNodeSelectorChildren(models[id], name, id));
-        });
-      }
-      children.push({
-        id: `${array.craftercms.id}_${id}`,
-        name,
-        type,
-        children: subChildren
-      });
-    });
-    return children;
-  }
+  useEffect(() => {
+    if (guest?.modelId && guest?.models && contentTypes && data.id === null) {
+      let parent = guest.models[guest.modelId];
+      let contentType = contentTypes.find((contentType) => contentType.id === parent.craftercms.contentType);
+      let data: RenderTree = {
+        id: 'root',
+        name: parent.craftercms.label,
+        children: getChildren(parent, contentType, guest.models, contentTypes),
+        type: contentType.type,
+        modelId: parent.craftercms.id
+      };
+      setData(data);
+    }
+  }, [contentTypes, data.id, guest]);
 
   const renderTree = (nodes: RenderTree) => {
-    let Icon = Union;
+    let Icon;
     if (nodes.type === 'page') {
       Icon = Page;
     } else if (nodes.type === 'node-selector') {
       Icon = NodeSelector;
     } else if (nodes.type === 'component') {
       Icon = Component;
+    } else if (nodes.type === 'repeat') {
+      Icon = Repeat;
+    } else {
+      Icon = Field;
     }
     return (
-      <TreeItem key={nodes.id} nodeId={nodes.id} label={<div><Icon/>{nodes.name}</div>}>
+      <TreeItem
+        key={nodes.id}
+        nodeId={nodes.id}
+        label={
+          <div className={classes.treeItemLabel}>
+            <Icon className={nodes.id === 'root' ? '' : classes.icon}/>
+            <p>{nodes.name}</p>
+          </div>
+        }
+        classes={{
+          root: classes.treeItemRoot,
+          content: classes.treeItemContent,
+          expanded: classes.treeItemExpanded,
+          group: classes.treeItemGroup,
+          iconContainer: nodes.id === 'root' ? classes.treeItemIconContainer : ''
+        }}
+      >
         {Array.isArray(nodes.children) ? nodes.children.map(node => renderTree(node)) : null}
       </TreeItem>
     )
