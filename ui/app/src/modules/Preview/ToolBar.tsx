@@ -297,21 +297,66 @@ export function AddressBar(props: AddressBarProps) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={() => handleEdit('form')}>Edit</MenuItem>
+        <MenuItem onClick={() => handleEdit('form')}>
+          <FormattedMessage
+            id="previewToolBar.menu.edit"
+            defaultMessage="Edit"
+          />
+        </MenuItem>
         {
           (!publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
-          <MenuItem onClick={() => handleEdit('schedule')}>Schedule</MenuItem>
+          <MenuItem onClick={() => handleEdit('schedule')}>
+            <FormattedMessage
+              id="previewToolBar.menu.schedule"
+              defaultMessage="Schedule"
+            />
+          </MenuItem>
         }
         {
           (!publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
-          <MenuItem onClick={() => handleEdit('publish')}>Publish</MenuItem>
+          <MenuItem onClick={() => handleEdit('publish')}>
+            <FormattedMessage
+              id="previewToolBar.menu.publish"
+              defaultMessage="Publish"
+            />
+          </MenuItem>
         }
-        <MenuItem onClick={handleClose}>History</MenuItem>
-        <MenuItem onClick={handleClose}>Dependencies</MenuItem>
-        <MenuItem onClick={handleClose}>Delete</MenuItem>
-        <MenuItem onClick={handleClose} className={classes.separator}>Info Sheet</MenuItem>
-        <MenuItem onClick={() => handleEdit('template')}>Edit Template</MenuItem>
-        <MenuItem onClick={() => handleEdit('controller')}>Edit Controller</MenuItem>
+        <MenuItem onClick={handleClose}>
+          <FormattedMessage
+            id="previewToolBar.menu.history"
+            defaultMessage="History"
+          />
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <FormattedMessage
+            id="previewToolBar.menu.dependencies"
+            defaultMessage="Dependencies"
+          />
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <FormattedMessage
+            id="previewToolBar.menu.delete"
+            defaultMessage="Delete"
+          />
+        </MenuItem>
+        <MenuItem onClick={handleClose} className={classes.separator}>
+          <FormattedMessage
+            id="previewToolBar.menu.infoSheet"
+            defaultMessage="Info Sheet"
+          />
+        </MenuItem>
+        <MenuItem onClick={() => handleEdit('template')}>
+          <FormattedMessage
+            id="previewToolBar.menu.editTemplate"
+            defaultMessage="Edit Template"
+          />
+        </MenuItem>
+        <MenuItem onClick={() => handleEdit('controller')}>
+          <FormattedMessage
+            id="previewToolBar.menu.editController"
+            defaultMessage="Edit Controller"
+          />
+        </MenuItem>
       </Menu>
       {
         dialogConfig.open &&

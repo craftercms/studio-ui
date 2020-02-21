@@ -54,7 +54,7 @@ export function getPreviewURLFromPath(baseUrl: string, path: string) {
 
 export function getQueryVariable(query: string, variable: string) {
   let qs = parse(query);
-  return qs[variable] || null;
+  return qs[variable] ?? null;
 }
 
 export default {

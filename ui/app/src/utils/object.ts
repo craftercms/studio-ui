@@ -19,6 +19,7 @@ import { camelize } from './string';
 import { LookupTable } from '../models/LookupTable';
 import { EntityState } from '../models/GlobalState';
 import { MutableRefObject } from 'react';
+import { forEach } from './array';
 
 export function pluckProps(source: object, ...props: string[]): object {
   const object = {};
@@ -106,4 +107,28 @@ export function resolveEntityCollectionFetch<T = any>(collection: Array<T>): Ent
 
 export function ref<T = any>(ref: MutableRefObject<T>): T {
   return ref.current;
+}
+
+export function findParentModelId(modelId: string, childrenMap: LookupTable<Array<string>>, models: any) {
+  const parentId = forEach(
+    Object.entries(childrenMap),
+    ([id, children]) => {
+      if (
+        nnou(children) &&
+        (id !== modelId) &&
+        children.includes(modelId)
+      ) {
+        return id;
+      }
+    },
+    null
+  );
+  return nnou(parentId)
+    // If it has a path, it is not embedded and hence the parent
+    // Otherwise, need to keep looking.
+    ? nnou(models[parentId].craftercms.path)
+      ? parentId
+      : findParentModelId(parentId, childrenMap, models)
+    // No parent found for this model
+    : null;
 }

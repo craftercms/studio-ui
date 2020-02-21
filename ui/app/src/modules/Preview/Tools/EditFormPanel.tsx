@@ -28,9 +28,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
-import { nnou } from '../../../utils/object';
-import { forEach } from '../../../utils/array';
-import { LookupTable } from '../../../models/LookupTable';
+import { findParentModelId } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import { getQueryVariable } from '../../../utils/path';
 import EmbeddedLegacyEditors from '../EmbeddedLegacyEditors';
@@ -73,30 +71,6 @@ function createBackHandler(dispatch) {
     dispatch(clearSelectForEdit());
     hostToGuest$.next({ type: CLEAR_SELECTED_ZONES })
   };
-}
-
-function findParentModelId(modelId: string, childrenMap: LookupTable<Array<string>>, models: any) {
-  const parentId = forEach(
-    Object.entries(childrenMap),
-    ([id, children]) => {
-      if (
-        nnou(children) &&
-        (id !== modelId) &&
-        children.includes(modelId)
-      ) {
-        return id;
-      }
-    },
-    null
-  );
-  return nnou(parentId)
-    // If it has a path, it is not embedded and hence the parent
-    // Otherwise, need to keep looking.
-    ? nnou(models[parentId].craftercms.path)
-      ? parentId
-      : findParentModelId(parentId, childrenMap, models)
-    // No parent found for this model
-    : null;
 }
 
 export default function EditFormPanel() {
@@ -170,7 +144,8 @@ export default function EditFormPanel() {
         open: true,
         src: getSrc(type),
         type
-      });
+      }
+    );
   }
 
   const getPath = (type) => getQueryVariable(getSrc(type), 'path');
@@ -237,7 +212,8 @@ export default function EditFormPanel() {
       </ToolPanel>
       {
         dialogConfig.open &&
-        <EmbeddedLegacyEditors dialogConfig={dialogConfig} setDialogConfig={setDialogConfig} getPath={getPath} showController={selectedContentType.includes('/page')}/>
+        <EmbeddedLegacyEditors dialogConfig={dialogConfig} setDialogConfig={setDialogConfig} getPath={getPath}
+                               showController={selectedContentType.includes('/page')}/>
       }
     </>
   )
