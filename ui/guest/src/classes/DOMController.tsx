@@ -263,8 +263,8 @@ export class DOMController {
       recordId = zone.recordIds[0],
       record = iceRegistry.getReferentialEntries(recordId),
       receptacles = iceRegistry.getRecordReceptacles(recordId),
-      receptacleZones = receptacles.map((recId) =>
-        this.zones.find((zn) => zn.recordIds.includes(recId))
+      receptacleZones = receptacles.map((recId: number) =>
+        this.zones.find((zn: IceZone) => zn.recordIds.includes(recId))
       ),
       dropZones = receptacleZones.map(z => z.element);
 
