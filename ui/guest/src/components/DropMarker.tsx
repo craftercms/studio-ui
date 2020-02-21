@@ -30,12 +30,13 @@ import {
   Y_AXIS
 } from '../util';
 import { Coordinates } from '../models/Positioning';
+import { DropZone } from '../models/Ice';
 
 interface DropMarkerProps {
   over: any;
   prev: DOMRect;
   next: DOMRect;
-  dropZone: any;
+  dropZone: DropZone;
   coordinates: Coordinates;
   onDropPosition: Function;
 }

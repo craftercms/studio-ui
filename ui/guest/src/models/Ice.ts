@@ -35,13 +35,12 @@ export interface Stats {
   currentDZElementRect: DOMRect;
   currentDZChildrenRects: DOMRect[];
   record: Record;
-
+  $dropMarker: JQuery;
+  draggedElementIndex: number;
+  draggedElement: Element;
+  childArrangement: string;
+  originDropZone: Element;
   receptacles: any;
-  $dropMarker: any;
-  draggedElement: any;
-  childArrangement: any;
-  originDropZone: any;
-  draggedElementIndex: any;
 }
 
 export interface DropZone {

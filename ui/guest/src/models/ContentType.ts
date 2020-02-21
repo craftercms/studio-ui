@@ -26,7 +26,7 @@ export interface ContentTypeField {
   validations: {
     contentTypes: string[];
   };
-  defaultValue: any;
+  defaultValue: string;
   required: boolean;
   fields?: LookupTable<ContentTypeField>;
   values?: { label: string, value: string }[];
@@ -88,4 +88,14 @@ export interface Asset {
   lastModified: string;
   size: number;
   snippets: unknown;
+}
+
+export interface ContentTypeReceptacle {
+  modelId: string;
+  fieldId: string;
+  label: string;
+  id: number;
+  contentType: string;
+
+  [prop: string]: any;
 }
