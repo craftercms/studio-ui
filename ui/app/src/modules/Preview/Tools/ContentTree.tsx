@@ -41,7 +41,11 @@ const translations = defineMessages({
 });
 
 const useStyles = makeStyles((theme) => createStyles({
-  root: {},
+  root: {
+    '& > li > ul': {
+      marginLeft: '12px'
+    }
+  },
   icon: {
     ...iconStyles
   },
@@ -154,6 +158,28 @@ export default function ContentTree() {
     }
   }, [contentTypes, data.id, guest]);
 
+
+  const handleClick = (node: RenderTree) => {
+    if(node.type === 'component') {
+      let parent = guest.models[node.modelId];
+      let contentType = contentTypes.find((contentType) => contentType.id === parent.craftercms.contentType);
+      let data: RenderTree = {
+        id: 'root',
+        name: parent.craftercms.label,
+        children: getChildren(parent, contentType, guest.models, contentTypes),
+        type: contentType.type,
+        modelId: parent.craftercms.id
+      };
+      setData(data);
+      setExpanded(['root']);
+    }
+    return;
+  };
+
+  const handleChange = (event: React.ChangeEvent<{}>, nodes: string[]) => {
+    setExpanded([...nodes, 'root']);
+  };
+
   const renderTree = (nodes: RenderTree) => {
     let Icon;
     if (nodes.type === 'page') {
@@ -173,10 +199,12 @@ export default function ContentTree() {
         nodeId={nodes.id}
         label={
           <div className={classes.treeItemLabel}>
-            <Icon className={nodes.id === 'root' ? '' : classes.icon}/>
+            {/*<Icon className={nodes.id === 'root' ? '' : classes.icon}/>*/}
+            <Icon className={classes.icon}/>
             <p>{nodes.name}</p>
           </div>
         }
+        onClick={() => handleClick(nodes)}
         classes={{
           root: classes.treeItemRoot,
           content: classes.treeItemContent,
@@ -188,10 +216,6 @@ export default function ContentTree() {
         {Array.isArray(nodes.children) ? nodes.children.map(node => renderTree(node)) : null}
       </TreeItem>
     )
-  };
-
-  const handleChange = (event: React.ChangeEvent<{}>, nodes: string[]) => {
-    setExpanded([...nodes, 'root']);
   };
 
   return (
