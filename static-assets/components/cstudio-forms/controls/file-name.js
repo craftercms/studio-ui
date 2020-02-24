@@ -368,8 +368,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         dialog.setBody(
           CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.urlChangeWaring) + '</br></br>' +
           CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.viewReferences)
-          // 'Changing this value may result in broken references and links.</br></br>' +
-          // '<span>To view the content that references this content, click </span>'
         );
         dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
 
