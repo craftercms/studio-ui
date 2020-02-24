@@ -196,7 +196,7 @@ export class ContentController {
   insertItem(
     modelId: string,
     fieldId: string,
-    index: number,
+    index: number | string,
     item: Item
   ): void {
 
@@ -228,7 +228,7 @@ export class ContentController {
   insertComponent(
     modelId: string,
     fieldId: string,
-    targetIndex: number,
+    targetIndex: number | string,
     contentType: ContentType,
     shared: boolean = false
   ): void {
@@ -304,7 +304,7 @@ export class ContentController {
 
   }
 
-  insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void {
+  insertInstance(modelId: string, fieldId: string, targetIndex: number | string, instance: ContentInstance): void {
     const models = this.getCachedModels();
     const model = models[modelId];
     const result = getResult(model, fieldId, targetIndex);
@@ -343,8 +343,8 @@ export class ContentController {
   sortItem(
     modelId: string,
     fieldId: string,
-    currentIndex: number,
-    targetIndex: number
+    currentIndex: number | string,
+    targetIndex: number | string
   ): void {
 
     const models = this.getCachedModels();
@@ -377,10 +377,10 @@ export class ContentController {
   moveItem(
     originalModelId: string,
     originalFieldId: string,
-    originalIndex: number,
+    originalIndex: number | string,
     targetModelId: string,
     targetFieldId: string,
-    targetIndex: number
+    targetIndex: number | string
   ): void {
 
     const models = this.getCachedModels();
