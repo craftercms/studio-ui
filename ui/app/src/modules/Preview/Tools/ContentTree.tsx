@@ -15,12 +15,13 @@
  */
 
 import React, { useEffect, useMemo } from 'react';
+import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { defineMessages } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { usePreviewGuest, useSelection } from '../../../utils/hooks';
 import { ContentType } from '../../../models/ContentType';
@@ -32,11 +33,17 @@ import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
 import Repeat from '../../../components/Icons/Repeat';
 import iconStyles from '../../../styles/icon';
+import LoadingState from '../../../components/SystemStatus/LoadingState';
+import { createLookupTable } from '../../../utils/object';
 
 const translations = defineMessages({
   contentTree: {
     id: 'craftercms.ice.contentTree.title',
     defaultMessage: 'Content Tree'
+  },
+  loading: {
+    id: 'craftercms.ice.contentTree.loading',
+    defaultMessage: 'Loading'
   }
 });
 
@@ -53,22 +60,20 @@ const useStyles = makeStyles((theme) => createStyles({
     display: 'none'
   },
   treeItemRoot: {
-    "&:focus > .MuiTreeItem-content": {
+    '&:focus > .MuiTreeItem-content': {
       background: 'none'
     },
-    "&:hover > .MuiTreeItem-content": {
+    '&:hover > .MuiTreeItem-content': {
       background: 'none'
     }
   },
   treeItemContent: {
-    padding: '10px 8px',
+    padding: '10px 8px'
   },
   treeItemGroup: {
     //marginLeft: '12px'
   },
-  treeItemExpanded: {
-
-  },
+  treeItemExpanded: {},
   treeItemLabel: {
     display: 'flex',
     '& p': {
@@ -81,7 +86,7 @@ const useStyles = makeStyles((theme) => createStyles({
       marginBottom: 0,
       wordBreak: 'break-all'
     }
-  },
+  }
 }));
 
 interface RenderTree {
@@ -90,6 +95,12 @@ interface RenderTree {
   children: RenderTree[];
   type: string;
   modelId?: string;
+}
+
+interface Data {
+  selected: string;
+  previous: Array<string>;
+  lookupTable: LookupTable<RenderTree>
 }
 
 function getNodeSelectorChildren(array: ContentInstance, parentName: string, parentId) {
@@ -104,7 +115,7 @@ function getNodeSelectorChildren(array: ContentInstance, parentName: string, par
 function getChildren(array: ContentInstance, contentType: any, models: LookupTable<ContentInstance>, contentTypes: ContentType[]) {
   let children = [];
   Object.keys(array).forEach((key) => {
-    if(key === 'craftercms') return;
+    if (key === 'craftercms') return;
     const { type, name, id } = contentType.fields[key];
     let subChildren = [];
     if (type === 'node-selector' && array[key].length) {
@@ -130,21 +141,22 @@ function getChildren(array: ContentInstance, contentType: any, models: LookupTab
 export default function ContentTree() {
   const classes = useStyles({});
   const guest = usePreviewGuest();
+  const { formatMessage } = useIntl();
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const contentTypes = useMemo(
     () => contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null,
     [contentTypesBranch.byId]
   );
   const [expanded, setExpanded] = React.useState<string[]>(['root']);
-  const [data, setData] = React.useState({
-    id: null,
-    name: null,
-    children: [],
-    type: null
+  const [data, setData] = React.useState<Data>({
+    previous: [],
+    selected: null,
+    lookupTable: null
   });
 
   useEffect(() => {
-    if (guest?.modelId && guest?.models && contentTypes && data.id === null) {
+    if (guest?.modelId && guest?.models && contentTypes && data.selected === null) {
+      console.log('here');
       let parent = guest.models[guest.modelId];
       let contentType = contentTypes.find((contentType) => contentType.id === parent.craftercms.contentType);
       let data: RenderTree = {
@@ -154,26 +166,42 @@ export default function ContentTree() {
         type: contentType.type,
         modelId: parent.craftercms.id
       };
-      setData(data);
+      setData({
+        previous: [],
+        selected: parent.craftercms.id,
+        lookupTable: createLookupTable<RenderTree>([data], 'modelId')
+      });
     }
-  }, [contentTypes, data.id, guest]);
+  }, [contentTypes, data.selected, guest]);
 
 
   const handleClick = (node: RenderTree) => {
-    if(node.type === 'component') {
+    if (node.type === 'component' && node.id !== 'root') {
       let parent = guest.models[node.modelId];
       let contentType = contentTypes.find((contentType) => contentType.id === parent.craftercms.contentType);
-      let data: RenderTree = {
-        id: 'root',
-        name: parent.craftercms.label,
-        children: getChildren(parent, contentType, guest.models, contentTypes),
-        type: contentType.type,
-        modelId: parent.craftercms.id
-      };
-      setData(data);
+      setData({
+        previous: [...data.previous, data.selected],
+        selected: parent.craftercms.id,
+        lookupTable: {
+          ...data.lookupTable,
+          [parent.craftercms.id]: {
+            id: 'root',
+            name: parent.craftercms.label,
+            children: getChildren(parent, contentType, guest.models, contentTypes),
+            type: contentType.type,
+            modelId: parent.craftercms.id
+          }
+        }
+      });
       setExpanded(['root']);
     }
     return;
+  };
+
+  const handlePrevious = () => {
+    let previousArray = [...data.previous];
+    let previous = previousArray.pop();
+    setData({...data, selected: previous, previous: previousArray});
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, nodes: string[]) => {
@@ -199,8 +227,13 @@ export default function ContentTree() {
         nodeId={nodes.id}
         label={
           <div className={classes.treeItemLabel}>
-            {/*<Icon className={nodes.id === 'root' ? '' : classes.icon}/>*/}
-            <Icon className={classes.icon}/>
+            {
+              (nodes.id === 'root' && data.previous.length) ? (
+                <ChevronLeftRounded onClick={handlePrevious}/>
+              ) : (
+                <Icon className={classes.icon}/>
+              )
+            }
             <p>{nodes.name}</p>
           </div>
         }
@@ -220,6 +253,13 @@ export default function ContentTree() {
 
   return (
     <ToolPanel title={translations.contentTree}>
+      {
+        data.selected === null &&
+        <LoadingState
+          title={formatMessage(translations.loading)}
+          graphicProps={{ width: 150 }}
+        />
+      }
       <TreeView
         className={classes.root}
         defaultCollapseIcon={<ExpandMoreIcon/>}
@@ -228,8 +268,8 @@ export default function ContentTree() {
         onNodeToggle={handleChange}
       >
         {
-          data.id &&
-          renderTree(data)
+          data.selected &&
+          renderTree(data.lookupTable[data.selected])
         }
       </TreeView>
     </ToolPanel>
