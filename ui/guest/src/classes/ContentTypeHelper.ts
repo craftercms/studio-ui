@@ -90,7 +90,7 @@ export class ContentTypeHelper {
       ...names);
   }
 
-  setContentType(descriptor: ContentType) {
+  setContentType(descriptor: ContentType): void {
     this.descriptor = descriptor;
   }
 
