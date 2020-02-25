@@ -1136,7 +1136,7 @@ export function Guest(props: GuestProps) {
     return ElementRegistry.deregister(id);
   }
 
-  function onEvent(event: Event, dispatcher) {
+  function onEvent(event: Event, dispatcher: number) {
     if (
       persistence.contentReady &&
       stateRef.current.common.inEditMode
