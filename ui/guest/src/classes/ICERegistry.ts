@@ -27,8 +27,9 @@ import {
 import { ContentTypeHelper } from './ContentTypeHelper';
 import { ModelHelper } from './ModelHelper';
 import { ContentInstance } from '../models/ContentInstance';
-import { ContentType, ContentTypeField, Record } from '../models/ContentType';
+import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
+import { Record } from '../models/InContextEditing';
 
 export class ICERegistry {
 
