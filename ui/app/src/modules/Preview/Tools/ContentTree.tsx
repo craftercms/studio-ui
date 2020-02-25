@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => createStyles({
     }
   },
   treeItemContent: {
-    padding: '10px 8px',
+    padding: '6px 8px',
     '&.padded': {
       paddingLeft: '34px'
     }
@@ -197,10 +197,7 @@ export default function ContentTree() {
   }, [contentTypes, data.selected, guest]);
 
 
-  const handleClick = (node: RenderTree) => {
-    //console.log('goes to');
-    //console.log(node);
-
+  const handleClick = (event: React.ChangeEvent<{}>, node: RenderTree) => {
     hostToGuest$.next({
       type: SCROLL_TO_ELEMENT,
       payload: node
@@ -232,14 +229,17 @@ export default function ContentTree() {
     return;
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = (event: React.ChangeEvent<{}>) => {
+    event.stopPropagation();
     let previousArray = [...data.previous];
     let previous = previousArray.pop();
     setData({ ...data, selected: previous, previous: previousArray });
   };
 
-  const handleChange = (event: React.ChangeEvent<{}>, nodes: string[]) => {
-    setExpanded([...nodes, 'root']);
+  const handleChange = (event: any, nodes: string[]) => {
+    if (event.target.classList.contains('toggle') || event.target.parentElement.classList.contains('toggle')) {
+      setExpanded([...nodes, 'root']);
+    }
   };
 
   const renderTree = (nodes: RenderTree) => {
@@ -261,10 +261,10 @@ export default function ContentTree() {
         key={nodes.id}
         nodeId={nodes.id}
         label={
-          <div className={classes.treeItemLabel}>
+          <div className={classes.treeItemLabel} onClick={(e) => handleClick(e, nodes)}>
             {
               (nodes.id === 'root' && data.previous.length) ? (
-                <ChevronLeftRounded onClick={handlePrevious}/>
+                <ChevronLeftRounded onClick={(e) => handlePrevious(e)}/>
               ) : (
                 <>
                   {(nodes.type === 'component') && <ChevronRightIcon/>}
@@ -275,7 +275,6 @@ export default function ContentTree() {
             <p>{nodes.name}</p>
           </div>
         }
-        onClick={() => handleClick(nodes)}
         classes={{
           root: classes.treeItemRoot,
           content: clsx(classes.treeItemContent, (!nodes.children?.length && nodes.type !== 'component') && 'padded'),
@@ -300,8 +299,8 @@ export default function ContentTree() {
       }
       <TreeView
         className={classes.root}
-        defaultCollapseIcon={<ExpandMoreIcon/>}
-        defaultExpandIcon={<ChevronRightIcon/>}
+        defaultCollapseIcon={<ExpandMoreIcon className='toggle'/>}
+        defaultExpandIcon={<ChevronRightIcon className='toggle'/>}
         expanded={expanded}
         onNodeToggle={handleChange}
       >
