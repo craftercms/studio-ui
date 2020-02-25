@@ -61,8 +61,9 @@ import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
-import { Asset, ContentType, Record } from '../models/ContentType';
+import { Asset, ContentType } from '../models/ContentType';
 import { ContentInstance } from '../models/ContentInstance';
+import { Record } from '../models/InContextEditing';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -427,7 +428,7 @@ export function Guest(props: GuestProps) {
     },
 
     /*onDragStart*/
-    dragstart(e, physicalRecord: Record) {    // TODO: DragStartEvent not matching
+    dragstart(e, physicalRecord: Record): void {
 
       e.stopPropagation();
       (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', null);
@@ -492,7 +493,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    onHostInstanceDragStarted(instance: ContentInstance) {
+    onHostInstanceDragStarted(instance: ContentInstance): void {
       let players = [];
       let siblings = [];
       let containers = [];
@@ -555,7 +556,7 @@ export function Guest(props: GuestProps) {
       fn.dragOk() && fn.onDragEnd();
     },
 
-    onHostComponentDragStarted(contentType: ContentType) {
+    onHostComponentDragStarted(contentType: ContentType): void {
 
       let players = [];
       let siblings = [];
@@ -619,7 +620,7 @@ export function Guest(props: GuestProps) {
       fn.dragOk() && fn.onDragEnd();
     },
 
-    dragover(e: DragEvent, record: Record) {
+    dragover(e: DragEvent, record: Record): void {
       let element = record.element;
       if (
         fn.dragOk() &&
@@ -671,7 +672,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    drop(e, record: Record) {
+    drop(e: Event, record: Record): void {
       if (fn.dragOk()) {
         e.preventDefault();
         e.stopPropagation();
@@ -866,7 +867,7 @@ export function Guest(props: GuestProps) {
     // onDragEnd doesn't execute when dropping from Host
     // consider behaviour when running Host Guest-side
     /*onDragEnd*/
-    dragend(e: Event) {
+    dragend(e: Event): void {
       if (fn.dragOk()) {
         e.stopPropagation();
         post({ type: INSTANCE_DRAG_ENDED });
@@ -968,7 +969,7 @@ export function Guest(props: GuestProps) {
       });
     },
 
-    onAssetDragStarted(asset: Asset) {
+    onAssetDragStarted(asset: Asset): void {
       let
         players = [],
         siblings = [],
@@ -1131,7 +1132,7 @@ export function Guest(props: GuestProps) {
     return ElementRegistry.register(payload);
   }
 
-  function deregister(id: string) {
+  function deregister(id: number) {
     return ElementRegistry.deregister(id);
   }
 
