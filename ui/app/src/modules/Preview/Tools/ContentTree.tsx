@@ -143,7 +143,7 @@ function getChildren(array: ContentInstance, contentType: any, models: LookupTab
           type: 'item',
           children: getChildren(item, contentType.fields[key], models, contentTypes, array.craftercms.id),
           modelId: modelId || array.craftercms.id,
-          fieldId: `${key}_${index}`,
+          fieldId: `${key}.${index}`,
           index
         })
       });
@@ -197,12 +197,7 @@ export default function ContentTree() {
   }, [contentTypes, data.selected, guest]);
 
 
-  const handleClick = (event: React.ChangeEvent<{}>, node: RenderTree) => {
-    hostToGuest$.next({
-      type: SCROLL_TO_ELEMENT,
-      payload: node
-    });
-
+  const handleClick = (node: RenderTree) => {
     if (node.type === 'component' && node.id !== 'root') {
       let model = guest.models[node.modelId];
       let contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
@@ -226,6 +221,14 @@ export default function ContentTree() {
       });
       setExpanded(['root']);
     }
+    return;
+  };
+
+  const handleScroll = (node: RenderTree) => {
+    hostToGuest$.next({
+      type: SCROLL_TO_ELEMENT,
+      payload: node
+    });
     return;
   };
 
@@ -261,13 +264,13 @@ export default function ContentTree() {
         key={nodes.id}
         nodeId={nodes.id}
         label={
-          <div className={classes.treeItemLabel} onClick={(e) => handleClick(e, nodes)}>
+          <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
             {
               (nodes.id === 'root' && data.previous.length) ? (
                 <ChevronLeftRounded onClick={(e) => handlePrevious(e)}/>
               ) : (
                 <>
-                  {(nodes.type === 'component') && <ChevronRightIcon/>}
+                  {(nodes.type === 'component') && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
                   <Icon className={classes.icon}/>
                 </>
               )
