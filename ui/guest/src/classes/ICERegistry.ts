@@ -38,7 +38,7 @@ export class ICERegistry {
   /* private */
   registry: LookupTable<Record> = { /* [id]: { modelId, fieldId, index } */ };
 
-  register(data: Record) {
+  register(data: Record): number {
 
     // For consistency, set `fieldId` and `index` props
     // to null for records that don't include those values
@@ -82,7 +82,7 @@ export class ICERegistry {
 
     } else {
 
-      const record = { ...data, id: ICERegistry.rid++ };
+      const record: Record = { ...data, id: ICERegistry.rid++ };
       const entities = this.getReferentialEntries(record);
 
       // Record coherence validation
@@ -139,7 +139,7 @@ export class ICERegistry {
     );
   }
 
-  recordOf(id: string | number): Record {
+  recordOf(id: number): Record {
     return this.registry[id];
   }
 
@@ -152,7 +152,7 @@ export class ICERegistry {
     );
   }
 
-  isRepeatGroupItem(id: string): boolean {
+  isRepeatGroupItem(id: number): boolean {
     const { field, index } = this.getReferentialEntries(id);
     return (
       // If there's no field, it's a root item (component, page)
@@ -184,7 +184,7 @@ export class ICERegistry {
     return receptacles;
   }
 
-  getRecordReceptacles(id: string | number) {
+  getRecordReceptacles(id: number) {
     const record = this.recordOf(id);
     const { index, field, fieldId, model } = this.getReferentialEntries(record);
     if (isNullOrUndefined(index)) {
@@ -281,7 +281,7 @@ export class ICERegistry {
   //   }
   // }
 
-  getReferentialEntries(record: string | number | Record) {
+  getReferentialEntries(record: number | Record) {
     record = typeof record === 'object' ? record : this.recordOf(record);
     const
       model = contentController.getCachedModel(record.modelId),
