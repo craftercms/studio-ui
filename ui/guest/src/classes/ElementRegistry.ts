@@ -21,10 +21,9 @@ import contentController from './ContentController';
 import { take } from 'rxjs/operators';
 import { ContentTypeHelper } from './ContentTypeHelper';
 import { ModelHelper } from './ModelHelper';
-import { Record } from '../models/ContentType';
+import { DropZone, Record } from '../models/InContextEditing';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '../models/LookupTable';
-import { DropZone } from '../models/Ice';
 
 let seq = 0;
 

@@ -36,7 +36,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime, delay, filter } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import { render } from 'react-dom';
-import { IceZone, Stats } from '../models/Ice';
+import { IceZone, Stats } from '../models/InContextEditing';
 
 const hostTrashed$ = new Subject();
 

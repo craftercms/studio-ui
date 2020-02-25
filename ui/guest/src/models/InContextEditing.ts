@@ -53,3 +53,15 @@ export interface DropZone {
   childrenRects: DOMRect[];
   origin?: any;
 }
+
+export interface Record {
+  modelId?: string;
+  index?: number | string;
+  fieldId?: string;
+  id?: number;
+  element?: Element;
+  label?: string;
+  iceIds?: number[];
+  complete?: boolean;
+  refCount?: number;
+}

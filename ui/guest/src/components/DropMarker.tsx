@@ -30,7 +30,7 @@ import {
   Y_AXIS
 } from '../util';
 import { Coordinates } from '../models/Positioning';
-import { DropZone } from '../models/Ice';
+import { DropZone } from '../models/InContextEditing';
 
 interface DropMarkerProps {
   over: any;

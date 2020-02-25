@@ -66,18 +66,6 @@ export interface ContentType {
   mergeStrategy: string;
 }
 
-export interface Record {
-  modelId?: string;
-  index?: number | string;
-  fieldId?: string;
-  id?: number;
-  element?: Element;
-  label?: string;
-  iceIds?: number[];
-  complete?: boolean;
-  refCount?: number;
-}
-
 export interface Asset {
   path: string;
   name: string;
