@@ -734,6 +734,17 @@ const encryptToolMessages = defineMessages({
   }
 });
 
+const fileNameControlMessages = defineMessages({
+  urlChangeWaring: {
+    id: 'fileNameControl.urlChangeWarning',
+    defaultMessage: 'Changing this value may result in broken references and links.'
+  },
+  viewReferences: {
+    id: 'fileNameControl.viewReferences',
+    defaultMessage: 'To view the content that references this content, click '
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -760,5 +771,6 @@ export default {
   checkboxGroupControlMessages,
   globalMenuMessages,
   adminConfigurationMessages,
-  encryptToolMessages
+  encryptToolMessages,
+  fileNameControlMessages
 };

@@ -22,19 +22,22 @@ CStudioForms.Controls.FileName = CStudioForms.Controls.FileName ||
         this.errors = [];
         this.properties = properties;
         this.constraints = constraints;
-        this.inputEl = null;
-        this.countEl = null;
-        this.required = true;
-        this.value = "_not-set";
-        this.form = form;
-        this.id = "file-name";
-        this.contentAsFolder = (form.definition) ? form.definition.contentAsFolder : null;
-        this.readonly = readonly;
-        this.defaultValue = "";
-        this.showWarnOnEdit = true;
+      this.inputEl = null;
+      this.countEl = null;
+      this.required = true;
+      this.value = '_not-set';
+      this.form = form;
+      this.id = 'file-name';
+      this.contentAsFolder = (form.definition) ? form.definition.contentAsFolder : null;
+      this.readonly = readonly;
+      this.defaultValue = '';
+      this.showWarnOnEdit = true;
+      this.messages = {
+        fileNameControlMessages: CrafterCMSNext.i18n.messages.fileNameControlMessages
+      };
 
-        return this;
-    }
+      return this;
+    };
 
 YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
@@ -201,17 +204,17 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
                     this.obj.renderValidation(true, false);
                     YAHOO.util.Dom.addClass(this.obj.urlErrEl, 'on');
                 } else {
-                    this.obj.clearError("exists");
-                    this.obj.renderValidation(true, true);
-                    YAHOO.util.Dom.removeClass(this.obj.urlErrEl, 'on');
+                  this.obj.clearError('exists');
+                  this.obj.renderValidation(true, true);
+                  YAHOO.util.Dom.removeClass(this.obj.urlErrEl, 'on');
                 }
             },
-            failure: function() {
-                this.availableEl.style.display = "none";
-                this.availableEl.innerHTML = "";
-            },
-            obj: this
-        }
+          failure: function () {
+            this.availableEl.style.display = 'none';
+            this.availableEl.innerHTML = '';
+          },
+          obj: this
+        };
 
         if(path != "" && path != newPath) {
             CStudioAuthoring.Service.contentExists(newPath, checkCb);
@@ -363,8 +366,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
         dialog.setHeader('Warning');
         dialog.setBody(
-          'Changing this value may result in broken references and links.</br></br>' +
-          '<span>To view the content that references this content, click </span>'
+          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.urlChangeWaring) + '</br></br>' +
+          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.viewReferences)
         );
         dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
 
