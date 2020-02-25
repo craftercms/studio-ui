@@ -138,7 +138,7 @@ export function GuestProxy(props) {
     );
 
     const handler = (e: Event) => {
-      let record = ElementRegistry.fromElement(e.currentTarget);
+      let record = ElementRegistry.fromElement(e.currentTarget as Element);
       if (notNullOrUndefined(record)) {
         if (['click', 'dblclick'].includes(e.type)) {
           e.preventDefault();

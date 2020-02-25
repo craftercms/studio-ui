@@ -21,7 +21,7 @@ import contentController from './ContentController';
 import { take } from 'rxjs/operators';
 import { ContentTypeHelper } from './ContentTypeHelper';
 import { ModelHelper } from './ModelHelper';
-import { DropZone, Record } from '../models/InContextEditing';
+import { DropZone, HoverData, Record } from '../models/InContextEditing';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '../models/LookupTable';
 
@@ -165,7 +165,7 @@ export class ElementRegistry {
     );
   }
 
-  static getHoverData(id: number) {
+  static getHoverData(id: number): HoverData {
     const record = this.get(id);
     return {
       id,
@@ -178,14 +178,14 @@ export class ElementRegistry {
     return this.get(id).element.getBoundingClientRect();
   }
 
-  static fromICEId(iceId: string | number): RegistryEntry {
+  static fromICEId(iceId: number): RegistryEntry {
     return this.registry[iceId];
     // return Object.values(this.db).find(({ iceIds }) => {
     //   return iceIds.includes(iceId);
     // });
   }
 
-  static compileDropZone(iceId: number | string): DropZone {
+  static compileDropZone(iceId: number): DropZone {
 
     const physicalRecord = this.fromICEId(iceId);
     const physicalRecordId = physicalRecord.id;
@@ -235,7 +235,7 @@ export class ElementRegistry {
 
   }
 
-  static fromElement(element: Element | EventTarget): Record {
+  static fromElement(element: Element): Record {
     const db = this.db;
     return forEach(
       Object.values(db),

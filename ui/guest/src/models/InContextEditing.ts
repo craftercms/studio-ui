@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentType, Record } from './ContentType';
+import { ContentType } from './ContentType';
 
 export interface IceZone {
   element?: Element;
@@ -64,4 +64,10 @@ export interface Record {
   iceIds?: number[];
   complete?: boolean;
   refCount?: number;
+}
+
+export interface HoverData {
+  id: number;
+  rect: DOMRect;
+  label: string;
 }
