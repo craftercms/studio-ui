@@ -51,7 +51,7 @@ export interface PagedEntityState<T = any> extends EntityState<T> {
 export interface EditSelection {
   modelId: string;
   fieldId: string[];
-  index: number;
+  index: string | number;
 }
 
 export interface GuestData {
@@ -59,6 +59,7 @@ export interface GuestData {
   origin: string;
   location: string;
   models: LookupTable<ContentInstance>;
+  childrenMap: LookupTable<string[]>;
   modelId: string;
   selected: EditSelection[];
   itemBeingDragged: boolean;

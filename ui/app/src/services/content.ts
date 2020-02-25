@@ -16,7 +16,7 @@
  */
 
 import { get, getText, post, postJSON } from '../utils/ajax';
-import { map, switchMap } from 'rxjs/operators';
+import { map, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
 import {
@@ -46,16 +46,23 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
+import { Item } from '../models/Item';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
-    map(({ response }) => response)
+    pluck('response')
   );
 }
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
-    map(({ response }) => response.content)
+    pluck('response')
+  );
+}
+
+export function getItem(site: string, path: string): Observable<Item> {
+  return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
+    pluck('response', 'item')
   );
 }
 

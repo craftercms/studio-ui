@@ -72,19 +72,23 @@ export function GuestProxy(props) {
       return (typeof index === 'string') ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}` : index + value;
     };
 
+    const generateIndex = (index, value) => {
+      return (typeof index === 'string') ? `${removeLastPiece(index)}.${value}` : value;
+    };
+
     const updateElementRegistrations = (collection, type, newIndex, oldIndex) => {
       let originalNewIndex = newIndex;
       let originalOldIndex = oldIndex;
       newIndex = (typeof newIndex === 'string') ? parseInt(popPiece(newIndex)) : newIndex;
       oldIndex = (typeof oldIndex === 'string') ? parseInt(popPiece(oldIndex)) : oldIndex;
-      if (type === 'insert') {
+      if (type === 'insert' || type === 'delete') {
         collection.slice(newIndex).forEach((el, i) => {
           $(el).attr('data-craftercms-index', appendIndex(originalNewIndex, i));
           const pr = ElementRegistry.fromElement(el);
           pr && context.deregister(pr.id);
           registerElement(el);
         });
-      } else if (type === 'move') {
+      } else if (type === 'sort') {
         let from;
         let to;
         let index;
@@ -185,17 +189,7 @@ export function GuestProxy(props) {
             $el.insertBefore($targetSibling);
           }
 
-          // De register element
-          // context.deregister(phyRecord.id);
-
-          // Update attribute(s)
-          // $el.attr('data-craftercms-index', newIndex);
-
-          updateElementRegistrations(Array.from($el.parent().children()), 'move', newIndex, index);
-
-          // Re-register with updates
-          // registerElement(phyRecord.element);
-
+          updateElementRegistrations(Array.from($el.parent().children()), 'sort', newIndex, index);
           break;
 
         }
@@ -246,12 +240,12 @@ export function GuestProxy(props) {
             currentDropZonePhyRecord,
             targetDropZonePhyRecord
           ].forEach((record) => {
+            let newIndex = record === currentDropZonePhyRecord ? index : targetIndex;
             $(record.element).find('> [data-craftercms-index]').each((i, elem) => {
               ElementRegistry.deregister(ElementRegistry.fromElement(elem).id);
-
               $(elem).attr('data-craftercms-model-id', record.modelId);
               $(elem).attr('data-craftercms-field-id', record.fieldId);
-              $(elem).attr('data-craftercms-index', i);
+              $(elem).attr('data-craftercms-index', generateIndex(newIndex, i));
 
               registerElement(elem);
             });
@@ -273,19 +267,7 @@ export function GuestProxy(props) {
           setTimeout(() => {
             const $daddy = $(phyRecord.element).parent();
             $(phyRecord.element).remove();
-            forEach(
-              $daddy.children(),
-              (el, i) => {
-
-                $(el).attr('data-craftercms-index', i);
-
-                const pr = ElementRegistry.fromElement(el);
-
-                context.deregister(pr.id);
-                registerElement(el);
-
-              }
-            );
+            updateElementRegistrations(Array.from($daddy.children()), 'delete', index);
           });
 
           break;
