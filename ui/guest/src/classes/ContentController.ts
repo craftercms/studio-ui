@@ -134,7 +134,7 @@ export class ContentController {
     return ContentController.modelsObs$;
   }
 
-  contentTypes$(): Observable<object>/*: Observable<Model> */ {
+  contentTypes$(): Observable<LookupTable<ContentType>>/*: Observable<Model> */ {
     return ContentController.contentTypesObs$;
   }
 
