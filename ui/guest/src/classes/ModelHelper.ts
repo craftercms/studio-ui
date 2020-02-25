@@ -21,7 +21,7 @@ import { ContentInstance } from '../models/ContentInstance';
 const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
 
 export class ModelHelper {
-  static prop(model: ContentInstance, propName: string) {
+  static prop(model: ContentInstance, propName: string): string {
     if (model == null) {
       return null;
     } else if (systemPropList.includes(propName)) {
@@ -30,7 +30,7 @@ export class ModelHelper {
     return retrieveProperty(model, propName);
   }
 
-  static value(model: ContentInstance, fieldId: string, newValue?: string) {
+  static value(model: ContentInstance, fieldId: string, newValue?: unknown): string {
     // TODO: GraphQL transforms names as left-rail_o to left__rail_o.
     // This transform is potentially unreliable. We should discuss approach.
     const cleanFieldId = fieldId.replace(/-/g, '__');
