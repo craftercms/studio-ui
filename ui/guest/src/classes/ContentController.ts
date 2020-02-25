@@ -55,7 +55,7 @@ export class ContentController {
   static operations = ContentController.operations$.asObservable();
 
   /* private */
-  static models$ = new BehaviorSubject({ /*'modelId': { ...modelData }*/ });
+  static models$ = new BehaviorSubject({ /*'modelId': { ...modelData }*/ } as LookupTable<ContentInstance>);
   /* private */
   static modelsObs$ = ContentController.models$.asObservable().pipe(
     filter((objects) => Object.keys(objects).length > 0),
@@ -129,7 +129,7 @@ export class ContentController {
     );
   }
 
-  models$(modelId?: string): Observable<object>/*: Observable<Model> */ {
+  models$(modelId?: string): Observable<LookupTable<ContentInstance>> {
     (modelId && !this.hasCachedModel(modelId)) && this.fetchModel(modelId);
     return ContentController.modelsObs$;
   }
@@ -243,7 +243,7 @@ export class ContentController {
 
     // Create Item
     // const now = new Date().toISOString();
-    const instance = {
+    const instance: ContentInstance = {
       craftercms: {
         id: uuid(),
         path: null,
@@ -537,7 +537,7 @@ export class ContentController {
   fetchModel(modelId: string): void {
     if (!(modelId in this.modelRequestsInFlight)) {
       this.modelRequestsInFlight[modelId] = fetchById(modelId).subscribe(
-        (response: LookupTable) => {
+        (response: LookupTable<ContentInstance>) => {
           delete this.modelRequestsInFlight[modelId];
           this.modelsResponseReceived(response);
         },
@@ -674,7 +674,7 @@ function findParentModelId(modelId: string, childrenMap: LookupTable, models: Lo
     : null;
 }
 
-function fetchById(id: string, site: string = Cookies.get('crafterSite')): Observable<AjaxResponse> {
+function fetchById(id: string, site: string = Cookies.get('crafterSite')): Observable<ContentInstance> {
   const isArticleRequest = [
     'f360780a-372f-d005-d736-bcc9d657e50c',
     'b7a724f1-3422-055d-a244-5fc79a1ca007',

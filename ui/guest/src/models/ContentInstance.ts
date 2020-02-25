@@ -19,8 +19,8 @@ export interface ContentInstanceSystemProps {
   path: string;
   label: string; // Internal name
   locale: string;
-  dateCreated: string;
-  dateModified: string;
+  dateCreated?: string;
+  dateModified?: string;
   contentType: string;
 }
 
