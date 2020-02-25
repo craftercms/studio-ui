@@ -63,7 +63,8 @@ import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
 import { Asset, ContentType } from '../models/ContentType';
 import { ContentInstance } from '../models/ContentInstance';
-import { Record } from '../models/InContextEditing';
+import { HoverData, Record } from '../models/InContextEditing';
+import { LookupTable } from '../models/LookupTable';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -109,6 +110,8 @@ export function Guest(props: GuestProps) {
     onScroll: null
   });
 
+  const highlightedInitialData: LookupTable<HoverData> = {};
+
   const [, forceUpdate] = useState({});
   const stateRef = useRef({
     dragContext: null,
@@ -126,7 +129,7 @@ export function Guest(props: GuestProps) {
       dragged: {},
       editable: {},
       draggable: {},
-      highlighted: {},
+      highlighted: highlightedInitialData,
 
       register,
       deregister,
@@ -1372,7 +1375,7 @@ export function Guest(props: GuestProps) {
           (stateRef.current.common.status !== EditingStatus.OFF) &&
           <CrafterCMSPortal>
             {
-              Object.values(stateRef.current.common.highlighted).map((highlight: any) =>
+              Object.values(stateRef.current.common.highlighted).map((highlight: HoverData) =>
                 <ZoneMarker key={highlight.id} {...highlight} />
               )
             }
