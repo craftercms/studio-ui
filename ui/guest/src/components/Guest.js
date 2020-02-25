@@ -16,6 +16,8 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
+import jss from 'jss';
+import preset from 'jss-preset-default';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -46,6 +48,7 @@ import {
   pluckProps,
   RELOAD_REQUEST,
   SCROLL_TO_RECEPTACLE,
+  SCROLL_TO_ELEMENT,
   TRASHED
 } from '../util';
 import { fromEvent, interval, Subject, zip } from 'rxjs';
@@ -69,6 +72,27 @@ const clearAndListen$ = new Subject();
 const escape$ = fromEvent(document, 'keydown').pipe(
   filter(e => e.keyCode === 27)
 );
+
+jss.setup(preset());
+
+const styles = {
+  '@keyframes pulse': {
+    '0%': {
+      transform: 'scaleX(1)'
+    },
+    '50%': {
+      transform: 'scale3d(1.05,1.05,1.05)'
+    },
+    'to': {
+      transform: 'scaleX(1)'
+    }
+  },
+  pulseAnim: {
+    animation: '$pulse 3s ease-in-out'
+  }
+};
+
+const {classes} = jss.createStyleSheet(styles).attach()
 
 // TODO:
 // - add "modePreview" and bypass all
@@ -1142,6 +1166,26 @@ export function Guest(props) {
     }
   }
 
+  function scrollToElement(node) {
+    let $element;
+    if(node.index !== undefined) {
+      $element = $(`[data-craftercms-model-id="${node.parentId}"][data-craftercms-field-id="${node.fieldId}"][data-craftercms-index="${node.index}"]`);
+    } else {
+      $element = $(`[data-craftercms-model-id="${node.modelId}"][data-craftercms-field-id="${node.fieldId}"]`);
+    }
+    if($element.length) {
+      $element.removeClass(classes.pulseAnim);
+      setTimeout(function() {
+        $element.addClass(classes.pulseAnim);
+      }, 0);
+      if(!isElementInView($element)) {
+        $(scrollElement).animate({
+          scrollTop: $element.offset().top - 100
+        }, 300);
+      }
+    }
+  }
+
   function scrollToReceptacle(receptacles) {
     let elementInView;
     let element;
@@ -1257,6 +1301,10 @@ export function Guest(props) {
             }
           });
           break;
+        case SCROLL_TO_ELEMENT: {
+          scrollToElement(payload);
+          break;
+        }
         default:
           console.warn(`[message$] Unhandled host message "${type}".`);
       }

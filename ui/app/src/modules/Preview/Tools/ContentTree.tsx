@@ -36,6 +36,8 @@ import Repeat from '../../../components/Icons/Repeat';
 import iconStyles from '../../../styles/icon';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { createLookupTable } from '../../../utils/object';
+import { SCROLL_TO_ELEMENT } from '../../../state/actions/preview';
+import { getHostToGuestBus } from '../previewContext';
 
 const translations = defineMessages({
   contentTree: {
@@ -99,6 +101,9 @@ interface RenderTree {
   children: RenderTree[];
   type: string;
   modelId?: string;
+  parentId?: string;
+  fieldId?: string;
+  index?: string | number;
 }
 
 interface Data {
@@ -107,36 +112,49 @@ interface Data {
   lookupTable: LookupTable<RenderTree>
 }
 
-function getNodeSelectorChildren(array: ContentInstance, parentName: string, parentId) {
+function getNodeSelectorChildren(array: ContentInstance, modelId: string, parentName: string, fieldId: string, index: string | number) {
   return {
-    id: `${parentId}${Math.random() * 1000}`,
+    id: `${modelId}_${fieldId}_${index}`,
     name: `${parentName}: ${array.craftercms.label}`,
     type: 'component',
-    modelId: `${array.craftercms.id}`
+    modelId: `${array.craftercms.id}`,
+    parentId: modelId,
+    fieldId,
+    index
   };
 }
 
-function getChildren(array: ContentInstance, contentType: any, models: LookupTable<ContentInstance>, contentTypes: ContentType[]) {
+function getChildren(array: ContentInstance, contentType: any, models: LookupTable<ContentInstance>, contentTypes: ContentType[], modelId?: string) {
   let children = [];
   Object.keys(array).forEach((key) => {
     if (key === 'craftercms') return;
-    const { type, name, id } = contentType.fields[key];
+    const { type, name } = contentType.fields[key];
     let subChildren = [];
     if (type === 'node-selector' && array[key].length) {
-      array[key].forEach((id) => {
+      array[key].forEach((id: string, i: number) => {
         let parentName = contentTypes.find((contentType) => contentType.id === models[id].craftercms.contentType).name;
-        subChildren.push(getNodeSelectorChildren(models[id], parentName, id));
+        subChildren.push(getNodeSelectorChildren(models[id], modelId || array.craftercms.id, parentName, key, i));
       });
     } else if (type === 'repeat') {
-      array[key].forEach((item) => {
-        subChildren = getChildren(item, contentType.fields[key], models, contentTypes);
+      array[key].forEach((item, index: number) => {
+        subChildren.push({
+          id: `${modelId || array.craftercms.id}_${key}_${index}`,
+          name: 'Item',
+          type: 'item',
+          children: getChildren(item, contentType.fields[key], models, contentTypes, array.craftercms.id),
+          modelId: modelId || array.craftercms.id,
+          fieldId: `${key}_${index}`,
+          index
+        })
       });
     }
     children.push({
-      id: `${id}${Math.random() * 1000}`,
+      id: `${modelId || array.craftercms.id}_${key}`,
       name,
       type,
-      children: subChildren
+      children: subChildren,
+      modelId: modelId || array.craftercms.id,
+      fieldId: key
     });
   });
   return children;
@@ -147,6 +165,7 @@ export default function ContentTree() {
   const guest = usePreviewGuest();
   const { formatMessage } = useIntl();
   const contentTypesBranch = useSelection(state => state.contentTypes);
+  const hostToGuest$ = getHostToGuestBus();
   const contentTypes = useMemo(
     () => contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null,
     [contentTypesBranch.byId]
@@ -160,7 +179,6 @@ export default function ContentTree() {
 
   useEffect(() => {
     if (guest?.modelId && guest?.models && contentTypes && data.selected === null) {
-      console.log('here');
       let parent = guest.models[guest.modelId];
       let contentType = contentTypes.find((contentType) => contentType.id === parent.craftercms.contentType);
       let data: RenderTree = {
@@ -180,21 +198,32 @@ export default function ContentTree() {
 
 
   const handleClick = (node: RenderTree) => {
-    console.log('goes to');
+    //console.log('goes to');
+    //console.log(node);
+
+    hostToGuest$.next({
+      type: SCROLL_TO_ELEMENT,
+      payload: node
+    });
+
     if (node.type === 'component' && node.id !== 'root') {
-      let parent = guest.models[node.modelId];
-      let contentType = contentTypes.find((contentType) => contentType.id === parent.craftercms.contentType);
+      let model = guest.models[node.modelId];
+      let contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
+      const { type, modelId, name, index, fieldId, parentId } = node;
       setData({
         previous: [...data.previous, data.selected],
-        selected: parent.craftercms.id,
+        selected: model.craftercms.id,
         lookupTable: {
           ...data.lookupTable,
-          [parent.craftercms.id]: {
+          [model.craftercms.id]: {
             id: 'root',
-            name: parent.craftercms.label,
-            children: getChildren(parent, contentType, guest.models, contentTypes),
-            type: contentType.type,
-            modelId: parent.craftercms.id
+            name,
+            children: getChildren(model, contentType, guest.models, contentTypes),
+            type,
+            modelId,
+            index,
+            fieldId,
+            parentId
           }
         }
       });
@@ -206,7 +235,7 @@ export default function ContentTree() {
   const handlePrevious = () => {
     let previousArray = [...data.previous];
     let previous = previousArray.pop();
-    setData({...data, selected: previous, previous: previousArray});
+    setData({ ...data, selected: previous, previous: previousArray });
   };
 
   const handleChange = (event: React.ChangeEvent<{}>, nodes: string[]) => {
