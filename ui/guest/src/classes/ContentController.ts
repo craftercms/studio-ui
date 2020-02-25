@@ -552,7 +552,7 @@ export class ContentController {
   }
 
   /* private */
-  modelsResponseReceived(responseModels: LookupTable<ContentInstance>) {
+  modelsResponseReceived(responseModels: LookupTable<ContentInstance> | ContentInstance[]) {
 
     if (Array.isArray(responseModels)) {
       responseModels = createLookupTable(responseModels, 'craftercms.id');
@@ -582,7 +582,7 @@ export class ContentController {
   }
 
   /* private */
-  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>) {
+  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentInstance[]) {
 
     if (Array.isArray(responseContentTypes)) {
       responseContentTypes = createLookupTable(responseContentTypes);
@@ -644,13 +644,13 @@ export class ContentController {
 
 }
 
-function getParentModelId(modelId: string, models: LookupTable<ContentInstance>, children: LookupTable): string {
+function getParentModelId(modelId: string, models: LookupTable<ContentInstance>, children: LookupTable<ContentInstance>): string {
   return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
     ? findParentModelId(modelId, children, models)
     : null;
 }
 
-function findParentModelId(modelId: string, childrenMap: LookupTable, models: LookupTable<ContentInstance>): string {
+function findParentModelId(modelId: string, childrenMap: LookupTable<ContentInstance>, models: LookupTable<ContentInstance>): string {
   const parentId = forEach(
     Object.entries(childrenMap),
     ([id, children]) => {
@@ -905,7 +905,7 @@ function fetchById(id: string, site: string = Cookies.get('crafterSite')): Obser
   );
 }
 
-function reducer(lookupTable: LookupTable, model: ContentInstance): LookupTable<ContentInstance> {
+function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstance): LookupTable<ContentInstance> {
 
   const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
 
