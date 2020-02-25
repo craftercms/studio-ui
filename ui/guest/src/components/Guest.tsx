@@ -1074,7 +1074,7 @@ export function Guest(props: GuestProps) {
       });
     },
 
-    onDesktopAssetDragStarted(asset: DataTransferItem) {
+    onDesktopAssetDragStarted(asset: DataTransferItem): void {
       let
         players = [],
         siblings = [],
