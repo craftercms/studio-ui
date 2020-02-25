@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect, useMemo } from 'react';
+import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
 import { createStyles, makeStyles } from '@material-ui/core';
@@ -50,7 +51,7 @@ const translations = defineMessages({
 const useStyles = makeStyles((theme) => createStyles({
   root: {
     '& > li > ul': {
-      marginLeft: '12px'
+      marginLeft: '0px'
     }
   },
   icon: {
@@ -68,7 +69,10 @@ const useStyles = makeStyles((theme) => createStyles({
     }
   },
   treeItemContent: {
-    padding: '10px 8px'
+    padding: '10px 8px',
+    '&.padded': {
+      paddingLeft: '34px'
+    }
   },
   treeItemGroup: {
     //marginLeft: '12px'
@@ -176,6 +180,7 @@ export default function ContentTree() {
 
 
   const handleClick = (node: RenderTree) => {
+    console.log('goes to');
     if (node.type === 'component' && node.id !== 'root') {
       let parent = guest.models[node.modelId];
       let contentType = contentTypes.find((contentType) => contentType.id === parent.craftercms.contentType);
@@ -221,6 +226,7 @@ export default function ContentTree() {
     } else {
       Icon = Field;
     }
+
     return (
       <TreeItem
         key={nodes.id}
@@ -231,7 +237,10 @@ export default function ContentTree() {
               (nodes.id === 'root' && data.previous.length) ? (
                 <ChevronLeftRounded onClick={handlePrevious}/>
               ) : (
-                <Icon className={classes.icon}/>
+                <>
+                  {(nodes.type === 'component') && <ChevronRightIcon/>}
+                  <Icon className={classes.icon}/>
+                </>
               )
             }
             <p>{nodes.name}</p>
@@ -240,7 +249,7 @@ export default function ContentTree() {
         onClick={() => handleClick(nodes)}
         classes={{
           root: classes.treeItemRoot,
-          content: classes.treeItemContent,
+          content: clsx(classes.treeItemContent, (!nodes.children?.length && nodes.type !== 'component') && 'padded'),
           expanded: classes.treeItemExpanded,
           group: classes.treeItemGroup,
           iconContainer: nodes.id === 'root' ? classes.treeItemIconContainer : ''
