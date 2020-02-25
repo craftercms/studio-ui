@@ -238,7 +238,6 @@ export function AddressBar(props: AddressBarProps) {
 
   const onClosePublish = (response) => {
     setPublishDialog({ open: false, scheduling: null, item:{...publishDialog.item, isLive: true} });
-    //getHostToGuestBus().next({ type: RELOAD_REQUEST });
   };
 
   return (
@@ -293,7 +292,6 @@ export function AddressBar(props: AddressBarProps) {
       </IconButton>
       <Menu
         anchorEl={anchorEl}
-        keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
