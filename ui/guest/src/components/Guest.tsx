@@ -85,6 +85,12 @@ interface GuestProps {
   editModeOnIndicatorClass?: string;
 }
 
+declare global {
+  interface Window {
+    tinymce: { [prop: string]: any };
+  }
+}
+
 // TODO:
 // - add "modePreview" and bypass all
 export function Guest(props: GuestProps) {
@@ -232,8 +238,7 @@ export function Guest(props: GuestProps) {
 
             (type === 'html') && plugins.push('quickbars');
 
-            // @ts-ignore
-            if (!tinymce) {
+            if (!window.tinymce) {
               return alert('Looks like tinymce is not added on the page. Please add tinymce on to the page to enable editing.');
             }
 
@@ -242,8 +247,7 @@ export function Guest(props: GuestProps) {
               $(record.element).css('display', 'inline-block');
             }
 
-            // @ts-ignore
-            tinymce.init({
+            window.tinymce.init({
               mode: 'none',
               target: record.element,
               plugins,
