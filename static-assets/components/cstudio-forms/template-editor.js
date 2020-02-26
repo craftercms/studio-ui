@@ -109,7 +109,6 @@ CStudioAuthoring.Module.requireModule(
                 if ( xmlDoc ) {
                   me.addSnippets(xmlDoc);
                 }
-
                 me.renderTemplateEditor(templatePath, content, onSaveCb, contentType, mode);
               }).catch(error => {
                 const errorMsg = error.responseText
@@ -158,40 +157,40 @@ CStudioAuthoring.Module.requireModule(
 									var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
 
 									var modalEl = document.createElement("div");
-									modalEl.id = "cstudio-template-editor-container-modal";
+									modalEl.className = `cstudio-template-editor-container-modal ${onSaveCb.id}`;
 									document.body.appendChild(modalEl);
 
 									var containerEl = document.createElement("div");
-									containerEl.id = "cstudio-template-editor-container";
+									containerEl.className = "cstudio-template-editor-container";
 									YAHOO.util.Dom.addClass(containerEl, 'seethrough');
 									modalEl.appendChild(containerEl);
                                     var formHTML = '';
 
                                     if(isRead === "read"){
-                                        formHTML +='<div id="cstudio-form-readonly-banner">READ ONLY</div>';
+                                        formHTML +='<div class="cstudio-form-readonly-banner">READ ONLY</div>';
 
                                     }
 
 									formHTML +=
-										"<div id='template-editor-toolbar'><div id='template-editor-toolbar-variable'></div>" +
+										"<div class='template-editor-toolbar'><div class='template-editor-toolbar-variable'></div>" +
 											"<div class='' style='position: absolute; right: 20px; top: 23px;'>" +
 											"Theme: " +
-											"<select id='themeSelector'>"+
+											"<select class='themeSelector'>"+
 												"<option value='chrome'>Light</option>" +
 												"<option value='tomorrow_night'>Dark</option>"+
 										  	"</select>" +
 											"</div>" +
 										"</div>" +
-										"<div id='editor-container'>"+
+										"<div class='editor-container'>"+
 										"</div>" +
-										"<div id='template-editor-button-container'>";
+										"<div class='template-editor-button-container'>";
 
 									if(isWrite == true) {
 										formHTML +=
 											"<div class='edit-buttons-container'>" +
-											"<div  id='template-editor-update-button' class='btn btn-primary cstudio-template-editor-button'>" + formatMessage(words.update) + "</div>" +
+											"<div class='template-editor-update-button btn btn-primary cstudio-template-editor-button'>" + formatMessage(words.update) + "</div>" +
                       "<div class='dropup inline-block relative'>" +
-                      "<span id='template-editor-cancel-button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' class='btn btn-default cstudio-template-editor-button'>" + formatMessage(words.cancel) + "</span>" +
+                      "<span data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' class='template-editor-cancel-button btn btn-default cstudio-template-editor-button'>" + formatMessage(words.cancel) + "</span>" +
                       "<ul class='dropdown-menu' aria-labelledby='template-editor-cancel-button'>" +
                       "<li><a class='cancel' href='#' onclick='return false;'>" + formatMessage(messages.stay) + "</a></li>" +
                       "<li role='separator' class='divider'></li>" +
@@ -203,7 +202,7 @@ CStudioAuthoring.Module.requireModule(
 									else {
 										formHTML +=
                                             "<div class='edit-buttons-container viewer'>" +
-											"<div  id='template-editor-cancel-button' style='right: 120px;' class='btn btn-default cstudio-template-editor-button'>Close</div>";
+											"<div style='right: 120px;' class='template-editor-cancel-button btn btn-default cstudio-template-editor-button'>Close</div>";
                                             "<div/>";
 									}
 
@@ -211,9 +210,9 @@ CStudioAuthoring.Module.requireModule(
 										"</div>";
 
 									containerEl.innerHTML = formHTML;
-									var editorContainerEl = document.getElementById("editor-container");
+									var editorContainerEl = modalEl.querySelector(".editor-container");
 									var editorEl = document.createElement("pre");
-									editorEl.id = "editorPreEl"
+									editorEl.className = "editorPreEl";
 									editorEl.textContent= content;
 									editorContainerEl.appendChild(editorEl);
 
@@ -240,7 +239,7 @@ CStudioAuthoring.Module.requireModule(
 											}
 
 											langTools = ace.require("ace/ext/language_tools");
-                      var aceEditor = ace.edit("editorPreEl"),
+                      var aceEditor = ace.edit(modalEl.querySelector('.editorPreEl')),
                           defaultTheme = CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0]
                                          && CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0].textContent === 'dark'
                                           ? 'tomorrow_night'
@@ -266,15 +265,16 @@ CStudioAuthoring.Module.requireModule(
                         tabSize: tabSize
 											});
 
-											$("#themeSelector").val(theme);
+											$(modalEl).find("#themeSelector").val(theme);
 
-											$('#themeSelector').on('change', function() {
+                      $(modalEl).find('#themeSelector').on('change', function() {
 												aceEditor.setTheme("ace/theme/" + this.value);
                         localStorage.setItem('templateEditorTheme', this.value);
-											})
+											});
 
                       aceEditor.getSession().on('change', function() {
                         aceEditor.isModified = true;
+                        onSaveCb.pendingChanges();
                       });
 
 											return aceEditor;
@@ -359,7 +359,7 @@ CStudioAuthoring.Module.requireModule(
 														}
 													}
 												}
-											}
+											};
 
 										if(sections.length){
 											$.each(sections, function() {	//puede haber solo una seccion
@@ -373,9 +373,9 @@ CStudioAuthoring.Module.requireModule(
 									};
 									var _addVarsSelect = function() {
 										var selectVarList = document.createElement("select");
-										selectVarList.id = "varNames";
+										selectVarList.className = "varNames";
 										selectVarList.style.marginLeft = "10px";
-										$("#variable").after(selectVarList);
+										$(modalEl).find(".variable").after(selectVarList);
 										$(selectVarList).hide();
 
 										//fill variables on select item
@@ -399,10 +399,10 @@ CStudioAuthoring.Module.requireModule(
 										CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, path, sectionsCallBack);
 									};
 
-									var templateEditorToolbarVarElt = document.getElementById("template-editor-toolbar-variable");
+									var templateEditorToolbarVarElt = modalEl.querySelector(".template-editor-toolbar-variable");
 									var filename = templatePath.substring(templatePath.lastIndexOf("/")+1);
 									var filenameH2 = document.createElement("p");
-									filenameH2.id = 'fileName';
+									filenameH2.className = 'fileName';
 									filenameH2.innerHTML = filename;
 									templateEditorToolbarVarElt.appendChild(filenameH2);
 
@@ -425,10 +425,8 @@ CStudioAuthoring.Module.requireModule(
 															meta: "Crafter Studio"
 														};
 													}));
-
 												}
-											}
-											// aceEditor.completers = [staticWordCompleter]
+											};
 											langTools.addCompleter(customCompleter);
 										}
 										else if(templatePath.indexOf(".ftl") != -1) {
@@ -438,8 +436,6 @@ CStudioAuthoring.Module.requireModule(
 											var customCompleter = {
 												getCompletions: function(editor, session, pos, prefix, callback) {
 													callback(null, Object.keys(variableOpts).map(function(key, index) {
-														// console.log(variableOpts[key].value);
-
 														return {
 															caption: variableOpts[key].label,
 															value: variableOpts[key].value,
@@ -448,8 +444,7 @@ CStudioAuthoring.Module.requireModule(
 													}));
 
 												}
-											}
-											// aceEditor.completers = [staticWordCompleter]
+											};
 											langTools.addCompleter(customCompleter);
 										}
 
@@ -460,7 +455,7 @@ CStudioAuthoring.Module.requireModule(
 											templateEditorToolbarVarElt.appendChild(variableLabel);
 
 											var selectList = document.createElement("select");
-											selectList.id = "variable";
+											selectList.className = "variable";
 											templateEditorToolbarVarElt.appendChild(selectList);
 
                       Object.keys(variableOpts).map(function(key) {
@@ -472,16 +467,15 @@ CStudioAuthoring.Module.requireModule(
 
 											//Create and append add button
 											var addButton = document.createElement("button");
-											addButton.id = "addButtonVar";
+											addButton.className = "addButtonVar btn btn-primary";
 											addButton.innerHTML = "Add Code";
-											addButton.className = "btn btn-primary";
 											templateEditorToolbarVarElt.appendChild(addButton);
 
 											if(contentType && contentType !== ""){
 												_addVarsSelect();
 
-												var selectedLabel = $("#variable").find('option:selected').text(),
-													$varsSelect = $("#varNames");
+												var selectedLabel = $(modalEl).find('.variable').find('option:selected').text(),
+													$varsSelect = $(modalEl).find('.varNames');
 												if(selectedLabel == "Content variable"){
 													$varsSelect.show();
 												}
@@ -504,7 +498,7 @@ CStudioAuthoring.Module.requireModule(
 											addButton.onclick = () => {
                         const cursorPosition = aceEditor.getCursorPosition(),
                               itemKey = selectList.options[selectList.selectedIndex].value,
-                              $varDropdown = $('#varNames');
+                              $varDropdown = $(modalEl).find('.varNames');
 
                         let snippet = variableOpts[itemKey].value;
 
@@ -546,22 +540,28 @@ CStudioAuthoring.Module.requireModule(
 										}
 
 										YAHOO.util.Connect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(cancelEditServiceUrl), cancelEditCb);
-									}
+									};
 
-                  $('#template-editor-cancel-button').on('click', function(e) {
+                  $(modalEl).find('.template-editor-cancel-button').on('click', function(e) {
                     if (!aceEditor.isModified) {
                       e.stopPropagation();
                       cancelEdit();
+                      if (onSaveCb.cancelled) {
+                        onSaveCb.cancelled();
+                      }
                     }
                   });
 
-									$('#template-editor-cancel-button + .dropdown-menu .confirm').on('click', function(e) {
+                  $(modalEl).find('.template-editor-cancel-button + .dropdown-menu .confirm').on('click', function(e) {
 									  e.preventDefault();
                     cancelEdit();
+                    if (onSaveCb.cancelled) {
+                      onSaveCb.cancelled();
+                    }
                   });
 
 									if(isWrite == true) {
-										var saveEl = document.getElementById('template-editor-update-button');
+										var saveEl = modalEl.querySelector('.template-editor-update-button');
 										saveEl.onclick = function() {
 											var value = aceEditor.getValue();
 											var path = templatePath.substring(0, templatePath.lastIndexOf("/"));
@@ -591,12 +591,16 @@ CStudioAuthoring.Module.requireModule(
 											});
 										};
 									}
-
+                  if (onSaveCb.renderComplete) {
+                    onSaveCb.renderComplete();
+                  }
 								},
 								failure: function() {
-
-								}
-							}
+                  if (onSaveCb.failure) {
+                    onSaveCb.failure();
+                  }
+                }
+              };
 
 							CStudioAuthoring.Service.getUserPermissions(
 								CStudioAuthoringContext.site,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDebouncedInput, useSelection, useStateResourceSelection } from '../../../utils/hooks';
@@ -30,7 +30,8 @@ import List from '@material-ui/core/List';
 import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
-  fetchComponentsByContentType
+  fetchComponentsByContentType,
+  setContentTypeFilter
 } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import SearchBar from '../../../components/SearchBar';
@@ -148,12 +149,10 @@ interface ComponentResource {
 export default function BrowseComponentsPanel() {
 
   const classes = useStyles({});
-  //const onSearch$ = useMemo(() => new Subject<string>(), []);
   const dispatch = useDispatch();
   const initialKeyword = useSelection(state => state.preview.components.query.keywords);
-  const initialContentTypeFilter = useSelection(state => state.preview.components.contentTypeFilter);
+  const contentTypeFilter = useSelection(state => state.preview.components.contentTypeFilter);
   const [keyword, setKeyword] = useState(initialKeyword);
-  const [contentTypeFilter, setContentTypeFilter] = useState(initialContentTypeFilter);
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component') : null;
   const isFetching = useSelection(state => state.preview.components.isFetching);
@@ -181,10 +180,6 @@ export default function BrowseComponentsPanel() {
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
 
-  useEffect(() => {
-    dispatch(fetchComponentsByContentType(contentTypeFilter));
-  }, [contentTypeFilter, dispatch]);
-
   const onSearch = useCallback((
     (keywords: string) => dispatch(fetchComponentsByContentType(null, { keywords, offset: 0 }))
   ), [dispatch]);
@@ -201,7 +196,7 @@ export default function BrowseComponentsPanel() {
   }
 
   function handleSelectChange(value: string) {
-    setContentTypeFilter(value);
+    dispatch(setContentTypeFilter(value));
   }
 
   return (

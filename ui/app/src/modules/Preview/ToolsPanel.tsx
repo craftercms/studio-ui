@@ -22,7 +22,6 @@ import ImageRounded from '@material-ui/icons/ImageRounded';
 import EmojiPeopleRounded from '@material-ui/icons/EmojiPeopleRounded';
 import DevicesRounded from '@material-ui/icons/DevicesRounded';
 import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
-import EditRounded from '@material-ui/icons/EditRounded';
 import WarningRounded from '@material-ui/icons/WarningRounded';
 import AccountTreeRoundedIcon from '@material-ui/icons/AccountTreeRounded';
 import List from '@material-ui/core/List';
@@ -39,7 +38,6 @@ import AudiencesPanel from './Tools/AudiencesPanel';
 import AssetsPanel from './Tools/AssetsPanel';
 import ComponentsPanel from './Tools/ComponentsPanel';
 import SimulatorPanel from './Tools/SimulatorPanel';
-import ICEPanel from './Tools/ICEPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
@@ -116,14 +114,6 @@ const translations = defineMessages({
   unknownPanel: {
     id: 'craftercms.ice.unknown.title',
     defaultMessage: 'Unknown Panel'
-  },
-  inContextEditing: {
-    id: 'craftercms.ice.ice.title',
-    defaultMessage: 'In Context Editing'
-  },
-  pageComponents: {
-    id: 'craftercms.ice.components.title',
-    defaultMessage: 'Components'
   },
   componentsPanel: {
     id: 'craftercms.ice.components.title',
@@ -202,7 +192,6 @@ const componentIconMap: any = {
   'craftercms.ice.assets': ImageRounded,
   'craftercms.ice.audiences': EmojiPeopleRounded,
   'craftercms.ice.simulator': DevicesRounded,
-  'craftercms.ice.ice': EditRounded,
   'craftercms.ice.browseComponents': ExtensionRounded,
   'craftercms.ice.contentTree': AccountTreeRoundedIcon
 };
@@ -212,7 +201,6 @@ const componentMap: any = {
   'craftercms.ice.assets': AssetsPanel,
   'craftercms.ice.audiences': AudiencesPanel,
   'craftercms.ice.simulator': SimulatorPanel,
-  'craftercms.ice.ice': ICEPanel,
   'craftercms.ice.editForm': EditFormPanel,
   'craftercms.ice.browseComponents': BrowseComponentsPanel,
   'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,

@@ -45,6 +45,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Spinner from '../../../../components/SystemStatus/Spinner';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import Button from '@material-ui/core/Button';
+import { useSpreadState } from '../../../../utils/hooks';
 
 const messages = defineMessages({
   selectAll: {
@@ -185,11 +186,11 @@ function PublishingQueue(props: PublishingQueueProps) {
   const [pending, setPending] = useState({});
   const [count, setCount] = useState(0);
   const [total, setTotal] = useState(0);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useSpreadState({
     environments: null,
     states: [READY_FOR_LIVE, PROCESSING, COMPLETED, CANCELLED, BLOCKED]
   });
-  const [apiState, setApiState] = useState({
+  const [apiState, setApiState] = useSpreadState({
     error: false,
     errorResponse: null
   });
@@ -204,42 +205,31 @@ function PublishingQueue(props: PublishingQueueProps) {
         setPackages(response.packages);
       },
       ({ response }) => {
-        setApiState({ ...apiState, error: true, errorResponse: response });
+        setApiState({ error: true, errorResponse: response });
       }
     )
-  ), [apiState, currentFilters]);
+  ), [currentFilters, setApiState]);
 
   setRequestForgeryToken();
 
   useEffect(() => {
+    fetchEnvironments(siteId).subscribe(
+      ({ response }) => {
+        let channels: string[] = [];
+        response.availablePublishChannels.forEach((channel: any) => {
+          channels.push(channel.name);
+        });
+        setFilters({ environments: channels });
+      },
+      ({ response }) => {
+        setApiState({ error: true, errorResponse: response });
+      }
+    );
+  }, [siteId, setFilters, setApiState]);
 
-    function getEnvironments(siteId: string) {
-      fetchEnvironments(siteId)
-        .subscribe(
-          ({ response }) => {
-            let channels: string[] = [];
-            response.availablePublishChannels.forEach((channel: any) => {
-              channels.push(channel.name);
-            });
-            setFilters({ ...filters, environments: channels });
-          },
-          ({ response }) => {
-            setApiState({ ...apiState, error: true, errorResponse: response });
-          }
-        );
-    }
-
-    if (currentFilters && packages !== null) {
-      getPackages(siteId);
-    }
-    if (packages === null) {
-      getPackages(siteId);
-    }
-    if (filters.environments === null) {
-      getEnvironments(siteId);
-    }
-
-  }, [apiState, currentFilters, filters, getPackages, packages, siteId]);
+  useEffect(() => {
+    getPackages(siteId);
+  }, [currentFilters, siteId, getPackages]);
 
   useEffect(() => {
     setCount(renderCount(selected).length);
@@ -260,7 +250,6 @@ function PublishingQueue(props: PublishingQueueProps) {
         pending={pending}
         setPending={setPending}
         getPackages={getPackages}
-        apiState={apiState}
         setApiState={setApiState}
         setSelected={setSelected}
         currentFilters={currentFilters}
@@ -288,7 +277,7 @@ function PublishingQueue(props: PublishingQueueProps) {
           getPackages(siteId);
         },
         ({ response }) => {
-          setApiState({ ...apiState, error: true, errorResponse: response });
+          setApiState({ error: true, errorResponse: response });
         }
       );
   }

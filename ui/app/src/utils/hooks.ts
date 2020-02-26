@@ -38,6 +38,10 @@ export function useActiveSiteId(): string {
   return useSelector<GlobalState, string>(state => state.sites.active);
 }
 
+export function usePreviewGuest(): GuestData {
+  return useSelector<GlobalState, GuestData>(state => state.preview.guest);
+}
+
 export function usePreviewState(): GlobalState['preview'] {
   return useSelector<GlobalState, GlobalState['preview']>(state => state.preview);
 }

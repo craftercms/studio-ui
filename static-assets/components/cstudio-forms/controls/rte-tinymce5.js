@@ -625,6 +625,7 @@ CStudioAuthoring.Module.requireModule(
 		_onChangeVal: function(evt, obj) {
 			obj.edited = true;
 			this._onChange(evt, obj);
+			obj.owner.pendingChanges();
 		},
 
 		/**

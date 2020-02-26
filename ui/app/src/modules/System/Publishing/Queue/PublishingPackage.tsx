@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Button from "@material-ui/core/Button";
-import React, { ChangeEvent, useRef, useState } from "react";
-import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
-import { defineMessages, useIntl } from "react-intl";
-import SelectButton from "../../../../components/UserControl/ConfirmDropdown";
-import Typography from "@material-ui/core/Typography";
-import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import { cancelPackage, fetchPackage } from "../../../../services/publishing";
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@material-ui/core/Button';
+import React, { ChangeEvent, useRef, useState } from 'react';
+import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
+import { defineMessages, useIntl } from 'react-intl';
+import SelectButton from '../../../../components/UserControl/ConfirmDropdown';
+import Typography from '@material-ui/core/Typography';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import { cancelPackage, fetchPackage } from '../../../../services/publishing';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import "../../../../styles/animations.scss";
-import clsx from "clsx";
-import { CurrentFilters, READY_FOR_LIVE } from "../../../../models/Publishing";
+import '../../../../styles/animations.scss';
+import clsx from 'clsx';
+import { CurrentFilters, READY_FOR_LIVE } from '../../../../models/Publishing';
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -138,7 +138,6 @@ interface PublishingPackageProps {
   setSelected(selected: any): any
 
   pending: any;
-  apiState: any;
 
   setApiState(state: any): any;
 
@@ -160,7 +159,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
   const {
     id, approver, schedule, state, comment, environment,
     siteId, selected, setSelected, pending, setPending,
-    getPackages, apiState, setApiState, currentFilters,
+    getPackages, setApiState, currentFilters,
     filesPerPackage, setFilesPerPackage
   } = props;
   const [loading, setLoading] = useState(null);
@@ -189,7 +188,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
           ref.cancelComplete(packageId);
         },
         ({response}) => {
-          setApiState({...apiState, error: true, errorResponse: response});
+          setApiState({ error: true, errorResponse: response });
         }
       );
   }
@@ -203,7 +202,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
           setFilesPerPackage({...filesPerPackage, [packageId]: response.package.items});
         },
         ({response}) => {
-          setApiState({...apiState, error: true, errorResponse: response});
+          setApiState({ error: true, errorResponse: response });
         }
       );
   }
