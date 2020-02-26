@@ -43,7 +43,7 @@ export class ModelHelper {
     return retrieveProperty(model, fieldId);
   }
 
-  static extractCollection(model: ContentInstance, fieldId: string, index: number | string) {
+  static extractCollection(model: ContentInstance, fieldId: string, index: number | string): string {
     return extractCollectionPiece(
       model,
       fieldId,
@@ -51,7 +51,7 @@ export class ModelHelper {
     );
   }
 
-  static extractCollectionItem(model: ContentInstance, fieldId: string, index: number | string) {
+  static extractCollectionItem(model: ContentInstance, fieldId: string, index: number | string): string {
     const indexes = (
       (index === '' || isNullOrUndefined(index))
         ? []
@@ -85,7 +85,7 @@ export class ModelHelper {
   }
 }
 
-function extractCollectionPiece(model: ContentInstance, fieldId: string, index: number | string) {
+function extractCollectionPiece(model: ContentInstance, fieldId: string, index: number | string): string {
   const indexes = (
     (index === '' || isNullOrUndefined(index))
       ? []
