@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Button from "@material-ui/core/Button";
-import React, { ChangeEvent, useRef, useState } from "react";
-import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
-import { defineMessages, useIntl } from "react-intl";
-import SelectButton from "./ConfirmDropdown";
-import Typography from "@material-ui/core/Typography";
-import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import { cancelPackage, fetchPackage } from "../services/publishing";
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@material-ui/core/Button';
+import React, { ChangeEvent, useRef, useState } from 'react';
+import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
+import { defineMessages, useIntl } from 'react-intl';
+import SelectButton from './ConfirmDropdown';
+import Typography from '@material-ui/core/Typography';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import { cancelPackage, fetchPackage } from '../services/publishing';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import "../styles/animations.scss";
-import clsx from "clsx";
-import { CurrentFilters, READY_FOR_LIVE } from "../models/publishing";
+import '../styles/animations.scss';
+import clsx from 'clsx';
+import { CurrentFilters, READY_FOR_LIVE } from '../models/publishing';
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -236,7 +236,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
               </Typography>
             </header>
           ) : (
-            (currentFilters.state === READY_FOR_LIVE) ? (
+            (currentFilters.state.includes(READY_FOR_LIVE)) ? (
               <FormGroup className={classes.checkbox}>
                 <FormControlLabel
                   control={
