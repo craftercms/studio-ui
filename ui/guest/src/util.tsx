@@ -19,7 +19,7 @@ import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
 import { fromEvent, interval, Subscription } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
-import { Coordinates, DropMarkerPositionArgs } from './models/Positioning';
+import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs } from './models/Positioning';
 import { LookupTable } from './models/LookupTable';
 import { ContentTypeField } from './models/ContentType';
 
@@ -98,13 +98,13 @@ export function not(condition: boolean): boolean {
   return !condition;
 }
 
-export function sibling(element: HTMLElement, next: boolean) {
+export function sibling(element: HTMLElement, next: boolean): Element {
   return (next)
     ? element.nextElementSibling
     : element.previousElementSibling;
 }
 
-export function forEach(array: any[], fn: Function, emptyReturnValue?) {
+export function forEach(array: any[], fn: Function, emptyReturnValue?): string {
   if (notNullOrUndefined(emptyReturnValue) && array.length === 0) {
     return emptyReturnValue;
   }
@@ -121,7 +121,7 @@ export function forEach(array: any[], fn: Function, emptyReturnValue?) {
   return emptyReturnValue;
 }
 
-export function findComponentContainerFields(fields: LookupTable<ContentTypeField> | ContentTypeField[]) {
+export function findComponentContainerFields(fields: LookupTable<ContentTypeField> | ContentTypeField[]): ContentTypeField[] {
   if (!Array.isArray(fields)) {
     fields = Object.values(fields);
   }
@@ -151,7 +151,7 @@ export function findComponentContainerFields(fields: LookupTable<ContentTypeFiel
 //   });
 // }
 
-export function getDropMarkerPosition(args: DropMarkerPositionArgs) {
+export function getDropMarkerPosition(args: DropMarkerPositionArgs): DropMarkerPosition {
   const
     {
       // refElement,

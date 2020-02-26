@@ -27,6 +27,13 @@ export interface DropMarkerPositionArgs {
   refElement: Element;
 }
 
+export interface DropMarkerPosition {
+  height?: number,
+  width?: number,
+  top: number,
+  left: number
+}
+
 export interface Highlight {
   id: number;
   rect: DOMRect;
