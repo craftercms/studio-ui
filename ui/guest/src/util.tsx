@@ -472,7 +472,7 @@ export function setProperty(object: object, prop: string, value: any): boolean {
   return false;
 }
 
-export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTable {
+export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTable<T> {
   const table = {};
   list.forEach((item) => {
     table[retrieveProperty(item as any, idProp)] = item;
