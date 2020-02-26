@@ -19,7 +19,7 @@ import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
 import { fromEvent, interval, Subscription } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
-import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs } from './models/Positioning';
+import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs, InRectStats } from './models/Positioning';
 import { LookupTable } from './models/LookupTable';
 import { ContentTypeField } from './models/ContentType';
 
@@ -278,7 +278,7 @@ export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
 }
 
 export function insertDropMarker({ $dropMarker, insertPosition, refElement }:
-                                   { $dropMarker: JQuery<any>, insertPosition: string, refElement: Element | HTMLElement | JQuery | string }): void {
+                                   { $dropMarker: JQuery<any>, insertPosition: string, refElement: HTMLElement | JQuery | string }): void {
   if (insertPosition === 'after') {
     $dropMarker.insertAfter(refElement);
   } else {
@@ -375,7 +375,7 @@ export function getChildArrangement(children: Element[], childrenRects: DOMRect[
   return alignedTop ? HORIZONTAL : VERTICAL;
 }
 
-export function getInRectStats(rect: DOMRect, coordinates: Coordinates, tolerancePercents: Coordinates = TOLERANCE_PERCENTS) {
+export function getInRectStats(rect: DOMRect, coordinates: Coordinates, tolerancePercents: Coordinates = TOLERANCE_PERCENTS): InRectStats {
   const
     percents = Markers.getRelativePointerPositionPercentages(
       coordinates,

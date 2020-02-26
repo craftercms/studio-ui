@@ -39,3 +39,17 @@ export interface Highlight {
   rect: DOMRect;
   label: string;
 }
+
+export interface InRectStats {
+  inRectTop: boolean;
+  inRectRight: boolean;
+  inRectBottom: boolean;
+  inRectLeft: boolean;
+  inRect: boolean;
+  inInnerRectTop: boolean;
+  inInnerRectRight: boolean;
+  inInnerRectBottom: boolean;
+  inInnerRectLeft: boolean;
+  inInnerRect: boolean;
+  percents: Coordinates;
+}

@@ -394,7 +394,7 @@ export class DOMController {
 
         insertDropMarker({
           $dropMarker,
-          refElement: closestChild,
+          refElement: closestChild as HTMLElement,
           insertPosition: before ? 'before' : 'after'
         });
 
