@@ -47,8 +47,8 @@ import {
   notNullOrUndefined,
   pluckProps,
   RELOAD_REQUEST,
-  SCROLL_TO_RECEPTACLE,
   SCROLL_TO_ELEMENT,
+  SCROLL_TO_RECEPTACLE,
   TRASHED
 } from '../util';
 import { fromEvent, interval, Subject, zip } from 'rxjs';
@@ -88,7 +88,7 @@ const styles = {
     }
   },
   pulseAnim: {
-    animation: '$pulse 3s ease-in-out'
+    animation: '$pulse 300ms 2 ease-in-out'
   }
 };
 
@@ -1166,22 +1166,29 @@ export function Guest(props) {
     }
   }
 
+  function pulseAnimation($element) {
+    $element.removeClass(classes.pulseAnim);
+    setTimeout(function () {
+      $element.addClass(classes.pulseAnim);
+    }, 0);
+  }
+
   function scrollToElement(node) {
     let $element;
     if(node.index !== undefined) {
-      $element = $(`[data-craftercms-model-id="${node.parentId}"][data-craftercms-field-id="${node.fieldId}"][data-craftercms-index="${node.index}"]`);
+      $element = $(`[data-craftercms-model-id="${node.parentId || node.modelId}"][data-craftercms-field-id*="${node.fieldId}"][data-craftercms-index="${node.index}"]`);
     } else {
       $element = $(`[data-craftercms-model-id="${node.modelId}"][data-craftercms-field-id="${node.fieldId}"]`);
     }
     if($element.length) {
-      $element.removeClass(classes.pulseAnim);
-      setTimeout(function() {
-        $element.addClass(classes.pulseAnim);
-      }, 0);
       if(!isElementInView($element)) {
         $(scrollElement).animate({
           scrollTop: $element.offset().top - 100
-        }, 300);
+        }, 300, function () {
+          pulseAnimation($element);
+        });
+      } else {
+        pulseAnimation($element);
       }
     }
   }
