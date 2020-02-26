@@ -15,15 +15,55 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
-import { ContentTypeHelper } from '../../../utils/helpers';
+import { ContentTypeHelper, ModelHelper } from '../../../utils/helpers';
 import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { usePreviewState, useSelection } from '../../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection, useSpreadState } from '../../../utils/hooks';
+import { defineMessages, useIntl } from 'react-intl';
+import Button from '@material-ui/core/Button';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles } from '@material-ui/core';
+import { findParentModelId } from '../../../utils/object';
+import { popPiece } from '../../../utils/string';
+import { getQueryVariable } from '../../../utils/path';
+import EmbeddedLegacyEditors from '../EmbeddedLegacyEditors';
+
+const translations = defineMessages({
+  openComponentForm: {
+    id: 'craftercms.edit.openComponentForm',
+    defaultMessage: 'Open Component Form'
+  },
+  editTemplate: {
+    id: 'craftercms.edit.editTemplate',
+    defaultMessage: 'Edit Template'
+  },
+  editController: {
+    id: 'craftercms.edit.editController',
+    defaultMessage: 'Edit Controller'
+  }
+});
+
+const styles = makeStyles(() => createStyles({
+  formWrapper: {
+    textAlign: 'center',
+    padding: '20px 0',
+    display: 'flex',
+    flexDirection: 'column',
+    '& button': {
+      margin: '10px 20px'
+    }
+  },
+  closeButton: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px'
+  }
+}));
 
 function createBackHandler(dispatch) {
   const hostToGuest$ = getHostToGuestBus();
@@ -36,11 +76,79 @@ function createBackHandler(dispatch) {
 export default function EditFormPanel() {
 
   const dispatch = useDispatch();
-  const { guest: { selected, models } } = usePreviewState();
+  const { guest: { selected, models, childrenMap } } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
-
+  const site = useActiveSiteId();
+  const { formatMessage } = useIntl();
+  const classes = styles({});
   const onBack = createBackHandler(dispatch);
+  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const [dialogConfig, setDialogConfig] = useSpreadState({
+    open: false,
+    src: null,
+    type: null,
+    inProgress: true
+  });
+
+  const item = selected[0];
+  const model = models[item.modelId];
+  const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
+  const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
+    ? model.craftercms.label
+    : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
+  const fieldId = item.fieldId[0];
+  let selectedId;
+  if (fieldId) {
+    selectedId = ModelHelper.extractCollectionItem(model, fieldId, item.index);
+    selectedId = (typeof selectedId === 'string' && item.index !== undefined) ? selectedId : item.modelId;
+  } else {
+    selectedId = item.modelId;
+  }
+
+  const path = ModelHelper.prop(models[selectedId], 'path');
+  const selectedContentType = ModelHelper.prop(models[selectedId], 'contentType');
+
+  const getSrc = useCallback((type: string) => {
+    switch (type) {
+      case 'form': {
+        if (path) {
+          return `${defaultSrc}site=${site}&path=${path}&type=form`;
+        } else {
+          let parentPath;
+          if (model === models[selectedId]) {
+            let parentId = findParentModelId(model.craftercms.id, childrenMap, models);
+            parentPath = models[parentId].craftercms.path;
+          } else {
+            parentPath = models[model.craftercms.id].craftercms.path;
+          }
+          return `${defaultSrc}site=${site}&path=${parentPath}&isHidden=true&modelId=${selectedId}&type=form`;
+        }
+      }
+      case 'template': {
+        const template = contentTypes.find((contentType) => contentType.id === selectedContentType).displayTemplate;
+        return `${defaultSrc}site=${site}&path=${template}&type=template`;
+      }
+      case 'controller': {
+        let pageName = popPiece(selectedContentType, '/');
+        let groovyPath = `/scripts/pages/${pageName}.groovy`;
+        return `${defaultSrc}site=${site}&path=${groovyPath}&type=controller`;
+      }
+    }
+  }, [childrenMap, contentTypes, defaultSrc, model, models, path, selectedContentType, selectedId, site]);
+
+  function openDialog(type: string) {
+    setDialogConfig(
+      {
+        open: true,
+        src: getSrc(type),
+        type
+      }
+    );
+  }
+
+  const getPath = (type) => getQueryVariable(getSrc(type), 'path');
 
   useEffect(() => {
     const handler = (e) => {
@@ -68,32 +176,6 @@ export default function EditFormPanel() {
     )
   }
 
-  // modelId: string
-  // modelId: string, fieldId: string[]
-  // modelId: string, fieldId: string[], index: number
-
-  // Whole content type
-  // Group of fields (non-group) of a content type
-  // A field of type repeat group (an entire group) - no index, whole thing
-  // A field of type repeat group with index - only that item/index
-  // A set of fields of a repeat group
-  // Single field
-  // Set of fields
-
-  const item = selected[0];
-  const index = item.index;
-  const model = models[item.modelId];
-
-  if (index != null) {
-
-  }
-
-  const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
-  const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
-    ? model.craftercms.label
-    : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;
-  const fields = item.fieldId.map((fieldId) => ContentTypeHelper.getField(contentType, fieldId));
-
   return (
     <>
       <ToolPanel
@@ -101,12 +183,42 @@ export default function EditFormPanel() {
         onBack={onBack}
         BackIcon={CloseRounded}
       >
-        <Typography variant="body1" component="ul">
+        <div className={classes.formWrapper}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={e => openDialog('form')}
+          >
+            {formatMessage(translations.openComponentForm)}
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={e => openDialog('template')}
+          >
+            {formatMessage(translations.editTemplate)}
+          </Button>
           {
-            fields.map((field) => <li key={field.id}>{field.name}</li>)
+            (selectedContentType.includes('/page')) &&
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={e => openDialog('controller')}
+            >
+              {formatMessage(translations.editController)}
+            </Button>
           }
-        </Typography>
+        </div>
       </ToolPanel>
+      {
+        dialogConfig.open &&
+        <EmbeddedLegacyEditors 
+          dialogConfig={dialogConfig} 
+          setDialogConfig={setDialogConfig} 
+          getPath={getPath}
+          showController={selectedContentType.includes('/page')}
+        />
+      }
     </>
   )
 }

@@ -21,7 +21,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import KeyboardArrowDownRounded from '@material-ui/icons/KeyboardArrowDownRounded';
@@ -31,20 +31,27 @@ import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 import CustomMenu from '../../components/Icons/CustomMenu';
-import {
-  changeCurrentUrl,
-  closeTools,
-  openTools,
-  RELOAD_REQUEST
-} from '../../state/actions/preview';
+import { changeCurrentUrl, closeTools, openTools, RELOAD_REQUEST } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { changeSite } from '../../state/actions/sites';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, useEnv, usePreviewState, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useEnv,
+  usePreviewGuest,
+  usePreviewState,
+  useSelection,
+  useSpreadState
+} from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
-import { isBlank } from '../../utils/string';
+import { isBlank, popPiece } from '../../utils/string';
 import { FormattedMessage } from 'react-intl';
+import { Menu } from '@material-ui/core';
+import { palette } from '../../styles/theme';
+import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
+import { getItem } from '../../services/content';
+import PublishDialog from '../Content/Publish/PublishDialog';
 
 const foo = () => void 0;
 
@@ -91,8 +98,22 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   globalNavSection: {
     display: 'flex',
     alignItems: 'center'
+  },
+  separator : {
+    borderTop: `1px solid ${palette.gray.light3}`,
+    borderBottom: `1px solid ${palette.gray.light3}`
+  },
+  iframe: {
+    height: '0',
+    border: 0,
+    '&.complete': {
+      height: '100%'
+    }
+  },
+  loadingRoot: {
+    height: 'calc(100% - 104px)',
+    justifyContent: 'center'
   }
-
 }));
 
 function createOnEnter(handler, argument: 'value' | 'event' = 'event') {
@@ -124,12 +145,100 @@ export function AddressBar(props: AddressBarProps) {
   } = props;
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const guest = usePreviewGuest();
+  const contentTypesBranch = useSelection(state => state.contentTypes);
+  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
+  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const [dialogConfig, setDialogConfig] = useSpreadState({
+    open: false,
+    src: null,
+    type: null,
+    inProgress: true
+  });
+
+  const [publishDialog, setPublishDialog] = useSpreadState({
+    open: false,
+    item: null,
+    scheduling: null
+  });
+
+
+  useEffect(() => {
+    if (guest && guest.models) {
+      getItem(site, guest.models[guest.modelId].craftercms.path).subscribe(
+        (item) => {
+          setPublishDialog({ item })
+        },
+        (error) => {
+          console.log(error)
+        }
+      );
+    }
+  }, [guest, setPublishDialog, site]);
 
   useEffect(() => {
     (url) && setInternalUrl(url);
   }, [url]);
 
   const onSiteChangeInternal = (value) => !isBlank(value) && (value !== site) && onSiteChange(value);
+
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const getPath = (type?: string) => {
+    switch (type) {
+      case 'publish':
+      case 'form': {
+        return guest.models[guest.modelId].craftercms.path;
+      }
+      case 'template': {
+        return contentTypes.find((contentType) => contentType.id === guest.models[guest.modelId].craftercms.contentType).displayTemplate;
+      }
+      case 'controller': {
+        let pageName = popPiece(guest.models[guest.modelId].craftercms.contentType, '/');
+        return `/scripts/pages/${pageName}.groovy`;
+      }
+      default: {
+        return guest.models[guest.modelId].craftercms.path;
+      }
+    }
+  };
+
+  const handleEdit = (type: string) => {
+    handleClose();
+    switch (type) {
+      case 'schedule': {
+        setPublishDialog({ open: true, scheduling: 'custom' });
+        break;
+      }
+      case 'publish': {
+        setPublishDialog({ open: true, scheduling: 'now' });
+        break;
+      }
+      case 'form':
+      case 'template':
+      case 'controller': {
+        setDialogConfig(
+          {
+            open: true,
+            src: `${defaultSrc}site=${site}&path=${getPath(type)}&type=${type}`,
+            type
+          });
+        break;
+      }
+    }
+  };
+
+  const onClosePublish = (response) => {
+    setPublishDialog({ open: false, scheduling: null, item:{...publishDialog.item, isLive: true} });
+  };
 
   return (
     <>
@@ -178,9 +287,83 @@ export function AddressBar(props: AddressBarProps) {
           <KeyboardArrowDownRounded/>
         </IconButton>
       </Paper>
-      <IconButton className={classes.iconButton} aria-label="search">
+      <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <MoreVertRounded/>
       </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={() => handleEdit('form')}>
+          <FormattedMessage
+            id="previewToolBar.menu.edit"
+            defaultMessage="Edit"
+          />
+        </MenuItem>
+        {
+          (!publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
+          <MenuItem onClick={() => handleEdit('schedule')}>
+            <FormattedMessage
+              id="previewToolBar.menu.schedule"
+              defaultMessage="Schedule"
+            />
+          </MenuItem>
+        }
+        {
+          (!publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
+          <MenuItem onClick={() => handleEdit('publish')}>
+            <FormattedMessage
+              id="previewToolBar.menu.publish"
+              defaultMessage="Publish"
+            />
+          </MenuItem>
+        }
+        <MenuItem onClick={handleClose}>
+          <FormattedMessage
+            id="previewToolBar.menu.history"
+            defaultMessage="History"
+          />
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <FormattedMessage
+            id="previewToolBar.menu.dependencies"
+            defaultMessage="Dependencies"
+          />
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <FormattedMessage
+            id="previewToolBar.menu.delete"
+            defaultMessage="Delete"
+          />
+        </MenuItem>
+        <MenuItem onClick={handleClose} className={classes.separator}>
+          <FormattedMessage
+            id="previewToolBar.menu.infoSheet"
+            defaultMessage="Info Sheet"
+          />
+        </MenuItem>
+        <MenuItem onClick={() => handleEdit('template')}>
+          <FormattedMessage
+            id="previewToolBar.menu.editTemplate"
+            defaultMessage="Edit Template"
+          />
+        </MenuItem>
+        <MenuItem onClick={() => handleEdit('controller')}>
+          <FormattedMessage
+            id="previewToolBar.menu.editController"
+            defaultMessage="Edit Controller"
+          />
+        </MenuItem>
+      </Menu>
+      {
+        dialogConfig.open &&
+        <EmbeddedLegacyEditors dialogConfig={dialogConfig} setDialogConfig={setDialogConfig} getPath={getPath}/>
+      }
+      {
+        publishDialog.open &&
+        <PublishDialog scheduling={publishDialog.scheduling} items={[publishDialog.item]} onClose={onClosePublish}/>
+      }
     </>
   );
 }
@@ -194,7 +377,7 @@ export default function ToolBar() {
   const {
     guest,
     currentUrl,
-    showToolsPanel
+    showToolsPanel,
   } = usePreviewState();
   let addressBarUrl = guest?.url ?? currentUrl;
   if (addressBarUrl === PREVIEW_LANDING_BASE) {

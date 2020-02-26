@@ -18,7 +18,9 @@
 
 <html>
 <head>
-
+  <script>
+    window.IS_LEGACY_TOP_WINDOW = true;
+  </script>
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
 
   <#include "/templates/web/common/page-fragments/head.ftl" />

@@ -20,11 +20,12 @@ import {
   changeCurrentUrl,
   checkInGuest,
   checkOutGuest,
+  CHILDREN_MAP_UPDATE,
   CLEAR_SELECTED_ZONES,
   clearSelectForEdit,
-  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   COMPONENT_INSTANCE_HTML_REQUEST,
   COMPONENT_INSTANCE_HTML_RESPONSE,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
   DESKTOP_ASSET_DROP,
@@ -46,6 +47,7 @@ import {
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
   selectForEdit,
+  setChildrenMap,
   setContentTypeReceptacles,
   setItemBeingDragged,
   SORT_ITEM_OPERATION,
@@ -310,7 +312,7 @@ export function PreviewConcierge(props: any) {
           dispatch(setContentTypeReceptacles(payload));
           break;
         }
-        case COMPONENT_INSTANCE_HTML_REQUEST:
+        case COMPONENT_INSTANCE_HTML_REQUEST: {
           getComponentInstanceHTML(payload.path).subscribe((htmlString) => {
             hostToGuest$.next({
               type: COMPONENT_INSTANCE_HTML_RESPONSE,
@@ -318,6 +320,11 @@ export function PreviewConcierge(props: any) {
             });
           });
           break;
+        }
+        case CHILDREN_MAP_UPDATE: {
+          dispatch(setChildrenMap(payload));
+          break;
+        }
       }
     });
 

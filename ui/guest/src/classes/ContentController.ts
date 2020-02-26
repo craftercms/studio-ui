@@ -20,6 +20,7 @@ import { ajax, AjaxResponse } from 'rxjs/ajax';
 import { filter, map, share, take } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import {
+  CHILDREN_MAP_UPDATE,
   CONTENT_TYPES_RESPONSE,
   createLookupTable,
   DELETE_ITEM_OPERATION,
@@ -138,10 +139,9 @@ export class ContentController {
     return ContentController.contentTypesObs$;
   }
 
-  // TODO: implement operationObs$
-  // operations$() {
-  //   return ContentController.operationsObs$;
-  // }
+  operations$() {
+    return ContentController.operationsObs$;
+  }
 
   hasCachedModel(modelId: string): boolean {
     return (this.getCachedModel(modelId) != null);
@@ -336,7 +336,6 @@ export class ContentController {
 
   }
 
-  // TODO: implement
   insertGroup(modelId, fieldId, data) {
   }
 
@@ -569,6 +568,7 @@ export class ContentController {
       Object.values(responseModels).forEach((model) =>
         this.computeChildren(model)
       );
+      post(CHILDREN_MAP_UPDATE, this.children);
     });
 
     ContentController.models$.next(
