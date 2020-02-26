@@ -73,7 +73,7 @@ export function GuestProxy(props) {
       return (typeof index === 'string') ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}` : index + value;
     };
 
-    const updateElementRegistrations = (collection: Element[] | HTMLElement[], type: string, newIndex: string | number, oldIndex?: string | number): void => {
+    const updateElementRegistrations = (collection: Element[], type: string, newIndex: string | number, oldIndex?: string | number): void => {
       let originalNewIndex = newIndex;
       let originalOldIndex = oldIndex;
       newIndex = (typeof newIndex === 'string') ? parseInt(popPiece(newIndex)) : newIndex;
@@ -107,12 +107,12 @@ export function GuestProxy(props) {
       }
     };
 
-    const getDropzoneElement = (modelId: string, fieldId: string, targetIndex: string): JQuery<Element> => {
+    const getDropzoneElement = (modelId: string, fieldId: string, targetIndex: string | number): JQuery<Element> => {
       const dropZoneId = iceRegistry.exists({
         modelId,
         fieldId,
         index: fieldId.includes('.')
-          ? removeLastPiece(targetIndex)
+          ? removeLastPiece(targetIndex as string)
           : null
       });
       return $(ElementRegistry.fromICEId(dropZoneId).element);
