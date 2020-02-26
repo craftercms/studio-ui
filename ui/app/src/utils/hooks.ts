@@ -46,10 +46,6 @@ export function usePreviewState(): GlobalState['preview'] {
   return useSelector<GlobalState, GlobalState['preview']>(state => state.preview);
 }
 
-export function usePreviewGuest(): GuestData {
-  return useSelector<GlobalState, GuestData>(state => state.preview.guest);
-}
-
 export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>(state => state.env);
 }
