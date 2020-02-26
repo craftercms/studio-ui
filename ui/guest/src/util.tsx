@@ -104,7 +104,7 @@ export function sibling(element: HTMLElement, next: boolean): Element {
     : element.previousElementSibling;
 }
 
-export function forEach(array: any[], fn: Function, emptyReturnValue?): string {
+export function forEach(array: any[], fn: (item: any, index: number, array: any[]) => boolean | 'continue' | 'break', emptyReturnValue?: boolean): string | boolean {
   if (notNullOrUndefined(emptyReturnValue) && array.length === 0) {
     return emptyReturnValue;
   }
