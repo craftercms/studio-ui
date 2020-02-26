@@ -639,7 +639,7 @@ export function Guest(props: GuestProps) {
       }
     },
 
-    onDragOver(e: DragEvent, physicalRecord: Record) {
+    onDragOver(e: DragEvent, physicalRecord: Record): void {
       const dragContext = stateRef.current.dragContext;
       if (persistence.scrolling$.value) {
         return null;
@@ -679,7 +679,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    drop(e: Event, record: Record): void {
+    drop(e: JQuery.DropEvent, record: Record): void {
       if (fn.dragOk()) {
         e.preventDefault();
         e.stopPropagation();
@@ -687,7 +687,7 @@ export function Guest(props: GuestProps) {
       }
     },
 
-    onDrop(e, record: Record) {
+    onDrop(e: JQuery.DropEvent, record: Record): void {
 
       const state = stateRef.current;
       const status = state.common.status;
