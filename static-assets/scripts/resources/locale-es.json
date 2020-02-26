@@ -198,7 +198,8 @@
         "PUBLISHED": "Publicado",
         "STOP_PUBLISHER":"Detener editor",
         "START_PUBLISHER":"Iniciar Publisher",
-        "REMOVE_CLUSTER_NODE":"Eliminar nodo de cluster"
+        "REMOVE_CLUSTER_NODE":"Eliminar nodo de cluster",
+        "CANCEL_PUBLISHING_PACKAGE":"Cancel Publishing Package"
       },
       "USER": "Usuario",
       "CONTENT": "Contenido",
