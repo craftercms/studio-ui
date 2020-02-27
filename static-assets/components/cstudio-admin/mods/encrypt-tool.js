@@ -13,32 +13,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 (function () {
-  class EncryptTool {
-    constructor(config, el) {
+  var EncryptTool =
+  /*#__PURE__*/
+  function () {
+    function EncryptTool(config, el) {
+      CrafterCMSNext.util.babel.classCallCheck(this, EncryptTool);
       this.containerEl = el;
       this.config = config;
       this.types = [];
     }
 
-    initialize(config) {
-      this.config = config;
-    }
-
-    renderWorkarea() {
-
-      const workarea = document.querySelector('#cstudio-admin-console-workarea');
-      const el = document.createElement('div');
-
-      $(workarea).html('');
-      workarea.appendChild(el);
-
-      CrafterCMSNext.render(el, 'EncryptTool');
-
-    }
-  }
+    CrafterCMSNext.util.babel.createClass(EncryptTool, [{
+      key: "initialize",
+      value: function initialize(config) {
+        this.config = config;
+      }
+    }, {
+      key: "renderWorkarea",
+      value: function renderWorkarea() {
+        var workarea = document.querySelector('#cstudio-admin-console-workarea');
+        var el = document.createElement('div');
+        $(workarea).html('');
+        workarea.appendChild(el);
+        CrafterCMSNext.render(el, 'EncryptTool');
+      }
+    }]);
+    return EncryptTool;
+  }();
 
   CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-encrypt-tool', EncryptTool);
-
 })();
