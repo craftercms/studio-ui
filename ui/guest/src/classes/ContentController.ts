@@ -43,7 +43,7 @@ import {
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../communicator';
 import uuid from 'uuid/v4';
-import { ContentInstance } from '../models/ContentInstance';
+import { ContentInstance, ContentInstanceSystemProps } from '../models/ContentInstance';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { Item } from '../models/Item';
@@ -353,7 +353,7 @@ export class ContentController {
     const collection = ModelHelper.value(model, fieldId);
     const result = collection
       .slice(0, currentIndex)
-      .concat(collection.slice(currentIndex + 1));
+      .concat(collection.slice((currentIndex as number) + 1));
 
     // Insert in desired position
     result.splice(targetIndex, 0, collection[currentIndex]);
@@ -584,10 +584,10 @@ export class ContentController {
   }
 
   /* private */
-  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentInstance[]) {
+  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]) {
 
     if (Array.isArray(responseContentTypes)) {
-      responseContentTypes = createLookupTable(responseContentTypes);
+      (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
     }
 
     const currentContentTypes = ContentController.contentTypes$.value;
@@ -955,7 +955,7 @@ function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstan
   );
 
   lookupTable[model.id] = {
-    craftercms: system,
+    craftercms: system as ContentInstanceSystemProps,
     ...data
   };
 
