@@ -14,15 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
 import { createStyles, makeStyles } from '@material-ui/core';
 import TreeView from '@material-ui/lab/TreeView';
+import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
+import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { usePreviewGuest, useSelection } from '../../../utils/hooks';
 import { ContentType, ContentTypeField } from '../../../models/ContentType';
@@ -35,7 +37,7 @@ import ContentInstance from '../../../models/ContentInstance';
 import Repeat from '../../../components/Icons/Repeat';
 import iconStyles from '../../../styles/icon';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
-import { createLookupTable } from '../../../utils/object';
+import { createLookupTable, reversePluckProps } from '../../../utils/object';
 import { SCROLL_TO_ELEMENT } from '../../../state/actions/preview';
 import { getHostToGuestBus } from '../previewContext';
 
@@ -55,7 +57,10 @@ const useStyles = makeStyles((theme) => createStyles({
     '& > li > ul': {
       marginLeft: '0px'
     }
-  },
+  }
+}));
+
+const treeItemStyles = makeStyles((theme) => createStyles({
   icon: {
     ...iconStyles
   },
@@ -71,17 +76,17 @@ const useStyles = makeStyles((theme) => createStyles({
     }
   },
   treeItemContent: {
-    padding: '6px 8px',
+    paddingLeft: '8px',
     '&.padded': {
       paddingLeft: '34px'
     }
   },
-  treeItemGroup: {
-    //marginLeft: '12px'
-  },
+  treeItemGroup: {},
   treeItemExpanded: {},
   treeItemLabel: {
     display: 'flex',
+    alignItems: 'center',
+    height: '32px',
     '& p': {
       marginTop: 0,
       marginLeft: '5px',
@@ -92,6 +97,10 @@ const useStyles = makeStyles((theme) => createStyles({
       marginBottom: 0,
       wordBreak: 'break-all'
     }
+  },
+  options: {
+    marginLeft: 'auto',
+    padding: '4px'
   }
 }));
 
@@ -192,6 +201,89 @@ function getChildren(model: ContentInstance, contentType: ContentType, models: L
   return children;
 }
 
+function TreeItemCustom(props) {
+  const { nodes, handleScroll, handlePrevious, handleClick, handleOptions } = props;
+  const classes = treeItemStyles({});
+  const [over, setOver] = useState(false);
+  let timeout = React.useRef<any>();
+
+  let Icon;
+  if (nodes.type === 'page') {
+    Icon = Page;
+  } else if (nodes.type === 'node-selector') {
+    Icon = NodeSelector;
+  } else if (nodes.type === 'component') {
+    Icon = Component;
+  } else if (nodes.type === 'repeat') {
+    Icon = Repeat;
+  } else {
+    Icon = Field;
+  }
+
+  function setOverState(e: React.MouseEvent, isOver: boolean) {
+    e.stopPropagation();
+    clearTimeout(timeout.current);
+    if (!isOver) {
+      timeout.current = setTimeout(() => {
+        setOver(false);
+      }, 10)
+    } else {
+      setOver(isOver);
+    }
+  }
+
+  return (
+    <TreeItem
+      key={nodes.id}
+      nodeId={nodes.id}
+      onMouseOver={(e) => setOverState(e, true)}
+      onMouseOut={(e) => setOverState(e, false)}
+      label={
+        <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
+          {
+            (nodes.id === 'root' && handlePrevious) ? (
+              <ChevronLeftRounded onClick={(e) => handlePrevious(e)}/>
+            ) : (
+              <>
+                {(nodes.type === 'component') && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
+                <Icon className={classes.icon}/>
+              </>
+            )
+          }
+          <p>{nodes.name}</p>
+          {
+            over &&
+            <IconButton className={classes.options} onMouseOver={(e) => setOverState(e, true)}
+                        onClick={(e) => handleOptions(e)}>
+              <MoreVertIcon/>
+            </IconButton>
+          }
+        </div>
+      }
+      classes={{
+        root: classes.treeItemRoot,
+        content: clsx(classes.treeItemContent, (!nodes.children?.length && nodes.type !== 'component') && 'padded'),
+        expanded: classes.treeItemExpanded,
+        group: classes.treeItemGroup,
+        iconContainer: nodes.id === 'root' ? classes.treeItemIconContainer : ''
+      }}
+    >
+      {
+        Array.isArray(nodes.children)
+          ? nodes.children.map(node =>
+            <TreeItemCustom
+              key={node.id}
+              nodes={node}
+              {...reversePluckProps(props, 'nodes')}
+            />
+          )
+          : null
+      }
+    </TreeItem>
+  )
+}
+
+
 export default function ContentTree() {
   const classes = useStyles({});
   const guest = usePreviewGuest();
@@ -223,7 +315,6 @@ export default function ContentTree() {
       });
     }
   }, [contentTypesBranch, data.selected, guest]);
-
 
   const handleClick = (node: RenderTree) => {
     if (node.type === 'component' && node.id !== 'root') {
@@ -273,50 +364,8 @@ export default function ContentTree() {
     }
   };
 
-  const renderTree = (nodes: RenderTree) => {
-    let Icon;
-    if (nodes.type === 'page') {
-      Icon = Page;
-    } else if (nodes.type === 'node-selector') {
-      Icon = NodeSelector;
-    } else if (nodes.type === 'component') {
-      Icon = Component;
-    } else if (nodes.type === 'repeat') {
-      Icon = Repeat;
-    } else {
-      Icon = Field;
-    }
-
-    return (
-      <TreeItem
-        key={nodes.id}
-        nodeId={nodes.id}
-        label={
-          <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
-            {
-              (nodes.id === 'root' && data.previous.length) ? (
-                <ChevronLeftRounded onClick={(e) => handlePrevious(e)}/>
-              ) : (
-                <>
-                  {(nodes.type === 'component') && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
-                  <Icon className={classes.icon}/>
-                </>
-              )
-            }
-            <p>{nodes.name}</p>
-          </div>
-        }
-        classes={{
-          root: classes.treeItemRoot,
-          content: clsx(classes.treeItemContent, (!nodes.children?.length && nodes.type !== 'component') && 'padded'),
-          expanded: classes.treeItemExpanded,
-          group: classes.treeItemGroup,
-          iconContainer: nodes.id === 'root' ? classes.treeItemIconContainer : ''
-        }}
-      >
-        {Array.isArray(nodes.children) ? nodes.children.map(node => renderTree(node)) : null}
-      </TreeItem>
-    )
+  const handleOptions = (event: any) => {
+    event.stopPropagation();
   };
 
   return (
@@ -337,7 +386,13 @@ export default function ContentTree() {
       >
         {
           data.selected &&
-          renderTree(data.lookupTable[data.selected])
+          <TreeItemCustom
+            nodes={data.lookupTable[data.selected]}
+            handleScroll={handleScroll}
+            handlePrevious={data.previous.length ? handlePrevious : null}
+            handleClick={handleClick}
+            handleOptions={handleOptions}
+          />
         }
       </TreeView>
     </ToolPanel>
