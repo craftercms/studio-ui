@@ -17,7 +17,7 @@
 export interface Operation {
   type: string;
   args: any;
-  state: object;
+  state?: object;
 
   [id: string]: any;
 }

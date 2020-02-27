@@ -47,12 +47,13 @@ import { ContentInstance } from '../models/ContentInstance';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { Item } from '../models/Item';
+import { Operation } from '../models/Operations';
 
 const apiUrl = 'http://authoring.sample.com:3030';
 
 export class ContentController {
 
-  static operations$ = new Subject();
+  static operations$ = new Subject<Operation>();
   static operations = ContentController.operations$.asObservable();
 
   /* private */

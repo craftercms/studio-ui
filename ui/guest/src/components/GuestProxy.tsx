@@ -38,6 +38,8 @@ import { filter, map, take } from 'rxjs/operators';
 import { ContentTypeHelper } from '../classes/ContentTypeHelper';
 import { message$, post } from '../communicator';
 import { ContentTypeField } from '../models/ContentType';
+import { ContentInstance } from '../models/ContentInstance';
+import { Operation } from '../models/Operations';
 
 export function GuestProxy(props) {
 
@@ -163,7 +165,7 @@ export function GuestProxy(props) {
       .on('click', '[data-craftercms-model-id]', handler)
       .on('dblclick', '[data-craftercms-model-id]', handler);
 
-    const sub = ContentController.operations.subscribe((op: any) => {
+    const sub = ContentController.operations.subscribe((op: Operation) => {
       switch (op.type) {
         case 'sort': {
 
@@ -279,7 +281,7 @@ export function GuestProxy(props) {
           const $daddy = getDropzoneElement(modelId, fieldId, targetIndex);
           let $clone = $daddy.children(':first').clone();
           if ($clone.length) {
-            const processFields = function (instance, fields: ContentTypeField) {
+            const processFields = function (instance: ContentInstance, fields: ContentTypeField): void {
               Object.entries(fields).forEach(([id, field]) => {
                 switch (field.type) {
                   case 'repeat':
