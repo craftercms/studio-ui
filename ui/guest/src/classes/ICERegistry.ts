@@ -29,7 +29,7 @@ import { ModelHelper } from './ModelHelper';
 import { ContentInstance } from '../models/ContentInstance';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
-import { Record } from '../models/InContextEditing';
+import { Record, ReferentialEntries } from '../models/InContextEditing';
 
 export class ICERegistry {
 
@@ -171,11 +171,11 @@ export class ICERegistry {
     );
   }
 
-  getMediaReceptacles(type: string) {
+  getMediaReceptacles(type: string): Record[] {
     const receptacles = [];
     forEach(
       Object.values(this.registry),
-      (record) => {
+      (record: Record) => {
         const entries = this.getReferentialEntries(record);
         if (entries.field && entries.field.type === type) {
           receptacles.push(record);
@@ -185,7 +185,7 @@ export class ICERegistry {
     return receptacles;
   }
 
-  getRecordReceptacles(id: number) {
+  getRecordReceptacles(id: number): Record[] | number[] {
     const record = this.recordOf(id);
     const { index, field, fieldId, model } = this.getReferentialEntries(record);
     if (isNullOrUndefined(index)) {
@@ -208,7 +208,7 @@ export class ICERegistry {
     }
   }
 
-  getRepeatGroupItemReceptacles(record: Record) {
+  getRepeatGroupItemReceptacles(record: Record): number[] {
     const entries = this.getReferentialEntries(record);
     return Object.values(this.registry)
       .filter((rec) =>
@@ -222,12 +222,12 @@ export class ICERegistry {
       .map((rec) => rec.id);
   }
 
-  getComponentItemReceptacles(record: Record) {
+  getComponentItemReceptacles(record: Record): number[] {
     const contentType = this.getReferentialEntries(record).contentType;
     return this.getContentTypeReceptacles(contentType).map((rec) => rec.id);
   }
 
-  getContentTypeReceptacles(contentType: string | ContentType) {
+  getContentTypeReceptacles(contentType: string | ContentType): Record[] {
     const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
     return Object.values(this.registry).filter((record) => {
       const { fieldId, index } = record;
@@ -282,7 +282,7 @@ export class ICERegistry {
   //   }
   // }
 
-  getReferentialEntries(record: number | Record) {
+  getReferentialEntries(record: number | Record): ReferentialEntries {
     record = typeof record === 'object' ? record : this.recordOf(record);
     const
       model = contentController.getCachedModel(record.modelId),
@@ -298,11 +298,11 @@ export class ICERegistry {
     };
   }
 
-  getRecordField(record: Record) {
+  getRecordField(record: Record): string {
     return this.getReferentialEntries(record).field;
   }
 
-  isMovable(recordId: Record) {
+  isMovable(recordId: Record): boolean {
 
     // modeId -> the main/parent model id or a sub model id
     // fieldId -> repeatGroup or array

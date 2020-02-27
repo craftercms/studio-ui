@@ -15,6 +15,7 @@
  */
 
 import { ContentType } from './ContentType';
+import { ContentInstance } from './ContentInstance';
 
 export interface IceZone {
   element?: Element;
@@ -70,4 +71,12 @@ export interface HoverData {
   id: number;
   rect: DOMRect;
   label: string;
+}
+
+export interface ReferentialEntries extends Record {
+  model: ContentInstance;
+  contentType: ContentType;
+  field: any;
+  contentTypeId: string;
+
 }

@@ -55,7 +55,7 @@ export class ContentTypeHelper {
     const field = ContentTypeHelper.getField(contentType, fieldId);
   }
 
-  static getField(type: ContentType, fieldId: string): ContentTypeField {
+  static getField(type: ContentType, fieldId: string): any {
     // For repeat groups, the field inside the repeat group field will be
     // under {repeatName}.fields.{fieldName}. To abstract this complexity from devs
     // we parse it here.
