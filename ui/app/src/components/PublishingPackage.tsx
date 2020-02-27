@@ -90,18 +90,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const messages = defineMessages({
-  cancel: {
-    id: 'publishingDashboard.cancel',
+const translations = defineMessages({
+  cancelText: {
+    id: 'publishingDashboard.confirm.cancelText',
     defaultMessage: 'Cancel'
   },
-  confirm: {
-    id: 'publishingDashboard.confirm',
-    defaultMessage: 'Confirm'
+  cancel: {
+    id: 'publishingDashboard.confirm.no',
+    defaultMessage: 'No'
   },
-  confirmHelper: {
-    id: 'publishingDashboard.confirmHelper',
-    defaultMessage: 'Set the state for the item to "Cancelled"'
+  confirm: {
+    id: 'publishingDashboard.confirm.yes',
+    defaultMessage: 'Yes'
+  },
+  confirmHelperText: {
+    id: 'publishingDashboard.confirmHelperText',
+    defaultMessage: 'Set item state to "Cancelled"?'
   },
   fetchPackagesFiles: {
     id: 'publishingDashboard.fetchPackagesFiles',
@@ -236,7 +240,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
               </Typography>
             </header>
           ) : (
-            (currentFilters.state.includes(READY_FOR_LIVE)) ? (
+            (state === READY_FOR_LIVE) ? (
               <FormGroup className={classes.checkbox}>
                 <FormControlLabel
                   control={
@@ -258,10 +262,10 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         {
           (state === READY_FOR_LIVE) &&
           <SelectButton
-            text={formatMessage(messages.cancel)}
-            cancelText={formatMessage(messages.cancel)}
-            confirmText={formatMessage(messages.confirm)}
-            confirmHelperText={formatMessage(messages.confirmHelper)}
+            text={formatMessage(translations.cancelText)}
+            cancelText={formatMessage(translations.cancel)}
+            confirmText={formatMessage(translations.confirm)}
+            confirmHelperText={formatMessage(translations.confirmHelperText)}
             onConfirm={() => handleCancel(id)}
           />
         }
@@ -270,7 +274,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         <Typography variant="body2">
           {
             formatMessage(
-              messages.scheduled,
+              translations.scheduled,
               {
                 schedule: new Date(schedule),
                 approver: approver,
@@ -282,7 +286,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         <Typography variant="body2">
           {
             formatMessage(
-              messages.status,
+              translations.status,
               {
                 state: <strong key={state}>{state}</strong>,
                 environment: <strong key={environment}>{environment}</strong>,
@@ -293,10 +297,10 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       </div>
       <div className="comment">
         <Typography variant="body2">
-          {formatMessage(messages.comment)}
+          {formatMessage(translations.comment)}
         </Typography>
         <Typography variant="body2">
-          {comment ? comment : <span>{formatMessage(messages.commentNotProvided)}</span>}
+          {comment ? comment : <span>{formatMessage(translations.commentNotProvided)}</span>}
         </Typography>
       </div>
       <div className="files">
@@ -313,7 +317,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
               loading &&
               <CircularProgress size={14} className={classes.spinner} color={"inherit"}/>
             }
-            {formatMessage(messages.fetchPackagesFiles)}
+            {formatMessage(translations.fetchPackagesFiles)}
           </Button>
         }
       </div>

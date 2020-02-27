@@ -52,20 +52,20 @@ const messages = defineMessages({
     defaultMessage: 'Select all on this page'
   },
   cancelSelected: {
-    id: 'publishingDashboard.cancelSelected',
+    id: 'publishingDashboard.confirm.cancelSelected',
     defaultMessage: 'Cancel Selected'
   },
   cancel: {
-    id: 'publishingDashboard.cancel',
-    defaultMessage: 'Cancel'
+    id: 'publishingDashboard.confirm.no',
+    defaultMessage: 'No'
   },
   confirm: {
-    id: 'publishingDashboard.confirm',
-    defaultMessage: 'Confirm'
+    id: 'publishingDashboard.confirm.yes',
+    defaultMessage: 'Yes'
   },
   confirmAllHelper: {
-    id: 'publishingDashboard.confirmHelper',
-    defaultMessage: 'Set the state for all selected items to "Cancelled"'
+    id: 'publishingDashboard.confirmAllHelper',
+    defaultMessage: 'Set the state for all selected items to "Cancelled"?'
   },
   filters: {
     id: 'publishingDashboard.filters',
@@ -282,6 +282,7 @@ function PublishingQueue(props: PublishingQueueProps) {
             _pending[key] = false;
           });
           setPending({...pending, ..._pending});
+          clearSelected();
           getPackages(siteId);
         },
         ({response}) => {
@@ -299,7 +300,7 @@ function PublishingQueue(props: PublishingQueueProps) {
     let _selected: Selected = {};
     if (event.target.checked) {
       packages.forEach((item: Package) => {
-        _selected[item.id] = true;
+        _selected[item.id] = item.state === READY_FOR_LIVE;
         setSelected({...selected, ..._selected});
       });
     } else {
@@ -313,11 +314,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   function areAllSelected() {
     if (!packages || packages.length === 0) return false;
     let _selected: boolean = true;
-    packages.forEach((item: Package) => {
-      if (!selected[item.id]) {
-        _selected = false;
-      }
-    });
+    _selected = !packages.some((item: Package) => !selected[item.id] && item.state === READY_FOR_LIVE);
     return _selected;
   }
 
