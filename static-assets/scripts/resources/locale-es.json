@@ -199,7 +199,7 @@
         "STOP_PUBLISHER":"Detener editor",
         "START_PUBLISHER":"Iniciar Publisher",
         "REMOVE_CLUSTER_NODE":"Eliminar nodo de cluster",
-        "CANCEL_PUBLISHING_PACKAGE":"Cancel Publishing Package"
+        "CANCEL_PUBLISHING_PACKAGE":"Cancelar Paquete de Publicación"
       },
       "USER": "Usuario",
       "CONTENT": "Contenido",
