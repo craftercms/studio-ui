@@ -139,9 +139,10 @@ export class ContentController {
     return ContentController.contentTypesObs$;
   }
 
-  operations$() {
-    return ContentController.operationsObs$;
-  }
+  // TODO: implement operationsObs$
+  // operations$() {
+  //   return ContentController.operationsObs$;
+  // }
 
   hasCachedModel(modelId: string): boolean {
     return (this.getCachedModel(modelId) != null);
