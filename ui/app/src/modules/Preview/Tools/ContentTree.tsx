@@ -86,7 +86,7 @@ const treeItemStyles = makeStyles((theme) => createStyles({
   treeItemLabel: {
     display: 'flex',
     alignItems: 'center',
-    height: '32px',
+    height: '36px',
     '& p': {
       marginTop: 0,
       marginLeft: '5px',
@@ -100,7 +100,7 @@ const treeItemStyles = makeStyles((theme) => createStyles({
   },
   options: {
     marginLeft: 'auto',
-    padding: '4px'
+    padding: '6px'
   }
 }));
 
