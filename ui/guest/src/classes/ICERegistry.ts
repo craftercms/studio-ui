@@ -302,7 +302,7 @@ export class ICERegistry {
     return this.getReferentialEntries(record).field;
   }
 
-  isMovable(recordId: Record): boolean {
+  isMovable(recordId: number): boolean {
 
     // modeId -> the main/parent model id or a sub model id
     // fieldId -> repeatGroup or array
