@@ -52,15 +52,15 @@ const messages = defineMessages({
     defaultMessage: 'Select all on this page'
   },
   cancelSelected: {
-    id: 'publishingDashboard.confirm.cancelSelected',
+    id: 'publishingDashboard.cancelSelected',
     defaultMessage: 'Cancel Selected'
   },
   cancel: {
-    id: 'publishingDashboard.confirm.no',
+    id: 'publishingDashboard.no',
     defaultMessage: 'No'
   },
   confirm: {
-    id: 'publishingDashboard.confirm.yes',
+    id: 'publishingDashboard.yes',
     defaultMessage: 'Yes'
   },
   confirmAllHelper: {

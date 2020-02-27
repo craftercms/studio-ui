@@ -92,15 +92,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const translations = defineMessages({
   cancelText: {
-    id: 'publishingDashboard.confirm.cancelText',
+    id: 'publishingDashboard.cancelText',
     defaultMessage: 'Cancel'
   },
   cancel: {
-    id: 'publishingDashboard.confirm.no',
+    id: 'publishingDashboard.no',
     defaultMessage: 'No'
   },
   confirm: {
-    id: 'publishingDashboard.confirm.yes',
+    id: 'publishingDashboard.yes',
     defaultMessage: 'Yes'
   },
   confirmHelperText: {
