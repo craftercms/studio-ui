@@ -146,7 +146,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const currentFiltersInitialState: CurrentFilters = {
   environment: '',
   path: '',
-  state: [],
+  state: [READY_FOR_LIVE],
   limit: 5,
   page: 0
 };
@@ -247,7 +247,7 @@ function PublishingQueue(props: PublishingQueueProps) {
     let filters: any = {};
     if (currentFilters.environment) filters['environment'] = currentFilters.environment;
     if (currentFilters.path) filters['path'] = currentFilters.path;
-    if (currentFilters.state) filters['states'] = currentFilters.state;
+    if (currentFilters.state.length) filters['states'] = currentFilters.state;
     if (currentFilters.limit) filters['limit'] = currentFilters.limit;
     if (currentFilters.page) filters['offset'] = currentFilters.page * currentFilters.limit;
     return filters;
