@@ -198,7 +198,8 @@
         "PUBLISHED": "Publish",
         "STOP_PUBLISHER":"Stop Publisher",
         "START_PUBLISHER":"Start Publisher",
-        "REMOVE_CLUSTER_NODE":"Remove Cluster Node"
+        "REMOVE_CLUSTER_NODE":"Remove Cluster Node",
+        "CANCEL_PUBLISHING_PACKAGE":"Cancel Publishing Package"
       },
       "USER": "User",
       "CONTENT": "Content",
