@@ -102,7 +102,7 @@ export default function SelectButton(props: ConfirmDropdownProps) {
           horizontal: 'right',
         }}
       >
-        <Typography variant="body2" color="textSecondary" className={classes.helperText}>
+        <Typography variant="body1" className={classes.helperText}>
           {confirmHelperText}
         </Typography>
         <MenuItem onClick={handleConfirm}>{confirmText}</MenuItem>
