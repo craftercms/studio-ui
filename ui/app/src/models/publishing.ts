@@ -38,7 +38,7 @@ export interface File {
 export interface CurrentFilters {
   environment: string;
   path: string;
-  state: string
+  state: Array<string>;
   limit: number,
   page: number
 }
