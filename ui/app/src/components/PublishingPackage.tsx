@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const translations = defineMessages({
   cancelText: {
-    id: 'publishingDashboard.cancelText',
+    id: 'publishingDashboard.cancelItemButtonText',
     defaultMessage: 'Cancel'
   },
   cancel: {
