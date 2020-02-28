@@ -335,7 +335,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   function handleFilterChange(event: any) {
     if (event.target.type === 'radio') {
       clearSelected();
-      setCurrentFilters({...currentFilters, [event.target.name]: event.target.value, page: 0});
+      setCurrentFilters({ ...currentFilters, [event.target.name]: event.target.value, page: 0 });
     } else if (event.target.type === 'checkbox') {
       let state = [...currentFilters.state];
       if (event.target.checked) {
