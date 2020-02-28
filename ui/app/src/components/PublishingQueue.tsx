@@ -42,7 +42,7 @@ import EmptyState from './EmptyState';
 import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Spinner from './Spinner';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import RefreshIcon from '@material-ui/icons/RefreshRounded';
 import Button from '@material-ui/core/Button';
 
 const messages = defineMessages({
@@ -72,7 +72,7 @@ const messages = defineMessages({
   },
   noPackagesTitle: {
     id: 'publishingDashboard.noPackagesTitle',
-    defaultMessage: 'No Packages Where Found'
+    defaultMessage: 'No packages were found'
   },
   noPackagesSubtitle: {
     id: 'publishingDashboard.noPackagesSubtitle',
@@ -84,8 +84,8 @@ const messages = defineMessages({
   },
   packagesSelected: {
     id: 'publishingDashboard.packagesSelected',
-    defaultMessage: '{count, plural, one {{count} Package selected} other {{count} Packages selected}}',
-  },
+    defaultMessage: '{count, plural, one {{count} Package selected} other {{count} Packages selected}}'
+  }
 });
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -111,7 +111,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     '& .status': {
       display: 'flex',
-      justifyContent: 'space-between',
+      justifyContent: 'space-between'
     },
     '& .comment': {
       display: 'flex',
@@ -120,7 +120,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginRight: '20px'
       }
     },
-    '& .files': {},
+    '& .files': {}
   },
   packagesSelected: {
     marginRight: '10px',
@@ -135,7 +135,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: 'auto'
   },
   button: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1)
   },
   empty: {
     padding: '40px 0'
@@ -170,11 +170,12 @@ function PublishingQueue(props: PublishingQueueProps) {
   });
   const [apiState, setApiState] = useState({
     error: false,
-    errorResponse: null,
+    errorResponse: null
   });
   const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
-  const {formatMessage} = useIntl();
-  const {siteId} = props;
+  const { formatMessage } = useIntl();
+  const { siteId } = props;
+  const hasReadyForLivePackages = ((packages || []).filter((item: Package) => item.state === READY_FOR_LIVE).length > 0);
 
   setRequestForgeryToken();
 
@@ -220,24 +221,23 @@ function PublishingQueue(props: PublishingQueueProps) {
         apiState={apiState}
         setApiState={setApiState}
         setSelected={setSelected}
-        currentFilters={currentFilters}
         filesPerPackage={filesPerPackage}
-        setFilesPerPackage={setFilesPerPackage}/>
+        setFilesPerPackage={setFilesPerPackage} />
     })
   }
 
   function getEnvironments(siteId: string) {
     fetchEnvironments(siteId)
       .subscribe(
-        ({response}) => {
+        ({ response }) => {
           let channels: string[] = [];
           response.availablePublishChannels.forEach((channel: any) => {
             channels.push(channel.name);
           });
-          setFilters({...filters, environments: channels});
+          setFilters({ ...filters, environments: channels });
         },
-        ({response}) => {
-          setApiState({...apiState, error: true, errorResponse: response});
+        ({ response }) => {
+          setApiState({ ...apiState, error: true, errorResponse: response });
         }
       );
   }
@@ -255,12 +255,12 @@ function PublishingQueue(props: PublishingQueueProps) {
   function getPackages(siteId: string) {
     fetchPackages(siteId, getFilters(currentFilters))
       .subscribe(
-        ({response}) => {
+        ({ response }) => {
           setTotal(response.total);
           setPackages(response.packages);
         },
-        ({response}) => {
-          setApiState({...apiState, error: true, errorResponse: response});
+        ({ response }) => {
+          setApiState({ ...apiState, error: true, errorResponse: response });
         }
       );
   }
@@ -280,12 +280,12 @@ function PublishingQueue(props: PublishingQueueProps) {
           Object.keys(selected).forEach((key: string) => {
             _pending[key] = false;
           });
-          setPending({...pending, ..._pending});
+          setPending({ ...pending, ..._pending });
           clearSelected();
           getPackages(siteId);
         },
-        ({response}) => {
-          setApiState({...apiState, error: true, errorResponse: response});
+        ({ response }) => {
+          setApiState({ ...apiState, error: true, errorResponse: response });
         }
       );
   }
@@ -300,27 +300,33 @@ function PublishingQueue(props: PublishingQueueProps) {
     if (event.target.checked) {
       packages.forEach((item: Package) => {
         _selected[item.id] = item.state === READY_FOR_LIVE;
-        setSelected({...selected, ..._selected});
+        setSelected({ ...selected, ..._selected });
       });
     } else {
       packages.forEach((item: Package) => {
         _selected[item.id] = false;
-        setSelected({...selected, ..._selected});
+        setSelected({ ...selected, ..._selected });
       });
     }
   }
 
   function areAllSelected() {
-    if (!packages || packages.length === 0) return false;
-    let _selected: boolean = true;
-    _selected = !packages.some((item: Package) => !selected[item.id] && item.state === READY_FOR_LIVE);
-    return _selected;
+    if (packages?.length === 0 || !hasReadyForLivePackages) {
+      return false;
+    } else {
+      return !(
+        packages.some((item: Package) =>
+          // There is at least one that is not selected
+          item.state === READY_FOR_LIVE && !selected[item.id]
+        )
+      );
+    }
   }
 
   function handleFilterChange(event: any) {
     if (event.target.type === 'radio') {
       clearSelected();
-      setCurrentFilters({...currentFilters, [event.target.name]: event.target.value, page: 0});
+      setCurrentFilters({ ...currentFilters, [event.target.name]: event.target.value, page: 0 });
     } else if (event.target.type === 'checkbox') {
       let state = [...currentFilters.state];
       if (event.target.checked) {
@@ -341,15 +347,15 @@ function PublishingQueue(props: PublishingQueueProps) {
   }
 
   function handleEnterKey(path: string) {
-    setCurrentFilters({...currentFilters, path: path, page: 0});
+    setCurrentFilters({ ...currentFilters, path: path, page: 0 });
   }
 
   function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
-    setCurrentFilters({...currentFilters, page: newPage});
+    setCurrentFilters({ ...currentFilters, page: newPage });
   }
 
   function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setCurrentFilters({...currentFilters, page: 0, limit: parseInt(event.target.value, 10)});
+    setCurrentFilters({ ...currentFilters, page: 0, limit: parseInt(event.target.value, 10) });
   }
 
   function renderCount(selected: Selected) {
@@ -373,7 +379,7 @@ function PublishingQueue(props: PublishingQueueProps) {
                 <Checkbox
                   color="primary"
                   checked={areAllSelected()}
-                  disabled={!packages || !packages.length}
+                  disabled={!packages || !hasReadyForLivePackages}
                   onClick={handleSelectAll}
                 />
               }
@@ -385,11 +391,15 @@ function PublishingQueue(props: PublishingQueueProps) {
           (count > 0 && currentFilters.state.includes(READY_FOR_LIVE)) &&
           <Typography variant="body2" className={classes.packagesSelected} color="textSecondary">
             {formatMessage(messages.packagesSelected, { count: count })}
-            <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected}/>
+            <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected} />
           </Typography>
         }
-        <Button variant="outlined" className={classes.button} onClick={() => getPackages(siteId)}>
-          <RefreshIcon/>
+        <Button
+          variant="outlined"
+          className={classes.button}
+          onClick={() => getPackages(siteId)}
+        >
+          <RefreshIcon />
         </Button>
         {
           currentFilters.state.includes(READY_FOR_LIVE) &&
@@ -399,11 +409,17 @@ function PublishingQueue(props: PublishingQueueProps) {
             confirmText={formatMessage(messages.confirm)}
             confirmHelperText={formatMessage(messages.confirmAllHelper)}
             onConfirm={handleCancelAll}
+            disabled={!(hasReadyForLivePackages && Object.values(selected).length > 0)}
           />
         }
-        <FilterDropdown className={classes.button} text={formatMessage(messages.filters)}
-                        handleFilterChange={handleFilterChange}
-                        currentFilters={currentFilters} handleEnterKey={handleEnterKey} filters={filters}/>
+        <FilterDropdown
+          className={classes.button}
+          text={formatMessage(messages.filters)}
+          handleFilterChange={handleFilterChange}
+          currentFilters={currentFilters}
+          handleEnterKey={handleEnterKey}
+          filters={filters}
+        />
       </div>
       {
         (currentFilters.state.length || currentFilters.path || currentFilters.environment) &&
@@ -436,10 +452,10 @@ function PublishingQueue(props: PublishingQueueProps) {
       }
       {
         (apiState.error && apiState.errorResponse)
-          ? <ErrorState error={apiState.errorResponse}/>
+          ? <ErrorState error={apiState.errorResponse} />
           : (
             <div className={classes.queueList}>
-              {packages === null && <Spinner/>}
+              {packages === null && <Spinner />}
               {packages && renderPackages()}
               {
                 packages !== null && packages.length === 0 &&

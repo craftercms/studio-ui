@@ -30,7 +30,7 @@ import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import '../styles/animations.scss';
 import clsx from 'clsx';
-import { CurrentFilters, READY_FOR_LIVE } from '../models/publishing';
+import { READY_FOR_LIVE } from '../models/publishing';
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -62,8 +62,8 @@ const useStyles = makeStyles((theme: Theme) => ({
       }
     },
     '& .files': {
-      marginTop: '10px',
-    },
+      marginTop: '10px'
+    }
   },
   checkbox: {
     marginRight: 'auto'
@@ -112,7 +112,7 @@ const translations = defineMessages({
   },
   scheduled: {
     id: 'publishingDashboard.scheduled',
-    defaultMessage: 'Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <b>{approver}</b>',
+    defaultMessage: 'Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <b>{approver}</b>'
   },
   status: {
     id: 'publishingDashboard.status',
@@ -149,7 +149,6 @@ interface PublishingPackageProps {
 
   getPackages(siteId: string, filters?: string): any;
 
-  currentFilters: CurrentFilters;
   filesPerPackage: {
     [key: string]: any;
   };
@@ -159,40 +158,40 @@ interface PublishingPackageProps {
 
 export default function PublishingPackage(props: PublishingPackageProps) {
   const classes = useStyles({});
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
   const {
     id, approver, schedule, state, comment, environment,
     siteId, selected, setSelected, pending, setPending,
-    getPackages, apiState, setApiState, currentFilters,
+    getPackages, apiState, setApiState,
     filesPerPackage, setFilesPerPackage
   } = props;
   const [loading, setLoading] = useState(null);
 
-  const {current: ref} = useRef<any>({});
+  const { current: ref } = useRef<any>({});
 
   ref.cancelComplete = (packageId: string) => {
-    setPending({...pending, [packageId]: false});
+    setPending({ ...pending, [packageId]: false });
     getPackages(siteId);
   };
 
   function onSelect(event: ChangeEvent, id: string, checked: boolean) {
     if (checked) {
-      setSelected({...selected, [id]: false});
+      setSelected({ ...selected, [id]: false });
     } else {
-      setSelected({...selected, [id]: true});
+      setSelected({ ...selected, [id]: true });
     }
   }
 
   function handleCancel(packageId: string) {
-    setPending({...pending, [packageId]: true});
+    setPending({ ...pending, [packageId]: true });
 
     cancelPackage(siteId, [packageId])
       .subscribe(
         () => {
           ref.cancelComplete(packageId);
         },
-        ({response}) => {
-          setApiState({...apiState, error: true, errorResponse: response});
+        ({ response }) => {
+          setApiState({ ...apiState, error: true, errorResponse: response });
         }
       );
   }
@@ -201,12 +200,12 @@ export default function PublishingPackage(props: PublishingPackageProps) {
     setLoading(true);
     fetchPackage(siteId, packageId)
       .subscribe(
-        ({response}) => {
+        ({ response }) => {
           setLoading(false);
-          setFilesPerPackage({...filesPerPackage, [packageId]: response.package.items});
+          setFilesPerPackage({ ...filesPerPackage, [packageId]: response.package.items });
         },
-        ({response}) => {
-          setApiState({...apiState, error: true, errorResponse: response});
+        ({ response }) => {
+          setApiState({ ...apiState, error: true, errorResponse: response });
         }
       );
   }
@@ -232,8 +231,8 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       <section className="name">
         {
           pending[id] ? (
-            <header className={"loading-header"}>
-              <CircularProgress size={15} className={classes.spinner} color={"inherit"}/>
+            <header className={'loading-header'}>
+              <CircularProgress size={15} className={classes.spinner} color={'inherit'} />
               <Typography variant="body1">
                 <strong>{id}</strong>
               </Typography>
@@ -246,7 +245,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
                     <Checkbox
                       color="primary"
                       checked={checked}
-                      onChange={(event) => onSelect(event, id, checked)}/>
+                      onChange={(event) => onSelect(event, id, checked)} />
                   }
                   label={<strong>{id}</strong>}
                 />
@@ -288,7 +287,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
               translations.status,
               {
                 state: <strong key={state}>{state}</strong>,
-                environment: <strong key={environment}>{environment}</strong>,
+                environment: <strong key={environment}>{environment}</strong>
               }
             )
           }
@@ -314,7 +313,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
           <Button variant="outlined" onClick={() => onFetchPackages(id)} disabled={!!loading}>
             {
               loading &&
-              <CircularProgress size={14} className={classes.spinner} color={"inherit"}/>
+              <CircularProgress size={14} className={classes.spinner} color={'inherit'} />
             }
             {formatMessage(translations.fetchPackagesFiles)}
           </Button>

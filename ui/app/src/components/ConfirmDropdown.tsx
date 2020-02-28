@@ -30,9 +30,9 @@ const ColorButton = withStyles(() => ({
     paddingRight: '10px',
     border: `1px solid ${fade('#FF9500', 0.5)}`,
     '&:hover': {
-      backgroundColor: fade('#FF9500', 0.08),
-    },
-  },
+      backgroundColor: fade('#FF9500', 0.08)
+    }
+  }
 }))(Button);
 
 const useStyles = makeStyles(() => ({
@@ -44,7 +44,7 @@ const useStyles = makeStyles(() => ({
     '& li': {
       borderTop: '1px solid #dedede',
       paddingTop: '10px',
-      paddingBottom: '10px',
+      paddingBottom: '10px'
     }
   },
   helperText: {
@@ -53,18 +53,27 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface ConfirmDropdownProps {
-  onConfirm(): any,
-  text: string,
-  cancelText: string,
+  onConfirm(): any
+
+  text: string
+  cancelText: string
   confirmText: string
-  confirmHelperText?: string,
+  confirmHelperText?: string
+  disabled?: boolean
 }
 
 
 export default function SelectButton(props: ConfirmDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
-  const {onConfirm, text, cancelText, confirmText, confirmHelperText} = props;
+  const {
+    onConfirm,
+    text,
+    cancelText,
+    confirmText,
+    confirmHelperText,
+    disabled = false
+  } = props;
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -81,24 +90,24 @@ export default function SelectButton(props: ConfirmDropdownProps) {
 
   return (
     <div>
-      <ColorButton variant="outlined" onClick={handleClick}>
-        {text} <ArrowDropDownIcon/>
+      <ColorButton variant="outlined" onClick={handleClick} disabled={disabled}>
+        {text} <ArrowDropDownIcon />
       </ColorButton>
       <Menu
         id="simple-menu"
         anchorEl={anchorEl}
         getContentAnchorEl={null}
-        classes={{paper: classes.paper }}
+        classes={{ paper: classes.paper }}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
       >
         <Typography variant="body1" className={classes.helperText}>
