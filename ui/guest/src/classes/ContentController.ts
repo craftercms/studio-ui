@@ -338,7 +338,7 @@ export class ContentController {
 
   }
 
-  insertGroup(modelId, fieldId, data) {
+  insertGroup(modelId, fieldId, data): void {
   }
 
   sortItem(
@@ -548,7 +548,7 @@ export class ContentController {
   }
 
   /* private */
-  fetchContentType(contentTypeId: string) {
+  fetchContentType(contentTypeId: string): boolean {
     return false;
   }
 
@@ -603,7 +603,7 @@ export class ContentController {
   }
 
   /* private */
-  responseReceived(response) {
+  responseReceived(response): void {
     const
 
       currentContentTypes = ContentController.contentTypes$.value,
