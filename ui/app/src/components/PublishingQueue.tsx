@@ -85,6 +85,14 @@ const messages = defineMessages({
   packagesSelected: {
     id: 'publishingDashboard.packagesSelected',
     defaultMessage: '{count, plural, one {{count} Package selected} other {{count} Packages selected}}'
+  },
+  previous: {
+    id: 'publishingDashboard.previous',
+    defaultMessage: 'Previous page'
+  },
+  next: {
+    id: 'publishingDashboard.next',
+    defaultMessage: 'Next page'
   }
 });
 
@@ -204,8 +212,8 @@ function PublishingQueue(props: PublishingQueueProps) {
   );
 
   function renderPackages() {
-    return packages.map((item: Package, index: number) => {
-      return <PublishingPackage
+    return packages.map((item: Package, index: number) =>
+      <PublishingPackage
         id={item.id}
         approver={item.approver}
         schedule={item.schedule}
@@ -222,8 +230,9 @@ function PublishingQueue(props: PublishingQueueProps) {
         setApiState={setApiState}
         setSelected={setSelected}
         filesPerPackage={filesPerPackage}
-        setFilesPerPackage={setFilesPerPackage} />
-    })
+        setFilesPerPackage={setFilesPerPackage}
+      />
+    )
   }
 
   function getEnvironments(siteId: string) {
@@ -326,7 +335,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   function handleFilterChange(event: any) {
     if (event.target.type === 'radio') {
       clearSelected();
-      setCurrentFilters({ ...currentFilters, [event.target.name]: event.target.value, page: 0 });
+      setCurrentFilters({...currentFilters, [event.target.name]: event.target.value, page: 0});
     } else if (event.target.type === 'checkbox') {
       let state = [...currentFilters.state];
       if (event.target.checked) {
@@ -476,17 +485,16 @@ function PublishingQueue(props: PublishingQueueProps) {
         rowsPerPage={currentFilters.limit}
         page={currentFilters.page}
         backIconButtonProps={{
-          'aria-label': 'previous page'
+          'aria-label': formatMessage(messages.previous)
         }}
         nextIconButtonProps={{
-          'aria-label': 'next page'
+          'aria-label': formatMessage(messages.next)
         }}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
     </div>
   );
-  // TODO: Translate aria-labels
 }
 
 export default PublishingQueue;

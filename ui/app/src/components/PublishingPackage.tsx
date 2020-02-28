@@ -125,6 +125,10 @@ const translations = defineMessages({
   commentNotProvided: {
     id: 'publishingDashboard.commentNotProvided',
     defaultMessage: '(submission comment not provided)'
+  },
+  filesList: {
+    id: 'publishingDashboard.filesList',
+    defaultMessage: 'files list'
   }
 });
 
@@ -304,7 +308,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       <div className="files">
         {
           (filesPerPackage && filesPerPackage[id]) &&
-          <List aria-label="files list" className={classes.list}>
+          <List aria-label={formatMessage(translations.filesList)} className={classes.list}>
             {renderFiles(filesPerPackage[id])}
           </List>
         }
