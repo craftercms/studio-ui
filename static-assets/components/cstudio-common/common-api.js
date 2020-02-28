@@ -644,6 +644,8 @@ var nodeOpen = false,
 
                     if (customZIndex) {
                       dialog.element.style.setProperty('z-index', customZIndex, 'important');
+                    } else {
+                      dialog.element.style.setProperty('z-index', '1042', 'important');
                     }
 
                     $(".studioDialog").on("keyup", function(e) {
