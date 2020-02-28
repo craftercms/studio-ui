@@ -368,32 +368,37 @@ function PublishingQueue(props: PublishingQueueProps) {
         {
           currentFilters.state.includes(READY_FOR_LIVE) &&
           <FormGroup className={classes.selectAll}>
-              <FormControlLabel
-                  control={<Checkbox color="primary"
-                                     checked={areAllSelected()}
-                                     disabled={!packages || !packages.length} onClick={handleSelectAll}/>}
-                  label={formatMessage(messages.selectAll)}
-              />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={areAllSelected()}
+                  disabled={!packages || !packages.length}
+                  onClick={handleSelectAll}
+                />
+              }
+              label={formatMessage(messages.selectAll)}
+            />
           </FormGroup>
         }
         {
           (count > 0 && currentFilters.state.includes(READY_FOR_LIVE)) &&
-          <Typography variant="body2" className={classes.packagesSelected} color={"textSecondary"}>
-            {formatMessage(messages.packagesSelected, {count: count})}
-              <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected}/>
+          <Typography variant="body2" className={classes.packagesSelected} color="textSecondary">
+            {formatMessage(messages.packagesSelected, { count: count })}
+            <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected}/>
           </Typography>
         }
-        <Button variant="outlined" className={classes.button} onClick={() => getPackages(siteId)} >
+        <Button variant="outlined" className={classes.button} onClick={() => getPackages(siteId)}>
           <RefreshIcon/>
         </Button>
         {
           currentFilters.state.includes(READY_FOR_LIVE) &&
           <ConfirmDropdown
-              text={formatMessage(messages.cancelSelected)}
-              cancelText={formatMessage(messages.cancel)}
-              confirmText={formatMessage(messages.confirm)}
-              confirmHelperText={formatMessage(messages.confirmAllHelper)}
-              onConfirm={handleCancelAll}
+            text={formatMessage(messages.cancelSelected)}
+            cancelText={formatMessage(messages.cancel)}
+            confirmText={formatMessage(messages.confirm)}
+            confirmHelperText={formatMessage(messages.confirmAllHelper)}
+            onConfirm={handleCancelAll}
           />
         }
         <FilterDropdown className={classes.button} text={formatMessage(messages.filters)}
@@ -403,37 +408,50 @@ function PublishingQueue(props: PublishingQueueProps) {
       {
         (currentFilters.state.length || currentFilters.path || currentFilters.environment) &&
         <div className={classes.secondBar}>
-            <Typography variant="body2">
-              {
-                formatMessage(
-                  messages.filteredBy,
-                  {
-                    state: currentFilters.state ?
-                      <strong key="state">{currentFilters.state.join(', ')}</strong> : 'all',
-                    path: currentFilters.path ? <strong key="path">{currentFilters.path}</strong> : 'none',
-                    environment: currentFilters.environment ?
-                      <strong key="environment">{currentFilters.environment}</strong> : 'all',
-                  }
-                )
-              }
-            </Typography>
+          <Typography variant="body2">
+            {
+              formatMessage(
+                messages.filteredBy,
+                {
+                  state: (
+                    currentFilters.state
+                      ? <strong key="state">{currentFilters.state.join(', ')}</strong>
+                      : 'all'
+                  ),
+                  path: (
+                    currentFilters.path
+                      ? <strong key="path">{currentFilters.path}</strong>
+                      : 'none'
+                  ),
+                  environment: (
+                    currentFilters.environment
+                      ? <strong key="environment">{currentFilters.environment}</strong>
+                      : 'all'
+                  )
+                }
+              )
+            }
+          </Typography>
         </div>
       }
       {
-        (apiState.error && apiState.errorResponse) ?
-          <ErrorState error={apiState.errorResponse}/>
-          :
-          <div className={classes.queueList}>
-            {packages === null && <Spinner/>}
-            {packages && renderPackages()}
-            {
-              packages !== null && packages.length === 0 &&
-              <div className={classes.empty}>
-                  <EmptyState title={formatMessage(messages.noPackagesTitle)}
-                              subtitle={formatMessage(messages.noPackagesSubtitle)}/>
-              </div>
-            }
-          </div>
+        (apiState.error && apiState.errorResponse)
+          ? <ErrorState error={apiState.errorResponse}/>
+          : (
+            <div className={classes.queueList}>
+              {packages === null && <Spinner/>}
+              {packages && renderPackages()}
+              {
+                packages !== null && packages.length === 0 &&
+                <div className={classes.empty}>
+                  <EmptyState
+                    title={formatMessage(messages.noPackagesTitle)}
+                    subtitle={formatMessage(messages.noPackagesSubtitle)}
+                  />
+                </div>
+              }
+            </div>
+          )
       }
       <TablePagination
         rowsPerPageOptions={[3, 5, 10]}
@@ -442,16 +460,17 @@ function PublishingQueue(props: PublishingQueueProps) {
         rowsPerPage={currentFilters.limit}
         page={currentFilters.page}
         backIconButtonProps={{
-          'aria-label': 'previous page',
+          'aria-label': 'previous page'
         }}
         nextIconButtonProps={{
-          'aria-label': 'next page',
+          'aria-label': 'next page'
         }}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
     </div>
-  )
+  );
+  // TODO: Translate aria-labels
 }
 
 export default PublishingQueue;
