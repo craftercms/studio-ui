@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -41,7 +40,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import ErrorState from '../../../../components/SystemStatus/ErrorState';
 import EmptyState from '../../../../components/SystemStatus/EmptyState';
 import Typography from '@material-ui/core/Typography';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import HighlightOffIcon from '@material-ui/icons/HighlightOffRounded';
 import Spinner from '../../../../components/SystemStatus/Spinner';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import Button from '@material-ui/core/Button';
@@ -57,16 +56,16 @@ const messages = defineMessages({
     defaultMessage: 'Cancel Selected'
   },
   cancel: {
-    id: 'publishingDashboard.cancel',
-    defaultMessage: 'Cancel'
+    id: 'publishingDashboard.no',
+    defaultMessage: 'No'
   },
   confirm: {
-    id: 'publishingDashboard.confirm',
-    defaultMessage: 'Confirm'
+    id: 'publishingDashboard.yes',
+    defaultMessage: 'Yes'
   },
   confirmAllHelper: {
-    id: 'publishingDashboard.confirmHelper',
-    defaultMessage: 'Set the state for all selected items to "Cancelled"'
+    id: 'publishingDashboard.confirmAllHelper',
+    defaultMessage: 'Set the state for all selected items to "Cancelled"?'
   },
   filters: {
     id: 'publishingDashboard.filters',
@@ -147,7 +146,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const currentFiltersInitialState: CurrentFilters = {
   environment: '',
   path: '',
-  state: READY_FOR_LIVE,
+  state: [READY_FOR_LIVE],
   limit: 5,
   page: 0
 };
@@ -162,7 +161,7 @@ function getFilters(currentFilters: CurrentFilters) {
   let filters: any = {};
   if (currentFilters.environment) filters['environment'] = currentFilters.environment;
   if (currentFilters.path) filters['path'] = currentFilters.path;
-  if (currentFilters.state) filters['state'] = currentFilters.state;
+  if (currentFilters.state.length) filters['states'] = currentFilters.state;
   if (currentFilters.limit) filters['limit'] = currentFilters.limit;
   if (currentFilters.page) filters['offset'] = currentFilters.page * currentFilters.limit;
   return filters;
@@ -198,7 +197,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   const { formatMessage } = useIntl();
   const { siteId } = props;
 
-  const getPackages = useMemo(() => (siteId: string) => (
+  const getPackages = useCallback((siteId: string) => (
     fetchPackages(siteId, getFilters(currentFilters)).subscribe(
       ({ response }) => {
         setTotal(response.total);
@@ -274,6 +273,7 @@ function PublishingQueue(props: PublishingQueueProps) {
             _pending[key] = false;
           });
           setPending({ ...pending, ..._pending });
+          clearSelected();
           getPackages(siteId);
         },
         ({ response }) => {
@@ -291,7 +291,7 @@ function PublishingQueue(props: PublishingQueueProps) {
     let _selected: Selected = {};
     if (event.target.checked) {
       packages.forEach((item: Package) => {
-        _selected[item.id] = true;
+        _selected[item.id] = item.state === READY_FOR_LIVE;
         setSelected({ ...selected, ..._selected });
       });
     } else {
@@ -305,11 +305,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   function areAllSelected() {
     if (!packages || packages.length === 0) return false;
     let _selected: boolean = true;
-    packages.forEach((item: Package) => {
-      if (!selected[item.id]) {
-        _selected = false;
-      }
-    });
+    _selected = !packages.some((item: Package) => !selected[item.id] && item.state === READY_FOR_LIVE);
     return _selected;
   }
 
@@ -317,6 +313,22 @@ function PublishingQueue(props: PublishingQueueProps) {
     if (event.target.type === 'radio') {
       clearSelected();
       setCurrentFilters({ ...currentFilters, [event.target.name]: event.target.value, page: 0 });
+    } else if (event.target.type === 'checkbox') {
+      let state = [...currentFilters.state];
+      if (event.target.checked) {
+        if (event.target.value) {
+          state.push(event.target.value);
+        } else {
+          state = [...filters.states];
+        }
+      } else {
+        if (event.target.value) {
+          state.splice(state.indexOf(event.target.value), 1);
+        } else {
+          state = [];
+        }
+      }
+      setCurrentFilters({ ...currentFilters, state, page: 0 });
     }
   }
 
@@ -336,7 +348,7 @@ function PublishingQueue(props: PublishingQueueProps) {
     <div className={classes.publishingQueue}>
       <div className={classes.topBar}>
         {
-          currentFilters.state === READY_FOR_LIVE &&
+          currentFilters.state.includes(READY_FOR_LIVE) &&
           <FormGroup className={classes.selectAll}>
             <FormControlLabel
               control={
@@ -352,8 +364,8 @@ function PublishingQueue(props: PublishingQueueProps) {
           </FormGroup>
         }
         {
-          (count > 0 && currentFilters.state === READY_FOR_LIVE) &&
-          <Typography variant="body2" className={classes.packagesSelected} color={'textSecondary'}>
+          (count > 0 && currentFilters.state.includes(READY_FOR_LIVE)) &&
+          <Typography variant="body2" className={classes.packagesSelected} color="textSecondary">
             {formatMessage(messages.packagesSelected, { count: count })}
             <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected}/>
           </Typography>
@@ -362,7 +374,7 @@ function PublishingQueue(props: PublishingQueueProps) {
           <RefreshIcon/>
         </Button>
         {
-          currentFilters.state === READY_FOR_LIVE &&
+          currentFilters.state.includes(READY_FOR_LIVE) &&
           <ConfirmDropdown
             text={formatMessage(messages.cancelSelected)}
             cancelText={formatMessage(messages.cancel)}
@@ -376,17 +388,28 @@ function PublishingQueue(props: PublishingQueueProps) {
                         currentFilters={currentFilters} handleEnterKey={handleEnterKey} filters={filters}/>
       </div>
       {
-        (currentFilters.state || currentFilters.path || currentFilters.environment) &&
+        (currentFilters.state.length || currentFilters.path || currentFilters.environment) &&
         <div className={classes.secondBar}>
           <Typography variant="body2">
             {
               formatMessage(
                 messages.filteredBy,
                 {
-                  state: currentFilters.state ? <strong key="state">{currentFilters.state}</strong> : 'all',
-                  path: currentFilters.path ? <strong key="path">{currentFilters.path}</strong> : 'none',
-                  environment: currentFilters.environment ?
-                    <strong key="environment">{currentFilters.environment}</strong> : 'all'
+                  state: (
+                    currentFilters.state
+                      ? <strong key="state">{currentFilters.state.join(', ')}</strong>
+                      : 'all'
+                  ),
+                  path: (
+                    currentFilters.path
+                      ? <strong key="path">{currentFilters.path}</strong>
+                      : 'none'
+                  ),
+                  environment: (
+                    currentFilters.environment
+                      ? <strong key="environment">{currentFilters.environment}</strong>
+                      : 'all'
+                  )
                 }
               )
             }

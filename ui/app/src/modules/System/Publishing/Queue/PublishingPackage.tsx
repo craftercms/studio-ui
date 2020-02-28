@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -90,18 +89,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const messages = defineMessages({
-  cancel: {
-    id: 'publishingDashboard.cancel',
+const translations = defineMessages({
+  cancelText: {
+    id: 'publishingDashboard.cancelItemButtonText',
     defaultMessage: 'Cancel'
   },
-  confirm: {
-    id: 'publishingDashboard.confirm',
-    defaultMessage: 'Confirm'
+  cancel: {
+    id: 'publishingDashboard.no',
+    defaultMessage: 'No'
   },
-  confirmHelper: {
-    id: 'publishingDashboard.confirmHelper',
-    defaultMessage: 'Set the state for the item to "Cancelled"'
+  confirm: {
+    id: 'publishingDashboard.yes',
+    defaultMessage: 'Yes'
+  },
+  confirmHelperText: {
+    id: 'publishingDashboard.confirmHelperText',
+    defaultMessage: 'Set item state to "Cancelled"?'
   },
   fetchPackagesFiles: {
     id: 'publishingDashboard.fetchPackagesFiles',
@@ -235,7 +238,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
               </Typography>
             </header>
           ) : (
-            (currentFilters.state === READY_FOR_LIVE) ? (
+            (state === READY_FOR_LIVE) ? (
               <FormGroup className={classes.checkbox}>
                 <FormControlLabel
                   control={
@@ -257,10 +260,10 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         {
           (state === READY_FOR_LIVE) &&
           <SelectButton
-            text={formatMessage(messages.cancel)}
-            cancelText={formatMessage(messages.cancel)}
-            confirmText={formatMessage(messages.confirm)}
-            confirmHelperText={formatMessage(messages.confirmHelper)}
+            text={formatMessage(translations.cancelText)}
+            cancelText={formatMessage(translations.cancel)}
+            confirmText={formatMessage(translations.confirm)}
+            confirmHelperText={formatMessage(translations.confirmHelperText)}
             onConfirm={() => handleCancel(id)}
           />
         }
@@ -269,7 +272,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         <Typography variant="body2">
           {
             formatMessage(
-              messages.scheduled,
+              translations.scheduled,
               {
                 schedule: new Date(schedule),
                 approver: approver,
@@ -281,7 +284,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         <Typography variant="body2">
           {
             formatMessage(
-              messages.status,
+              translations.status,
               {
                 state: <strong key={state}>{state}</strong>,
                 environment: <strong key={environment}>{environment}</strong>,
@@ -292,10 +295,10 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       </div>
       <div className="comment">
         <Typography variant="body2">
-          {formatMessage(messages.comment)}
+          {formatMessage(translations.comment)}
         </Typography>
         <Typography variant="body2">
-          {comment ? comment : <span>{formatMessage(messages.commentNotProvided)}</span>}
+          {comment ? comment : <span>{formatMessage(translations.commentNotProvided)}</span>}
         </Typography>
       </div>
       <div className="files">
@@ -312,7 +315,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
               loading &&
               <CircularProgress size={14} className={classes.spinner} color={"inherit"}/>
             }
-            {formatMessage(messages.fetchPackagesFiles)}
+            {formatMessage(translations.fetchPackagesFiles)}
           </Button>
         }
       </div>

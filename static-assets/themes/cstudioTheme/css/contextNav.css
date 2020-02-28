@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -138,11 +137,7 @@
 body .mask {
   background-color: rgb(68, 68, 68) !important;
   opacity: 0.5 !important;
-  /* z-index: 1031!important; */
-}
-
-.yui-dialog {
-  /* z-index: 100102!important; */
+  z-index: 1031;
 }
 
 .yui-dialog.inc-zindex {
@@ -168,7 +163,7 @@ div[id*="expandComponentError"].yui-dialog {
 .cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"],
 .cstudio-dialogue[id^="viewcontroller-approve"], .cstudio-dialogue[id^="viewcontroller-delete"],
 .cstudio-dialogue[id^="viewcontroller-requestpublish"] {
-  z-index: 1020 !important;
+  z-index: 1030 !important;
 }
 
 .yui-dialog .yui-overlay.yui-panel {

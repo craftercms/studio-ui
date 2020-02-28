@@ -23,7 +23,7 @@ import TextField from '@material-ui/core/TextField';
 import PasswordTextField from '../Controls/PasswordTextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import React, { CSSProperties, PropsWithChildren, useEffect, useState } from 'react';
+import React, { CSSProperties, PropsWithChildren, useEffect, useState, useRef } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import { login, validateSession } from '../../state/actions/auth';
@@ -31,7 +31,7 @@ import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { interval } from 'rxjs';
-import { getLogoutInfoURL } from '../../services/auth';
+import { getLogoutInfoURL, me } from '../../services/auth';
 import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
@@ -90,9 +90,11 @@ export default function AuthMonitor() {
   const isSSO = (authType.toLowerCase() !== 'db');
   const [ssoButtonClicked, setSSOButtonClicked] = useState(false);
   const styles: CSSProperties = isFetching ? { visibility: 'hidden' } : {};
+  const firstRender = useRef(true);
 
-  const onSubmit = () => {
-    setRequestForgeryToken();
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (isSSO) {
       dispatch(validateSession());
       setSSOButtonClicked(false);
@@ -115,6 +117,16 @@ export default function AuthMonitor() {
     if (active) {
       setPassword('');
       const sub = interval(60000).subscribe(() => dispatch(validateSession()));
+      if (firstRender.current) {
+        firstRender.current = false;
+      } else {
+        me().subscribe((user) => {
+          if (user.username !== username) {
+            alert(formatMessage(translations.postSSOLoginMismatch));
+            window.location.reload();
+          }
+        });
+      }
       return () => sub.unsubscribe();
     }
   }, [active, dispatch]);
@@ -122,6 +134,7 @@ export default function AuthMonitor() {
   return (
     <Dialog
       open={!active}
+      id="authMonitorDialog"
       aria-labelledby="craftercmsReLoginDialog"
     >
       <DialogTitle id="craftercmsReLoginDialog" className={classes.title} style={styles}>
@@ -177,7 +190,13 @@ export default function AuthMonitor() {
         <Button type="button" onClick={onClose} disabled={isFetching}>
           <FormattedMessage id="authMonitor.logOutButtonLabel" defaultMessage="Log Out"/>
         </Button>
-        <Button type="button" onClick={onSubmit} color="primary" disabled={isFetching} variant={ssoButtonClicked ? 'contained' : 'text'}>
+        <Button
+          type="button"
+          color="primary"
+          onClick={onSubmit}
+          disabled={isFetching}
+          variant={ssoButtonClicked ? 'contained' : 'text'}
+        >
           {
             isSSO
               ? <FormattedMessage id="authMonitor.validateSessionButtonLabel" defaultMessage="Resume"/>

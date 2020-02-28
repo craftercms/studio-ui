@@ -491,9 +491,10 @@
       };
 
       this.logout = function () {
-        $http.post(security('logout'), null);
-        unmountAuthMonitor && unmountAuthMonitor();
-        user = null;
+        return $http.post(security('logout'), null).then(() => {
+          unmountAuthMonitor && unmountAuthMonitor();
+          user = null;
+        });
       };
 
       this.getSSOLogoutInfo = function () {
@@ -1008,12 +1009,13 @@
 
       function logout() {
         if ($scope.showLogoutLink) {
-          authService.logout();
-          if ($scope.logoutInfo.url) {
-            $window.location.href = $scope.logoutInfo.url;
-          } else {
-            $state.go('login');
-          }
+          authService.logout().then(() => {
+            if ($scope.logoutInfo.url) {
+              $window.location.href = $scope.logoutInfo.url;
+            } else {
+              $state.go('login');
+            }
+          });
         }
       }
 

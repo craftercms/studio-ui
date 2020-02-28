@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -265,7 +264,7 @@ CStudioAuthoring.Dialogs.DialogCopy = CStudioAuthoring.Dialogs.DialogCopy || (fu
 
         dialog.render();
         dialog.show();
-        dialog.cfg.setProperty("zIndex", 100001); // Update the z-index value to make it go over the site content nav
+        dialog.cfg.setProperty("zIndex", 1000); // Update the z-index value to make it go over the site content nav
 
         $("#cstudio-wcm-popup-div").on("keyup", function(e) {
             if (e.keyCode == 10 || e.keyCode == 13) {	// enter
