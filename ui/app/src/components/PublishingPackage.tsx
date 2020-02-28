@@ -31,7 +31,7 @@ import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import '../styles/animations.scss';
 import clsx from 'clsx';
-import { CurrentFilters, READY_FOR_LIVE } from '../models/publishing';
+import { READY_FOR_LIVE } from '../models/publishing';
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -126,6 +126,10 @@ const translations = defineMessages({
   commentNotProvided: {
     id: 'publishingDashboard.commentNotProvided',
     defaultMessage: '(submission comment not provided)'
+  },
+  filesList: {
+    id: 'publishingDashboard.filesList',
+    defaultMessage: 'files list'
   }
 });
 
@@ -150,7 +154,6 @@ interface PublishingPackageProps {
 
   getPackages(siteId: string, filters?: string): any;
 
-  currentFilters: CurrentFilters;
   filesPerPackage: {
     [key: string]: any;
   };
@@ -164,7 +167,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
   const {
     id, approver, schedule, state, comment, environment,
     siteId, selected, setSelected, pending, setPending,
-    getPackages, apiState, setApiState, currentFilters,
+    getPackages, apiState, setApiState,
     filesPerPackage, setFilesPerPackage
   } = props;
   const [loading, setLoading] = useState(null);
@@ -306,7 +309,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       <div className="files">
         {
           (filesPerPackage && filesPerPackage[id]) &&
-          <List aria-label="files list" className={classes.list}>
+          <List aria-label={formatMessage(translations.filesList)} className={classes.list}>
             {renderFiles(filesPerPackage[id])}
           </List>
         }

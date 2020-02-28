@@ -87,6 +87,14 @@ const messages = defineMessages({
     id: 'publishingDashboard.packagesSelected',
     defaultMessage: '{count, plural, one {{count} Package selected} other {{count} Packages selected}}',
   },
+  previous: {
+    id: 'publishingDashboard.previous',
+    defaultMessage: 'Previous page'
+  },
+  next: {
+    id: 'publishingDashboard.next',
+    defaultMessage: 'Next page'
+  }
 });
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -443,10 +451,10 @@ function PublishingQueue(props: PublishingQueueProps) {
         rowsPerPage={currentFilters.limit}
         page={currentFilters.page}
         backIconButtonProps={{
-          'aria-label': 'previous page',
+          'aria-label': formatMessage(messages.previous)
         }}
         nextIconButtonProps={{
-          'aria-label': 'next page',
+          'aria-label': formatMessage(messages.next)
         }}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
