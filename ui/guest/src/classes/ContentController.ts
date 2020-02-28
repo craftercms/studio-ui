@@ -169,7 +169,7 @@ export class ContentController {
     return ContentController.contentTypes$.value;
   }
 
-  updateField(modelId: string, fieldId: string, index: string | number, value: string): void {
+  updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
     const models = this.getCachedModels();
     const model = { ...models[modelId] };
 
