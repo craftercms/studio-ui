@@ -417,22 +417,23 @@ function PublishingQueue(props: PublishingQueueProps) {
         </div>
       }
       {
-        (apiState.error && apiState.errorResponse) ?
-          <ErrorState error={apiState.errorResponse}/>
-          :
-          <div className={classes.queueList}>
-            {packages === null && <Spinner/>}
-            {packages && renderPackages()}
-            {
-              packages !== null && packages.length === 0 &&
-              <div className={classes.empty}>
-                <EmptyState
-                  title={formatMessage(messages.noPackagesTitle)}
-                  subtitle={formatMessage(messages.noPackagesSubtitle)}
-                />
-              </div>
-            }
-          </div>
+        (apiState.error && apiState.errorResponse)
+          ? <ErrorState error={apiState.errorResponse}/>
+          : (
+            <div className={classes.queueList}>
+              {packages === null && <Spinner/>}
+              {packages && renderPackages()}
+              {
+                packages !== null && packages.length === 0 &&
+                <div className={classes.empty}>
+                  <EmptyState
+                    title={formatMessage(messages.noPackagesTitle)}
+                    subtitle={formatMessage(messages.noPackagesSubtitle)}
+                  />
+                </div>
+              }
+            </div>
+          )
       }
       <TablePagination
         rowsPerPageOptions={[3, 5, 10]}
@@ -451,7 +452,7 @@ function PublishingQueue(props: PublishingQueueProps) {
       />
     </div>
   );
-  // TODO: Translate aria-labels above.
+  // TODO: Translate aria-labels
 }
 
 export default PublishingQueue;
