@@ -22,7 +22,7 @@ export class ContentTypeHelper {
 
   descriptor: ContentType = null;
 
-  static getRelatedContentTypeIds(contentType: ContentType) {
+  static getRelatedContentTypeIds(contentType: ContentType): string[] {
     return Object.values(contentType.fields)
       .reduce((accumulator, field) => {
         if (
