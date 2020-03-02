@@ -1768,9 +1768,11 @@
 
       renderPostfixesVariable: (type) => {
 
+        let label = CMgs.format(langBundle, 'variableName');
+
         let controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
           renderPostfixes = CStudioAdminConsole.getPostfixes(type, controls),
-          identifier = '.label-name-variable-name',
+          identifier = `.label-${label.replace(/\//g, '').replace(/\s+/g, '-').toLowerCase()}`,
           xml = '<table class="quick-create-help">';
 
         for (var i = 0; i < renderPostfixes.length; i++) {
