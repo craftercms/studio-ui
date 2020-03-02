@@ -21,9 +21,11 @@ import { FormattedMessage } from 'react-intl';
 import EmbeddedLegacyEditors from '../modules/Preview/EmbeddedLegacyEditors';
 import PublishDialog from '../modules/Content/Publish/PublishDialog';
 import { palette } from '../styles/theme';
-import { usePreviewGuest, useSelection, useSpreadState } from '../utils/hooks';
+import { useSelection, useSpreadState } from '../utils/hooks';
 import { getItem } from '../services/content';
 import { popPiece } from '../utils/string';
+import { LookupTable } from '../models/LookupTable';
+import ContentInstance from '../models/ContentInstance';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -32,12 +34,19 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
+interface ComponentMenu {
+  anchorEl: Element;
+  site: string;
+  modelId: string;
+
+  setAnchorEl(value?: any): void;
+}
+
 export default function ComponentMenu(props) {
   const classes = useStyles({});
-  const { anchorEl, setAnchorEl, site } = props;
-  const guest = usePreviewGuest();
+  const { anchorEl, setAnchorEl, site, modelId } = props;
+  const models = useSelection<LookupTable<ContentInstance>>(state => state.preview.guest?.models);
   const contentTypesBranch = useSelection(state => state.contentTypes);
-  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
   const [dialogConfig, setDialogConfig] = useSpreadState({
@@ -55,8 +64,8 @@ export default function ComponentMenu(props) {
 
 
   useEffect(() => {
-    if (guest && guest.models) {
-      getItem(site, guest.models[guest.modelId].craftercms.path).subscribe(
+    if (models && modelId) {
+      getItem(site, models[modelId].craftercms.path).subscribe(
         (item) => {
           setPublishDialog({ item })
         },
@@ -65,7 +74,7 @@ export default function ComponentMenu(props) {
         }
       );
     }
-  }, [guest, setPublishDialog, site]);
+  }, [models, modelId, setPublishDialog, site]);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -100,17 +109,17 @@ export default function ComponentMenu(props) {
     switch (type) {
       case 'publish':
       case 'form': {
-        return guest.models[guest.modelId].craftercms.path;
+        return models[modelId].craftercms.path;
       }
       case 'template': {
-        return contentTypes.find((contentType) => contentType.id === guest.models[guest.modelId].craftercms.contentType).displayTemplate;
+        return contentTypesBranch.byId[models[modelId].craftercms.contentType].displayTemplate;
       }
       case 'controller': {
-        let pageName = popPiece(guest.models[guest.modelId].craftercms.contentType, '/');
+        let pageName = popPiece(models[modelId].craftercms.contentType, '/');
         return `/scripts/pages/${pageName}.groovy`;
       }
       default: {
-        return guest.models[guest.modelId].craftercms.path;
+        return models[modelId].craftercms.path;
       }
     }
   };
@@ -180,12 +189,15 @@ export default function ComponentMenu(props) {
             defaultMessage="Edit Template"
           />
         </MenuItem>
-        <MenuItem onClick={() => handleEdit('controller')}>
-          <FormattedMessage
-            id="previewToolBar.menu.editController"
-            defaultMessage="Edit Controller"
-          />
-        </MenuItem>
+        {
+          publishDialog.item && contentTypesBranch.byId[publishDialog.item.contentType].type === 'page' &&
+          <MenuItem onClick={() => handleEdit('controller')}>
+            <FormattedMessage
+              id="previewToolBar.menu.editController"
+              defaultMessage="Edit Controller"
+            />
+          </MenuItem>
+        }
       </Menu>
       {
         dialogConfig.open &&

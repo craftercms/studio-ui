@@ -131,6 +131,7 @@ export function AddressBar(props: AddressBarProps) {
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
   const [anchorEl, setAnchorEl] = useState(null);
+  const modelId = useSelection<string>(state => state.preview.guest?.modelId);
 
   useEffect(() => {
     (url) && setInternalUrl(url);
@@ -196,6 +197,7 @@ export function AddressBar(props: AddressBarProps) {
         anchorEl={anchorEl}
         setAnchorEl={setAnchorEl}
         site={site}
+        modelId={modelId}
       />
     </>
   );

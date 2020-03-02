@@ -26,7 +26,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
-import { usePreviewGuest, useSelection } from '../../../utils/hooks';
+import { useActiveSiteId, usePreviewGuest, useSelection } from '../../../utils/hooks';
 import { ContentType, ContentTypeField } from '../../../models/ContentType';
 import Page from '../../../components/Icons/Page';
 import Field from '../../../components/Icons/Field';
@@ -40,6 +40,7 @@ import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { createLookupTable, reversePluckProps } from '../../../utils/object';
 import { SCROLL_TO_ELEMENT } from '../../../state/actions/preview';
 import { getHostToGuestBus } from '../previewContext';
+import ComponentMenu from '../../../components/ComponentMenu';
 
 const translations = defineMessages({
   contentTree: {
@@ -201,7 +202,20 @@ function getChildren(model: ContentInstance, contentType: ContentType, models: L
   return children;
 }
 
-function TreeItemCustom(props) {
+
+interface TreeItemCustomInterface {
+  nodes: RenderTree;
+
+  handleScroll?(node: RenderTree): void;
+
+  handlePrevious?(e: any): void
+
+  handleClick?(node: RenderTree): void
+
+  handleOptions?(e: any, modelId: string): void
+}
+
+function TreeItemCustom(props: TreeItemCustomInterface) {
   const { nodes, handleScroll, handlePrevious, handleClick, handleOptions } = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
@@ -252,9 +266,9 @@ function TreeItemCustom(props) {
           }
           <p>{nodes.name}</p>
           {
-            over &&
+            over && (nodes.type === 'component' || nodes.id === 'root') &&
             <IconButton className={classes.options} onMouseOver={(e) => setOverState(e, true)}
-                        onClick={(e) => handleOptions(e)}>
+                        onClick={(e) => handleOptions(e, nodes.modelId)}>
               <MoreVertIcon/>
             </IconButton>
           }
@@ -291,6 +305,11 @@ export default function ContentTree() {
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const hostToGuest$ = getHostToGuestBus();
   const [expanded, setExpanded] = React.useState<string[]>(['root']);
+  const site = useActiveSiteId();
+  const [optionsMenu, setOptionsMenu] = React.useState({
+    modelId: null,
+    anchorEl: null
+  });
   const [data, setData] = React.useState<Data>({
     previous: [],
     selected: null,
@@ -364,8 +383,13 @@ export default function ContentTree() {
     }
   };
 
-  const handleOptions = (event: any) => {
+  const handleOptions = (event: any, modelId: string) => {
     event.stopPropagation();
+    setOptionsMenu({ ...optionsMenu, modelId, anchorEl: event.currentTarget });
+  };
+
+  const closeMenu = () => {
+    setOptionsMenu({ ...optionsMenu, modelId: null, anchorEl: null });
   };
 
   return (
@@ -386,13 +410,21 @@ export default function ContentTree() {
       >
         {
           data.selected &&
-          <TreeItemCustom
-            nodes={data.lookupTable[data.selected]}
-            handleScroll={handleScroll}
-            handlePrevious={data.previous.length ? handlePrevious : null}
-            handleClick={handleClick}
-            handleOptions={handleOptions}
-          />
+          <>
+            <TreeItemCustom
+              nodes={data.lookupTable[data.selected]}
+              handleScroll={handleScroll}
+              handlePrevious={data.previous.length ? handlePrevious : null}
+              handleClick={handleClick}
+              handleOptions={handleOptions}
+            />
+            <ComponentMenu
+              anchorEl={optionsMenu.anchorEl}
+              setAnchorEl={closeMenu}
+              site={site}
+              modelId={optionsMenu.modelId}
+            />
+          </>
         }
       </TreeView>
     </ToolPanel>
