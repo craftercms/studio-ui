@@ -553,7 +553,7 @@ export class ContentController {
   }
 
   /* private */
-  modelsResponseReceived(responseModels: LookupTable<ContentInstance> | ContentInstance[]) {
+  modelsResponseReceived(responseModels: LookupTable<ContentInstance> | ContentInstance[]): void {
 
     if (Array.isArray(responseModels)) {
       responseModels = createLookupTable(responseModels, 'craftercms.id');
@@ -584,7 +584,7 @@ export class ContentController {
   }
 
   /* private */
-  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]) {
+  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]): void {
 
     if (Array.isArray(responseContentTypes)) {
       (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
@@ -963,7 +963,7 @@ function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstan
 
 }
 
-function getResult(model: ContentInstance, fieldId: string, index: string | number) {
+function getResult(model: ContentInstance, fieldId: string, index: string | number): number[] | string[] {
   const isStringIndex = typeof index === 'string';
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
 
