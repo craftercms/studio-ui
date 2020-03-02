@@ -33,9 +33,9 @@
 
     events: ['submitStart', 'submitComplete', 'submitEnd'],
     actions: ['.close-button', '.submit-button'],
-    startup: ['itemsEventsDelegation'],
+    startup: ['eventsDelegation'],
 
-    itemsEventsDelegation: itemsEventsDelegation,
+    eventsDelegation: eventsDelegation,
 
     loadItems: loadItems,
 
@@ -49,11 +49,28 @@
     $(document).off("keyup");
   }
 
-  function itemsEventsDelegation() {
+  function eventsDelegation() {
     depController = this;
 
     $('.studio-view').on('change', '.dependencies-option', function () {
       loadItems(itemsData, $(this).val());
+    });
+
+    const openCallback = () => {
+      $(`#${this.cfg.config.context.value}`).parent().hide();
+    };
+
+    const closeCallback = () => {
+      $(`#${this.cfg.config.context.value}`).parent().show();
+    };
+
+    document.addEventListener('legacyTemplateEditor.opened', openCallback);
+
+    document.addEventListener('legacyTemplateEditor.closed', closeCallback);
+
+    this.on('end', () => {
+      document.removeEventListener('legacyTemplateEditor.opened', openCallback);
+      document.removeEventListener('legacyTemplateEditor.closed', closeCallback);
     });
 
   }
