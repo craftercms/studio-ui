@@ -597,6 +597,7 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                 (Object.keys(me.manager.files).length === Object.keys(me.manager.complete).length)
               ) {
                 document.querySelector(".bulk-upload .buttons-container .close").classList.remove("disabled");
+                document.querySelector('.bulk-upload .buttons-container .close').disabled = false;
               }
             } else {
                 error();
@@ -631,6 +632,7 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
         document.querySelector(".bulk-upload .buttons-container .cancel").style.display = "none";
         document.querySelector(".bulk-upload .buttons-container .close").style.display = "";
         document.querySelector(".bulk-upload .buttons-container .close").classList.add("disabled");
+      document.querySelector('.bulk-upload .buttons-container .close').disabled = true;
 
     }
 
