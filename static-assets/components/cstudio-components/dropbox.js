@@ -593,7 +593,11 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                 me.manager.setCompleted(file.id);
                 me.showUploadProgress( elemProgress, 100, fileUI );
 
+              if (document.querySelector('.bulk-upload .buttons-container .close') &&
+                (Object.keys(me.manager.files).length === Object.keys(me.manager.complete).length)
+              ) {
                 document.querySelector(".bulk-upload .buttons-container .close").classList.remove("disabled");
+              }
             } else {
                 error();
             }
