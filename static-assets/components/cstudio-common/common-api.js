@@ -535,7 +535,7 @@ var nodeOpen = false,
          */
         Operations: {
 
-            _showDialogueView: function(oRequest, setZIndex, dialogWidth, ApproveTypeParam){
+            _showDialogueView: function(oRequest, setZIndex, dialogWidth){
                 var width = (dialogWidth) ? dialogWidth : "602px";
                 var Loader = CSA.Env.Loader,
                     moduleid = oRequest.controller;
@@ -567,7 +567,6 @@ var nodeOpen = false,
                                 }
                                 oRequest.callback && oRequest.callback.call(view, dialogue);
                                 dialogue.centreY();
-                                ApproveType = ApproveTypeParam;
                             }
                         },
                         fixedcenter: true,
@@ -835,9 +834,9 @@ var nodeOpen = false,
                     controller: 'viewcontroller-approve',
                     callback: function(dialogue) {
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
-                        this.loadItems(items, dialogue);
+                        this.loadItems(items, dialogue, approveType);
                     }
-                }, true, '800px', approveType);
+                }, true, '800px');
 
             },
 
