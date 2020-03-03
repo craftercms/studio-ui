@@ -19,7 +19,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import React, { ChangeEvent, useRef, useState } from 'react';
-import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
+import makeStyles from '@material-ui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import SelectButton from './ConfirmDropdown';
 import Typography from '@material-ui/core/Typography';
