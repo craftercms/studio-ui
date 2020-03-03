@@ -1352,6 +1352,13 @@
             if (deleteEl) {
               deleteEl.parentNode.removeChild(deleteEl);
             }
+
+            // remove switchFileName
+            var switchFileNameEl = YDom.getElementsByClassName('switch-filename', null, listeningEl)[0];
+
+            if (switchFileNameEl) {
+              switchFileNameEl.parentNode.removeChild(switchFileNameEl);
+            }
           } else {
             YDom.addClass(listeningEl, 'content-type-visual-field-container-selected');
             CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(listeningEl.field);
@@ -1377,6 +1384,29 @@
               YAHOO.util.Event.stopEvent(evt);
             }
 
+            const objectType = CStudioAdminConsole.Tool.ContentTypes.propertySheet.form.objectType;
+
+            if (field.id === 'file-name' && objectType === 'component') {
+              var switchFileNameEl = YDom.getElementsByClassName('switch-filename', null, listeningEl)[0];
+
+              if (!switchFileNameEl) {
+                switchFileNameEl = document.createElement('i');
+                YDom.addClass(switchFileNameEl, 'switch-filename fa fa-exchange');
+
+                listeningEl.appendChild(switchFileNameEl);
+
+                var switchFileNameFn = function () {
+                  CStudioAdminConsole.isDirty = true;
+                  CStudioAdminConsole.Tool.ContentTypes.FormDefMain.editField(this.parentNode.field, {
+                    type: this.parentNode.field.type === 'file-name' ? 'auto-filename' : 'file-name'
+                  });
+
+                  CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+                };
+
+                YAHOO.util.Event.on(switchFileNameEl, 'click', switchFileNameFn);
+              }
+            }
           }
 
         };
@@ -2736,6 +2766,18 @@
       },
 
       /**
+       * edit a field
+       */
+      editField: function (field, update) {
+        CStudioAdminConsole.isDirty = true;
+        var index = this.findFieldIndex(field);
+        field.section.fields[index] = {
+          ...field.section.fields[index],
+          ...update
+        };
+      },
+
+      /**
        * delete a section
        */
       deleteSection: function (section) {
@@ -2744,7 +2786,6 @@
 
         section.form.sections.splice(index, 1);
       },
-
 
       /**
        * determine where in the form a datasource is
