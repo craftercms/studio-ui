@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-interface ComponentMenu {
+interface ComponentMenuProps {
   anchorEl: Element;
   site: string;
   modelId: string;
@@ -44,7 +44,7 @@ interface ComponentMenu {
   handleClose(): void;
 }
 
-export default function ComponentMenu(props: ComponentMenu) {
+export default function ComponentMenu(props: ComponentMenuProps) {
   const classes = useStyles({});
   const { anchorEl, site, modelId, parentId, handleClose, embeddedParentPath = null } = props;
   const models = useSelection<LookupTable<ContentInstance>>(state => state.preview.guest?.models);
@@ -96,7 +96,7 @@ export default function ComponentMenu(props: ComponentMenu) {
       case 'template':
       case 'controller': {
         let src = `${defaultSrc}site=${site}&path=${getPath(type)}&type=${type}`;
-        if (embeddedParentPath) {
+        if (embeddedParentPath && type === 'form') {
           src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
         }
         setDialogConfig(
@@ -200,7 +200,7 @@ export default function ComponentMenu(props: ComponentMenu) {
           />
         </MenuItem>
         {
-          publishDialog.item && contentTypesBranch.byId[publishDialog.item.contentType]?.type === 'page' &&
+          publishDialog.item && !embeddedParentPath && contentTypesBranch.byId[publishDialog.item.contentType]?.type === 'page' &&
           <MenuItem onClick={() => handleEdit('controller')}>
             <FormattedMessage
               id="previewToolBar.menu.editController"
@@ -211,12 +211,21 @@ export default function ComponentMenu(props: ComponentMenu) {
       </Menu>
       {
         dialogConfig.open &&
-        <EmbeddedLegacyEditors dialogConfig={dialogConfig} setDialogConfig={setDialogConfig} getPath={getPath}/>
+        <EmbeddedLegacyEditors
+          dialogConfig={dialogConfig}
+          setDialogConfig={setDialogConfig}
+          getPath={getPath}
+          showController={!embeddedParentPath && contentTypesBranch.byId[publishDialog.item.contentType]?.type === 'page'}
+        />
       }
       {
         publishDialog.open &&
-        <PublishDialog scheduling={publishDialog.scheduling} items={[publishDialog.item]} onSuccess={onSuccessPublish}
-                       onClose={onClosePublish}/>
+        <PublishDialog
+          scheduling={publishDialog.scheduling}
+          items={[publishDialog.item]}
+          onSuccess={onSuccessPublish}
+          onClose={onClosePublish}
+        />
       }
     </>
   )
