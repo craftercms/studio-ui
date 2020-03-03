@@ -68,7 +68,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   //Effect used to open the publish Dialog
   useEffect(() => {
-    if (models && modelId) {
+    if (models && modelId && publishDialog.item === null) {
       let path = models[modelId].craftercms.path;
       if (embeddedParentPath) path = models[parentId].craftercms.path;
       getItem(site, path).subscribe(
@@ -80,7 +80,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, setPublishDialog, site, embeddedParentPath, parentId]);
+  }, [models, modelId, setPublishDialog, site, embeddedParentPath, parentId, publishDialog.item]);
 
   const handleEdit = (type: string) => {
     handleClose();
