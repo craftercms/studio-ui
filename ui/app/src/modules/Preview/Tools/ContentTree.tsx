@@ -39,7 +39,7 @@ import iconStyles from '../../../styles/icon';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { createLookupTable, reversePluckProps } from '../../../utils/object';
 import { SCROLL_TO_ELEMENT } from '../../../state/actions/preview';
-import { getHostToGuestBus } from '../previewContext';
+import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
 import ComponentMenu from '../../../components/ComponentMenu';
 
 const translations = defineMessages({
@@ -390,7 +390,13 @@ export default function ContentTree() {
 
   const handleOptions = (event: any, modelId: string, parentId: string, embeddedParentPath: string) => {
     event.stopPropagation();
-    setOptionsMenu({ ...optionsMenu, modelId, parentId, embeddedParentPath, anchorEl: event.currentTarget });
+    setOptionsMenu({
+      ...optionsMenu,
+      modelId,
+      parentId,
+      embeddedParentPath,
+      anchorEl: event.currentTarget.parentElement
+    });
   };
 
   const handleClose = () => {
@@ -430,6 +436,10 @@ export default function ContentTree() {
               modelId={optionsMenu.modelId}
               parentId={optionsMenu.parentId}
               embeddedParentPath={optionsMenu.embeddedParentPath}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: DRAWER_WIDTH - 60
+              }}
             />
           </>
         }

@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { createStyles, makeStyles, Menu, Theme } from '@material-ui/core';
+import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import EmbeddedLegacyEditors from '../modules/Preview/EmbeddedLegacyEditors';
@@ -40,13 +40,14 @@ interface ComponentMenuProps {
   modelId: string;
   parentId?: string;
   embeddedParentPath?: string;
+  anchorOrigin?: PopoverOrigin;
 
   handleClose(): void;
 }
 
 export default function ComponentMenu(props: ComponentMenuProps) {
   const classes = useStyles({});
-  const { anchorEl, site, modelId, parentId, handleClose, embeddedParentPath = null } = props;
+  const { anchorEl, site, modelId, parentId, handleClose, embeddedParentPath = null, anchorOrigin = undefined } = props;
   const models = useSelection<LookupTable<ContentInstance>>(state => state.preview.guest?.models);
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
@@ -144,6 +145,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}
+        anchorOrigin={anchorOrigin}
       >
         <MenuItem onClick={() => handleEdit('form')}>
           <FormattedMessage

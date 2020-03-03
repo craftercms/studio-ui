@@ -92,7 +92,7 @@ const styles = {
   }
 };
 
-const {classes} = jss.createStyleSheet(styles).attach()
+const { classes } = jss.createStyleSheet(styles).attach();
 
 // TODO:
 // - add "modePreview" and bypass all
@@ -746,7 +746,7 @@ export function Guest(props) {
                   record.fieldId[0],
                   record.index,
                   payload.path
-                )
+                );
               });
 
               return function (event) {
@@ -1167,21 +1167,22 @@ export function Guest(props) {
   }
 
   function pulseAnimation($element) {
-    $element.removeClass(classes.pulseAnim);
-    setTimeout(function () {
-      $element.addClass(classes.pulseAnim);
-    }, 0);
+    var END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+    $element.addClass(classes.pulseAnim);
+    $element.one(END_EVENT, function () {
+      $element.removeClass(classes.pulseAnim);
+    });
   }
 
   function scrollToElement(node) {
     let $element;
-    if(node.index !== undefined) {
-      $element = $(`[data-craftercms-model-id="${node.parentId || node.modelId}"][data-craftercms-field-id*="${node.fieldId}"][data-craftercms-index="${node.index}"]`);
+    if (node.index !== undefined) {
+      $element = $(`[data-craftercms-model-id="${node.parentId || node.modelId}"][data-craftercms-field-id="${node.fieldId}"][data-craftercms-index="${node.index}"]`);
     } else {
-      $element = $(`[data-craftercms-model-id="${node.modelId}"][data-craftercms-field-id="${node.fieldId}"]`);
+      $element = $(`[data-craftercms-model-id="${node.modelId}"][data-craftercms-field-id="${node.fieldId}"]:not([data-craftercms-index])`);
     }
-    if($element.length) {
-      if(!isElementInView($element)) {
+    if ($element.length) {
+      if (!isElementInView($element)) {
         $(scrollElement).animate({
           scrollTop: $element.offset().top - 100
         }, 300, function () {
