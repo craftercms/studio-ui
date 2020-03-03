@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,9 +33,9 @@
 
     events: ['submitStart', 'submitComplete', 'submitEnd'],
     actions: ['.close-button', '.submit-button'],
-    startup: ['itemsEventsDelegation'],
+    startup: ['eventsDelegation'],
 
-    itemsEventsDelegation: itemsEventsDelegation,
+    eventsDelegation: eventsDelegation,
 
     loadItems: loadItems,
 
@@ -50,11 +49,28 @@
     $(document).off("keyup");
   }
 
-  function itemsEventsDelegation() {
+  function eventsDelegation() {
     depController = this;
 
     $('.studio-view').on('change', '.dependencies-option', function () {
       loadItems(itemsData, $(this).val());
+    });
+
+    const openCallback = () => {
+      $(`#${this.cfg.config.context.value}`).parent().hide();
+    };
+
+    const closeCallback = () => {
+      $(`#${this.cfg.config.context.value}`).parent().show();
+    };
+
+    document.addEventListener('legacyTemplateEditor.opened', openCallback);
+
+    document.addEventListener('legacyTemplateEditor.closed', closeCallback);
+
+    this.on('end', () => {
+      document.removeEventListener('legacyTemplateEditor.opened', openCallback);
+      document.removeEventListener('legacyTemplateEditor.closed', closeCallback);
     });
 
   }
