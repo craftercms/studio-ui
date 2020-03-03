@@ -112,6 +112,7 @@ interface RenderTree {
   type: string;
   modelId?: string;
   parentId?: string;
+  embeddedParentPath?: string;
   fieldId?: string;
   index?: string | number;
 }
@@ -122,19 +123,20 @@ interface Data {
   lookupTable: LookupTable<RenderTree>
 }
 
-function getNodeSelectorChildren(model: ContentInstance, parentModelId: string, itemContentTypeName: string, fieldId: string, index: number | string) {
+function getNodeSelectorChildren(model: ContentInstance, parentModelId: string, path: string, itemContentTypeName: string, fieldId: string, index: number | string) {
   return {
     id: `${parentModelId}_${fieldId}_${index}`,
     name: `${itemContentTypeName}: ${model.craftercms.label}`,
     type: 'component',
     modelId: `${model.craftercms.id}`,
     parentId: parentModelId,
+    embeddedParentPath: path || null,
     fieldId,
     index
   };
 }
 
-function getRepeatGroupChildren(item: LookupTable<any>, contentTypeField: ContentTypeField, contentTypes: LookupTable<ContentType>, parentTreeItemId: string, modelId: string, models: LookupTable<ContentInstance>, index: number) {
+function getRepeatGroupChildren(item: LookupTable<any>, contentTypeField: ContentTypeField, contentTypes: LookupTable<ContentType>, parentTreeItemId: string, model: ContentInstance, models: LookupTable<ContentInstance>, index: number) {
   let children = [];
   Object.keys(item).forEach((fieldName) => {
     let subChildren = [];
@@ -145,7 +147,7 @@ function getRepeatGroupChildren(item: LookupTable<any>, contentTypeField: Conten
       item[fieldName].forEach((id: string, i: number) => {
         let itemContentTypeName = contentTypes[models[id].craftercms.contentType].name;
         subChildren.push(
-          getNodeSelectorChildren(models[id], modelId, itemContentTypeName, fieldId, `${index}.${i}`)
+          getNodeSelectorChildren(models[id], model.craftercms.id, models[id].craftercms.path ? null : model.craftercms.path, itemContentTypeName, fieldId, `${index}.${i}`)
         );
       });
     }
@@ -154,7 +156,7 @@ function getRepeatGroupChildren(item: LookupTable<any>, contentTypeField: Conten
       name,
       type,
       children: subChildren,
-      modelId: modelId,
+      modelId: model.craftercms.id,
       fieldId,
       index
     })
@@ -173,7 +175,7 @@ function getChildren(model: ContentInstance, contentType: ContentType, models: L
       model[fieldName].forEach((id: string, i: number) => {
         let itemContentTypeName = contentTypes[models[id].craftercms.contentType].name;
         subChildren.push(
-          getNodeSelectorChildren(models[id], model.craftercms.id, itemContentTypeName, fieldName, i)
+          getNodeSelectorChildren(models[id], model.craftercms.id, models[id].craftercms.path ? null : model.craftercms.path, itemContentTypeName, fieldName, i)
         );
       });
     } else if (type === 'repeat') {
@@ -183,7 +185,7 @@ function getChildren(model: ContentInstance, contentType: ContentType, models: L
           id,
           name: `Item ${index + 1}`,
           type: 'item',
-          children: getRepeatGroupChildren(item, contentType.fields[fieldName], contentTypes, id, model.craftercms.id, models, index),
+          children: getRepeatGroupChildren(item, contentType.fields[fieldName], contentTypes, id, model, models, index),
           modelId: model.craftercms.id,
           fieldId: `${fieldName}`,
           index
@@ -212,7 +214,7 @@ interface TreeItemCustomInterface {
 
   handleClick?(node: RenderTree): void
 
-  handleOptions?(e: any, modelId: string): void
+  handleOptions?(e: any, modelId: string, parentId: string, embeddedParentPath: string): void
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
@@ -268,7 +270,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
           {
             over && (nodes.type === 'component' || nodes.id === 'root') &&
             <IconButton className={classes.options} onMouseOver={(e) => setOverState(e, true)}
-                        onClick={(e) => handleOptions(e, nodes.modelId)}>
+                        onClick={(e) => handleOptions(e, nodes.modelId, nodes.parentId, nodes.embeddedParentPath)}>
               <MoreVertIcon/>
             </IconButton>
           }
@@ -308,6 +310,8 @@ export default function ContentTree() {
   const site = useActiveSiteId();
   const [optionsMenu, setOptionsMenu] = React.useState({
     modelId: null,
+    parentId: null,
+    embeddedParentPath: null,
     anchorEl: null
   });
   const [data, setData] = React.useState<Data>({
@@ -339,7 +343,7 @@ export default function ContentTree() {
     if (node.type === 'component' && node.id !== 'root') {
       let model = guest.models[node.modelId];
       let contentType = contentTypesBranch.byId[model.craftercms.contentType];
-      const { type, modelId, name, index, fieldId, parentId } = node;
+      const { type, modelId, name, index, fieldId, parentId, embeddedParentPath } = node;
       setData({
         previous: [...data.previous, data.selected],
         selected: model.craftercms.id,
@@ -353,7 +357,8 @@ export default function ContentTree() {
             modelId,
             index,
             fieldId,
-            parentId
+            parentId,
+            embeddedParentPath
           }
         }
       });
@@ -383,13 +388,13 @@ export default function ContentTree() {
     }
   };
 
-  const handleOptions = (event: any, modelId: string) => {
+  const handleOptions = (event: any, modelId: string, parentId: string, embeddedParentPath: string) => {
     event.stopPropagation();
-    setOptionsMenu({ ...optionsMenu, modelId, anchorEl: event.currentTarget });
+    setOptionsMenu({ ...optionsMenu, modelId, parentId, embeddedParentPath, anchorEl: event.currentTarget });
   };
 
-  const closeMenu = () => {
-    setOptionsMenu({ ...optionsMenu, modelId: null, anchorEl: null });
+  const handleClose = () => {
+    setOptionsMenu({ ...optionsMenu, anchorEl: null });
   };
 
   return (
@@ -420,9 +425,11 @@ export default function ContentTree() {
             />
             <ComponentMenu
               anchorEl={optionsMenu.anchorEl}
-              setAnchorEl={closeMenu}
+              handleClose={handleClose}
               site={site}
               modelId={optionsMenu.modelId}
+              parentId={optionsMenu.parentId}
+              embeddedParentPath={optionsMenu.embeddedParentPath}
             />
           </>
         }

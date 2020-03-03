@@ -38,13 +38,15 @@ interface ComponentMenu {
   anchorEl: Element;
   site: string;
   modelId: string;
+  parentId?: string;
+  embeddedParentPath?: string;
 
-  setAnchorEl(value?: any): void;
+  handleClose(): void;
 }
 
-export default function ComponentMenu(props) {
+export default function ComponentMenu(props: ComponentMenu) {
   const classes = useStyles({});
-  const { anchorEl, setAnchorEl, site, modelId } = props;
+  const { anchorEl, site, modelId, parentId, handleClose, embeddedParentPath = null } = props;
   const models = useSelection<LookupTable<ContentInstance>>(state => state.preview.guest?.models);
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
@@ -63,9 +65,12 @@ export default function ComponentMenu(props) {
   });
 
 
+  //Effect used to open the publish Dialog
   useEffect(() => {
     if (models && modelId) {
-      getItem(site, models[modelId].craftercms.path).subscribe(
+      let path = models[modelId].craftercms.path;
+      if (embeddedParentPath) path = models[parentId].craftercms.path;
+      getItem(site, path).subscribe(
         (item) => {
           setPublishDialog({ item })
         },
@@ -74,11 +79,7 @@ export default function ComponentMenu(props) {
         }
       );
     }
-  }, [models, modelId, setPublishDialog, site]);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  }, [models, modelId, setPublishDialog, site, embeddedParentPath, parentId]);
 
   const handleEdit = (type: string) => {
     handleClose();
@@ -94,10 +95,14 @@ export default function ComponentMenu(props) {
       case 'form':
       case 'template':
       case 'controller': {
+        let src = `${defaultSrc}site=${site}&path=${getPath(type)}&type=${type}`;
+        if (embeddedParentPath) {
+          src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
+        }
         setDialogConfig(
           {
             open: true,
-            src: `${defaultSrc}site=${site}&path=${getPath(type)}&type=${type}`,
+            src,
             type
           });
         break;
@@ -109,6 +114,7 @@ export default function ComponentMenu(props) {
     switch (type) {
       case 'publish':
       case 'form': {
+        if (embeddedParentPath) return embeddedParentPath;
         return models[modelId].craftercms.path;
       }
       case 'template': {
@@ -124,8 +130,12 @@ export default function ComponentMenu(props) {
     }
   };
 
-  const onClosePublish = (response) => {
+  const onSuccessPublish = () => {
     setPublishDialog({ open: false, scheduling: null, item: { ...publishDialog.item, isLive: true } });
+  };
+
+  const onClosePublish = () => {
+    setPublishDialog({ open: false, scheduling: null });
   };
 
   return (
@@ -190,7 +200,7 @@ export default function ComponentMenu(props) {
           />
         </MenuItem>
         {
-          publishDialog.item && contentTypesBranch.byId[publishDialog.item.contentType].type === 'page' &&
+          publishDialog.item && contentTypesBranch.byId[publishDialog.item.contentType]?.type === 'page' &&
           <MenuItem onClick={() => handleEdit('controller')}>
             <FormattedMessage
               id="previewToolBar.menu.editController"
@@ -205,7 +215,8 @@ export default function ComponentMenu(props) {
       }
       {
         publishDialog.open &&
-        <PublishDialog scheduling={publishDialog.scheduling} items={[publishDialog.item]} onClose={onClosePublish}/>
+        <PublishDialog scheduling={publishDialog.scheduling} items={[publishDialog.item]} onSuccess={onSuccessPublish}
+                       onClose={onClosePublish}/>
       }
     </>
   )

@@ -143,6 +143,10 @@ export function AddressBar(props: AddressBarProps) {
     setAnchorEl(event.currentTarget);
   };
 
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <IconButton className={classes.iconButton} aria-label="search">
@@ -195,7 +199,7 @@ export function AddressBar(props: AddressBarProps) {
       </IconButton>
       <ComponentMenu
         anchorEl={anchorEl}
-        setAnchorEl={setAnchorEl}
+        handleClose={handleClose}
         site={site}
         modelId={modelId}
       />
