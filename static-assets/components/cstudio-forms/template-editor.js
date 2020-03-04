@@ -592,7 +592,7 @@ CStudioAuthoring.Module.requireModule(
 												body: value
 											}).then(res => res.json()).then((data) => {
 												if (data && data.result && data.result.success) {
-                          var event = new Event('legacyTemplateEditor.closed');
+                          var event = new CustomEvent('legacyTemplateEditor.closed');
                           document.dispatchEvent(event);
 													modalEl.parentNode.removeChild(modalEl);
                           onSaveCb.success && onSaveCb.success();
