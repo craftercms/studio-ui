@@ -18,27 +18,28 @@ import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { createStyles, makeStyles } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import createStyles from '@material-ui/core/styles/createStyles';
 import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
+import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeftRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { useActiveSiteId, usePreviewGuest, useSelection } from '../../../utils/hooks';
 import { ContentType, ContentTypeField } from '../../../models/ContentType';
 import Page from '../../../components/Icons/Page';
-import Field from '../../../components/Icons/Field';
+import ContentTypeFieldIcon from '../../../components/Icons/ContentTypeField';
 import Component from '../../../components/Icons/Component';
 import NodeSelector from '../../../components/Icons/NodeSelector';
 import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
-import Repeat from '../../../components/Icons/Repeat';
-import iconStyles from '../../../styles/icon';
+import RepeatGroup from '../../../components/Icons/RepeatGroup';
+import iconWithStrokeAndFill from '../../../styles/icon';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { createLookupTable, reversePluckProps } from '../../../utils/object';
-import { SCROLL_TO_ELEMENT } from '../../../state/actions/preview';
+import { CONTENT_TREE_FIELD_SELECTED } from '../../../state/actions/preview';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
 import ComponentMenu from '../../../components/ComponentMenu';
 
@@ -63,7 +64,7 @@ const useStyles = makeStyles((theme) => createStyles({
 
 const treeItemStyles = makeStyles((theme) => createStyles({
   icon: {
-    ...iconStyles
+    ...iconWithStrokeAndFill
   },
   treeItemIconContainer: {
     display: 'none'
@@ -231,9 +232,9 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   } else if (nodes.type === 'component') {
     Icon = Component;
   } else if (nodes.type === 'repeat') {
-    Icon = Repeat;
+    Icon = RepeatGroup;
   } else {
-    Icon = Field;
+    Icon = ContentTypeFieldIcon;
   }
 
   function setOverState(e: React.MouseEvent, isOver: boolean) {
@@ -258,7 +259,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
         <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
           {
             (nodes.id === 'root' && handlePrevious) ? (
-              <ChevronLeftRounded onClick={(e) => handlePrevious(e)}/>
+              <ChevronLeftIcon onClick={(e) => handlePrevious(e)}/>
             ) : (
               <>
                 {(nodes.type === 'component') && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
@@ -321,7 +322,7 @@ export default function ContentTree() {
   });
 
   useEffect(() => {
-    if (guest?.modelId && guest?.models && contentTypesBranch.byId && data.selected === null) {
+    if (guest?.modelId && guest.models && contentTypesBranch.byId && data.selected === null) {
       let parent = guest.models[guest.modelId];
       let contentType = contentTypesBranch.byId[parent.craftercms.contentType];
       let data: RenderTree = {
@@ -369,7 +370,7 @@ export default function ContentTree() {
 
   const handleScroll = (node: RenderTree) => {
     hostToGuest$.next({
-      type: SCROLL_TO_ELEMENT,
+      type: CONTENT_TREE_FIELD_SELECTED,
       payload: node
     });
     return;

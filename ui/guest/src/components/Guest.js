@@ -16,8 +16,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import jss from 'jss';
-import preset from 'jss-preset-default';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -27,28 +25,28 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   EDIT_MODE_CHANGED,
   EditingStatus,
-  forEach,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
-  isElementInView,
   isNullOrUndefined,
   NAVIGATION_REQUEST,
   not,
   notNullOrUndefined,
   pluckProps,
   RELOAD_REQUEST,
-  SCROLL_TO_ELEMENT,
   SCROLL_TO_RECEPTACLE,
+  scrollToNode,
+  scrollToReceptacle,
   TRASHED
 } from '../util';
 import { fromEvent, interval, Subject, zip } from 'rxjs';
@@ -72,27 +70,6 @@ const clearAndListen$ = new Subject();
 const escape$ = fromEvent(document, 'keydown').pipe(
   filter(e => e.keyCode === 27)
 );
-
-jss.setup(preset());
-
-const styles = {
-  '@keyframes pulse': {
-    '0%': {
-      transform: 'scaleX(1)'
-    },
-    '50%': {
-      transform: 'scale3d(1.05,1.05,1.05)'
-    },
-    'to': {
-      transform: 'scaleX(1)'
-    }
-  },
-  pulseAnim: {
-    animation: '$pulse 300ms 2 ease-in-out'
-  }
-};
-
-const { classes } = jss.createStyleSheet(styles).attach();
 
 // TODO:
 // - add "modePreview" and bypass all
@@ -1166,55 +1143,6 @@ export function Guest(props) {
     }
   }
 
-  function pulseAnimation($element) {
-    var END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-    $element.addClass(classes.pulseAnim);
-    $element.one(END_EVENT, function () {
-      $element.removeClass(classes.pulseAnim);
-    });
-  }
-
-  function scrollToElement(node) {
-    let $element;
-    if (node.index !== undefined) {
-      $element = $(`[data-craftercms-model-id="${node.parentId || node.modelId}"][data-craftercms-field-id="${node.fieldId}"][data-craftercms-index="${node.index}"]`);
-    } else {
-      $element = $(`[data-craftercms-model-id="${node.modelId}"][data-craftercms-field-id="${node.fieldId}"]:not([data-craftercms-index])`);
-    }
-    if ($element.length) {
-      if (!isElementInView($element)) {
-        $(scrollElement).animate({
-          scrollTop: $element.offset().top - 100
-        }, 300, function () {
-          pulseAnimation($element);
-        });
-      } else {
-        pulseAnimation($element);
-      }
-    }
-  }
-
-  function scrollToReceptacle(receptacles) {
-    let elementInView;
-    let element;
-    elementInView = forEach(receptacles, ({ id }) => {
-      let elem = ElementRegistry.fromICEId(id).element;
-      if (isElementInView(elem)) {
-        elementInView = true;
-        element = elem;
-        return 'break';
-      }
-    }, false);
-
-    if (!elementInView) {
-      // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
-      let element = ElementRegistry.fromICEId(receptacles[0].id).element;
-      $(scrollElement).animate({
-        scrollTop: $(element).offset().top - 100
-      }, 300);
-    }
-  }
-
   function getHighlighted(dropZones) {
     return dropZones.reduce((object, { physicalRecordId: id }) => {
       object[id] = ElementRegistry.getHoverData(id);
@@ -1297,7 +1225,7 @@ export function Guest(props) {
           break;
         }
         case SCROLL_TO_RECEPTACLE:
-          scrollToReceptacle([payload]);
+          scrollToReceptacle([payload], scrollElement);
           break;
         case CLEAR_HIGHLIGHTED_RECEPTACLES:
           setState({
@@ -1309,8 +1237,8 @@ export function Guest(props) {
             }
           });
           break;
-        case SCROLL_TO_ELEMENT: {
-          scrollToElement(payload);
+        case CONTENT_TREE_FIELD_SELECTED: {
+          scrollToNode(payload, scrollElement);
           break;
         }
         default:

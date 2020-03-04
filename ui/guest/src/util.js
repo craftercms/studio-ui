@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from 'jquery/dist/jquery.slim';
+import $ from 'jquery/dist/jquery';
 import { Markers } from './classes/Markers';
 import { fromEvent, interval } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
+import { ElementRegistry } from './classes/ElementRegistry';
 
 export const foo = () => void null;
 export const
@@ -67,7 +68,7 @@ export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUES
 export const CONTENT_TYPE_RECEPTACLES_RESPONSE = 'CONTENT_TYPE_RECEPTACLES_RESPONSE';
 export const SCROLL_TO_RECEPTACLE = 'SCROLL_TO_RECEPTACLE';
 export const CLEAR_HIGHLIGHTED_RECEPTACLES = 'CLEAR_HIGHLIGHTED_RECEPTACLES';
-export const SCROLL_TO_ELEMENT = 'SCROLL_TO_ELEMENT';
+export const CONTENT_TREE_FIELD_SELECTED = 'CONTENT_TREE_FIELD_SELECTED';
 export const CHILDREN_MAP_UPDATE = 'CHILDREN_MAP_UPDATE';
 
 // endregion
@@ -538,4 +539,53 @@ export function popPiece(str, splitChar = '.') {
 
 export function isBlank(str) {
   return str === '';
+}
+
+export function addAnimation($element, animationClass) {
+  var END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+  $element.addClass(animationClass);
+  $element.one(END_EVENT, function () {
+    $element.removeClass(animationClass);
+  });
+}
+
+export function scrollToNode(node, scrollElement) {
+  let $element;
+  if (node.index !== undefined) {
+    $element = $(`[data-craftercms-model-id="${node.parentId || node.modelId}"][data-craftercms-field-id="${node.fieldId}"][data-craftercms-index="${node.index}"]`);
+  } else {
+    $element = $(`[data-craftercms-model-id="${node.modelId}"][data-craftercms-field-id="${node.fieldId}"]:not([data-craftercms-index])`);
+  }
+  if ($element.length) {
+    if (!isElementInView($element)) {
+      $(scrollElement).animate({
+        scrollTop: $element.offset().top - 100
+      }, 300, function () {
+        addAnimation($element, 'craftercms-contentTree-pulse');
+      });
+    } else {
+      addAnimation($element, 'craftercms-contentTree-pulse');
+    }
+  }
+}
+
+export function scrollToReceptacle(receptacles, scrollElement) {
+  let elementInView;
+  let element;
+  elementInView = forEach(receptacles, ({ id }) => {
+    let elem = ElementRegistry.fromICEId(id).element;
+    if (isElementInView(elem)) {
+      elementInView = true;
+      element = elem;
+      return 'break';
+    }
+  }, false);
+
+  if (!elementInView) {
+    // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
+    let element = ElementRegistry.fromICEId(receptacles[0].id).element;
+    $(scrollElement).animate({
+      scrollTop: $(element).offset().top - 100
+    }, 300);
+  }
 }

@@ -821,12 +821,6 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
                 content_o {
                   ...ContentIncludeWrapperFragment
                 }
-                randomrg_o {
-                  item {
-                    namebonito_s
-                    namefeo_s
-                  }
-                }
               }
               ... on taxonomy {
                 items {
@@ -928,7 +922,7 @@ function reducer(lookupTable, model) {
             reducer(lookupTable, item.component);
           }
         } else {
-          // 2. Repeat Groups
+          // 2. RepeatGroup Groups
           const repeatGroupItem = {};
           data[key].push(repeatGroupItem);
           Object.entries(item).forEach((entry) =>

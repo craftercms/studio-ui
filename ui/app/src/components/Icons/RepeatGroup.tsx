@@ -17,7 +17,7 @@
 import React from 'react';
 import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 
-export default function Repeat(props: SvgIconProps) {
+export default function RepeatGroup(props: SvgIconProps) {
   return (
     <SvgIcon {...props}>
       <circle cx="12.126" cy="12.2466" r="9.31986" stroke="black" strokeWidth="1.08199"/>

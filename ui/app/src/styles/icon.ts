@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const iconStyles = {
+export const iconWithStrokeAndFill = {
   fill: 'none',
   stroke: 'currentColor'
 };
-
-export default iconStyles;
