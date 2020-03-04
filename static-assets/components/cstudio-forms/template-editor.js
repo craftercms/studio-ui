@@ -217,8 +217,8 @@ CStudioAuthoring.Module.requireModule(
 									editorEl.textContent= content;
 									editorContainerEl.appendChild(editorEl);
 
-                  //dispatch legacyTemplateEditor.opened
-                  var event = new Event('legacyTemplateEditor.opened');
+                  // dispatch legacyTemplateEditor.opened
+                  var event = new CustomEvent('legacyTemplateEditor.opened');
                   document.dispatchEvent(event);
 
 									var langTools;
@@ -536,8 +536,8 @@ CStudioAuthoring.Module.requireModule(
 
 										var cancelEditCb = {
 											success: function(response) {
-                        //dispatch legacyTemplateEditor.opened
-                        var event = new Event('legacyTemplateEditor.closed');
+                        // dispatch legacyTemplateEditor.opened
+                        var event = new CustomEvent('legacyTemplateEditor.closed');
                         document.dispatchEvent(event);
 												modalEl.parentNode.removeChild(modalEl);
 											},
