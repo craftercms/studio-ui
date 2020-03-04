@@ -46,7 +46,7 @@ function closeButtonClicked() {
   this.end();
 }
 
-function loadItems(data, dialogue) {
+function loadItems(data, dialogue, approveType) {
   var me = this;
 
   var loadSpinner = document.getElementById('loadSpinner');
@@ -56,7 +56,7 @@ function loadItems(data, dialogue) {
   loadSpinner.classList.add('hidden');
   me.renderItems(items);
   $('#approveSubmit').prop('disabled', false);
-  verifyMixedSchedules(items);
+  verifyMixedSchedules(items, approveType);
   this.on("submitComplete", function(evt, args){
     submitComplete(items, dialogue, args);
   });
@@ -85,13 +85,13 @@ function traverse(items, referenceDate) {
 
 }
 
-function verifyMixedSchedules(contentItems) {
+function verifyMixedSchedules(contentItems, approveType) {
 
   var reference = contentItems[0].scheduledDate,
     allHaveSameDate = traverse(contentItems, reference);
 
   if (allHaveSameDate) {
-    if ((reference === '' || reference === null) && !ApproveType) {
+    if ((reference === '' || reference === null) && !approveType) {
       //YDom.get('globalSetToNow').checked = true;
       this.$('[name="schedulingMode"]')[0].checked = true;
       this.$('[name="schedulingMode"]')[1].checked = false;
