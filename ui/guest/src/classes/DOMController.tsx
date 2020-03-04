@@ -36,7 +36,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { debounceTime, delay, filter } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import { render } from 'react-dom';
-import { IceZone, Stats } from '../models/InContextEditing';
+import { DZStats, IceZone, Stats } from '../models/InContextEditing';
 
 const hostTrashed$ = new Subject();
 
@@ -59,7 +59,7 @@ export class DOMController {
   // and resume them once the scroll stopped.
   static scrolling$/*: BehaviourSubject<boolean>*/;
 
-  static addZone(zone: IceZone) {
+  static addZone(zone: IceZone): number {
     let { element, field, modelId, index, label } = zone;
 
     if (!element) {
@@ -104,18 +104,18 @@ export class DOMController {
 
   }
 
-  static removeZone(element: Element) {
+  static removeZone(element: Element): void {
     const index = this.findIndexOf(element);
     if (index !== -1) {
       this.zones.splice(index, 1);
     }
   }
 
-  static includes(element: Element) {
+  static includes(element: Element): boolean {
     return this.zones.some((zone) => zone.element === element);
   }
 
-  static getFieldFor(element: Element) {
+  static getFieldFor(element: Element): unknown {
     const index = this.findIndexOf(element);
     return this.zones[index].recordIds.map((id) => iceRegistry.getReferentialEntries(id).field);
   }
@@ -129,7 +129,7 @@ export class DOMController {
     return this.zones.findIndex((zone) => zone.element === element);
   }
 
-  static findZoneElement(element: Element) {
+  static findZoneElement(element: Element): Element {
     const
 
       body = document.body,
@@ -169,7 +169,7 @@ export class DOMController {
     }
   }
 
-  static updateDragStats() {
+  static updateDragStats(): void {
     const stats = DOMController.dragStats;
     const { currentDZ, currentDZChildren, dropZones } = stats;
     stats.dropZoneRects = dropZones.map((dz) => {
@@ -182,11 +182,11 @@ export class DOMController {
     stats.currentDZChildrenRects = currentDZChildren.map((child) => child.getBoundingClientRect());
   }
 
-  static onMouseMove(element: Element) {
+  static onMouseMove(element: Element): void {
 
   }
 
-  static onMouseOver(element: Element) {
+  static onMouseOver(element: Element): boolean {
 
     const elem = this.findZoneElement(element);
 
@@ -211,7 +211,7 @@ export class DOMController {
 
   }
 
-  static onMouseOut() {
+  static onMouseOut(): void {
 
     const elem = this.activeElement;
 
@@ -225,7 +225,7 @@ export class DOMController {
 
   }
 
-  static getCurrentDZStats(dzElement: Element) {
+  static getCurrentDZStats(dzElement: Element): DZStats {
     const
       currentDZ = dzElement,
       currentDZElementRect = currentDZ.getBoundingClientRect(),
@@ -241,7 +241,7 @@ export class DOMController {
     };
   }
 
-  static setCurrentDZStats(dzElement: Element) {
+  static setCurrentDZStats(dzElement: Element): void {
     Object.assign(
       this.dragStats,
       this.getCurrentDZStats(dzElement));
@@ -343,7 +343,7 @@ export class DOMController {
 
   }
 
-  static onDragOver({ element, mousePosition }) {
+  static onDragOver({ element, mousePosition }): void {
     if (this.scrolling$.value) {
       return;
     }
@@ -477,7 +477,7 @@ export class DOMController {
 
   }
 
-  static onDrop() {
+  static onDrop(): void {
     const {
       $dropMarker,
       draggedElement,
@@ -587,7 +587,7 @@ export class DOMController {
 
   }
 
-  static clearDragStats() {
+  static clearDragStats(): void {
     $(document).unbind('scroll', this.onScroll);
 
     // this.dragStats.$dropMarker.remove();
@@ -598,14 +598,14 @@ export class DOMController {
     this.scrolling$ = null;
   }
 
-  static onDragEnd() {
+  static onDragEnd(): void {
     if (!this.dragStats) {
       return;
     }
     this.clearDragStats();
   }
 
-  static onClick(element) {
+  static onClick(element): void {
     const elem = this.findZoneElement(element);
     if (elem) {
       const field = this.getFieldFor(elem)[0];
@@ -613,7 +613,7 @@ export class DOMController {
     }
   }
 
-  static onScroll() {
+  static onScroll(): void {
     DOMController.dragStats.$dropMarker.detach();
     DOMController.scrolling$.next(true);
   }

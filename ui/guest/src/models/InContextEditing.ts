@@ -55,6 +55,13 @@ export interface DropZone {
   origin?: any;
 }
 
+export interface DZStats {
+  currentDZ: Element;
+  currentDZChildren: Element[];
+  currentDZElementRect: DOMRect;
+  currentDZChildrenRects: DOMRect[];
+}
+
 export interface Record {
   modelId?: string;
   index?: number | string;

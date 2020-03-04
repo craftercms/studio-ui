@@ -72,7 +72,7 @@ export function DropMarker(props: DropMarkerProps) {
     />
   );
 
-  function dragOver() {
+  function dragOver(): void {
 
     let
       nextStyle = null,

@@ -32,7 +32,7 @@ export class ElementRegistry {
   static db = {};
   static registry = {};
 
-  static get(id: number) {
+  static get(id: number): Record {
     const record = this.db[id];
     record && isNullOrUndefined(record.label) && this.setLabel(record);
     return record;
@@ -40,7 +40,7 @@ export class ElementRegistry {
 
   // TODO: Unknown field names go by ignored. Trace the registration point to warn...
   // developers about field names that aren't found in the content type
-  static setLabel(record: Record) {
+  static setLabel(record: Record): void {
     const labels = [];
     const models = contentController.getCachedModels();
     record.iceIds.forEach((iceId) => {
@@ -86,7 +86,7 @@ export class ElementRegistry {
     record.label = labels.join(', ');
   }
 
-  static register(payload) {
+  static register(payload): number {
     if (notNullOrUndefined(payload.id)) {
       throw new Error('Record already has id. Was it pre-registered? Please deregister first.');
     }
@@ -215,8 +215,8 @@ export class ElementRegistry {
       next,
       prev;
 
-    nextSibling = sibling(element, true);
-    prevSibling = sibling(element, false);
+    nextSibling = sibling(element as HTMLElement, true);
+    prevSibling = sibling(element as HTMLElement, false);
 
     forEach(
       Object.values(this.db),
@@ -247,7 +247,7 @@ export class ElementRegistry {
     );
   }
 
-  static hasElement(element: Element) {
+  static hasElement(element: Element): boolean {
     return forEach(
       Object.values(this.db),
       (record) => {

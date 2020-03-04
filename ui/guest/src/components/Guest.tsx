@@ -63,7 +63,7 @@ import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
 import { Asset, ContentType } from '../models/ContentType';
 import { ContentInstance } from '../models/ContentInstance';
-import { HoverData, Record } from '../models/InContextEditing';
+import { DropZone, HoverData, Record } from '../models/InContextEditing';
 import { LookupTable } from '../models/LookupTable';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
@@ -151,7 +151,7 @@ export function Guest(props: GuestProps) {
 
   const fn = {
 
-    onEditModeChanged(inEditMode) {
+    onEditModeChanged(inEditMode): void {
 
       const status = inEditMode ? EditingStatus.LISTENING : EditingStatus.OFF;
 
@@ -168,7 +168,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    initializeSubjects() {
+    initializeSubjects(): void {
 
       const
         dragover$ = new Subject<{ e: DragEvent, record: Record }>(),
@@ -207,7 +207,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    destroySubjects() {
+    destroySubjects(): void {
 
       persistence.dragover$.complete();
       persistence.dragover$.unsubscribe();
@@ -223,7 +223,7 @@ export function Guest(props: GuestProps) {
     },
 
     /*onClick*/
-    click(e: Event, record: Record) {
+    click(e: Event, record: Record): void {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
@@ -383,7 +383,7 @@ export function Guest(props: GuestProps) {
       }
     },
 
-    dblclick(e: Event, record: Record) {
+    dblclick(e: Event, record: Record): void {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
         setState({
@@ -401,7 +401,7 @@ export function Guest(props: GuestProps) {
     },
 
     /*onMouseOver*/
-    mouseover(e: Event, record: Record) {
+    mouseover(e: Event, record: Record): void {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         clearTimeout(persistence.mouseOverTimeout);
         e.stopPropagation();
@@ -423,7 +423,7 @@ export function Guest(props: GuestProps) {
     },
 
     /*onMouseOut*/
-    mouseout(e: Event) {
+    mouseout(e: Event): void {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         e.stopPropagation();
         clearTimeout(persistence.mouseOverTimeout);
@@ -559,7 +559,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    onHostInstanceDragEnd() {
+    onHostInstanceDragEnd(): void {
       fn.dragOk() && fn.onDragEnd();
     },
 
@@ -623,7 +623,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    onHostComponentDragEnd() {
+    onHostComponentDragEnd(): void {
       fn.dragOk() && fn.onDragEnd();
     },
 
@@ -772,7 +772,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    moveComponent() {
+    moveComponent(): void {
 
       let
         {
@@ -842,7 +842,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    insertComponent() {
+    insertComponent(): void {
 
       const { targetIndex, contentType, dropZone } = stateRef.current.dragContext;
       const record = iceRegistry.recordOf(dropZone.iceId);
@@ -858,7 +858,7 @@ export function Guest(props: GuestProps) {
 
     },
 
-    insertInstance() {
+    insertInstance(): void {
       const { targetIndex, instance, dropZone } = stateRef.current.dragContext;
       const record = iceRegistry.recordOf(dropZone.iceId);
 
@@ -882,7 +882,7 @@ export function Guest(props: GuestProps) {
       }
     },
 
-    onDragEnd() {
+    onDragEnd(): void {
 
       fn.destroySubjects();
 
@@ -900,13 +900,13 @@ export function Guest(props: GuestProps) {
 
     },
 
-    dragleave() {
+    dragleave(): void {
       if (fn.dragOk()) {
         fn.onDragLeave();
       }
     },
 
-    onDragLeave() {
+    onDragLeave(): void {
       setState({
         dragContext: {
           ...stateRef.current.dragContext,
@@ -923,7 +923,7 @@ export function Guest(props: GuestProps) {
       });
     },
 
-    onPermMouseOut() {
+    onPermMouseOut(): void {
       setState({
         ...stateRef.current,
         common: {
@@ -937,7 +937,7 @@ export function Guest(props: GuestProps) {
       });
     },
 
-    onScroll() {
+    onScroll(): void {
       setState({
         dragContext: {
           ...stateRef.current.dragContext,
@@ -955,7 +955,7 @@ export function Guest(props: GuestProps) {
       });
     },
 
-    onScrollStopped() {
+    onScrollStopped(): void {
       const dragContext = stateRef.current.dragContext;
       setState({
         dragContext: {
@@ -1030,11 +1030,11 @@ export function Guest(props: GuestProps) {
 
     },
 
-    onAssetDragEnded() {
+    onAssetDragEnded(): void {
       fn.onDragEnd();
     },
 
-    onSetDropPosition(payload) {
+    onSetDropPosition(payload): void {
       setState({
         ...stateRef.current,
         dragContext: {
@@ -1052,24 +1052,24 @@ export function Guest(props: GuestProps) {
 
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
-    onTrashDrop() {
+    onTrashDrop(): void {
       const { dragContext } = stateRef.current;
       const { id } = dragContext.dragged;
       let { modelId, fieldId, index } = iceRegistry.recordOf(id);
       contentController.deleteItem(modelId, fieldId, index);
     },
 
-    dragOk() {
+    dragOk(): boolean {
       return [
         EditingStatus.SORTING_COMPONENT,
         EditingStatus.PLACING_NEW_COMPONENT,
         EditingStatus.PLACING_DETACHED_ASSET,
         EditingStatus.PLACING_DETACHED_COMPONENT,
-        EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
+        EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
       ].includes(stateRef.current.common.status);
     },
 
-    clearAndListen() {
+    clearAndListen(): void {
       clearAndListen$.next();
       setState({
         ...stateRef.current,
@@ -1135,15 +1135,15 @@ export function Guest(props: GuestProps) {
     }
   };
 
-  function register(payload) {
+  function register(payload): number {
     return ElementRegistry.register(payload);
   }
 
-  function deregister(id: number) {
+  function deregister(id: number): Record {
     return ElementRegistry.deregister(id);
   }
 
-  function onEvent(event: Event, dispatcher: number) {
+  function onEvent(event: Event, dispatcher: number): boolean {
     if (
       persistence.contentReady &&
       stateRef.current.common.inEditMode
@@ -1168,7 +1168,7 @@ export function Guest(props: GuestProps) {
     }
   }
 
-  function scrollToReceptacle(receptacles) {
+  function scrollToReceptacle(receptacles: Record[]): void {
     let elementInView;
     let element;
     elementInView = forEach(receptacles, ({ id }) => {
@@ -1189,8 +1189,8 @@ export function Guest(props: GuestProps) {
     }
   }
 
-  function getHighlighted(dropZones) {
-    return dropZones.reduce((object, { physicalRecordId: id }) => {
+  function getHighlighted(dropZones: DropZone[]): DropZone[] {
+    return dropZones.reduce((object: DropZone, { physicalRecordId: id }) => {
       object[id] = ElementRegistry.getHoverData(id);
       return object;
     }, {});

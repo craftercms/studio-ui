@@ -51,7 +51,7 @@ export function GuestProxy(props) {
 
   useEffect(() => {
 
-    const registerElement = (element: Element) => {
+    const registerElement = (element: Element): void => {
 
       let
         modelId = element.getAttribute('data-craftercms-model-id'),
@@ -71,11 +71,11 @@ export function GuestProxy(props) {
 
     };
 
-    const appendIndex = (index: string | number, value: number) => {
+    const appendIndex = (index: string | number, value: number): string | number => {
       return (typeof index === 'string') ? `${removeLastPiece(index)}.${parseInt(popPiece(index)) + value}` : index + value;
     };
 
-    const generateIndex = (index, value) => {
+    const generateIndex = (index, value): string | number => {
       return (typeof index === 'string') ? `${removeLastPiece(index)}.${value}` : value;
     };
 
@@ -143,7 +143,7 @@ export function GuestProxy(props) {
         .forEach(registerElement)
     );
 
-    const handler = (e: Event) => {
+    const handler = (e: Event): void => {
       let record = ElementRegistry.fromElement(e.currentTarget as Element);
       if (notNullOrUndefined(record)) {
         if (['click', 'dblclick'].includes(e.type)) {

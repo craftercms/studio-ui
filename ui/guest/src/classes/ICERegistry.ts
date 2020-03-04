@@ -144,7 +144,7 @@ export class ICERegistry {
     return this.registry[id];
   }
 
-  isRepeatGroup(id) {
+  isRepeatGroup(id): boolean {
     const { field, index } = this.getReferentialEntries(id);
     return (
       notNullOrUndefined(field) &&
@@ -321,12 +321,12 @@ export class ICERegistry {
 
   }
 
-  findParentValueHolder(modelId) {
+  findParentValueHolder(modelId): void {
 
   }
 
   /* private */
-  checkComponentMovability(entries) {
+  checkComponentMovability(entries): boolean {
     // Can't move if
     // - no other zones
     // - other zones are maxed out
@@ -451,7 +451,7 @@ export class ICERegistry {
   }
 
   /* private */
-  checkRepeatGroupMovability(entries) {
+  checkRepeatGroupMovability(entries): boolean {
     const { model, field, index } = entries;
     return (
       (field?.type === 'repeat') &&

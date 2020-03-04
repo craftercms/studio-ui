@@ -17,6 +17,7 @@
 
 import $ from 'jquery/dist/jquery.slim';
 import { Coordinates } from '../models/Positioning';
+import { CSSProperties } from 'react';
 
 const TOLERANCE_PERCENTS = { x: 5, y: 5 };
 
@@ -33,7 +34,7 @@ export class Markers {
   static draggedElement = null;
   static draggedComponent = null;
 
-  static initDragAndDrop(element: HTMLElement, mousePosition: DOMRect) {
+  static initDragAndDrop(element: HTMLElement, mousePosition: DOMRect): boolean {
 
     // If no valid element hovered
     if (!element) {
@@ -153,7 +154,7 @@ export class Markers {
 
   }
 
-  static markZone(element: HTMLElement) {
+  static markZone(element: HTMLElement): JQuery | false {
 
     // If no valid element hovered
     if (!element) {
@@ -348,7 +349,7 @@ export class Markers {
     return $element.is(selector);
   }
 
-  static calculateDistance(elementData: DOMRect, mouseX: number, mouseY: number) {
+  static calculateDistance(elementData: DOMRect, mouseX: number, mouseY: number): number {
     return Math.sqrt(
       Math.pow(elementData.x - mouseX, 2) +
       Math.pow(elementData.y - mouseY, 2)
@@ -587,7 +588,7 @@ export class Markers {
     }
   }
 
-  static getZoneMarkerLabelStyle(rect: DOMRect) {
+  static getZoneMarkerLabelStyle(rect: DOMRect): CSSProperties {
     const $body = $('body');
     return ((rect.top + $body.scrollTop()) <= 0) ? {
       top: 0,
@@ -597,7 +598,7 @@ export class Markers {
     } : {};
   }
 
-  static getZoneMarkerStyle(rect: DOMRect, padding: number = 0) {
+  static getZoneMarkerStyle(rect: DOMRect, padding: number = 0): CSSProperties {
     const $window = $(window);
     return {
       height: rect.height + padding,
