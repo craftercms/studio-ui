@@ -2401,7 +2401,7 @@ var nodeOpen = false,
                       } else {
                         CStudioAuthoring.SelectedContent.init();
                       }
-                      callback.success(nodeRef);
+                      callback.success && callback.success(nodeRef);
                     },
                     failure: function () {},
                     callingWindow: window
