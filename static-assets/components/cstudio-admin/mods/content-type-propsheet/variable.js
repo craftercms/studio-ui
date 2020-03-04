@@ -14,27 +14,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable = CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable ||  function(fieldName, containerEl)  {
-		this.fieldName = fieldName;
-		this.containerEl = containerEl;
-		return this;
-	}
+CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable = CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable || function (fieldName, containerEl) {
+  this.fieldName = fieldName;
+  this.containerEl = containerEl;
+  return this;
+};
 
 YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable, CStudioAdminConsole.Tool.ContentTypes.PropertyType, {
-	render: function(value, updateFn, fName, itemId, defaultValue, type) {
-		var containerEl = this.containerEl;
-		var valueEl = document.createElement("input");
-		YAHOO.util.Dom.addClass(valueEl, "property-input-"+fName);
-		containerEl.appendChild(valueEl);
-		valueEl.value = value;
-		valueEl.fieldName = this.fieldName;
+  render: function (value, updateFn, fName, itemId, defaultValue, type, disabled) {
+    var containerEl = this.containerEl;
+    var valueEl = document.createElement('input');
+    YAHOO.util.Dom.addClass(valueEl, 'property-input-' + fName);
+    valueEl.disabled = disabled;
+    containerEl.appendChild(valueEl);
+    valueEl.value = value;
+    valueEl.fieldName = this.fieldName;
 
-		if(updateFn) {
-			var updateFieldFn = function(event, el) {
-				updateFn(event, el);
-                var addPostfixes = "";
-                switch (type) {
-                    case  "dropdown":
+    if (updateFn) {
+      var updateFieldFn = function (event, el) {
+        updateFn(event, el);
+        var addPostfixes = '';
+        switch (type) {
+          case  'dropdown':
                     case  "image-picker":
                     case  "video-picker":
                     case  "label":
@@ -78,14 +79,14 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable, CStudi
 				CStudioAdminConsole.Tool.ContentTypes.visualization.render();
 			};
 
-			var checkVarState = function(event, el) {
-				var titleEl = YDom.getElementsByClassName("property-input-title");
-				YAHOO.util.Dom.addClass(titleEl, 'no-update');
+      var checkVarState = function (event, el) {
+        var titleEl = YDom.getElementsByClassName('property-input-title');
+        YAHOO.util.Dom.addClass(titleEl, 'no-update');
 
-				if(this.value == ""){
-					YAHOO.util.Dom.removeClass(titleEl, 'no-update');
-				}
-			}
+        if (this.value == '') {
+          YAHOO.util.Dom.removeClass(titleEl, 'no-update');
+        }
+      };
 
 			YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
             $(valueEl).change(function() {
