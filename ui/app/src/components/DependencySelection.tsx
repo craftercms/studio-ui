@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Item } from '../models/Item';
+import React, { useCallback, useEffect, useState } from 'react';
+import { LegacyItem } from '../models/Item';
 import '../styles/dependency-selection.scss';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -24,7 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
 
 interface DependencySelectionProps {
-  items: Item[];
+  items: LegacyItem[];
   siteId: string;
   onChange: Function;
 }
@@ -37,7 +37,7 @@ interface ResultObject {
 interface SelectionListProps {
   title: any;
   subtitle?: any;
-  items?: Item[];
+  items?: LegacyItem[];
   uris?: [];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
@@ -67,7 +67,7 @@ const CenterCircularProgress = withStyles({
   }
 })(CircularProgress);
 
-const checkState = (items: Item[]) => {
+const checkState = (items: LegacyItem[]) => {
   return (items || []).reduce(
     (table: any, item) => {
       table[item.uri] = true;
@@ -97,7 +97,7 @@ const paths = (checked: any) => (
     .map(([key]) => key)
 );
 
-const selectAll = (setChecked: Function, items: Item[]) => {
+const selectAll = (setChecked: Function, items: LegacyItem[]) => {
   setChecked(items.map(i => i.uri), true);
 };
 

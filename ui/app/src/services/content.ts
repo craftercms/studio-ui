@@ -16,7 +16,7 @@
 
 import { get } from '../utils/ajax';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -28,6 +28,31 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(
     map((xml = '') => new DOMParser().parseFromString(xml, 'text/xml'))
   );
+}
+
+export function getChildrenByPath(site: string, path: string): Observable<any> {
+  const response = {
+    response: {},
+    items: [
+      {
+        id: 'Style',
+        label: 'Style'
+      },
+      {
+        id: 'Health',
+        label: 'Health'
+      },
+      {
+        id: 'Entertainment',
+        label: 'Entertainment'
+      }
+    ]
+  };
+
+  return new Observable((observer: Observer<any>) => {
+    observer.next(response);
+    observer.complete();
+  });
 }
 
 export default {

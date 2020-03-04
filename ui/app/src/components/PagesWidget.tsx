@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -26,6 +26,8 @@ import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { Theme } from '@material-ui/core';
+import { getChildrenByPath } from '../services/content';
+import { Item } from '../models/Item';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -81,22 +83,32 @@ function PagesHeader() {
   )
 }
 
-function PagesBreadcrumbs() {
+interface Breadcrumb {
+  id: string;
+  label: string;
+  path: string;
+}
+
+function PagesBreadcrumbs(props: any) {
   const classes = useStyles({});
+  const { breadcrumb, onBreadcrumbSelected } = props;
   return (
     <section className={classes.pagesBreadcrumbs}>
       <div className={classes.pagesBreadcrumbsUrl}>
-        <Link
-          component="button"
-          variant="body2"
-          underline="always"
-          color="textPrimary"
-          onClick={() => {
-            console.log('home');
-          }}
-        >
-          Home
-        </Link>
+        {
+          breadcrumb.map((item: Breadcrumb) =>
+            <Link
+              component="button"
+              variant="body2"
+              underline="always"
+              color="textPrimary"
+              onClick={() => onBreadcrumbSelected(item)}
+              key={item.id}
+            >
+              {item.label}
+            </Link>
+          )
+        }
       </div>
       <IconButton aria-label="options" className={classes.icon}>
         <MoreVertIcon/>
@@ -108,37 +120,71 @@ function PagesBreadcrumbs() {
   )
 }
 
-function PagesNav() {
+function PagesNav(props: any) {
   const classes = useStyles({});
+  const { items, onItemSelected } = props;
   return (
     <List component="nav" aria-label="pages nav" disablePadding={true}>
-      <ListItem className={classes.pagesNavItem}>
-        <Typography variant="body2">
-          Item 1
-        </Typography>
-        <IconButton aria-label="options" className={classes.icon}>
-          <MoreVertIcon/>
-        </IconButton>
-      </ListItem>
-      <ListItem className={classes.pagesNavItem}>
-        <Typography variant="body2">
-          Item 2
-        </Typography>
-        <IconButton aria-label="options" className={classes.icon}>
-          <MoreVertIcon/>
-        </IconButton>
-      </ListItem>
+      {
+        items.map((item: Partial<Item>) =>
+          <ListItem className={classes.pagesNavItem} key={item.id}>
+            <Typography variant="body2">
+              {item.label}
+            </Typography>
+            <IconButton aria-label="options" className={classes.icon}>
+              <MoreVertIcon/>
+            </IconButton>
+          </ListItem>
+        )
+      }
     </List>
   )
 }
 
-export default function PagesWidget() {
+export default function PagesWidget(props: any) {
   const classes = useStyles({});
+  const { site = 'editorial', path = 'site/website' } = props;
+  const [items, setItems] = useState<Item[]>(null);
+  const [breadcrumb, setBreadcrumb] = useState<Breadcrumb[]>([
+    {
+      id: 'Home',
+      label: 'Home',
+      path: 'home'
+    }
+  ]);
+  const [activePath, setActivePath] = useState<string>(path);
+
+  useEffect(() => {
+    getChildrenByPath(site, activePath).subscribe(
+      (response) => {
+        console.log(response);
+        setItems(response.items);
+      },
+      (error) => {
+        console.log(error);
+      }
+    )
+  }, [site, activePath]);
+
+  const onItemSelected = (item: Item) => {
+    console.log(item);
+    //setBreadcrumb();
+    setActivePath(item.path);
+  };
+
+  const onBreadcrumbSelected = (item: Breadcrumb) => {
+    //setBreadcrumb();
+    //setActivePath(path);
+  };
+
   return (
     <section className={classes.wrapper}>
       <PagesHeader/>
-      <PagesBreadcrumbs/>
-      <PagesNav/>
+      <PagesBreadcrumbs breadcrumb={breadcrumb} onBreadcrumbSelected={onBreadcrumbSelected}/>
+      {
+        items &&
+        <PagesNav items={items} onItemSelected={onItemSelected}/>
+      }
     </section>
   )
 }
