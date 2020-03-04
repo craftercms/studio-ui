@@ -1383,9 +1383,8 @@
               YAHOO.util.Event.stopEvent(evt);
             }
 
-            const objectType = CStudioAdminConsole.Tool.ContentTypes.propertySheet.form.objectType;
 
-            if (field.id === 'file-name' && objectType === 'component') {
+            if (field.id === 'file-name') {
               var switchFileNameEl = YDom.getElementsByClassName('switch-filename', null, listeningEl)[0];
 
               if (!switchFileNameEl) {
@@ -1394,10 +1393,15 @@
 
                 listeningEl.appendChild(switchFileNameEl);
 
+                const newType = listeningEl.field.type === 'file-name' ? 'auto-filename' : 'file-name';
+
+                $(switchFileNameEl).tooltip({
+                  title: formatMessage(contentTypesMessages.switchToMessage, { type: newType })
+                });
+
                 var switchFileNameFn = function () {
-                  CStudioAdminConsole.isDirty = true;
                   CStudioAdminConsole.Tool.ContentTypes.FormDefMain.editField(this.parentNode.field, {
-                    type: this.parentNode.field.type === 'file-name' ? 'auto-filename' : 'file-name'
+                    type: newType
                   });
 
                   CStudioAdminConsole.Tool.ContentTypes.visualization.render();
