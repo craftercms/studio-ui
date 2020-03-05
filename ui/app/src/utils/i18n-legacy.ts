@@ -331,6 +331,10 @@ const contentTypesMessages = defineMessages({
   insertExpressionMessage: {
     id: 'siteConfig.insertExpressionMessage',
     defaultMessage: 'Insert Expression'
+  },
+  switchToMessage: {
+    id: 'siteConfig.switchToMessage',
+    defaultMessage: 'Switch to {type}'
   }
 });
 
