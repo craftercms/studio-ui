@@ -115,6 +115,7 @@
     "HEADER_LABEL": "Über Crafter Studio",
     "STUDIO_INFO": "Crafter Studio Informationen",
     "STUDIO_VERSION_NUMBER": "Studio Versionsnummer",
+    "ATTRIBUTION_PREPEND": "Crafter CMS wird betrieben von",
     "BUILD_NUMBER": "Build ID",
     "BUILD_DATE_TIME": "Build Zeitstempel"
   },

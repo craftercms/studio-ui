@@ -15,20 +15,20 @@
   -->
 
 <div class="about-us-view">
-    <div class="row">
-        <div class="col-sm-12">
-            <h1>{{ 'about.HEADER_LABEL' | translate }}</h1>
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>{{ 'about.HEADER_LABEL' | translate }}</h1>
+    </div>
+    <div class="col-sm-12">
+      <div class="well studio-info">
+        <img id="studio-logo" src="/studio/static-assets/images/logo.svg" alt="Crafter CMS">
+        <div id="studio-data">
+          <p><strong>{{ 'about.STUDIO_VERSION_NUMBER' | translate }}</strong>: {{versionNumber}}</p>
+          <p><strong>{{ 'about.BUILD_NUMBER' | translate }}</strong>: {{aboutStudio.packageBuild}}</p>
+          <p><strong>{{ 'about.BUILD_DATE_TIME' | translate }}</strong>: {{aboutStudio.packageBuildDate | date:'MM-dd-yyyy HH:mm:ss Z'}}</p>
+          <p>{{ 'about.ATTRIBUTION_PREPEND' | translate }} <a href="https://docs.craftercms.org/en/3.1/acknowledgements/index.html">open source software</a>.</p>
         </div>
-        <div class="col-sm-12">
-            <div class="well studio-info">
-                <img id="studio-logo" src="/studio/static-assets/images/logo.svg" alt="Crafter CMS">
-                <div id="studio-data">
-                    <p><strong>{{ 'about.STUDIO_VERSION_NUMBER' | translate }}</strong>: {{versionNumber}}</p>
-                    <p><strong>{{ 'about.BUILD_NUMBER' | translate }}</strong>: {{aboutStudio.packageBuild}}</p>
-                    <p><strong>{{ 'about.BUILD_DATE_TIME' | translate }}</strong>: {{aboutStudio.packageBuildDate | date:'MM-dd-yyyy HH:mm:ss Z'}}</p>
-                </div>
-
-            </div>
-        </div>
-</div>
+      </div>
+    </div>
+  </div>
 </div>
