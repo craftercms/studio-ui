@@ -36,15 +36,18 @@ export function getChildrenByPath(site: string, path: string): Observable<any> {
     items: [
       {
         id: 'Style',
-        label: 'Style'
+        label: 'Style',
+        path: 'Style'
       },
       {
         id: 'Health',
-        label: 'Health'
+        label: 'Health',
+        path: 'Health'
       },
       {
         id: 'Entertainment',
-        label: 'Entertainment'
+        label: 'Entertainment',
+        path: 'Entertainment'
       }
     ]
   };
