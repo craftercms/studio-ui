@@ -24,9 +24,13 @@
     <title>Crafter CMS</title>
     <#-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <#if userEmail??><script type="application/json" id="user">{"firstName":"${userFirstName!""}","lastName":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }</script>
-
+    <#if userEmail??>
+      <script type="application/json" id="user">
+      {"firstName":"${userFirstName!""}","lastName":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }
+      </script>
     </#if>
+
+    <script type="application/json" id="entitlementValidator">${applicationContext.get("crafter.entitlementValidator").getDescription()}</script>
 
     <script>var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };</script>
 

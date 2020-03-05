@@ -116,6 +116,7 @@
     "HEADER_LABEL": "About",
     "STUDIO_INFO": "Crafter Studio Information",
     "STUDIO_VERSION_NUMBER": "Studio Version Number",
+    "ATTRIBUTION_PREPEND": "Crafter CMS is powered by",
     "BUILD_NUMBER": "Build Number",
     "BUILD_DATE_TIME": "Build Date/Time"
   },
