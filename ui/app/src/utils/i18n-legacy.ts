@@ -385,6 +385,14 @@ const words = defineMessages({
   no: {
     id: 'words.no',
     defaultMessage: 'No'
+  },
+  browse: {
+    id: 'words.browse',
+    defaultMessage: 'Browse'
+  },
+  upload: {
+    id: 'words.upload',
+    defaultMessage: 'Upload'
   }
 });
 

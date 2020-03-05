@@ -21,16 +21,20 @@ CStudioForms.Datasources.S3Repo = CStudioForms.Datasources.S3Repo ||
         this.properties = properties;
         this.constraints = constraints;
 
-        for(var i=0; i<properties.length; i++) {
-            if(properties[i].name === "path") {
-                this.path = properties[i].value;
-            }
-            if(properties[i].name === "profileId") {
-                this.profileId = properties[i].value;
-            }
+      for (var i = 0; i < properties.length; i++) {
+        if (properties[i].name === 'path') {
+          this.path = properties[i].value;
         }
+        if (properties[i].name === 'profileId') {
+          this.profileId = properties[i].value;
+        }
+      }
 
-        return this;
+      this.messages = {
+        words: CrafterCMSNext.i18n.messages.words
+      };
+
+      return this;
     };
 
 YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource, {
@@ -62,8 +66,8 @@ YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource
             var addContainerEl = null;
 
             if (!control.addContainerEl) {
-                addContainerEl = document.createElement("div")
-                addContainerEl.create = document.createElement("div");
+              addContainerEl = document.createElement('div');
+              addContainerEl.create = document.createElement('div');
                 addContainerEl.browse = document.createElement("div");
 
                 addContainerEl.appendChild(addContainerEl.create);
@@ -71,26 +75,33 @@ YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource
                 control.containerEl.appendChild(addContainerEl);
 
 
-                YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-                YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
-                YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
+              YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
+              YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
+              YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
 
-                control.addContainerEl = addContainerEl;
-                addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
-                addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
+              control.addContainerEl = addContainerEl;
+              addContainerEl.style.left = control.addButtonEl.offsetLeft + 'px';
+              addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + 'px';
             }
 
-            var newElTitle = 'S3';  //TODO: check how to get DS title
+          var datasourceDef = this.form.definition.datasources,
+            newElTitle = '';
 
-            var createEl = document.createElement("div");
-            YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-            createEl.innerHTML = "Browse - " + newElTitle;
-            control.addContainerEl.create.appendChild(createEl);
+          for (var x = 0; x < datasourceDef.length; x++) {
+            if (datasourceDef[x].id === this.id) {
+              newElTitle = datasourceDef[x].title;
+            }
+          }
 
-            var addContainerEl = control.addContainerEl;
-            YAHOO.util.Event.on(createEl, 'click', function () {
-                control.addContainerEl = null;
-                control.containerEl.removeChild(addContainerEl);
+          var createEl = document.createElement('div');
+          YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
+          createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.browse)} - ${newElTitle}`;
+          control.addContainerEl.create.appendChild(createEl);
+
+          var addContainerEl = control.addContainerEl;
+          YAHOO.util.Event.on(createEl, 'click', function () {
+            control.addContainerEl = null;
+            control.containerEl.removeChild(addContainerEl);
                 CStudioAuthoring.Operations.openS3Browse(_self.profileId,_self.processPathsForMacros( _self.path), "select", true, browseCb);
             }, createEl);
         } else {
