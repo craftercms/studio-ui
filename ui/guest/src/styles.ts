@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import jss from 'jss';
+import jss, { StyleSheet } from 'jss';
 import preset from 'jss-preset-default';
 
-export function appendStyleSheet(styles: CSSStyleSheet): CSSStyleSheet {
+export function appendStyleSheet(styles: StyleSheet): StyleSheet {
 
   const colors = {
     blue: '#007AFF',
@@ -64,14 +64,14 @@ export function appendStyleSheet(styles: CSSStyleSheet): CSSStyleSheet {
 
   jss.setup(preset());
 
-  const stylesheet = jss.createStyleSheet({
+  const stylesheet: StyleSheet = jss.createStyleSheet({
     '@global': {
       '[data-craftercms-model-id][contentEditable="true"]': {
         outlineOffset: 5,
         outline: `2px solid ${colors.blueTint}`,
         '&:focus': {
           outline: `5px solid ${colors.blue}`
-        },
+        }
       },
       '[draggable="true"]': {
         'cursor': 'move !important'
