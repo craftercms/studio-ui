@@ -595,66 +595,76 @@ var nodeOpen = false,
             simpleDialogTypeWARN: "WARN",
             simpleDialogTypeERROR: "ERROR",
 
-            showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className, width, customZIndex) {
+          showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className, width, customZIndex) {
 
-                var dialogId = id;
+            var dialogId = id;
 
-                if(!buttonsArray) {
-                    buttonsArray = [{ text: "OK",  handler:function(){
-                        this.destroy();
-                    },isDefault:false }];
-                };
+            if (!buttonsArray) {
+              buttonsArray = [{
+                text: 'OK',
+                handler: destroyDialog,
+                isDefault: false
+              }];
+            }
 
-                var dialog = new YAHOO.widget.SimpleDialog(dialogId,
-                    {   width: width ? width :"400px",
-                        fixedcenter: true,
-                        visible: false,
-                        draggable: false,
-                        close: false,
-                        modal: true,
-                        text: message,
-                        icon: dialogType,
-                        constraintoviewport: true,
-                        buttons: buttonsArray
-                    });
+            var dialog = new YAHOO.widget.SimpleDialog(dialogId, {
+              width: width ? width : '400px',
+              fixedcenter: true,
+              visible: false,
+              draggable: false,
+              close: false,
+              modal: true,
+              text: message,
+              icon: dialogType,
+              constraintoviewport: true,
+              buttons: buttonsArray
+            });
 
-                    dialog.setHeader(header);
-                    dialog.render(document.body);
+            dialog.setHeader(header);
+            dialog.render(document.body);
 
-                    var bdIcon = dialog.element.getElementsByClassName("fa")[0],
-                        bdHeight,
-                        element = dialog.element.getElementsByClassName("bd")[0],
-                        computedStyle = getComputedStyle(element);
+            var bdIcon = dialog.element.getElementsByClassName("fa")[0],
+              bdHeight,
+              element = dialog.element.getElementsByClassName("bd")[0],
+              computedStyle = getComputedStyle(element);
 
-                    bdHeight = element.clientHeight;  // height with padding
-                    bdHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+            bdHeight = element.clientHeight;  // height with padding
+            bdHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
 
-                    if(dialogType) {
-                        if (bdHeight > bdIcon.offsetHeight) {
-                          bdIcon.style.marginBottom = (bdHeight - 15) + 'px';
-                        }
-                    }
+            if(dialogType) {
+              if (bdHeight > bdIcon.offsetHeight) {
+                bdIcon.style.marginBottom = (bdHeight - 15) + 'px';
+              }
+            }
 
-                    if(className){
-                        dialog.element.firstElementChild.className +=(' '+className);
-                    }
+            if(className){
+              dialog.element.firstElementChild.className +=(' '+className);
+            }
 
-                    dialog.show();
+            dialog.show();
 
-                    if (customZIndex) {
-                      dialog.element.style.setProperty('z-index', customZIndex, 'important');
-                    } else {
-                      dialog.element.style.setProperty('z-index', '1042', 'important');
-                    }
+            if (customZIndex) {
+              dialog.element.style.setProperty('z-index', customZIndex, 'important');
+            } else {
+              dialog.element.style.setProperty('z-index', '1042', 'important');
+            }
 
-                    $(".studioDialog").on("keyup", function(e) {
-                        if (e.keyCode === 27) {	// esc
-                            dialog.hide();
-                            $(document).off("keyup");
-                        }
-                    });
+            function escapeHandler(e) {
+              if (e.key === 'Escape') {
+                e.preventDefault();
+                e.stopPropagation();
+                destroyDialog();
+              }
+            }
 
-            },
+            function destroyDialog() {
+              dialog.destroy();
+              document.removeEventListener('keyup', escapeHandler, true);
+            }
+
+            document.addEventListener('keyup', escapeHandler, true);
+
+          },
 
             createNavBarDropDown: function(opt){
 
