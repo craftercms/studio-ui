@@ -326,7 +326,7 @@ export default function LoginView() {
                   fullWidth
                 >
                   <FormattedMessage
-                    id="loginView.loginButtonLabel"
+                    id="words.submit"
                     defaultMessage="Submit"
                   />
                 </Button>
