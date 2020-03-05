@@ -1288,7 +1288,7 @@ export function Guest(props: GuestProps) {
       }
     });
 
-    const stylesheet = appendStyleSheet({ styles });
+    const stylesheet = appendStyleSheet(styles);
 
     return () => {
       stylesheet.detach();

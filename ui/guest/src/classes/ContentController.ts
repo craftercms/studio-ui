@@ -273,7 +273,7 @@ export class ContentController {
     processFields(instance, contentType.fields);
 
     // Insert in desired position
-    result.splice(targetIndex, 0, instance.craftercms.id);
+    result.splice(targetIndex as number, 0, instance.craftercms.id);
 
     ContentController.models$.next({
       ...models,
@@ -307,7 +307,7 @@ export class ContentController {
     const result = getResult(model, fieldId, targetIndex);
 
     // Insert in desired position
-    result.splice(targetIndex, 0, instance.craftercms.id);
+    result.splice(targetIndex as number, 0, instance.craftercms.id);
 
     ContentController.models$.next({
       ...models,

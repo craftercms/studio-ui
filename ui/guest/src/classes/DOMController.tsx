@@ -250,7 +250,7 @@ export class DOMController {
   static onDragStart({ element }: { element: Element }) {
 
     const zone = this.getZoneFor(element);
-    // Images, links, and selections are draggable
+    // Images, links, annumberd selections are draggable
     // by default in HTML.
     if (!zone) {
       throw new Error(

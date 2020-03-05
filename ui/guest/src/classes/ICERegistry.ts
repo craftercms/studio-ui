@@ -185,7 +185,7 @@ export class ICERegistry {
     return receptacles;
   }
 
-  getRecordReceptacles(id: number): Record[] | number[] {
+  getRecordReceptacles(id: number): number[] {
     const record = this.recordOf(id);
     const { index, field, fieldId, model } = this.getReferentialEntries(record);
     if (isNullOrUndefined(index)) {
