@@ -15,9 +15,11 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { defineMessages, useIntl } from 'react-intl';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import TablePagination from '@material-ui/core/TablePagination';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import PhotoSizeSelectActualIcon from '@material-ui/icons/PhotoSizeSelectActual';
 import Typography from '@material-ui/core/Typography';
@@ -62,8 +64,44 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.08)'
     }
+  },
+  pagination: {
+    marginTop: '20px',
+    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+    '& p': {
+      padding: 0
+    },
+    '& svg': {
+      top: 'inherit'
+    },
+    '& .hidden': {
+      display: 'none'
+    }
+  },
+  toolbar: {
+    padding: 0,
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingLeft: '20px',
+    '& .MuiTablePagination-spacer': {
+      display: 'none'
+    },
+    '& .MuiTablePagination-spacer + p': {
+      display: 'none'
+    }
   }
 }));
+
+const translations = defineMessages({
+  previousPage: {
+    id: 'craftercms.pages.widget.previousPage',
+    defaultMessage: 'previous page'
+  },
+  nextPage: {
+    id: 'craftercms.pages.widget.nextPage',
+    defaultMessage: 'next page'
+  }
+});
 
 function PagesHeader() {
   const classes = useStyles({});
@@ -143,6 +181,7 @@ function PagesNav(props: any) {
 
 export default function PagesWidget(props: any) {
   const classes = useStyles({});
+  const { formatMessage } = useIntl();
   const { site = 'editorial', path = 'site/website' } = props;
   const [items, setItems] = useState<Item[]>(null);
   const [breadcrumb, setBreadcrumb] = useState<Breadcrumb[]>([
@@ -177,6 +216,10 @@ export default function PagesWidget(props: any) {
     //setActivePath(path);
   };
 
+  function onPageChanged(page: number) {
+    console.log(page);
+  }
+
   return (
     <section className={classes.wrapper}>
       <PagesHeader/>
@@ -185,6 +228,22 @@ export default function PagesWidget(props: any) {
         items &&
         <PagesNav items={items} onItemSelected={onItemSelected}/>
       }
+      <TablePagination
+        className={classes.pagination}
+        classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+        component="div"
+        labelRowsPerPage=""
+        count={10}
+        rowsPerPage={10}
+        page={0}
+        backIconButtonProps={{
+          'aria-label': formatMessage(translations.previousPage)
+        }}
+        nextIconButtonProps={{
+          'aria-label': formatMessage(translations.nextPage)
+        }}
+        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(page)}
+      />
     </section>
   )
 }
