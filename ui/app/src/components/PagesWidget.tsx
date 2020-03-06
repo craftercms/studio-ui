@@ -22,6 +22,7 @@ import ListItem from '@material-ui/core/ListItem';
 import TablePagination from '@material-ui/core/TablePagination';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import PhotoSizeSelectActualIcon from '@material-ui/icons/PhotoSizeSelectActual';
+import FlagRoundedIcon from '@material-ui/icons/FlagRounded';
 import PlaceRoundedIcon from '@material-ui/icons/PlaceRounded';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
@@ -36,10 +37,14 @@ import { Item } from '../models/Item';
 import clsx from 'clsx';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Checkbox from '@material-ui/core/Checkbox';
+import { LookupTable } from '../models/LookupTable';
+import Divider from '@material-ui/core/Divider';
 
 const blueColor = '#7E9DBA';
 const grayColor = '#7C7C80';
 const blackColor = '#000000';
+const flagColor = 'rgba(255, 59, 48, 0.5)';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -54,8 +59,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   blackColor: {
     color: blackColor
   },
+  flag: {
+    color: flagColor,
+    fontSize: '1rem',
+    marginLeft: '5px'
+  },
   optionsWrapper: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
+    display: 'flex'
   },
   pagesHeader: {
     display: 'flex',
@@ -87,15 +98,28 @@ const useStyles = makeStyles((theme: Theme) => ({
   pagesBreadcrumbsTypo: {
     fontWeight: 'bold',
     color: grayColor,
-    lineHeight: 1
   },
   pagesNavItem: {
     justifyContent: 'space-between',
     padding: '0px 0px 0px 10px',
     height: '36px',
+    '&.noLeftPadding': {
+      paddingLeft: 0
+    },
     '&:hover': {
       backgroundColor: 'rgba(0, 0, 0, 0.08)'
     }
+  },
+  pagesNavItemText: {
+    color: blueColor,
+    marginRight: 'auto',
+    '&.opacity': {
+      opacity: '0.7'
+    }
+  },
+  pagesNavItemCheckbox: {
+    padding: '6px',
+    color: blueColor
   },
   pagination: {
     marginTop: '10px',
@@ -121,6 +145,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& .MuiTablePagination-spacer + p': {
       display: 'none'
     }
+  },
+  MenuPaper: {
+    width: '182px',
+    '& ul': {
+      padding: 0
+    },
+    '& li': {
+      paddingTop: '10px',
+      paddingBottom: '10px',
+      whiteSpace: 'initial'
+    }
+  },
+  helperText: {
+    padding: '10px 16px 10px 16px',
+    color: '#8E8E93'
   }
 }));
 
@@ -143,8 +182,22 @@ interface PagesHeaderProps {
 
 function PagesHeader(props: PagesHeaderProps) {
   const classes = useStyles({});
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [menu, setMenu] = React.useState({
+    anchorEl: null,
+    type: null
+  });
   const { currentLocale, setCurrentLocale } = props;
+
+  const localeList = [
+    {
+      id: 'en',
+      label: 'English, US (en)'
+    },
+    {
+      id: 'es',
+      label: 'Spanish, Spain (es)'
+    }
+  ];
 
   const currentFlag = (locale: string) => {
     switch (locale) {
@@ -161,7 +214,7 @@ function PagesHeader(props: PagesHeaderProps) {
   };
 
   const changeLocale = (locale: string) => {
-    setAnchorEl(null);
+    setMenu({ ...menu, anchorEl: null });
     setCurrentLocale(locale);
   };
 
@@ -174,22 +227,36 @@ function PagesHeader(props: PagesHeaderProps) {
       <IconButton
         aria-label="language select"
         className={classes.icon}
-        onClick={(event) => setAnchorEl(event.currentTarget)}
+        onClick={(event) => setMenu({ ...menu, anchorEl: event.currentTarget, type: 'language' })}
       >
         {currentFlag(currentLocale)}
       </IconButton>
-      <IconButton aria-label="options" className={classes.icon}>
+      <IconButton
+        aria-label="options"
+        className={classes.icon}
+        onClick={(event) => setMenu({ ...menu, anchorEl: event.currentTarget, type: 'options' })}
+      >
         <MoreVertIcon className={classes.blackColor}/>
       </IconButton>
       <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
+        anchorEl={menu.anchorEl}
+        open={Boolean(menu.anchorEl)}
         onClose={() => {
-          setAnchorEl(null)
+          setMenu({ ...menu, anchorEl: null });
         }}
       >
-        <MenuItem onClick={() => changeLocale('en')}>English, US (en)</MenuItem>
-        <MenuItem onClick={() => changeLocale('es')}>Spanish, Spain (es)</MenuItem>
+        {
+          menu.type === 'language' ? (
+            localeList.map(locale =>
+              <MenuItem key={locale.id} onClick={() => changeLocale(locale.id)}>{locale.label}</MenuItem>
+            )
+          ) : (
+            <MenuItem onClick={() => {
+            }}>
+              option1
+            </MenuItem>
+          )
+        }
       </Menu>
     </header>
   )
@@ -201,9 +268,46 @@ interface Breadcrumb {
   path: string;
 }
 
-function PagesBreadcrumbs(props: any) {
+interface PagesBreadcrumbsProps {
+  breadcrumb: Breadcrumb[];
+  selectMode: boolean;
+  selectedItems: LookupTable<Item>;
+
+  setSelectMode(toggle: boolean): void;
+
+  onBreadcrumbSelected(breadcrumb: Breadcrumb): void;
+
+  terminateSelection(): void;
+
+}
+
+function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
   const classes = useStyles({});
-  const { breadcrumb, onBreadcrumbSelected } = props;
+  const { breadcrumb, onBreadcrumbSelected, selectMode, setSelectMode, terminateSelection, selectedItems } = props;
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const checkSelectedLength = () => {
+    if (selectedItems) {
+      return (
+        <div>
+          <Typography variant="body1" className={classes.helperText}>
+            {Object.values(selectedItems).filter((item: Item | false) => item != false).length} Items Selected.
+          </Typography>
+          <Divider/>
+        </div>
+      )
+    }
+    return null
+  };
+
+  const changeSelectMode = (select: boolean) => {
+    setAnchorEl(null);
+    setSelectMode(select);
+    if (!select) {
+      terminateSelection();
+    }
+  };
+
   return (
     <section className={classes.pagesBreadcrumbs}>
       <Breadcrumbs
@@ -212,51 +316,96 @@ function PagesBreadcrumbs(props: any) {
         classes={{ ol: classes.pagesBreadcrumbsOl, separator: classes.PagesBreadCrumbsSeparator }}
       >
         {
-          breadcrumb.map((item: Breadcrumb) =>
-            <Link
-              key={item.id}
-              color="inherit"
-              component="button"
-              variant="subtitle2"
-              underline="always"
-              TypographyClasses={{ root: classes.pagesBreadcrumbsTypo }}
-              onClick={() => onBreadcrumbSelected(item)}
-            >
-              {item.label}
-            </Link>
-          )
+          breadcrumb.map((item: Breadcrumb, i: number) => {
+            return (breadcrumb.length !== i + 1) ? (
+                <Link
+                  key={item.id}
+                  color="inherit"
+                  component="button"
+                  variant="subtitle2"
+                  underline="always"
+                  TypographyClasses={{ root: classes.pagesBreadcrumbsTypo }}
+                  onClick={() => onBreadcrumbSelected(item)}
+                >
+                  {item.label}
+                </Link>
+              ) :
+              (
+                <Typography key={item.id} variant="subtitle2"
+                            className={classes.pagesBreadcrumbsTypo}>{item.label}</Typography>
+              )
+          })
         }
       </Breadcrumbs>
       <div className={classes.optionsWrapper}>
-        <IconButton aria-label="options" className={clsx(classes.icon, classes.primaryColor)}>
+        <IconButton
+          aria-label="options"
+          className={clsx(classes.icon, classes.primaryColor)}
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+        >
           <MoreVertIcon/>
         </IconButton>
         <IconButton aria-label="search" className={clsx(classes.icon, classes.primaryColor)}>
           <SearchRoundedIcon/>
         </IconButton>
       </div>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        classes={{ paper: classes.MenuPaper }}
+        onClose={() => {
+          setAnchorEl(null);
+        }}
+      >
+        {
+          selectMode && checkSelectedLength()
+        }
+        <MenuItem onClick={() => changeSelectMode(!selectMode)}>
+          {!selectMode ? 'Select' : 'Terminate Selection'}
+        </MenuItem>
+      </Menu>
     </section>
   )
 }
 
 interface PagesNavItemProps {
-  item: Item
+  item: Item;
+  currentLocale: string;
+  selectMode: boolean;
 
   onItemSelected(item: Item): void;
+
+  onSelectItem(item: Item, unselect: boolean): void;
 }
 
 function PagesNavItem(props: PagesNavItemProps) {
   const classes = useStyles({});
-  const { item, onItemSelected } = props;
+  const { item, onItemSelected, currentLocale, selectMode, onSelectItem } = props;
   const [over, setOver] = useState(false);
   return (
     <ListItem
-      className={classes.pagesNavItem}
+      className={clsx(classes.pagesNavItem, selectMode && 'noLeftPadding')}
       onMouseEnter={() => setOver(true)}
       onMouseLeave={() => setOver(false)}
     >
-      <Typography variant="body2" className={classes.primaryColor}>
+      {
+        selectMode &&
+        <Checkbox
+          color="default"
+          className={classes.pagesNavItemCheckbox}
+          onChange={(e) => {
+            onSelectItem(item, e.currentTarget.checked)
+          }}
+          value="primary"
+        />
+      }
+      <Typography variant="body2"
+                  className={clsx(classes.pagesNavItemText, (currentLocale !== item.localeCode) && 'opacity')}>
         {item.label}
+        {
+          (currentLocale === item.localeCode) &&
+          <FlagRoundedIcon className={classes.flag}/>
+        }
       </Typography>
       {
         over &&
@@ -273,13 +422,30 @@ function PagesNavItem(props: PagesNavItemProps) {
   )
 }
 
-function PagesNav(props: any) {
-  const { items, onItemSelected } = props;
+interface PagesNavProps {
+  items: Item[];
+  currentLocale: string;
+  selectMode: boolean;
+
+  onSelectItem(item: Item, unselect: boolean): void;
+
+  onItemSelected(item: Item): void;
+}
+
+function PagesNav(props: PagesNavProps) {
+  const { items, onItemSelected, currentLocale, selectMode, onSelectItem } = props;
   return (
     <List component="nav" aria-label="pages nav" disablePadding={true}>
       {
         items.map((item: Item) =>
-          <PagesNavItem item={item} key={item.id} onItemSelected={onItemSelected}/>
+          <PagesNavItem
+            item={item}
+            key={item.id}
+            onItemSelected={onItemSelected}
+            currentLocale={currentLocale}
+            selectMode={selectMode}
+            onSelectItem={onSelectItem}
+          />
         )
       }
     </List>
@@ -297,20 +463,17 @@ export default function PagesWidget(props: PagesWidgetProps) {
   const { formatMessage } = useIntl();
   const { site = 'editorial', path = 'site/website', locale = 'en' } = props;
   const [currentLocale, setCurrentLocale] = React.useState(locale);
+  const [selectMode, setSelectMode] = React.useState(false);
   const [items, setItems] = useState<Item[]>(null);
   const [breadcrumb, setBreadcrumb] = useState<Breadcrumb[]>([
     {
       id: 'Home',
       label: 'Home',
       path: 'home'
-    },
-    {
-      id: 'Second',
-      label: 'Second',
-      path: 'Second'
     }
   ]);
   const [activePath, setActivePath] = useState<string>(path);
+  const [selectedItems, setSelectedItems] = useState<LookupTable>(null);
 
   useEffect(() => {
     getChildrenByPath(site, activePath).subscribe(
@@ -325,27 +488,53 @@ export default function PagesWidget(props: PagesWidgetProps) {
   }, [site, activePath]);
 
   const onItemSelected = (item: Item) => {
-    console.log(item);
-    //setBreadcrumb();
+    setBreadcrumb([...breadcrumb, item]);
     setActivePath(item.path);
   };
 
   const onBreadcrumbSelected = (item: Breadcrumb) => {
-    //setBreadcrumb();
-    //setActivePath(path);
+    let newBreadcrumb = [...breadcrumb];
+    let i = newBreadcrumb.indexOf(item);
+    newBreadcrumb.splice(i + 1);
+    setBreadcrumb(newBreadcrumb);
+    setActivePath(item.path);
   };
 
-  function onPageChanged(page: number) {
+  const onPageChanged = (page: number) => {
     console.log(page);
-  }
+  };
+
+  const onSelectItem = (item: Item, select: boolean) => {
+    setSelectedItems({ ...selectedItems, [item.id]: select ? item : false })
+  };
+
+  const terminateSelection = () => {
+    setSelectedItems(null);
+  };
 
   return (
     <section className={classes.wrapper}>
-      <PagesHeader currentLocale={currentLocale} setCurrentLocale={setCurrentLocale}/>
-      <PagesBreadcrumbs breadcrumb={breadcrumb} onBreadcrumbSelected={onBreadcrumbSelected}/>
+      <PagesHeader
+        currentLocale={currentLocale}
+        setCurrentLocale={setCurrentLocale}
+      />
+      <PagesBreadcrumbs
+        breadcrumb={breadcrumb}
+        onBreadcrumbSelected={onBreadcrumbSelected}
+        selectMode={selectMode}
+        setSelectMode={setSelectMode}
+        terminateSelection={terminateSelection}
+        selectedItems={selectedItems}
+      />
       {
         items &&
-        <PagesNav items={items} onItemSelected={onItemSelected}/>
+        <PagesNav
+          items={items}
+          onItemSelected={onItemSelected}
+          currentLocale={currentLocale}
+          selectMode={selectMode}
+          onSelectItem={onSelectItem}
+        />
       }
       <TablePagination
         className={classes.pagination}

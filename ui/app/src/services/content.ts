@@ -37,17 +37,26 @@ export function getChildrenByPath(site: string, path: string): Observable<any> {
       {
         id: 'Style',
         label: 'Style',
-        path: 'Style'
+        path: 'Style',
+        localeCode: 'en'
       },
       {
-        id: 'Health',
-        label: 'Health',
-        path: 'Health'
+        id: 'Salud',
+        label: 'Salud',
+        path: 'Salud',
+        localeCode: 'es'
       },
       {
         id: 'Entertainment',
         label: 'Entertainment',
-        path: 'Entertainment'
+        path: 'Entertainment',
+        localeCode: 'en'
+      },
+      {
+        id: 'Cositas',
+        label: 'Español',
+        path: 'Español',
+        localeCode: 'es'
       }
     ]
   };
