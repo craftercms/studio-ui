@@ -1189,8 +1189,8 @@ export function Guest(props: GuestProps) {
     }
   }
 
-  function getHighlighted(dropZones: DropZone[]): DropZone[] {
-    return dropZones.reduce((object: DropZone, { physicalRecordId: id }) => {
+  function getHighlighted(dropZones: DropZone[]): LookupTable<{ id: number, rect: DOMRect, label: string }> {
+    return dropZones.reduce((object, { physicalRecordId: id }) => {
       object[id] = ElementRegistry.getHoverData(id);
       return object;
     }, {});
