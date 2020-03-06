@@ -20,7 +20,8 @@
     i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     contentTypesMessages = i18n.messages.contentTypesMessages,
-    words = i18n.messages.words;
+    words = i18n.messages.words,
+    defaultFields = ['file-name', 'internal-name', 'placeInNav', 'navLabel'];
 
   const WORK_AREA_HTML = '<div id="content-type-canvas"></div><div id="content-type-tools"></div>';
 
@@ -1302,10 +1303,12 @@
        * render a field
        */
       renderField: function (section, field) {
+        const defaultField = defaultFields.includes(field.id);
 
         var fieldContainerEl = document.createElement('div');
 
         YDom.addClass(fieldContainerEl, 'content-type-visual-field-container');
+        defaultField && YDom.addClass(fieldContainerEl, 'default-field');
         section.sectionContainerEl.appendChild(fieldContainerEl);
         field.fieldContainerEl = fieldContainerEl;
         field.section = section;
@@ -1348,6 +1351,13 @@
             if (deleteEl) {
               deleteEl.parentNode.removeChild(deleteEl);
             }
+
+            // remove switchFileName
+            var switchFileNameEl = YDom.getElementsByClassName('switch-filename', null, listeningEl)[0];
+
+            if (switchFileNameEl) {
+              switchFileNameEl.parentNode.removeChild(switchFileNameEl);
+            }
           } else {
             YDom.addClass(listeningEl, 'content-type-visual-field-container-selected');
             CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(listeningEl.field);
@@ -1358,7 +1368,8 @@
             if (!deleteEl) {
               deleteEl = document.createElement('i');
               YDom.addClass(deleteEl, 'deleteControl fa fa-times-circle');
-              listeningEl.appendChild(deleteEl);
+
+              !defaultField && listeningEl.appendChild(deleteEl);
 
               var deleteFieldFn = function (evt) {
                 CStudioAdminConsole.isDirty = true;
@@ -1372,6 +1383,33 @@
               YAHOO.util.Event.stopEvent(evt);
             }
 
+
+            if (field.id === 'file-name') {
+              var switchFileNameEl = YDom.getElementsByClassName('switch-filename', null, listeningEl)[0];
+
+              if (!switchFileNameEl) {
+                switchFileNameEl = document.createElement('i');
+                YDom.addClass(switchFileNameEl, 'switch-filename fa fa-exchange');
+
+                listeningEl.appendChild(switchFileNameEl);
+
+                const newType = listeningEl.field.type === 'file-name' ? 'auto-filename' : 'file-name';
+
+                $(switchFileNameEl).tooltip({
+                  title: formatMessage(contentTypesMessages.switchToMessage, { type: newType })
+                });
+
+                var switchFileNameFn = function () {
+                  CStudioAdminConsole.Tool.ContentTypes.FormDefMain.editField(this.parentNode.field, {
+                    type: newType
+                  });
+
+                  CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+                };
+
+                YAHOO.util.Event.on(switchFileNameEl, 'click', switchFileNameFn);
+              }
+            }
           }
 
         };
@@ -2171,6 +2209,7 @@
       },
 
       renderFieldPropertySheet: function (item, sheetEl) {
+        const defaultField = defaultFields.includes(item.id);
         const controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
           itemPostFixes = CStudioAdminConsole.getPostfixes(item.type, controls),
           showPostFixes = (itemPostFixes && itemPostFixes.length > 0 && (!CStudioAdminConsole.ignorePostfixFields.includes(item.id)));
@@ -2185,15 +2224,20 @@
             item.id = el.value;
           }
         }, false, null, null, item.type);
-        this.createRowFn(CMgs.format(langBundle, 'variableName'),
-          'id', item.id, '', 'variable', sheetEl,
+        this.createRowFn(
+          CMgs.format(langBundle, 'variableName'),
+          'id',
+          item.id,
+          '', 'variable', sheetEl,
           function (e, el) {
             item.id = el.value;
             CStudioAdminConsole.isDirty = true;
           },
           showPostFixes,
           'Postfixes',
-          this.renderPostfixesVariable(item.type));
+          this.renderPostfixesVariable(item.type),
+          null,
+          defaultField);
         this.createRowFn(CMgs.format(langBundle, 'iceGroup'), 'iceGroup', item.iceId, '', 'string', sheetEl, function (e, el) {
           item.iceId = el.value;
           CStudioAdminConsole.isDirty = true;
@@ -2334,7 +2378,7 @@
       /**
        * render a property sheet row
        */
-      createRowFn: function (label, fName, value, defaultValue, type, containerEl, fn, help, helpTitle, helpHTML, typeControl) {
+      createRowFn: function (label, fName, value, defaultValue, type, containerEl, fn, help, helpTitle, helpHTML, typeControl, disabled) {
 
         var itemId = this.itemId;
         var helpIcon = '';
@@ -2391,7 +2435,7 @@
           moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
             try {
               var propControl = new moduleClass(fName, propertyContainerEl, this.self.form, type);
-              propControl.render(value, fn, fName, itemId, defaultValue, typeControl);
+              propControl.render(value, fn, fName, itemId, defaultValue, typeControl, disabled);
             } catch (e) {
             }
           },
@@ -2727,6 +2771,18 @@
       },
 
       /**
+       * edit a field
+       */
+      editField: function (field, update) {
+        CStudioAdminConsole.isDirty = true;
+        var index = this.findFieldIndex(field);
+        field.section.fields[index] = {
+          ...field.section.fields[index],
+          ...update
+        };
+      },
+
+      /**
        * delete a section
        */
       deleteSection: function (section) {
@@ -2735,7 +2791,6 @@
 
         section.form.sections.splice(index, 1);
       },
-
 
       /**
        * determine where in the form a datasource is
