@@ -82,7 +82,7 @@ const messages = defineMessages({
     defaultMessage: 'More info'
   },
   error: {
-    id: 'common.error',
+    id: 'words.error',
     defaultMessage: 'Error'
   }
 });
