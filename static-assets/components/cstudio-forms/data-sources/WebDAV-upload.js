@@ -19,19 +19,23 @@ function(id, form, properties, constraints)  {
    	this.id = id;
    	this.form = form;
    	this.properties = properties;
-   	this.constraints = constraints;
+  this.constraints = constraints;
 
-   	for(var i=0; i<properties.length; i++) {
-   		if(properties[i].name == "repoPath") {
-			this.repoPath = properties[i].value;
-		}
-		if(properties[i].name === "profileId") {
-			this.profileId = properties[i].value;
-		}
-   	}
+  for (var i = 0; i < properties.length; i++) {
+    if (properties[i].name == 'repoPath') {
+      this.repoPath = properties[i].value;
+    }
+    if (properties[i].name === 'profileId') {
+      this.profileId = properties[i].value;
+    }
+  }
 
-	return this;
-}
+  this.messages = {
+    words: CrafterCMSNext.i18n.messages.words
+  };
+
+  return this;
+};
 
 YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormDatasource, {
 	itemsAreContentReferences: true,
@@ -82,18 +86,18 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
 		if(multiple){
 			var addContainerEl = null;
 
-			if(!control.addContainerEl){
-				addContainerEl = document.createElement("div")
-				addContainerEl.create = document.createElement("div");
-				addContainerEl.browse = document.createElement("div");
+			if(!control.addContainerEl) {
+        addContainerEl = document.createElement('div');
+        addContainerEl.create = document.createElement('div');
+        addContainerEl.browse = document.createElement('div');
 
-				addContainerEl.appendChild(addContainerEl.create);
-				addContainerEl.appendChild(addContainerEl.browse);
-				control.containerEl.appendChild(addContainerEl);
+        addContainerEl.appendChild(addContainerEl.create);
+        addContainerEl.appendChild(addContainerEl.browse);
+        control.containerEl.appendChild(addContainerEl);
 
 
-				YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-				YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
+        YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
+        YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
 				YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
 
 				control.addContainerEl = addContainerEl;
@@ -111,9 +115,9 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
 			}
 
 			var createEl = document.createElement("div");
-			YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-			createEl.innerHTML = "Upload - " + newElTitle;
-			control.addContainerEl.create.appendChild(createEl);
+      YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
+      createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(me.messages.words.upload)} - ${newElTitle}`;
+      control.addContainerEl.create.appendChild(createEl);
 
       (function(control, me) {
         var addContainerEl = control.addContainerEl;
