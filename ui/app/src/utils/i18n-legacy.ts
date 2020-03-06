@@ -714,7 +714,7 @@ const adminConfigurationMessages = defineMessages({
   pendingEncryptions: {
     id: 'adminConfigurations.pendingEncryptions',
     defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t}' +
-                    'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
+      'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
   }
 });
 
@@ -756,6 +756,13 @@ const fileNameControlMessages = defineMessages({
   }
 });
 
+const rteControlMessages = defineMessages({
+  escapeScripts: {
+    id: 'rteControlMessages.escapeScripts',
+    defaultMessage: 'Escape Scripts'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -783,5 +790,6 @@ export default {
   globalMenuMessages,
   adminConfigurationMessages,
   encryptToolMessages,
-  fileNameControlMessages
+  fileNameControlMessages,
+  rteControlMessages
 };
