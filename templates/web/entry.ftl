@@ -30,8 +30,6 @@
       </script>
     </#if>
 
-    <script type="application/json" id="entitlementValidator">${applicationContext.get("crafter.entitlementValidator").getDescription()}</script>
-
     <script>var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };</script>
 
     <script>
