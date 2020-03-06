@@ -756,6 +756,13 @@ const fileNameControlMessages = defineMessages({
   }
 });
 
+const rteControlMessages = defineMessages({
+  escapeScripts: {
+    id: 'rteControlMessages.escapeScripts',
+    defaultMessage: 'Escape Scripts'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -783,5 +790,6 @@ export default {
   globalMenuMessages,
   adminConfigurationMessages,
   encryptToolMessages,
-  fileNameControlMessages
+  fileNameControlMessages,
+  rteControlMessages
 };

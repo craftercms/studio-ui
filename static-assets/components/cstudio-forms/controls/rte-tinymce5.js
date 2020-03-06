@@ -21,18 +21,22 @@ function(id, form, owner, properties, constraints, readonly, pencilMode)  {
 	this.errors = [];
 	this.properties = properties;
 	this.constraints = constraints;
-	this.inputEl = null;
-	this.required = false;
-	this.value = "_not-set";
-	this.form = form;
-	this.id = id;
-	this.readonly = readonly;
-	this.rteHeight = 300;
+  this.inputEl = null;
+  this.required = false;
+  this.value = '_not-set';
+  this.form = form;
+  this.id = id;
+  this.readonly = readonly;
+  this.rteHeight = 300;
   this.pencilMode = pencilMode;
-  this.supportedPostFixes = ["_html"];
+  this.supportedPostFixes = ['_html'];
 
-	return this;
-}
+  this.messages = {
+    rteControlMessages: CrafterCMSNext.i18n.messages.rteControlMessages
+  };
+
+  return this;
+};
 
 CStudioForms.Controls.RTETINYMCE5.plugins =  CStudioForms.Controls.RTETINYMCE5.plugins || {};
 
@@ -61,16 +65,16 @@ CStudioAuthoring.Module.requireModule(
 				configuration = "generic";
 
 			for(var i=0; i<config.properties.length; i++) {
-				var prop = config.properties[i];
+        var prop = config.properties[i];
 
-				if(prop.name == "rteConfiguration") {
-					if(prop.value && prop.Value != "") {
-						configuration = prop.value;
-					}
+        if (prop.name == 'rteConfiguration') {
+          if (prop.value && prop.Value != '') {
+            configuration = prop.value;
+          }
 
-					break;
-				}
-			};
+          break;
+        }
+      }
 
 			CStudioForms.Controls.RTEManager.getRteConfiguration(configuration, "no-role-support", {
 				success: function(rteConfig) {
@@ -104,15 +108,17 @@ CStudioAuthoring.Module.requireModule(
 				tinymce.activeEditor.setContent(value, {format: 'raw'});
 			}
 			catch(err) {
-			};
+      }
 
 			this.updateModel(value);
 			this.edited = false;
 		},
 
 		updateModel: function(value) {
-      this.form.updateModel(this.id, value);
-		},
+      const newValue = this.escapeScripts ? value : CStudioForms.Util.unEscapeXml(value);
+
+      this.form.updateModel(this.id, newValue);
+    },
 
 		/**
 		 * get the widget name
@@ -126,18 +132,34 @@ CStudioAuthoring.Module.requireModule(
 		 */
 		getSupportedProperties: function() {
 			return [
-				{ label: formatMessage(messages.width), name: "width", type: "int" },
-        { label: formatMessage(messages.height), name: "height", type: "int" },
-        { label: formatMessage(messages.autoGrow), name: "autoGrow", type: "boolean", defaultValue: "false" },
-				{ label: formatMessage(messages.forceRootBlockP), name: "forceRootBlockPTag", type: "boolean", defaultValue: "true" },
-				{ label: formatMessage(messages.forcePNewLines), name: "forcePTags", type: "boolean", defaultValue: "true" },
-				{ label: formatMessage(messages.forceBRNewLines), name: "forceBRTags", type: "boolean", defaultValue: "false" },
-				{ label: formatMessage(messages.supportedChannels), name: "supportedChannels", type: "supportedChannels" },
-				{ label: formatMessage(messages.RTEConfiguration), name: "rteConfiguration", type: "string", defaultValue: "generic" },
-				{ label: formatMessage(messages.imageManager), name: "imageManager", type: "datasource:image" },
-				{ label: formatMessage(messages.videoManager), name: "videoManager", type: "datasource:video" },
-				{ label: formatMessage(messages.fileManager), name: "fileManager", type: "datasource:item" }
-			];
+        { label: formatMessage(messages.width), name: 'width', type: 'int' },
+        { label: formatMessage(messages.height), name: 'height', type: 'int' },
+        { label: formatMessage(messages.autoGrow), name: 'autoGrow', type: 'boolean', defaultValue: 'false' },
+        {
+          label: formatMessage(messages.forceRootBlockP),
+          name: 'forceRootBlockPTag',
+          type: 'boolean',
+          defaultValue: 'true'
+        },
+        { label: formatMessage(messages.forcePNewLines), name: 'forcePTags', type: 'boolean', defaultValue: 'true' },
+        { label: formatMessage(messages.forceBRNewLines), name: 'forceBRTags', type: 'boolean', defaultValue: 'false' },
+        { label: formatMessage(messages.supportedChannels), name: 'supportedChannels', type: 'supportedChannels' },
+        {
+          label: formatMessage(messages.RTEConfiguration),
+          name: 'rteConfiguration',
+          type: 'string',
+          defaultValue: 'generic'
+        },
+        {
+          label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.rteControlMessages.escapeScripts),
+          name: 'escapeScripts',
+          type: 'boolean',
+          defaultValue: 'true'
+        },
+        { label: formatMessage(messages.imageManager), name: 'imageManager', type: 'datasource:image' },
+        { label: formatMessage(messages.videoManager), name: 'videoManager', type: 'datasource:video' },
+        { label: formatMessage(messages.fileManager), name: 'fileManager', type: 'datasource:item' }
+      ];
 		},
 
 		/**
@@ -205,70 +227,77 @@ CStudioAuthoring.Module.requireModule(
 						break;
 					case "maxlength" :
 						inputEl.maxlength = prop.value;
-						break;
-					case "forcePTags" :
-						var forcePTags = (prop.value == "false") ? false : true;
-						break;
-					case "forceBRTags" :
-						var forceBRTags = (prop.value == "true") ? true : false;
-						break;
-					case "forceRootBlockPTag" :
-						var forceRootBlockPTag = (prop.value == "false") ? false : "p";
-						break;
-				}
+            break;
+          case 'forcePTags' :
+            var forcePTags = (prop.value == 'false') ? false : true;
+            break;
+          case 'forceBRTags' :
+            var forceBRTags = (prop.value == 'true') ? true : false;
+            break;
+          case 'forceRootBlockPTag' :
+            var forceRootBlockPTag = (prop.value == 'false') ? false : 'p';
+            break;
+          case 'escapeScripts' :
+            var escapeScripts = (prop.value == 'true') ? true : false;
+            this.escapeScripts = escapeScripts;
+            break;
+        }
 			}
 
 			templates = rteConfig.templates && rteConfig.templates.template ? rteConfig.templates.template : null;
 
 			// https://www.tiny.cloud/docs/plugins/
       pluginList = rteConfig.plugins;
-      pluginList = this.autoGrow ? pluginList + ' autoresize' : pluginList
+      pluginList = this.autoGrow ? pluginList + ' autoresize' : pluginList;
 
 			toolbarConfig1 = (rteConfig.toolbarItems1 && rteConfig.toolbarItems1.length !=0) ?
-				rteConfig.toolbarItems1 : "bold italic | bullist numlist";
-			toolbarConfig2 = (rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length !=0) ? rteConfig.toolbarItems2 : "";
-			toolbarConfig3 = (rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length !=0) ? rteConfig.toolbarItems3 : "";
-			toolbarConfig4 = (rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length !=0) ? rteConfig.toolbarItems4 : "";
+        rteConfig.toolbarItems1 : 'bold italic | bullist numlist';
+      toolbarConfig2 = (rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length != 0) ? rteConfig.toolbarItems2 : '';
+      toolbarConfig3 = (rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length != 0) ? rteConfig.toolbarItems3 : '';
+      toolbarConfig4 = (rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length != 0) ? rteConfig.toolbarItems4 : '';
 
-			rteStylesheets = ( rteConfig.rteStylesheets && typeof rteConfig.rteStylesheets === 'object' )
-				? rteConfig.rteStylesheets.link : null;
+      rteStylesheets = (rteConfig.rteStylesheets && typeof rteConfig.rteStylesheets === 'object')
+        ? rteConfig.rteStylesheets.link : null;
 
       rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
-			editor = tinymce.init({
-				selector: '#' + rteId,
-				width: _thisControl.rteWidth,
-				height: _thisControl.rteHeight,
-				min_height: _thisControl.rteHeight,
-				theme: 'silver',
+      const extendedValidElements = escapeScripts ? '' : 'script[language|type|src]';
+
+      editor = tinymce.init({
+        selector: '#' + rteId,
+        width: _thisControl.rteWidth,
+        height: _thisControl.rteHeight,
+        min_height: _thisControl.rteHeight,
+        theme: 'silver',
         plugins: pluginList,
-				toolbar1: toolbarConfig1,
-				toolbar2: toolbarConfig2,
+        toolbar1: toolbarConfig1,
+        toolbar2: toolbarConfig2,
 				toolbar3: toolbarConfig3,
 				toolbar4: toolbarConfig4,
 				image_advtab: true,
 				encoding: 'xml',
 				relative_urls : false,
-				remove_script_host : false,
-				convert_urls : false,
-				readonly: _thisControl.readonly,
-				force_p_newlines: forcePTags,
-				force_br_newlines: forceBRTags,
-				forced_root_block: forceRootBlockPTag,
-				remove_trailing_brs: false,
-				media_live_embeds: true,
+        remove_script_host: false,
+        convert_urls: false,
+        readonly: _thisControl.readonly,
+        force_p_newlines: forcePTags,
+        force_br_newlines: forceBRTags,
+        forced_root_block: forceRootBlockPTag,
+        remove_trailing_brs: false,
+        media_live_embeds: true,
         autoresize_on_init: false,
         autoresize_bottom_margin: 0,
+        extended_valid_elements: extendedValidElements,
 
-				menu: {
-					tools: {title: 'Tools', items: 'tinymcespellchecker code acecode wordcount'},
-				},
+        menu: {
+          tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' },
+        },
 
-				automatic_uploads: true,
-				file_picker_types: 'image media file',
-				file_picker_callback: function(cb, value, meta) {
-					// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
-					_thisControl.createControl(cb, meta);
+        automatic_uploads: true,
+        file_picker_types: 'image media file',
+        file_picker_callback: function (cb, value, meta) {
+          // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
+          _thisControl.createControl(cb, meta);
 
 				},
 
@@ -436,17 +465,17 @@ CStudioAuthoring.Module.requireModule(
 
 						var itemEl = document.createElement("div");
 						YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-image-picker-add-container-item');
-						itemEl.innerHTML = el.title;
-						addContainerEl.appendChild(itemEl);
+            itemEl.innerHTML = el.title;
+            addContainerEl.appendChild(itemEl);
 
-						YAHOO.util.Event.on(itemEl, 'click', function() {
-							_self.addContainerEl = null;
-							$('.cstudio-form-control-image-picker-add-container').remove();
+            YAHOO.util.Event.on(itemEl, 'click', function () {
+              _self.addContainerEl = null;
+              $('.cstudio-form-control-image-picker-add-container').remove();
 
-							addFunction(mapDatasource, cb);		//video or image add function
-						}, itemEl);
-					}
-				}
+              addFunction(mapDatasource, cb);		//video or image add function
+            }, itemEl);
+          }
+        };
 				datasourceDef.forEach(addMenuOption);
 
 				// If no datasources for type
@@ -509,9 +538,9 @@ CStudioAuthoring.Module.requireModule(
 			if(datasource && datasource.add) {
 				datasource.add({
 					insertItem: function(fileData) {
-						var cleanUrl = fileData
-						cb(cleanUrl);
-					},
+            var cleanUrl = fileData;
+            cb(cleanUrl);
+          },
 					failure: function(message) {
 						CStudioAuthoring.Operations.showSimpleDialog(
 							"message-dialog",
