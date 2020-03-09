@@ -183,7 +183,7 @@ function PublishDialog(props: PublishDialogProps) {
     setOpen(false);
 
     // call externalClose fn
-    onClose && onClose();
+    onClose?.();
   };
 
   const handleSubmit = () => {
@@ -206,8 +206,8 @@ function PublishDialog(props: PublishDialogProps) {
       (response) => {
         setOpen(false);
         setApiState({ ...apiState, error: false, submitting: false });
-        onSuccess && onSuccess(response);
-        onClose && onClose(response);
+        onSuccess?.(response);
+        onClose?.(response);
       },
       (response) => {
         if (response) {
