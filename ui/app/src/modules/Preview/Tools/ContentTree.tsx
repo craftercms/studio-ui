@@ -270,8 +270,11 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
           <p>{nodes.name}</p>
           {
             over && (nodes.type === 'component' || nodes.id === 'root') &&
-            <IconButton className={classes.options} onMouseOver={(e) => setOverState(e, true)}
-                        onClick={(e) => handleOptions(e, nodes.modelId, nodes.parentId, nodes.embeddedParentPath)}>
+            <IconButton
+              className={classes.options}
+              onMouseOver={(e) => setOverState(e, true)}
+              onClick={(e) => handleOptions(e, nodes.modelId, nodes.parentId, nodes.embeddedParentPath)}
+            >
               <MoreVertIcon/>
             </IconButton>
           }
