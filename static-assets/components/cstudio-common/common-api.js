@@ -664,6 +664,8 @@ var nodeOpen = false,
 
             document.addEventListener('keyup', escapeHandler, true);
 
+            return dialog;
+
           },
 
             createNavBarDropDown: function(opt){
