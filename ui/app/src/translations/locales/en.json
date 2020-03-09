@@ -12,6 +12,7 @@
   "GlobalMenu.Settings": "Account Management",
   "GlobalMenu.SitesEntryLabel": "Sites",
   "GlobalMenu.UsersEntryLabel": "Users",
+  "aboutView.attribution": "Crafter CMS is made possible by these other <a>open source software projects</a>.",
   "adminConfigurations.allEncrypted": "All marked items are already encrypted. The `encrypted` attribute should have a blank value to be marked for encryption (e.g. `encrypted=\"\"`)",
   "adminConfigurations.encryptError": "An error has occurred attempting to encrypt items.",
   "adminConfigurations.encryptMarked": "Encrypt Marked",
