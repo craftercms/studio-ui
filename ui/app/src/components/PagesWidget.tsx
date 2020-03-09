@@ -39,7 +39,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
-import Divider from '@material-ui/core/Divider';
+import CustomMenu, { SectionItem } from './CustomMenu';
 
 const blueColor = '#7E9DBA';
 const grayColor = '#7C7C80';
@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   pagesBreadcrumbsTypo: {
     fontWeight: 'bold',
-    color: grayColor,
+    color: grayColor
   },
   pagesNavItem: {
     justifyContent: 'space-between',
@@ -171,8 +171,115 @@ const translations = defineMessages({
   nextPage: {
     id: 'craftercms.pages.widget.nextPage',
     defaultMessage: 'next page'
+  },
+  itemsSelected: {
+    id: 'craftercms.pages.widget.itemsSelected',
+    defaultMessage: '{count, plural, one {{count} Item selected} other {{count} Items selected}}'
   }
 });
+
+const itemMenuSections = [
+  [
+    {
+      id: 'edit',
+      label: 'Edit'
+    },
+    {
+      id: 'view',
+      label: 'View'
+    },
+    {
+      id: 'newcontent',
+      label: 'New Content'
+    },
+    {
+      id: 'newfolder',
+      label: 'New Folder'
+    }
+  ],
+  [
+    {
+      id: 'delete',
+      label: 'Delete'
+    },
+    {
+      id: 'changeTemplate',
+      label: 'Change Template'
+    }
+  ],
+  [
+    {
+      id: 'cut',
+      label: 'Cut'
+    },
+    {
+      id: 'copy',
+      label: 'Copy'
+    },
+    {
+      id: 'duplicate',
+      label: 'Duplicate'
+    }
+  ],
+  [
+    {
+      id: 'dependencies',
+      label: 'Dependencies'
+    }
+  ],
+  [
+    {
+      id: 'history',
+      label: 'History'
+    },
+    {
+      id: 'traslation',
+      label: 'Traslation'
+    }
+  ]
+];
+
+const itemsSelectedMenu = [
+  [
+    {
+      id: 'itemsSelected',
+      label: '',
+      type: 'text'
+    },
+    {
+      id: 'terminateSelection',
+      label: 'Terminate Selection'
+    }
+  ],
+  [
+    {
+      id: 'cut',
+      label: 'Cut'
+    },
+    {
+      id: 'copy',
+      label: 'Copy'
+    },
+    {
+      id: 'paste',
+      label: 'Paste'
+    },
+    {
+      id: 'duplicate',
+      label: 'Duplicate'
+    },
+    {
+      id: 'delete',
+      label: 'Delete'
+    }
+  ],
+  [
+    {
+      id: 'traslation',
+      label: 'Translation'
+    }
+  ]
+];
 
 interface PagesHeaderProps {
   currentLocale: string;
@@ -270,43 +377,20 @@ interface Breadcrumb {
 
 interface PagesBreadcrumbsProps {
   breadcrumb: Breadcrumb[];
-  selectMode: boolean;
-  selectedItems: LookupTable<Item>;
-
-  setSelectMode(toggle: boolean): void;
 
   onBreadcrumbSelected(breadcrumb: Breadcrumb): void;
 
-  terminateSelection(): void;
+  onOpenBreadcrumbsMenu(element: Element): void;
 
 }
 
 function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
   const classes = useStyles({});
-  const { breadcrumb, onBreadcrumbSelected, selectMode, setSelectMode, terminateSelection, selectedItems } = props;
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const checkSelectedLength = () => {
-    if (selectedItems) {
-      return (
-        <div>
-          <Typography variant="body1" className={classes.helperText}>
-            {Object.values(selectedItems).filter((item: Item | false) => item != false).length} Items Selected.
-          </Typography>
-          <Divider/>
-        </div>
-      )
-    }
-    return null
-  };
-
-  const changeSelectMode = (select: boolean) => {
-    setAnchorEl(null);
-    setSelectMode(select);
-    if (!select) {
-      terminateSelection();
-    }
-  };
+  const {
+    breadcrumb,
+    onBreadcrumbSelected,
+    onOpenBreadcrumbsMenu
+  } = props;
 
   return (
     <section className={classes.pagesBreadcrumbs}>
@@ -341,7 +425,7 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
         <IconButton
           aria-label="options"
           className={clsx(classes.icon, classes.primaryColor)}
-          onClick={(event) => setAnchorEl(event.currentTarget)}
+          onClick={(event) => onOpenBreadcrumbsMenu(event.currentTarget)}
         >
           <MoreVertIcon/>
         </IconButton>
@@ -349,21 +433,6 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
           <SearchRoundedIcon/>
         </IconButton>
       </div>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        classes={{ paper: classes.MenuPaper }}
-        onClose={() => {
-          setAnchorEl(null);
-        }}
-      >
-        {
-          selectMode && checkSelectedLength()
-        }
-        <MenuItem onClick={() => changeSelectMode(!selectMode)}>
-          {!selectMode ? 'Select' : 'Terminate Selection'}
-        </MenuItem>
-      </Menu>
     </section>
   )
 }
@@ -376,11 +445,13 @@ interface PagesNavItemProps {
   onItemSelected(item: Item): void;
 
   onSelectItem(item: Item, unselect: boolean): void;
+
+  onOpenItemMenu(element: Element): void;
 }
 
 function PagesNavItem(props: PagesNavItemProps) {
   const classes = useStyles({});
-  const { item, onItemSelected, currentLocale, selectMode, onSelectItem } = props;
+  const { item, onItemSelected, currentLocale, selectMode, onSelectItem, onOpenItemMenu } = props;
   const [over, setOver] = useState(false);
   return (
     <ListItem
@@ -399,18 +470,21 @@ function PagesNavItem(props: PagesNavItemProps) {
           value="primary"
         />
       }
-      <Typography variant="body2"
-                  className={clsx(classes.pagesNavItemText, (currentLocale !== item.localeCode) && 'opacity')}>
+      <Typography
+        variant="body2"
+        className={clsx(classes.pagesNavItemText, (currentLocale !== item.localeCode) && 'opacity')}
+      >
         {item.label}
         {
-          (currentLocale === item.localeCode) &&
+          (currentLocale !== item.localeCode) &&
           <FlagRoundedIcon className={classes.flag}/>
         }
       </Typography>
       {
         over &&
         <div className={classes.optionsWrapper}>
-          <IconButton aria-label="options" className={classes.icon}>
+          <IconButton aria-label="options" className={classes.icon}
+                      onClick={(event) => onOpenItemMenu(event.currentTarget)}>
             <MoreVertIcon/>
           </IconButton>
           <IconButton aria-label="options" className={classes.icon} onClick={() => onItemSelected(item)}>
@@ -430,10 +504,12 @@ interface PagesNavProps {
   onSelectItem(item: Item, unselect: boolean): void;
 
   onItemSelected(item: Item): void;
+
+  onOpenItemMenu(element: Element): void;
 }
 
 function PagesNav(props: PagesNavProps) {
-  const { items, onItemSelected, currentLocale, selectMode, onSelectItem } = props;
+  const { items, onItemSelected, currentLocale, selectMode, onSelectItem, onOpenItemMenu } = props;
   return (
     <List component="nav" aria-label="pages nav" disablePadding={true}>
       {
@@ -445,6 +521,7 @@ function PagesNav(props: PagesNavProps) {
             currentLocale={currentLocale}
             selectMode={selectMode}
             onSelectItem={onSelectItem}
+            onOpenItemMenu={onOpenItemMenu}
           />
         )
       }
@@ -474,6 +551,11 @@ export default function PagesWidget(props: PagesWidgetProps) {
   ]);
   const [activePath, setActivePath] = useState<string>(path);
   const [selectedItems, setSelectedItems] = useState<LookupTable>(null);
+  const [menu, setMenu] = useState({
+    sections: [],
+    anchorEl: null
+  });
+
 
   useEffect(() => {
     getChildrenByPath(site, activePath).subscribe(
@@ -508,8 +590,52 @@ export default function PagesWidget(props: PagesWidgetProps) {
     setSelectedItems({ ...selectedItems, [item.id]: select ? item : false })
   };
 
-  const terminateSelection = () => {
-    setSelectedItems(null);
+  const onMenuItemClicked = (section: SectionItem) => {
+    if (section.id === 'select') {
+      setSelectMode(true);
+      setMenu({
+        ...menu,
+        sections: itemsSelectedMenu
+      });
+    } else if (section.id === 'terminateSelection') {
+      setSelectMode(false);
+      setSelectedItems(null);
+      setMenu({
+        ...menu,
+        anchorEl: null
+      });
+    }
+  };
+
+  const onOpenBreadcrumbsMenu = (element: Element) => {
+    //{Object.values(selectedItems).filter((item: Item | false) => item !== false).length} Items Selected.
+    if (selectMode) {
+      setMenu({
+        sections: itemsSelectedMenu,
+        anchorEl: element
+      });
+    } else {
+      setMenu({
+        sections: [
+          ...itemMenuSections,
+          [
+            {
+              id: 'select',
+              label: 'Select'
+            }
+          ]
+        ],
+        anchorEl: element
+      });
+    }
+
+  };
+
+  const onOpenItemMenu = (element: Element) => {
+    setMenu({
+      sections: itemMenuSections,
+      anchorEl: element
+    });
   };
 
   return (
@@ -521,10 +647,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
       <PagesBreadcrumbs
         breadcrumb={breadcrumb}
         onBreadcrumbSelected={onBreadcrumbSelected}
-        selectMode={selectMode}
-        setSelectMode={setSelectMode}
-        terminateSelection={terminateSelection}
-        selectedItems={selectedItems}
+        onOpenBreadcrumbsMenu={onOpenBreadcrumbsMenu}
       />
       {
         items &&
@@ -534,6 +657,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
           currentLocale={currentLocale}
           selectMode={selectMode}
           onSelectItem={onSelectItem}
+          onOpenItemMenu={onOpenItemMenu}
         />
       }
       <TablePagination
@@ -551,6 +675,16 @@ export default function PagesWidget(props: PagesWidgetProps) {
           'aria-label': formatMessage(translations.nextPage)
         }}
         onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(page)}
+      />
+      <CustomMenu
+        anchorEl={menu.anchorEl}
+        open={Boolean(menu.anchorEl)}
+        classes={{ paper: classes.MenuPaper, helperText: classes.helperText }}
+        onClose={() => {
+          setMenu({ ...menu, anchorEl: null });
+        }}
+        sections={menu.sections}
+        onMenuItemClicked={onMenuItemClicked}
       />
     </section>
   )
