@@ -765,6 +765,13 @@ const fileNameControlMessages = defineMessages({
   }
 });
 
+const ossAttribution = defineMessages({
+  attribution: {
+    id: 'aboutView.attribution',
+    defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+  }
+});
+
 const rteControlMessages = defineMessages({
   escapeScripts: {
     id: 'rteControlMessages.escapeScripts',
@@ -799,6 +806,8 @@ export default {
   globalMenuMessages,
   adminConfigurationMessages,
   encryptToolMessages,
+  fileNameControlMessages,
+  ossAttribution
   fileNameControlMessages,
   rteControlMessages
 };
