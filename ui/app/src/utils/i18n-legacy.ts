@@ -760,6 +760,10 @@ const rteControlMessages = defineMessages({
   escapeScripts: {
     id: 'rteControlMessages.escapeScripts',
     defaultMessage: 'Escape Scripts'
+  },
+  requiredField: {
+    id: 'rteControlMessages.requiredField',
+    defaultMessage: 'Field is Required'
   }
 });
 

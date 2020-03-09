@@ -31,9 +31,9 @@ CStudioForms.Controls.RTETINYMCE5 = CStudioForms.Controls.RTETINYMCE5 ||
     this.pencilMode = pencilMode;
     this.supportedPostFixes = ['_html'];
 
-    this.messages = {
-      rteControlMessages: CrafterCMSNext.i18n.messages.rteControlMessages
-    };
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.messages = CrafterCMSNext.i18n.messages.rteControlMessages;
+    this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
 
     return this;
   };
@@ -47,11 +47,7 @@ CStudioAuthoring.Module.requireModule(
   {
     moduleLoaded: function () {
 
-      const YDom = YAHOO.util.Dom,
-        i18n = CrafterCMSNext.i18n,
-        formatMessage = i18n.intl.formatMessage,
-        messages = i18n.messages.contentTypesMessages;
-
+      const YDom = YAHOO.util.Dom;
       YAHOO.extend(CStudioForms.Controls.RTETINYMCE5, CStudioForms.CStudioFormField, {
 
         getLabel: function () {
@@ -132,43 +128,64 @@ CStudioAuthoring.Module.requireModule(
          */
         getSupportedProperties: function () {
           return [
-            { label: formatMessage(messages.width), name: 'width', type: 'int' },
-            { label: formatMessage(messages.height), name: 'height', type: 'int' },
-            { label: formatMessage(messages.autoGrow), name: 'autoGrow', type: 'boolean', defaultValue: 'false' },
+            { label: this.formatMessage(this.contentTypesMessages.width), name: 'width', type: 'int' },
+            { label: this.formatMessage(this.contentTypesMessages.height), name: 'height', type: 'int' },
             {
-              label: formatMessage(messages.forceRootBlockP),
+              label: this.formatMessage(this.contentTypesMessages.autoGrow),
+              name: 'autoGrow',
+              type: 'boolean',
+              defaultValue: 'false'
+            },
+            {
+              label: this.formatMessage(this.contentTypesMessages.forceRootBlockP),
               name: 'forceRootBlockPTag',
               type: 'boolean',
               defaultValue: 'true'
             },
             {
-              label: formatMessage(messages.forcePNewLines),
+              label: this.formatMessage(this.contentTypesMessages.forcePNewLines),
               name: 'forcePTags',
               type: 'boolean',
               defaultValue: 'true'
             },
             {
-              label: formatMessage(messages.forceBRNewLines),
+              label: this.formatMessage(this.contentTypesMessages.forceBRNewLines),
               name: 'forceBRTags',
               type: 'boolean',
               defaultValue: 'false'
             },
-            { label: formatMessage(messages.supportedChannels), name: 'supportedChannels', type: 'supportedChannels' },
             {
-              label: formatMessage(messages.RTEConfiguration),
+              label: this.formatMessage(this.contentTypesMessages.supportedChannels),
+              name: 'supportedChannels',
+              type: 'supportedChannels'
+            },
+            {
+              label: this.formatMessage(this.contentTypesMessages.RTEConfiguration),
               name: 'rteConfiguration',
               type: 'string',
               defaultValue: 'generic'
             },
             {
-              label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.rteControlMessages.escapeScripts),
+              label: this.formatMessage(this.messages.escapeScripts),
               name: 'escapeScripts',
               type: 'boolean',
               defaultValue: 'true'
             },
-            { label: formatMessage(messages.imageManager), name: 'imageManager', type: 'datasource:image' },
-            { label: formatMessage(messages.videoManager), name: 'videoManager', type: 'datasource:video' },
-            { label: formatMessage(messages.fileManager), name: 'fileManager', type: 'datasource:item' }
+            {
+              label: this.formatMessage(this.contentTypesMessages.imageManager),
+              name: 'imageManager',
+              type: 'datasource:image'
+            },
+            {
+              label: this.formatMessage(this.contentTypesMessages.videoManager),
+              name: 'videoManager',
+              type: 'datasource:video'
+            },
+            {
+              label: this.formatMessage(this.contentTypesMessages.fileManager),
+              name: 'fileManager',
+              type: 'datasource:item'
+            }
           ];
         },
 
