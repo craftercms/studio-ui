@@ -46,13 +46,13 @@ function moduleLoaded() {
   CStudioAuthoring.Utils.addCss("/static-assets/themes/cstudioTheme/css/template-editor.css");
   CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/ace/ext-language_tools.js");
 
-  CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/admin-configurations.css");
+  CStudioAuthoring.Utils.addCss('/static-assets/components/cstudio-admin/mods/admin-configurations.css');
   CStudioAdminConsole.Tool.AdminConfig = CStudioAdminConsole.Tool.AdminConfig || function (config, el) {
     this.containerEl = el;
     this.config = config;
     this.types = [];
     return this;
-  }
+  };
 
   /**
    * Overarching class that drives the content type tools
@@ -91,26 +91,33 @@ function moduleLoaded() {
         containerEl = document.getElementById("config-area");
 
       containerEl.innerHTML =
-        "<div class='configuration-window'>" +
-        "<p id='activeEnvironment' class='hide'><strong>Active Environment:</strong> <span id='active-environment-value'>" + this.environment + "</span></p>" +
-        "<select id='config-list'>" +
-        " <option value='' >" + CMgs.format(langBundle, "confTabSelectConf") + "</option>" +
-        "</select>" +
-        "<div id='edit-area'>" +
-        "<div id='menu-area'>" +
-        "<div id='config-description'>" +
-        "</div>" +
-        "<div id='config-buttons'>" +
-        "</div>" +
-        "</div>" +
-        "<div id='content-area'>" +
-        "<div id='edit-window'>" +
-        "</div>" +
-        "<div id='sample-window'>" +
-        "</div>" +
-        "</div>" +
-        "</div>" +
-        "</div>";
+        '<div class=\'configuration-window\'>' +
+        /**/'<p id=\'activeEnvironment\' class=\'hide\'><strong>Active Environment:</strong> <span id=\'active-environment-value\'>' + this.environment + '</span></p>' +
+        /**/'<select id=\'config-list\'>' +
+        /****/' <option value=\'\' >' + CMgs.format(langBundle, 'confTabSelectConf') + '</option>' +
+        /**/'</select>' +
+        /**/'<div id=\'edit-area\'>' +
+        /****/'<div id=\'menu-area\'>' +
+        /******/'<div id=\'config-description\'>' +
+        /******/'</div>' +
+        /******/'<div id=\'config-buttons\'>' +
+        /******/'</div>' +
+        /****/'</div>' +
+        /****/'<div id=\'content-area\'>' +
+        /******/'<div id=\'edit-window\'>' +
+        /******/'</div>' +
+        /******/'<div id=\'sample-window\'>' +
+        /******/'</div>' +
+        /****/'</div>' +
+        /**/'</div>' +
+        /**/'<div id=\'encryptHintText\' style=\'display: none;\'>' +
+        /****/'<i class="fa fa-info-circle" aria-hidden="true"></i>' +
+        /****/'<div class="hint">' +
+        /******/`<h2 class="title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
+        /******/`<p>${formatMessage(adminConfigurationMessages.encryptHint)}</p>` +
+        /****/'</div>' +
+        /**/'</div>' +
+        '</div>';
       // set editor for configuration file
       var editorContainerEl = document.getElementById("edit-window");
       var editorEl = this.setEditor(editorContainerEl, false);
@@ -134,13 +141,13 @@ function moduleLoaded() {
         editAreaEl,
         editor: editorEl,
         sampleEditor: sampleEditorEl
-      }
+      };
 
       this.loadConfigFiles();
 
-      amplify.subscribe("HISTORY_REVERT", function () {
+      amplify.subscribe('HISTORY_REVERT', function () {
         self.loadSelectedConfig();
-      })
+      });
 
       // hide display area by default
       editAreaEl.style.display = 'none';
@@ -236,7 +243,7 @@ function moduleLoaded() {
         }
         YAHOO.util.Connect.asyncRequest('GET', url, {
           success: function (response) {
-            var responseObj = eval('(' + response.responseText + ')')
+            var responseObj = eval('(' + response.responseText + ')');
             editor.setValue(responseObj.content);
             editor.clearSelection(); // This will remove the highlight over the text
             CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
@@ -302,10 +309,12 @@ function moduleLoaded() {
         }
 
         CStudioAdminConsole.CommandBar.show();
+        $('#encryptHintText').show();
 
       } else {
         editAreaEl.style.display = 'none';
         CStudioAdminConsole.CommandBar.hide();
+        $('#encryptHintText').hide();
       }
     },
 
@@ -346,6 +355,7 @@ function moduleLoaded() {
     addButtons: function (containerEl, itemSelectEl, editor) {
 
       containerEl.innerHTML =
+        '<a href="#" id="encryptHint" class="hint-btn"><i class="fa fa-question-circle-o" aria-hidden="true"></i></a>' +
         '<button id="encryptButton" class="btn btn-default">' + formatMessage(adminConfigurationMessages.encryptMarked) + '</button> ' +
         `<button type="submit" id="view-sample-button" class="btn btn-primary">${CMgs.format(formsLangBundle, 'viewSample')}</button>` +
         `<button type="submit" id="hide-sample-button" class="btn btn-primary">${CMgs.format(formsLangBundle, 'hideSample')}</button>`;
@@ -534,10 +544,30 @@ function moduleLoaded() {
             showErrorDialog(errMessage);
           }
 
-        } catch(e) {
+        } catch (e) {
           showErrorDialog(e.message);
         }
 
+      });
+
+      // Styles are inline because the dialog its not at admin-config container level.
+      $('#encryptHint').click((e) => {
+        e.preventDefault();
+        CStudioAuthoring.Operations.showSimpleDialog(
+          'error-dialog',
+          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+          formatMessage(adminConfigurationMessages.encryptMarked),
+          '<div style="display: flex;">' +
+          '<i class="fa fa-info-circle" aria-hidden="true" style="font-size: 20px; color: #5cc7fa; margin-right: 10px;"></i>' +
+          `<p style="padding: 0; margin: 0">${formatMessage(adminConfigurationMessages.encryptHint)}</p></div>`,
+          [{
+            text: CMgs.format(formsLangBundle, 'Ok'), handler: function () {
+              this.destroy();
+            }, isDefault: false
+          }],
+          null,
+          'studioDialog',
+        );
       });
 
     },
@@ -641,6 +671,6 @@ function showErrorDialog(message){
     YAHOO.widget.SimpleDialog.ICON_BLOCK,
     "studioDialog"
   );
-};
+}
 
 }) ();

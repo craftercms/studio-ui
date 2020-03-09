@@ -75,13 +75,37 @@
     float: left;
     height: 100%;
     width: 45%;
-    margin: 5px 0 5px 0;
+  margin: 5px 0 5px 0;
 }
 
 #sample-text {
-	height: 600px;
+  height: 600px;
 }
 
-#edit-window .CodeMirror pre, #sample-window .CodeMirror pre{
-    overflow: initial;
+#edit-window .CodeMirror pre, #sample-window .CodeMirror pre {
+  overflow: initial;
+}
+
+.hint-btn {
+  padding: 6px;
+  vertical-align: middle;
+}
+
+.hint-btn i.fa, #encryptHintText i {
+  font-size: 20px;
+  color: #5cc7fa;
+}
+
+#encryptHintText {
+  width: 95%;
+  display: flex;
+}
+
+#encryptHintText i {
+  margin-right: 10px;
+}
+
+#encryptHintText .hint .title {
+  font-size: 14px;
+  margin: 2px 0 0;
 }
