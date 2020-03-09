@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
@@ -26,6 +26,8 @@ import { getItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
+import { APIError } from '../models/GlobalState';
+import ErrorDialog from './SystemStatus/ErrorDialog';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -65,6 +67,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     scheduling: null
   });
 
+  const [error, setError] = useState<APIError>(null);
 
   //Effect used to open the publish Dialog
   useEffect(() => {
@@ -73,14 +76,20 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       if (embeddedParentPath) path = models[parentId].craftercms.path;
       getItem(site, path).subscribe(
         (item) => {
-          setPublishDialog({ item })
+          setPublishDialog({ item });
         },
-        (error) => {
-          console.log(error)
+        ({ response }) => {
+          //TODO: I'm wrapping the API response as a API2 response
+          const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+          setError(error);
         }
       );
     }
   }, [models, modelId, setPublishDialog, site, embeddedParentPath, parentId, publishDialog.item]);
+
+  const onErrorClose = () => {
+    setError(null);
+  };
 
   const handleEdit = (type: string) => {
     handleClose();
@@ -154,7 +163,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          (!publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
+          (publishDialog.item && !publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
           <MenuItem onClick={() => handleEdit('schedule')}>
             <FormattedMessage
               id="previewToolBar.menu.schedule"
@@ -163,7 +172,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           </MenuItem>
         }
         {
-          (!publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
+          (publishDialog.item && !publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
           <MenuItem onClick={() => handleEdit('publish')}>
             <FormattedMessage
               id="previewToolBar.menu.publish"
@@ -228,6 +237,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           onSuccess={onSuccessPublish}
           onClose={onClosePublish}
         />
+      }
+      {
+        error &&
+        <ErrorDialog error={error} onClose={onErrorClose}/>
       }
     </>
   )
