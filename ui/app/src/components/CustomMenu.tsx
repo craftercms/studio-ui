@@ -46,27 +46,27 @@ export default function CustomMenu(props: CustomMenuProps) {
     <Menu
       anchorEl={anchorEl}
       open={open}
-      classes={{ paper: classes.paper }}
+      classes={{ paper: classes?.paper }}
       onClose={onClose}
     >
       {
         sections.map((section: any, i: number) =>
-          section.map((SectionItem: SectionItem, y: number) =>
-            (SectionItem.type === 'text') ? (
-              SectionItem.label ? (
+          section.map((sectionItem: SectionItem, y: number) =>
+            (sectionItem.type === 'text') ? (
+              sectionItem.label ? (
                 <div>
                   <Typography variant="body1" className={classes.helperText}>
-                    {SectionItem.label}
+                    {sectionItem.label}
                   </Typography>
                   <Divider/>
                 </div>
               ) : null
             ) : (
               <MenuItem
-                divider={!!((i !== sections.length - 1) && (y === section.length - 1))}
-                onClick={() => onMenuItemClicked(SectionItem)}
+                divider={(i !== sections.length - 1) && (y === section.length - 1)}
+                onClick={() => onMenuItemClicked(sectionItem)}
               >
-                {SectionItem.label}
+                {sectionItem.label}
               </MenuItem>
             )
           )
