@@ -12,6 +12,7 @@
   "GlobalMenu.Settings": "계정 관리",
   "GlobalMenu.SitesEntryLabel": "사이트",
   "GlobalMenu.UsersEntryLabel": "사용자",
+  "aboutView.attribution": "Crafter CMS는 여러가지 <a>Open Source Software Projects</a>와 연동하여 기능합니다",
   "adminConfigurations.allEncrypted": "표시된 모든 항목은 이미 암호화되어 있습니다. `encrypted` 속성은 암호화로 표시 될 빈 값을 가져야합니다 (예: `encrypted=\"\"`)",
   "adminConfigurations.encryptError": "항목을 암호화하는 중 오류가 발생했습니다.",
   "adminConfigurations.encryptMarked": "표시된 암호화",

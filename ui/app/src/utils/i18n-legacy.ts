@@ -714,7 +714,7 @@ const adminConfigurationMessages = defineMessages({
   pendingEncryptions: {
     id: 'adminConfigurations.pendingEncryptions',
     defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t}' +
-      'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
+                    'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
   }
 });
 
@@ -767,6 +767,13 @@ const rteControlMessages = defineMessages({
   }
 });
 
+const ossAttribution = defineMessages({
+  attribution: {
+    id: 'aboutView.attribution',
+    defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -796,4 +803,6 @@ export default {
   encryptToolMessages,
   fileNameControlMessages,
   rteControlMessages
+  fileNameControlMessages,
+  ossAttribution
 };

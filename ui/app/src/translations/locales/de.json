@@ -12,6 +12,7 @@
   "GlobalMenu.Settings": "Kontoverwaltung",
   "GlobalMenu.SitesEntryLabel": "Websites",
   "GlobalMenu.UsersEntryLabel": "Benutzer",
+  "aboutView.attribution": "Crafter CMS wird durch diese anderen <a>Quelloffene Software projekte</a> ermöglicht.",
   "adminConfigurations.allEncrypted": "Alle markierten Elemente sind bereits verschlüsselt. Das Attribut \"encrypted\" sollte einen leeren Wert haben, der für die Verschlüsselung markiert werden soll (z.B. `encrypted=\"\"`).",
   "adminConfigurations.encryptError": "Beim Versuch, Elemente zu verschlüsseln, ist ein Fehler aufgetreten.",
   "adminConfigurations.encryptMarked": "Markierte verschlüsseln",

@@ -464,7 +464,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         var item = items[i];
         if(item.key == key){
           successful = false;
-          message = `"The item "${value}" already exists."`;
+          message = `The item "${value}" already exists.`;
           break;
         }
       }
@@ -547,18 +547,24 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     this.showValidationMessageTimeout = setTimeout(() => {
       const CMgs = CStudioAuthoring.Messages;
       const langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
-      CStudioAuthoring.Operations.showSimpleDialog(
+      const dialog = CStudioAuthoring.Operations.showSimpleDialog(
         `message-dialog-${CStudioAuthoring.Utils.getScopedInt()}`,
         CStudioAuthoring.Operations.simpleDialogTypeINFO,
         CMgs.format(langBundle, 'notification'),
-        (this.showValidationMessageMessages.length > 1)
-          ? `• ${this.showValidationMessageMessages.join('<br/>• ')}`
-          : message,
+        (
+          (this.showValidationMessageMessages.length > 1)
+            ? `• ${this.showValidationMessageMessages.join('<br/>• ')}`
+            : message
+        ),
         null,
         YAHOO.widget.SimpleDialog.ICON_BLOCK,
         'studioDialog'
       );
       this.showValidationMessageMessages = [];
+      $(dialog.body).css({
+        maxHeight: 200,
+        overflow: 'auto'
+      });
     }, 50);
   },
 
