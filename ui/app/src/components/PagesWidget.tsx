@@ -39,6 +39,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
 import CustomMenu, { SectionItem } from './CustomMenu';
 import ErrorState from './ErrorState';
+import SearchBar from './SearchBar';
 
 const blueColor = '#7E9DBA';
 const grayColor = '#7C7C80';
@@ -87,6 +88,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   pagesBreadcrumbsOl: {
     display: 'flex',
     alignItems: 'center',
+    padding: '9px 0',
     '& li': {
       lineHeight: 1
     }
@@ -344,11 +346,13 @@ interface Breadcrumb {
 
 interface PagesBreadcrumbsProps {
   breadcrumb: Breadcrumb[];
+  keyword: string;
 
   onBreadcrumbSelected(breadcrumb: Breadcrumb): void;
 
   onOpenBreadcrumbsMenu(element: Element): void;
 
+  onSearch(keyword: string): void;
 }
 
 function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
@@ -356,50 +360,74 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
   const {
     breadcrumb,
     onBreadcrumbSelected,
-    onOpenBreadcrumbsMenu
+    onOpenBreadcrumbsMenu,
+    keyword,
+    onSearch
   } = props;
+  const [showSearch, setShowSearch] = useState(false);
+
+  const onChange = (keyword: string) => {
+    if (keyword === '') {
+      setShowSearch(false);
+    }
+    onSearch(keyword);
+  };
 
   return (
     <section className={classes.pagesBreadcrumbs}>
-      <Breadcrumbs
-        aria-label="breadcrumb"
-        separator={<NavigateNextIcon fontSize="small"/>}
-        classes={{ ol: classes.pagesBreadcrumbsOl, separator: classes.PagesBreadCrumbsSeparator }}
-      >
-        {
-          breadcrumb.map((item: Breadcrumb, i: number) => {
-            return (breadcrumb.length !== i + 1) ? (
-                <Link
-                  key={item.id}
-                  color="inherit"
-                  component="button"
-                  variant="subtitle2"
-                  underline="always"
-                  TypographyClasses={{ root: classes.pagesBreadcrumbsTypo }}
-                  onClick={() => onBreadcrumbSelected(item)}
-                >
-                  {item.label}
-                </Link>
-              ) :
-              (
-                <Typography key={item.id} variant="subtitle2"
-                            className={classes.pagesBreadcrumbsTypo}>{item.label}</Typography>
-              )
-          })
-        }
-      </Breadcrumbs>
-      <div className={classes.optionsWrapper}>
-        <IconButton
-          aria-label="options"
-          className={clsx(classes.icon, classes.primaryColor)}
-          onClick={(event) => onOpenBreadcrumbsMenu(event.currentTarget)}
-        >
-          <MoreVertIcon/>
-        </IconButton>
-        <IconButton aria-label="search" className={clsx(classes.icon, classes.primaryColor)}>
-          <SearchRoundedIcon/>
-        </IconButton>
-      </div>
+      {
+        showSearch ? (
+          <SearchBar
+            onChange={onChange}
+            keyword={keyword}
+            closeIcon={true}
+            persistentCloseIcon={true}
+          />
+        ) : (
+          <>
+            <Breadcrumbs
+              aria-label="breadcrumb"
+              separator={<NavigateNextIcon fontSize="small"/>}
+              classes={{ ol: classes.pagesBreadcrumbsOl, separator: classes.PagesBreadCrumbsSeparator }}
+            >
+              {
+                breadcrumb.map((item: Breadcrumb, i: number) => {
+                  return (breadcrumb.length !== i + 1) ? (
+                      <Link
+                        key={item.id}
+                        color="inherit"
+                        component="button"
+                        variant="subtitle2"
+                        underline="always"
+                        TypographyClasses={{ root: classes.pagesBreadcrumbsTypo }}
+                        onClick={() => onBreadcrumbSelected(item)}
+                      >
+                        {item.label}
+                      </Link>
+                    ) :
+                    (
+                      <Typography key={item.id} variant="subtitle2"
+                                  className={classes.pagesBreadcrumbsTypo}>{item.label}</Typography>
+                    )
+                })
+              }
+            </Breadcrumbs>
+            <div className={classes.optionsWrapper}>
+              <IconButton
+                aria-label="options"
+                className={clsx(classes.icon, classes.primaryColor)}
+                onClick={(event) => onOpenBreadcrumbsMenu(event.currentTarget)}
+              >
+                <MoreVertIcon/>
+              </IconButton>
+              <IconButton aria-label="search" className={clsx(classes.icon, classes.primaryColor)}
+                          onClick={() => setShowSearch(true)}>
+                <SearchRoundedIcon/>
+              </IconButton>
+            </div>
+          </>
+        )
+      }
     </section>
   )
 }
@@ -522,6 +550,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
     sections: [],
     anchorEl: null
   });
+  const [keyword, setKeyword] = useState('');
 
   const [error, setError] = useState(null);
 
@@ -653,6 +682,10 @@ export default function PagesWidget(props: PagesWidgetProps) {
     }
   };
 
+  const onSearch = (keyword: string) => {
+    setKeyword(keyword);
+  };
+
   return (
     <section className={classes.wrapper}>
       {
@@ -669,6 +702,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
               breadcrumb={breadcrumb}
               onBreadcrumbSelected={onBreadcrumbSelected}
               onOpenBreadcrumbsMenu={onOpenBreadcrumbsMenu}
+              keyword={keyword}
+              onSearch={onSearch}
             />
             {
               items &&
