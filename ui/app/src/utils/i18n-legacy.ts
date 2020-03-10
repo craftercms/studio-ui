@@ -802,7 +802,6 @@ export default {
   adminConfigurationMessages,
   encryptToolMessages,
   fileNameControlMessages,
-  rteControlMessages
-  fileNameControlMessages,
+  rteControlMessages,
   ossAttribution
 };
