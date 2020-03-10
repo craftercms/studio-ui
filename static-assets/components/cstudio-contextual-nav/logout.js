@@ -26,7 +26,6 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
    */
   initialize: function (config) {
 
-    var CMgs = CStudioAuthoring.Messages;
     var el = YDom.get('acn-logout-link');
     var showLogoutLink = false;
     var url = null;
@@ -65,7 +64,7 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
 
     CStudioAuthoring.Operations.createNavBarDropDown('account');
 
-    var onClickFunction = function (el, url) {
+    function onClickFunction (el, url) {
       el.onclick = function () {
 
         var serviceUri = CStudioAuthoring.Service.logoutUrl;
@@ -88,7 +87,7 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
         });
 
       };
-    };
+    }
 
   }
 };

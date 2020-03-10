@@ -310,6 +310,7 @@
   "usersAdmin.lastName": "Last Name",
   "usersAdmin.maxLengthError": "{field} can't be longer than {size} characters",
   "usersAdmin.userName": "User Name",
+  "words.browse": "Browse",
   "words.cancel": "Cancel",
   "words.clear": "Clear",
   "words.close": "Close",
@@ -325,5 +326,6 @@
   "words.save": "Save",
   "words.submit": "Submit",
   "words.update": "Update",
+  "words.upload": "Upload",
   "words.yes": "Yes"
 }
