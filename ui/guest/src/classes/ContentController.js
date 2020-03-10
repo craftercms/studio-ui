@@ -922,7 +922,7 @@ function reducer(lookupTable, model) {
             reducer(lookupTable, item.component);
           }
         } else {
-          // 2. RepeatGroup Groups
+          // 2. Repeat Groups
           const repeatGroupItem = {};
           data[key].push(repeatGroupItem);
           Object.entries(item).forEach((entry) =>
