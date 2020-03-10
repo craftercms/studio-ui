@@ -99,6 +99,8 @@ interface PublishDialogProps {
   scheduling?: string;
 
   onClose?(response?: any): any;
+
+  onSuccess?(response?: any): any;
 }
 
 const submitMap = {
@@ -110,7 +112,8 @@ function PublishDialog(props: PublishDialogProps) {
   const {
     items,
     scheduling = 'now',
-    onClose
+    onClose,
+    onSuccess
   } = props;
 
   const [open, setOpen] = React.useState(true);
@@ -180,7 +183,7 @@ function PublishDialog(props: PublishDialogProps) {
     setOpen(false);
 
     // call externalClose fn
-    onClose();
+    onClose?.();
   };
 
   const handleSubmit = () => {
@@ -203,7 +206,8 @@ function PublishDialog(props: PublishDialogProps) {
       (response) => {
         setOpen(false);
         setApiState({ ...apiState, error: false, submitting: false });
-        onClose(response);
+        onSuccess?.(response);
+        onClose?.(response);
       },
       (response) => {
         if (response) {

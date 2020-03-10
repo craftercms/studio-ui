@@ -84,7 +84,22 @@ function filterBy(filter: string, changes: object, currentTab: string): Array<st
   return array;
 }
 
-export default function EmbeddedLegacyEditors(props) {
+interface dialogConfig {
+  open: boolean,
+  src: string,
+  type: string,
+  inProgress: boolean
+}
+
+interface EmbeddedLegacyEditorsProps {
+  dialogConfig: dialogConfig;
+  setDialogConfig: any;
+  showController?: boolean;
+
+  getPath(type: string): void;
+}
+
+export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
   const { formatMessage } = useIntl();
   const classes = styles({});
   const iframeRef = useRef(null);

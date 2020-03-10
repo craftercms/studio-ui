@@ -162,8 +162,22 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
         '0%': { strokeDasharray: '1, 150', strokeDashoffset: '0' },
         '50%': { strokeDasharray: '90, 150', strokeDashoffset: '-35' },
         '100%': { strokeDasharray: '90, 150', strokeDashoffset: '-124' }
+      },
+      '.craftercms-contentTree-pulse': {
+        animation: 'craftercms-contentTree-pulse-animation 300ms 2 ease-in-out'
+      },
+      '@keyframes craftercms-contentTree-pulse-animation': {
+        '0%': {
+          transform: 'scaleX(1)'
+        },
+        '50%': {
+          transform: 'scale3d(1.05,1.05,1.05)'
+        },
+        'to': {
+          transform: 'scaleX(1)'
+        }
       }
-    }
+    },
   });
 
   stylesheet.attach();
