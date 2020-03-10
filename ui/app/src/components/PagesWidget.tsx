@@ -35,11 +35,10 @@ import { Breadcrumbs, Theme } from '@material-ui/core';
 import { getChildrenByPath } from '../services/content';
 import { Item } from '../models/Item';
 import clsx from 'clsx';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
 import CustomMenu, { SectionItem } from './CustomMenu';
+import ErrorState from './ErrorState';
 
 const blueColor = '#7E9DBA';
 const grayColor = '#7C7C80';
@@ -164,6 +163,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const translations = defineMessages({
+  title: {
+    id: 'craftercms.pages.widget.title',
+    defaultMessage: 'Pages'
+  },
   previousPage: {
     id: 'craftercms.pages.widget.previousPage',
     defaultMessage: 'previous page'
@@ -239,18 +242,19 @@ const itemMenuSections = [
   ]
 ];
 
+const selectedMenu = [
+  {
+    id: 'itemsSelected',
+    label: '',
+    type: 'text'
+  },
+  {
+    id: 'terminateSelection',
+    label: 'Terminate Selection'
+  }
+];
+
 const itemsSelectedMenu = [
-  [
-    {
-      id: 'itemsSelected',
-      label: '',
-      type: 'text'
-    },
-    {
-      id: 'terminateSelection',
-      label: 'Terminate Selection'
-    }
-  ],
   [
     {
       id: 'cut',
@@ -285,26 +289,14 @@ interface PagesHeaderProps {
   currentLocale: string;
 
   setCurrentLocale(locale: string): void;
+
+  onPagesMenuOpen(anchorElement: Element, type: string): void;
 }
 
 function PagesHeader(props: PagesHeaderProps) {
   const classes = useStyles({});
-  const [menu, setMenu] = React.useState({
-    anchorEl: null,
-    type: null
-  });
-  const { currentLocale, setCurrentLocale } = props;
-
-  const localeList = [
-    {
-      id: 'en',
-      label: 'English, US (en)'
-    },
-    {
-      id: 'es',
-      label: 'Spanish, Spain (es)'
-    }
-  ];
+  const { currentLocale, onPagesMenuOpen } = props;
+  const { formatMessage } = useIntl();
 
   const currentFlag = (locale: string) => {
     switch (locale) {
@@ -320,51 +312,26 @@ function PagesHeader(props: PagesHeaderProps) {
     }
   };
 
-  const changeLocale = (locale: string) => {
-    setMenu({ ...menu, anchorEl: null });
-    setCurrentLocale(locale);
-  };
-
   return (
     <header className={classes.pagesHeader}>
       <DescriptionOutlinedIcon/>
       <Typography variant="subtitle1" className={classes.pagesHeaderTitle}>
-        Pages
+        {formatMessage(translations.title)}
       </Typography>
       <IconButton
         aria-label="language select"
         className={classes.icon}
-        onClick={(event) => setMenu({ ...menu, anchorEl: event.currentTarget, type: 'language' })}
+        onClick={(event) => onPagesMenuOpen(event.currentTarget, 'language')}
       >
         {currentFlag(currentLocale)}
       </IconButton>
       <IconButton
         aria-label="options"
         className={classes.icon}
-        onClick={(event) => setMenu({ ...menu, anchorEl: event.currentTarget, type: 'options' })}
+        onClick={(event) => onPagesMenuOpen(event.currentTarget, 'options')}
       >
         <MoreVertIcon className={classes.blackColor}/>
       </IconButton>
-      <Menu
-        anchorEl={menu.anchorEl}
-        open={Boolean(menu.anchorEl)}
-        onClose={() => {
-          setMenu({ ...menu, anchorEl: null });
-        }}
-      >
-        {
-          menu.type === 'language' ? (
-            localeList.map(locale =>
-              <MenuItem key={locale.id} onClick={() => changeLocale(locale.id)}>{locale.label}</MenuItem>
-            )
-          ) : (
-            <MenuItem onClick={() => {
-            }}>
-              option1
-            </MenuItem>
-          )
-        }
-      </Menu>
     </header>
   )
 }
@@ -556,6 +523,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
     anchorEl: null
   });
 
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     getChildrenByPath(site, activePath).subscribe(
@@ -563,8 +531,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
         console.log(response);
         setItems(response.items);
       },
-      (error) => {
-        console.log(error);
+      ({ response }) => {
+        setError(response);
       }
     )
   }, [site, activePath]);
@@ -583,7 +551,6 @@ export default function PagesWidget(props: PagesWidgetProps) {
   };
 
   const onPageChanged = (page: number) => {
-    console.log(page);
   };
 
   const onSelectItem = (item: Item, select: boolean) => {
@@ -594,7 +561,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
     if (section.id === 'select') {
       setSelectMode(true);
       setMenu({
-        ...menu,
+        anchorEl: null,
         sections: itemsSelectedMenu
       });
     } else if (section.id === 'terminateSelection') {
@@ -604,14 +571,26 @@ export default function PagesWidget(props: PagesWidgetProps) {
         ...menu,
         anchorEl: null
       });
+    } else if (section.id.includes('locale')) {
+      setMenu({
+        ...menu,
+        anchorEl: null
+      });
+      onChangeLocale(section.id.split('.')[1]);
     }
   };
 
   const onOpenBreadcrumbsMenu = (element: Element) => {
-    //{Object.values(selectedItems).filter((item: Item | false) => item !== false).length} Items Selected.
     if (selectMode) {
+      const count = selectedItems && Object.values(selectedItems).filter((item: Item | false) => item !== false).length;
+      let _sections = [[...selectedMenu], ...itemsSelectedMenu];
+      if (count) {
+        let selectedMenuItems = selectedMenu;
+        selectedMenuItems[0].label = formatMessage(translations.itemsSelected, { count });
+        _sections = [[...selectedMenuItems], ...itemsSelectedMenu];
+      }
       setMenu({
-        sections: itemsSelectedMenu,
+        sections: _sections,
         anchorEl: element
       });
     } else {
@@ -638,54 +617,99 @@ export default function PagesWidget(props: PagesWidgetProps) {
     });
   };
 
+  const onChangeLocale = (locale: string) => {
+    setCurrentLocale(locale);
+  };
+
+  const onPagesMenuOpen = (anchorEl: Element, type: string) => {
+    if (type === 'language') {
+      setMenu({
+        sections: [
+          [
+            {
+              id: 'locale.en',
+              label: 'English, US (en)'
+            },
+            {
+              id: 'locale.es',
+              label: 'Spanish, Spain (es)'
+            }
+          ]
+        ],
+        anchorEl
+      });
+    } else {
+      setMenu({
+        sections: [
+          [
+            {
+              id: 'option1',
+              label: 'option1'
+            }
+          ]
+        ],
+        anchorEl
+      });
+    }
+  };
+
   return (
     <section className={classes.wrapper}>
-      <PagesHeader
-        currentLocale={currentLocale}
-        setCurrentLocale={setCurrentLocale}
-      />
-      <PagesBreadcrumbs
-        breadcrumb={breadcrumb}
-        onBreadcrumbSelected={onBreadcrumbSelected}
-        onOpenBreadcrumbsMenu={onOpenBreadcrumbsMenu}
-      />
       {
-        items &&
-        <PagesNav
-          items={items}
-          onItemSelected={onItemSelected}
-          currentLocale={currentLocale}
-          selectMode={selectMode}
-          onSelectItem={onSelectItem}
-          onOpenItemMenu={onOpenItemMenu}
-        />
+        error ? (
+          <ErrorState error={error}/>
+        ) : (
+          <>
+            <PagesHeader
+              currentLocale={currentLocale}
+              setCurrentLocale={setCurrentLocale}
+              onPagesMenuOpen={onPagesMenuOpen}
+            />
+            <PagesBreadcrumbs
+              breadcrumb={breadcrumb}
+              onBreadcrumbSelected={onBreadcrumbSelected}
+              onOpenBreadcrumbsMenu={onOpenBreadcrumbsMenu}
+            />
+            {
+              items &&
+              <PagesNav
+                items={items}
+                onItemSelected={onItemSelected}
+                currentLocale={currentLocale}
+                selectMode={selectMode}
+                onSelectItem={onSelectItem}
+                onOpenItemMenu={onOpenItemMenu}
+              />
+            }
+            <TablePagination
+              className={classes.pagination}
+              classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+              component="div"
+              labelRowsPerPage=""
+              count={10}
+              rowsPerPage={10}
+              page={0}
+              backIconButtonProps={{
+                'aria-label': formatMessage(translations.previousPage)
+              }}
+              nextIconButtonProps={{
+                'aria-label': formatMessage(translations.nextPage)
+              }}
+              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(page)}
+            />
+            <CustomMenu
+              anchorEl={menu.anchorEl}
+              open={Boolean(menu.anchorEl)}
+              classes={{ paper: classes.MenuPaper, helperText: classes.helperText }}
+              onClose={() => {
+                setMenu({ ...menu, anchorEl: null });
+              }}
+              sections={menu.sections}
+              onMenuItemClicked={onMenuItemClicked}
+            />
+          </>
+        )
       }
-      <TablePagination
-        className={classes.pagination}
-        classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-        component="div"
-        labelRowsPerPage=""
-        count={10}
-        rowsPerPage={10}
-        page={0}
-        backIconButtonProps={{
-          'aria-label': formatMessage(translations.previousPage)
-        }}
-        nextIconButtonProps={{
-          'aria-label': formatMessage(translations.nextPage)
-        }}
-        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(page)}
-      />
-      <CustomMenu
-        anchorEl={menu.anchorEl}
-        open={Boolean(menu.anchorEl)}
-        classes={{ paper: classes.MenuPaper, helperText: classes.helperText }}
-        onClose={() => {
-          setMenu({ ...menu, anchorEl: null });
-        }}
-        sections={menu.sections}
-        onMenuItemClicked={onMenuItemClicked}
-      />
     </section>
   )
 }
