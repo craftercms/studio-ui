@@ -1136,6 +1136,10 @@ export function Guest(props: GuestProps) {
     }
   };
 
+  function getElementRegistry(id: number): Element {
+    return ElementRegistry.fromICEId(id).element;
+  }
+
   function register(payload): number {
     return ElementRegistry.register(payload);
   }
@@ -1251,7 +1255,7 @@ export function Guest(props: GuestProps) {
           break;
         }
         case SCROLL_TO_RECEPTACLE:
-          scrollToReceptacle([payload], scrollElement);
+          scrollToReceptacle([payload], scrollElement, getElementRegistry);
           break;
         case CLEAR_HIGHLIGHTED_RECEPTACLES:
           setState({

@@ -21,8 +21,9 @@ import { fromEvent, interval, Subscription } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs, InRectStats } from './models/Positioning';
 import { LookupTable } from './models/LookupTable';
-import { ContentTypeField } from './models/ContentType';
-import { ElementRegistry } from './classes/ElementRegistry';
+import { ContentTypeField, ContentTypeReceptacle } from './models/ContentType';
+import { RenderTree } from './models/ContentTree';
+import { Record } from './models/InContextEditing';
 
 export const foo = (...args: any[]) => void null;
 export const
@@ -520,7 +521,7 @@ export function addClickListener(element: HTMLElement | Document, type: string, 
 
 }
 
-export function isElementInView(element: HTMLElement | Element, fullyInView?: boolean): boolean {
+export function isElementInView(element: Element | JQuery, fullyInView?: boolean): boolean {
   const pageTop = $(window).scrollTop();
   const pageBottom = pageTop + $(window).height();
   const elementTop = $(element).offset().top;
@@ -545,16 +546,16 @@ export function isBlank(str: string): boolean {
   return str === '';
 }
 
-export function addAnimation($element, animationClass) {
-  var END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+export function addAnimation($element: JQuery, animationClass: string): void {
+  const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
   $element.addClass(animationClass);
   $element.one(END_EVENT, function () {
     $element.removeClass(animationClass);
   });
 }
 
-export function scrollToNode(node, scrollElement) {
-  let $element;
+export function scrollToNode(node: RenderTree, scrollElement: string): void {
+  let $element: JQuery;
   if (node.index !== undefined) {
     $element = $(`[data-craftercms-model-id="${node.parentId || node.modelId}"][data-craftercms-field-id="${node.fieldId}"][data-craftercms-index="${node.index}"]`);
   } else {
@@ -573,11 +574,11 @@ export function scrollToNode(node, scrollElement) {
   }
 }
 
-export function scrollToReceptacle(receptacles, scrollElement) {
-  let elementInView;
-  let element;
+export function scrollToReceptacle(receptacles: ContentTypeReceptacle[] | Record[], scrollElement: string, getElementRegistry: (id: number) => Element) {
+  let elementInView: boolean;
+  let element: Element;
   elementInView = forEach(receptacles, ({ id }) => {
-    let elem = ElementRegistry.fromICEId(id).element;
+    let elem = getElementRegistry(id);
     if (isElementInView(elem)) {
       elementInView = true;
       element = elem;
@@ -587,7 +588,7 @@ export function scrollToReceptacle(receptacles, scrollElement) {
 
   if (!elementInView) {
     // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
-    let element = ElementRegistry.fromICEId(receptacles[0].id).element;
+    let element = getElementRegistry(receptacles[0].id);
     $(scrollElement).animate({
       scrollTop: $(element).offset().top - 100
     }, 300);
