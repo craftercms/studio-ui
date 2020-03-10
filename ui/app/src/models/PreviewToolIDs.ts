@@ -23,6 +23,7 @@ type Tools =
   'craftercms.ice.ice' |
   'craftercms.ice.editForm' |
   'craftercms.ice.browseComponents' |
-  'craftercms.ice.contentTypeReceptacles';
+  'craftercms.ice.contentTypeReceptacles' |
+  'craftercms.ice.contentTree';
 
 export default Tools;

@@ -23,6 +23,7 @@ import EmojiPeopleRounded from '@material-ui/icons/EmojiPeopleRounded';
 import DevicesRounded from '@material-ui/icons/DevicesRounded';
 import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
 import WarningRounded from '@material-ui/icons/WarningRounded';
+import AccountTreeRoundedIcon from '@material-ui/icons/AccountTreeRounded';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -46,6 +47,7 @@ import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hook
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
+import ContentTree from './Tools/ContentTree';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawer: {
@@ -133,6 +135,10 @@ const translations = defineMessages({
     id: 'craftercms.ice.browseComponents.title',
     defaultMessage: 'Browse Components'
   },
+  contentTreePanel: {
+    id: 'craftercms.ice.contentTreePanel.title',
+    defaultMessage: 'Content Tree'
+  }
 });
 
 function UnknownPanel(props: any) {
@@ -187,6 +193,7 @@ const componentIconMap: any = {
   'craftercms.ice.audiences': EmojiPeopleRounded,
   'craftercms.ice.simulator': DevicesRounded,
   'craftercms.ice.browseComponents': ExtensionRounded,
+  'craftercms.ice.contentTree': AccountTreeRoundedIcon
 };
 
 const componentMap: any = {
@@ -196,7 +203,8 @@ const componentMap: any = {
   'craftercms.ice.simulator': SimulatorPanel,
   'craftercms.ice.editForm': EditFormPanel,
   'craftercms.ice.browseComponents': BrowseComponentsPanel,
-  'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel
+  'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,
+  'craftercms.ice.contentTree': ContentTree
 };
 
 export default function ToolsPanel() {

@@ -25,20 +25,19 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   EDIT_MODE_CHANGED,
   EditingStatus,
-  forEach,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
-  isElementInView,
   isNullOrUndefined,
   NAVIGATION_REQUEST,
   not,
@@ -46,6 +45,8 @@ import {
   pluckProps,
   RELOAD_REQUEST,
   SCROLL_TO_RECEPTACLE,
+  scrollToNode,
+  scrollToReceptacle,
   TRASHED
 } from '../util';
 import { fromEvent, interval, Subject, zip } from 'rxjs';
@@ -749,7 +750,7 @@ export function Guest(props: GuestProps) {
                   record.fieldId[0],
                   record.index,
                   payload.path
-                )
+                );
               });
 
               return function (event) {
@@ -1135,6 +1136,10 @@ export function Guest(props: GuestProps) {
     }
   };
 
+  function getElementRegistry(id: number): Element {
+    return ElementRegistry.fromICEId(id).element;
+  }
+
   function register(payload): number {
     return ElementRegistry.register(payload);
   }
@@ -1165,27 +1170,6 @@ export function Guest(props: GuestProps) {
 
     } else {
       return true;
-    }
-  }
-
-  function scrollToReceptacle(receptacles: Record[]): void {
-    let elementInView;
-    let element;
-    elementInView = forEach(receptacles, ({ id }) => {
-      let elem = ElementRegistry.fromICEId(id).element;
-      if (isElementInView(elem)) {
-        elementInView = true;
-        element = elem;
-        return 'break';
-      }
-    }, false);
-
-    if (!elementInView) {
-      // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
-      let element = ElementRegistry.fromICEId(receptacles[0].id).element;
-      $(scrollElement).animate({
-        scrollTop: $(element).offset().top - 100
-      }, 300);
     }
   }
 
@@ -1271,7 +1255,7 @@ export function Guest(props: GuestProps) {
           break;
         }
         case SCROLL_TO_RECEPTACLE:
-          scrollToReceptacle([payload]);
+          scrollToReceptacle([payload], scrollElement, getElementRegistry);
           break;
         case CLEAR_HIGHLIGHTED_RECEPTACLES:
           setState({
@@ -1283,6 +1267,10 @@ export function Guest(props: GuestProps) {
             }
           });
           break;
+        case CONTENT_TREE_FIELD_SELECTED: {
+          scrollToNode(payload, scrollElement);
+          break;
+        }
         default:
           console.warn(`[message$] Unhandled host message "${type}".`);
       }

@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from 'jquery/dist/jquery.slim';
+import $ from 'jquery/dist/jquery';
 import { Markers } from './classes/Markers';
 import { fromEvent, interval, Subscription } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs, InRectStats } from './models/Positioning';
 import { LookupTable } from './models/LookupTable';
-import { ContentTypeField } from './models/ContentType';
+import { ContentTypeField, ContentTypeReceptacle } from './models/ContentType';
+import { RenderTree } from './models/ContentTree';
+import { Record } from './models/InContextEditing';
 
 export const foo = (...args: any[]) => void null;
 export const
@@ -70,6 +72,7 @@ export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUES
 export const CONTENT_TYPE_RECEPTACLES_RESPONSE = 'CONTENT_TYPE_RECEPTACLES_RESPONSE';
 export const SCROLL_TO_RECEPTACLE = 'SCROLL_TO_RECEPTACLE';
 export const CLEAR_HIGHLIGHTED_RECEPTACLES = 'CLEAR_HIGHLIGHTED_RECEPTACLES';
+export const CONTENT_TREE_FIELD_SELECTED = 'CONTENT_TREE_FIELD_SELECTED';
 export const CHILDREN_MAP_UPDATE = 'CHILDREN_MAP_UPDATE';
 
 // endregion
@@ -518,7 +521,7 @@ export function addClickListener(element: HTMLElement | Document, type: string, 
 
 }
 
-export function isElementInView(element: HTMLElement | Element, fullyInView?: boolean): boolean {
+export function isElementInView(element: Element | JQuery, fullyInView?: boolean): boolean {
   const pageTop = $(window).scrollTop();
   const pageBottom = pageTop + $(window).height();
   const elementTop = $(element).offset().top;
@@ -541,4 +544,53 @@ export function popPiece(str: string, splitChar: string = '.'): string {
 
 export function isBlank(str: string): boolean {
   return str === '';
+}
+
+export function addAnimation($element: JQuery, animationClass: string): void {
+  const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+  $element.addClass(animationClass);
+  $element.one(END_EVENT, function () {
+    $element.removeClass(animationClass);
+  });
+}
+
+export function scrollToNode(node: RenderTree, scrollElement: string): void {
+  let $element: JQuery;
+  if (node.index !== undefined) {
+    $element = $(`[data-craftercms-model-id="${node.parentId || node.modelId}"][data-craftercms-field-id="${node.fieldId}"][data-craftercms-index="${node.index}"]`);
+  } else {
+    $element = $(`[data-craftercms-model-id="${node.modelId}"][data-craftercms-field-id="${node.fieldId}"]:not([data-craftercms-index])`);
+  }
+  if ($element.length) {
+    if (!isElementInView($element)) {
+      $(scrollElement).animate({
+        scrollTop: $element.offset().top - 100
+      }, 300, function () {
+        addAnimation($element, 'craftercms-contentTree-pulse');
+      });
+    } else {
+      addAnimation($element, 'craftercms-contentTree-pulse');
+    }
+  }
+}
+
+export function scrollToReceptacle(receptacles: ContentTypeReceptacle[] | Record[], scrollElement: string, getElementRegistry: (id: number) => Element) {
+  let elementInView: boolean;
+  let element: Element;
+  elementInView = forEach(receptacles, ({ id }) => {
+    let elem = getElementRegistry(id);
+    if (isElementInView(elem)) {
+      elementInView = true;
+      element = elem;
+      return 'break';
+    }
+  }, false);
+
+  if (!elementInView) {
+    // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
+    let element = getElementRegistry(receptacles[0].id);
+    $(scrollElement).animate({
+      scrollTop: $(element).offset().top - 100
+    }, 300);
+  }
 }

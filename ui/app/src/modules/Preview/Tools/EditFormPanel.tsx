@@ -212,9 +212,9 @@ export default function EditFormPanel() {
       </ToolPanel>
       {
         dialogConfig.open &&
-        <EmbeddedLegacyEditors 
-          dialogConfig={dialogConfig} 
-          setDialogConfig={setDialogConfig} 
+        <EmbeddedLegacyEditors
+          dialogConfig={dialogConfig}
+          setDialogConfig={setDialogConfig}
           getPath={getPath}
           showController={selectedContentType.includes('/page')}
         />
