@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -161,7 +160,6 @@ function BlueprintReview(props: BlueprintReviewProps) {
   const [passwordFields, setPasswordFields] = useState(null);
   const { formatMessage } = useIntl();
 
-
   useEffect(() => {
     if (blueprint.parameters) {
       let fields: any = {};
@@ -227,7 +225,8 @@ function BlueprintReview(props: BlueprintReviewProps) {
   }
 
   function renderGitOptions() {
-    return (<div>
+    return (
+      <div>
         {
           inputs.repoUrl &&
           <Typography variant="body2" gutterBottom>
@@ -235,10 +234,8 @@ function BlueprintReview(props: BlueprintReviewProps) {
           </Typography>
         }
         <Typography variant="body2" gutterBottom>
-          <span className={classes.bold}>
-            {formatMessage(messages.remoteName)}:
-          </span>
-          {inputs.repoRemoteName ? inputs.repoRemoteName : 'origin'}
+          <span className={classes.bold}>{formatMessage(messages.remoteName)}:</span>
+          {` ${inputs.repoRemoteName ? inputs.repoRemoteName : 'origin'}`}
         </Typography>
         <Typography variant="body2" gutterBottom>
           <span
@@ -296,18 +293,26 @@ function BlueprintReview(props: BlueprintReviewProps) {
             <span className={classes.bold}>{formatMessage(messages.siteId)}: </span> {inputs.siteId}
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>
-              {formatMessage(messages.description)}:
-            </span>
-            {inputs.description ? inputs.description :
-            <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>}
+            <span className={classes.bold}>{formatMessage(messages.description)}:</span>
+            {` `}
+            {
+              inputs.description
+                ? inputs.description
+                : <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>
+            }
           </Typography>
-          {blueprint.source !== 'GIT' && (blueprint.id === 'GIT' || inputs.pushSite) && renderGitOptions()}
+          {
+            (blueprint.source !== 'GIT') &&
+            (blueprint.id === 'GIT' || inputs.pushSite) &&
+            renderGitOptions()
+          }
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>
-              {formatMessage(messages.sandboxBranch)}:
-            </span>
-            {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
+            <span className={classes.bold}>{formatMessage(messages.sandboxBranch)}:</span>
+            {` ${
+              inputs.sandboxBranch
+                ? inputs.sandboxBranch
+                : 'master'
+            }`}
           </Typography>
           {
             (blueprint.id !== 'GIT' && inputs.pushSite) &&

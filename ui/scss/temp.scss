@@ -1,10 +1,9 @@
 /*!
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -2879,8 +2878,7 @@ span.acn-canned-search {
   -o-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   -webkit-box-shadow:  0 5px 15px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  z-index: 99999;
-  //max-height: 500px;
+  z-index: 1030;
 
   .persona-container{
     max-height: 463px;
@@ -3005,7 +3003,7 @@ span.acn-canned-search {
 }
 
 #cstudio-emulate {
-  z-index: 99999;
+  z-index: 1030;
 }
 
 .yui-carousel-content {
@@ -3079,7 +3077,7 @@ span.acn-canned-search {
 **/
 
 .full-screen-overlay {
-  z-index: 99999;
+  z-index: 1031;
   background: rgba(50, 50, 50, .8);
   position: fixed;
   top: 0;

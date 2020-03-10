@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,22 +21,25 @@ CStudioForms.Controls.FileName = CStudioForms.Controls.FileName ||
         this.errors = [];
         this.properties = properties;
         this.constraints = constraints;
-        this.inputEl = null;
-        this.countEl = null;
-        this.required = true;
-        this.value = "_not-set";
-        this.form = form;
-        this.id = "file-name";
-        this.contentAsFolder = (form.definition) ? form.definition.contentAsFolder : null;
-        this.readonly = readonly;
-        this.defaultValue = "";
-        this.showWarnOnEdit = true;
+      this.inputEl = null;
+      this.countEl = null;
+      this.required = true;
+      this.value = '_not-set';
+      this.form = form;
+      this.id = 'file-name';
+      this.contentAsFolder = (form.definition) ? form.definition.contentAsFolder : null;
+      this.readonly = readonly;
+      this.defaultValue = '';
+      this.showWarnOnEdit = true;
+      this.messages = {
+        fileNameControlMessages: CrafterCMSNext.i18n.messages.fileNameControlMessages
+      };
 
-        return this;
-    }
+      return this;
+    };
 
 YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
-    
+
     getFixedId: function() {
         return "file-name";
     },
@@ -201,17 +203,17 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
                     this.obj.renderValidation(true, false);
                     YAHOO.util.Dom.addClass(this.obj.urlErrEl, 'on');
                 } else {
-                    this.obj.clearError("exists");
-                    this.obj.renderValidation(true, true);
-                    YAHOO.util.Dom.removeClass(this.obj.urlErrEl, 'on');
+                  this.obj.clearError('exists');
+                  this.obj.renderValidation(true, true);
+                  YAHOO.util.Dom.removeClass(this.obj.urlErrEl, 'on');
                 }
             },
-            failure: function() {
-                this.availableEl.style.display = "none";
-                this.availableEl.innerHTML = "";
-            },
-            obj: this
-        }
+          failure: function () {
+            this.availableEl.style.display = 'none';
+            this.availableEl.innerHTML = '';
+          },
+          obj: this
+        };
 
         if(path != "" && path != newPath) {
             CStudioAuthoring.Service.contentExists(newPath, checkCb);
@@ -227,7 +229,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         // we need to make the general layout of a control inherit from common
         // you should be able to override it -- but most of the time it wil be the same
         containerEl.id = this.id;
-        
+
         var titleEl = document.createElement("span");
 
         YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
@@ -323,76 +325,93 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     },
 
-    _renderEdit: function(containerEl){
-    	var _self = this;
-        if (CStudioAuthoring.Utils.getQueryVariable(location.search, "edit") && this.readonly == false ){
-            var editFileNameEl = document.createElement("div");
-            YAHOO.util.Dom.addClass(editFileNameEl, 'cstudio-form-control-filename-edit');
-            var editFileNameBtn = document.createElement("input");
-            editFileNameBtn.type="button";
-            editFileNameBtn.value="Edit";
-            YAHOO.util.Dom.addClass(editFileNameBtn, 'cstudio-button');
-            editFileNameEl.appendChild(editFileNameBtn);
-            containerEl.appendChild(editFileNameEl);
+  _renderEdit: function (containerEl) {
+    var _self = this;
+    if (CStudioAuthoring.Utils.getQueryVariable(location.search, 'edit') && this.readonly == false) {
+      var editFileNameEl = document.createElement('div');
+      YAHOO.util.Dom.addClass(editFileNameEl, 'cstudio-form-control-filename-edit');
+      var editFileNameBtn = document.createElement('input');
+      editFileNameBtn.type = 'button';
+      editFileNameBtn.value = 'Edit';
+      YAHOO.util.Dom.addClass(editFileNameBtn, 'cstudio-button');
+      editFileNameEl.appendChild(editFileNameBtn);
+      containerEl.appendChild(editFileNameEl);
 
-            this.inputEl.disabled=true;
+      this.inputEl.disabled = true;
 
-            var createWarningDialog = function(){
-                var dialogEl = document.getElementById("changeNameWar");
-                if(!dialogEl) {
-                    var dialog = new YAHOO.widget.SimpleDialog("changeNameWar",
-                        {
-                            width: "440px", fixedcenter: true, visible: false, draggable: false, close: true,
-                            modal: true, icon: YAHOO.widget.SimpleDialog.ICON_WARN, constraintoviewport: true
-                        });
+      var createWarningDialog = function () {
 
-                    var viewDependenciesLink = document.createElement("a");
-                    viewDependenciesLink.innerHTML="here";
-                    viewDependenciesLink.onclick = function() {
-                        window.parent.CStudioAuthoring.Operations.viewDependencies(
-                            window.parent.CStudioAuthoringContext.site,
-                            window.parent.CStudioAuthoring.SelectedContent.getSelectedContent(),
-                            false,
-                            'depends-on-me'
-                        );
-                    };
+        var dialog = new YAHOO.widget.SimpleDialog('changeNameWar', {
+          width: '440px',
+          fixedcenter: true,
+          visible: false,
+          draggable: false,
+          close: true,
+          modal: true,
+          icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+          constraintoviewport: true
+        });
 
-                    dialog.setHeader("Warning");
-                    dialog.setBody("Changing this value may result in broken references and links.</br></br>" +
-                        "<span>To view the content that references this content, click </span>");
-                    dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
+        var viewDependenciesLink = document.createElement('a');
+        viewDependenciesLink.innerHTML = 'here';
+        viewDependenciesLink.onclick = function () {
+          window.parent.CStudioAuthoring.Operations.viewDependencies(
+            window.parent.CStudioAuthoringContext.site,
+            window.parent.CStudioAuthoring.SelectedContent.getSelectedContent(),
+            false,
+            'depends-on-me'
+          );
+        };
 
-                    var handleYes = function() {
-                        _self.inputEl.disabled = false;
-                        _self.inputEl.focus();
-                        editFileNameEl.style.display='none';
-                        this.hide();
-                    };
-                    var handleNo = function() {
-                        this.hide();
-                    };
-                    var myButtons = [
-                        { text:"Cancel", handler: handleNo, isDefault:true},
-                        { text: "OK", handler: handleYes }
-                    ];
+        dialog.setHeader('Warning');
+        dialog.setBody(
+          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.urlChangeWaring) + '</br></br>' +
+          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.viewReferences)
+        );
+        dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
 
-                    dialog.cfg.queueProperty("buttons", myButtons);
-                    dialog.render(document.body);
-                    dialogEl = document.getElementById("changeNameWar");
-                    dialogEl.dialog = dialog;
-                }
+        var myButtons = [
+          {
+            text: 'Cancel',
+            isDefault: true,
+            handler: function () {
+              this.destroy();
+              $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
+            }
+          },
+          {
+            text: 'OK',
+            handler: function () {
+              _self.inputEl.disabled = false;
+              _self.inputEl.focus();
+              editFileNameEl.style.display = 'none';
+              this.destroy();
+              $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
+            }
+          }
+        ];
 
-                dialogEl.dialog.show();
-            };
+        dialog.cfg.queueProperty('buttons', myButtons);
+        dialog.render(document.body);
+        dialog.show();
 
-            YAHOO.util.Event.on(editFileNameBtn, 'click', function(){
-                _self.form.setFocusedField(_self);
-            	if(_self.showWarnOnEdit){
-                    createWarningDialog();
-            	}
-            });
+        function onEscape(e) {
+          dialog.destroy();
+          $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
         }
-    },
+
+        $(document).on('CloseFormWithChangesUserWarningDialogShown', onEscape);
+
+      };
+
+      YAHOO.util.Event.on(editFileNameBtn, 'click', function () {
+        _self.form.setFocusedField(_self);
+        if (_self.showWarnOnEdit) {
+          createWarningDialog();
+        }
+      });
+    }
+  },
 
     getValue: function() {
         return this.value;

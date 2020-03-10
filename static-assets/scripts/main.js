@@ -27,7 +27,8 @@
     'angularUtils.directives.dirPagination',
     'ngTagsInput',
     'ngPatternRestrict',
-    'ngAnimate'
+    'ngAnimate',
+    'ngSanitize'
   ]);
 
   let
@@ -491,9 +492,10 @@
       };
 
       this.logout = function () {
-        $http.post(security('logout'), null);
-        unmountAuthMonitor && unmountAuthMonitor();
-        user = null;
+        return $http.post(security('logout'), null).then(() => {
+          unmountAuthMonitor && unmountAuthMonitor();
+          user = null;
+        });
       };
 
       this.getSSOLogoutInfo = function () {
@@ -935,7 +937,8 @@
       $scope.langSelected = '';
       $scope.modalInstance = '';
       $scope.authenticated = authService.isAuthenticated();
-      $scope.helpUrl = 'https://docs.craftercms.org/en/3.1/index.html';
+      $scope.helpUrl = 'javascript:alert("Please wait while product information loads.")';
+      $scope.attributionHTML = '';
       $scope.isIframeClass = $location.search().iframe ? 'iframe' : '';
       $rootScope.isFooter = true;
       $scope.showLogoutLink = false;
@@ -1008,12 +1011,13 @@
 
       function logout() {
         if ($scope.showLogoutLink) {
-          authService.logout();
-          if ($scope.logoutInfo.url) {
-            $window.location.href = $scope.logoutInfo.url;
-          } else {
-            $state.go('login');
-          }
+          authService.logout().then(() => {
+            if ($scope.logoutInfo.url) {
+              $window.location.href = $scope.logoutInfo.url;
+            } else {
+              $state.go('login');
+            }
+          });
         }
       }
 
@@ -1141,8 +1145,16 @@
 
       if (authService.getUser()) {
         authService.getStudioInfo().then(function (response) {
+          const packageVersion = response.data.version.packageVersion;
+          const simpleVersion = packageVersion.substr(0, 3);
           $scope.aboutStudio = response.data.version;
-          $scope.versionNumber = response.data.version.packageVersion + '-' + response.data.version.packageBuild.substring(0, 6);
+          $scope.versionNumber = `${packageVersion}-${response.data.version.packageBuild.substring(0, 6)}`;
+          $scope.simpleVersion = simpleVersion;
+          $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
+          $scope.attributionHTML = CrafterCMSNext.i18n.intl.formatMessage(
+            CrafterCMSNext.i18n.messages.ossAttribution.attribution,
+            { a: msg => `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>` }
+          ).join('');
         });
       }
 
