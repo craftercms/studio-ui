@@ -30,8 +30,6 @@
       </script>
     </#if>
 
-    <script type="application/json" id="entitlementValidator">${applicationContext.get("crafter.entitlementValidator").getDescription()}</script>
-
     <script>var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };</script>
 
     <script>
@@ -58,7 +56,8 @@
     <script src="/studio/static-assets/libs/flexslider/jquery.flexslider.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/angular/angular.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/angular/angular-1.5.0.min.js"></script>
+    <script src="/studio/static-assets/libs/angular/angular-sanitize-1.5.0.min.js"></script>
     <script src="/studio/static-assets/libs/angular-translate/angular-translate.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/angular-translate-handler-log/angular-translate-handler-log.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
