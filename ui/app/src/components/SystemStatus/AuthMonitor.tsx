@@ -131,7 +131,7 @@ export default function AuthMonitor() {
       }
       return () => sub.unsubscribe();
     }
-  }, [active, dispatch]);
+  }, [active, dispatch, formatMessage, username]);
 
   return (
     <Dialog

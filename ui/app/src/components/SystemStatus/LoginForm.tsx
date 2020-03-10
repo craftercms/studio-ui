@@ -17,7 +17,7 @@
 import React, { PropsWithChildren } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
-import PasswordTextField from '../PasswordTextField';
+import PasswordTextField from '../Controls/PasswordTextField';
 import Button from '@material-ui/core/Button';
 
 type LogInFormProps = PropsWithChildren<{

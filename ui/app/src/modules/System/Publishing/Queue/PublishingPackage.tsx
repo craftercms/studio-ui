@@ -165,7 +165,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
   const {
     id, approver, schedule, state, comment, environment,
     siteId, selected, setSelected, pending, setPending,
-    getPackages, apiState, setApiState,
+    getPackages, setApiState,
     filesPerPackage, setFilesPerPackage
   } = props;
   const [loading, setLoading] = useState(null);
