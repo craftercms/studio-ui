@@ -20,7 +20,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
-import PasswordTextField from '../Controls/PasswordTextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import React, { CSSProperties, PropsWithChildren, useEffect, useState, useRef } from 'react';
@@ -36,7 +35,6 @@ import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
-import { setRequestForgeryToken } from '../../utils/auth';
 import { LogInForm } from './LoginForm';
 import { ClassNameMap } from '@material-ui/styles/withStyles';
 
