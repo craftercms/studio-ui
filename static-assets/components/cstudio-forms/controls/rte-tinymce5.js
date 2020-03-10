@@ -288,7 +288,7 @@ CStudioAuthoring.Module.requireModule(
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
-          const extendedValidElements = escapeScripts ? '' : 'script[language|type|src]';
+          const extendedValidElements = escapeScripts ? '' : 'script';
 
           editor = tinymce.init({
             selector: '#' + rteId,
