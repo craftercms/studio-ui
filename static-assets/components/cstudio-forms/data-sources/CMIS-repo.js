@@ -31,18 +31,22 @@ CStudioForms.Datasources.CMISRepo= CStudioForms.Datasources.CMISRepo ||
             if(properties[i].name === "studioPath") {
                 this.studioPath = properties[i].value;
             }
-            if(properties[i].name === "allowedOperations") {
-                var propValues = JSON.parse(properties[i].value);
+          if (properties[i].name === 'allowedOperations') {
+            var propValues = JSON.parse(properties[i].value);
 
-                for(var x = 0; x < propValues.length; x++) {
-                    if(propValues[x].selected){
-                        this.allowedOperations = propValues[x].value;
-                    }
-                }
+            for (var x = 0; x < propValues.length; x++) {
+              if (propValues[x].selected) {
+                this.allowedOperations = propValues[x].value;
+              }
             }
+          }
         }
 
-        return this;
+      this.messages = {
+        words: CrafterCMSNext.i18n.messages.words
+      };
+
+      return this;
     };
 
 YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasource, {
@@ -74,17 +78,17 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
               var fileExtension = fileName.split(".").pop();
               if(!selectedTOs[i].clone){
                 uri = repo["download-url-regex"].replace("{item_id}",item.itemId);
-              }else{
-                uri = _self.studioPath+fileName;
-                uri = uri.startsWith("/") ? uri : "/" + uri;
+              } else {
+                uri = _self.studioPath + fileName;
+                uri = uri.startsWith('/') ? uri : '/' + uri;
               }
 
-              control.insertItem(uri, item.browserUri, fileExtension, null,_self.id);
-              if(control._renderItems){
+              control.insertItem(uri, item.browserUri, fileExtension, null, _self.id);
+              if (control._renderItems) {
                 control._renderItems();
               }
             }
-          }
+          };
 
           _self.getConfig(cb);
 
@@ -97,8 +101,8 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
         var addContainerEl = null;
 
         if(!control.addContainerEl){
-          addContainerEl = document.createElement("div")
-          addContainerEl.create = document.createElement("div");
+          addContainerEl = document.createElement('div');
+          addContainerEl.create = document.createElement('div');
           addContainerEl.browse = document.createElement("div");
 
           addContainerEl.appendChild(addContainerEl.create);
@@ -126,7 +130,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
 
         var createEl = document.createElement("div");
         YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-        createEl.innerHTML = "Upload - " + newElTitle;
+        createEl.innerHTML = `${CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.browse)} - ${newElTitle}`;
         control.addContainerEl.create.appendChild(createEl);
 
         var addContainerEl = control.addContainerEl;

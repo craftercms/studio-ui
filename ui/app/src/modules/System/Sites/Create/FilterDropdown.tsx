@@ -145,10 +145,10 @@ export default function FilterDropdown(props: FilterDropdownProps) {
   return (
     <div>
       <Button variant="outlined" onClick={handleClick} className={className}>
-        {text} <ArrowDropDownIcon/>
+        {text} <ArrowDropDownIcon />
       </Button>
       <Popover
-        id="simple-menu"
+        id="publishingFilterDropdown"
         anchorEl={anchorEl}
         getContentAnchorEl={null}
         classes={{ paper: classes.paper }}
@@ -172,7 +172,7 @@ export default function FilterDropdown(props: FilterDropdownProps) {
           </header>
           <div className={classes.body}>
             <div className={classes.searchIcon}>
-              <SearchIcon/>
+              <SearchIcon />
             </div>
             <TextField
               id="path"
@@ -194,19 +194,27 @@ export default function FilterDropdown(props: FilterDropdownProps) {
             </Typography>
           </header>
           <div className={classes.formControl}>
-            <RadioGroup aria-label="environment" name="environment"
-                        value={currentFilters.environment} onChange={handleFilterChange}>
+            <RadioGroup
+              aria-label="environment"
+              name="environment"
+              value={currentFilters.environment}
+              onChange={handleFilterChange}
+            >
               <FormControlLabel
                 value=""
-                control={<Radio color="primary"/>}
+                control={<Radio color="primary" />}
                 label={formatMessage(messages.all)}
               />
               {
                 filters.environments &&
-                filters.environments.map((filter: string, index: number) => {
-                  return <FormControlLabel key={index} value={filter} control={<Radio color="primary"/>}
-                                           label={filter}/>
-                })
+                filters.environments.map((filter: string, index: number) =>
+                  <FormControlLabel
+                    key={index}
+                    value={filter}
+                    control={<Radio color="primary" />}
+                    label={filter}
+                  />
+                )
               }
             </RadioGroup>
           </div>
@@ -220,16 +228,17 @@ export default function FilterDropdown(props: FilterDropdownProps) {
           <div className={classes.formControl}>
             <FormGroup>
               <FormControlLabel
-                value={''}
+                value=""
+                label={formatMessage(messages.all)}
                 control={
                   <Checkbox
                     color="primary"
-                    value={''}
-                    checked={currentFilters.state.length === filters.states.length}
+                    value=""
+                    checked={currentFilters.state.length === filters.states.length || currentFilters.state.length === 0}
                     onChange={handleFilterChange}
                   />
                 }
-                label={formatMessage(messages.all)}/>
+              />
               {
                 filters.states.map((filter: string, index: number) =>
                   <FormControlLabel

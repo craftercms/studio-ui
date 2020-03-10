@@ -719,7 +719,7 @@ input[type="checkbox"].content-type-selector--checkbox {
 
 }
 
-.deleteControl {
+.deleteControl, .switch-filename {
   float: right;
   height: 30px;
   left: 10px;
@@ -732,6 +732,17 @@ input[type="checkbox"].content-type-selector--checkbox {
 .fa.deleteControl {
   font-size: 25px;
   color: #e84646;
+}
+
+.switch-filename {
+  font-size: 15px;
+  color: white !important;
+  background-color: #7e9dbb;
+  border-radius: 15px;
+  padding: 3px;
+  height: 22px;
+  width: 22px;
+  left: 2px;
 }
 
 .property-wrapper .date-options li {

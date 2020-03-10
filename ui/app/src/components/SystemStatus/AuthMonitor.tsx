@@ -37,6 +37,8 @@ import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
 import { setRequestForgeryToken } from '../../utils/auth';
+import { LogInForm } from './LoginForm';
+import { ClassNameMap } from '@material-ui/styles/withStyles';
 
 const translations = defineMessages({
   sessionExpired: {
@@ -54,7 +56,7 @@ const translations = defineMessages({
 });
 
 const useStyles = makeStyles((theme) => createStyles({
-  input: {
+  username: {
     marginBottom: theme.spacing(2)
   },
   actions: {
@@ -174,6 +176,7 @@ export default function AuthMonitor() {
                   />
                 ) :(
                   <LogInForm
+                    classes={classes}
                     username={username}
                     isFetching={isFetching}
                     onSubmit={onSubmit}
@@ -214,11 +217,18 @@ type SSOFormProps = PropsWithChildren<{
   onSubmit: (e) => any;
   ssoButtonClicked: boolean;
   onSetSSOButtonClicked: Function;
+  classes?: ClassNameMap<any>;
 }>;
 
 function SSOForm(props: SSOFormProps) {
-  const { username, onSubmit, authoringUrl, ssoButtonClicked, onSetSSOButtonClicked } = props;
-  const classes = useStyles({});
+  const {
+    username,
+    onSubmit,
+    authoringUrl,
+    ssoButtonClicked,
+    onSetSSOButtonClicked,
+    classes
+  } = props;
   const onOpenLogin = () => {
     window.open(
       `${authoringUrl}/login/resume`,
@@ -234,20 +244,20 @@ function SSOForm(props: SSOFormProps) {
         disabled
         type="email"
         value={username}
-        className={classes.input}
+        className={classes?.input}
         label={
-          <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username"/>
+          <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username" />
         }
       />
-      <section className={classes.ssoAction}>
+      <section className={classes?.ssoAction}>
         <Button
           type="button"
           color="primary"
           variant={ssoButtonClicked ? 'outlined' : 'contained'}
           onClick={onOpenLogin}
-          endIcon={<OpenInNewRounded/>}
+          endIcon={<OpenInNewRounded />}
         >
-          <FormattedMessage id="authMonitor.openSSOLoginButtonLabel" defaultMessage="Open Login Form"/>
+          <FormattedMessage id="authMonitor.openSSOLoginButtonLabel" defaultMessage="Open Login Form" />
         </Button>
         <Typography variant="caption">
           <FormattedMessage
@@ -259,50 +269,6 @@ function SSOForm(props: SSOFormProps) {
           />
         </Typography>
       </section>
-    </form>
-  );
-}
-
-type LogInFormProps = PropsWithChildren<{
-  username: string;
-  password: string;
-  isFetching: boolean;
-  onSubmit: (e) => any;
-  onSetPassword: Function;
-}>;
-
-function LogInForm(props: LogInFormProps) {
-  const { username, onSubmit, isFetching, onSetPassword, password } = props;
-  const classes = useStyles({});
-  return (
-    <form onSubmit={onSubmit}>
-      <TextField
-        fullWidth
-        disabled
-        type="email"
-        value={username}
-        className={classes.input}
-        label={
-          <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username"/>
-        }
-      />
-      <PasswordTextField
-        fullWidth
-        autoFocus
-        value={password}
-        onChange={(e) => onSetPassword(e.target.value)}
-        label={
-          <FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password"/>
-        }
-      />
-      {/* This button is just to have the form submit when pressing enter. */}
-      <Button
-        children=""
-        type="submit"
-        onClick={onSubmit}
-        disabled={isFetching}
-        style={{ display: 'none' }}
-      />
     </form>
   );
 }

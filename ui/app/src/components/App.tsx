@@ -25,7 +25,7 @@ const DevServerRoot = process.env.REACT_APP_COMPONENT ? lazy(() => import(proces
 export default function App() {
   return (
     <CrafterCMSNextBridge>
-      <DevServerRoot/>
+      <DevServerRoot />
     </CrafterCMSNextBridge>
   );
 }

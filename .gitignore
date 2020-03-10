@@ -22,3 +22,6 @@ templates/web/common/js-next-scripts.ftl
 
 # misc
 *.ignore.*
+
+ui/app/src/translations/src
+ui/app/src/translations/whitelists

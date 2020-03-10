@@ -307,7 +307,12 @@ export function getGlobalMenuItems() {
   return get('/studio/api/2/ui/views/global_menu.json');
 }
 
+export function getProductLanguages(): Observable<{ id: string; label: string }[]> {
+  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
+}
+
 export default {
+  getProductLanguages,
   getRawContent,
   getDOM,
   getGlobalMenuItems

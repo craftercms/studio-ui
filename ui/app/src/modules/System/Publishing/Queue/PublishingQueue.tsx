@@ -42,7 +42,7 @@ import EmptyState from '../../../../components/SystemStatus/EmptyState';
 import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOffRounded';
 import Spinner from '../../../../components/SystemStatus/Spinner';
-import RefreshIcon from '@material-ui/icons/Refresh';
+import RefreshIcon from '@material-ui/icons/RefreshRounded';
 import Button from '@material-ui/core/Button';
 import { useSpreadState } from '../../../../utils/hooks';
 
@@ -73,7 +73,7 @@ const messages = defineMessages({
   },
   noPackagesTitle: {
     id: 'publishingDashboard.noPackagesTitle',
-    defaultMessage: 'No Packages Were Found'
+    defaultMessage: 'No packages were found'
   },
   noPackagesSubtitle: {
     id: 'publishingDashboard.noPackagesSubtitle',
@@ -86,6 +86,14 @@ const messages = defineMessages({
   packagesSelected: {
     id: 'publishingDashboard.packagesSelected',
     defaultMessage: '{count, plural, one {{count} Package selected} other {{count} Packages selected}}'
+  },
+  previous: {
+    id: 'publishingDashboard.previous',
+    defaultMessage: 'Previous page'
+  },
+  next: {
+    id: 'publishingDashboard.next',
+    defaultMessage: 'Next page'
   }
 });
 
@@ -196,6 +204,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
   const { formatMessage } = useIntl();
   const { siteId } = props;
+  const hasReadyForLivePackages = ((packages || []).filter((item: Package) => item.state === READY_FOR_LIVE).length > 0);
 
   const getPackages = useCallback((siteId: string) => (
     fetchPackages(siteId, getFilters(currentFilters)).subscribe(
@@ -235,8 +244,8 @@ function PublishingQueue(props: PublishingQueueProps) {
   }, [selected]);
 
   function renderPackages() {
-    return packages.map((item: Package, index: number) => {
-      return <PublishingPackage
+    return packages.map((item: Package, index: number) =>
+      <PublishingPackage
         id={item.id}
         approver={item.approver}
         schedule={item.schedule}
@@ -251,10 +260,10 @@ function PublishingQueue(props: PublishingQueueProps) {
         getPackages={getPackages}
         setApiState={setApiState}
         setSelected={setSelected}
-        currentFilters={currentFilters}
         filesPerPackage={filesPerPackage}
-        setFilesPerPackage={setFilesPerPackage}/>
-    })
+        setFilesPerPackage={setFilesPerPackage}
+      />
+    );
   }
 
   function handleCancelAll() {
@@ -303,10 +312,16 @@ function PublishingQueue(props: PublishingQueueProps) {
   }
 
   function areAllSelected() {
-    if (!packages || packages.length === 0) return false;
-    let _selected: boolean = true;
-    _selected = !packages.some((item: Package) => !selected[item.id] && item.state === READY_FOR_LIVE);
-    return _selected;
+    if (packages?.length === 0 || !hasReadyForLivePackages) {
+      return false;
+    } else {
+      return !(
+        packages.some((item: Package) =>
+          // There is at least one that is not selected
+          item.state === READY_FOR_LIVE && !selected[item.id]
+        )
+      );
+    }
   }
 
   function handleFilterChange(event: any) {
@@ -355,7 +370,7 @@ function PublishingQueue(props: PublishingQueueProps) {
                 <Checkbox
                   color="primary"
                   checked={areAllSelected()}
-                  disabled={!packages || !packages.length}
+                  disabled={!packages || !hasReadyForLivePackages}
                   onClick={handleSelectAll}
                 />
               }
@@ -367,11 +382,15 @@ function PublishingQueue(props: PublishingQueueProps) {
           (count > 0 && currentFilters.state.includes(READY_FOR_LIVE)) &&
           <Typography variant="body2" className={classes.packagesSelected} color="textSecondary">
             {formatMessage(messages.packagesSelected, { count: count })}
-            <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected}/>
+            <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected} />
           </Typography>
         }
-        <Button variant="outlined" className={classes.button} onClick={() => getPackages(siteId)}>
-          <RefreshIcon/>
+        <Button
+          variant="outlined"
+          className={classes.button}
+          onClick={() => getPackages(siteId)}
+        >
+          <RefreshIcon />
         </Button>
         {
           currentFilters.state.includes(READY_FOR_LIVE) &&
@@ -381,11 +400,17 @@ function PublishingQueue(props: PublishingQueueProps) {
             confirmText={formatMessage(messages.confirm)}
             confirmHelperText={formatMessage(messages.confirmAllHelper)}
             onConfirm={handleCancelAll}
+            disabled={!(hasReadyForLivePackages && Object.values(selected).length > 0)}
           />
         }
-        <FilterDropdown className={classes.button} text={formatMessage(messages.filters)}
-                        handleFilterChange={handleFilterChange}
-                        currentFilters={currentFilters} handleEnterKey={handleEnterKey} filters={filters}/>
+        <FilterDropdown
+          className={classes.button}
+          text={formatMessage(messages.filters)}
+          handleFilterChange={handleFilterChange}
+          currentFilters={currentFilters}
+          handleEnterKey={handleEnterKey}
+          filters={filters}
+        />
       </div>
       {
         (currentFilters.state.length || currentFilters.path || currentFilters.environment) &&
@@ -418,10 +443,10 @@ function PublishingQueue(props: PublishingQueueProps) {
       }
       {
         (apiState.error && apiState.errorResponse)
-          ? <ErrorState error={apiState.errorResponse}/>
+          ? <ErrorState error={apiState.errorResponse} />
           : (
             <div className={classes.queueList}>
-              {packages === null && <Spinner/>}
+              {packages === null && <Spinner />}
               {packages && renderPackages()}
               {
                 packages !== null && packages.length === 0 &&
@@ -442,17 +467,16 @@ function PublishingQueue(props: PublishingQueueProps) {
         rowsPerPage={currentFilters.limit}
         page={currentFilters.page}
         backIconButtonProps={{
-          'aria-label': 'previous page'
+          'aria-label': formatMessage(messages.previous)
         }}
         nextIconButtonProps={{
-          'aria-label': 'next page'
+          'aria-label': formatMessage(messages.next)
         }}
         onChangePage={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
       />
     </div>
   );
-  // TODO: Translate aria-labels
 }
 
 export default PublishingQueue;

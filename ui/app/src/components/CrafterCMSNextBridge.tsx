@@ -17,7 +17,7 @@
 import '../styles/index.scss';
 
 import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useState } from 'react';
-import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
+import { createIntl, createIntlCache, IntlShape, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from '../styles/theme';
 import { updateIntl } from '../utils/codebase-bridge';
@@ -41,19 +41,21 @@ export let intl = getIntl(getCurrentLocale());
 
 // @ts-ignore
 document.addEventListener('setlocale', (e: CustomEvent<string>) => {
-  intl = getIntl(e.detail);
-  updateIntl(intl);
-  document.documentElement.setAttribute('lang', e.detail);
+  if (e.detail && e.detail !== intl.locale) {
+    intl = getIntl(e.detail);
+    updateIntl(intl);
+    document.documentElement.setAttribute('lang', e.detail);
+  }
 }, false);
 
-function getIntl(locale: string) {
+function getIntl(locale: string): IntlShape {
   return createIntl({
     locale: locale,
     messages: Locales[locale] || en
   }, createIntlCache());
 }
 
-function getCurrentLocale() {
+export function getCurrentLocale(): string {
   const username = localStorage.getItem('userName');
   const locale = username
     ? localStorage.getItem(`${username}_crafterStudioLanguage`)
@@ -66,7 +68,7 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
   const [, update] = useState();
 
   useLayoutEffect(setRequestForgeryToken, []);
-  useEffect(() => setUpLocaleChangeListener(update), [update]);
+  useEffect(() => setUpLocaleChangeListener(update, intl), [update]);
 
   return (
     <Provider store={store}>
@@ -82,8 +84,12 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
 
 }
 
-function setUpLocaleChangeListener(update) {
-  const handler = (e: any) => update({});
+function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {
+  const handler = (e: any) => {
+    if (currentIntl !== intl) {
+      update({});
+    }
+  };
   document.addEventListener('setlocale', handler, false);
   return () => document.removeEventListener('setlocale', handler, false);
 }
