@@ -111,7 +111,7 @@
           /****/'</div>' +
           /**/'</div>' +
           /**/'<div id="encryptHintText" style="display: none;">' +
-          /****/'<i class="fa fa-info" aria-hidden="true"></i>' +
+          /****/'<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
           /****/'<div class="hint">' +
           /******/`<h2 class="title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
           /******/`<p>${formatMessage(adminConfigurationMessages.encryptHint)}</p>` +
@@ -355,7 +355,7 @@
       addButtons: function (containerEl, itemSelectEl, editor) {
 
         containerEl.innerHTML =
-          '<a href="#" id="encryptHint" class="hint-btn"><i class="fa fa-question-circle-o" aria-hidden="true"></i></a>' +
+          '<a href="#" id="encryptHint" class="hint-btn"><i class="hint-btn--icon fa fa-question-circle-o" aria-hidden="true"></i></a>' +
           '<button id="encryptButton" class="btn btn-default">' + formatMessage(adminConfigurationMessages.encryptMarked) + '</button> ' +
           `<button type="submit" id="view-sample-button" class="btn btn-primary">${CMgs.format(formsLangBundle, 'viewSample')}</button>` +
           `<button type="submit" id="hide-sample-button" class="btn btn-primary">${CMgs.format(formsLangBundle, 'hideSample')}</button>`;
@@ -557,8 +557,8 @@
             CStudioAuthoring.Operations.simpleDialogTypeINFO,
             formatMessage(adminConfigurationMessages.encryptMarked),
             '<div class="encrypt-hint">' +
-            '<i class="fa fa-info" aria-hidden="true"></i>' +
-            `<p>${formatMessage(adminConfigurationMessages.encryptHint)}</p></div>`,
+            '<i class="encrypt-hint--icon fa fa-info" aria-hidden="true"></i>' +
+            `<p class="encrypt-hint--description">${formatMessage(adminConfigurationMessages.encryptHint)}</p></div>`,
             [{
               text: CMgs.format(formsLangBundle, 'Ok'), handler: function () {
                 this.destroy();

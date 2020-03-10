@@ -91,7 +91,7 @@
   vertical-align: middle;
 }
 
-.hint-btn i.fa, #encryptHintText i {
+.hint-btn .hint-btn--icon, #encryptHintText .hint-text--icon {
   font-size: 20px;
   color: #5cc7fa;
 }
@@ -102,20 +102,20 @@
   padding-bottom: 60px;
 }
 
-#encryptHintText i {
+#encryptHintText .hint-text--icon {
   margin-right: 10px;
   font-size: 14px;
   margin-top: 4px;
 }
 
-#encryptHintText i::before {
+#encryptHintText .hint-text--icon::before {
   border: 2px solid;
   padding: 2px 6px;
   border-radius: 10px;
 }
 
 #encryptHintText .hint .title {
-  font-size: 14px;
+  font-size: 12px;
   margin: 2px 0 0;
 }
 
@@ -123,20 +123,20 @@
   display: flex;
 }
 
-#encryptionInfoDialog .encrypt-hint i {
+#encryptionInfoDialog .encrypt-hint .encrypt-hint--icon {
   font-size: 12px;
   color: #5cc7fa;
   margin-right: 10px;
   margin-top: 2px;
 }
 
-#encryptionInfoDialog .encrypt-hint i::before {
+#encryptionInfoDialog .encrypt-hint .encrypt-hint--icon::before {
   border: 2px solid;
   padding: 2px 6px;
   border-radius: 10px;
 }
 
-#encryptionInfoDialog .encrypt-hint p {
+#encryptionInfoDialog .encrypt-hint .encrypt-hint--description {
   padding: 0;
   margin: 0;
 }
