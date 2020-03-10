@@ -91,26 +91,26 @@
           containerEl = document.getElementById('config-area');
 
         containerEl.innerHTML =
-          '<div class=\'configuration-window\'>' +
-          /**/'<p id=\'activeEnvironment\' class=\'hide\'><strong>Active Environment:</strong> <span id=\'active-environment-value\'>' + this.environment + '</span></p>' +
-          /**/'<select id=\'config-list\'>' +
-          /****/' <option value=\'\' >' + CMgs.format(langBundle, 'confTabSelectConf') + '</option>' +
+          '<div class="configuration-window">' +
+          /**/'<p id="activeEnvironment" class="hide"><strong>Active Environment:</strong> <span id="active-environment-value">' + this.environment + '</span></p>' +
+          /**/'<select id="config-list">' +
+          /****/' <option value="" >' + CMgs.format(langBundle, 'confTabSelectConf') + '</option>' +
           /**/'</select>' +
-          /**/'<div id=\'edit-area\'>' +
-          /****/'<div id=\'menu-area\'>' +
-          /******/'<div id=\'config-description\'>' +
+          /**/'<div id="edit-area">' +
+          /****/'<div id="menu-area">' +
+          /******/'<div id="config-description">' +
           /******/'</div>' +
-          /******/'<div id=\'config-buttons\'>' +
+          /******/'<div id="config-buttons">' +
           /******/'</div>' +
           /****/'</div>' +
-          /****/'<div id=\'content-area\'>' +
-          /******/'<div id=\'edit-window\'>' +
+          /****/'<div id="content-area">' +
+          /******/'<div id="edit-window">' +
           /******/'</div>' +
-          /******/'<div id=\'sample-window\'>' +
+          /******/'<div id="sample-window">' +
           /******/'</div>' +
           /****/'</div>' +
           /**/'</div>' +
-          /**/'<div id=\'encryptHintText\' style=\'display: none;\'>' +
+          /**/'<div id="encryptHintText" style="display: none;">' +
           /****/'<i class="fa fa-info" aria-hidden="true"></i>' +
           /****/'<div class="hint">' +
           /******/`<h2 class="title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
