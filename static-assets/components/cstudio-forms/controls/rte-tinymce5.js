@@ -662,7 +662,7 @@ CStudioAuthoring.Module.requireModule(
 
           if (obj.required) {
             if (obj.value == '') {
-              obj.setError('required', 'Field is Required');
+              obj.setError('required', this.formatMessage(this.messages.requiredField));
               obj.renderValidation(true, false);
             } else {
               obj.clearError('required');
