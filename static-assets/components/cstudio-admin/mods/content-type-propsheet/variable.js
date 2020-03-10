@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable = CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable || function (fieldName, containerEl) {
+CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable = function (fieldName, containerEl) {
   this.fieldName = fieldName;
   this.containerEl = containerEl;
   return this;
