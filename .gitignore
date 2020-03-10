@@ -23,6 +23,8 @@ templates/web/common/js-next-scripts.ftl
 # misc
 *.ignore.*
 
+ui/app/.env.development
+
 # Ignore irrelevant generated translation system files
 ui/app/src/translations/src
 ui/app/src/translations/whitelists

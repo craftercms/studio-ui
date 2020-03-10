@@ -46,7 +46,6 @@ import uuid from 'uuid/v4';
 import { ContentInstance, ContentInstanceSystemProps } from '../models/ContentInstance';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
-import { Item } from '../models/Item';
 import { Operation } from '../models/Operations';
 
 const apiUrl = 'http://authoring.sample.com:3030';
@@ -57,7 +56,7 @@ export class ContentController {
   static operations = ContentController.operations$.asObservable();
 
   /* private */
-  static models$ = new BehaviorSubject({ /*'modelId': { ...modelData }*/ } as LookupTable<ContentInstance>);
+  static models$ = new BehaviorSubject<LookupTable<ContentInstance>>({ /*'modelId': { ...modelData }*/ });
   /* private */
   static modelsObs$ = ContentController.models$.asObservable().pipe(
     filter((objects) => Object.keys(objects).length > 0),
@@ -65,7 +64,7 @@ export class ContentController {
   );
 
   /* private */
-  static contentTypes$ = new BehaviorSubject({ /*...*/ });
+  static contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({ /*...*/ });
   /* private */
   static contentTypesObs$ = ContentController.contentTypes$.asObservable().pipe(
     filter((objects) => Object.keys(objects).length > 0),
@@ -194,7 +193,7 @@ export class ContentController {
     modelId: string,
     fieldId: string,
     index: number | string,
-    item: Item
+    item: ContentInstance
   ): void {
 
     const models = this.getCachedModels();
@@ -301,6 +300,8 @@ export class ContentController {
 
   }
 
+  insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void;
+  insertInstance(modelId: string, fieldId: string, targetIndex: string, instance: ContentInstance): void;
   insertInstance(modelId: string, fieldId: string, targetIndex: number | string, instance: ContentInstance): void {
     const models = this.getCachedModels();
     const model = models[modelId];
@@ -482,11 +483,7 @@ export class ContentController {
 
   }
 
-  deleteItem(
-    modelId: string,
-    fieldId: string,
-    index: number | string
-  ): void {
+  deleteItem(modelId: string, fieldId: string, index: number | string): void {
 
     const isStringIndex = typeof index === 'string';
     const parsedIndex = parseInt(popPiece(`${index}`), 10);
@@ -548,6 +545,8 @@ export class ContentController {
   }
 
   /* private */
+  modelsResponseReceived(responseModels: ContentInstance[]): void;
+  modelsResponseReceived(responseModels: LookupTable<ContentInstance>): void;
   modelsResponseReceived(responseModels: LookupTable<ContentInstance> | ContentInstance[]): void {
 
     if (Array.isArray(responseModels)) {
@@ -579,6 +578,8 @@ export class ContentController {
   }
 
   /* private */
+  contentTypesResponseReceived(responseContentTypes: ContentType[]): void;
+  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>): void;
   contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]): void {
 
     if (Array.isArray(responseContentTypes)) {
