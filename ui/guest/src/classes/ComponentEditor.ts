@@ -20,7 +20,7 @@ import { debounceTime, throttleTime } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 let cmpEditIds = 0;
-const post = () => void null;
+const post = (...args: any[]) => void null;
 
 export class ComponentEditor {
 
@@ -30,6 +30,8 @@ export class ComponentEditor {
   $marker;
   handlers;
   input$Sub;
+  props;
+  initialValue;
 
   terminated = false;
 
@@ -64,7 +66,7 @@ export class ComponentEditor {
       $marker.addClass('craftercms-zone-marker__editing-content');
 
       $el
-        .attr('draggable', false)
+        .attr('draggable', 'false')
         .removeAttr('draggable');
 
       input$
@@ -72,7 +74,7 @@ export class ComponentEditor {
         .subscribe(() => this.inputHandler);
 
       $el
-        .attr('contenteditable', true)
+        .attr('contenteditable', 'true')
         .on('keydown', handlers.keydown)
         .on('input', handlers.input)
         .on('blur', handlers.blur)

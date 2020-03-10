@@ -15,25 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useLayoutEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useEffect, useState } from 'react';
+import { Markers } from '../classes/Markers';
 
-export default function CrafterCMSPortal(props) {
+interface ZoneMarkerProps {
+  rect?: DOMRect;
+  label?: string;
+  id?: number;
+  key?: number;
+}
 
-  const portalRef = useRef(document.createElement('craftercms-portal'));
+export function ZoneMarker(props: ZoneMarkerProps) {
 
-  useLayoutEffect(() => {
-    const body = document.body;
-    const portal = portalRef.current;
-    body.appendChild(portal);
-    return () => {
-      body.removeChild(portal);
-    };
-  }, []);
+  const //
+    { rect, label } = props,
+    [zoneStyle, setZoneStyle] = useState(),
+    [labelStyle, setLabelStyle] = useState();
 
-  return ReactDOM.createPortal(
-    props.children,
-    portalRef.current
+  useEffect(
+    () => {
+      setZoneStyle(Markers.getZoneMarkerStyle(rect));
+      setLabelStyle(Markers.getZoneMarkerLabelStyle(rect));
+    },
+    [rect]
+  );
+
+  return (
+    <craftercms-zone-marker style={zoneStyle}>
+      <craftercms-zone-marker-label style={labelStyle}>{label}</craftercms-zone-marker-label>
+    </craftercms-zone-marker>
   );
 
 }

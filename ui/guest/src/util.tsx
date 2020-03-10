@@ -17,10 +17,13 @@
 
 import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
-import { fromEvent, interval } from 'rxjs';
+import { fromEvent, interval, Subscription } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
+import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs, InRectStats } from './models/Positioning';
+import { LookupTable } from './models/LookupTable';
+import { ContentTypeField } from './models/ContentType';
 
-export const foo = () => void null;
+export const foo = (...args: any[]) => void null;
 export const
   X_AXIS = 'X',
   Y_AXIS = 'Y',
@@ -84,25 +87,25 @@ export const EditingStatus = {
   SHOW_RECEPTACLES: 'SHOW_RECEPTACLES'
 };
 
-export function notNullOrUndefined(value) {
+export function notNullOrUndefined(value: any): boolean {
   return value != null;
 }
 
-export function isNullOrUndefined(value) {
+export function isNullOrUndefined(value: any): boolean {
   return value == null;
 }
 
-export function not(condition) {
+export function not(condition: boolean): boolean {
   return !condition;
 }
 
-export function sibling(element, next) {
+export function sibling(element: HTMLElement, next: boolean): Element {
   return (next)
     ? element.nextElementSibling
     : element.previousElementSibling;
 }
 
-export function forEach(array, fn, emptyReturnValue) {
+export function forEach(array: any[], fn: (item: any, index?: number, array?: any[]) => any, emptyReturnValue?: any): any {
   if (notNullOrUndefined(emptyReturnValue) && array.length === 0) {
     return emptyReturnValue;
   }
@@ -119,7 +122,7 @@ export function forEach(array, fn, emptyReturnValue) {
   return emptyReturnValue;
 }
 
-export function findComponentContainerFields(fields) {
+export function findComponentContainerFields(fields: LookupTable<ContentTypeField> | ContentTypeField[]): ContentTypeField[] {
   if (!Array.isArray(fields)) {
     fields = Object.values(fields);
   }
@@ -149,7 +152,7 @@ export function findComponentContainerFields(fields) {
 //   });
 // }
 
-export function getDropMarkerPosition(args) {
+export function getDropMarkerPosition(args: DropMarkerPositionArgs): DropMarkerPosition {
   const
     {
       // refElement,
@@ -158,7 +161,6 @@ export function getDropMarkerPosition(args) {
       refElementRect,
       nextOrPrevRect
     } = args,
-
     horizontal = (arrangement === HORIZONTAL),
     before = (insertPosition === 'before'),
 
@@ -221,9 +223,9 @@ export function getDropMarkerPosition(args) {
 }
 
 // noinspection DuplicatedCode
-export function splitRect(rect, axis = X_AXIS) {
+export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
   // x, y, width, height, top, right, bottom, left
-  let rect1 = {}, rect2 = {};
+  let rect1: any = {}, rect2: any = {};
 
   // noinspection DuplicatedCode
   if (axis === X_AXIS) {
@@ -276,7 +278,8 @@ export function splitRect(rect, axis = X_AXIS) {
   return [rect1, rect2];
 }
 
-export function insertDropMarker({ $dropMarker, insertPosition, refElement }) {
+export function insertDropMarker({ $dropMarker, insertPosition, refElement }:
+                                   { $dropMarker: JQuery<any>, insertPosition: string, refElement: HTMLElement | JQuery | string }): void {
   if (insertPosition === 'after') {
     $dropMarker.insertAfter(refElement);
   } else {
@@ -284,15 +287,16 @@ export function insertDropMarker({ $dropMarker, insertPosition, refElement }) {
   }
 }
 
-export function getDistanceBetweenPoints(p1, p2) {
+export function getDistanceBetweenPoints(p1: Coordinates, p2: Coordinates): number {
   const div = document.createElement('div');
+
   return Math.sqrt(
     Math.pow(p2.x - p1.x, 2) +
     Math.pow(p2.y - p1.y, 2)
   );
 }
 
-export function findClosestRect(parentRect, subRects, coordinates) {
+export function findClosestRect(parentRect: DOMRect, subRects: DOMRect[], coordinates: Coordinates): number {
   let //
     index = -1,
     distances = []
@@ -325,7 +329,7 @@ export function findClosestRect(parentRect, subRects, coordinates) {
   return index;
 }
 
-export function getChildArrangement(children, childrenRects, selfRect) {
+export function getChildArrangement(children: Element[], childrenRects: DOMRect[], selfRect?: DOMRect): string {
   if (children.length === 0) {
     // If width is big enough, we may assume it may potentially have multiple
     // columns and HORIZONTAL arrangement may be better guess; however,
@@ -372,7 +376,7 @@ export function getChildArrangement(children, childrenRects, selfRect) {
   return alignedTop ? HORIZONTAL : VERTICAL;
 }
 
-export function getInRectStats(rect, coordinates, tolerancePercents = TOLERANCE_PERCENTS) {
+export function getInRectStats(rect: DOMRect, coordinates: Coordinates, tolerancePercents: Coordinates = TOLERANCE_PERCENTS): InRectStats {
   const
     percents = Markers.getRelativePointerPositionPercentages(
       coordinates,
@@ -416,7 +420,7 @@ export function getInRectStats(rect, coordinates, tolerancePercents = TOLERANCE_
   };
 }
 
-export function pluckProps(source, ...props) {
+export function pluckProps(source: object, ...props: string[]): object {
   const object = {};
   if (isNullOrUndefined(source)) {
     return object;
@@ -429,7 +433,7 @@ export function pluckProps(source, ...props) {
   return object;
 }
 
-export function reversePluckProps(source, ...props) {
+export function reversePluckProps(source: object, ...props: string[]): object {
   const object = {};
   if (isNullOrUndefined(source)) {
     return object;
@@ -442,11 +446,11 @@ export function reversePluckProps(source, ...props) {
   return object;
 }
 
-export function capitalize(str) {
+export function capitalize(str: string): string {
   return `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
 }
 
-export function retrieveProperty(object, prop) {
+export function retrieveProperty(object: object, prop: string): any {
   return (object == null)
     ? null
     : (!prop)
@@ -454,7 +458,7 @@ export function retrieveProperty(object, prop) {
       : prop.split('.').reduce((value, prop) => value[prop], object);
 }
 
-export function setProperty(object, prop, value) {
+export function setProperty(object: object, prop: string, value: any): boolean {
   if (object) {
     const props = prop.split('.');
     const propToSet = props.pop();
@@ -469,10 +473,10 @@ export function setProperty(object, prop, value) {
   return false;
 }
 
-export function createLookupTable(list, idProp = 'id') {
+export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTable<T> {
   const table = {};
   list.forEach((item) => {
-    table[retrieveProperty(item, idProp)] = item;
+    table[retrieveProperty(item as any, idProp)] = item;
   });
   return table;
 }
@@ -487,7 +491,7 @@ export function createLookupTable(list, idProp = 'id') {
 // delegate on the document (i.e. the event as bubbled all the way up).
 // Would need to add additional logic to set the delegation in a way that
 // events can still be stopped (see jQuery).
-export function addClickListener(element, type, handler) {
+export function addClickListener(element: HTMLElement | Document, type: string, handler: (e: Event) => any): Subscription {
 
   if (element === document) {
     // TODO: set up as delegate, control event propagation & stopping accordingly
@@ -500,7 +504,7 @@ export function addClickListener(element, type, handler) {
       takeUntil(interval(300)),
       take(1)
     )),
-    filter((e) => (
+    filter((e: any) => (
       e.target.hasAttribute('data-craftercms-model-id') ||
       forEach(e.path, (el) => (
         (
@@ -514,11 +518,11 @@ export function addClickListener(element, type, handler) {
 
 }
 
-export function isElementInView(element, fullyInView) {
-  var pageTop = $(window).scrollTop();
-  var pageBottom = pageTop + $(window).height();
-  var elementTop = $(element).offset().top;
-  var elementBottom = elementTop + $(element).height();
+export function isElementInView(element: HTMLElement | Element, fullyInView?: boolean): boolean {
+  const pageTop = $(window).scrollTop();
+  const pageBottom = pageTop + $(window).height();
+  const elementTop = $(element).offset().top;
+  const elementBottom = elementTop + $(element).height();
 
   if (fullyInView === true) {
     return ((pageTop < elementTop) && (pageBottom > elementBottom));
@@ -527,14 +531,14 @@ export function isElementInView(element, fullyInView) {
   }
 }
 
-export function removeLastPiece(str, splitChar = '.') {
+export function removeLastPiece(str: string, splitChar: string = '.'): string {
   return str.substr(0, str.lastIndexOf(splitChar));
 }
 
-export function popPiece(str, splitChar = '.') {
+export function popPiece(str: string, splitChar: string = '.'): string {
   return str.substr(str.lastIndexOf(splitChar) + 1);
 }
 
-export function isBlank(str) {
+export function isBlank(str: string): boolean {
   return str === '';
 }

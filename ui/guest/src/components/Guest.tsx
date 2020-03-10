@@ -61,18 +61,39 @@ import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
+import { Asset, ContentType } from '../models/ContentType';
+import { ContentInstance } from '../models/ContentInstance';
+import { DropZone, HoverData, Record } from '../models/InContextEditing';
+import { LookupTable } from '../models/LookupTable';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
 
 const clearAndListen$ = new Subject();
-const escape$ = fromEvent(document, 'keydown').pipe(
+const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
   filter(e => e.keyCode === 27)
 );
 
+interface GuestProps {
+  modelId: string;
+  documentDomain: string;
+  path?: string;
+  styles?: any;
+  children?: any;
+  isAuthoring?: boolean;
+  scrollElement?: string;
+  editModeOnIndicatorClass?: string;
+}
+
+declare global {
+  interface Window {
+    tinymce: { [prop: string]: any };
+  }
+}
+
 // TODO:
 // - add "modePreview" and bypass all
-export function Guest(props) {
+export function Guest(props: GuestProps) {
 
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
@@ -86,10 +107,16 @@ export function Guest(props) {
     scrollElement = 'html, body',
     editModeOnIndicatorClass = 'craftercms-ice-on'
   } = props;
+
   const { current: persistence } = useRef({
     contentReady: false,
-    mouseOverTimeout: null
+    mouseOverTimeout: null,
+    dragover$: null,
+    scrolling$: null,
+    onScroll: null
   });
+
+  const highlightedInitialData: LookupTable<HoverData> = {};
 
   const [, forceUpdate] = useState({});
   const stateRef = useRef({
@@ -108,7 +135,7 @@ export function Guest(props) {
       dragged: {},
       editable: {},
       draggable: {},
-      highlighted: {},
+      highlighted: highlightedInitialData,
 
       register,
       deregister,
@@ -124,7 +151,7 @@ export function Guest(props) {
 
   const fn = {
 
-    onEditModeChanged(inEditMode) {
+    onEditModeChanged(inEditMode): void {
 
       const status = inEditMode ? EditingStatus.LISTENING : EditingStatus.OFF;
 
@@ -141,11 +168,11 @@ export function Guest(props) {
 
     },
 
-    initializeSubjects() {
+    initializeSubjects(): void {
 
       const
-        dragover$ = new Subject(),
-        scrolling$ = new Subject();
+        dragover$ = new Subject<{ e: DragEvent, record: Record }>(),
+        scrolling$ = new Subject<boolean>();
 
       persistence.dragover$ = dragover$;
       persistence.scrolling$ = scrolling$;
@@ -180,7 +207,7 @@ export function Guest(props) {
 
     },
 
-    destroySubjects() {
+    destroySubjects(): void {
 
       persistence.dragover$.complete();
       persistence.dragover$.unsubscribe();
@@ -196,7 +223,7 @@ export function Guest(props) {
     },
 
     /*onClick*/
-    click(e, record) {
+    click(e: Event, record: Record): void {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
@@ -211,8 +238,7 @@ export function Guest(props) {
 
             (type === 'html') && plugins.push('quickbars');
 
-            // eslint-disable-next-line no-undef
-            if (!tinymce) {
+            if (!window.tinymce) {
               return alert('Looks like tinymce is not added on the page. Please add tinymce on to the page to enable editing.');
             }
 
@@ -221,8 +247,7 @@ export function Guest(props) {
               $(record.element).css('display', 'inline-block');
             }
 
-            // eslint-disable-next-line no-undef
-            tinymce.init({
+            window.tinymce.init({
               mode: 'none',
               target: record.element,
               plugins,
@@ -358,7 +383,7 @@ export function Guest(props) {
       }
     },
 
-    dblclick(e, record) {
+    dblclick(e: Event, record: Record): void {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
         setState({
@@ -376,7 +401,7 @@ export function Guest(props) {
     },
 
     /*onMouseOver*/
-    mouseover(e, record) {
+    mouseover(e: Event, record: Record): void {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         clearTimeout(persistence.mouseOverTimeout);
         e.stopPropagation();
@@ -398,7 +423,7 @@ export function Guest(props) {
     },
 
     /*onMouseOut*/
-    mouseout(e) {
+    mouseout(e: Event): void {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         e.stopPropagation();
         clearTimeout(persistence.mouseOverTimeout);
@@ -410,7 +435,8 @@ export function Guest(props) {
     },
 
     /*onDragStart*/
-    dragstart(e, physicalRecord) {
+    dragstart(e, physicalRecord: Record): void {
+
       e.stopPropagation();
       (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', null);
 
@@ -474,7 +500,7 @@ export function Guest(props) {
 
     },
 
-    onHostInstanceDragStarted(instance) {
+    onHostInstanceDragStarted(instance: ContentInstance): void {
       let players = [];
       let siblings = [];
       let containers = [];
@@ -533,11 +559,11 @@ export function Guest(props) {
 
     },
 
-    onHostInstanceDragEnd() {
+    onHostInstanceDragEnd(): void {
       fn.dragOk() && fn.onDragEnd();
     },
 
-    onHostComponentDragStarted(contentType) {
+    onHostComponentDragStarted(contentType: ContentType): void {
 
       let players = [];
       let siblings = [];
@@ -597,11 +623,11 @@ export function Guest(props) {
 
     },
 
-    onHostComponentDragEnd() {
+    onHostComponentDragEnd(): void {
       fn.dragOk() && fn.onDragEnd();
     },
 
-    dragover(e, record) {
+    dragover(e: DragEvent, record: Record): void {
       let element = record.element;
       if (
         fn.dragOk() &&
@@ -613,7 +639,7 @@ export function Guest(props) {
       }
     },
 
-    onDragOver(e, physicalRecord) {
+    onDragOver(e: DragEvent, physicalRecord: Record): void {
       const dragContext = stateRef.current.dragContext;
       if (persistence.scrolling$.value) {
         return null;
@@ -626,7 +652,7 @@ export function Guest(props) {
           { next, prev } =
             // No point finding siblings for the drop zone element
             stateRef.current.dragContext.containers.includes(element)
-              ? {}
+              ? { next: null, prev: null }
               : ElementRegistry.getSiblingRects(physicalRecord.id);
 
         setState({
@@ -653,7 +679,7 @@ export function Guest(props) {
 
     },
 
-    drop(e, record) {
+    drop(e: JQuery.DropEvent, record: Record): void {
       if (fn.dragOk()) {
         e.preventDefault();
         e.stopPropagation();
@@ -661,7 +687,7 @@ export function Guest(props) {
       }
     },
 
-    onDrop(e, record) {
+    onDrop(e: JQuery.DropEvent, record: Record): void {
 
       const state = stateRef.current;
       const status = state.common.status;
@@ -708,7 +734,7 @@ export function Guest(props) {
           if (stateRef.current.dragContext.inZone) {
             const file = e.originalEvent.dataTransfer.files[0];
             const reader = new FileReader();
-            reader.onload = (function (aImg) {
+            reader.onload = (function (aImg: HTMLImageElement) {
               message$.pipe(
                 filter((e) =>
                   (e.data?.type === DESKTOP_ASSET_UPLOAD_COMPLETE) &&
@@ -734,7 +760,7 @@ export function Guest(props) {
                 });
                 aImg.src = event.target.result;
               };
-            })(record.element);
+            })(record.element as HTMLImageElement);
             fn.onDragEnd();
             reader.readAsDataURL(file);
           }
@@ -746,7 +772,7 @@ export function Guest(props) {
 
     },
 
-    moveComponent() {
+    moveComponent(): void {
 
       let
         {
@@ -816,7 +842,7 @@ export function Guest(props) {
 
     },
 
-    insertComponent() {
+    insertComponent(): void {
 
       const { targetIndex, contentType, dropZone } = stateRef.current.dragContext;
       const record = iceRegistry.recordOf(dropZone.iceId);
@@ -832,7 +858,7 @@ export function Guest(props) {
 
     },
 
-    insertInstance() {
+    insertInstance(): void {
       const { targetIndex, instance, dropZone } = stateRef.current.dragContext;
       const record = iceRegistry.recordOf(dropZone.iceId);
 
@@ -848,7 +874,7 @@ export function Guest(props) {
     // onDragEnd doesn't execute when dropping from Host
     // consider behaviour when running Host Guest-side
     /*onDragEnd*/
-    dragend(e) {
+    dragend(e: Event): void {
       if (fn.dragOk()) {
         e.stopPropagation();
         post({ type: INSTANCE_DRAG_ENDED });
@@ -856,7 +882,7 @@ export function Guest(props) {
       }
     },
 
-    onDragEnd() {
+    onDragEnd(): void {
 
       fn.destroySubjects();
 
@@ -874,13 +900,13 @@ export function Guest(props) {
 
     },
 
-    dragleave() {
+    dragleave(): void {
       if (fn.dragOk()) {
         fn.onDragLeave();
       }
     },
 
-    onDragLeave() {
+    onDragLeave(): void {
       setState({
         dragContext: {
           ...stateRef.current.dragContext,
@@ -897,7 +923,7 @@ export function Guest(props) {
       });
     },
 
-    onPermMouseOut() {
+    onPermMouseOut(): void {
       setState({
         ...stateRef.current,
         common: {
@@ -911,7 +937,7 @@ export function Guest(props) {
       });
     },
 
-    onScroll() {
+    onScroll(): void {
       setState({
         dragContext: {
           ...stateRef.current.dragContext,
@@ -929,7 +955,7 @@ export function Guest(props) {
       });
     },
 
-    onScrollStopped() {
+    onScrollStopped(): void {
       const dragContext = stateRef.current.dragContext;
       setState({
         dragContext: {
@@ -950,7 +976,7 @@ export function Guest(props) {
       });
     },
 
-    onAssetDragStarted(asset) {
+    onAssetDragStarted(asset: Asset): void {
       let
         players = [],
         siblings = [],
@@ -1004,11 +1030,11 @@ export function Guest(props) {
 
     },
 
-    onAssetDragEnded() {
+    onAssetDragEnded(): void {
       fn.onDragEnd();
     },
 
-    onSetDropPosition(payload) {
+    onSetDropPosition(payload): void {
       setState({
         ...stateRef.current,
         dragContext: {
@@ -1026,24 +1052,24 @@ export function Guest(props) {
 
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
-    onTrashDrop() {
+    onTrashDrop(): void {
       const { dragContext } = stateRef.current;
       const { id } = dragContext.dragged;
       let { modelId, fieldId, index } = iceRegistry.recordOf(id);
       contentController.deleteItem(modelId, fieldId, index);
     },
 
-    dragOk() {
+    dragOk(): boolean {
       return [
         EditingStatus.SORTING_COMPONENT,
         EditingStatus.PLACING_NEW_COMPONENT,
         EditingStatus.PLACING_DETACHED_ASSET,
         EditingStatus.PLACING_DETACHED_COMPONENT,
-        EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
+        EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
       ].includes(stateRef.current.common.status);
     },
 
-    clearAndListen() {
+    clearAndListen(): void {
       clearAndListen$.next();
       setState({
         ...stateRef.current,
@@ -1055,7 +1081,7 @@ export function Guest(props) {
       });
     },
 
-    onDesktopAssetDragStarted(asset) {
+    onDesktopAssetDragStarted(asset: DataTransferItem): void {
       let
         players = [],
         siblings = [],
@@ -1109,15 +1135,15 @@ export function Guest(props) {
     }
   };
 
-  function register(payload) {
+  function register(payload): number {
     return ElementRegistry.register(payload);
   }
 
-  function deregister(id) {
+  function deregister(id: number): Record {
     return ElementRegistry.deregister(id);
   }
 
-  function onEvent(event, dispatcher) {
+  function onEvent(event: Event, dispatcher: number): boolean {
     if (
       persistence.contentReady &&
       stateRef.current.common.inEditMode
@@ -1142,7 +1168,7 @@ export function Guest(props) {
     }
   }
 
-  function scrollToReceptacle(receptacles) {
+  function scrollToReceptacle(receptacles: Record[]): void {
     let elementInView;
     let element;
     elementInView = forEach(receptacles, ({ id }) => {
@@ -1163,7 +1189,7 @@ export function Guest(props) {
     }
   }
 
-  function getHighlighted(dropZones) {
+  function getHighlighted(dropZones: DropZone[]): LookupTable<{ id: number, rect: DOMRect, label: string }> {
     return dropZones.reduce((object, { physicalRecordId: id }) => {
       object[id] = ElementRegistry.getHoverData(id);
       return object;
@@ -1193,7 +1219,7 @@ export function Guest(props) {
         case ASSET_DRAG_STARTED:
           return fn.onAssetDragStarted(payload);
         case ASSET_DRAG_ENDED:
-          return fn.onAssetDragEnded(payload);
+          return fn.onAssetDragEnded();
         case COMPONENT_DRAG_STARTED:
           return fn.onHostComponentDragStarted(payload);
         case COMPONENT_DRAG_ENDED:
@@ -1203,7 +1229,7 @@ export function Guest(props) {
         case COMPONENT_INSTANCE_DRAG_ENDED:
           return fn.onHostInstanceDragEnd();
         case TRASHED:
-          return fn.onTrashDrop(payload);
+          return fn.onTrashDrop();
         case CLEAR_SELECTED_ZONES:
           fn.clearAndListen();
           break;
@@ -1262,7 +1288,7 @@ export function Guest(props) {
       }
     });
 
-    const stylesheet = appendStyleSheet({ styles });
+    const stylesheet = appendStyleSheet(styles);
 
     return () => {
       stylesheet.detach();
@@ -1309,7 +1335,7 @@ export function Guest(props) {
   }, [modelId, path]);
 
   useEffect(() => {
-    const subscription = fromEvent(document, 'dragenter').pipe(
+    const subscription = fromEvent<DragEvent>(document, 'dragenter').pipe(
       filter((e) => e.dataTransfer?.types.includes('Files'))
     ).subscribe((e) => {
       e.preventDefault();
@@ -1353,7 +1379,7 @@ export function Guest(props) {
           (stateRef.current.common.status !== EditingStatus.OFF) &&
           <CrafterCMSPortal>
             {
-              Object.values(stateRef.current.common.highlighted).map((highlight) =>
+              Object.values(stateRef.current.common.highlighted).map((highlight: HoverData) =>
                 <ZoneMarker key={highlight.id} {...highlight} />
               )
             }

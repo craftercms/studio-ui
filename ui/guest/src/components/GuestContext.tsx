@@ -55,7 +55,7 @@ export function useGuestContext() {
   return context;
 }
 
-export function GuestContextProvider(props) {
+export function GuestContextProvider(props): JSX.Element {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const value = useMemo(() => [state, dispatch], [state]);
   return (

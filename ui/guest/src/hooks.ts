@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,6 +21,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import contentController from './classes/ContentController';
 import { GuestContext } from './components/GuestContext';
 import { skip } from 'rxjs/operators';
+import { ContentInstance } from './models/ContentInstance';
 
 const fooEvents = {
   ref: foo,
@@ -99,7 +101,7 @@ export function useICE(props) {
 
   // region Internal
 
-  function onModelChanged() {
+  function onModelChanged(): void {
     // Refs setting will call onModelChanged too for the element registration.
     if (persistence.id != null) {
       deregister(persistence.id);
@@ -115,7 +117,7 @@ export function useICE(props) {
     });
   }
 
-  function componentWillUnmount() {
+  function componentWillUnmount(): void {
     deregister(persistence.id);
   }
 
@@ -123,7 +125,7 @@ export function useICE(props) {
 
   // region Ref
 
-  function ref(element) {
+  function ref(element: HTMLElement): void {
     clearTimeout(persistence.refTimeout);
 
     try {
@@ -171,7 +173,7 @@ export function useICE(props) {
 
   // endregion
 
-  function onClick(e) {
+  function onClick(e: Event): void {
     if (onEvent(e, persistence.id)) {
       handlers.onClick(e);
     }
@@ -179,13 +181,13 @@ export function useICE(props) {
 
   // region MouseOver Events
 
-  function onMouseOver(e) {
+  function onMouseOver(e: Event): void {
     if (onEvent(e, persistence.id)) {
       handlers.onMouseOver(e);
     }
   }
 
-  function onMouseOut(e) {
+  function onMouseOut(e: Event): void {
     if (onEvent(e, persistence.id)) {
       handlers.onMouseOut(e);
     }
@@ -195,31 +197,31 @@ export function useICE(props) {
 
   // region Dragging Events
 
-  function onDragStart(e) {
+  function onDragStart(e: Event): void {
     if (onEvent(e, persistence.id)) {
       handlers.onDragStart(e);
     }
   }
 
-  function onDragOver(e) {
+  function onDragOver(e: Event): void {
     if (onEvent(e, persistence.id)) {
       handlers.onDragOver(e);
     }
   }
 
-  function onDrop(e) {
+  function onDrop(e: Event): void {
     if (onEvent(e, persistence.id)) {
       handlers.onDrop(e);
     }
   }
 
-  function onDragEnd(e) {
+  function onDragEnd(e: Event): void {
     if (onEvent(e, persistence.id)) {
       handlers.onDragEnd(e);
     }
   }
 
-  function onDragLeave(e) {
+  function onDragLeave(e: Event): void {
     if (onEvent(e, persistence.id)) {
       handlers.onDragLeave(e);
     }
@@ -247,9 +249,9 @@ export function useICE(props) {
 
 }
 
-function useModel({ modelId }) {
+function useModel({ modelId }): ContentInstance {
   const [model, setModel] = useState(
-    contentController.getCachedModel(modelId) || {}
+    contentController.getCachedModel(modelId) || { craftercms: null }
   ); // Use react-cache resource here?
   useEffect(
     () => {

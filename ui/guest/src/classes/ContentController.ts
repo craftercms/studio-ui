@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BehaviorSubject, Subject } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { ajax, AjaxResponse } from 'rxjs/ajax';
 import { filter, map, share, take } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import {
@@ -43,16 +43,21 @@ import {
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../communicator';
 import uuid from 'uuid/v4';
+import { ContentInstance, ContentInstanceSystemProps } from '../models/ContentInstance';
+import { ContentType, ContentTypeField } from '../models/ContentType';
+import { LookupTable } from '../models/LookupTable';
+import { Item } from '../models/Item';
+import { Operation } from '../models/Operations';
 
 const apiUrl = 'http://authoring.sample.com:3030';
 
 export class ContentController {
 
-  static operations$ = new Subject();
+  static operations$ = new Subject<Operation>();
   static operations = ContentController.operations$.asObservable();
 
   /* private */
-  static models$ = new BehaviorSubject({ /*'modelId': { ...modelData }*/ });
+  static models$ = new BehaviorSubject({ /*'modelId': { ...modelData }*/ } as LookupTable<ContentInstance>);
   /* private */
   static modelsObs$ = ContentController.models$.asObservable().pipe(
     filter((objects) => Object.keys(objects).length > 0),
@@ -79,7 +84,8 @@ export class ContentController {
     });
   }
 
-  computeChildren(model) {
+  computeChildren(model: ContentInstance): void {
+
     let childIds = [];
     const modelId = ModelHelper.prop(model, 'id');
     const children = this.children;
@@ -102,22 +108,22 @@ export class ContentController {
 
   }
 
-  getModel(modelId)/*: Promise<Model> */ {
+  getModel(modelId: string): Promise<ContentInstance> {
     return this.getModel$(modelId).toPromise();
   }
 
-  getModel$(modelId)/*: Observable<Model> */ {
+  getModel$(modelId: string): Observable<ContentInstance> {
     return this.models$(modelId).pipe(
       filter(models => modelId in models),
       map(models => models[modelId])
     );
   }
 
-  getContentType(contentTypeId) {
+  getContentType(contentTypeId: string): Promise<ContentType> {
     return this.getContentType$(contentTypeId).toPromise();
   }
 
-  getContentType$(contentTypeId) {
+  getContentType$(contentTypeId: string): Observable<ContentType> {
     (!this.hasCachedContentType(contentTypeId)) && this.fetchContentType(contentTypeId);
     return ContentController.contentTypesObs$.pipe(
       filter(contentTypes => contentTypeId in contentTypes),
@@ -125,44 +131,40 @@ export class ContentController {
     );
   }
 
-  models$(modelId)/*: Observable<Model> */ {
+  models$(modelId?: string): Observable<LookupTable<ContentInstance>> {
     (modelId && !this.hasCachedModel(modelId)) && this.fetchModel(modelId);
     return ContentController.modelsObs$;
   }
 
-  contentTypes$()/*: Observable<Model> */ {
+  contentTypes$(): Observable<LookupTable<ContentType>> {
     return ContentController.contentTypesObs$;
   }
 
-  operations$() {
-    return ContentController.operationsObs$;
-  }
-
-  hasCachedModel(modelId) {
+  hasCachedModel(modelId: string): boolean {
     return (this.getCachedModel(modelId) != null);
   }
 
-  getCachedModel(modelId) {
+  getCachedModel(modelId: string): ContentInstance {
     return this.getCachedModels()[modelId];
   }
 
-  getCachedModels() {
+  getCachedModels(): LookupTable<ContentInstance> {
     return ContentController.models$.value;
   }
 
-  hasCachedContentType(contentTypeId) {
+  hasCachedContentType(contentTypeId: string): boolean {
     return (this.getCachedContentType(contentTypeId) != null);
   }
 
-  getCachedContentType(contentTypeId) {
+  getCachedContentType(contentTypeId: string): ContentType {
     return this.getCachedContentTypes()[contentTypeId];
   }
 
-  getCachedContentTypes() {
+  getCachedContentTypes(): LookupTable<ContentType> {
     return ContentController.contentTypes$.value;
   }
 
-  updateField(modelId, fieldId, index, value) {
+  updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
     const models = this.getCachedModels();
     const model = { ...models[modelId] };
 
@@ -189,11 +191,11 @@ export class ContentController {
   }
 
   insertItem(
-    modelId/*: string*/,
-    fieldId/*: string*/,
-    index/*: number*/,
-    item
-  ) {
+    modelId: string,
+    fieldId: string,
+    index: number | string,
+    item: Item
+  ): void {
 
     const models = this.getCachedModels();
     const model = models[modelId];
@@ -220,7 +222,13 @@ export class ContentController {
 
   }
 
-  insertComponent(modelId, fieldId, targetIndex, contentType, shared = false) {
+  insertComponent(
+    modelId: string,
+    fieldId: string,
+    targetIndex: number | string,
+    contentType: ContentType,
+    shared: boolean = false
+  ): void {
     if (typeof contentType === 'string') {
       contentType = this.getCachedContentType(contentType);
     }
@@ -232,7 +240,7 @@ export class ContentController {
 
     // Create Item
     // const now = new Date().toISOString();
-    const instance = {
+    const instance: ContentInstance = {
       craftercms: {
         id: uuid(),
         path: null,
@@ -244,7 +252,7 @@ export class ContentController {
       }
     };
 
-    function processFields(instance, fields) {
+    function processFields(instance, fields: LookupTable<ContentTypeField>) {
       Object.entries(fields).forEach(([id, field]) => {
         switch (field.type) {
           case 'repeat':
@@ -265,7 +273,7 @@ export class ContentController {
     processFields(instance, contentType.fields);
 
     // Insert in desired position
-    result.splice(targetIndex, 0, instance.craftercms.id);
+    result.splice(targetIndex as number, 0, instance.craftercms.id);
 
     ContentController.models$.next({
       ...models,
@@ -293,13 +301,13 @@ export class ContentController {
 
   }
 
-  insertInstance(modelId, fieldId, targetIndex, instance) {
+  insertInstance(modelId: string, fieldId: string, targetIndex: number | string, instance: ContentInstance): void {
     const models = this.getCachedModels();
     const model = models[modelId];
     const result = getResult(model, fieldId, targetIndex);
 
     // Insert in desired position
-    result.splice(targetIndex, 0, instance.craftercms.id);
+    result.splice(targetIndex as number, 0, instance.craftercms.id);
 
     ContentController.models$.next({
       ...models,
@@ -325,22 +333,22 @@ export class ContentController {
 
   }
 
-  insertGroup(modelId, fieldId, data) {
+  insertGroup(modelId, fieldId, data): void {
   }
 
   sortItem(
-    modelId/*: string*/,
-    fieldId/*: string*/,
-    currentIndex/*: number*/,
-    targetIndex/*: number*/
-  ) {
+    modelId: string,
+    fieldId: string,
+    currentIndex: number | string,
+    targetIndex: number | string
+  ): void {
 
     const models = this.getCachedModels();
     const model = models[modelId];
     const collection = ModelHelper.value(model, fieldId);
     const result = collection
       .slice(0, currentIndex)
-      .concat(collection.slice(currentIndex + 1));
+      .concat(collection.slice((currentIndex as number) + 1));
 
     // Insert in desired position
     result.splice(targetIndex, 0, collection[currentIndex]);
@@ -363,13 +371,13 @@ export class ContentController {
   }
 
   moveItem(
-    originalModelId/*: string*/,
-    originalFieldId/*: string*/,
-    originalIndex/*: number*/,
-    targetModelId/*: string*/,
-    targetFieldId/*: string*/,
-    targetIndex/*: number*/
-  ) {
+    originalModelId: string,
+    originalFieldId: string,
+    originalIndex: number | string,
+    targetModelId: string,
+    targetFieldId: string,
+    targetIndex: number | string
+  ): void {
 
     const models = this.getCachedModels();
 
@@ -475,10 +483,10 @@ export class ContentController {
   }
 
   deleteItem(
-    modelId/*: string */,
-    fieldId/*: string */,
-    index/*: number | string */,
-  ) {
+    modelId: string,
+    fieldId: string,
+    index: number | string
+  ): void {
 
     const isStringIndex = typeof index === 'string';
     const parsedIndex = parseInt(popPiece(`${index}`), 10);
@@ -517,15 +525,15 @@ export class ContentController {
   }
 
   /* private */
-  createModelRequest(modelId) {
+  createModelRequest(modelId: string): Observable<AjaxResponse> {
     return ajax.get(`${apiUrl}/content/${modelId}`);
   }
 
   /* private */
-  fetchModel(modelId) {
+  fetchModel(modelId: string): void {
     if (!(modelId in this.modelRequestsInFlight)) {
       this.modelRequestsInFlight[modelId] = fetchById(modelId).subscribe(
-        (response) => {
+        (response: LookupTable<ContentInstance>) => {
           delete this.modelRequestsInFlight[modelId];
           this.modelsResponseReceived(response);
         },
@@ -535,12 +543,12 @@ export class ContentController {
   }
 
   /* private */
-  fetchContentType(contentTypeId) {
+  fetchContentType(contentTypeId: string): boolean {
     return false;
   }
 
   /* private */
-  modelsResponseReceived(responseModels) {
+  modelsResponseReceived(responseModels: LookupTable<ContentInstance> | ContentInstance[]): void {
 
     if (Array.isArray(responseModels)) {
       responseModels = createLookupTable(responseModels, 'craftercms.id');
@@ -571,10 +579,10 @@ export class ContentController {
   }
 
   /* private */
-  contentTypesResponseReceived(responseContentTypes) {
+  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]): void {
 
     if (Array.isArray(responseContentTypes)) {
-      responseContentTypes = createLookupTable(responseContentTypes);
+      (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
     }
 
     const currentContentTypes = ContentController.contentTypes$.value;
@@ -590,7 +598,7 @@ export class ContentController {
   }
 
   /* private */
-  responseReceived(response) {
+  responseReceived(response): void {
     const
 
       currentContentTypes = ContentController.contentTypes$.value,
@@ -633,13 +641,13 @@ export class ContentController {
 
 }
 
-function getParentModelId(modelId, models, children) {
+function getParentModelId(modelId: string, models: LookupTable<ContentInstance>, children: LookupTable<ContentInstance>): string {
   return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
     ? findParentModelId(modelId, children, models)
     : null;
 }
 
-function findParentModelId(modelId, childrenMap, models) {
+function findParentModelId(modelId: string, childrenMap: LookupTable<ContentInstance>, models: LookupTable<ContentInstance>): string {
   const parentId = forEach(
     Object.entries(childrenMap),
     ([id, children]) => {
@@ -663,7 +671,7 @@ function findParentModelId(modelId, childrenMap, models) {
     : null;
 }
 
-function fetchById(id, site = Cookies.get('crafterSite')) {
+function fetchById(id: string, site: string = Cookies.get('crafterSite')): Observable<ContentInstance> {
   const isArticleRequest = [
     'f360780a-372f-d005-d736-bcc9d657e50c',
     'b7a724f1-3422-055d-a244-5fc79a1ca007',
@@ -894,7 +902,7 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
   );
 }
 
-function reducer(lookupTable, model) {
+function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstance): LookupTable<ContentInstance> {
 
   const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
 
@@ -942,7 +950,7 @@ function reducer(lookupTable, model) {
   );
 
   lookupTable[model.id] = {
-    craftercms: system,
+    craftercms: system as ContentInstanceSystemProps,
     ...data
   };
 
@@ -950,7 +958,7 @@ function reducer(lookupTable, model) {
 
 }
 
-function getResult(model, fieldId, index) {
+function getResult(model: ContentInstance, fieldId: string, index: string | number): number[] | string[] {
   const isStringIndex = typeof index === 'string';
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
 

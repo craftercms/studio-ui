@@ -17,16 +17,31 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  findClosestRect, foo,
+  findClosestRect,
+  foo,
+  forEach,
   getDropMarkerPosition,
   getInRectStats,
   HORIZONTAL,
   notNullOrUndefined,
+  splitRect,
   VERTICAL,
-  forEach, splitRect, X_AXIS, Y_AXIS
+  X_AXIS,
+  Y_AXIS
 } from '../util';
+import { Coordinates } from '../models/Positioning';
+import { DropZone, Record } from '../models/InContextEditing';
 
-export function DropMarker(props) {
+interface DropMarkerProps {
+  over: Record;
+  prev: DOMRect;
+  next: DOMRect;
+  dropZone: DropZone;
+  coordinates: Coordinates;
+  onDropPosition: Function;
+}
+
+export function DropMarker(props: DropMarkerProps) {
 
   const //
     {
@@ -50,13 +65,14 @@ export function DropMarker(props) {
   useEffect(dragOver, [prev, next, coordinates.x, coordinates.y]);
 
   return (
+    // @ts-ignore
     <craftercms-drop-marker
       style={style}
       class={`${dropZone.arrangement === HORIZONTAL ? VERTICAL : HORIZONTAL}`}
     />
   );
 
-  function dragOver() {
+  function dragOver(): void {
 
     let
       nextStyle = null,

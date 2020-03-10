@@ -18,24 +18,25 @@
 import $ from 'jquery/dist/jquery.slim';
 import contentController from './ContentController';
 import {
-  not,
   findClosestRect,
-  isNullOrUndefined,
-  notNullOrUndefined,
   forEach,
   getChildArrangement,
-  insertDropMarker,
   getInRectStats,
   HORIZONTAL,
+  insertDropMarker,
+  isNullOrUndefined,
+  not,
+  notNullOrUndefined,
   VERTICAL
 } from '../util';
 import iceRegistry from './ICERegistry';
 // import { Markers } from './Markers';
 import { ComponentEditor } from './ComponentEditor';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { delay, debounceTime, filter } from 'rxjs/operators';
+import { debounceTime, delay, filter } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import { render } from 'react-dom';
+import { DZStats, IceZone, Stats } from '../models/InContextEditing';
 
 const hostTrashed$ = new Subject();
 
@@ -44,28 +45,21 @@ export class DOMController {
   static zoneIds = 0;
 
   // Keeps track of all registered zones
-  static zones/*: IceZone[]*/ = [
-    // {
-    //   field: Field;
-    //   element: Element;
-    //   index: number;
-    //   contentType?: ContentType;
-    // }
-  ];
+  static zones: IceZone[];
 
   // Used for mouseover/mouseout cycles
   // to control/clean zone manipulation
-  static activeElement/*: Element*/;
+  static activeElement: Element;
 
   // Object that tracks relevant values
   // for during drag & drop.
-  static dragStats/*: object*/;
+  static dragStats: Stats;
 
   // Used for suspending or debouncing expensive processes
   // and resume them once the scroll stopped.
   static scrolling$/*: BehaviourSubject<boolean>*/;
 
-  static addZone(zone) {
+  static addZone(zone: IceZone): number {
     let { element, field, modelId, index, label } = zone;
 
     if (!element) {
@@ -110,32 +104,32 @@ export class DOMController {
 
   }
 
-  static removeZone(element) {
+  static removeZone(element: Element): void {
     const index = this.findIndexOf(element);
     if (index !== -1) {
       this.zones.splice(index, 1);
     }
   }
 
-  static includes(element) {
+  static includes(element: Element): boolean {
     return this.zones.some((zone) => zone.element === element);
   }
 
-  static getFieldFor(element) {
+  static getFieldFor(element: Element): unknown {
     const index = this.findIndexOf(element);
     return this.zones[index].recordIds.map((id) => iceRegistry.getReferentialEntries(id).field);
   }
 
-  static getZoneFor(element) {
+  static getZoneFor(element: Element): IceZone {
     const index = this.findIndexOf(element);
     return this.zones[index];
   }
 
-  static findIndexOf(element) {
+  static findIndexOf(element: Element): number {
     return this.zones.findIndex((zone) => zone.element === element);
   }
 
-  static findZoneElement(element) {
+  static findZoneElement(element: Element): Element {
     const
 
       body = document.body,
@@ -160,7 +154,7 @@ export class DOMController {
     return includes ? elem : null;
   }
 
-  static isDraggable(element, zone = this.getZoneFor(element)) {
+  static isDraggable(element: Element, zone: IceZone = this.getZoneFor(element)): boolean {
     if (!zone) {
       return false;
     } else {
@@ -175,7 +169,7 @@ export class DOMController {
     }
   }
 
-  static updateDragStats() {
+  static updateDragStats(): void {
     const stats = DOMController.dragStats;
     const { currentDZ, currentDZChildren, dropZones } = stats;
     stats.dropZoneRects = dropZones.map((dz) => {
@@ -188,11 +182,11 @@ export class DOMController {
     stats.currentDZChildrenRects = currentDZChildren.map((child) => child.getBoundingClientRect());
   }
 
-  static onMouseMove(element) {
+  static onMouseMove(element: Element): void {
 
   }
 
-  static onMouseOver(element) {
+  static onMouseOver(element: Element): boolean {
 
     const elem = this.findZoneElement(element);
 
@@ -202,12 +196,13 @@ export class DOMController {
       const zone = this.getZoneFor(elem);
 
       if (this.isDraggable(elem, zone)) {
-        $(elem).attr('draggable', true);
+        $(elem).attr('draggable', 'true');
       }
 
-      // eslint-disable-next-line
+
+      // @ts-ignore
       Markers.removeZoneMarkers();
-      // eslint-disable-next-line
+      // @ts-ignore
       Markers.markZone(elem);
 
     }
@@ -216,21 +211,21 @@ export class DOMController {
 
   }
 
-  static onMouseOut() {
+  static onMouseOut(): void {
 
     const elem = this.activeElement;
 
     if (elem) {
-      // eslint-disable-next-line
+      // @ts-ignore
       Markers.removeZoneMarkers();
       $(elem)
-        .attr('draggable', false)
+        .attr('draggable', 'false')
         .removeAttr('draggable');
     }
 
   }
 
-  static getCurrentDZStats(dzElement) {
+  static getCurrentDZStats(dzElement: Element): DZStats {
     const
       currentDZ = dzElement,
       currentDZElementRect = currentDZ.getBoundingClientRect(),
@@ -246,16 +241,16 @@ export class DOMController {
     };
   }
 
-  static setCurrentDZStats(dzElement) {
+  static setCurrentDZStats(dzElement: Element): void {
     Object.assign(
       this.dragStats,
       this.getCurrentDZStats(dzElement));
   }
 
-  static onDragStart({ element }) {
+  static onDragStart({ element }: { element: Element }) {
 
     const zone = this.getZoneFor(element);
-    // Images, links, and selections are draggable
+    // Images, links, annumberd selections are draggable
     // by default in HTML.
     if (!zone) {
       throw new Error(
@@ -268,8 +263,8 @@ export class DOMController {
       recordId = zone.recordIds[0],
       record = iceRegistry.getReferentialEntries(recordId),
       receptacles = iceRegistry.getRecordReceptacles(recordId),
-      receptacleZones = receptacles.map((recId) =>
-        this.zones.find((zn) => zn.recordIds.includes(recId))
+      receptacleZones = receptacles.map((recId: number) =>
+        this.zones.find((zn: IceZone) => zn.recordIds.includes(recId))
       ),
       dropZones = receptacleZones.map(z => z.element);
 
@@ -288,7 +283,8 @@ export class DOMController {
       draggedElement = element,
       draggedElementIndex = currentDZChildren.findIndex(child => child === element),
       childArrangement = getChildArrangement(currentDZChildren, currentDZChildrenRects),
-      // eslint-disable-next-line
+
+      // @ts-ignore
       $dropMarker = Markers.createDropMaker(),
       scrolling$ = new BehaviorSubject(false);
     // endregion
@@ -324,7 +320,7 @@ export class DOMController {
 
     $(document).bind('scroll', this.onScroll);
 
-    // eslint-disable-next-line
+    // @ts-ignore
     dropZones.forEach((e) => Markers.markZone(e));
 
     this.dragStats = {
@@ -347,7 +343,7 @@ export class DOMController {
 
   }
 
-  static onDragOver({ element, mousePosition }) {
+  static onDragOver({ element, mousePosition }): void {
     if (this.scrolling$.value) {
       return;
     }
@@ -398,7 +394,7 @@ export class DOMController {
 
         insertDropMarker({
           $dropMarker,
-          refElement: closestChild,
+          refElement: closestChild as HTMLElement,
           insertPosition: before ? 'before' : 'after'
         });
 
@@ -481,7 +477,7 @@ export class DOMController {
 
   }
 
-  static onDrop() {
+  static onDrop(): void {
     const {
       $dropMarker,
       draggedElement,
@@ -500,15 +496,17 @@ export class DOMController {
     }
 
     // Insert new component
-    // eslint-disable-next-line
+
+    // @ts-ignore
     if (Markers.draggedComponent) {
       const newComponent = document.createElement('div');
       $dropMarker.after(newComponent);
       // noinspection JSXNamespaceValidation
       render(
-        // eslint-disable-next-line
+        // @ts-ignore
+        // eslint-disable-next-line react/jsx-no-undef,react/react-in-jsx-scope
         <DroppedComponentPlaceholder
-          // eslint-disable-next-line
+          // @ts-ignore
           component={Markers.draggedComponent}
           node={newComponent}/>,
         newComponent);
@@ -517,8 +515,10 @@ export class DOMController {
 
     // noinspection JSCheckFunctionSignatures
     if (
-      // eslint-disable-next-line
+      // @ts-ignore
       notNullOrUndefined(Markers.draggedElement) &&
+      // jQuery contains' first param is type Element, document doesn't match
+      // @ts-ignore
       not($.contains(document, $dropMarker[0]))
     ) {
       return;
@@ -587,7 +587,7 @@ export class DOMController {
 
   }
 
-  static clearDragStats() {
+  static clearDragStats(): void {
     $(document).unbind('scroll', this.onScroll);
 
     // this.dragStats.$dropMarker.remove();
@@ -598,14 +598,14 @@ export class DOMController {
     this.scrolling$ = null;
   }
 
-  static onDragEnd(e) {
+  static onDragEnd(): void {
     if (!this.dragStats) {
       return;
     }
     this.clearDragStats();
   }
 
-  static onClick(element) {
+  static onClick(element): void {
     const elem = this.findZoneElement(element);
     if (elem) {
       const field = this.getFieldFor(elem)[0];
@@ -613,7 +613,7 @@ export class DOMController {
     }
   }
 
-  static onScroll() {
+  static onScroll(): void {
     DOMController.dragStats.$dropMarker.detach();
     DOMController.scrolling$.next(true);
   }
