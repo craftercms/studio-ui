@@ -22,7 +22,8 @@
       "USER_PASSWORD_INVALID": "잘못된 사용자 이름 또는 비밀번호",
       "LOGIN_ERROR": "시스템 오류가 발생했습니다. 잠시 후 또는 관리자에게 문의하십시오.",
       "PASSWORD_REQUIREMENTS_ERROR": "사용자 암호가 요구 사항을 충족하지 못합니다.",
-      "PASSWORD_REQUIREMENTS_REMEDIAL": "암호 요구 사항을 충족시키는 암호 사용"
+      "PASSWORD_REQUIREMENTS_REMEDIAL": "암호 요구 사항을 충족시키는 암호 사용",
+      "CANCEL_PUBLISHING_PACKAGE":"게시 패키지 취소"
     },
     "sites": {
       "SITES_LABEL": "사이트",

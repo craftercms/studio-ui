@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +22,9 @@ import replace from 'rollup-plugin-replace';
 
 import pkg from './package.json';
 
-const input = 'src/index.js';
+const input = 'src/index.tsx';
+
+const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
 const plugins = [
   replace({ 'process.env.NODE_ENV': '"production"' }),
@@ -31,15 +32,19 @@ const plugins = [
     exclude: 'node_modules/**',
     presets: [
       '@babel/preset-env',
-      '@babel/preset-react'
+      '@babel/preset-react',
+      '@babel/preset-typescript'
     ],
     plugins: [
       'babel-plugin-transform-react-remove-prop-types',
+      '@babel/plugin-proposal-nullish-coalescing-operator',
       '@babel/plugin-proposal-optional-chaining',
       '@babel/plugin-proposal-class-properties'
-    ]
+    ],
+    extensions
   }),
   resolve({
+    extensions,
     mainFields: ['module', 'main', 'browser']
   }),
   commonjs({
@@ -110,7 +115,7 @@ export default [
   },
   /* UMD build for preview landing controller */
   {
-    input: 'src/index.preview.js',
+    input: 'src/index.preview.ts',
     external,
     plugins,
     output: {

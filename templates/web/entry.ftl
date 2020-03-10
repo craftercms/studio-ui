@@ -1,12 +1,11 @@
 <#include "/templates/system/common/versionInfo.ftl" />
 <!doctype html>
 <!--
-  ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
+  ~ it under the terms of the GNU General Public License version 3 as published by
+  ~ the Free Software Foundation.
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +25,9 @@
   <#-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
   <#if userEmail??>
-  <script type="application/json" id="user">{"firstName":"${userFirstName!""}","lastName":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }</script>
+    <script type="application/json" id="user">
+    {"firstName":"${userFirstName!""}","lastName":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }
+    </script>
   </#if>
 
   <script>var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };</script>
@@ -55,7 +56,8 @@
   <script src="/studio/static-assets/libs/flexslider/jquery.flexslider.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/libs/angular/angular.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/angular/angular-1.5.0.min.js"></script>
+  <script src="/studio/static-assets/libs/angular/angular-sanitize-1.5.0.min.js"></script>
   <script src="/studio/static-assets/libs/angular-translate/angular-translate.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/angular-translate-handler-log/angular-translate-handler-log.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>

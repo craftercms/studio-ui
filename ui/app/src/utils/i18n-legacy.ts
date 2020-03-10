@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -332,6 +331,10 @@ const contentTypesMessages = defineMessages({
   insertExpressionMessage: {
     id: 'siteConfig.insertExpressionMessage',
     defaultMessage: 'Insert Expression'
+  },
+  switchToMessage: {
+    id: 'siteConfig.switchToMessage',
+    defaultMessage: 'Switch to {type}'
   }
 });
 
@@ -386,6 +389,14 @@ const words = defineMessages({
   no: {
     id: 'words.no',
     defaultMessage: 'No'
+  },
+  browse: {
+    id: 'words.browse',
+    defaultMessage: 'Browse'
+  },
+  upload: {
+    id: 'words.upload',
+    defaultMessage: 'Upload'
   }
 });
 
@@ -745,6 +756,24 @@ const encryptToolMessages = defineMessages({
   }
 });
 
+const fileNameControlMessages = defineMessages({
+  urlChangeWaring: {
+    id: 'fileNameControl.urlChangeWarning',
+    defaultMessage: 'Changing this value may result in broken references and links.'
+  },
+  viewReferences: {
+    id: 'fileNameControl.viewReferences',
+    defaultMessage: 'To view the content that references this content, click '
+  }
+});
+
+const ossAttribution = defineMessages({
+  attribution: {
+    id: 'aboutView.attribution',
+    defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -772,5 +801,7 @@ export default {
   checkboxGroupControlMessages,
   globalMenuMessages,
   adminConfigurationMessages,
-  encryptToolMessages
+  encryptToolMessages,
+  fileNameControlMessages,
+  ossAttribution
 };

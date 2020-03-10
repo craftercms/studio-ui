@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,7 +30,7 @@ import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../../../styles/animations.scss';
 import clsx from 'clsx';
-import { CurrentFilters, READY_FOR_LIVE } from '../../../../models/Publishing';
+import { READY_FOR_LIVE } from '../../../../models/Publishing';
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -63,8 +62,8 @@ const useStyles = makeStyles((theme: Theme) => ({
       }
     },
     '& .files': {
-      marginTop: '10px',
-    },
+      marginTop: '10px'
+    }
   },
   checkbox: {
     marginRight: 'auto'
@@ -90,18 +89,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const messages = defineMessages({
-  cancel: {
-    id: 'publishingDashboard.cancel',
+const translations = defineMessages({
+  cancelText: {
+    id: 'publishingDashboard.cancelItemButtonText',
     defaultMessage: 'Cancel'
   },
-  confirm: {
-    id: 'publishingDashboard.confirm',
-    defaultMessage: 'Confirm'
+  cancel: {
+    id: 'publishingDashboard.no',
+    defaultMessage: 'No'
   },
-  confirmHelper: {
-    id: 'publishingDashboard.confirmHelper',
-    defaultMessage: 'Set the state for the item to "Cancelled"'
+  confirm: {
+    id: 'publishingDashboard.yes',
+    defaultMessage: 'Yes'
+  },
+  confirmHelperText: {
+    id: 'publishingDashboard.confirmHelperText',
+    defaultMessage: 'Set item state to "Cancelled"?'
   },
   fetchPackagesFiles: {
     id: 'publishingDashboard.fetchPackagesFiles',
@@ -109,7 +112,7 @@ const messages = defineMessages({
   },
   scheduled: {
     id: 'publishingDashboard.scheduled',
-    defaultMessage: 'Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <b>{approver}</b>',
+    defaultMessage: 'Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <b>{approver}</b>'
   },
   status: {
     id: 'publishingDashboard.status',
@@ -122,6 +125,10 @@ const messages = defineMessages({
   commentNotProvided: {
     id: 'publishingDashboard.commentNotProvided',
     defaultMessage: '(submission comment not provided)'
+  },
+  filesList: {
+    id: 'publishingDashboard.filesList',
+    defaultMessage: 'files list'
   }
 });
 
@@ -145,7 +152,6 @@ interface PublishingPackageProps {
 
   getPackages(siteId: string, filters?: string): any;
 
-  currentFilters: CurrentFilters;
   filesPerPackage: {
     [key: string]: any;
   };
@@ -155,39 +161,39 @@ interface PublishingPackageProps {
 
 export default function PublishingPackage(props: PublishingPackageProps) {
   const classes = useStyles({});
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
   const {
     id, approver, schedule, state, comment, environment,
     siteId, selected, setSelected, pending, setPending,
-    getPackages, setApiState, currentFilters,
+    getPackages, setApiState,
     filesPerPackage, setFilesPerPackage
   } = props;
   const [loading, setLoading] = useState(null);
 
-  const {current: ref} = useRef<any>({});
+  const { current: ref } = useRef<any>({});
 
   ref.cancelComplete = (packageId: string) => {
-    setPending({...pending, [packageId]: false});
+    setPending({ ...pending, [packageId]: false });
     getPackages(siteId);
   };
 
   function onSelect(event: ChangeEvent, id: string, checked: boolean) {
     if (checked) {
-      setSelected({...selected, [id]: false});
+      setSelected({ ...selected, [id]: false });
     } else {
-      setSelected({...selected, [id]: true});
+      setSelected({ ...selected, [id]: true });
     }
   }
 
   function handleCancel(packageId: string) {
-    setPending({...pending, [packageId]: true});
+    setPending({ ...pending, [packageId]: true });
 
     cancelPackage(siteId, [packageId])
       .subscribe(
         () => {
           ref.cancelComplete(packageId);
         },
-        ({response}) => {
+        ({ response }) => {
           setApiState({ error: true, errorResponse: response });
         }
       );
@@ -197,11 +203,11 @@ export default function PublishingPackage(props: PublishingPackageProps) {
     setLoading(true);
     fetchPackage(siteId, packageId)
       .subscribe(
-        ({response}) => {
+        ({ response }) => {
           setLoading(false);
-          setFilesPerPackage({...filesPerPackage, [packageId]: response.package.items});
+          setFilesPerPackage({ ...filesPerPackage, [packageId]: response.package.items });
         },
-        ({response}) => {
+        ({ response }) => {
           setApiState({ error: true, errorResponse: response });
         }
       );
@@ -228,21 +234,21 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       <section className="name">
         {
           pending[id] ? (
-            <header className={"loading-header"}>
-              <CircularProgress size={15} className={classes.spinner} color={"inherit"}/>
+            <header className={'loading-header'}>
+              <CircularProgress size={15} className={classes.spinner} color={'inherit'} />
               <Typography variant="body1">
                 <strong>{id}</strong>
               </Typography>
             </header>
           ) : (
-            (currentFilters.state === READY_FOR_LIVE) ? (
+            (state === READY_FOR_LIVE) ? (
               <FormGroup className={classes.checkbox}>
                 <FormControlLabel
                   control={
                     <Checkbox
                       color="primary"
                       checked={checked}
-                      onChange={(event) => onSelect(event, id, checked)}/>
+                      onChange={(event) => onSelect(event, id, checked)} />
                   }
                   label={<strong>{id}</strong>}
                 />
@@ -257,10 +263,10 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         {
           (state === READY_FOR_LIVE) &&
           <SelectButton
-            text={formatMessage(messages.cancel)}
-            cancelText={formatMessage(messages.cancel)}
-            confirmText={formatMessage(messages.confirm)}
-            confirmHelperText={formatMessage(messages.confirmHelper)}
+            text={formatMessage(translations.cancelText)}
+            cancelText={formatMessage(translations.cancel)}
+            confirmText={formatMessage(translations.confirm)}
+            confirmHelperText={formatMessage(translations.confirmHelperText)}
             onConfirm={() => handleCancel(id)}
           />
         }
@@ -269,7 +275,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         <Typography variant="body2">
           {
             formatMessage(
-              messages.scheduled,
+              translations.scheduled,
               {
                 schedule: new Date(schedule),
                 approver: approver,
@@ -281,10 +287,10 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         <Typography variant="body2">
           {
             formatMessage(
-              messages.status,
+              translations.status,
               {
                 state: <strong key={state}>{state}</strong>,
-                environment: <strong key={environment}>{environment}</strong>,
+                environment: <strong key={environment}>{environment}</strong>
               }
             )
           }
@@ -292,16 +298,16 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       </div>
       <div className="comment">
         <Typography variant="body2">
-          {formatMessage(messages.comment)}
+          {formatMessage(translations.comment)}
         </Typography>
         <Typography variant="body2">
-          {comment ? comment : <span>{formatMessage(messages.commentNotProvided)}</span>}
+          {comment ? comment : <span>{formatMessage(translations.commentNotProvided)}</span>}
         </Typography>
       </div>
       <div className="files">
         {
           (filesPerPackage && filesPerPackage[id]) &&
-          <List aria-label="files list" className={classes.list}>
+          <List aria-label={formatMessage(translations.filesList)} className={classes.list}>
             {renderFiles(filesPerPackage[id])}
           </List>
         }
@@ -310,9 +316,9 @@ export default function PublishingPackage(props: PublishingPackageProps) {
           <Button variant="outlined" onClick={() => onFetchPackages(id)} disabled={!!loading}>
             {
               loading &&
-              <CircularProgress size={14} className={classes.spinner} color={"inherit"}/>
+              <CircularProgress size={14} className={classes.spinner} color={'inherit'} />
             }
-            {formatMessage(messages.fetchPackagesFiles)}
+            {formatMessage(translations.fetchPackagesFiles)}
           </Button>
         }
       </div>

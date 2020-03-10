@@ -18,14 +18,10 @@
 import $ from 'jquery/dist/jquery';
 import { message$, post } from './communicator';
 import { filter, map } from 'rxjs/operators';
-import {
-  GUEST_CHECK_IN,
-  GUEST_CHECK_OUT,
-  NAVIGATION_REQUEST
-} from './util';
+import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './util';
 
 message$.pipe(
-  filter((e) => (e.data?.type) != null),
+  filter((e: MessageEvent) => (e.data?.type) != null),
   map(e => e.data)
 ).subscribe(function ({ type, payload }) {
   switch (type) {

@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -384,7 +383,35 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
                 '<type>boolean</type>\r\n' +
                 '</constraint>\r\n' +
                 '</constraints>\r\n' +
-                '</field>';
+                '</field>' +
+                '<field>\r\n' +
+                '<type>input</type>\r\n' +
+                '<id>navLabel</id>\r\n' +
+                '<iceId></iceId>\r\n' +
+                '<title>Nav Label</title>\r\n' +
+                '<description></description>\r\n' +
+                '<defaultValue></defaultValue>\r\n' +
+                '<help></help>\r\n' +
+                '<properties>\r\n' +
+                '<property>\r\n' +
+                '<name>size</name>\r\n' +
+                '<value>50</value>\r\n' +
+                '<type>int</type>\r\n' +
+                '</property>\r\n' +
+                '<property>\r\n' +
+                '<name>maxlength</name>\r\n' +
+                '<value>50</value>\r\n' +
+                '<type>int</type>\r\n' +
+                '</property>\r\n' +
+                '</properties>\r\n' +
+                '<constraints>\r\n' +
+                '<constraint>\r\n' +
+                '<name>required</name>\r\n' +
+                '<value>true</value>\r\n' +
+                '<type>boolean</type>\r\n' +
+                '</constraint>\r\n' +
+                '</constraints>\r\n' +
+                '</field>\r\n';
             }
 
             formDefContent +=

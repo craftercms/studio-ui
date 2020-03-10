@@ -14,29 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+export interface Item {
+  name: string;
+  internalName: string;
+  uri: string;
 
-import React, { useEffect, useState } from 'react';
-import { Markers } from '../classes/Markers';
-
-export function ZoneMarker(props) {
-
-  const //
-    { rect, label } = props,
-    [zoneStyle, setZoneStyle] = useState(),
-    [labelStyle, setLabelStyle] = useState();
-
-  useEffect(
-    () => {
-      setZoneStyle(Markers.getZoneMarkerStyle(rect));
-      setLabelStyle(Markers.getZoneMarkerLabelStyle(rect));
-    },
-    [rect]
-  );
-
-  return (
-    <craftercms-zone-marker style={zoneStyle}>
-      <craftercms-zone-marker-label style={labelStyle}>{label}</craftercms-zone-marker-label>
-    </craftercms-zone-marker>
-  );
-
+  [prop: string]: any;
 }

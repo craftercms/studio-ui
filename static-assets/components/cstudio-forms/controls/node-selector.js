@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,43 +15,43 @@
  */
 
 CStudioForms.Controls.NodeSelector = function(id, form, owner, properties, constraints, readonly)  {
-  this.owner = owner;
-  this.owner.registerField(this);
-  this.errors = [];
-  this.nodes = [];
-  this.properties = properties;
-  this.constraints = constraints;
-  this.inputEl = null;
-  this.countEl = null;
-  this.required = false;
-  this.value = "_not-set";
-  this.form = form;
-  this.id = id;
-  this.allowEdit = false;
-  this.selectedItemIndex = -1;
-  this.items =  [];
-  this.readonly = readonly;
-  this.allowDuplicates = false;
-  this.minSize = 0;
-  this.maxSize = 0;
-  this.readonly = readonly;
-  this.defaultValue = "";
-  this.disableFlattening = false;
-  this.useSingleValueFilename = false;
-  this.supportedPostFixes = ["_o"];
-  amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
-  amplify.subscribe("UPDATE_NODE_SELECTOR", this, this.onIceUpdate);
-  amplify.subscribe("UPDATE_NODE_SELECTOR_NEW", this, this.insertEmbeddedItem);
+    this.owner = owner;
+    this.owner.registerField(this);
+    this.errors = [];
+    this.nodes = [];
+    this.properties = properties;
+    this.constraints = constraints;
+    this.inputEl = null;
+    this.countEl = null;
+    this.required = false;
+    this.value = "_not-set";
+    this.form = form;
+    this.id = id;
+    this.allowEdit = false;
+    this.selectedItemIndex = -1;
+    this.items =  [];
+    this.readonly = readonly;
+    this.allowDuplicates = false;
+    this.minSize = 0;
+    this.maxSize = 0;
+    this.readonly = readonly;
+    this.defaultValue = "";
+    this.disableFlattening = false;
+    this.useSingleValueFilename = false;
+    this.supportedPostFixes = ["_o"];
+    amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
+    amplify.subscribe("UPDATE_NODE_SELECTOR", this, this.onIceUpdate);
+    amplify.subscribe("UPDATE_NODE_SELECTOR_NEW", this, this.insertEmbeddedItem);
 
-  return this;
-}
+    return this;
+  };
 
 CStudioForms.Controls.NodeSelector.prototype = {
   Node: {
     label: '',
     value: ''
   }
-}
+};
 
 YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, {
 
@@ -458,13 +457,13 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
   insertItem: function(key, value, fileType, fileSize, datasource, order) {
     var successful = true;
     var message = "";
-    if(this.allowDuplicates != true){
+    if (!this.allowDuplicates){
       var items =  this.items;
       for(var i=0; i<items.length;i++){
         var item = items[i];
         if(item.key == key){
           successful = false;
-          message = "The item \"" + value + "\" already exists.";
+          message = `The item "${value}" already exists.`;
           break;
         }
       }
@@ -528,21 +527,44 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
       this.count();
       this._onChangeVal(this);
-    }else{
-      var CMgs = CStudioAuthoring.Messages;
-      var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-      CStudioAuthoring.Operations.showSimpleDialog(
-        "message-dialog",
-        CStudioAuthoring.Operations.simpleDialogTypeINFO,
-        CMgs.format(langBundle, "notification"),
-        message,
-        null,
-        YAHOO.widget.SimpleDialog.ICON_BLOCK,
-        "studioDialog"
-      );
+    } else {
+      this.showValidationMessage(message);
     }
     this.count();
     this._onChangeVal(this);
+  },
+
+  // Insert item may be called multiple times per item inserted.
+  // This function differs showing the dialog by a few ms to only show the last call to
+  // displaying a dialog. Otherwise, multiple dialogs are shown and all sorts of problems
+  // come with that.
+  showValidationMessageTimeout: null,
+  showValidationMessageMessages: [],
+  showValidationMessage(message) {
+    clearTimeout(this.showValidationMessageTimeout);
+    this.showValidationMessageMessages.push(message);
+    this.showValidationMessageTimeout = setTimeout(() => {
+      const CMgs = CStudioAuthoring.Messages;
+      const langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
+      const dialog = CStudioAuthoring.Operations.showSimpleDialog(
+        `message-dialog-${CStudioAuthoring.Utils.getScopedInt()}`,
+        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+        CMgs.format(langBundle, 'notification'),
+        (
+          (this.showValidationMessageMessages.length > 1)
+            ? `• ${this.showValidationMessageMessages.join('<br/>• ')}`
+            : message
+        ),
+        null,
+        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+        'studioDialog'
+      );
+      this.showValidationMessageMessages = [];
+      $(dialog.body).css({
+        maxHeight: 200,
+        overflow: 'auto'
+      });
+    }, 50);
   },
 
   count: function(){
@@ -657,7 +679,6 @@ NodeSelectorDragAndDropDecorator = function(id, sGroup, config) {
   this.lastY = 0;
   this.oldIndex = null;
 };
-
 
 YAHOO.extend(NodeSelectorDragAndDropDecorator, YAHOO.util.DDProxy, {
 

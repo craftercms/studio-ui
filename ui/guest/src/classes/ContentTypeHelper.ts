@@ -16,10 +16,13 @@
  */
 
 import { createLookupTable, retrieveProperty } from '../util';
+import { ContentType, ContentTypeField } from '../models/ContentType';
 
 export class ContentTypeHelper {
 
-  static getRelatedContentTypeIds(contentType) {
+  descriptor: ContentType = null;
+
+  static getRelatedContentTypeIds(contentType: ContentType): string[] {
     return Object.values(contentType.fields)
       .reduce((accumulator, field) => {
         if (
@@ -36,23 +39,23 @@ export class ContentTypeHelper {
       }, []);
   }
 
-  static isGroupItem(contentType, fieldId) {
+  static isGroupItem(contentType: ContentType, fieldId: string): boolean {
     return fieldId.includes('.');
   }
 
-  static isComponentHolder(contentType, fieldId) {
+  static isComponentHolder(contentType: ContentType, fieldId: string): boolean {
     return ContentTypeHelper.getField(contentType, fieldId).type === 'node-selector';
   }
 
-  static isGroup(contentType, fieldId) {
+  static isGroup(contentType: ContentType, fieldId: string): boolean {
     return ContentTypeHelper.getField(contentType, fieldId).type === 'repeat';
   }
 
-  static doesFieldAccept(contentType, fieldId) {
+  static doesFieldAccept(contentType: ContentType, fieldId: string) {
     const field = ContentTypeHelper.getField(contentType, fieldId);
   }
 
-  static getField(type, fieldId) {
+  static getField(type: ContentType, fieldId: string): any {
     // For repeat groups, the field inside the repeat group field will be
     // under {repeatName}.fields.{fieldName}. To abstract this complexity from devs
     // we parse it here.
@@ -63,33 +66,31 @@ export class ContentTypeHelper {
     );
   }
 
-  static getFields(type, ...ids) {
+  static getFields(type: ContentType, ...ids: string[]): ContentTypeField[] {
     return ids.map((id) => ContentTypeHelper.getField(type, id));
   }
 
-  static getFieldsByType(contentType, fieldType) {
+  static getFieldsByType(contentType: ContentType, fieldType): ContentTypeField[] {
     return Object.values(contentType.fields).filter((field) => field.type === fieldType);
   }
-
-  descriptor = null;
 
   constructor(descriptor) {
     this.descriptor = descriptor;
   }
 
-  getField(fieldId) {
+  getField(fieldId: string): ContentTypeField {
     return ContentTypeHelper.getField(
       this.descriptor,
       fieldId);
   }
 
-  getFields(...names) {
+  getFields(...names: string[]): ContentTypeField[] {
     return ContentTypeHelper.getFields(
       this.descriptor,
       ...names);
   }
 
-  setContentType(descriptor) {
+  setContentType(descriptor: ContentType): void {
     this.descriptor = descriptor;
   }
 

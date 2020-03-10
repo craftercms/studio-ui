@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,7 +46,7 @@ function closeButtonClicked() {
   this.end();
 }
 
-function loadItems(data, dialogue) {
+function loadItems(data, dialogue, approveType) {
   var me = this;
 
   var loadSpinner = document.getElementById('loadSpinner');
@@ -57,7 +56,7 @@ function loadItems(data, dialogue) {
   loadSpinner.classList.add('hidden');
   me.renderItems(items);
   $('#approveSubmit').prop('disabled', false);
-  verifyMixedSchedules(items);
+  verifyMixedSchedules(items, approveType);
   this.on("submitComplete", function(evt, args){
     submitComplete(items, dialogue, args);
   });
@@ -86,13 +85,13 @@ function traverse(items, referenceDate) {
 
 }
 
-function verifyMixedSchedules(contentItems) {
+function verifyMixedSchedules(contentItems, approveType) {
 
   var reference = contentItems[0].scheduledDate,
     allHaveSameDate = traverse(contentItems, reference);
 
   if (allHaveSameDate) {
-    if ((reference === '' || reference === null) && !ApproveType) {
+    if ((reference === '' || reference === null) && !approveType) {
       //YDom.get('globalSetToNow').checked = true;
       this.$('[name="schedulingMode"]')[0].checked = true;
       this.$('[name="schedulingMode"]')[1].checked = false;

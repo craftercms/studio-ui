@@ -15,9 +15,10 @@
  */
 
 import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
-import { map, mapTo, pluck } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Credentials, User } from '../models/User';
+import { AjaxError } from 'rxjs/ajax';
 
 export function getLogoutInfoURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
@@ -49,10 +50,28 @@ export function me(): Observable<User> {
   );
 }
 
+interface ApiResponse {
+  code: number
+  message: string
+  remedialAction: string
+  documentationUrl: string
+}
+
+export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
+  return get(`/studio/api/2/users/forgot_password?username=${username}`).pipe(
+    pluck('response', 'response'),
+    catchError((error: AjaxError) => {
+      // eslint-disable-next-line no-throw-literal
+      throw error.response?.response ?? error;
+    })
+  );
+}
+
 export default {
   getLogoutInfoURL,
   logout,
   login,
   validateSession,
+  sendPasswordRecovery,
   me
 }

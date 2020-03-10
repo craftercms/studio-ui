@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -308,7 +307,12 @@ export function getGlobalMenuItems() {
   return get('/studio/api/2/ui/views/global_menu.json');
 }
 
+export function getProductLanguages(): Observable<{ id: string; label: string }[]> {
+  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
+}
+
 export default {
+  getProductLanguages,
   getRawContent,
   getDOM,
   getGlobalMenuItems

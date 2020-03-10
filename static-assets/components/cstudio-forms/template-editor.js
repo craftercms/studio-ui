@@ -216,6 +216,10 @@ CStudioAuthoring.Module.requireModule(
 									editorEl.textContent= content;
 									editorContainerEl.appendChild(editorEl);
 
+                  // dispatch legacyTemplateEditor.opened
+                  var event = new CustomEvent('legacyTemplateEditor.opened');
+                  document.dispatchEvent(event);
+
 									var langTools;
 
 									var initEditorFn = function() {
@@ -526,6 +530,9 @@ CStudioAuthoring.Module.requireModule(
 
 										var cancelEditCb = {
 											success: function(response) {
+                        // dispatch legacyTemplateEditor.opened
+                        var event = new CustomEvent('legacyTemplateEditor.closed');
+                        document.dispatchEvent(event);
 												modalEl.parentNode.removeChild(modalEl);
 											},
 											failure: function() {
@@ -585,8 +592,10 @@ CStudioAuthoring.Module.requireModule(
 												body: value
 											}).then(res => res.json()).then((data) => {
 												if (data && data.result && data.result.success) {
+                          var event = new CustomEvent('legacyTemplateEditor.closed');
+                          document.dispatchEvent(event);
 													modalEl.parentNode.removeChild(modalEl);
-													onSaveCb.success();
+                          onSaveCb.success && onSaveCb.success();
 												}
 											});
 										};

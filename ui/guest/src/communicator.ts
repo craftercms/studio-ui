@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromEvent } from 'rxjs';
+import { fromEvent, Observable } from 'rxjs';
 import { filter, map, share } from 'rxjs/operators';
+import { ContentType } from './models/ContentType';
 
 const useBroadcastChannel = (
   (window.parent === window) &&
@@ -27,15 +28,15 @@ const broadcastChannel = useBroadcastChannel
   ? new BroadcastChannel('org.craftercms.accommodationChannel')
   : null;
 
-export const message$ = fromEvent(useBroadcastChannel ? broadcastChannel : window, 'message').pipe(share());
+export const message$ = fromEvent<MessageEvent>(useBroadcastChannel ? broadcastChannel : window, 'message').pipe(share());
 
 export const post = useBroadcastChannel
-  ? (type, payload) => broadcastChannel.postMessage((typeof type === 'object') ? type : { type, payload })
-  : (type, payload) => window.parent.postMessage((typeof type === 'object') ? type : { type, payload }, '*');
+  ? (type, payload?) => broadcastChannel.postMessage((typeof type === 'object') ? type : { type, payload })
+  : (type, payload?) => window.parent.postMessage((typeof type === 'object') ? type : { type, payload }, '*');
 
-export function fromTopic(type) {
+export function fromTopic(type: string): Observable<{ type: string, payload: ContentType[] }> {
   return message$.pipe(
-    filter((e) => e.data?.type === type),
+    filter((e: MessageEvent) => e.data?.type === type),
     map(e => e.data)
   );
 }

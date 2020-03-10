@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -97,14 +96,14 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
     var newdiv = YDom.get("cstudio-wcm-popup-div");
-    if (newdiv === undefined) {
-      newdiv = document.createElement("div");
+    if (newdiv === undefined || newdiv === null) {
+      newdiv = document.createElement('div');
       document.body.appendChild(newdiv);
     }
 
     var divIdName = "cstudio-wcm-popup-div";
-    newdiv.setAttribute("id", divIdName);
-    newdiv.className = "yui-pe-content";
+    newdiv.setAttribute('id', divIdName);
+    newdiv.className = 'yui-pe-content';
 
     var imgObj = this.calculateAspectRatioFit(this.originalWidth, this.originalHeight, window.innerWidth - 10, window.innerHeight - 20),
       imgWidth = imgObj.width,
