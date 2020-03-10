@@ -72,7 +72,8 @@ const useStyles = makeStyles((theme) => createStyles({
   ssoAction: {
     textAlign: 'center',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    marginTop: theme.spacing(1)
   }
 }));
 
@@ -166,6 +167,7 @@ export default function AuthMonitor() {
               {
                 isSSO ? (
                   <SSOForm
+                    classes={classes}
                     authoringUrl={authoringUrl}
                     username={username}
                     onSubmit={onSubmit}

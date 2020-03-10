@@ -66,13 +66,14 @@ import { Asset, ContentType } from '../models/ContentType';
 import { ContentInstance } from '../models/ContentInstance';
 import { DropZone, HoverData, Record } from '../models/InContextEditing';
 import { LookupTable } from '../models/LookupTable';
+import { Editor } from 'tinymce';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
 
 const clearAndListen$ = new Subject();
 const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
-  filter(e => e.keyCode === 27)
+  filter(e => e.key === 'Escape')
 );
 
 interface GuestProps {
@@ -88,7 +89,7 @@ interface GuestProps {
 
 declare global {
   interface Window {
-    tinymce: { [prop: string]: any };
+    tinymce: any;
   }
 }
 
@@ -218,7 +219,7 @@ export function Guest(props: GuestProps) {
       persistence.scrolling$.unsubscribe();
       persistence.scrolling$ = null;
 
-      $(document).unbind('scroll', persistence.onScroll);
+      $(document).off('scroll', persistence.onScroll);
       persistence.onScroll = null;
 
     },
@@ -258,14 +259,14 @@ export function Guest(props: GuestProps) {
               inline: true,
               base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
               suffix: '.min',
-              setup(editor) {
+              setup(editor: Editor) {
 
                 editor.on('init', function () {
 
                   let changed = false;
                   let originalContent = getContent();
 
-                  editor.focus();
+                  editor.focus(false);
                   editor.selection.select(editor.getBody(), true);
                   editor.selection.collapse(false);
 
@@ -991,7 +992,6 @@ export function Guest(props: GuestProps) {
         type = 'video-picker';
       }
       const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
-      // scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles
         .forEach(({ id }) => {

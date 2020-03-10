@@ -17,7 +17,6 @@
 
 import { fromEvent, Observable } from 'rxjs';
 import { filter, map, share } from 'rxjs/operators';
-import { ContentType } from './models/ContentType';
 
 const useBroadcastChannel = (
   (window.parent === window) &&
@@ -34,7 +33,7 @@ export const post = useBroadcastChannel
   ? (type, payload?) => broadcastChannel.postMessage((typeof type === 'object') ? type : { type, payload })
   : (type, payload?) => window.parent.postMessage((typeof type === 'object') ? type : { type, payload }, '*');
 
-export function fromTopic(type: string): Observable<{ type: string, payload: ContentType[] }> {
+export function fromTopic(type: string): Observable<{ type: string, payload?: any }> {
   return message$.pipe(
     filter((e: MessageEvent) => e.data?.type === type),
     map(e => e.data)
