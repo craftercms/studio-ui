@@ -790,7 +790,7 @@ body.yui-skin-cstudioTheme .mask {
 .yui-overlay.yui-panel .bd {
   background-color: white;
   border-bottom: solid 1px #ccc;
-  padding: 25px;
+  padding: 30px;
   word-wrap: break-word;
 }
 
@@ -869,7 +869,7 @@ body.yui-skin-cstudioTheme .mask {
 
 .yui-overlay.yui-panel .ft {
   background-color: white;
-  padding: 0 10px 0;
+  padding: 0px 10px 10px;
 }
 
 #errMissingRequirements .ft .button-group, .studioDialog .ft .button-group {
@@ -960,16 +960,6 @@ body.yui-skin-cstudioTheme .mask {
   border: none;
 }
 
-.studioDialog .close--btn {
-  position: absolute;
-  right: 25px;
-}
-
-.studioDialog .close--icon {
-  color: rgba(0, 0, 0, 0.54);
-  font-size: 18px;
-}
-
 #closeUserWarning .bd, #saveDraftWar .bd, #errMissingRequirements .bd, .studioDialog .bd {
   height: 63px !important;
   padding: 24px;
@@ -992,7 +982,7 @@ body.yui-skin-cstudioTheme .mask {
 #closeUserWarning .hd, #saveDraftWar .hd, #errMissingRequirements .hd, .yui-dialog .yui-overlay.yui-panel.studioDialog .hd {
   border-radius: 6px 6px 0 0;
   font-size: 15px;
-  padding: 12px 25px;
+  padding: 7px 10px;
 }
 
 #closeUserWarning .ft, #saveDraftWar .ft, #errMissingRequirements .ft, .studioDialog .ft {
