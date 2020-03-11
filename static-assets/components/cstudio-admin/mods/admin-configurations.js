@@ -94,7 +94,7 @@
           '<div class="configuration-window">' +
           /**/'<p id="activeEnvironment" class="hide"><strong>Active Environment:</strong> <span id="active-environment-value">' + this.environment + '</span></p>' +
           /**/'<select id="config-list">' +
-          /****/' <option value="" >' + CMgs.format(langBundle, 'confTabSelectConf') + '</option>' +
+          /****/'<option value="" >' + CMgs.format(langBundle, 'confTabSelectConf') + '</option>' +
           /**/'</select>' +
           /**/'<div id="edit-area">' +
           /****/'<div id="menu-area">' +
