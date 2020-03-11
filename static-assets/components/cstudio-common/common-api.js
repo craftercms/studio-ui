@@ -595,7 +595,7 @@ var nodeOpen = false,
             simpleDialogTypeWARN: "WARN",
             simpleDialogTypeERROR: "ERROR",
 
-          showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className, width, customZIndex) {
+          showSimpleDialog: function(id, type, headerTitle, message, buttonsArray, dialogType, className, width, customZIndex) {
 
             var dialogId = id;
 
@@ -607,20 +607,31 @@ var nodeOpen = false,
               }];
             }
 
-            var dialog = new YAHOO.widget.SimpleDialog(dialogId, {
-              width: width ? width : '400px',
-              fixedcenter: true,
-              visible: false,
-              draggable: false,
-              close: false,
-              modal: true,
-              text: message,
-              icon: dialogType,
-              constraintoviewport: true,
-              buttons: buttonsArray
-            });
+            var dialog = new YAHOO.widget.SimpleDialog(
+              dialogId,
+              {
+                width: width ? width : '400px',
+                fixedcenter: true,
+                visible: false,
+                draggable: false,
+                close: false,
+                modal: true,
+                text: message,
+                icon: dialogType,
+                constraintoviewport: true,
+                buttons: buttonsArray
+              }
+            );
 
-            dialog.setHeader(header);
+            const titleMarkup =
+              '<div>' +
+              /**/`${headerTitle}` +
+              /**/'<a class="close--btn" href="#">' +
+              /****/'<i class="close--icon fa fa-times" aria-hidden="true"></i>' +
+              /**/'</a>' +
+              '</div>';
+
+            dialog.setHeader(titleMarkup);
             dialog.render(document.body);
 
             var bdIcon = dialog.element.getElementsByClassName("fa")[0],
@@ -642,6 +653,11 @@ var nodeOpen = false,
             }
 
             dialog.show();
+
+            $(`#${dialogId} .close--btn`).on('click', (e) => {
+              e.preventDefault();
+              destroyDialog();
+            });
 
             if (customZIndex) {
               dialog.element.style.setProperty('z-index', customZIndex, 'important');
