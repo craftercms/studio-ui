@@ -595,7 +595,7 @@ var nodeOpen = false,
             simpleDialogTypeWARN: "WARN",
             simpleDialogTypeERROR: "ERROR",
 
-          showSimpleDialog: function(id, type, headerTitle, message, buttonsArray, dialogType, className, width, customZIndex) {
+          showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className, width, customZIndex) {
 
             var dialogId = id;
 
@@ -623,15 +623,7 @@ var nodeOpen = false,
               }
             );
 
-            const titleMarkup =
-              '<div>' +
-              /**/`${headerTitle}` +
-              /**/'<a class="close--btn" href="#">' +
-              /****/'<i class="close--icon fa fa-times" aria-hidden="true"></i>' +
-              /**/'</a>' +
-              '</div>';
-
-            dialog.setHeader(titleMarkup);
+            dialog.setHeader(header);
             dialog.render(document.body);
 
             var bdIcon = dialog.element.getElementsByClassName("fa")[0],
@@ -653,11 +645,6 @@ var nodeOpen = false,
             }
 
             dialog.show();
-
-            $(`#${dialogId} .close--btn`).on('click', (e) => {
-              e.preventDefault();
-              destroyDialog();
-            });
 
             if (customZIndex) {
               dialog.element.style.setProperty('z-index', customZIndex, 'important');
