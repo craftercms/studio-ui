@@ -180,11 +180,9 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const [index, setIndex] = useState(selectedIndex || 0);
   const {media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
-  const crafterCMS = crafterCmsVersions
-    ? crafterCmsVersions.map((version) => { return `${version.major}.${version.minor}.${version.patch}` }).join(', ')
-    : null;
+  const crafterCMS = crafterCmsVersions?.map((version) => `${version.major}.${version.minor}.${version.patch}`).join(', ');
 
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
 
   function handleChangeIndex(value: number) {
     setIndex(value);
