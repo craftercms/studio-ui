@@ -559,11 +559,15 @@
             '<div class="encrypt-hint">' +
             '<i class="encrypt-hint--icon fa fa-info" aria-hidden="true"></i>' +
             `<p class="encrypt-hint--description">${formatMessage(adminConfigurationMessages.encryptHint)}</p></div>`,
-            [{
-              text: CMgs.format(formsLangBundle, 'Ok'), handler: function () {
-                this.destroy();
-              }, isDefault: false
-            }],
+            [
+              {
+                text: CMgs.format(formsLangBundle, 'Ok'),
+                handler: function () {
+                  this.destroy();
+                },
+                isDefault: false
+              }
+            ],
             null,
             'studioDialog',
           );
