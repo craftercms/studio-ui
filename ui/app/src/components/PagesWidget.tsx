@@ -32,16 +32,16 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import makeStyles from '@material-ui/styles/makeStyles';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import { Breadcrumbs, Theme } from '@material-ui/core';
-import { copyItem, getChildrenByPath, pasteItem } from '../services/content';
-import { CopyItem, Item } from '../models/Item';
+import { copyItem, cutItem, getChildrenByPath, pasteItem } from '../services/content';
+import { Item } from '../models/Item';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
 import CustomMenu, { SectionItem } from './CustomMenu';
-import ErrorState from './ErrorState';
 import SearchBar from './SearchBar';
 import { setRequestForgeryToken } from '../utils/auth';
 import { useSpreadState } from '../utils/hooks';
+import ErrorDialog from './SystemStatus/ErrorDialog';
 
 const blueColor = '#7E9DBA';
 const grayColor = '#7C7C80';
@@ -495,7 +495,7 @@ function PagesNavItem(props: PagesNavItemProps) {
   return (
     <ListItem
       className={clsx(classes.pagesNavItem, selectMode && 'noLeftPadding')}
-      onMouseEnter={() => setOver(true)}
+      onMouseOver={() => setOver(true)}
       onMouseLeave={() => setOver(false)}
     >
       {
@@ -610,11 +610,12 @@ export default function PagesWidget(props: PagesWidgetProps) {
   useEffect(() => {
     getChildrenByPath(site, activePath).subscribe(
       (response) => {
-        console.log(response);
         setItems(response.items);
       },
       ({ response }) => {
-        setError(response);
+        //TODO: I'm wrapping the API response as a API2 response
+        const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+        setError(error);
       }
     )
   }, [site, activePath]);
@@ -661,8 +662,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
         break;
       }
       case 'copy': {
-        const item: CopyItem = { item: [{ uri: menu.activeItem.path }] };
-        copyItem(site, item).subscribe(
+        copyItem(site, menu.activeItem).subscribe(
           (response) => {
             if (response.success) {
               setMenu({
@@ -670,17 +670,18 @@ export default function PagesWidget(props: PagesWidgetProps) {
                 anchorEl: null
               });
               setMenuState({ hasClipboard: true });
-              //snack with copy success;
             }
           },
           ({ response }) => {
-            console.log(response);
+            //TODO: I'm wrapping the API response as a API2 response
+            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+            setError(error);
           }
         );
         break;
       }
       case 'paste': {
-        pasteItem(site, menu.activeItem.path).subscribe(
+        pasteItem(site, menu.activeItem).subscribe(
           (response) => {
             setMenu({
               activeItem: null,
@@ -689,10 +690,32 @@ export default function PagesWidget(props: PagesWidgetProps) {
             setMenuState({ hasClipboard: false });
             //snack with paste success;
           },
-          (response) => {
+          ({ response }) => {
             const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
             console.log(_response);
             //setError(_response); open errorDialog;
+          }
+        );
+        break;
+      }
+      case 'duplicate': {
+        break;
+      }
+      case 'cut': {
+        cutItem(site, menu.activeItem).subscribe(
+          (response) => {
+            if (response.success) {
+              setMenu({
+                activeItem: null,
+                anchorEl: null
+              });
+              setMenuState({ hasClipboard: true });
+            }
+          },
+          ({ response }) => {
+            //TODO: I'm wrapping the API response as a API2 response
+            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+            setError(error);
           }
         );
         break;
@@ -774,62 +797,67 @@ export default function PagesWidget(props: PagesWidgetProps) {
     setMenu({ ...menu, anchorEl: null, activeItem: null });
   };
 
+  const onErrorClose = () => {
+    setError(null);
+  };
+
   return (
     <section className={classes.wrapper}>
       {
-        error ? (
-          <ErrorState error={error}/>
-        ) : (
-          <>
-            <PagesHeader
+        (items !== null) &&
+        <>
+          <PagesHeader
+            currentLocale={currentLocale}
+            setCurrentLocale={setCurrentLocale}
+            onPagesMenuOpen={onPagesMenuOpen}
+          />
+          <PagesBreadcrumbs
+            breadcrumb={breadcrumb}
+            onBreadcrumbSelected={onBreadcrumbSelected}
+            onOpenBreadcrumbsMenu={onOpenBreadcrumbsMenu}
+            keyword={keyword}
+            onSearch={onSearch}
+          />
+          {
+            items &&
+            <PagesNav
+              items={items}
+              onItemSelected={onItemSelected}
               currentLocale={currentLocale}
-              setCurrentLocale={setCurrentLocale}
-              onPagesMenuOpen={onPagesMenuOpen}
+              selectMode={menuState.selectMode}
+              onSelectItem={onSelectItem}
+              onOpenItemMenu={onOpenItemMenu}
             />
-            <PagesBreadcrumbs
-              breadcrumb={breadcrumb}
-              onBreadcrumbSelected={onBreadcrumbSelected}
-              onOpenBreadcrumbsMenu={onOpenBreadcrumbsMenu}
-              keyword={keyword}
-              onSearch={onSearch}
-            />
-            {
-              items &&
-              <PagesNav
-                items={items}
-                onItemSelected={onItemSelected}
-                currentLocale={currentLocale}
-                selectMode={menuState.selectMode}
-                onSelectItem={onSelectItem}
-                onOpenItemMenu={onOpenItemMenu}
-              />
-            }
-            <TablePagination
-              className={classes.pagination}
-              classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-              component="div"
-              labelRowsPerPage=""
-              count={10}
-              rowsPerPage={10}
-              page={0}
-              backIconButtonProps={{
-                'aria-label': formatMessage(translations.previousPage)
-              }}
-              nextIconButtonProps={{
-                'aria-label': formatMessage(translations.nextPage)
-              }}
-              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(page)}
-            />
-            <CustomMenu
-              anchorEl={menu.anchorEl}
-              open={Boolean(menu.anchorEl)}
-              classes={{ paper: classes.MenuPaper, helperText: classes.helperText }}
-              onClose={onCloseCustomMenu}
-              sections={menu.sections}
-              onMenuItemClicked={onMenuItemClicked}
-            />
-          </>
-        )
+          }
+          <TablePagination
+            className={classes.pagination}
+            classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+            component="div"
+            labelRowsPerPage=""
+            count={10}
+            rowsPerPage={10}
+            page={0}
+            backIconButtonProps={{
+              'aria-label': formatMessage(translations.previousPage)
+            }}
+            nextIconButtonProps={{
+              'aria-label': formatMessage(translations.nextPage)
+            }}
+            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(page)}
+          />
+          <CustomMenu
+            anchorEl={menu.anchorEl}
+            open={Boolean(menu.anchorEl)}
+            classes={{ paper: classes.MenuPaper, helperText: classes.helperText }}
+            onClose={onCloseCustomMenu}
+            sections={menu.sections}
+            onMenuItemClicked={onMenuItemClicked}
+          />
+        </>
+      }
+      {
+        error &&
+        <ErrorDialog error={error} onClose={onErrorClose}/>
       }
     </section>
   )

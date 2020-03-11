@@ -13,31 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-export interface LegacyItem {
-  name: string;
-  internalName: string;
-  uri: string;
-  [prop: string]: any;
-}
 
-export interface Item {
-  id: string;
-  label: string;
-  contentTypeId: string;
-  path: string;
-  previewUrl: string;
-  systemType: string;
-  mimeType: string;
-  state: number;
-  lockOwner: string;
-  disabled: boolean;
-  localeCode: string;
-  translationSourceId: string;
-  creator: string;
-  createdDate: string;
-  modifier: string;
-  lastModifiedDate: string;
-  commitId: string;
-  sizeInBytes: number;
+// Not Null Or Undefined (nnou)
+export function nnou(object: any): boolean {
+  return object != null;
 }
-
