@@ -113,7 +113,7 @@
           /**/'<div id="encryptHintText" style="display: none;">' +
           /****/'<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
           /****/'<div class="hint">' +
-          /******/`<h2 class="title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
+          /******/`<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
           /******/`<p>${formatMessage(adminConfigurationMessages.encryptHint)}</p>` +
           /****/'</div>' +
           /**/'</div>' +

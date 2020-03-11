@@ -91,7 +91,7 @@
   vertical-align: middle;
 }
 
-.hint-btn .hint-btn--icon, #encryptHintText .hint-text--icon {
+.hint-btn--icon, .hint-text--icon {
   font-size: 20px;
   color: #5cc7fa;
 }
@@ -102,41 +102,41 @@
   padding-bottom: 60px;
 }
 
-#encryptHintText .hint-text--icon {
+.hint-text--icon {
   margin-right: 10px;
   font-size: 14px;
   margin-top: 4px;
 }
 
-#encryptHintText .hint-text--icon::before {
+.hint-text--icon::before {
   border: 2px solid;
   padding: 2px 6px;
   border-radius: 10px;
 }
 
-#encryptHintText .hint .title {
+.hint--title {
   font-size: 12px;
   margin: 2px 0 0;
 }
 
-#encryptionInfoDialog .encrypt-hint {
+.encrypt-hint {
   display: flex;
 }
 
-#encryptionInfoDialog .encrypt-hint .encrypt-hint--icon {
+.encrypt-hint--icon {
   font-size: 12px;
   color: #5cc7fa;
   margin-right: 10px;
   margin-top: 2px;
 }
 
-#encryptionInfoDialog .encrypt-hint .encrypt-hint--icon::before {
+.encrypt-hint--icon::before {
   border: 2px solid;
   padding: 2px 6px;
   border-radius: 10px;
 }
 
-#encryptionInfoDialog .encrypt-hint .encrypt-hint--description {
+.encrypt-hint--description {
   padding: 0;
   margin: 0;
 }
