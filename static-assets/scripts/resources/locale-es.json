@@ -113,7 +113,7 @@
     "NOTIFICATION": "Notificación"
   },
   "about": {
-    "HEADER_LABEL": "Acerca de Nosotros",
+    "HEADER_LABEL": "Información del Producto",
     "STUDIO_INFO": "Información de Crafter Studio",
     "STUDIO_VERSION_NUMBER": "Número de versión de Studio",
     "BUILD_NUMBER": "Número de compilación",
@@ -375,7 +375,7 @@
     "OK":"Ok",
     "HELP": "Ayuda",
     "DOCUMENTATION": "Documentación",
-    "ABOUT": "Acerca de nosotros",
+    "ABOUT": "Acerca de Crafter CMS",
     "SETTINGS": "Preferencias",
     "SIGN_OUT": "Desloguearse",
     "NOTIFICATION": "Notificación",

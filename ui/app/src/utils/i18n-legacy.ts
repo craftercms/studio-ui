@@ -331,6 +331,10 @@ const contentTypesMessages = defineMessages({
   insertExpressionMessage: {
     id: 'siteConfig.insertExpressionMessage',
     defaultMessage: 'Insert Expression'
+  },
+  switchToMessage: {
+    id: 'siteConfig.switchToMessage',
+    defaultMessage: 'Switch to {type}'
   }
 });
 
@@ -385,6 +389,14 @@ const words = defineMessages({
   no: {
     id: 'words.no',
     defaultMessage: 'No'
+  },
+  browse: {
+    id: 'words.browse',
+    defaultMessage: 'Browse'
+  },
+  upload: {
+    id: 'words.upload',
+    defaultMessage: 'Upload'
   }
 });
 
@@ -744,6 +756,24 @@ const fileNameControlMessages = defineMessages({
   }
 });
 
+const rteControlMessages = defineMessages({
+  escapeScripts: {
+    id: 'rteControlMessages.escapeScripts',
+    defaultMessage: 'Escape Scripts'
+  },
+  requiredField: {
+    id: 'rteControlMessages.requiredField',
+    defaultMessage: 'Field is Required'
+  }
+});
+
+const ossAttribution = defineMessages({
+  attribution: {
+    id: 'aboutView.attribution',
+    defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -771,5 +801,7 @@ export default {
   globalMenuMessages,
   adminConfigurationMessages,
   encryptToolMessages,
-  fileNameControlMessages
+  fileNameControlMessages,
+  rteControlMessages,
+  ossAttribution
 };

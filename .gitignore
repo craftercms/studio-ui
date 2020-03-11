@@ -19,3 +19,6 @@ static-assets/styles/browse.css
 static-assets/styles/graphiql.css
 static-assets/styles/tinymce-ace.css
 templates/web/common/js-next-scripts.ftl
+
+ui/app/src/translations/src
+ui/app/src/translations/whitelists

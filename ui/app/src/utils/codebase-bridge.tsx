@@ -100,14 +100,15 @@ export function createCodebaseBridge() {
       DependencySelection: lazy(() => import('../components/DependencySelection')),
       DependencySelectionDelete: lazy(() => (
         import('../components/DependencySelection')
-        .then(module => ({
-          default: module.DependencySelectionDelete
-        }))
+          .then(module => ({
+            default: module.DependencySelectionDelete
+          }))
       )),
       CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../components/PublishingQueue')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
-      AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor'))
+      AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
+      Login: lazy(() => import('../pages/Login'))
     },
 
     assets: {

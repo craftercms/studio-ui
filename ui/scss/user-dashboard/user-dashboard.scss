@@ -308,6 +308,10 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 .about-us-view {
+  h1 {
+    text-align: center;
+    margin-top: 50px;
+  }
   .studio-info {
     overflow: hidden;
     max-width: 560px;
