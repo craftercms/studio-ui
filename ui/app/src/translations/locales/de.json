@@ -310,6 +310,7 @@
   "usersAdmin.lastName": "Nachname",
   "usersAdmin.maxLengthError": "{field} darf nicht länger als {size} Zeichen sein",
   "usersAdmin.userName": "Nutzername",
+  "words.browse": "Durchsuche",
   "words.cancel": "Stornieren",
   "words.clear": "klar",
   "words.close": "Schließen",
@@ -325,5 +326,6 @@
   "words.save": "sparen",
   "words.submit": "Einsenden",
   "words.update": "Aktualisieren",
+  "words.upload": "Hochladen",
   "words.yes": "Ja"
 }

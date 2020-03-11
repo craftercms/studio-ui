@@ -310,6 +310,7 @@
   "usersAdmin.lastName": "성",
   "usersAdmin.maxLengthError": "{field} 은 {size} 자보다 길 수 없습니다",
   "usersAdmin.userName": "사용자 이름",
+  "words.browse": "검색",
   "words.cancel": "취소",
   "words.clear": "명확한",
   "words.close": "닫기",
@@ -325,5 +326,6 @@
   "words.save": "구하다",
   "words.submit": "제출하다",
   "words.update": "최신 정보",
+  "words.upload": "업로드",
   "words.yes": "예"
 }

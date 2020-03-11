@@ -767,6 +767,17 @@ const fileNameControlMessages = defineMessages({
   }
 });
 
+const rteControlMessages = defineMessages({
+  escapeScripts: {
+    id: 'rteControlMessages.escapeScripts',
+    defaultMessage: 'Escape Scripts'
+  },
+  requiredField: {
+    id: 'rteControlMessages.requiredField',
+    defaultMessage: 'Field is Required'
+  }
+});
+
 const ossAttribution = defineMessages({
   attribution: {
     id: 'aboutView.attribution',
@@ -803,5 +814,6 @@ export default {
   adminConfigurationMessages,
   encryptToolMessages,
   fileNameControlMessages,
+  rteControlMessages,
   ossAttribution
 };
