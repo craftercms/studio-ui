@@ -53,14 +53,12 @@ export default function CustomMenu(props: CustomMenuProps) {
         sections.map((section: any, i: number) =>
           section.map((sectionItem: SectionItem, y: number) =>
             (sectionItem.type === 'text') ? (
-              sectionItem.label ? (
-                <div>
-                  <Typography variant="body1" className={classes.helperText}>
-                    {sectionItem.label}
-                  </Typography>
-                  <Divider/>
-                </div>
-              ) : null
+              <div>
+                <Typography variant="body1" className={classes.helperText}>
+                  {sectionItem.label}
+                </Typography>
+                <Divider/>
+              </div>
             ) : (
               <MenuItem
                 divider={(i !== sections.length - 1) && (y === section.length - 1)}

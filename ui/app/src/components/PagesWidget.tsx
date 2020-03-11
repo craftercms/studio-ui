@@ -32,14 +32,16 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import makeStyles from '@material-ui/styles/makeStyles';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import { Breadcrumbs, Theme } from '@material-ui/core';
-import { getChildrenByPath } from '../services/content';
-import { Item } from '../models/Item';
+import { copyItem, getChildrenByPath, pasteItem } from '../services/content';
+import { CopyItem, Item } from '../models/Item';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
 import CustomMenu, { SectionItem } from './CustomMenu';
 import ErrorState from './ErrorState';
 import SearchBar from './SearchBar';
+import { setRequestForgeryToken } from '../utils/auth';
+import { useSpreadState } from '../utils/hooks';
 
 const blueColor = '#7E9DBA';
 const grayColor = '#7C7C80';
@@ -79,6 +81,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   icon: {
     padding: '6px'
+  },
+  searchRoot: {
+    //margin: '10px 0'
   },
   pagesBreadcrumbs: {
     display: 'flex',
@@ -153,8 +158,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       padding: 0
     },
     '& li': {
-      paddingTop: '10px',
-      paddingBottom: '10px',
       whiteSpace: 'initial'
     }
   },
@@ -183,109 +186,148 @@ const translations = defineMessages({
   }
 });
 
-const itemMenuSections = [
-  [
-    {
-      id: 'edit',
-      label: 'Edit'
-    },
-    {
-      id: 'view',
-      label: 'View'
-    },
-    {
-      id: 'newcontent',
-      label: 'New Content'
-    },
-    {
-      id: 'newfolder',
-      label: 'New Folder'
-    }
-  ],
-  [
-    {
-      id: 'delete',
-      label: 'Delete'
-    },
-    {
-      id: 'changeTemplate',
-      label: 'Change Template'
-    }
-  ],
-  [
-    {
-      id: 'cut',
-      label: 'Cut'
-    },
-    {
-      id: 'copy',
-      label: 'Copy'
-    },
-    {
-      id: 'duplicate',
-      label: 'Duplicate'
-    }
-  ],
-  [
-    {
-      id: 'dependencies',
-      label: 'Dependencies'
-    }
-  ],
-  [
-    {
-      id: 'history',
-      label: 'History'
-    },
-    {
-      id: 'traslation',
-      label: 'Traslation'
-    }
-  ]
-];
-
-const selectedMenu = [
-  {
+const menuOptions = {
+  edit: {
+    id: 'edit',
+    label: 'Edit'
+  },
+  view: {
+    id: 'view',
+    label: 'View'
+  },
+  newContent: {
+    id: 'newcontent',
+    label: 'New Content'
+  },
+  newFolder: {
+    id: 'newfolder',
+    label: 'New Folder'
+  },
+  changeTemplate: {
+    id: 'changeTemplate',
+    label: 'Change Template'
+  },
+  cut: {
+    id: 'cut',
+    label: 'Cut'
+  },
+  copy: {
+    id: 'copy',
+    label: 'Copy'
+  },
+  paste: {
+    id: 'paste',
+    label: 'Paste'
+  },
+  duplicate: {
+    id: 'duplicate',
+    label: 'Duplicate'
+  },
+  delete: {
+    id: 'delete',
+    label: 'Delete'
+  },
+  dependencies: {
+    id: 'dependencies',
+    label: 'Dependencies'
+  },
+  history: {
+    id: 'history',
+    label: 'History'
+  },
+  translation: {
+    id: 'translation',
+    label: 'Translation'
+  },
+  select: {
+    id: 'select',
+    label: 'Select'
+  },
+  itemsSelected: {
     id: 'itemsSelected',
     label: '',
     type: 'text'
   },
-  {
+  terminateSelection: {
     id: 'terminateSelection',
     label: 'Terminate Selection'
   }
-];
+};
 
-const itemsSelectedMenu = [
-  [
-    {
-      id: 'cut',
-      label: 'Cut'
-    },
-    {
-      id: 'copy',
-      label: 'Copy'
-    },
-    {
-      id: 'paste',
-      label: 'Paste'
-    },
-    {
-      id: 'duplicate',
-      label: 'Duplicate'
-    },
-    {
-      id: 'delete',
-      label: 'Delete'
+function generateMenuSections(item: Item, menuState: MenuState, selectedLabel?: string) {
+  let sections = [];
+  if (menuState.selectMode && !item) {
+    if (selectedLabel) {
+      let selectedMenuItems = menuOptions.itemsSelected;
+      selectedMenuItems.label = selectedLabel;
+      sections.push([
+        selectedMenuItems,
+        menuOptions.terminateSelection
+      ])
+    } else {
+      sections.push([
+        menuOptions.terminateSelection
+      ]);
     }
-  ],
-  [
-    {
-      id: 'traslation',
-      label: 'Translation'
+    sections.push(menuState.hasClipboard ? [
+        menuOptions.cut,
+        menuOptions.copy,
+        menuOptions.paste,
+        menuOptions.duplicate,
+        menuOptions.delete
+      ] : [
+        menuOptions.cut,
+        menuOptions.copy,
+        menuOptions.duplicate,
+        menuOptions.delete
+      ]
+    );
+    sections.push([
+      menuOptions.translation
+    ])
+  } else {
+    sections.push(
+      [
+        menuOptions.edit,
+        menuOptions.view,
+        menuOptions.newContent,
+        menuOptions.newFolder
+      ],
+      [
+        menuOptions.delete,
+        menuOptions.changeTemplate
+      ]
+    );
+    sections.push(
+      menuState.hasClipboard ? [
+        menuOptions.cut,
+        menuOptions.copy,
+        menuOptions.paste,
+        menuOptions.duplicate
+      ] : [
+        menuOptions.cut,
+        menuOptions.copy,
+        menuOptions.duplicate
+      ]
+    );
+    sections.push(
+      [
+        menuOptions.dependencies
+      ],
+      [
+        menuOptions.history,
+        menuOptions.translation
+      ]
+    );
+    if (!item) {
+      sections.push([
+        menuOptions.select
+      ])
     }
-  ]
-];
+  }
+
+  return sections;
+}
 
 interface PagesHeaderProps {
   currentLocale: string;
@@ -382,11 +424,13 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
             keyword={keyword}
             closeIcon={true}
             persistentCloseIcon={true}
+            classes={{ root: classes.searchRoot }}
           />
         ) : (
           <>
             <Breadcrumbs
               aria-label="breadcrumb"
+              maxItems={2}
               separator={<NavigateNextIcon fontSize="small"/>}
               classes={{ ol: classes.pagesBreadcrumbsOl, separator: classes.PagesBreadCrumbsSeparator }}
             >
@@ -441,7 +485,7 @@ interface PagesNavItemProps {
 
   onSelectItem(item: Item, unselect: boolean): void;
 
-  onOpenItemMenu(element: Element): void;
+  onOpenItemMenu(element: Element, item: Item): void;
 }
 
 function PagesNavItem(props: PagesNavItemProps) {
@@ -479,7 +523,7 @@ function PagesNavItem(props: PagesNavItemProps) {
         over &&
         <div className={classes.optionsWrapper}>
           <IconButton aria-label="options" className={classes.icon}
-                      onClick={(event) => onOpenItemMenu(event.currentTarget)}>
+                      onClick={(event) => onOpenItemMenu(event.currentTarget, item)}>
             <MoreVertIcon/>
           </IconButton>
           <IconButton aria-label="options" className={classes.icon} onClick={() => onItemSelected(item)}>
@@ -500,7 +544,7 @@ interface PagesNavProps {
 
   onItemSelected(item: Item): void;
 
-  onOpenItemMenu(element: Element): void;
+  onOpenItemMenu(element: Element, item: Item): void;
 }
 
 function PagesNav(props: PagesNavProps) {
@@ -530,25 +574,34 @@ interface PagesWidgetProps {
   locale?: string;
 }
 
+interface MenuState {
+  selectMode: boolean,
+  hasClipboard: boolean
+}
+
 export default function PagesWidget(props: PagesWidgetProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { site = 'editorial', path = 'site/website', locale = 'en' } = props;
   const [currentLocale, setCurrentLocale] = React.useState(locale);
-  const [selectMode, setSelectMode] = React.useState(false);
+  const [menuState, setMenuState] = useSpreadState<MenuState>({
+    selectMode: false,
+    hasClipboard: false
+  });
   const [items, setItems] = useState<Item[]>(null);
   const [breadcrumb, setBreadcrumb] = useState<Breadcrumb[]>([
     {
       id: 'Home',
       label: 'Home',
-      path: 'home'
+      path: '/site/website/index.xml'
     }
   ]);
   const [activePath, setActivePath] = useState<string>(path);
   const [selectedItems, setSelectedItems] = useState<LookupTable>(null);
-  const [menu, setMenu] = useState({
+  const [menu, setMenu] = useSpreadState({
     sections: [],
-    anchorEl: null
+    anchorEl: null,
+    activeItem: null
   });
   const [keyword, setKeyword] = useState('');
 
@@ -565,6 +618,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
       }
     )
   }, [site, activePath]);
+
+  setRequestForgeryToken();
 
   const onItemSelected = (item: Item) => {
     setBreadcrumb([...breadcrumb, item]);
@@ -587,62 +642,89 @@ export default function PagesWidget(props: PagesWidgetProps) {
   };
 
   const onMenuItemClicked = (section: SectionItem) => {
-    if (section.id === 'select') {
-      setSelectMode(true);
-      setMenu({
-        anchorEl: null,
-        sections: itemsSelectedMenu
-      });
-    } else if (section.id === 'terminateSelection') {
-      setSelectMode(false);
-      setSelectedItems(null);
-      setMenu({
-        ...menu,
-        anchorEl: null
-      });
-    } else if (section.id.includes('locale')) {
-      setMenu({
-        ...menu,
-        anchorEl: null
-      });
-      onChangeLocale(section.id.split('.')[1]);
+    switch (section.id) {
+      case 'select': {
+        setMenuState({ selectMode: true });
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
+        break;
+      }
+      case 'terminateSelection': {
+        setMenuState({ selectMode: false });
+        setSelectedItems(null);
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
+        break;
+      }
+      case 'copy': {
+        const item: CopyItem = { item: [{ uri: menu.activeItem.path }] };
+        copyItem(site, item).subscribe(
+          (response) => {
+            if (response.success) {
+              setMenu({
+                activeItem: null,
+                anchorEl: null
+              });
+              setMenuState({ hasClipboard: true });
+              //snack with copy success;
+            }
+          },
+          ({ response }) => {
+            console.log(response);
+          }
+        );
+        break;
+      }
+      case 'paste': {
+        pasteItem(site, menu.activeItem.path).subscribe(
+          (response) => {
+            setMenu({
+              activeItem: null,
+              anchorEl: null
+            });
+            setMenuState({ hasClipboard: false });
+            //snack with paste success;
+          },
+          (response) => {
+            const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+            console.log(_response);
+            //setError(_response); open errorDialog;
+          }
+        );
+        break;
+      }
+      default: {
+        console.log('default');
+        if (section.id.includes('locale')) {
+          setMenu({
+            ...menu,
+            anchorEl: null
+          });
+          onChangeLocale(section.id.split('.')[1]);
+        }
+        break;
+      }
     }
   };
 
   const onOpenBreadcrumbsMenu = (element: Element) => {
-    if (selectMode) {
-      const count = selectedItems && Object.values(selectedItems).filter((item: Item | false) => item !== false).length;
-      let _sections = [[...selectedMenu], ...itemsSelectedMenu];
-      if (count) {
-        let selectedMenuItems = selectedMenu;
-        selectedMenuItems[0].label = formatMessage(translations.itemsSelected, { count });
-        _sections = [[...selectedMenuItems], ...itemsSelectedMenu];
-      }
-      setMenu({
-        sections: _sections,
-        anchorEl: element
-      });
-    } else {
-      setMenu({
-        sections: [
-          ...itemMenuSections,
-          [
-            {
-              id: 'select',
-              label: 'Select'
-            }
-          ]
-        ],
-        anchorEl: element
-      });
-    }
-
+    const count = selectedItems && Object.values(selectedItems).filter((item: Item | false) => item !== false).length;
+    setMenu({
+      sections: generateMenuSections(null, menuState, count ? formatMessage(translations.itemsSelected, { count }) : null),
+      anchorEl: element,
+      activeItem: breadcrumb[breadcrumb.length - 1]
+    });
   };
 
-  const onOpenItemMenu = (element: Element) => {
+  const onOpenItemMenu = (element: Element, item: Item) => {
     setMenu({
-      sections: itemMenuSections,
-      anchorEl: element
+      sections: generateMenuSections(item, menuState),
+      anchorEl: element,
+      activeItem: item
     });
   };
 
@@ -665,7 +747,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
             }
           ]
         ],
-        anchorEl
+        anchorEl,
+        activeItem: null
       });
     } else {
       setMenu({
@@ -677,13 +760,18 @@ export default function PagesWidget(props: PagesWidgetProps) {
             }
           ]
         ],
-        anchorEl
+        anchorEl,
+        activeItem: null
       });
     }
   };
 
   const onSearch = (keyword: string) => {
     setKeyword(keyword);
+  };
+
+  const onCloseCustomMenu = () => {
+    setMenu({ ...menu, anchorEl: null, activeItem: null });
   };
 
   return (
@@ -711,7 +799,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
                 items={items}
                 onItemSelected={onItemSelected}
                 currentLocale={currentLocale}
-                selectMode={selectMode}
+                selectMode={menuState.selectMode}
                 onSelectItem={onSelectItem}
                 onOpenItemMenu={onOpenItemMenu}
               />
@@ -736,9 +824,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
               anchorEl={menu.anchorEl}
               open={Boolean(menu.anchorEl)}
               classes={{ paper: classes.MenuPaper, helperText: classes.helperText }}
-              onClose={() => {
-                setMenu({ ...menu, anchorEl: null });
-              }}
+              onClose={onCloseCustomMenu}
               sections={menu.sections}
               onMenuItemClicked={onMenuItemClicked}
             />

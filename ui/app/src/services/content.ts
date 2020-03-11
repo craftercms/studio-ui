@@ -14,9 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get } from '../utils/ajax';
-import { map } from 'rxjs/operators';
+import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
+import { map, pluck } from 'rxjs/operators';
 import { Observable, Observer } from 'rxjs';
+import { CopyItem } from '../models/Item';
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -37,25 +38,25 @@ export function getChildrenByPath(site: string, path: string): Observable<any> {
       {
         id: 'Style',
         label: 'Style',
-        path: 'Style',
+        path: '/site/website/style/index.xml',
         localeCode: 'en'
       },
       {
         id: 'Salud',
         label: 'Salud',
-        path: 'Salud',
+        path: '/site/website/health/index.xml',
         localeCode: 'es'
       },
       {
         id: 'Entertainment',
         label: 'Entertainment',
-        path: 'Entertainment',
+        path: '/site/website/entertainment/index.xml',
         localeCode: 'en'
       },
       {
-        id: 'Cositas',
-        label: 'Español',
-        path: 'Español',
+        id: 'Tecnologia',
+        label: 'Tecnologia',
+        path: '/site/website/technology/index.xml',
         localeCode: 'es'
       }
     ]
@@ -65,6 +66,14 @@ export function getChildrenByPath(site: string, path: string): Observable<any> {
     observer.next(response);
     observer.complete();
   });
+}
+
+export function copyItem(site: string, item: CopyItem): Observable<any> {
+  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, item, CONTENT_TYPE_JSON).pipe(pluck('response'));
+}
+
+export function pasteItem(site: string, path: string) {
+  return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${path}`).pipe(pluck('response'));
 }
 
 export default {
