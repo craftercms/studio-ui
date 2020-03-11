@@ -180,7 +180,9 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const [index, setIndex] = useState(selectedIndex || 0);
   const {media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
-  const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
+  const crafterCMS = crafterCmsVersions
+    ? crafterCmsVersions.map((version) => { return `${version.major}.${version.minor}.${version.patch}` }).join(', ')
+    : null;
 
   const {formatMessage} = useIntl();
 
@@ -308,6 +310,14 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
                   </Typography>
               </div>
             }
+            <div className={classes.section}>
+              <Typography variant="subtitle2">
+                {formatMessage(messages.craftercms)}
+              </Typography>
+              <Typography variant="subtitle2" color={'textSecondary'}>
+                {crafterCMS}
+              </Typography>
+            </div>
             <div className={classes.sectionChips}>
               <div className={classes.chip}>
                 <label>{formatMessage(messages.version)}</label>
@@ -316,10 +326,6 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
               <div className={classes.chip}>
                 <label>{formatMessage(messages.license)}</label>
                 <span>{license.name}</span>
-              </div>
-              <div className={classes.chip}>
-                <label>{formatMessage(messages.craftercms)}</label>
-                <span>{crafterCMS}</span>
               </div>
             </div>
           </Grid>
