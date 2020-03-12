@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEvent, useEffect, useReducer, useRef, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useEffect, useReducer, useRef, useState } from 'react';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -57,7 +57,6 @@ import { backgroundColor } from '../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import { Checkbox, FormControlLabel } from '@material-ui/core';
-
 const messages = defineMessages({
   privateBlueprints: {
     id: 'createSiteDialog.privateBlueprints',
@@ -134,6 +133,10 @@ const messages = defineMessages({
   chooseCreationStrategy: {
     id: 'createSiteDialog.chooseCreationStrategy',
     defaultMessage: 'Choose creation strategy: start from an existing Git repo or create based on a blueprint that suits you best.'
+  },
+  showIncompatible: {
+    id: 'createSiteDialog.showIncompatible',
+    defaultMessage: 'Show Incompatible Plugins'
   }
 });
 
@@ -163,7 +166,8 @@ const siteInitialState: SiteState = {
     basic: false,
     token: false,
     key: false
-  }
+  },
+  showIncompatible: true
 };
 
 const CustomTabs = withStyles({
@@ -314,6 +318,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   showIncompatible: {
     marginLeft: 'auto'
+  },
+  showIncompatibleInput: {
+    fontSize: '0.8125rem'
   }
 }));
 
@@ -425,7 +432,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       }
     },
     // eslint-disable-next-line
-    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView],
+    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView, site.showIncompatible],
   );
 
   function handleClose(event?: any, reason?: string) {
@@ -554,6 +561,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         createNewSite(blueprintParams);
       }
     }
+  }
+
+  function handleShowIncompatibleChange(e: ChangeEvent<HTMLInputElement>) {
+    setBlueprints(null);
+    setMarketplace(null);
+    setSite({ showIncompatible: e.target.checked });
   }
 
   function checkAdditionalFields() {
@@ -688,7 +701,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function getMarketPlace() {
-    fetchMarketplaceBlueprints()
+    fetchMarketplaceBlueprints(site.showIncompatible)
       .subscribe(
         ({response}) => {
           setMarketplace(response.plugins);
@@ -842,11 +855,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
                   onClick={handleSearchClick}
                 />
-                <FormControlLabel className={classes.showIncompatible}
-                                  control={
-                                    <Checkbox checked={true} /*onChange={handleChange('antoine')}*/ color="primary"/>
-                                  }
-                                  label="Show Incompatible Plugins"
+                <FormControlLabel
+                  className={classes.showIncompatible}
+                  control={
+                    <Checkbox
+                      checked={site.showIncompatible}
+                      onChange={ (e: ChangeEvent<HTMLInputElement>) => {handleShowIncompatibleChange(e)} }
+                      color="primary" />
+                  }
+                  label={<Typography className={classes.showIncompatibleInput}>{formatMessage(messages.showIncompatible)}</Typography>}
+                  labelPlacement="start"
                 />
               </div>
             }

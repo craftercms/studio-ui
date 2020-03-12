@@ -17,7 +17,7 @@
 import { get, post } from "../utils/ajax";
 import { MarketplaceSite } from "../models/Site";
 
-export function fetchBlueprints() {
+export function fetchBlueprints(showIncompatible: boolean) {    //TODO: API still not updated with the param
   return get('/studio/api/2/marketplace/search?type=blueprint&limit=1000');
 }
 
