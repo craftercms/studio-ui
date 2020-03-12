@@ -18,6 +18,8 @@ export interface LegacyItem {
   internalName: string;
   uri: string;
   [prop: string]: any;
+
+  children: LegacyItem[];
 }
 
 export interface Item {

@@ -17,7 +17,7 @@
 import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
 import { map, pluck } from 'rxjs/operators';
 import { Observable, Observer } from 'rxjs';
-import { Item } from '../models/Item';
+import { Item, LegacyItem } from '../models/Item';
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -68,8 +68,9 @@ export function getChildrenByPath(site: string, path: string): Observable<any> {
   });
 }
 
-export function copyItem(site: string, item: Item): Observable<any> {
-  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, { item: [{ uri: item.path }] }, CONTENT_TYPE_JSON).pipe(pluck('response'));
+export function copyItem(site: string, item: Partial<LegacyItem>): Observable<any> {
+  let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
+  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(pluck('response'));
 }
 
 export function cutItem(site: string, item: Item): Observable<any> {
@@ -78,6 +79,10 @@ export function cutItem(site: string, item: Item): Observable<any> {
 
 export function pasteItem(site: string, item: Item): Observable<any> {
   return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(pluck('response'));
+}
+
+export function getPages(site: string, item: any): Observable<LegacyItem> {
+  return get(`/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`).pipe(pluck('response', 'item'));
 }
 
 export default {

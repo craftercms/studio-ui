@@ -32,8 +32,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import makeStyles from '@material-ui/styles/makeStyles';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import { Breadcrumbs, Theme } from '@material-ui/core';
-import { copyItem, cutItem, getChildrenByPath, pasteItem } from '../services/content';
-import { Item } from '../models/Item';
+import { copyItem, cutItem, getChildrenByPath, getPages, pasteItem } from '../services/content';
+import { Item, LegacyItem } from '../models/Item';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
@@ -42,6 +42,7 @@ import SearchBar from './SearchBar';
 import { setRequestForgeryToken } from '../utils/auth';
 import { useSpreadState } from '../utils/hooks';
 import ErrorDialog from './SystemStatus/ErrorDialog';
+import CopyItemsDialog from './CopyItemsDialog';
 
 const blueColor = '#7E9DBA';
 const grayColor = '#7C7C80';
@@ -183,6 +184,14 @@ const translations = defineMessages({
   itemsSelected: {
     id: 'craftercms.pages.widget.itemsSelected',
     defaultMessage: '{count, plural, one {{count} Item selected} other {{count} Items selected}}'
+  },
+  copyDialogTitle: {
+    id: 'craftercms.copy.dialog.title',
+    defaultMessage: 'Copy'
+  },
+  copyDialogSubtitle: {
+    id: 'craftercms.copy.dialog.subtitle',
+    defaultMessage: 'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
   }
 });
 
@@ -607,6 +616,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
 
   const [error, setError] = useState(null);
 
+  const [copyDialog, setCopyDialog] = useState(null);
+
   useEffect(() => {
     getChildrenByPath(site, activePath).subscribe(
       (response) => {
@@ -662,14 +673,31 @@ export default function PagesWidget(props: PagesWidgetProps) {
         break;
       }
       case 'copy': {
-        copyItem(site, menu.activeItem).subscribe(
-          (response) => {
-            if (response.success) {
+        getPages(site, menu.activeItem).subscribe(
+          (legacyItem: LegacyItem) => {
+            if (legacyItem.children.length) {
               setMenu({
                 activeItem: null,
                 anchorEl: null
               });
-              setMenuState({ hasClipboard: true });
+              setCopyDialog(legacyItem);
+            } else {
+              copyItem(site, menu.activeItem).subscribe(
+                (response) => {
+                  if (response.success) {
+                    setMenu({
+                      activeItem: null,
+                      anchorEl: null
+                    });
+                    setMenuState({ hasClipboard: true });
+                  }
+                },
+                ({ response }) => {
+                  //TODO: I'm wrapping the API response as a API2 response
+                  const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+                  setError(error);
+                }
+              );
             }
           },
           ({ response }) => {
@@ -801,6 +829,30 @@ export default function PagesWidget(props: PagesWidgetProps) {
     setError(null);
   };
 
+  const onCopyDialogClose = () => {
+    setCopyDialog(null);
+  };
+
+  const onCopyDialogOk = (item: Partial<LegacyItem>) => {
+    setCopyDialog(null);
+    copyItem(site, item).subscribe(
+      (response) => {
+        if (response.success) {
+          setMenu({
+            activeItem: null,
+            anchorEl: null
+          });
+          setMenuState({ hasClipboard: true });
+        }
+      },
+      ({ response }) => {
+        //TODO: I'm wrapping the API response as a API2 response
+        const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+        setError(error);
+      }
+    );
+  };
+
   return (
     <section className={classes.wrapper}>
       {
@@ -858,6 +910,17 @@ export default function PagesWidget(props: PagesWidgetProps) {
       {
         error &&
         <ErrorDialog error={error} onClose={onErrorClose}/>
+      }
+      {
+        copyDialog &&
+        <CopyItemsDialog
+          title={formatMessage(translations.copyDialogTitle)}
+          subtitle={formatMessage(translations.copyDialogSubtitle)}
+          onClose={onCopyDialogClose}
+          open={true}
+          onOk={onCopyDialogOk}
+          item={copyDialog}
+        />
       }
     </section>
   )
