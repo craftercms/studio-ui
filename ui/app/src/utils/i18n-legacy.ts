@@ -783,6 +783,13 @@ const ossAttribution = defineMessages({
   }
 });
 
+const dashboardWidgetsMessages = defineMessages({
+  publishingTarget: {
+    id: 'dashboardWidgetsMessages.publishingTarget',
+    defaultMessage: 'Publishing Target'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -812,5 +819,6 @@ export default {
   encryptToolMessages,
   fileNameControlMessages,
   rteControlMessages,
-  ossAttribution
+  ossAttribution,
+  dashboardWidgetsMessages
 };
