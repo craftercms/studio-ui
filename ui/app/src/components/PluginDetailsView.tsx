@@ -14,23 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
-import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Typography from "@material-ui/core/Typography";
+import React, { useState } from 'react';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import MobileStepper from "./MobileStepper";
-import { defineMessages, useIntl } from "react-intl";
-import { Blueprint } from "../models/Blueprint";
-import Button from "@material-ui/core/Button";
-import Fab from "@material-ui/core/Fab";
+import MobileStepper from './MobileStepper';
+import { defineMessages, useIntl } from 'react-intl';
+import { Blueprint } from '../models/Blueprint';
+import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import Grid from "@material-ui/core/Grid";
+import Grid from '@material-ui/core/Grid';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { backgroundColor } from "../styles/theme";
-import clsx from "clsx";
+import { backgroundColor } from '../styles/theme';
+import clsx from 'clsx';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   '@keyframes fadeIn': fadeIn,
   fadeIn: {
     animationName: '$fadeIn',
-    animationDuration: '1s',
+    animationDuration: '1s'
   },
   detailsView: {
     height: '100%',
@@ -178,9 +178,8 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const [play, setPlay] = useState(false);
   const {blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex} = props;
   const [index, setIndex] = useState(selectedIndex || 0);
-  const {media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine} = blueprint;
+  const { media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine, compatible } = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
-  const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
 
   const {formatMessage} = useIntl();
 
@@ -238,9 +237,13 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
         <Typography variant="h5" component="h1">
           {name}
         </Typography>
-        <Button variant="contained" color="primary" className={classes.useBtn} onClick={() => onBlueprintSelected(blueprint, 1)}>
-          {formatMessage(messages.use)}
-        </Button>
+        {
+          compatible &&
+          <Button variant="contained" color="primary" className={classes.useBtn}
+                  onClick={() => onBlueprintSelected(blueprint, 1)}>
+            {formatMessage(messages.use)}
+          </Button>
+        }
       </div>
       <AutoPlaySwipeableViews
         index={index}
@@ -248,7 +251,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
         interval={interval}
         onChangeIndex={handleChangeIndex}
         enableMouseEvents
-        slideStyle={{ height: '340px'}}
+        slideStyle={{ height: '340px' }}
       >
         {renderMedias()}
       </AutoPlaySwipeableViews>
@@ -316,10 +319,6 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
               <div className={classes.chip}>
                 <label>{formatMessage(messages.license)}</label>
                 <span>{license.name}</span>
-              </div>
-              <div className={classes.chip}>
-                <label>{formatMessage(messages.craftercms)}</label>
-                <span>{crafterCMS}</span>
               </div>
             </div>
           </Grid>

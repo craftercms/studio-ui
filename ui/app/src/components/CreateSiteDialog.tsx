@@ -46,11 +46,7 @@ import PluginDetailsView from './PluginDetailsView';
 import EmptyState from './EmptyState';
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
-import {
-  checkHandleAvailability,
-  createSite,
-  fetchBlueprints as fetchBuiltInBlueprints
-} from '../services/sites';
+import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from '../services/sites';
 import {
   createSite as createSiteFromMarketplace,
   fetchBlueprints as fetchMarketplaceBlueprints
@@ -60,6 +56,7 @@ import Cookies from 'js-cookie';
 import { backgroundColor } from '../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
+import { Checkbox, FormControlLabel } from '@material-ui/core';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -306,7 +303,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     height: '100%'
   },
   loadingStateRoot: {
-    height: '100%',
+    height: '100%'
   },
   loadingStateGraphic: {
     flexGrow: 1,
@@ -314,6 +311,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   errorPaperRoot: {
     height: '100%'
+  },
+  showIncompatible: {
+    marginLeft: 'auto'
   }
 }));
 
@@ -841,6 +841,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 <SearchIcon
                   className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
                   onClick={handleSearchClick}
+                />
+                <FormControlLabel className={classes.showIncompatible}
+                                  control={
+                                    <Checkbox checked={true} /*onChange={handleChange('antoine')}*/ color="primary"/>
+                                  }
+                                  label="Show Incompatible Plugins"
                 />
               </div>
             }
