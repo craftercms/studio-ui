@@ -29,9 +29,9 @@ import IconButton from '@material-ui/core/IconButton';
 import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
-import { Breadcrumbs, Theme } from '@material-ui/core';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import { copyItem, cutItem, getChildrenByPath, getPages, pasteItem } from '../services/content';
 import { Item, LegacyItem } from '../models/Item';
 import clsx from 'clsx';
@@ -43,13 +43,12 @@ import { setRequestForgeryToken } from '../utils/auth';
 import { useSpreadState } from '../utils/hooks';
 import ErrorDialog from './SystemStatus/ErrorDialog';
 import CopyItemsDialog from './CopyItemsDialog';
+import ContentLocalizationDialog from './ContentLocalizationDialog';
+import { palette } from '../styles/theme';
 
-const blueColor = '#7E9DBA';
-const grayColor = '#7C7C80';
-const blackColor = '#000000';
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => createStyles({
   wrapper: {
     padding: '10px',
     border: '1px solid gray',
@@ -57,10 +56,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     margin: '0 auto'
   },
   primaryColor: {
-    color: blueColor
+    color: theme.palette.primary.main
   },
   blackColor: {
-    color: blackColor
+    color: palette.black
   },
   flag: {
     color: flagColor,
@@ -104,7 +103,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   pagesBreadcrumbsTypo: {
     fontWeight: 'bold',
-    color: grayColor
+    color: palette.gray.medium4
   },
   pagesNavItem: {
     justifyContent: 'space-between',
@@ -118,7 +117,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   pagesNavItemText: {
-    color: blueColor,
+    color: theme.palette.primary.main,
     marginRight: 'auto',
     '&.opacity': {
       opacity: '0.7'
@@ -126,7 +125,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   pagesNavItemCheckbox: {
     padding: '6px',
-    color: blueColor
+    color: theme.palette.primary.main
   },
   pagination: {
     marginTop: '10px',
@@ -852,7 +851,6 @@ export default function PagesWidget(props: PagesWidgetProps) {
       }
     );
   };
-
   return (
     <section className={classes.wrapper}>
       {
@@ -922,6 +920,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
           item={copyDialog}
         />
       }
+      <ContentLocalizationDialog open={true} onClose={() => {
+      }}/>
     </section>
   )
 }

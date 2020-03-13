@@ -20,10 +20,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { Link, Theme } from '@material-ui/core';
 import { palette } from '../styles/theme';
@@ -33,6 +29,7 @@ import { TreeView } from '@material-ui/lab';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LookupTable } from '../models/LookupTable';
+import DialogTitle, { DialogTitleProps } from './DialogTitle';
 
 
 const messages = defineMessages({
@@ -54,59 +51,11 @@ const messages = defineMessages({
   }
 });
 
-const dialogTitleStyles = makeStyles((theme: Theme) => ({
-  titleRoot: {
-    margin: 0,
-    padding: '13px 20px 11px',
-    background: palette.white
-  },
-  title: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 10
-  },
-  subtitle: {
-    fontSize: '14px',
-    lineHeight: '18px',
-    paddingRight: '35px'
-  },
-  closeIcon: {}
-}));
-
-interface DialogTitleProps {
-  title: string;
-  subtitle?: string;
-
-  onClose(): void;
-}
-
-//TODO: Extract this to be used on others components
-function DialogTitle(props: DialogTitleProps) {
-  const classes = dialogTitleStyles({});
-  const { onClose, title, subtitle } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.titleRoot}>
-      <div className={classes.title}>
-        <Typography variant="h6">{title}</Typography>
-        {onClose ? (
-          <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
-            <CloseIcon/>
-          </IconButton>
-        ) : null}
-      </div>
-      {
-        subtitle &&
-        <Typography variant="subtitle1" className={classes.subtitle}>{subtitle}</Typography>
-      }
-    </MuiDialogTitle>
-  );
-}
-
 const simpleItemsSelectionsStyles = makeStyles((theme: Theme) => ({
   simpleItemsSelectionRoot: {
     background: palette.white,
-    border: '1px solid rgba(0, 0, 0, .125)'
+    border: '1px solid rgba(0, 0, 0, .125)',
+    minHeight: '30vh'
   },
   simpleItemsSelectionHeader: {
     padding: '10px 10px 0 10px'
