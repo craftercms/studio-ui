@@ -33,14 +33,16 @@ CStudioForms.Controls.TranscodedVideoPicker = CStudioForms.Controls.TranscodedVi
     this.external = null;
     this.supportedPostFixes = ['_o'];
 
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.messages = CrafterCMSNext.i18n.messages.transcodedVideoPickerControlMessages;
+
     return this;
   };
 
 YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFormField, {
 
   getLabel: function () {
-    // return CMgs.format(langBundle, "video");
-    return 'Transcoded Video Picker';
+    return this.formatMessage(this.messages.label);
   },
 
   _onChange: function (evt, obj) {
