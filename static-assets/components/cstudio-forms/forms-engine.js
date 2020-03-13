@@ -1513,6 +1513,9 @@ var CStudioForms = CStudioForms || function() {
             }
           }
           if (showWarnMsg && (flag || repeatEdited)) {
+            if (CStudioAuthoring.InContextEdit.isDialogCollapsed()) {
+              collapseFn();
+            }
             var dialogEl = document.getElementById('closeUserWarning');
             if (!dialogEl) {
               var dialog = new YAHOO.widget.SimpleDialog('closeUserWarning', {
@@ -1598,6 +1601,15 @@ var CStudioForms = CStudioForms || function() {
           }
         };
 
+        var collapseFn = function () {
+          if ((iceId && iceId !== '') || (iceComponent && iceComponent !== '')) {
+            var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+            CStudioAuthoring.InContextEdit.collapseDialog(editorId);
+          } else {
+            window.close();
+          }
+        };
+
         cfe.engine.cancelForm = cancelFn;
 
         amplify.subscribe('/field/init/completed', function () {
@@ -1680,12 +1692,7 @@ var CStudioForms = CStudioForms || function() {
         colExpButtonEl.value = 'Collapse';
         formControlBarEl.appendChild(colExpButtonEl);
         YAHOO.util.Event.addListener(colExpButtonEl, 'click', function () {
-          if ((iceId && iceId !== '') || (iceComponent && iceComponent !== '')) {
-            var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-            CStudioAuthoring.InContextEdit.collapseDialog(editorId);
-          } else {
-            window.close();
-          }
+          collapseFn();
         }, me);
 
         var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
