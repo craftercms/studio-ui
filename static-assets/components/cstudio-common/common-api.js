@@ -9357,6 +9357,11 @@ CStudioAuthoring.InContextEdit = {
 
   },
 
+  isDialogCollapsed: function () {
+    const $controlBar = $('#formContainer .cstudio-form-controls-container').first();
+    return $controlBar.hasClass('collapseForm');
+  },
+
   regions: [],
 
   initializeEditRegion: function(regionElId, formField, regionLabel) {

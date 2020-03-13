@@ -26,51 +26,54 @@ if(typeof CStudioAuthoringWidgets == "undefined" || !CStudioAuthoringWidgets) {
  */
 CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.RecentlyMadeLiveDashboard || function(widgetId, pageId) {
 
-    this.widgetId = widgetId;
-    this.pageId = pageId;
-    this._self =  this;
-    this.showInprogressItems = false;
-    this.expanded = true;
-    this.hideEmptyRow = false;
-    this.defaultSortBy='eventDate';
-    this.defaultSearchNumber=20;
-    this.tooltipLabels=null;
-    WcmDashboardWidgetCommon.init(this);
+  this.widgetId = widgetId;
+  this.pageId = pageId;
+  this._self = this;
+  this.showInprogressItems = false;
+  this.expanded = true;
+  this.hideEmptyRow = false;
+  this.defaultSortBy = 'eventDate';
+  this.defaultSearchNumber = 20;
+  this.tooltipLabels = null;
+  WcmDashboardWidgetCommon.init(this);
 
-    /**
-     * get table data
-     */
-    this.retrieveTableData = function(sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber,filterBy) {
+  this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+  this.messages = CrafterCMSNext.i18n.messages.dashboardWidgetsMessages;
 
-        sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
+  /**
+   * get table data
+   */
+  this.retrieveTableData = function (sortBy, sortAscDesc, callback, retrieveTableData, filterByNumber, filterBy) {
 
-        CStudioAuthoring.Service.getDeploymentHistory(
-            CStudioAuthoringContext.site,
-            sortBy,
-            sortAscDesc,
-            30, // what should this be
-            filterByNumber,
-            filterBy,
-            callback);
-    };
+    sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
+
+    CStudioAuthoring.Service.getDeploymentHistory(
+      CStudioAuthoringContext.site,
+      sortBy,
+      sortAscDesc,
+      30, // what should this be
+      filterByNumber,
+      filterBy,
+      callback);
+  };
 
     /**
      * callback to render the table headings
      */
     this.renderItemsHeading = function() {
 
-        var widgetId = this._self.widgetId;
+      var widgetId = this._self.widgetId;
 
-        var header = WcmDashboardWidgetCommon.getSimpleRow("checkAll", widgetId, '<input title="Select all" class="dashlet-item-check" id="' + widgetId + 'CheckAll" name="check-all" type="checkbox"/>', "minimize")+
-            WcmDashboardWidgetCommon.getDefaultSortRow("eventDate",widgetId,CMgs.format(langBundle, "dashletRecentDeployColPageName"),"minimize")+
-            WcmDashboardWidgetCommon.getSimpleRow("edit",widgetId,CMgs.format(langBundle, "dashletRecentDeployColEdit"),"minimize")+
-            WcmDashboardWidgetCommon.getSimpleRow("browserUri",widgetId,CMgs.format(langBundle, "dashletRecentDeployColURL"),"maximize")+
-            WcmDashboardWidgetCommon.getSimpleRow("endpoint",widgetId,CMgs.format(langBundle, "dashletRecentDeployColEndpoint"),"minimize")+
-            "<th id='fullUri' class='width0'></th>"+
-            WcmDashboardWidgetCommon.getSimpleRow("madeliveDate",widgetId,CMgs.format(langBundle, "dashletRecentDeployColMadeLiveDateDate"),"ttThColLast alignRight minimize")+
-            WcmDashboardWidgetCommon.getSimpleRow("publisher", widgetId, CMgs.format(langBundle, "dashletRecentDeployColDeployBy"),"minimize");
+      var header = WcmDashboardWidgetCommon.getSimpleRow('checkAll', widgetId, '<input title="Select all" class="dashlet-item-check" id="' + widgetId + 'CheckAll" name="check-all" type="checkbox"/>', 'minimize') +
+        WcmDashboardWidgetCommon.getDefaultSortRow('eventDate', widgetId, CMgs.format(langBundle, 'dashletRecentDeployColPageName'), 'minimize') +
+        WcmDashboardWidgetCommon.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletRecentDeployColEdit'), 'minimize') +
+        WcmDashboardWidgetCommon.getSimpleRow('browserUri', widgetId, CMgs.format(langBundle, 'dashletRecentDeployColURL'), 'maximize') +
+        WcmDashboardWidgetCommon.getSimpleRow('endpoint', widgetId, this.formatMessage(this.messages.publishingTarget), 'minimize') +
+        '<th id=\'fullUri\' class=\'width0\'></th>' +
+        WcmDashboardWidgetCommon.getSimpleRow('madeliveDate', widgetId, CMgs.format(langBundle, 'dashletRecentDeployColMadeLiveDateDate'), 'ttThColLast alignRight minimize') +
+        WcmDashboardWidgetCommon.getSimpleRow('publisher', widgetId, CMgs.format(langBundle, 'dashletRecentDeployColDeployBy'), 'minimize');
 
-        return header;
+      return header;
     };
 
     this.renderAuxControls = function(containerEl) {
