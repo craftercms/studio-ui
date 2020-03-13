@@ -114,7 +114,14 @@
           /****/'<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
           /****/'<div class="hint">' +
           /******/`<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
-          /******/`<p>${formatMessage(adminConfigurationMessages.encryptHint)}</p>` +
+          /******/`<p>${
+            formatMessage(
+              adminConfigurationMessages.encryptHint,
+              {
+                breakline: msg => `${msg}</br>`
+              }
+            ).join('')
+          }</p>` +
           /****/'</div>' +
           /**/'</div>' +
           '</div>';
@@ -558,7 +565,13 @@
             formatMessage(adminConfigurationMessages.encryptMarked),
             '<div class="encrypt-hint">' +
             '<i class="encrypt-hint--icon fa fa-info" aria-hidden="true"></i>' +
-            `<p class="encrypt-hint--description">${formatMessage(adminConfigurationMessages.encryptHint)}</p></div>`,
+            `<p class="encrypt-hint--description">${
+              formatMessage(
+                adminConfigurationMessages.encryptHint,
+                {
+                  breakline: msg => `${msg}</br>`
+                }
+              ).join('')}</p></div>`,
             [
               {
                 text: CMgs.format(formsLangBundle, 'Ok'),

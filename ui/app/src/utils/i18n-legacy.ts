@@ -718,15 +718,15 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHint: {
     id: 'adminConfigurations.encryptHint',
-    defaultMessage: 'To encrypt the content of a tag, (1) mark the desired tags for encryption, then (2) click on the "Encrypt Marked" button. </br></br>' +
-      '(1) Mark your tag/s for encryption by adding the attribute `encrypted=""`. </br>' +
-      'Example: &lt;accessKey encrypted="">AKIAIOSFODNN7EXAMPLE&lt;/accessKey> </br></br>' +
-      '(2) Click on the `Encrypt Marked` button, and your tag should now look like: </br>' +
-      '&lt;accessKey encrypted="true">${enc:xeJW23SomeEncryptedValuesListedHere&lt;/accessKey> </br></br>' +
-      'Remember: </br>' +
-      '* Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text). *' +
-      'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML. </br>' +
-      '* Do not manipulate encryption results manually.'
+    defaultMessage: 'To encrypt the content of a tag, (1) mark the desired tags for encryption, then (2) click on the "Encrypt Marked" button.<breakline> </breakline><breakline> </breakline>' +
+      '(1) Mark your tag/s for encryption by adding the attribute `encrypted=""`.<breakline> </breakline>' +
+      'Example: &#60;accessKey encrypted="">AKIAIOSFODNN7EXAMPLE&lt;/accessKey><breakline> </breakline><breakline> </breakline>' +
+      '(2) Click on the `Encrypt Marked` button, and your tag should now look like: <breakline> </breakline>' +
+      '&lt;accessKey encrypted="true">$&#123;enc:xeJW23SomeEncryptedValuesListedHere&#125;&lt;/accessKey><breakline> </breakline><breakline> </breakline>' +
+      'Remember: <breakline> </breakline>' +
+      '• Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).<breakline> </breakline>' +
+      '• Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML. <breakline> </breakline>' +
+      '• Do not manipulate encryption results manually.'
   }
 });
 
