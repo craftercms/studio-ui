@@ -147,14 +147,14 @@ function SimpleItemsSelection(props: SimpleItemsSelectionProps) {
 
   const renderTree = (nodes: LegacyItem) => (
     <TreeItem
-      onFocus={(event) => {
-        event.stopPropagation();
-        event.preventDefault()
-      }}
       key={nodes.uri}
       nodeId={nodes.uri}
       label={
         <FormControlLabel
+          onFocus={(event) => {
+            event.stopPropagation();
+            event.preventDefault()
+          }}
           control={
             <Checkbox
               color="primary"
