@@ -130,7 +130,17 @@ const simpleItemsSelectionsStyles = makeStyles((theme: Theme) => ({
   labelText: {}
 }));
 
-function SimpleItemsSelection(props: any) {
+interface SimpleItemsSelectionProps {
+  item: LegacyItem;
+  selected: string[];
+  expanded: string[];
+
+  handleSelect(checked: boolean, item: LegacyItem): void;
+
+  toggleSelectAll(): void;
+}
+
+function SimpleItemsSelection(props: SimpleItemsSelectionProps) {
   const { formatMessage } = useIntl();
   const classes = simpleItemsSelectionsStyles({});
   const { item, selected, expanded, handleSelect, toggleSelectAll } = props;
@@ -317,10 +327,14 @@ export default function CopyItemsDialog(props: CopyItemsDialogProps) {
         title &&
         <DialogTitle title={title} subtitle={subtitle} onClose={onClose}/>
       }
-
       <DialogContent dividers classes={{ root: classes.dialogContentRoot }}>
-        <SimpleItemsSelection item={item} selected={selected} expanded={expanded} handleSelect={handleSelect}
-                              toggleSelectAll={toggleSelectAll}/>
+        <SimpleItemsSelection
+          item={item}
+          selected={selected}
+          expanded={expanded}
+          handleSelect={handleSelect}
+          toggleSelectAll={toggleSelectAll}
+        />
       </DialogContent>
       <DialogActions classes={{ root: classes.dialogActionsRoot }}>
         <Button onClick={onClose} variant="contained">
