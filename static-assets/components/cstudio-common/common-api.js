@@ -9299,10 +9299,7 @@ CStudioAuthoring.InContextEdit = {
 
   isDialogCollapsed: function () {
     const $controlBar = $('#formContainer .cstudio-form-controls-container').first();
-    if ($controlBar.hasClass('collapseForm')) {
-      return true;
-    }
-    return false;
+    return $controlBar.hasClass('collapseForm');
   },
 
   regions: [],
