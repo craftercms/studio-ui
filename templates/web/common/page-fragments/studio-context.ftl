@@ -48,7 +48,7 @@
 
   CStudioAuthoringContext.authoringAppBaseUri = window.location.origin + '/studio';
   CStudioAuthoringContext.formServerUri = window.location.origin;
-  CStudioAuthoringContext.previewAppBaseUrl = window.location.origin;
+  CStudioAuthoringContext.previewAppBaseUri = window.location.origin;
   CStudioAuthoringContext.graphQLBaseURI = window.location.origin + '/api/1/site/graphql';
 
   var lang = (
