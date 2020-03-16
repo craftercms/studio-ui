@@ -194,26 +194,26 @@ export default function CopyItemsDialog(props: CopyItemsDialogProps) {
   const [selected, setSelected] = useState(expanded);
 
   const handleSelect = (checked: boolean, nodes: LegacyItem) => {
-    const _select = [...selected];
+    const _selected = [...selected];
     if (checked) {
       const parentsId = getParentsId(nodes.uri, parents);
       parentsId.forEach(id => {
-        if (!_select.includes(id)) {
-          _select.push(id)
+        if (!_selected.includes(id)) {
+          _selected.push(id)
         }
       });
-      _select.push(nodes.uri)
+      _selected.push(nodes.uri)
     } else {
       const childrenId = getChildrenId(nodes.uri, children);
       childrenId.forEach(id => {
-        let index = _select.indexOf(id);
-        if (index) {
-          _select.splice(index, 1);
+        let index = _selected.indexOf(id);
+        if (index >= 0) {
+          _selected.splice(index, 1);
         }
       });
-      _select.splice(_select.indexOf(nodes.uri), 1);
+      _selected.splice(_selected.indexOf(nodes.uri), 1);
     }
-    setSelected(_select);
+    setSelected(_selected);
   };
 
   function getParentsId(id: string, parents: LookupTable<string>, ids: string[] = []) {

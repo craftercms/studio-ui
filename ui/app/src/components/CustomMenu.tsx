@@ -19,18 +19,25 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
+import { MessageDescriptor, useIntl } from 'react-intl';
 
-export interface SectionItem {
+export interface Option {
   id: string;
-  label: string;
+  label: MessageDescriptor;
+}
+
+export interface SectionItem extends Option {
   type?: string;
+  values?: any;
 }
 
 interface CustomMenuProps {
   anchorEl?: null | Element | ((element: Element) => Element);
   open: boolean;
-  classes: {
+  classes?: {
     paper?: any;
+    itemRoot?: any;
+    menuList?: any;
     helperText?: any;
   }
   sections: SectionItem[][];
@@ -42,11 +49,12 @@ interface CustomMenuProps {
 
 export default function CustomMenu(props: CustomMenuProps) {
   const { sections, classes, onClose, open, anchorEl, onMenuItemClicked } = props;
+  const { formatMessage } = useIntl();
   return (
     <Menu
       anchorEl={anchorEl}
       open={open}
-      classes={{ paper: classes?.paper }}
+      classes={{ paper: classes?.paper, list: classes?.menuList }}
       onClose={onClose}
     >
       {
@@ -55,7 +63,7 @@ export default function CustomMenu(props: CustomMenuProps) {
             (sectionItem.type === 'text') ? (
               <div>
                 <Typography variant="body1" className={classes.helperText}>
-                  {sectionItem.label}
+                  {formatMessage(sectionItem.label, sectionItem.values)}
                 </Typography>
                 <Divider/>
               </div>
@@ -63,8 +71,9 @@ export default function CustomMenu(props: CustomMenuProps) {
               <MenuItem
                 divider={(i !== sections.length - 1) && (y === section.length - 1)}
                 onClick={() => onMenuItemClicked(sectionItem)}
+                classes={{ root: classes?.itemRoot }}
               >
-                {sectionItem.label}
+                {formatMessage(sectionItem.label, sectionItem.values)}
               </MenuItem>
             )
           )

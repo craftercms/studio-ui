@@ -33,6 +33,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import { copyItem, cutItem, getChildrenByPath, getPages, pasteItem } from '../services/content';
+import { getTargetLocales } from '../services/translation';
 import { Item, LegacyItem } from '../models/Item';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -152,14 +153,14 @@ const useStyles = makeStyles((theme) => createStyles({
       display: 'none'
     }
   },
-  MenuPaper: {
+  menuPaper: {
     width: '182px',
-    '& ul': {
-      padding: 0
-    },
-    '& li': {
-      whiteSpace: 'initial'
-    }
+  },
+  menuList: {
+    padding: 0
+  },
+  menuItemRoot: {
+    whiteSpace: 'initial'
   },
   helperText: {
     padding: '10px 16px 10px 16px',
@@ -191,83 +192,146 @@ const translations = defineMessages({
   copyDialogSubtitle: {
     id: 'craftercms.copy.dialog.subtitle',
     defaultMessage: 'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
+  },
+  edit: {
+    id: 'words.edit',
+    defaultMessage: 'Edit'
+  },
+  view: {
+    id: 'words.view',
+    defaultMessage: 'View'
+  },
+  newContent: {
+    id: 'craftercms.pages.option.newContent',
+    defaultMessage: 'New Content'
+  },
+  newFolder: {
+    id: 'craftercms.pages.option.newFolder',
+    defaultMessage: 'New Folder'
+  },
+  changeTemplate: {
+    id: 'craftercms.pages.option.changeTemplate',
+    defaultMessage: 'Change Template'
+  },
+  cut: {
+    id: 'words.cut',
+    defaultMessage: 'Cut'
+  },
+  copy: {
+    id: 'words.copy',
+    defaultMessage: 'Copy'
+  },
+  paste: {
+    id: 'words.paste',
+    defaultMessage: 'Paste'
+  },
+  duplicate: {
+    id: 'words.duplicate',
+    defaultMessage: 'Duplicate'
+  },
+  delete: {
+    id: 'words.delete',
+    defaultMessage: 'Delete'
+  },
+  dependencies: {
+    id: 'words.dependencies',
+    defaultMessage: 'Dependencies'
+  },
+  history: {
+    id: 'words.history',
+    defaultMessage: 'History'
+  },
+  translation: {
+    id: 'words.translation',
+    defaultMessage: 'Translation'
+  },
+  select: {
+    id: 'words.select',
+    defaultMessage: 'Select'
+  },
+  terminateSelection: {
+    id: 'craftercms.pages.option.terminateSelection',
+    defaultMessage: 'Terminate Selection'
   }
 });
 
 const menuOptions = {
   edit: {
     id: 'edit',
-    label: 'Edit'
+    label: translations.edit
   },
   view: {
     id: 'view',
-    label: 'View'
+    label: translations.view
   },
   newContent: {
     id: 'newcontent',
-    label: 'New Content'
+    label: translations.newContent
   },
   newFolder: {
     id: 'newfolder',
-    label: 'New Folder'
+    label: translations.newFolder
   },
   changeTemplate: {
     id: 'changeTemplate',
-    label: 'Change Template'
+    label: translations.changeTemplate
   },
   cut: {
     id: 'cut',
-    label: 'Cut'
+    label: translations.cut
   },
   copy: {
     id: 'copy',
-    label: 'Copy'
+    label: translations.copy
   },
   paste: {
     id: 'paste',
-    label: 'Paste'
+    label: translations.paste
   },
   duplicate: {
     id: 'duplicate',
-    label: 'Duplicate'
+    label: translations.duplicate
   },
   delete: {
     id: 'delete',
-    label: 'Delete'
+    label: translations.delete
   },
   dependencies: {
     id: 'dependencies',
-    label: 'Dependencies'
+    label: translations.dependencies
   },
   history: {
     id: 'history',
-    label: 'History'
+    label: translations.history
   },
   translation: {
     id: 'translation',
-    label: 'Translation'
+    label: translations.translation
   },
   select: {
     id: 'select',
-    label: 'Select'
+    label: translations.select
   },
   itemsSelected: {
     id: 'itemsSelected',
-    label: '',
-    type: 'text'
+    label: translations.itemsSelected,
+    type: 'text',
+    values: {
+      count: 0
+    }
   },
   terminateSelection: {
     id: 'terminateSelection',
-    label: 'Terminate Selection'
+    label: translations.terminateSelection
   }
 };
 
-function generateMenuSections(item: Item, menuState: MenuState, selectedLabel?: string) {
+function generateMenuSections(item: Item, menuState: MenuState, count?: number) {
   let sections = [];
   if (menuState.selectMode && !item) {
-    if (selectedLabel) {
+    if (count > 0) {
       let selectedMenuItems = menuOptions.itemsSelected;
-      selectedMenuItems.label = selectedLabel;
+      selectedMenuItems.values.count = count;
       sections.push([
         selectedMenuItems,
         menuOptions.terminateSelection
@@ -616,6 +680,19 @@ export default function PagesWidget(props: PagesWidgetProps) {
   const [error, setError] = useState(null);
 
   const [copyDialog, setCopyDialog] = useState(null);
+  const [translationDialog, setTranslationDialog] = useState(null);
+
+  useEffect(() => {
+    getTargetLocales(site, '').subscribe(
+      (response) => {
+        setTranslationDialog(response.items)
+      },
+      ({ response }) => {
+        const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+        setError(error);
+      }
+    );
+  }, []);
 
   useEffect(() => {
     getChildrenByPath(site, activePath).subscribe(
@@ -715,12 +792,10 @@ export default function PagesWidget(props: PagesWidgetProps) {
               anchorEl: null
             });
             setMenuState({ hasClipboard: false });
-            //snack with paste success;
           },
           ({ response }) => {
-            const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            console.log(_response);
-            //setError(_response); open errorDialog;
+            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+            setError(error);
           }
         );
         break;
@@ -747,6 +822,23 @@ export default function PagesWidget(props: PagesWidgetProps) {
         );
         break;
       }
+      case 'translation': {
+        const path = menu.activeItem.path;
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
+        getTargetLocales(site, path).subscribe(
+          (response) => {
+            setTranslationDialog(response.items)
+          },
+          ({ response }) => {
+            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+            setError(error);
+          }
+        );
+        break;
+      }
       default: {
         console.log('default');
         if (section.id.includes('locale')) {
@@ -764,7 +856,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
   const onOpenBreadcrumbsMenu = (element: Element) => {
     const count = selectedItems && Object.values(selectedItems).filter((item: Item | false) => item !== false).length;
     setMenu({
-      sections: generateMenuSections(null, menuState, count ? formatMessage(translations.itemsSelected, { count }) : null),
+      sections: generateMenuSections(null, menuState, count),
       anchorEl: element,
       activeItem: breadcrumb[breadcrumb.length - 1]
     });
@@ -851,6 +943,11 @@ export default function PagesWidget(props: PagesWidgetProps) {
       }
     );
   };
+
+  const onTranslationDialogClose = () => {
+    setTranslationDialog(null);
+  };
+
   return (
     <section className={classes.wrapper}>
       {
@@ -898,7 +995,12 @@ export default function PagesWidget(props: PagesWidgetProps) {
           <CustomMenu
             anchorEl={menu.anchorEl}
             open={Boolean(menu.anchorEl)}
-            classes={{ paper: classes.MenuPaper, helperText: classes.helperText }}
+            classes={{
+              paper: classes.menuPaper,
+              helperText: classes.helperText,
+              itemRoot: classes.menuItemRoot,
+              menuList: classes.menuList
+            }}
             onClose={onCloseCustomMenu}
             sections={menu.sections}
             onMenuItemClicked={onMenuItemClicked}
@@ -920,8 +1022,11 @@ export default function PagesWidget(props: PagesWidgetProps) {
           item={copyDialog}
         />
       }
-      <ContentLocalizationDialog open={true} onClose={() => {
-      }}/>
+      {
+        translationDialog &&
+        <ContentLocalizationDialog locales={translationDialog} open={true} onClose={onTranslationDialogClose}/>
+      }
+
     </section>
   )
 }

@@ -22,6 +22,20 @@ export interface LegacyItem {
   children: LegacyItem[];
 }
 
+export interface LocalizationItem {
+  id: string;
+  label: string;
+  path: string;
+  previewUrl: string;
+  systemType: string;
+  mimeType: string;
+  state: number;
+  lockOwner: string;
+  disabled: boolean;
+  localeCode: string;
+  translationSourceId: string;
+}
+
 export interface Item {
   id: string;
   label: string;

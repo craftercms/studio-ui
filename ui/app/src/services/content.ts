@@ -32,6 +32,7 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
 }
 
 export function getChildrenByPath(site: string, path: string): Observable<any> {
+  ///studio/api/2/content/children_by_path
   const response = {
     response: {},
     items: [
@@ -67,6 +68,7 @@ export function getChildrenByPath(site: string, path: string): Observable<any> {
     observer.complete();
   });
 }
+
 
 export function copyItem(site: string, item: Partial<LegacyItem>): Observable<any> {
   let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
