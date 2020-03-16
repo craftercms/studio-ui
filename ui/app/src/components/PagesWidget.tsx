@@ -821,6 +821,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
             setTranslationDialog(response.items)
           },
           ({ response }) => {
+            //TODO: I'm wrapping the API response as a API2 response
             const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
             setError(error);
           }
@@ -1012,7 +1013,13 @@ export default function PagesWidget(props: PagesWidgetProps) {
       }
       {
         translationDialog &&
-        <ContentLocalizationDialog locales={translationDialog} open={true} onClose={onTranslationDialogClose}/>
+        <ContentLocalizationDialog
+          locales={translationDialog}
+          open={true}
+          onClose={onTranslationDialogClose}
+          site={site}
+          setError={setError}
+        />
       }
 
     </section>

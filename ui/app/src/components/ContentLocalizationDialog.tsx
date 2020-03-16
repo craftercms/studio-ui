@@ -28,6 +28,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import clsx from 'clsx';
 import CustomMenu, { Option, SectionItem } from './CustomMenu';
 import Link from '@material-ui/core/Link';
+import { markForTranslation } from '../services/translation';
+import { APIError } from '../models/GlobalState';
 
 const translations = defineMessages({
   title: {
@@ -228,19 +230,61 @@ function ItemHeaderOptions(props: ItemHeaderOptionsProps) {
   )
 }
 
-export default function ContentLocalizationDialog(props: any) {
+interface ContentLocalizationDialogProps {
+  open: boolean;
+  locales: any;
+  site: string;
+
+  onClose(): void;
+
+  setError(error: APIError): void;
+}
+
+export default function ContentLocalizationDialog(props: ContentLocalizationDialogProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
-  const { open, onClose, locales } = props;
-  const [anchorEl, setAnchorEl] = useState(null);
+  const { open, onClose, locales, site, setError } = props;
   const [selected, setSelected] = useState([]);
+  const [menu, setMenu] = useState({
+    activeItem: null,
+    anchorEl: null
+  });
+
+  const onOpenCustomMenu = (locale: any, anchorEl: Element) => {
+    setMenu({
+      activeItem: locale,
+      anchorEl
+    })
+  };
 
   const onCloseCustomMenu = () => {
-    setAnchorEl(null)
+    setMenu({
+      activeItem: null,
+      anchorEl: null
+    })
   };
 
   const onMenuItemClicked = (section: SectionItem) => {
-    console.log(section)
+    switch (section.id) {
+      case 'mark': {
+        markForTranslation(site, menu.activeItem.path, menu.activeItem.localeCode).subscribe(
+          () => {
+            setMenu({
+              activeItem: null,
+              anchorEl: null
+            })
+          },
+          ({ response }) => {
+            //TODO: I'm wrapping the API response as a API2 response
+            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+            setError(error);
+          }
+        );
+        break;
+      }
+      default:
+        break;
+    }
   };
 
   const handleSelect = (checked: boolean, id: string) => {
@@ -325,7 +369,7 @@ export default function ContentLocalizationDialog(props: any) {
                 <IconButton
                   aria-label="options"
                   className={classes.icon}
-                  onClick={e => setAnchorEl(e.currentTarget)}
+                  onClick={(e) => onOpenCustomMenu(locale, e.currentTarget)}
                 >
                   <MoreVertIcon/>
                 </IconButton>
@@ -335,8 +379,8 @@ export default function ContentLocalizationDialog(props: any) {
         </section>
       </DialogContent>
       <CustomMenu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
+        anchorEl={menu.anchorEl}
+        open={Boolean(menu.anchorEl)}
         classes={{
           paper: classes.menuPaper
         }}
