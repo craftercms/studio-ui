@@ -683,18 +683,6 @@ export default function PagesWidget(props: PagesWidgetProps) {
   const [translationDialog, setTranslationDialog] = useState(null);
 
   useEffect(() => {
-    getTargetLocales(site, '').subscribe(
-      (response) => {
-        setTranslationDialog(response.items)
-      },
-      ({ response }) => {
-        const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-        setError(error);
-      }
-    );
-  }, []);
-
-  useEffect(() => {
     getChildrenByPath(site, activePath).subscribe(
       (response) => {
         setItems(response.items);
