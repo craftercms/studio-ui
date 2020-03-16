@@ -114,14 +114,15 @@
           /****/'<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
           /****/'<div class="hint">' +
           /******/`<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
-          /******/`<p>${
-            formatMessage(
-              adminConfigurationMessages.encryptHint,
-              {
-                breakline: msg => `${msg}</br>`
-              }
-            ).join('')
-          }</p>` +
+          /******/`<div class="mb10">${formatMessage(adminConfigurationMessages.encryptHintPt1)}</div>` +
+          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt2)}</div>` +
+          /******/`<div class="mb10">${formatMessage(adminConfigurationMessages.encryptHintPt3)}</div>` +
+          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt4)}</div>` +
+          /******/`<div class="mb10">${formatMessage(adminConfigurationMessages.encryptHintPt5)}</div>` +
+          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt6)}</div>` +
+          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt7)}</div>` +
+          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt8)}</div>` +
+          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt9)}</div>` +
           /****/'</div>' +
           /**/'</div>' +
           '</div>';
