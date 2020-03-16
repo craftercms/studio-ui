@@ -17,7 +17,7 @@
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<#if envConfig.role! != 'admin'>
+<#if !(envConfig.role! == 'admin' || envConfig.role! == 'developer')>
   <script>window.location='/studio/site-dashboard'</script>
 </#if>
 
