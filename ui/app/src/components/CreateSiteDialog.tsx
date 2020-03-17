@@ -706,14 +706,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function getMarketPlace() {
-    fetchMarketplaceBlueprints(site.showIncompatible)
+    fetchMarketplaceBlueprints({
+      showIncompatible: site.showIncompatible
+    })
       .subscribe(
-        ({response}) => {
+        ({ response }) => {
           setMarketplace(response.plugins);
         },
-        ({response}) => {
+        ({ response }) => {
           if (response) {
-            setApiState({...apiState, creatingSite: false, error: true, errorResponse: response.response});
+            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
           }
         }
       );
