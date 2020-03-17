@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from "../../styles/theme";
-import { getQuickCreateContentList } from "../../services/content";
+import { getQuickCreateContentList } from '../../services/content';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,14 +23,17 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function QuickCreate() {
   const classes = useStyles({});
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [quickCreateContentList, setQuickCreateContentList] = useState([]);
 
   const handleClick = e => setAnchorEl(e.currentTarget);
 
   const handleClose = () => setAnchorEl(null);
 
   useEffect(() => {
-    getQuickCreateContentList('editorial').subscribe(data => console.log('getQuickCreateContentList data', data))
+    getQuickCreateContentList('editorial').subscribe(data => 
+      setQuickCreateContentList(data.items)
+    )
   }, [])
 
   return (
@@ -41,12 +45,14 @@ export default function QuickCreate() {
         open={Boolean(anchorEl)}
         onClose={handleClose}
         getContentAnchorEl={null}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "left" }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       >
-        <MenuItem onClick={handleClose}>Item 1</MenuItem>
-        <MenuItem onClick={handleClose}>Item 2</MenuItem>
-        <MenuItem onClick={handleClose}>Item 3</MenuItem>
+        
+        { quickCreateContentList.length && quickCreateContentList.map((item, i) => (
+          <MenuItem key={i} onClick={handleClose}><Link to='/'>{item.label}</Link></MenuItem>
+        )) }
+
       </Menu>
     </>
   );
