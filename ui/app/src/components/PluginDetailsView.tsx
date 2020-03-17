@@ -239,9 +239,17 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
         </Typography>
         {
           compatible &&
-          <Button variant="contained" color="primary" className={classes.useBtn}
-                  onClick={() => onBlueprintSelected(blueprint, 1)}>
-            {formatMessage(messages.use)}
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.useBtn}
+            onClick={
+              () => onBlueprintSelected(blueprint, 1)
+            }
+          >
+            {
+              formatMessage(messages.use)
+            }
           </Button>
         }
       </div>

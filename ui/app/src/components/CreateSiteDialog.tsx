@@ -862,10 +862,15 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   control={
                     <Checkbox
                       checked={site.showIncompatible}
-                      onChange={ (e: ChangeEvent<HTMLInputElement>) => {handleShowIncompatibleChange(e)} }
-                      color="primary" />
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
+                      color="primary"
+                    />
                   }
-                  label={<Typography className={classes.showIncompatibleInput}>{formatMessage(messages.showIncompatible)}</Typography>}
+                  label={
+                    <Typography className={classes.showIncompatibleInput}>
+                      {formatMessage(messages.showIncompatible)}
+                    </Typography>
+                  }
                   labelPlacement="start"
                 />
               </div>
