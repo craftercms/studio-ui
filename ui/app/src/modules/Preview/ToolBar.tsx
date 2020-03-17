@@ -41,6 +41,7 @@ import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
 import { FormattedMessage } from 'react-intl';
 import ComponentMenu from '../../components/ComponentMenu';
+import { QuickCreate } from './QuickCreate';
 
 const foo = () => void 0;
 
@@ -83,6 +84,14 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  actionButtonSection: {
+    display: 'flex',
+    alignItems: 'center',
+
+    '& > *': {
+      marginRight: theme.spacing(1),
+    },
   },
   globalNavSection: {
     display: 'flex',
@@ -226,12 +235,15 @@ export default function ToolBar() {
   return (
     <AppBar position="static" color="default">
       <Toolbar className={classes.toolBar}>
-        <IconButton
-          aria-label="Open drawer"
-          onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
-        >
-          <CustomMenu/>
-        </IconButton>
+        <section className={classes.actionButtonSection}>
+          <IconButton
+            aria-label="Open drawer"
+            onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
+          >
+            <CustomMenu/>
+          </IconButton>
+          <QuickCreate />
+        </section>
         <section className={classes.addressBarContainer}>
           <AddressBar
             site={site ?? ''}
