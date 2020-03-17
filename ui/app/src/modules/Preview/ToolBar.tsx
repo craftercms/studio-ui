@@ -39,9 +39,17 @@ import { LookupTable } from '../../models/LookupTable';
 import { useActiveSiteId, useEnv, usePreviewState, useSelection } from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ComponentMenu from '../../components/ComponentMenu';
-import { QuickCreate } from './QuickCreate';
+import QuickCreate from './QuickCreate';
+
+const translations = defineMessages({
+  openToolsPanel: {
+    id: 'openToolsPanel.label',
+    defaultMessage: 'Open tools panel'
+  }
+});
+
 
 const foo = () => void 0;
 
@@ -217,6 +225,8 @@ export function AddressBar(props: AddressBarProps) {
 }
 
 export default function ToolBar() {
+  const { formatMessage } = useIntl();
+  const classes = useStyles({});
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const sitesTable = useSelection<LookupTable<Site>>(state => state.sites.byId);
@@ -228,16 +238,17 @@ export default function ToolBar() {
     showToolsPanel,
   } = usePreviewState();
   let addressBarUrl = guest?.url ?? currentUrl;
+
   if (addressBarUrl === PREVIEW_LANDING_BASE) {
     addressBarUrl = '';
   }
-  const classes = useStyles({});
+  
   return (
     <AppBar position="static" color="default">
       <Toolbar className={classes.toolBar}>
         <section className={classes.actionButtonSection}>
           <IconButton
-            aria-label="Open drawer"
+            aria-label={formatMessage(translations.openToolsPanel)}
             onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
           >
             <CustomMenu/>
