@@ -268,7 +268,7 @@ CStudioAuthoring.Module.requireModule(
           pluginList = rteConfig.plugins;
           pluginList = this.autoGrow ? pluginList + ' autoresize' : pluginList;
 
-          extendedValidElements = rteConfig.extendedElements;
+          extendedValidElements = rteConfig.extendedElements ? rteConfig.extendedElements : '';
 
           toolbarConfig1 = (rteConfig.toolbarItems1 && rteConfig.toolbarItems1.length != 0) ?
             rteConfig.toolbarItems1 : 'bold italic | bullist numlist';
