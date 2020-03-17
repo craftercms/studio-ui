@@ -323,6 +323,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   showIncompatibleInput: {
     fontSize: '0.8125rem'
+  },
+  showIncompatibleCheckbox: {
+    paddingTop: 0,
+    paddingBottom: 0
   }
 }));
 
@@ -566,7 +570,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function handleShowIncompatibleChange(e: ChangeEvent<HTMLInputElement>) {
-    setBlueprints(null);
     setMarketplace(null);
     setSite({ showIncompatible: e.target.checked });
   }
@@ -857,22 +860,27 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
                   onClick={handleSearchClick}
                 />
-                <FormControlLabel
-                  className={classes.showIncompatible}
-                  control={
-                    <Checkbox
-                      checked={site.showIncompatible}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
-                      color="primary"
-                    />
-                  }
-                  label={
-                    <Typography className={classes.showIncompatibleInput}>
-                      {formatMessage(messages.showIncompatible)}
-                    </Typography>
-                  }
-                  labelPlacement="start"
-                />
+                {
+                  (tab === 1 && marketplace) &&
+                  <FormControlLabel
+                    className={classes.showIncompatible}
+                    control={
+                      <Checkbox
+                        checked={site.showIncompatible}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
+                        color="primary"
+                        className={classes.showIncompatibleCheckbox}
+                      />
+                    }
+                    label={
+                      <Typography className={classes.showIncompatibleInput}>
+                        {formatMessage(messages.showIncompatible)}
+                      </Typography>
+                    }
+                    labelPlacement="start"
+                  />
+                }
+
               </div>
             }
             {
