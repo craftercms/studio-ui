@@ -57,7 +57,7 @@ export function getInnerHtml(element: Element, options = { trim: true }) {
       content = matches[0][1].trim();
     }
   }
-  return (options.trim) ? content.trim() : content;
+  return content ? ((options.trim) ? content.trim() : content) : null;
 }
 
 export function getInnerHtmlNumber(element: Element): number {
