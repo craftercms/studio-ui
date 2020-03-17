@@ -325,11 +325,16 @@ function BlueprintCard(props: BlueprintCardProps) {
       {
         (id !== 'GIT') &&
         <CardActions className={'cardActions'}>
-          {blueprint.compatible &&
-          <Button variant="outlined" color="primary" onClick={() => onBlueprintSelected(blueprint, 1)}
-                  className={classes.use}>
-            {formatMessage(messages.use)}
-          </Button>
+          {
+            blueprint.compatible &&
+            <Button 
+              variant="outlined" 
+              color="primary" 
+              onClick={() => onBlueprintSelected(blueprint, 1)}
+              className={classes.use}
+            >
+              {formatMessage(messages.use)}
+            </Button>
           }
           <Button className={classes.more} onClick={() => onDetails(blueprint)}>
             {formatMessage(messages.more)}
