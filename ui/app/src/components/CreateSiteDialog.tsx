@@ -56,7 +56,9 @@ import Cookies from 'js-cookie';
 import { backgroundColor } from '../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+
 const messages = defineMessages({
   privateBlueprints: {
     id: 'createSiteDialog.privateBlueprints',
