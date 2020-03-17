@@ -729,7 +729,7 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHintPt2: {
     id: 'adminConfigurations.encryptHinPt2',
-    defaultMessage: '(1) Mark your tag/s for encryption by adding the attribute `encrypted=""`. '
+    defaultMessage: '(1) Mark your tag/s for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
   },
   encryptHintPt3: {
     id: 'adminConfigurations.encryptHinPt3',
@@ -737,7 +737,7 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHintPt4: {
     id: 'adminConfigurations.encryptHinPt4',
-    defaultMessage: '(2) Click on the `Encrypt Marked` button, and your tag should now look like:'
+    defaultMessage: '(2) Click on the <bold>`Encrypt Marked`</bold> button, and your tag should now look like:'
   },
   encryptHintPt5: {
     id: 'adminConfigurations.encryptHinPt5',
@@ -749,15 +749,15 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHintPt7: {
     id: 'adminConfigurations.encryptHinPt7',
-    defaultMessage: '• Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).'
+    defaultMessage: 'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).'
   },
   encryptHintPt8: {
     id: 'adminConfigurations.encryptHinPt8',
-    defaultMessage: '• Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML.'
+    defaultMessage: 'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML.'
   },
   encryptHintPt9: {
     id: 'adminConfigurations.encryptHinPt9',
-    defaultMessage: '• Do not manipulate encryption results manually.'
+    defaultMessage: 'Do not manipulate encryption results manually.'
   }
 });
 

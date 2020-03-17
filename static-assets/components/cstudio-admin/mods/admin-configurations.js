@@ -111,19 +111,7 @@
           /****/'</div>' +
           /**/'</div>' +
           /**/'<div id="encryptHintText" style="display: none;">' +
-          /****/'<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
-          /****/'<div class="hint">' +
-          /******/`<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
-          /******/`<div class="mb10">${formatMessage(adminConfigurationMessages.encryptHintPt1)}</div>` +
-          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt2)}</div>` +
-          /******/`<div class="mb10">${formatMessage(adminConfigurationMessages.encryptHintPt3)}</div>` +
-          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt4)}</div>` +
-          /******/`<div class="mb10">${formatMessage(adminConfigurationMessages.encryptHintPt5)}</div>` +
-          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt6)}</div>` +
-          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt7)}</div>` +
-          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt8)}</div>` +
-          /******/`<div>${formatMessage(adminConfigurationMessages.encryptHintPt9)}</div>` +
-          /****/'</div>' +
+          /****/this.renderEncryptionHint() +
           /**/'</div>' +
           '</div>';
         // set editor for configuration file
@@ -160,6 +148,32 @@
         // hide display area by default
         editAreaEl.style.display = 'none';
 
+      },
+
+      renderEncryptionHint: function () {
+        return '<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
+          '<div class="hint">' +
+          /**/`<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
+          /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt1)}</p>` +
+          /**/`<p>${formatMessage(
+            adminConfigurationMessages.encryptHintPt2,
+            {
+              bold: msg => `<span class="bold">${msg}</span>`
+            }
+          ).join('')}</br>` +
+          /**/`${formatMessage(adminConfigurationMessages.encryptHintPt3)}</p>` +
+          /**/`<p>${formatMessage(
+            adminConfigurationMessages.encryptHintPt4,
+            {
+              bold: msg => `<span class="bold">${msg}</span>`
+            }
+          ).join('')}</br>` +
+          /**/`${formatMessage(adminConfigurationMessages.encryptHintPt5)}</p>` +
+          /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt6)}` +
+          /**/`<ul><li>${formatMessage(adminConfigurationMessages.encryptHintPt7)}</li>` +
+          /**/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt8)}</li>` +
+          /**/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt9)}</li></ul></p>` +
+          '</div>';
       },
 
       /*
@@ -564,15 +578,7 @@
             'encryptionInfoDialog',
             CStudioAuthoring.Operations.simpleDialogTypeINFO,
             formatMessage(adminConfigurationMessages.encryptMarked),
-            '<div class="encrypt-hint">' +
-            '<i class="encrypt-hint--icon fa fa-info" aria-hidden="true"></i>' +
-            `<p class="encrypt-hint--description">${
-              formatMessage(
-                adminConfigurationMessages.encryptHint,
-                {
-                  breakline: msg => `${msg}</br>`
-                }
-              ).join('')}</p></div>`,
+            `<div class="encrypt-hint">${this.renderEncryptionHint()}</div>`,
             [
               {
                 text: CMgs.format(formsLangBundle, 'Ok'),
