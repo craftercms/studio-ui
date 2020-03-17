@@ -19,6 +19,14 @@ static-assets/styles/browse.css
 static-assets/styles/graphiql.css
 static-assets/styles/tinymce-ace.css
 templates/web/common/js-next-scripts.ftl
+static-assets/scripts/craftercms-guest.umd.js
+static-assets/scripts/preview-landing.umd.js
+ui/app/public/craftercms-guest.umd.js
+ui/app/public/preview-landing.umd.js
+ui/guest/dist/
+
+
+
 
 # misc
 *.ignore.*

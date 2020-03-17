@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { palette } from "../../styles/theme";
+import { getQuickCreateContentList } from "../../services/content";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,6 +27,10 @@ export default function QuickCreate() {
   const handleClick = e => setAnchorEl(e.currentTarget);
 
   const handleClose = () => setAnchorEl(null);
+
+  useEffect(() => {
+    getQuickCreateContentList('editorial').subscribe(data => console.log('getQuickCreateContentList data', data))
+  }, [])
 
   return (
     <>

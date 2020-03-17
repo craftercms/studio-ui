@@ -995,12 +995,6 @@ export function fetchPublishingChannels(site: string) {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`)
 }
 
-export default {
-  getContent,
-  getDOM,
-  fetchPublishingChannels
-}
-
 export function uploadDataUrl(
   site: string,
   file: any,
@@ -1043,4 +1037,16 @@ export function uploadDataUrl(
       data: blob
     });
   });
+}
+
+export function getQuickCreateContentList(siteId: string) {
+  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
+    pluck('response')
+  )
+}
+
+export default {
+  getContent,
+  getDOM,
+  fetchPublishingChannels
 }
