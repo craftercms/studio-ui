@@ -631,6 +631,13 @@ const checkboxGroupControlMessages = defineMessages({
   }
 });
 
+const transcodedVideoPickerControlMessages = defineMessages({
+  label: {
+    id: 'transcodedVideoPickerControl.label',
+    defaultMessage: 'Transcoded Video Picker'
+  }
+});
+
 const globalMenuMessages = defineMessages({
   'home.globalMenu.sites': {
     id: 'GlobalMenu.SitesEntryLabel',
@@ -792,10 +799,28 @@ const fileNameControlMessages = defineMessages({
   }
 });
 
+const rteControlMessages = defineMessages({
+  escapeScripts: {
+    id: 'rteControlMessages.escapeScripts',
+    defaultMessage: 'Escape Scripts'
+  },
+  requiredField: {
+    id: 'rteControlMessages.requiredField',
+    defaultMessage: 'Field is Required'
+  }
+});
+
 const ossAttribution = defineMessages({
   attribution: {
     id: 'aboutView.attribution',
     defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+  }
+});
+
+const dashboardWidgetsMessages = defineMessages({
+  publishingTarget: {
+    id: 'dashboardWidgetsMessages.publishingTarget',
+    defaultMessage: 'Publishing Target'
   }
 });
 
@@ -823,9 +848,12 @@ export default {
   dragAndDropMessages,
   internalNameControlMessages,
   checkboxGroupControlMessages,
+  transcodedVideoPickerControlMessages,
   globalMenuMessages,
   adminConfigurationMessages,
   encryptToolMessages,
   fileNameControlMessages,
-  ossAttribution
+  rteControlMessages,
+  ossAttribution,
+  dashboardWidgetsMessages
 };

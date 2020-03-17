@@ -26,44 +26,47 @@ if (typeof CStudioAuthoringWidgets == "undefined" || !CStudioAuthoringWidgets) {
  */
 CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQueueDashboard || function(widgetId, pageId) {
 
-        this.widgetId = widgetId;
-        this.pageId = pageId;
-        this._self = this;
-        this.showInprogressItems = false;
-        this.expanded = true;
-        this.hideEmptyRow = true;
-        this.defaultSortBy = 'eventDate';
-        this.skipComponentSort = true;
-        this.tooltipLabels=null;
-        WcmDashboardWidgetCommon.init(this);
+  this.widgetId = widgetId;
+  this.pageId = pageId;
+  this._self = this;
+  this.showInprogressItems = false;
+  this.expanded = true;
+  this.hideEmptyRow = true;
+  this.defaultSortBy = 'eventDate';
+  this.skipComponentSort = true;
+  this.tooltipLabels = null;
+  WcmDashboardWidgetCommon.init(this);
 
-        /**
-         * get table data
-         */
-        this.retrieveTableData = function(sortBy, sortAscDesc, callback) {
-            sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
-            CStudioAuthoring.Service.getGoLiveQueueItems(
-                CStudioAuthoringContext.site,
-                this.showInprogressItems,
-                sortBy,
-                sortAscDesc,
-                callback);
-        };
+  this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+  this.messages = CrafterCMSNext.i18n.messages.dashboardWidgetsMessages;
 
-        /**
-         * render widget specific controls
-         */
-        this.renderAuxControls = function(containerEl) {
+  /**
+   * get table data
+   */
+  this.retrieveTableData = function (sortBy, sortAscDesc, callback) {
+    sortAscDesc = CStudioAuthoring.Utils.sortByAsc.init(sortBy, widgetId);
+    CStudioAuthoring.Service.getGoLiveQueueItems(
+      CStudioAuthoringContext.site,
+      this.showInprogressItems,
+      sortBy,
+      sortAscDesc,
+      callback);
+  };
 
-            var listItemEl = document.createElement("li");
+  /**
+   * render widget specific controls
+   */
+  this.renderAuxControls = function (containerEl) {
 
-            var itemFilterEl = document.createElement("a");
+    var listItemEl = document.createElement('li');
 
-            /**
-             * adding loading image to go-live0queue widget
-             */
-            var liLoadingEl = document.createElement("li");
-            liLoadingEl.id = "loading-" + widgetId;
+    var itemFilterEl = document.createElement('a');
+
+    /**
+     * adding loading image to go-live0queue widget
+     */
+    var liLoadingEl = document.createElement('li');
+    liLoadingEl.id = 'loading-' + widgetId;
             var imgEl = document.createElement("i");
             imgEl.className += ' fa fa-spinner fa-spin fa-3x fa-fw';
             liLoadingEl.appendChild(imgEl);
@@ -120,46 +123,46 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                 Common = WcmDashboardWidgetCommon;
 
             var header = [
-                Common.getSimpleRow("checkAll", widgetId, '<input title="Select all" class="dashlet-item-check" id="' + widgetId + 'CheckAll" name="check-all" type="checkbox"/>', "minimize"),
-                Common.getSimpleRow("internalName", widgetId, CMgs.format(langBundle, "dashletGoLiveColPageName"), "minimize"),
-                Common.getSimpleRow("view", widgetId, CMgs.format(langBundle, "dashletGoLiveColView"), "minimize"),
-                Common.getSimpleRow("edit", widgetId, CMgs.format(langBundle, "dashletGoLiveColEdit"), "minimize"),
-                Common.getSortableRow("browserUri", widgetId, CMgs.format(langBundle, "dashletGoLiveColURL"), "maximize"),
-                '<th id="fullUri" class="width0"></th>',
-                Common.getSimpleRow("server", widgetId, CMgs.format(langBundle, "dashletGoLiveColEnvironment"),"maximize"),
-                Common.getSortableRow("scheduledDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColPublishDate"), "minimize"),
-                Common.getSimpleRow("userLastName", widgetId, CMgs.format(langBundle, "dashletGoLiveColLastEditedBy"), "alignRight minimize"),
-                Common.getSortableRow("eventDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColLastEditedDate"), "ttThColLast alignRight minimize")
+              Common.getSimpleRow('checkAll', widgetId, '<input title="Select all" class="dashlet-item-check" id="' + widgetId + 'CheckAll" name="check-all" type="checkbox"/>', 'minimize'),
+              Common.getSimpleRow('internalName', widgetId, CMgs.format(langBundle, 'dashletGoLiveColPageName'), 'minimize'),
+              Common.getSimpleRow('view', widgetId, CMgs.format(langBundle, 'dashletGoLiveColView'), 'minimize'),
+              Common.getSimpleRow('edit', widgetId, CMgs.format(langBundle, 'dashletGoLiveColEdit'), 'minimize'),
+              Common.getSortableRow('browserUri', widgetId, CMgs.format(langBundle, 'dashletGoLiveColURL'), 'maximize'),
+              '<th id="fullUri" class="width0"></th>',
+              Common.getSimpleRow('server', widgetId, this.formatMessage(this.messages.publishingTarget), 'maximize'),
+              Common.getSortableRow('scheduledDate', widgetId, CMgs.format(langBundle, 'dashletGoLiveColPublishDate'), 'minimize'),
+              Common.getSimpleRow('userLastName', widgetId, CMgs.format(langBundle, 'dashletGoLiveColLastEditedBy'), 'alignRight minimize'),
+              Common.getSortableRow('eventDate', widgetId, CMgs.format(langBundle, 'dashletGoLiveColLastEditedDate'), 'ttThColLast alignRight minimize')
             ].join('');
 
-            return header;
+          return header;
         };
 
-        /**
-         * optional on click handler
-         */
-        this.onCheckedClickHandler = function(event, matchedEl) {
-            this.handleTopDownPathDependenciesItemsClick(event, matchedEl);
-        }
+  /**
+   * optional on click handler
+   */
+  this.onCheckedClickHandler = function (event, matchedEl) {
+    this.handleTopDownPathDependenciesItemsClick(event, matchedEl);
+  };
 
-        /**
-         * Call back to render each line item of the table
-         */
-        this.renderLineItem = function(item, isFirst, count, depth) {
+  /**
+   * Call back to render each line item of the table
+   */
+  this.renderLineItem = function (item, isFirst, count, depth) {
 
-            if(!item.folder){
+    if (!item.folder) {
 
-                var html = [],
-                name = item.internalName,
-                editLinkId;
+      var html = [],
+        name = item.internalName,
+        editLinkId;
 
-                //reducing max character length to support 1024 screen resolution
-                var removeCharCount = ((window.innerWidth <= 1024)?5:0);
-                var displayName = WcmDashboardWidgetCommon.getFormattedString(name, (80 - removeCharCount), item.newFile);
+      //reducing max character length to support 1024 screen resolution
+      var removeCharCount = ((window.innerWidth <= 1024) ? 5 : 0);
+      var displayName = WcmDashboardWidgetCommon.getFormattedString(name, (80 - removeCharCount), item.newFile);
 
-                if (isFirst) {
+      if (isFirst) {
 
-                    html.push('<td colspan="4">');
+        html.push('<td colspan="4">');
 
                     if (item.numOfChildren > 0) {
                         var parentClass = ['wcm-table-parent-', name, '-', count].join("");
