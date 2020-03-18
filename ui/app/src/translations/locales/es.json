@@ -310,6 +310,7 @@
   "usersAdmin.lastName": "Apellido",
   "usersAdmin.maxLengthError": "{field} no puede tener más de {size} caracteres",
   "usersAdmin.userName": "Nombre de usuario",
+  "words.browse": "Explorar",
   "words.cancel": "Cancelar",
   "words.clear": "Limpiar",
   "words.close": "Cerrar",
@@ -325,5 +326,6 @@
   "words.save": "Guardar",
   "words.submit": "Enviar",
   "words.update": "Actualizar",
+  "words.upload": "Subir",
   "words.yes": "Si"
 }

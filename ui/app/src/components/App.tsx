@@ -20,6 +20,7 @@ import crafterIconUrl from '../assets/crafter-icon.svg';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { palette } from '../styles/theme';
 
+// eslint-disable-next-line
 const DevServerRoot = process.env.REACT_APP_COMPONENT ? lazy(() => import(process.env.REACT_APP_COMPONENT)) : Intro;
 
 export default function App() {

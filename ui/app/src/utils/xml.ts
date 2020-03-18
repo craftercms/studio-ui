@@ -18,6 +18,7 @@
 // @ts-ignore
 import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
 import prettier from 'prettier/standalone';
+import { nnou } from './object';
 
 export function fromString(xml: string) {
   return (xml != null) ? new DOMParser().parseFromString(xml, 'text/xml') : null
@@ -57,7 +58,7 @@ export function getInnerHtml(element: Element, options = { trim: true }) {
       content = matches[0][1].trim();
     }
   }
-  return (options.trim) ? content.trim() : content;
+  return nnou(content) ? ((options.trim) ? content.trim() : content) : null;
 }
 
 export function getInnerHtmlNumber(element: Element): number {
