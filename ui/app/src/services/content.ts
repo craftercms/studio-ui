@@ -1040,8 +1040,21 @@ export function uploadDataUrl(
 }
 
 export default {
+  getComponentInstanceHTML,
   getContent,
+  getItem,
   getDOM,
+  getContentInstanceLookup,
+  fetchContentTypes,
+  fetchById,
+  updateField,
+  insertComponent,
+  insertInstance,
+  insertItem,
+  sortItem,
+  moveItem,
+  deleteItem,
+  getContentByContentType,
   fetchPublishingChannels,
   uploadDataUrl
 };
