@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircleRounded';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from "../../styles/theme";
 import { getQuickCreateContentList } from '../../services/content';
+import { useActiveSiteId, useSpreadState } from '../../utils/hooks';
+import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 
 
 function useQuery() {
@@ -58,24 +61,41 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function QuickCreate() {
   const classes = useStyles({});
   const query = useQuery();
-  const siteId = query.get('site');
+  const siteId = useActiveSiteId();
   const [anchorEl, setAnchorEl] = useState(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState([]);
+  const [dialogConfig, setDialogConfig] = useSpreadState({
+    open: false,
+    src: 'http://authoring.sample.com:8080/studio/legacy/form?site=editorial&path=/site/website/articles/2020/3/index.xml&type=form',
+    // src: '/studio/legacy/form?site=editorial&path=/site/website/index.xml&type=form',
+    type: 'form',
+    inProgress: false,
+  });
 
   const handleClick = e => setAnchorEl(e.currentTarget);
 
   const handleClose = () => setAnchorEl(null);
 
+
+  const getPath = (type: string) => {}
+
   useEffect(() => {
-    getQuickCreateContentList(siteId).subscribe(data => 
-      setQuickCreateContentList(data.items)
-    )
+    if(siteId) {
+      getQuickCreateContentList(siteId).subscribe(data => 
+       {
+         console.log(data.items)
+        setQuickCreateContentList(data.items)
+       }
+      )
+    }
   }, [siteId])
 
 
   return (
     <>
-      <AddCircleIcon fontSize="small" onClick={handleClick} className={classes.addBtn}/>
+      <IconButton onClick={handleClick}>
+        <AddCircleIcon fontSize="small" className={classes.addBtn}/>
+      </IconButton>
       <Menu
         className={classes.menu}
         anchorEl={anchorEl}
@@ -94,12 +114,17 @@ export default function QuickCreate() {
         </MenuItem>
         
         { quickCreateContentList.length && quickCreateContentList.map((item, i) => (
-          <MenuItem key={i} onClick={handleClose} className={classes.menuItem}>
-            <Link to='/'>{item.label}</Link>
+          <MenuItem key={i} onClick={() => {
+            setDialogConfig({
+              open: true
+            })
+          }} className={classes.menuItem}>
+            {item.label}
           </MenuItem>
         )) }
 
       </Menu>
+      <EmbeddedLegacyEditors getPath={getPath} dialogConfig={dialogConfig} setDialogConfig={setDialogConfig} showController={false} />
     </>
   );
 }
