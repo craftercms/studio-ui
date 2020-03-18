@@ -63,6 +63,7 @@ import {
   SearchResult
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
+import Tools from '../../models/PreviewToolIDs';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -81,7 +82,8 @@ const reducer = createReducer<GlobalState['preview']>({
   hostSize: { width: null, height: null },
   showToolsPanel: true,
   previousTool: null,
-  selectedTool: 'craftercms.ice.contentTree',
+  // Don't change/commit the tool you're working with. Use your .env.development to set it
+  selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as Tools) || null,
   tools: null,
   guest: null,
   assets: createEntityState({

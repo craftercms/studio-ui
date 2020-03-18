@@ -606,18 +606,21 @@ var nodeOpen = false,
               }];
             }
 
-            var dialog = new YAHOO.widget.SimpleDialog(dialogId, {
-              width: width ? width : '400px',
-              fixedcenter: true,
-              visible: false,
-              draggable: false,
-              close: false,
-              modal: true,
-              text: message,
-              icon: dialogType,
-              constraintoviewport: true,
-              buttons: buttonsArray
-            });
+            var dialog = new YAHOO.widget.SimpleDialog(
+              dialogId,
+              {
+                width: width ? width : '400px',
+                fixedcenter: true,
+                visible: false,
+                draggable: false,
+                close: false,
+                modal: true,
+                text: message,
+                icon: dialogType,
+                constraintoviewport: true,
+                buttons: buttonsArray
+              }
+            );
 
             dialog.setHeader(header);
             dialog.render(document.body);
@@ -9352,6 +9355,11 @@ CStudioAuthoring.InContextEdit = {
       overlayContainer && overlayContainer.removeClass('overlay-collapsed');
     }
 
+  },
+
+  isDialogCollapsed: function () {
+    const $controlBar = $('#formContainer .cstudio-form-controls-container').first();
+    return $controlBar.hasClass('collapseForm');
   },
 
   regions: [],

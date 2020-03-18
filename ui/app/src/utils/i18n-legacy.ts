@@ -642,6 +642,13 @@ const checkboxGroupControlMessages = defineMessages({
   }
 });
 
+const transcodedVideoPickerControlMessages = defineMessages({
+  label: {
+    id: 'transcodedVideoPickerControl.label',
+    defaultMessage: 'Transcoded Video Picker'
+  }
+});
+
 const globalMenuMessages = defineMessages({
   'home.globalMenu.sites': {
     id: 'GlobalMenu.SitesEntryLabel',
@@ -725,7 +732,16 @@ const adminConfigurationMessages = defineMessages({
   pendingEncryptions: {
     id: 'adminConfigurations.pendingEncryptions',
     defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t}' +
-                    'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
+      'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
+  },
+  encryptHint: {
+    id: 'adminConfigurations.encryptHint',
+    defaultMessage: 'By adding the `encrypted=””` attribute to a tag on the config document you mark it for encryption.' +
+      ' By pressing the “Encrypt Marked” button, the system will encrypt the inner text of each of the marked tags. ' +
+      'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text). ' +
+      'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypted a chunk of XML. ' +
+      'The encrypted text result will be in the form of `${enc:..}`. This wrapping is a hint to the system that this is ' +
+      'an encrypted value. Please do not manipulate encryption results manually.'
   }
 });
 
@@ -767,10 +783,28 @@ const fileNameControlMessages = defineMessages({
   }
 });
 
+const rteControlMessages = defineMessages({
+  escapeScripts: {
+    id: 'rteControlMessages.escapeScripts',
+    defaultMessage: 'Escape Scripts'
+  },
+  requiredField: {
+    id: 'rteControlMessages.requiredField',
+    defaultMessage: 'Field is Required'
+  }
+});
+
 const ossAttribution = defineMessages({
   attribution: {
     id: 'aboutView.attribution',
     defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+  }
+});
+
+const dashboardWidgetsMessages = defineMessages({
+  publishingTarget: {
+    id: 'dashboardWidgetsMessages.publishingTarget',
+    defaultMessage: 'Publishing Target'
   }
 });
 
@@ -799,9 +833,12 @@ export default {
   dragAndDropMessages,
   internalNameControlMessages,
   checkboxGroupControlMessages,
+  transcodedVideoPickerControlMessages,
   globalMenuMessages,
   adminConfigurationMessages,
   encryptToolMessages,
   fileNameControlMessages,
-  ossAttribution
+  rteControlMessages,
+  ossAttribution,
+  dashboardWidgetsMessages
 };

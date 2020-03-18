@@ -32,10 +32,11 @@ import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import { nou } from './object';
-import ErrorState from '../components/SystemStatus/ErrorState';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
+
+const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
 /**
  *

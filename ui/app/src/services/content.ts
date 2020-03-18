@@ -55,7 +55,7 @@ export function getComponentInstanceHTML(path: string): Observable<string> {
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
-    pluck('response')
+    pluck('response', 'content')
   );
 }
 
@@ -126,7 +126,7 @@ function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLook
   if (nnou(doc)) {
     Array.from(doc.documentElement.children).forEach((element: Element) => {
       if (!systemPropsList.includes(element.tagName)) {
-        instanceLookup[id][element.tagName] = parseElementByContentType(element, contentTypesLookup[contentType].fields[element.tagName], contentTypesLookup, instanceLookup)
+        instanceLookup[id][element.tagName] = parseElementByContentType(element, contentTypesLookup[contentType].fields[element.tagName], contentTypesLookup, instanceLookup);
       }
     });
   }
@@ -301,7 +301,7 @@ export function fetchById(site: string, id: string): Observable<any> {
 
       Object.entries(data).forEach(([key, value]: [string, any]) => {
         if (key.endsWith('_o')) {
-          data[key] = value.item.map((item) => item.component?.id || item)
+          data[key] = value.item.map((item) => item.component?.id || item);
         } else if (model.contentType === '/taxonomy' && key === 'items') {
           data[key] = value.item;
         }
@@ -325,7 +325,7 @@ const typeMap = {
 };
 
 function url(type, document) {
-  return (`/studio/api/1/services/api/1/site/get-configuration.json?site=editorial&path=/content-types${type}/${document}`)
+  return (`/studio/api/1/services/api/1/site/get-configuration.json?site=editorial&path=/content-types${type}/${document}`);
 }
 
 function asArray<T = any>(object: Array<T> | T): Array<T> {
@@ -755,7 +755,7 @@ export function moveItem(
         }
 
       }
-    )
+    );
   } else {
     let removedItemHTML: string;
     return performMutation(
@@ -992,7 +992,7 @@ function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: st
 }
 
 export function fetchPublishingChannels(site: string) {
-  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`)
+  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`);
 }
 
 export function uploadDataUrl(
@@ -1016,7 +1016,7 @@ export function uploadDataUrl(
     uppy.on('upload-progress', (file, progress) => {
       let type = 'progress';
       if (progress.bytesUploaded === progress.bytesTotal) {
-        type = 'complete'
+        type = 'complete';
       }
       subscriber.next({
         type,
@@ -1046,7 +1046,22 @@ export function getQuickCreateContentList(siteId: string) {
 }
 
 export default {
+  getComponentInstanceHTML,
   getContent,
+  getItem,
   getDOM,
-  fetchPublishingChannels
-}
+  getContentInstanceLookup,
+  fetchContentTypes,
+  fetchById,
+  updateField,
+  insertComponent,
+  insertInstance,
+  insertItem,
+  sortItem,
+  moveItem,
+  deleteItem,
+  getContentByContentType,
+  fetchPublishingChannels,
+  uploadDataUrl,
+  getQuickCreateContentList
+};
