@@ -27,17 +27,21 @@
 		site: "${envConfig.site!'UNSET'}",
 		siteId: "${envConfig.site!'UNSET'}",
     authenticationType: "${envConfig.authenticationType!'UNSET'}",
-		collabSandbox: "",
-		baseUri: "/studio",
-		contextMenuOffsetPage: false,
-		brandedLogoUri: "/api/1/services/api/1/content/get-content-at-path.bin?path=/configuration/app-logo.png",
-		homeUri: "/site-dashboard?site=${envConfig.site!'UNSET'}",
+    collabSandbox: '',
+    baseUri: '/studio',
+    authoringAppBaseUri: window.location.origin + '/studio',
+    formServerUri: window.location.origin,
+    previewAppBaseUri: window.location.origin,
+    contextMenuOffsetPage: false,
+    brandedLogoUri: '/api/1/services/api/1/content/get-content-at-path.bin?path=/configuration/app-logo.png',
+    homeUri: "/site-dashboard?site=${envConfig.site!'UNSET'}",
 		navContext: "default",
 		cookieDomain: "${cookieDomain!'UNSET'}",
 		openSiteDropdown: ${envConfig.openSiteDropdown!"false"},
-		isPreview: false,
-		liveAppBaseUri:"",
-		xsrfHeaderName: "${_csrf.headerName}",
+    isPreview: false,
+    liveAppBaseUri: '',
+    graphQLBaseURI: window.location.origin + '/api/1/site/graphql',
+    xsrfHeaderName: "${_csrf.headerName}",
 		xsrfParameterName: "${_csrf.parameterName}",
 		passwordRequirementsRegex: "${envConfig.passwordRequirementsRegex?js_string}"
   };
@@ -45,11 +49,6 @@
   if (CStudioAuthoringContext.role === '') {
     document.location = CStudioAuthoringContext.baseUri;
   }
-
-  CStudioAuthoringContext.authoringAppBaseUri = window.location.origin + '/studio';
-  CStudioAuthoringContext.formServerUri = window.location.origin;
-  CStudioAuthoringContext.previewAppBaseUri = window.location.origin;
-  CStudioAuthoringContext.graphQLBaseURI = window.location.origin + '/api/1/site/graphql';
 
   var lang = (
           localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage') ||
