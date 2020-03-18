@@ -157,17 +157,21 @@
           /**/`<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
           /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt1)}</p>` +
           /**/`<p>` + 
-          /**/formatMessage(
-          /**/  adminConfigurationMessages.encryptHintPt2,
-          /**/  { bold: msg => `<span class="bold">${msg}</span>` }
-          /**/).join('') + '</br>' + 
-          /**/formatMessage(adminConfigurationMessages.encryptHintPt3) +
+          /**/  formatMessage(
+          /**/    adminConfigurationMessages.encryptHintPt2,
+          /**/    { bold: msg => `<span class="bold">${msg}</span>` }
+          /**/  ).join('') +
+          /**/  '</br>' +
+          /**/  formatMessage(adminConfigurationMessages.encryptHintPt3) +
           /**/`</p>` +
-          /**/`<p>` + formatMessage(
-            adminConfigurationMessages.encryptHintPt4,
-            { bold: msg => `<span class="bold">${msg}</span>` }
-          ).join('') + '</br>' +
-          /**/`${formatMessage(adminConfigurationMessages.encryptHintPt5)}</p>` +
+          /**/`<p>` +
+          /**/  formatMessage(
+          /**/    adminConfigurationMessages.encryptHintPt4,
+          /**/    { bold: msg => `<span class="bold">${msg}</span>` }
+          /**/  ).join('') + 
+          /**/  '</br>' + 
+          /**/  formatMessage(adminConfigurationMessages.encryptHintPt5) +
+          /**/`</p>` +
           /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt6)}` +
           /**/`<ul>` +
           /**/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt7)}</li>` +
