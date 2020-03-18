@@ -99,13 +99,15 @@
       },
       select = $('.dependencies-option');
 
+    this.item = itemsData[0];
+
     select.val(dependenciesSelection);
     CStudioAuthoring.Service.loadItems(callback, data);
 
-    $(document).on("keyup", function (e) {
+    $(document).on('keyup', function (e) {
       if (e.keyCode === 27) {	// esc
         me.end();
-        $(document).off("keyup");
+        $(document).off('keyup');
       }
     });
   }
@@ -176,7 +178,7 @@
 
     $container.empty();
 
-    var item = items[0];
+    var item = this.item;
 
     var temp = item.scheduledDate,
       itemDependenciesClass = "toggle-deps",
@@ -186,7 +188,6 @@
     item.index = itemDependenciesClass;
     var $parentRow = $(agent.get('ITEM_ROW', item));
     $container.empty();
-    // $container.append($parentRow);
     item.scheduledDate = temp;
 
     var $nameEl = $(me.getComponent('.view-caption .show-for-item'));
@@ -273,7 +274,7 @@
         });
 
       }
-    }
+    };
 
     if (optionSelected !== 'depends-on') {
       CStudioAuthoring.Service.loadDependencies(
