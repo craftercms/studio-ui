@@ -173,7 +173,7 @@
           /**/  formatMessage(adminConfigurationMessages.encryptHintPt5) +
           /**/`</p>` +
           /**/`<p>` +
-          /**/  formatMessage(adminConfigurationMessages.encryptHintPt6)
+          /**/  formatMessage(adminConfigurationMessages.encryptHintPt6) +
           /****/`<ul>` +
           /******/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt7)}</li>` +
           /******/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt8)}</li>` +
