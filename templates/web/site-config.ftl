@@ -1,26 +1,22 @@
-<!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License version 3 as published by
-  ~ the Free Software Foundation.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
+<#--
+~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+~
+~ This program is free software: you can redistribute it and/or modify
+~ it under the terms of the GNU General Public License version 3 as published by
+~ the Free Software Foundation.
+~
+~ This program is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+~ GNU General Public License for more details.
+~
+~ You should have received a copy of the GNU General Public License
+~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
 
+<#if (envConfig.role! == 'admin' || envConfig.role! == 'developer')>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-
-<#if !(envConfig.role! == 'admin' || envConfig.role! == 'developer')>
-  <script>window.location='/studio/site-dashboard'</script>
-</#if>
-
 <head>
     <#include "/templates/web/common/page-fragments/head.ftl" />
 
@@ -61,8 +57,20 @@
     <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
 
 </head>
-
 <body class="yui-skin-cstudioTheme">
 <div id="admin-console" class="categories-panel-active"></div>
 </body>
 </html>
+<#else>
+  <script>window.location.href = '/studio'</script>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+    }
+  </style>
+  <noscript>
+    <h1>Access Denied</h1>
+    <p>You don't have the necessary permissions to access this page.</p>
+  </noscript>
+</#if>
