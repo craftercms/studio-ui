@@ -253,7 +253,7 @@ export default function ToolBar() {
           >
             <CustomMenu/>
           </IconButton>
-          <QuickCreate />
+          <QuickCreate/>
         </section>
         <section className={classes.addressBarContainer}>
           <AddressBar

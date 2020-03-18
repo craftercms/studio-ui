@@ -79,6 +79,9 @@
   var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   var site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
   var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
+  var contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
+  var newEdit = CStudioAuthoring.Utils.getQueryVariable(location.search, 'newEdit');
+  
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
   const changeTab = (e) => {
@@ -125,59 +128,96 @@
   window.addEventListener('message', changeTab, false);
 
   function openDialog(type, path) {
+    console.log('enter openDialog')
     switch (type) {
       case 'form': {
         var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
         var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
 
-        CStudioAuthoring.Service.lookupContentItem(
-          site,
-          path,
-          {
-            success: (contentTO) => {
-              CStudioAuthoring.Operations.performSimpleIceEdit(
-                contentTO.item,
-                '',
-                true,
-                {
-                  success: () => {
-                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
-                  },
-                  failure: () => {
-                    console.log('failure');
-                  },
-                  cancelled: () => {
-                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
-                  },
-                  renderComplete: () => {
-                    if (!modelId) {
-                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                    } else {
-                      CStudioAuthoring.InContextEdit.messageDialogs({
-                        type: 'OPEN_CHILD_COMPONENT',
-                        key: modelId,
-                        iceId: null,
-                        edit: true,
-                        callback: {
-                          renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
-                          pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
-                        }
-                      });
+        console.log('enter form', site, path);
+
+        if(!newEdit) {
+          CStudioAuthoring.Service.lookupContentItem(
+            site,
+            path,
+            {
+              success: (contentTO) => {
+                CStudioAuthoring.Operations.performSimpleIceEdit(
+                  contentTO.item,
+                  '',
+                  true,
+                  {
+                    success: () => {
+                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
+                    },
+                    failure: () => {
+                      console.log('failure');
+                    },
+                    cancelled: () => {
+                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
+                    },
+                    renderComplete: () => {
+                      if (!modelId) {
+                        window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                      } else {
+                        CStudioAuthoring.InContextEdit.messageDialogs({
+                          type: 'OPEN_CHILD_COMPONENT',
+                          key: modelId,
+                          iceId: null,
+                          edit: true,
+                          callback: {
+                            renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
+                            pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
+                          }
+                        });
+                      }
+                    },
+                    pendingChanges: () => {
+                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
                     }
                   },
-                  pendingChanges: () => {
-                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
-                  }
-                },
-                [],
-                null,
-                !!isHidden);
+                  [],
+                  null,
+                  !!isHidden);
+              },
+              failure: (error) => {
+                console.log(error);
+              }
             },
-            failure: (error) => {
-              console.log(error);
-            }
-          },
-          false, false);
+            false, false
+          );
+        } 
+        else {
+          CStudioAuthoring.Operations.openContentWebForm(
+            contentTypeId,
+            null,
+            null,
+            CStudioAuthoring.Operations.processPathsForMacros(path, null, true),
+            false,
+            false,
+            {
+              success: () => {
+                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
+              },
+              failure: () => {
+                console.log('failure');
+              },
+              cancelled: () => {
+                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
+              },
+              renderComplete: () => {
+                
+                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                
+              },
+              pendingChanges: () => {
+                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
+              }
+            },
+            null
+          );
+        }
+
         break;
       }
       case 'controller':

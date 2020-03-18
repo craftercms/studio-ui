@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircleRounded';
@@ -8,13 +7,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from "../../styles/theme";
 import { getQuickCreateContentList } from '../../services/content';
-import { useActiveSiteId, useSpreadState } from '../../utils/hooks';
+import { useActiveSiteId, useSpreadState, useSelection } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,14 +55,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function QuickCreate() {
   const classes = useStyles({});
-  const query = useQuery();
   const siteId = useActiveSiteId();
+  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
   const [anchorEl, setAnchorEl] = useState(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState([]);
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
-    src: 'http://authoring.sample.com:8080/studio/legacy/form?site=editorial&path=/site/website/articles/2020/3/index.xml&type=form',
-    // src: '/studio/legacy/form?site=editorial&path=/site/website/index.xml&type=form',
+    src: '',
     type: 'form',
     inProgress: false,
   });
@@ -77,18 +72,25 @@ export default function QuickCreate() {
   const handleClose = () => setAnchorEl(null);
 
 
-  const getPath = (type: string) => {}
+  const getPath = (type: string) => console.log('GETTING PATH!')
 
   useEffect(() => {
     if(siteId) {
       getQuickCreateContentList(siteId).subscribe(data => 
-       {
-         console.log(data.items)
         setQuickCreateContentList(data.items)
-       }
       )
     }
   }, [siteId])
+
+  const handleMenuItem = srcData => {
+    const today = new Date();
+    const src = 
+      `${defaultSrc}/legacy/form?newEdit=article&contentTypeId=${srcData.contentTypeId}&path=${srcData.path.replace('{year}/{month}', `${today.getFullYear()}/${today.getFullYear()}`)}&type=form`;
+    setDialogConfig({
+      open: true,
+      src
+    })
+  }
 
 
   return (
@@ -113,18 +115,23 @@ export default function QuickCreate() {
           />
         </MenuItem>
         
-        { quickCreateContentList.length && quickCreateContentList.map((item, i) => (
-          <MenuItem key={i} onClick={() => {
-            setDialogConfig({
-              open: true
-            })
-          }} className={classes.menuItem}>
+        { quickCreateContentList.length && quickCreateContentList.map(item => (
+          <MenuItem 
+            key={item.siteId} 
+            onClick={() => handleMenuItem(item)}
+            className={classes.menuItem}
+          >
             {item.label}
           </MenuItem>
         )) }
 
       </Menu>
-      <EmbeddedLegacyEditors getPath={getPath} dialogConfig={dialogConfig} setDialogConfig={setDialogConfig} showController={false} />
+      <EmbeddedLegacyEditors 
+        getPath={getPath}
+        dialogConfig={dialogConfig}
+        setDialogConfig={setDialogConfig}
+        showController={false} 
+      />
     </>
   );
 }
