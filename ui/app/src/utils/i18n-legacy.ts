@@ -642,6 +642,13 @@ const checkboxGroupControlMessages = defineMessages({
   }
 });
 
+const transcodedVideoPickerControlMessages = defineMessages({
+  label: {
+    id: 'transcodedVideoPickerControl.label',
+    defaultMessage: 'Transcoded Video Picker'
+  }
+});
+
 const globalMenuMessages = defineMessages({
   'home.globalMenu.sites': {
     id: 'GlobalMenu.SitesEntryLabel',
@@ -826,6 +833,7 @@ export default {
   dragAndDropMessages,
   internalNameControlMessages,
   checkboxGroupControlMessages,
+  transcodedVideoPickerControlMessages,
   globalMenuMessages,
   adminConfigurationMessages,
   encryptToolMessages,

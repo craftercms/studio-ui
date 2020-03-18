@@ -22,23 +22,23 @@ CStudioForms.Datasources.VideoS3Transcoding = CStudioForms.Datasources.VideoS3Tr
     this.constraints = constraints;
 
     for (var i = 0; i < properties.length; i++) {
-      if (properties[i].name === "outputProfileId") {
+      if (properties[i].name === 'outputProfileId') {
         this.outputProfileId = properties[i].value;
       }
-      if (properties[i].name === "inputProfileId") {
+      if (properties[i].name === 'inputProfileId') {
         this.inputProfileId = properties[i].value;
       }
     }
 
     return this;
-  }
+  };
 
 YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFormDatasource, {
   itemsAreContentReferences: true,
 
-	/**
-	 * action called when user clicks insert file
-	 */
+  /**
+   * action called when user clicks insert file
+   */
   insertVideoAction: function (insertCb) {
     this._self = this,
       me = this;
@@ -47,7 +47,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
     var site = CStudioAuthoringContext.site;
 
     for (var i = 0; i < this.properties.length; i++) {
-      if (this.properties[i].name == "repoPath") {
+      if (this.properties[i].name == 'repoPath') {
         path = this.properties[i].value;
         path = this.processPathsForMacros(path);
       }
@@ -63,7 +63,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
         fileData.urls.forEach(function (url) {
           var video = {
             url: url
-          }
+          };
 
           videoData.videos.push(video);
         });
@@ -80,12 +80,12 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
 
     var params = {
       transcode: true
-    }
+    };
 
     var profiles = {
       outputProfileId: me.outputProfileId,
       inputProfileId: me.inputProfileId
-    }
+    };
 
     CStudioAuthoring.Operations.uploadS3Asset(site, path, profiles, callback, params, ["video/*"]);
   },
@@ -95,7 +95,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
   },
 
   getInterface: function () {
-    return "video";
+    return 'transcoded-video';
   },
 
   getName: function () {
