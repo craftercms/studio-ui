@@ -104,12 +104,14 @@
     select.val(dependenciesSelection);
     CStudioAuthoring.Service.loadItems(callback, data);
 
-    $(document).on('keyup', function (e) {
+    const endDialog = function (e) {
       if (e.keyCode === 27) {	// esc
         me.end();
-        $(document).off('keyup');
+        $(document).off('keyup', endDialog);
       }
-    });
+    };
+
+    $(document).on('keyup', endDialog);
   }
 
   function traverse(items, referenceDate) {
