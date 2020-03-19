@@ -108,7 +108,8 @@ export function createCodebaseBridge() {
       PublishingQueue: lazy(() => import('../components/PublishingQueue')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
-      Login: lazy(() => import('../pages/Login'))
+      Login: lazy(() => import('../pages/Login')),
+      BulkUpload: lazy(() => import('../components/BulkUpload'))
     },
 
     assets: {

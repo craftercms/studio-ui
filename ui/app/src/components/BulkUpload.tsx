@@ -29,9 +29,10 @@ import {
   Theme,
   Typography
 } from '@material-ui/core';
-import { Core, ProgressBar, ThumbnailGenerator, XHRUpload } from 'uppy';
+import { Core, ProgressBar, XHRUpload } from 'uppy';
 
 import getDroppedFiles from '@uppy/utils/lib/getDroppedFiles';
+import toArray from '@uppy/utils/lib/toArray';
 
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/drag-drop/src/style.scss';
@@ -130,7 +131,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   hiddenInput: {
-    display: 'none'
+    display: 'none !important'
   },
   browseText: {
     color: palette.blue.main
@@ -167,7 +168,8 @@ const UppyItemStyles = makeStyles((theme: Theme) => ({
     color: palette.red.main
   },
   iconRetry: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
+    height: '48px'
   },
   progressBar: {
     position: 'absolute',
@@ -193,10 +195,41 @@ const UppyItemStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+interface UppyFile {
+  source: string;
+  id: string;
+  name: string;
+  extension: string;
+  meta: {
+    site?: string;
+    relativePath?: string;
+    name: string;
+    type: string;
+    path: string;
+  }
+  type: string;
+  data: File | Blob;
+  progress: {
+    percentage: number;
+    bytesUploaded: number;
+    bytesTotal: number;
+    uploadComplete: boolean;
+    uploadStarted: number;
+    failed?: boolean;
+  }
+  size: number;
+  isRemote: boolean;
+  remote: {
+    host: string;
+    url: string;
+  };
+  preview: any;
+}
+
 interface UppyItemProps {
   file: any,
 
-  retryFileUpload(file: any): void
+  retryFileUpload(file: UppyFile): void
 }
 
 function UppyItem(props: UppyItemProps) {
@@ -204,7 +237,9 @@ function UppyItem(props: UppyItemProps) {
   const { file, retryFileUpload } = props;
   const [failed, setFailed] = useState(null);
 
-  const handleRetry = (file: any) => {
+  const handleRetry = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, file: UppyFile) => {
+    event.preventDefault();
+    event.stopPropagation();
     setFailed(false);
     retryFileUpload(file);
   };
@@ -231,8 +266,8 @@ function UppyItem(props: UppyItemProps) {
           </div>
           {
             failed &&
-            <IconButton onClick={() => {
-              handleRetry(file)
+            <IconButton onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+              handleRetry(event, file)
             }} className={classes.iconRetry}>
               <ReplayIcon/>
             </IconButton>
@@ -266,54 +301,58 @@ function DropZone(props: DropZoneProps) {
   const { onComplete, onUpload, path, site, limit } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useSpreadState<LookupTable<any>>(null);
-  const [files, setFiles] = useSpreadState<LookupTable<any>>(null);
+  const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
   const inputRef = useRef(null);
 
   const uppy = useMemo(() => Core({ debug: true, autoProceed: true }), []);
 
-  const retryFileUpload = (file: any) => {
+  const retryFileUpload = (file: UppyFile) => {
     uppy.retryUpload(file.id)
   };
 
-  const handleDragOver = (event: any) => {
+  const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
     event.dataTransfer.dropEffect = 'copy';
     setDragOver(true);
   };
 
-  const handleOnDrop = (event: any) => {
+  const handleOnDrop = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
     getDroppedFiles(event.dataTransfer)
-      .then((files) => {
-        files.map((file: any) =>
-          uppy.addFile({
-            name: file.name,
-            type: file.type,
-            data: file,
-            meta: {
-              relativePath: file.relativePath || null
-            }
-          })
-        )
-      });
+      .then((files) => addFiles(files));
     setDragOver(false);
     removeDragData(event);
   };
 
-  const handleDragLeave = (event: any) => {
+  const handleDragLeave = (event: React.DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setDragOver(false);
   };
 
-  const handleInputChange = (event: any) => {
-    console.log('onInputChange')
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = toArray(event.target.files);
+    addFiles(files);
+    event.target.value = null;
   };
 
-  function removeDragData(event: any) {
+  function addFiles(files: File[]) {
+    files.map((file: any) =>
+      uppy.addFile({
+        name: file.name,
+        type: file.type,
+        data: file,
+        meta: {
+          relativePath: file.relativePath || null
+        }
+      })
+    )
+  }
+
+  function removeDragData(event: React.DragEvent<HTMLElement>) {
     if (event.dataTransfer.items) {
       event.dataTransfer.items.clear();
     } else {
@@ -323,17 +362,12 @@ function DropZone(props: DropZoneProps) {
 
   useEffect(() => {
     if (dndRef?.current && generalProgress?.current) {
-      uppy.use(ThumbnailGenerator, {
-        thumbnailWidth: 200,
-        thumbnailHeight: 200,
-        waitForThumbnailsBeforeUpload: true
+      uppy.use(XHRUpload, {
+        endpoint: getBulkUploadUrl(site, path),
+        formData: true,
+        fieldName: 'file',
+        limit
       })
-        .use(XHRUpload, {
-          endpoint: getBulkUploadUrl(site, path),
-          formData: true,
-          fieldName: 'file',
-          limit
-        })
         .use(ProgressBar, {
           target: generalProgress.current,
           hideAfterFinish: true
@@ -345,7 +379,7 @@ function DropZone(props: DropZoneProps) {
       uppy.reset();
       uppy.close();
     };
-  }, [formatMessage, path, site, uppy]);
+  }, [formatMessage, limit, path, site, uppy]);
 
   useEffect(() => {
 
@@ -353,28 +387,30 @@ function DropZone(props: DropZoneProps) {
       onComplete();
     };
 
-    const handleThumbnailGenerated = (file: any) => {
-      setFiles({ [file.id]: file });
-    };
-
     const handleUploadProgress = (file: any, progress: any) => {
-      file.progress.bytesUploaded = progress.bytesUploaded;
-      file.progress.bytesTotal = progress.bytesTotal;
-      file.progress.percentage = Math.floor(parseInt((progress.bytesUploaded / progress.bytesTotal * 100).toFixed(2)));
-      setFiles({ [file.id]: file });
+      const newFile = uppy.getFile(file.id) as UppyFile;
+      newFile.progress.bytesUploaded = progress.bytesUploaded;
+      newFile.progress.bytesTotal = progress.bytesTotal;
+      newFile.progress.percentage = Math.floor(parseInt((progress.bytesUploaded / progress.bytesTotal * 100).toFixed(2)));
+      setFiles({ [file.id]: newFile });
     };
 
     const handleUploadError = (file: any, error: any, response: any) => {
-      file.progress.failed = true;
-      setFiles({ [file.id]: file });
+      const newFile = uppy.getFile(file.id) as UppyFile;
+      newFile.progress.failed = true;
+      setFiles({ [file.id]: newFile });
     };
 
     const handleFileAdded = (file: any) => {
       const newPath = file.meta.relativePath ? path + file.meta.relativePath.substring(0, file.meta.relativePath.lastIndexOf('/')) : path;
       const ids = (filesPerPath && filesPerPath[newPath]) ? [...filesPerPath[newPath], file.id] : [file.id];
       setFilesPerPath({ [newPath]: ids });
-      setFiles({ [file.id]: file });
       uppy.setFileMeta(file.id, { path: newPath });
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        uppy.setFileState(file.id, { preview: e.target.result });
+      };
+      reader.readAsDataURL(file.data)
     };
 
     const handleUpload = () => {
@@ -386,7 +422,6 @@ function DropZone(props: DropZoneProps) {
     uppy.on('upload', handleUpload);
     uppy.on('upload-error', handleUploadError);
     uppy.on('upload-progress', handleUploadProgress);
-    uppy.on('thumbnail:generated', handleThumbnailGenerated);
 
     return () => {
       uppy.off('complete', handleComplete);
@@ -394,10 +429,9 @@ function DropZone(props: DropZoneProps) {
       uppy.off('upload', handleUpload);
       uppy.off('upload-error', handleUploadError);
       uppy.off('upload-progress', handleUploadProgress);
-      uppy.off('thumbnail:generated', handleThumbnailGenerated);
     }
 
-  }, [filesPerPath, onComplete, path, setFiles, setFilesPerPath, uppy]);
+  }, [filesPerPath, onComplete, onUpload, path, setFiles, setFilesPerPath, uppy]);
 
   return (
     <>
@@ -410,7 +444,7 @@ function DropZone(props: DropZoneProps) {
         onClick={() => inputRef.current?.click()}
       >
         {
-          filesPerPath ? (
+          (filesPerPath && files) ? (
             Object.keys(filesPerPath).map(fileId =>
               <div key={fileId} className={classes.sectionFiles}>
                 <Typography variant="subtitle2" className={classes.sectionTitle}>
@@ -447,15 +481,6 @@ function DropZone(props: DropZoneProps) {
       />
       <section ref={generalProgress} className={classes.generalProgress}/>
     </>
-  )
-}
-
-function RenderArrowSvg() {
-  return (
-    <svg aria-hidden="true" focusable="false" className="UppyIcon uppy-DragDrop-arrow" width="16" height="16"
-         viewBox="0 0 16 16">
-      <path d="M11 10V0H5v10H2l6 6 6-6h-3zm0 0" fillRule="evenodd"/>
-    </svg>
   )
 }
 
