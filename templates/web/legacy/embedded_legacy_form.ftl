@@ -81,7 +81,7 @@
   var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
   var contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   var newEdit = CStudioAuthoring.Utils.getQueryVariable(location.search, 'newEdit');
-  
+
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
   const changeTab = (e) => {
@@ -128,13 +128,10 @@
   window.addEventListener('message', changeTab, false);
 
   function openDialog(type, path) {
-    console.log('enter openDialog')
     switch (type) {
       case 'form': {
         var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
         var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
-
-        console.log('enter form', site, path);
 
         if(!newEdit) {
           CStudioAuthoring.Service.lookupContentItem(

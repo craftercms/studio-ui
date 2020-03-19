@@ -4,6 +4,7 @@ import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircleRounded';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Divider from '@material-ui/core/Divider';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from "../../styles/theme";
 import { getQuickCreateContentList } from '../../services/content';
@@ -24,39 +25,43 @@ const useStyles = makeStyles((theme: Theme) =>
       fill: palette.green.main,
       width: 30,
       height: 30,
-
       "&:hover": {
         fill: palette.green.shade
       }
     },
 
     menu: {
+      transform: 'translate(20px, 15px)',
       "& ul": {
-        paddingTop: 0
-      }
-    },
-
-    menuTitle: {
-      fontSize: 10,
-      fontWeight: 'bold',
-      backgroundColor: palette.gray.light2,
-      borderBottom: palette.gray.light3,
-      marginBottom: 5,
-      textTransform: 'uppercase',
-
-      "&:hover": {
-        backgroundColor: palette.gray.light2
+        paddingTop: 0,
+        minWidth: '140px'
       }
     },
 
     menuItem: {
+      fontSize: 14,
+    },
+
+    menuTitle: {
+      fontSize: 14,
+      "&:hover": {
+        cursor: 'text',
+        backgroundColor: 'transparent'
+      }
+    },
+
+    menuSectionTitle: {
       fontSize: 12,
-      
-      "& a": {
-        color: palette.black,
-        textDecoration: 'none'
-      } 
-    }
+      backgroundColor: palette.gray.light0,
+      color: palette.gray.medium3,
+      paddingTop: 2,
+      paddingBottom: 2,
+      "&:hover": {
+        backgroundColor: palette.gray.light0,
+        cursor: 'text'
+      }
+
+    },
   })
 );
 
@@ -77,7 +82,7 @@ export default function QuickCreate() {
 
   const handleClick = e => setAnchorEl(e.currentTarget);
 
-  const handleClose = () => setAnchorEl(null);
+  const handleMenuClose = () => setAnchorEl(null);
 
   useEffect(() => {
     if(siteId) {
@@ -114,22 +119,29 @@ export default function QuickCreate() {
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleClose}
-        getContentAnchorEl={null}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        onClose={handleMenuClose}
       >
         <MenuItem className={classes.menuTitle}>
           <FormattedMessage
             id="quickCreateMenu.title"
-            defaultMessage="quick create"
+            defaultMessage="New Content"
+          />
+        </MenuItem>
+        <Divider />
+        <MenuItem className={classes.menuSectionTitle}>
+          <FormattedMessage
+            id="quickCreateMenu.sectionTitle"
+            defaultMessage="Quick Create"
           />
         </MenuItem>
         
         { quickCreateContentList?.map(item => (
           <MenuItem 
             key={item.siteId} 
-            onClick={() => handleFormDisplay(item)}
+            onClick={() => {
+              handleMenuClose();
+              handleFormDisplay(item);
+            }}
             className={classes.menuItem}
           >
             {item.label}
