@@ -624,8 +624,6 @@ export default function BulkUpload(props: any) {
     e.preventDefault();
   };
 
-  console.log(dropZoneStatus.status);
-
   return (
     <Dialog
       open={true}
