@@ -62,7 +62,7 @@
 </body>
 </html>
 <#else>
-  <script>window.location.href = '/studio/site-dashboard'</script>
+  <script>window.location.href = '/studio'</script>
   <style>
     body {
       text-align: center;
