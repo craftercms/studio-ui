@@ -139,7 +139,7 @@ export default function QuickCreate() {
 
         {quickCreateContentList?.map(item => (
           <MenuItem
-            key={item.siteId}
+            key={item.path}
             onClick={() => {
               handleMenuClose();
               handleFormDisplay(item);

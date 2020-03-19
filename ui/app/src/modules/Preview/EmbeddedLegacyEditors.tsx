@@ -30,7 +30,8 @@ import {
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
   EMBEDDED_LEGACY_FORM_RENDERED,
-  RELOAD_REQUEST
+  RELOAD_REQUEST,
+  EMBEDDED_LEGACY_FORM_SAVE
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -159,6 +160,21 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
             if (tabsState[tab].pendingChanges === false) {
               setTabsState({ [tab]: { loaded: true, pendingChanges: true } });
             }
+            break;
+          }
+          case EMBEDDED_LEGACY_FORM_SAVE: {
+            console.log('SAVE EMBEDDED_LEGACY_FORM_SAVE');
+            let hasSomeLoaded = filterBy('loaded', tabsState, tab);
+            if (hasSomeLoaded.length) {
+              setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
+              handleTabChange(null, hasSomeLoaded[0]);
+            } else {
+              setDialogConfig({ open: false, src: null, type: null, inProgress: true });
+              if (e.data.refresh) {
+                getHostToGuestBus().next({ type: RELOAD_REQUEST });
+              }
+            }
+            break;
           }
         }
       });

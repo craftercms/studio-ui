@@ -30,7 +30,7 @@
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <#--  <#include "/templates/web/common/js-next-scripts.ftl" />  -->
+  <#include "/templates/web/common/js-next-scripts.ftl" />
   <#-- Lang resources -->
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
   <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
@@ -183,37 +183,38 @@
             },
             false, false
           );
-        } 
-        else {
-          CStudioAuthoring.Operations.openContentWebForm(
-            contentTypeId,
-            null,
-            null,
-            CStudioAuthoring.Operations.processPathsForMacros(path, null, true),
-            false,
-            false,
-            {
-              success: () => {
-                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
+        } else {
+            CStudioAuthoring.Operations.openContentWebForm(
+              contentTypeId,
+              null,
+              null,
+              CStudioAuthoring.Operations.processPathsForMacros(path, null, true),
+              false,
+              false,
+              {
+                success: () => {
+                  console.log('success')
+                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_SAVE', refresh: true, tab: type, action: 'success' }, '*');
+                },
+                failure: () => {
+                  console.log('failure');
+                },
+                cancelled: () => {
+                  console.log('cancelled')
+                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
+                },
+                renderComplete: () => {
+                  
+                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                  
+                },
+                pendingChanges: () => {
+                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
+                }
               },
-              failure: () => {
-                console.log('failure');
-              },
-              cancelled: () => {
-                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
-              },
-              renderComplete: () => {
-                
-                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                
-              },
-              pendingChanges: () => {
-                window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
-              }
-            },
-            null
-          );
-        }
+              null
+            );
+          }
 
         break;
       }
