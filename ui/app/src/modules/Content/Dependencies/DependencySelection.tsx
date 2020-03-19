@@ -260,9 +260,15 @@ export function DependencySelection(props: DependencySelectionProps) {
   );
 }
 
-export function DependencySelectionDelete(props: DependencySelectionProps) {
+interface DependencySelectionDeleteProps {
+  items: Item[],
+  siteId: string,
+  onChange: Function;
+}
+
+export function DependencySelectionDelete(props: DependencySelectionDeleteProps) {
   const [resultItems, setResultItems] = useState<ResultObject>();
-  const { items, siteId } = props;
+  const { items, siteId, onChange } = props;
   const [checked, _setChecked] = useState<any>(
     checkState(items)
   );
@@ -361,7 +367,7 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
     const result = Object.entries({ ...checked })
       .filter(([key, value]) => value === true)
       .map(([key]) => key);
-    props.onChange(result);
+    onChange(result);
   }
 
   function showAllDependencies() {
