@@ -416,7 +416,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       newFile.progress.bytesTotal = progress.bytesTotal;
       newFile.progress.percentage = Math.floor(parseInt((progress.bytesUploaded / progress.bytesTotal * 100).toFixed(2)));
       setFiles({ [file.id]: newFile });
-      onStatusChange({ progress: uppy.getState().totalProgress });
+      onStatusChange({ status: 'uploading', progress: uppy.getState().totalProgress });
     };
 
     const handleUploadError = (file: any, error: any, response: any) => {
@@ -623,6 +623,8 @@ export default function BulkUpload(props: any) {
     e.stopPropagation();
     e.preventDefault();
   };
+
+  console.log(dropZoneStatus.status);
 
   return (
     <Dialog
