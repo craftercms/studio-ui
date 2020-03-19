@@ -69,8 +69,8 @@ const translations = defineMessages({
     defaultMessage: 'Drop files here or <span>browse</span>'
   },
   browse: {
-    id: 'bulkUpload.browse',
-    defaultMessage: 'browse'
+    id: 'words.browse',
+    defaultMessage: 'Browse'
   }
 });
 
@@ -92,7 +92,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer',
     '&.hasFiles': {
       height: '100%',
-      padding: '15px'
+      minHeight: '200px',
+      padding: '15px',
+      justifyContent: 'start',
+      cursor: 'inherit'
     },
     '&.over': {
       backgroundColor: palette.gray.light4,
@@ -287,24 +290,20 @@ function UppyItem(props: UppyItemProps) {
 interface DropZoneProps {
   path: string;
   site: string;
-  limit: number;
+  maxSimultaneousUploads: number;
 
-  onComplete(): void;
-
-  onUpload(): void;
+  onStatusChange(status: string): void;
 }
 
-function DropZone(props: DropZoneProps) {
+const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
   const generalProgress = useRef(null);
-  const { onComplete, onUpload, path, site, limit } = props;
+  const { onStatusChange, path, site, maxSimultaneousUploads } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useSpreadState<LookupTable<any>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
-  const inputRef = useRef(null);
-
   const uppy = useMemo(() => Core({ debug: true, autoProceed: true }), []);
 
   const retryFileUpload = (file: UppyFile) => {
@@ -341,7 +340,7 @@ function DropZone(props: DropZoneProps) {
 
   function addFiles(files: File[]) {
     files.map((file: any) =>
-      uppy.addFile({
+      checkFileExist(file) && uppy.addFile({
         name: file.name,
         type: file.type,
         data: file,
@@ -350,6 +349,10 @@ function DropZone(props: DropZoneProps) {
         }
       })
     )
+  }
+
+  function checkFileExist(newFile: File) {
+    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type)
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
@@ -366,7 +369,7 @@ function DropZone(props: DropZoneProps) {
         endpoint: getBulkUploadUrl(site, path),
         formData: true,
         fieldName: 'file',
-        limit
+        limit: maxSimultaneousUploads
       })
         .use(ProgressBar, {
           target: generalProgress.current,
@@ -379,12 +382,12 @@ function DropZone(props: DropZoneProps) {
       uppy.reset();
       uppy.close();
     };
-  }, [formatMessage, limit, path, site, uppy]);
+  }, [formatMessage, maxSimultaneousUploads, path, site, uppy]);
 
   useEffect(() => {
 
     const handleComplete = () => {
-      onComplete();
+      onStatusChange('complete');
     };
 
     const handleUploadProgress = (file: any, progress: any) => {
@@ -406,15 +409,17 @@ function DropZone(props: DropZoneProps) {
       const ids = (filesPerPath && filesPerPath[newPath]) ? [...filesPerPath[newPath], file.id] : [file.id];
       setFilesPerPath({ [newPath]: ids });
       uppy.setFileMeta(file.id, { path: newPath });
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        uppy.setFileState(file.id, { preview: e.target.result });
-      };
-      reader.readAsDataURL(file.data)
+      if (file.type.includes('image')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          uppy.setFileState(file.id, { preview: e.target.result });
+        };
+        reader.readAsDataURL(file.data)
+      }
     };
 
     const handleUpload = () => {
-      onUpload();
+      onStatusChange('uploading');
     };
 
     uppy.on('complete', handleComplete);
@@ -431,7 +436,7 @@ function DropZone(props: DropZoneProps) {
       uppy.off('upload-progress', handleUploadProgress);
     }
 
-  }, [filesPerPath, onComplete, onUpload, path, setFiles, setFilesPerPath, uppy]);
+  }, [filesPerPath, onStatusChange, path, setFiles, setFilesPerPath, uppy]);
 
   return (
     <>
@@ -441,7 +446,7 @@ function DropZone(props: DropZoneProps) {
         onDrop={handleOnDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => inputRef.current?.click()}
+        onClick={() => !files && ref.current?.click()}
       >
         {
           (filesPerPath && files) ? (
@@ -474,7 +479,7 @@ function DropZone(props: DropZoneProps) {
         className={classes.hiddenInput}
         type="file"
         tabIndex={-1}
-        ref={inputRef}
+        ref={ref}
         name="files[]"
         multiple={true}
         onChange={handleInputChange}
@@ -482,26 +487,21 @@ function DropZone(props: DropZoneProps) {
       <section ref={generalProgress} className={classes.generalProgress}/>
     </>
   )
-}
+});
 
 export default function BulkUpload(props: any) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
-  const {
-    onClose = () => {
-    },
-    path = '/static-assets/test',
-    site = 'editorial',
-    limit = 2
-  } = props;
-  const [status, setStatus] = useState(null);
+  const { onClose, path, site, maxSimultaneousUploads = 2 } = props;
+  const [status, setStatus] = useState('idle');
+  const inputRef = useRef(null);
 
-  const onComplete = () => {
-    setStatus('complete');
+  const onStatusChange = (status: string) => {
+    setStatus(status);
   };
 
-  const onUpload = () => {
-    setStatus('uploading');
+  const onBrowse = () => {
+    inputRef.current.click();
   };
 
   return (
@@ -512,17 +512,45 @@ export default function BulkUpload(props: any) {
         onClose={onClose}
       />
       <DialogContent dividers className={classes.dialogContent}>
-        <DropZone onComplete={onComplete} path={path} site={site} onUpload={onUpload} limit={limit}/>
+        <DropZone
+          onStatusChange={onStatusChange}
+          path={path}
+          site={site}
+          maxSimultaneousUploads={maxSimultaneousUploads}
+          ref={inputRef}
+        />
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={onClose}
-          disabled={status === 'uploading'}
-          variant="contained"
-          color={status === 'complete' ? 'primary' : 'default'}
-        >
-          {status === 'complete' ? formatMessage(translations.done) : formatMessage(translations.close)}
-        </Button>
+        {
+          status === 'idle' ? (
+            <Button
+              onClick={onClose}
+              variant="contained"
+              color='default'
+            >
+              {formatMessage(translations.close)}
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={onBrowse}
+                disabled={status === 'uploading'}
+                variant="contained"
+                color='default'
+              >
+                {formatMessage(translations.browse)}
+              </Button>
+              <Button
+                onClick={onClose}
+                disabled={status === 'uploading'}
+                variant="contained"
+                color='primary'
+              >
+                {formatMessage(translations.done)}
+              </Button>
+            </>
+          )
+        }
       </DialogActions>
     </Dialog>
   )

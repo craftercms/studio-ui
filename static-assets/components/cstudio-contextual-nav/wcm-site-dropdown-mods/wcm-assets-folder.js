@@ -1666,55 +1666,20 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
   },
 
   bulkUpload: function () {
-
-    var CSA = CStudioAuthoring,
-      CSAC = CStudioAuthoringContext,
-
-      fmt = CSA.StringUtils.format;
-
-    CSA.Env.Loader.use('component-dropbox', 'dialog-bulkupload', function () {
-
-      var view = new CSA.Dialogs.BulkUpload(),
-        Dropbox = CSA.Component.Dropbox,
-        treeNode = oCurrentTextNode;
-
-      document.body.appendChild(view.element);
-      var serviceUrl = CStudioAuthoring.Service.createServiceUri(
-        CStudioAuthoring.Service.createWriteServiceUrl(
-          treeNode.data.uri,
-          treeNode.data.filename,
-          null,
-          treeNode.data.contentType,
-          CSAC.site,
-          true,
-          false,
-          false,
-          true));
-
-      var dropbox = new Dropbox({
-        element: view.element,
-        display: fmt(
-          '#{0} .file-display-container .pad',
-          view.id),
-        progress: '.progress .bar',
-        target: serviceUrl,
-        uploadPostKey: 'file',
-        formData: {
-          site: CSAC.site,
-          path: oCurrentTextNode.data.uri
-        },
-        template: fmt('template_{0}', view.id),
-        newOnTop: true
-      });
-
-      dropbox.showUploadProgress = function (elem, progress) {
-        elem.style.width = progress + '%';
+    const container = document.createElement('div');
+    const onClose = () => {
+      CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
+    };
+    CrafterCMSNext.render(
+      container,
+      'BulkUpload',
+      {
+        path: oCurrentTextNode.data.path,
+        site: oCurrentTextNode.data.site,
+        maxSimultaneousUploads: 1,
+        onClose: onClose
       }
-
-      dropbox.on(Dropbox.UPLOAD_SUCCESS_EVENT, function (data) {
-      });
-
-    });
+    );
   },
 
   /**
