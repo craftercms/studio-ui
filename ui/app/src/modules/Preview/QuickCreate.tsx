@@ -5,10 +5,15 @@ import AddCircleIcon from '@material-ui/icons/AddCircleRounded';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { palette } from "../../styles/theme";
+import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
-import { useActiveSiteId, useSpreadState, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useSpreadState,
+  useSelection
+} from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 
 const translations = defineMessages({
@@ -18,50 +23,42 @@ const translations = defineMessages({
   }
 });
 
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     addBtn: {
-      fill: palette.green.main,
-      width: 30,
-      height: 30,
-      "&:hover": {
-        fill: palette.green.shade
-      }
+      padding: 0
+    },
+
+    addIcon: {
+      fill: palette.green.main
     },
 
     menu: {
       transform: 'translate(20px, 15px)',
-      "& ul": {
+      '& ul': {
         paddingTop: 0,
         minWidth: '140px'
       }
     },
 
     menuItem: {
-      fontSize: 14,
+      fontSize: 14
     },
 
     menuTitle: {
-      fontSize: 14,
-      "&:hover": {
-        cursor: 'text',
-        backgroundColor: 'transparent'
-      }
+      fontSize: 14
     },
 
     menuSectionTitle: {
       fontSize: 12,
       backgroundColor: palette.gray.light0,
       color: palette.gray.medium3,
-      paddingTop: 2,
-      paddingBottom: 2,
-      "&:hover": {
+      padding: '5px 16px',
+      '&:hover': {
         backgroundColor: palette.gray.light0,
         cursor: 'text'
       }
-
-    },
+    }
   })
 );
 
@@ -69,7 +66,9 @@ export default function QuickCreate() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const siteId = useActiveSiteId();
-  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const AUTHORING_BASE = useSelection<string>(
+    state => state.env.AUTHORING_BASE
+  );
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [anchorEl, setAnchorEl] = useState(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
@@ -77,7 +76,7 @@ export default function QuickCreate() {
     open: false,
     src: defaultFormSrc,
     type: 'form',
-    inProgress: false,
+    inProgress: false
   });
 
   const handleClick = e => setAnchorEl(e.currentTarget);
@@ -85,34 +84,37 @@ export default function QuickCreate() {
   const handleMenuClose = () => setAnchorEl(null);
 
   useEffect(() => {
-    if(siteId) {
-      getQuickCreateContentList(siteId).subscribe(data => 
+    if (siteId) {
+      getQuickCreateContentList(siteId).subscribe(data =>
         setQuickCreateContentList(data.items)
-      )
+      );
     }
-  }, [siteId])
+  }, [siteId]);
 
   const handleFormDisplay = srcData => {
     const { contentTypeId, path } = srcData;
     const today = new Date();
-    const formatPath = path.replace('{year}/{month}', `${today.getFullYear()}/${today.getFullYear()}`)
-    const src = 
-      `${defaultFormSrc}?newEdit=article&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
+    const formatPath = path.replace(
+      '{year}/{month}',
+      `${today.getFullYear()}/${today.getMonth()}`
+    );
+    const src = `${defaultFormSrc}?newEdit=article&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
 
     setDialogConfig({
       open: true,
       src
-    })
-  }
-
+    });
+  };
 
   return (
     <>
-      <IconButton 
-        onClick={handleClick} 
+      <IconButton
+        onClick={handleClick}
         aria-label={formatMessage(translations.quickCreateBtnLabel)}
+        className={classes.addBtn}
+        size="small"
       >
-        <AddCircleIcon fontSize="small" className={classes.addBtn}/>
+        <AddCircleIcon fontSize="large" className={classes.addIcon} />
       </IconButton>
       <Menu
         className={classes.menu}
@@ -128,16 +130,16 @@ export default function QuickCreate() {
           />
         </MenuItem>
         <Divider />
-        <MenuItem className={classes.menuSectionTitle}>
+        <Typography variant="h4" className={classes.menuSectionTitle}>
           <FormattedMessage
             id="quickCreateMenu.sectionTitle"
             defaultMessage="Quick Create"
           />
-        </MenuItem>
-        
-        { quickCreateContentList?.map(item => (
-          <MenuItem 
-            key={item.siteId} 
+        </Typography>
+
+        {quickCreateContentList?.map(item => (
+          <MenuItem
+            key={item.siteId}
             onClick={() => {
               handleMenuClose();
               handleFormDisplay(item);
@@ -146,12 +148,11 @@ export default function QuickCreate() {
           >
             {item.label}
           </MenuItem>
-        )) }
-
+        ))}
       </Menu>
       <EmbeddedLegacyEditors
-        showTabs={false} 
-        showController={false} 
+        showTabs={false}
+        showController={false}
         dialogConfig={dialogConfig}
         setDialogConfig={setDialogConfig}
       />

@@ -30,7 +30,7 @@
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <#include "/templates/web/common/js-next-scripts.ftl" />
+  <#--  <#include "/templates/web/common/js-next-scripts.ftl" />  -->
   <#-- Lang resources -->
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
   <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
