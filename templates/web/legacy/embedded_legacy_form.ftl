@@ -192,15 +192,13 @@
               false,
               false,
               {
-                success: () => {
-                  console.log('success')
-                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_SAVE', refresh: true, tab: type, action: 'success' }, '*');
+                success: (data) => {
+                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_SAVE', refresh: false, tab: type, action: 'success', redirectUrl: data.item?.browserUri }, '*');
                 },
                 failure: () => {
                   console.log('failure');
                 },
                 cancelled: () => {
-                  console.log('cancelled')
                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
                 },
                 renderComplete: () => {

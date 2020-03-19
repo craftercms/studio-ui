@@ -19,6 +19,7 @@ import AppBar from '@material-ui/core/AppBar/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import CreateIcon from '@material-ui/icons/Create';
+import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -26,6 +27,7 @@ import { createStyles } from '@material-ui/core';
 import { useSpreadState } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
+  changeCurrentUrl,
   EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
@@ -105,6 +107,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   const { formatMessage } = useIntl();
   const classes = styles({});
   const iframeRef = useRef(null);
+  const dispatch = useDispatch();
   const { dialogConfig, setDialogConfig, getPath, showController = false, showTabs = true } = props;
   const [tabsState, setTabsState] = useSpreadState({
     form: { loaded: false, pendingChanges: false },
@@ -131,22 +134,27 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       }, '*');
     }, [getPath, setDialogConfig, tabsState]);
 
+  const closeEmbeddedLegacyForm = (e, tab) => {
+    let hasSomeLoaded = filterBy('loaded', tabsState, tab);
+
+    if (hasSomeLoaded.length) {
+      setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
+      handleTabChange(null, hasSomeLoaded[0]);
+    } else {
+      handleClose();
+      if (e.data.refresh) {
+        getHostToGuestBus().next({ type: RELOAD_REQUEST });
+      }
+    }
+  }
+
   useEffect(() => {
     if (dialogConfig.open) {
       const messagesSubscription = messages.subscribe((e: any) => {
         let tab = e.data.tab || 'form';
         switch (e.data.type) {
           case EMBEDDED_LEGACY_FORM_CLOSE: {
-            let hasSomeLoaded = filterBy('loaded', tabsState, tab);
-            if (hasSomeLoaded.length) {
-              setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
-              handleTabChange(null, hasSomeLoaded[0]);
-            } else {
-              setDialogConfig({ open: false, src: null, type: null, inProgress: true });
-              if (e.data.refresh) {
-                getHostToGuestBus().next({ type: RELOAD_REQUEST });
-              }
-            }
+            closeEmbeddedLegacyForm(e, tab);
             break;
           }
           case EMBEDDED_LEGACY_FORM_RENDERED: {
@@ -163,16 +171,10 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
             break;
           }
           case EMBEDDED_LEGACY_FORM_SAVE: {
-            console.log('SAVE EMBEDDED_LEGACY_FORM_SAVE');
-            let hasSomeLoaded = filterBy('loaded', tabsState, tab);
-            if (hasSomeLoaded.length) {
-              setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
-              handleTabChange(null, hasSomeLoaded[0]);
-            } else {
-              setDialogConfig({ open: false, src: null, type: null, inProgress: true });
-              if (e.data.refresh) {
-                getHostToGuestBus().next({ type: RELOAD_REQUEST });
-              }
+            closeEmbeddedLegacyForm(e, tab);
+
+            if(e.data.redirectUrl) {
+              dispatch(changeCurrentUrl(e.data.redirectUrl));
             }
             break;
           }
