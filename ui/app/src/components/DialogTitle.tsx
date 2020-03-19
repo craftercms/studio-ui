@@ -45,20 +45,20 @@ const dialogTitleStyles = makeStyles((theme: Theme) => ({
 export interface DialogTitleProps {
   title: string;
   subtitle?: string;
-
+  icon?: any;
   onClose(): void;
 }
 
 export default function DialogTitle(props: DialogTitleProps) {
   const classes = dialogTitleStyles({});
-  const { onClose, title, subtitle } = props;
+  const { onClose, title, subtitle, icon: Icon = CloseIcon } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.titleRoot}>
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
-            <CloseIcon/>
+            <Icon/>
           </IconButton>
         ) : null}
       </div>
