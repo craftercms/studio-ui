@@ -46,7 +46,6 @@
 
   function closeButtonClicked() {
     this.end();
-    $(document).off("keyup");
   }
 
   function eventsDelegation() {
@@ -68,11 +67,19 @@
 
     document.addEventListener('legacyTemplateEditor.closed', closeCallback);
 
+    const escapeEndDialog = (e) => {
+      if (e.keyCode === 27) {	// esc
+        depController.end();
+      }
+    };
+
     this.on('end', () => {
       document.removeEventListener('legacyTemplateEditor.opened', openCallback);
       document.removeEventListener('legacyTemplateEditor.closed', closeCallback);
+      $(document).off('keyup', escapeEndDialog);
     });
 
+    $(document).on('keyup', escapeEndDialog);
   }
 
   function loadItems(data, dependenciesSelection) {
@@ -103,15 +110,6 @@
 
     select.val(dependenciesSelection);
     CStudioAuthoring.Service.loadItems(callback, data);
-
-    const endDialog = function (e) {
-      if (e.keyCode === 27) {	// esc
-        me.end();
-        $(document).off('keyup', endDialog);
-      }
-    };
-
-    $(document).on('keyup', endDialog);
   }
 
   function traverse(items, referenceDate) {
