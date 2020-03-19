@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircleRounded';
 import Menu from '@material-ui/core/Menu';
@@ -9,6 +9,13 @@ import { palette } from "../../styles/theme";
 import { getQuickCreateContentList } from '../../services/content';
 import { useActiveSiteId, useSpreadState, useSelection } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
+
+const translations = defineMessages({
+  quickCreateBtnLabel: {
+    id: 'quickCreateBtnLabel.label',
+    defaultMessage: 'Open quick create menu'
+  }
+});
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -55,14 +62,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function QuickCreate() {
   const classes = useStyles({});
+  const { formatMessage } = useIntl();
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
-  const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [anchorEl, setAnchorEl] = useState(null);
-  const [quickCreateContentList, setQuickCreateContentList] = useState([]);
+  const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
-    src: '',
+    src: defaultFormSrc,
     type: 'form',
     inProgress: false,
   });
@@ -70,9 +78,6 @@ export default function QuickCreate() {
   const handleClick = e => setAnchorEl(e.currentTarget);
 
   const handleClose = () => setAnchorEl(null);
-
-
-  const getPath = (type: string) => console.log('GETTING PATH!')
 
   useEffect(() => {
     if(siteId) {
@@ -82,10 +87,13 @@ export default function QuickCreate() {
     }
   }, [siteId])
 
-  const handleMenuItem = srcData => {
+  const handleFormDisplay = srcData => {
+    const { contentTypeId, path } = srcData;
     const today = new Date();
+    const formatPath = path.replace('{year}/{month}', `${today.getFullYear()}/${today.getFullYear()}`)
     const src = 
-      `${defaultSrc}/legacy/form?newEdit=article&contentTypeId=${srcData.contentTypeId}&path=${srcData.path.replace('{year}/{month}', `${today.getFullYear()}/${today.getFullYear()}`)}&type=form`;
+      `${defaultFormSrc}?newEdit=article&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
+
     setDialogConfig({
       open: true,
       src
@@ -95,7 +103,10 @@ export default function QuickCreate() {
 
   return (
     <>
-      <IconButton onClick={handleClick}>
+      <IconButton 
+        onClick={handleClick} 
+        aria-label={formatMessage(translations.quickCreateBtnLabel)}
+      >
         <AddCircleIcon fontSize="small" className={classes.addBtn}/>
       </IconButton>
       <Menu
@@ -115,10 +126,10 @@ export default function QuickCreate() {
           />
         </MenuItem>
         
-        { quickCreateContentList.length && quickCreateContentList.map(item => (
+        { quickCreateContentList?.map(item => (
           <MenuItem 
             key={item.siteId} 
-            onClick={() => handleMenuItem(item)}
+            onClick={() => handleFormDisplay(item)}
             className={classes.menuItem}
           >
             {item.label}
@@ -126,11 +137,11 @@ export default function QuickCreate() {
         )) }
 
       </Menu>
-      <EmbeddedLegacyEditors 
-        getPath={getPath}
+      <EmbeddedLegacyEditors
+        showTabs={false} 
+        showController={false} 
         dialogConfig={dialogConfig}
         setDialogConfig={setDialogConfig}
-        showController={false} 
       />
     </>
   );

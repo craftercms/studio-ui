@@ -95,15 +95,16 @@ interface EmbeddedLegacyEditorsProps {
   dialogConfig: dialogConfig;
   setDialogConfig: any;
   showController?: boolean;
+  showTabs?: boolean;
 
-  getPath(type: string): void;
+  getPath?(type: string): void;
 }
 
 export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
   const { formatMessage } = useIntl();
   const classes = styles({});
   const iframeRef = useRef(null);
-  const { dialogConfig, setDialogConfig, getPath, showController = false } = props;
+  const { dialogConfig, setDialogConfig, getPath, showController = false, showTabs = true } = props;
   const [tabsState, setTabsState] = useSpreadState({
     form: { loaded: false, pendingChanges: false },
     template: { loaded: false, pendingChanges: false },
@@ -170,46 +171,50 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
 
   return (
     <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
-      <AppBar position="static" color='default'>
-        <Tabs value={dialogConfig.type} onChange={handleTabChange} aria-label="simple tabs example" centered>
-          <Tab
-            value="form"
-            label={
-              <div>
-                {formatMessage(translations.contentForm)}
-                {tabsState.form.pendingChanges &&
-                <CreateIcon className={classes.edited}/>}
-              </div>
-            }
-            disabled={dialogConfig.inProgress}
-          />
-          <Tab
-            value="template"
-            label={
-              <div>
-                {formatMessage(translations.template)}
-                {tabsState.template.pendingChanges &&
-                <CreateIcon className={classes.edited}/>}
-              </div>
-            }
-            disabled={dialogConfig.inProgress}
-          />
-          {
-            (showController) &&
+      {
+        showTabs &&
+        <AppBar position="static" color='default'>
+          <Tabs value={dialogConfig.type} onChange={handleTabChange} aria-label="simple tabs example" centered>
             <Tab
-              value="controller"
+              value="form"
               label={
                 <div>
-                  {formatMessage(translations.controller)}
-                  {tabsState.controller.pendingChanges &&
+                  {formatMessage(translations.contentForm)}
+                  {tabsState.form.pendingChanges &&
                   <CreateIcon className={classes.edited}/>}
                 </div>
               }
               disabled={dialogConfig.inProgress}
             />
-          }
-        </Tabs>
-      </AppBar>
+            <Tab
+              value="template"
+              label={
+                <div>
+                  {formatMessage(translations.template)}
+                  {tabsState.template.pendingChanges &&
+                  <CreateIcon className={classes.edited}/>}
+                </div>
+              }
+              disabled={dialogConfig.inProgress}
+            />
+            {
+              (showController) &&
+              <Tab
+                value="controller"
+                label={
+                  <div>
+                    {formatMessage(translations.controller)}
+                    {tabsState.controller.pendingChanges &&
+                    <CreateIcon className={classes.edited}/>}
+                  </div>
+                }
+                disabled={dialogConfig.inProgress}
+              />
+            }
+          </Tabs>
+        </AppBar>
+      }
+
       {
         (dialogConfig.inProgress && dialogConfig.open) &&
         <LoadingState
