@@ -44,6 +44,7 @@ import { palette } from '../styles/theme';
 import { bytesToSize } from '../utils/string';
 import { useSpreadState } from '../utils/hooks';
 import clsx from 'clsx';
+import GetAppIcon from '@material-ui/icons/GetApp';
 
 const translations = defineMessages({
   title: {
@@ -64,7 +65,7 @@ const translations = defineMessages({
   },
   dropHere: {
     id: 'bulkUpload.dropHere',
-    defaultMessage: 'Drop files here'
+    defaultMessage: 'Drop files here or <span>browse</span>'
   },
   browse: {
     id: 'bulkUpload.browse',
@@ -87,16 +88,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
+    cursor: 'pointer',
     '&.hasFiles': {
       height: '100%',
       padding: '15px'
     },
     '&.over': {
       backgroundColor: palette.gray.light4,
-      borderColor: palette.blue.tint,
-      '& .uppy-DragDrop-arrow': {
-        fill: palette.gray.medium4
-      }
+      borderColor: palette.blue.tint
     },
     '& button:focus': {
       boxShadow: 'none'
@@ -113,12 +112,32 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: 'absolute',
     width: '100%',
     bottom: '52px',
-    left: 0
+    left: 0,
+    '& .uppy-ProgressBar-inner': {
+      backgroundColor: palette.blue.tint
+    }
   },
   sectionTitle: {
     fontWeight: 'bold',
     marginBottom: '10px'
   },
+  uploadIcon: {
+    fill: palette.gray.light7,
+    fontSize: '60px',
+    marginBottom: '10px',
+    '&.over': {
+      fill: palette.gray.medium4
+    }
+  },
+  hiddenInput: {
+    display: 'none'
+  },
+  browseText: {
+    color: palette.blue.main
+  }
+}));
+
+const UppyItemStyles = makeStyles((theme: Theme) => ({
   cardRoot: {
     display: 'flex',
     backgroundColor: palette.gray.light0,
@@ -127,9 +146,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&:last-child': {
       marginBottom: 0
     }
-  },
-  elevationError: {
-    border: '1px solid red'
   },
   cardContentRoot: {
     flexGrow: 1,
@@ -184,7 +200,7 @@ interface UppyItemProps {
 }
 
 function UppyItem(props: UppyItemProps) {
-  const classes = useStyles({});
+  const classes = UppyItemStyles({});
   const { file, retryFileUpload } = props;
   const [failed, setFailed] = useState(null);
 
@@ -252,6 +268,7 @@ function DropZone(props: DropZoneProps) {
   const [filesPerPath, setFilesPerPath] = useSpreadState<LookupTable<any>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<any>>(null);
   const [dragOver, setDragOver] = useState(null);
+  const inputRef = useRef(null);
 
   const uppy = useMemo(() => Core({ debug: true, autoProceed: true }), []);
 
@@ -292,6 +309,10 @@ function DropZone(props: DropZoneProps) {
     setDragOver(false);
   };
 
+  const handleInputChange = (event: any) => {
+    console.log('onInputChange')
+  };
+
   function removeDragData(event: any) {
     if (event.dataTransfer.items) {
       event.dataTransfer.items.clear();
@@ -315,7 +336,7 @@ function DropZone(props: DropZoneProps) {
         })
         .use(ProgressBar, {
           target: generalProgress.current,
-          hideAfterFinish: false
+          hideAfterFinish: true
         })
         .setMeta({ site });
     }
@@ -386,6 +407,7 @@ function DropZone(props: DropZoneProps) {
         onDrop={handleOnDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        onClick={() => inputRef.current?.click()}
       >
         {
           filesPerPath ? (
@@ -404,14 +426,25 @@ function DropZone(props: DropZoneProps) {
             )
           ) : (
             <>
-              <RenderArrowSvg/>
+              <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')}/>
               <Typography variant="subtitle1">
-                {formatMessage(translations.dropHere)}
+                {formatMessage(translations.dropHere, {
+                  span: browse => <span className={classes.browseText}>browse</span>
+                })}
               </Typography>
             </>
           )
         }
       </section>
+      <input
+        className={classes.hiddenInput}
+        type="file"
+        tabIndex={-1}
+        ref={inputRef}
+        name="files[]"
+        multiple={true}
+        onChange={handleInputChange}
+      />
       <section ref={generalProgress} className={classes.generalProgress}/>
     </>
   )
