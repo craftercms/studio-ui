@@ -40,12 +40,12 @@ export function isBlank(str: string): boolean {
   return str === '';
 }
 
-export function bytesToSize(bytes: number, seperator: string = '') {
+export function bytesToSize(bytes: number, separator: string = '') {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   if (bytes === 0) return 'n/a';
   const i = parseInt(`${Math.floor(Math.log(bytes) / Math.log(1024))}`, 10);
-  if (i === 0) return `${bytes}${seperator}${sizes[i]}`;
-  return `${(bytes / (1024 ** i)).toFixed(1)}${seperator}${sizes[i]}`
+  if (i === 0) return `${bytes}${separator}${sizes[i]}`;
+  return `${(bytes / (1024 ** i)).toFixed(1)}${separator}${sizes[i]}`
 }
 
 export default {
