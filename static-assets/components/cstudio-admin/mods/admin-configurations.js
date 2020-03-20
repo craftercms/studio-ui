@@ -151,6 +151,7 @@
       },
 
       renderEncryptionHint: function () {
+        const formats = { bold: msg => `<strong class="bold">${msg}</strong>` };
         return (
           '<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
           '<div class="hint">' +
@@ -159,7 +160,7 @@
           /**/`<p>` +
           /**/  formatMessage(
           /**/    adminConfigurationMessages.encryptHintPt2,
-          /**/    { bold: msg => `<span class="bold">${msg}</span>` }
+          /**/    formats
           /**/  ).join('') +
           /**/  '</br>' +
           /**/  formatMessage(adminConfigurationMessages.encryptHintPt3) +
@@ -167,7 +168,7 @@
           /**/`<p>` +
           /**/  formatMessage(
           /**/    adminConfigurationMessages.encryptHintPt4,
-          /**/    { bold: msg => `<span class="bold">${msg}</span>` }
+          /**/    formats
           /**/  ).join('') +
           /**/  '</br>' +
           /**/  formatMessage(adminConfigurationMessages.encryptHintPt5) +
