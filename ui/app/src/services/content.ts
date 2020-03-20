@@ -89,5 +89,10 @@ export function getPages(site: string, item: any): Observable<LegacyItem> {
 
 export default {
   getContent,
-  getDOM
+  getDOM,
+  getChildrenByPath,
+  copyItem,
+  cutItem,
+  pasteItem,
+  getPages
 }

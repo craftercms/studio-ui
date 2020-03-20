@@ -38,7 +38,7 @@ import { Item, LegacyItem } from '../models/Item';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
-import CustomMenu, { SectionItem } from './CustomMenu';
+import ContextMenu, { SectionItem } from './ContextMenu';
 import SearchBar from './SearchBar';
 import { setRequestForgeryToken } from '../utils/auth';
 import { useSpreadState } from '../utils/hooks';
@@ -981,7 +981,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
             }}
             onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(page)}
           />
-          <CustomMenu
+          <ContextMenu
             anchorEl={menu.anchorEl}
             open={Boolean(menu.anchorEl)}
             classes={{

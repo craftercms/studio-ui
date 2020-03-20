@@ -47,7 +47,7 @@ interface CustomMenuProps {
   onMenuItemClicked(section: SectionItem): void;
 }
 
-export default function CustomMenu(props: CustomMenuProps) {
+export default function ContextMenu(props: CustomMenuProps) {
   const { sections, classes, onClose, open, anchorEl, onMenuItemClicked } = props;
   const { formatMessage } = useIntl();
   return (

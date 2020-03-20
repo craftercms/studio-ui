@@ -59,7 +59,6 @@ export function getTargetLocales(siteId: string, path: string): Observable<any> 
 }
 
 export function markForTranslation(siteId: string, path: string, locale: string) {
-  ///studio/api/2/translation/mark_for_translation_by_path
   return post('/studio/api/2/translation/mark_for_translation_by_path', { siteId, path: [path], locales: [locale] }, {
     'Content-Type': 'application/json'
   })

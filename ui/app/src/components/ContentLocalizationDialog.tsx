@@ -26,7 +26,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import clsx from 'clsx';
-import CustomMenu, { Option, SectionItem } from './CustomMenu';
+import ContextMenu, { Option, SectionItem } from './ContextMenu';
 import Link from '@material-ui/core/Link';
 import { markForTranslation } from '../services/translation';
 import { APIError } from '../models/GlobalState';
@@ -173,13 +173,13 @@ const menuOptions = [
   }
 ];
 
-const itemHeaderStyles = makeStyles((theme) => createStyles({
+const contextSelectionOptionsOverlayStyles = makeStyles((theme) => createStyles({
   itemHeader: {
     display: 'flex',
     alignItems: 'center',
     background: 'rgba(0, 122, 255, 0.1)'
   },
-  linkTypo: {
+  optionTypography: {
     color: palette.blue.main,
     marginRight: '25px'
   },
@@ -188,7 +188,7 @@ const itemHeaderStyles = makeStyles((theme) => createStyles({
   }
 }));
 
-interface ItemHeaderOptionsProps {
+interface ContextSelectionOptionsOverlayProps {
   options: Option[];
   isIndeterminate: boolean;
   isChecked: boolean;
@@ -198,8 +198,8 @@ interface ItemHeaderOptionsProps {
   toggleSelectAll(): void;
 }
 
-function ItemHeaderOptions(props: ItemHeaderOptionsProps) {
-  const classes = itemHeaderStyles({});
+function ContextSelectionOptionsOverlay(props: ContextSelectionOptionsOverlayProps) {
+  const classes = contextSelectionOptionsOverlayStyles({});
   const { formatMessage } = useIntl();
   const { options, onOptionClicked, isIndeterminate, toggleSelectAll, isChecked } = props;
 
@@ -219,7 +219,7 @@ function ItemHeaderOptions(props: ItemHeaderOptionsProps) {
             color="inherit"
             component="button"
             variant="subtitle2"
-            TypographyClasses={{ root: classes.linkTypo }}
+            TypographyClasses={{ root: classes.optionTypography }}
             onClick={() => onOptionClicked(option)}
           >
             {formatMessage(option.label)}
@@ -275,9 +275,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
             })
           },
           ({ response }) => {
-            //TODO: I'm wrapping the API response as a API2 response
-            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setError(error);
+            setError(response);
           }
         );
         break;
@@ -311,7 +309,6 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
   };
 
   const onOptionClicked = (option: Option) => {
-    console.log(option);
   };
 
   return (
@@ -326,7 +323,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
         <section className={classes.contentLocalizationRoot}>
           {
             selected.length > 0 ? (
-              <ItemHeaderOptions
+              <ContextSelectionOptionsOverlay
                 isIndeterminate={(selected.length > 0 && selected.length < locales.length)}
                 onOptionClicked={onOptionClicked}
                 options={menuOptions}
@@ -378,7 +375,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
           }
         </section>
       </DialogContent>
-      <CustomMenu
+      <ContextMenu
         anchorEl={menu.anchorEl}
         open={Boolean(menu.anchorEl)}
         classes={{
