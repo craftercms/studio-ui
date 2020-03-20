@@ -166,12 +166,6 @@ CStudioAuthoring.Module.requireModule(
               defaultValue: 'generic'
             },
             {
-              label: this.formatMessage(this.messages.escapeScripts),
-              name: 'escapeScripts',
-              type: 'boolean',
-              defaultValue: 'true'
-            },
-            {
               label: this.formatMessage(this.contentTypesMessages.imageManager),
               name: 'imageManager',
               type: 'datasource:image'
@@ -212,6 +206,7 @@ CStudioAuthoring.Module.requireModule(
             rteId = CStudioAuthoring.Utils.generateUUID(),
             inputEl,
             pluginList,
+            extendedElements,
             rteStylesheets,
             rteStyleOverride,
             toolbarConfig1,
@@ -264,10 +259,6 @@ CStudioAuthoring.Module.requireModule(
               case 'forceRootBlockPTag' :
                 var forceRootBlockPTag = (prop.value == 'false') ? false : 'p';
                 break;
-              case 'escapeScripts' :
-                var escapeScripts = (prop.value == 'true') ? true : false;
-                this.escapeScripts = escapeScripts;
-                break;
             }
           }
 
@@ -276,6 +267,8 @@ CStudioAuthoring.Module.requireModule(
           // https://www.tiny.cloud/docs/plugins/
           pluginList = rteConfig.plugins;
           pluginList = this.autoGrow ? pluginList + ' autoresize' : pluginList;
+
+          extendedValidElements = rteConfig.extendedElements ? rteConfig.extendedElements : '';
 
           toolbarConfig1 = (rteConfig.toolbarItems1 && rteConfig.toolbarItems1.length != 0) ?
             rteConfig.toolbarItems1 : 'bold italic | bullist numlist';
@@ -287,8 +280,6 @@ CStudioAuthoring.Module.requireModule(
             ? rteConfig.rteStylesheets.link : null;
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
-
-          const extendedValidElements = escapeScripts ? '' : 'script';
 
           editor = tinymce.init({
             selector: '#' + rteId,
