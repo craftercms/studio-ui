@@ -1691,6 +1691,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       const onClose = () => {
         CrafterCMSNext.ReactDOM.unmountComponentAtNode(bulkUpload);
         bulkUpload.remove();
+        RootFolder().refreshNodes(oCurrentTextNode, false, false, null, null, true);
       };
       CrafterCMSNext.render(
         bulkUpload,
