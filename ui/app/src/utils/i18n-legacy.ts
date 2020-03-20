@@ -740,19 +740,19 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHintPt2: {
     id: 'adminConfigurations.encryptHinPt2',
-    defaultMessage: '(1) Mark your tag/s for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
+    defaultMessage: '(1) Mark your tags for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
   },
   encryptHintPt3: {
     id: 'adminConfigurations.encryptHinPt3',
-    defaultMessage: 'Example: &lt;accessKey encrypted="">AKIAIOSFODNN7EXAMPLE&lt;/accessKey>'
+    defaultMessage: 'Example: {lt}accessKey encrypted=""{gt}AKIAIOSFODNN7EXAMPLE{lt}/accessKey{gt}'
   },
   encryptHintPt4: {
     id: 'adminConfigurations.encryptHinPt4',
-    defaultMessage: '(2) Click on the <bold>`Encrypt Marked`</bold> button, and your tag should now look like:'
+    defaultMessage: '(2) Click on the <bold>`Encrypt Marked`</bold> button. Once the process completes, your tag should now look like:'
   },
   encryptHintPt5: {
     id: 'adminConfigurations.encryptHinPt5',
-    defaultMessage: '&lt;accessKey encrypted="true">${enc:xeJW23SomeEncryptedValuesListedHere&lt;/accessKey>'
+    defaultMessage: '{lt}accessKey encrypted="true"{gt}${lc}enc:xeJW23SomeEncryptedValuesListedHere{rc}{lt}/accessKey{gt}'
   },
   encryptHintPt6: {
     id: 'adminConfigurations.encryptHinPt6',
