@@ -870,11 +870,11 @@ export default function PagesWidget(props: PagesWidgetProps) {
           [
             {
               id: 'locale.en',
-              label: 'English, US (en)'
+              label: { id: 'locale.en', defaultMessage: 'English, US (en)' }
             },
             {
               id: 'locale.es',
-              label: 'Spanish, Spain (es)'
+              label: { id: 'locale.es', defaultMessage: 'Spanish, Spain (es)' }
             }
           ]
         ],
@@ -887,7 +887,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
           [
             {
               id: 'option1',
-              label: 'option1'
+              label: { id: 'option1', defaultMessage: 'Option 1' }
             }
           ]
         ],
