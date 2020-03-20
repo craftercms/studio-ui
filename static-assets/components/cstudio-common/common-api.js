@@ -713,51 +713,25 @@ var nodeOpen = false,
             },
 
             deleteContent: function(items, requestDelete, callback) {
-                var controller, view;
-                if(requestDelete == true) {
-                    controller = "viewcontroller-submitfordelete";
-                    view = CSA.Service.getSubmitForDeleteView;
-                } else {
-                    controller = "viewcontroller-delete";
-                    view = CSA.Service.getDeleteView;
-                }
+              const container = ($('<div class="delete-dialog-container"/>').appendTo('body'))[0];
 
-                CSA.Operations._showDialogueView({
-                    fn: view,
-                    controller: controller,
-                    callback: function (dialogue) {
-                        var _self = this;
-                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
-                        if (YDom.get("cancelBtn")) {
-                            YDom.get("cancelBtn").value = CMgs.format(formsLangBundle, "cancel");
-                        }
-                        if (YDom.get("deleteBtn")) {
-                            YDom.get("deleteBtn").value = CMgs.format(formsLangBundle, "deleteDialogDelete");
-                        }
-                        this.loadDependencies(items);
-                        (function (items) {
-                            _self.on("submitComplete", function (evt, args) {
-                                var reloadFn = function () {
-                                    eventNS.data = items;
-                                    eventNS.typeAction = "";
-                                    eventNS.oldPath = null;
-                                    document.dispatchEvent(eventNS);
-                                    callback && callback();
-                                };
-                                dialogue.hideEvent.subscribe(reloadFn);
-                                dialogue.destroyEvent.subscribe(reloadFn);
-                            });
-                        })(items);
-                        // Admin version of the view does not have this events
-                        // but then the call is ignored
-                        this.on("hideRequest", function (evt, args) {
-                            dialogue.destroy();
-                        });
-                        this.on("showRequest", function (evt, args) {
-                            dialogue.show();
-                        });
+              CrafterCMSNext.render(
+                container,
+                'DeleteDialog',
+                {
+                  onClose: (response) => {
+                    if(response) {
+                      eventNS.data = items;
+                      eventNS.typeAction = "";
+                      eventNS.oldPath = null;
+                      document.dispatchEvent(eventNS);
+                      callback && callback();
                     }
-                }, true);
+                    unmount({ delay: 300, removeContainer: true });
+                  },
+                  items
+                }
+              ).then(done => unmount = done.unmount);
             },
             viewSchedulingPolicy: function(callback) {
                 CSA.Operations._showDialogueView({
