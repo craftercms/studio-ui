@@ -202,9 +202,7 @@
                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
                 },
                 renderComplete: () => {
-                  
                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                  
                 },
                 pendingChanges: () => {
                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
