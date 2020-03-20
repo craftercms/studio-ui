@@ -14,14 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Item } from '../../../models/Item';
 import DeleteDialogUI from './DeleteDialogUI';
-
-const dialogInitialState: any = {
-  submissionComment: '',
-  selectedItems: null
-};
+import { deleteItems } from '../../../services/content';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../../models/GlobalState';
+import { useActiveSiteId } from '../../../utils/hooks';
 
 interface DeleteDialogProps {
   items: Item[];
@@ -37,11 +36,63 @@ function DeleteDialog(props: DeleteDialogProps) {
     onClose,
     onSuccess
   } = props;
+  const [open, setOpen] = React.useState(true);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [submissionComment, setSubmissionComment] = useState('');
+  const [apiState, setApiState] = useState({
+    error: false,
+    submitting: false,
+    global: false,
+    errorResponse: null
+  });
+  const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
+  const siteId = useActiveSiteId();
+
+  const handleClose = () => {
+    setOpen(false);
+
+    // call externalClose fn
+    onClose?.();
+  };
+
+  const handleSubmit = () => {
+    const data = {
+      items: selectedItems
+    };
+
+    setApiState({ ...apiState, submitting: true });
+
+    deleteItems(siteId, user.username, submissionComment, data).subscribe(
+      (response) => {
+        setOpen(false);
+        setApiState({ ...apiState, error: false, submitting: false });
+        onSuccess?.(response);
+        onClose?.(response);
+      },
+      (response) => {
+        if (response) {
+          setApiState({ ...apiState, error: true, errorResponse: (response.response) ? response.response : response });
+        }
+      }
+    );
+
+  };
+
+  function handleErrorBack() {
+    setApiState({ ...apiState, error: false, global: false });
+  }
 
   return (
     <DeleteDialogUI
       items={items}
-      open={true}
+      setSelectedItems={setSelectedItems}
+      submissionComment={submissionComment}
+      setSubmissionComment={setSubmissionComment}
+      open={open}
+      apiState={apiState}
+      handleClose={handleClose}
+      handleSubmit={handleSubmit}
+      handleErrorBack={handleErrorBack}
       onClose={onClose}
     />
   )

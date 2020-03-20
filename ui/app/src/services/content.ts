@@ -1039,6 +1039,24 @@ export function uploadDataUrl(
   });
 }
 
+export function deleteItems(siteId: string, user: string, submissionComment: string, data): Observable<any> {
+  return post(
+    `/studio/api/1/services/api/1/workflow/go-delete.json?site=${siteId}&user=${user}&submissionComment=${submissionComment}`,
+    data,
+    {
+      'Content-Type': 'application/json'
+    }
+  ).pipe(
+    map((response: any) => {
+      if (response.response.success) {
+        return response.response;
+      } else {
+        throw response;
+      }
+    })
+  );
+}
+
 export default {
   getComponentInstanceHTML,
   getContent,
