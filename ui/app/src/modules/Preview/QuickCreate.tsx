@@ -95,10 +95,13 @@ export default function QuickCreate() {
     const { contentTypeId, path } = srcData;
     const today = new Date();
     const formatPath = path.replace(
-      '{year}/{month}',
-      `${today.getFullYear()}/${today.getMonth()}`
+      '{year}',
+      today.getFullYear()
+    ).replace(
+      '{month}',
+      ('0' + (today.getMonth() + 1)).slice(-2)
     );
-    const src = `${defaultFormSrc}?newEdit=article&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
+    const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
 
     setDialogConfig({
       open: true,
@@ -130,14 +133,17 @@ export default function QuickCreate() {
           />
         </MenuItem>
         <Divider />
-        <Typography variant="h4" className={classes.menuSectionTitle}>
+        <Typography
+          component="h4"
+          className={classes.menuSectionTitle}
+        >
           <FormattedMessage
             id="quickCreateMenu.sectionTitle"
             defaultMessage="Quick Create"
           />
         </Typography>
 
-        {quickCreateContentList?.map(item => (
+        {quickCreateContentList?.map(item => 
           <MenuItem
             key={item.path}
             onClick={() => {
@@ -148,7 +154,7 @@ export default function QuickCreate() {
           >
             {item.label}
           </MenuItem>
-        ))}
+        )}
       </Menu>
       <EmbeddedLegacyEditors
         showTabs={false}

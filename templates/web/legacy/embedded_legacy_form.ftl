@@ -80,7 +80,7 @@
   var site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
   var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
   var contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
-  var newEdit = CStudioAuthoring.Utils.getQueryVariable(location.search, 'newEdit');
+  var isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent');
 
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
@@ -133,7 +133,7 @@
         var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
         var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
 
-        if(!newEdit) {
+        if (!isNewContent) {
           CStudioAuthoring.Service.lookupContentItem(
             site,
             path,

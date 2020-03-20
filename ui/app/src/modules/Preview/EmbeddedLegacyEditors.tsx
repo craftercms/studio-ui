@@ -173,7 +173,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
           case EMBEDDED_LEGACY_FORM_SAVE: {
             closeEmbeddedLegacyForm(e, tab);
 
-            if(e.data.redirectUrl) {
+            if (e.data.redirectUrl) {
               dispatch(changeCurrentUrl(e.data.redirectUrl));
             }
             break;
