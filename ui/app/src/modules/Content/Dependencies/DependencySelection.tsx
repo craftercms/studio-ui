@@ -106,7 +106,6 @@ const useStyles = makeStyles(() => ({
     verticalAlign: 'baseline'
   },
   bottomSection: {
-    marginTop: '20px',
     marginLeft: '10px'
   },
   circularProgressText: {
@@ -338,21 +337,21 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
             </>
           )
         }
-      </div>
-      <div className={classes.bottomSection}>
-        {
-          (resultItems == null) && (
-            <div className="centerCircularProgress">
-              <CenterCircularProgress/>
-              <span className={classes.circularProgressText}>
-                <FormattedMessage
-                  id="deleteDialog.uploadingDepenedents"
-                  defaultMessage={`Updating dependents, please wait...`}
-                />
-              </span>
-            </div>
-          )
-        }
+        <div className={classes.bottomSection}>
+          {
+            (resultItems === null) && (
+              <div className="centerCircularProgress">
+                <CenterCircularProgress/>
+                <span className={classes.circularProgressText}>
+                  <FormattedMessage
+                    id="deleteDialog.uploadingDepenedents"
+                    defaultMessage={`Updating dependents, please wait...`}
+                  />
+                </span>
+              </div>
+            )
+          }
+        </div>
       </div>
     </>
 

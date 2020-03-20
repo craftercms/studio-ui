@@ -55,9 +55,12 @@ const deleteDialogStyles = makeStyles((theme) => createStyles({
     padding: theme.spacing(2),
     backgroundColor: palette.gray.light0,
     flex: '1 1 auto',
-    overflowY: 'auto'
+    overflowY: 'auto',
+    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+    borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
   },
   submissionCommentField: {
+    marginTop: '20px',
     '& .MuiTextField-root': {
       width: '100%'
     }
