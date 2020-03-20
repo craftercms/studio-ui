@@ -625,12 +625,12 @@ export default function BulkUpload(props: any) {
       return formatMessage(translations.uploadInProgress)
     };
     if (dropZoneStatus.status === 'uploading') {
-      window.addEventListener('beforeunload', handleBeforeUpload);
+      window.onbeforeunload = handleBeforeUpload;
     } else if (dropZoneStatus.status === 'complete') {
-      window.removeEventListener('beforeunload', handleBeforeUpload);
+      window.onbeforeunload = null;
     }
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUpload);
+      window.onbeforeunload = null;
     }
   }, [dropZoneStatus.status, formatMessage]);
 
