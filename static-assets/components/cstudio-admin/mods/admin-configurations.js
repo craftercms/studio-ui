@@ -156,7 +156,7 @@
           '<div class="hint">' +
           /**/`<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
           /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt1)}</p>` +
-          /**/`<p>` + 
+          /**/`<p>` +
           /**/  formatMessage(
           /**/    adminConfigurationMessages.encryptHintPt2,
           /**/    { bold: msg => `<span class="bold">${msg}</span>` }
@@ -168,18 +168,16 @@
           /**/  formatMessage(
           /**/    adminConfigurationMessages.encryptHintPt4,
           /**/    { bold: msg => `<span class="bold">${msg}</span>` }
-          /**/  ).join('') + 
-          /**/  '</br>' + 
+          /**/  ).join('') +
+          /**/  '</br>' +
           /**/  formatMessage(adminConfigurationMessages.encryptHintPt5) +
           /**/`</p>` +
-          /**/`<p>` +
-          /**/  formatMessage(adminConfigurationMessages.encryptHintPt6) +
-          /****/`<ul>` +
-          /******/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt7)}</li>` +
-          /******/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt8)}</li>` +
-          /******/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt9)}</li>` +
-          /****/`</ul>` +
-          /**/`</p>` +
+          /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt6)}</p>` +
+          /**/`<ul>` +
+          /****/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt7)}</li>` +
+          /****/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt8)}</li>` +
+          /****/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt9)}</li>` +
+          /**/`</ul>` +
           '</div>'
         );
       },
