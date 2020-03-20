@@ -151,27 +151,23 @@
       },
 
       renderEncryptionHint: function () {
-        const formats = { bold: msg => `<strong class="bold">${msg}</strong>` };
+        const bold = { bold: msg => `<strong class="bold">${msg}</strong>` };
+        const tags = { lt: '&lt;', gt: '&gt;' };
+        const tagsAndCurls = Object.assign({ lc: '{', rc: '}' }, tags);
         return (
           '<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
           '<div class="hint">' +
           /**/`<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
           /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt1)}</p>` +
           /**/`<p>` +
-          /**/  formatMessage(
-          /**/    adminConfigurationMessages.encryptHintPt2,
-          /**/    formats
-          /**/  ).join('') +
+          /**/  formatMessage(adminConfigurationMessages.encryptHintPt2, bold).join('') +
           /**/  '</br>' +
-          /**/  formatMessage(adminConfigurationMessages.encryptHintPt3) +
+          /**/  formatMessage(adminConfigurationMessages.encryptHintPt3, tags) +
           /**/`</p>` +
           /**/`<p>` +
-          /**/  formatMessage(
-          /**/    adminConfigurationMessages.encryptHintPt4,
-          /**/    formats
-          /**/  ).join('') +
+          /**/  formatMessage(adminConfigurationMessages.encryptHintPt4, bold).join('') +
           /**/  '</br>' +
-          /**/  formatMessage(adminConfigurationMessages.encryptHintPt5) +
+          /**/  formatMessage(adminConfigurationMessages.encryptHintPt5, tagsAndCurls) +
           /**/`</p>` +
           /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt6)}</p>` +
           /**/`<ul>` +
