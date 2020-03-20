@@ -154,7 +154,7 @@ const useStyles = makeStyles((theme) => createStyles({
     }
   },
   menuPaper: {
-    width: '182px',
+    width: '182px'
   },
   menuList: {
     padding: 0
@@ -661,13 +661,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
     hasClipboard: false
   });
   const [items, setItems] = useState<Item[]>(null);
-  const [breadcrumb, setBreadcrumb] = useState<Breadcrumb[]>([
-    {
-      id: 'Home',
-      label: 'Home',
-      path: '/site/website/index.xml'
-    }
-  ]);
+  const [breadcrumb, setBreadcrumb] = useState<Breadcrumb[]>([]);
   const [activePath, setActivePath] = useState<string>(path);
   const [selectedItems, setSelectedItems] = useState<LookupTable>(null);
   const [menu, setMenu] = useSpreadState({
@@ -686,6 +680,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
     getChildrenByPath(site, activePath).subscribe(
       (response) => {
         setItems(response.items);
+        setBreadcrumb([...breadcrumb, response.parent]);
       },
       ({ response }) => {
         //TODO: I'm wrapping the API response as a API2 response
@@ -698,7 +693,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
   setRequestForgeryToken();
 
   const onItemSelected = (item: Item) => {
-    setBreadcrumb([...breadcrumb, item]);
+    //setBreadcrumb([...breadcrumb, item]);
     setActivePath(item.path);
   };
 

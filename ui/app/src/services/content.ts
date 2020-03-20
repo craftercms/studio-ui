@@ -35,6 +35,11 @@ export function getChildrenByPath(site: string, path: string): Observable<any> {
   ///studio/api/2/content/children_by_path
   const response = {
     response: {},
+    parent: {
+      id: 'home',
+      label: 'Home',
+      path: 'Path'
+    },
     items: [
       {
         id: 'Style',
