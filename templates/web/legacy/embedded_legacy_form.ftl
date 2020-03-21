@@ -76,6 +76,8 @@
 </head>
 <body>
 <script>
+  // const { formatMessage } = CrafterCMSNext.i18n.intl;
+  // const { embeddedLegacyFormMessages  } = CrafterCMSNext.i18n.intl.messages;
   var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   var site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
   var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
@@ -195,16 +197,21 @@
                 success: (data) => {
                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_SAVE', refresh: false, tab: type, action: 'success', redirectUrl: data.item?.browserUri }, '*');
                 },
-                failure: () => {
-                  console.log('failure');
+                failure: (error) => {
+                  console.error('Error', error);
+                  window.top.postMessage({
+                    type: 'EMBEDDED_LEGACY_FORM_FAILURE',
+                    refresh: false, tab: type, action: 'failure',
+                    message: 'An error occurred, please contact your system administrator' // TODO: replace value for formatMessage
+                  }, '*');
                 },
                 cancelled: () => {
                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
                 },
                 renderComplete: () => {
-                  
+
                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                  
+
                 },
                 pendingChanges: () => {
                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');

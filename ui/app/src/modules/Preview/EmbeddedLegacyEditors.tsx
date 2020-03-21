@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar/AppBar';
 import Tabs from '@material-ui/core/Tabs';
@@ -32,12 +32,15 @@ import {
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
   EMBEDDED_LEGACY_FORM_RENDERED,
-  RELOAD_REQUEST,
-  EMBEDDED_LEGACY_FORM_SAVE
+  EMBEDDED_LEGACY_FORM_SAVE,
+  EMBEDDED_LEGACY_FORM_FAILURE,
+  RELOAD_REQUEST
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { getHostToGuestBus } from './previewContext';
+import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
+import { APIError } from '../../models/GlobalState';
 
 const translations = defineMessages({
   contentForm: {
@@ -104,11 +107,13 @@ interface EmbeddedLegacyEditorsProps {
 }
 
 export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
+  const { dialogConfig, setDialogConfig, getPath, showController = false, showTabs = true } = props;
   const { formatMessage } = useIntl();
   const classes = styles({});
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
-  const { dialogConfig, setDialogConfig, getPath, showController = false, showTabs = true } = props;
+  const [error, setError] = useState<APIError>(null);
+
   const [tabsState, setTabsState] = useSpreadState({
     form: { loaded: false, pendingChanges: false },
     template: { loaded: false, pendingChanges: false },
@@ -123,6 +128,11 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     setDialogConfig({ open: false, src: null, type: null, inProgress: true });
   };
 
+  const onErrorClose = () => {
+    setError(null);
+    closeEmbeddedLegacyForm(false);
+  };
+
   const handleTabChange = useCallback(
     (event: React.ChangeEvent<{}>, type: string) => {
       let inProgress = !tabsState[type].loaded;
@@ -134,19 +144,19 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       }, '*');
     }, [getPath, setDialogConfig, tabsState]);
 
-  const closeEmbeddedLegacyForm = (e, tab) => {
+  const closeEmbeddedLegacyForm = (refresh: boolean, tab?: string) => {
     let hasSomeLoaded = filterBy('loaded', tabsState, tab);
 
-    if (hasSomeLoaded.length) {
+    if (hasSomeLoaded.length && tab) {
       setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
       handleTabChange(null, hasSomeLoaded[0]);
     } else {
       handleClose();
-      if (e.data.refresh) {
+      if (refresh) {
         getHostToGuestBus().next({ type: RELOAD_REQUEST });
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (dialogConfig.open) {
@@ -154,7 +164,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         let tab = e.data.tab || 'form';
         switch (e.data.type) {
           case EMBEDDED_LEGACY_FORM_CLOSE: {
-            closeEmbeddedLegacyForm(e, tab);
+            closeEmbeddedLegacyForm(e.data.refresh, tab);
             break;
           }
           case EMBEDDED_LEGACY_FORM_RENDERED: {
@@ -171,11 +181,17 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
             break;
           }
           case EMBEDDED_LEGACY_FORM_SAVE: {
-            closeEmbeddedLegacyForm(e, tab);
+            closeEmbeddedLegacyForm(e.data.refresh, tab);
 
             if (e.data.redirectUrl) {
               dispatch(changeCurrentUrl(e.data.redirectUrl));
             }
+            break;
+          }
+          case EMBEDDED_LEGACY_FORM_FAILURE: {
+            setError({
+              message: e.data.message
+            });
             break;
           }
         }
@@ -199,7 +215,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
                 <div>
                   {formatMessage(translations.contentForm)}
                   {tabsState.form.pendingChanges &&
-                  <CreateIcon className={classes.edited}/>}
+                  <CreateIcon className={classes.edited} />}
                 </div>
               }
               disabled={dialogConfig.inProgress}
@@ -210,7 +226,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
                 <div>
                   {formatMessage(translations.template)}
                   {tabsState.template.pendingChanges &&
-                  <CreateIcon className={classes.edited}/>}
+                  <CreateIcon className={classes.edited} />}
                 </div>
               }
               disabled={dialogConfig.inProgress}
@@ -223,7 +239,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
                   <div>
                     {formatMessage(translations.controller)}
                     {tabsState.controller.pendingChanges &&
-                    <CreateIcon className={classes.edited}/>}
+                    <CreateIcon className={classes.edited} />}
                   </div>
                 }
                 disabled={dialogConfig.inProgress}
@@ -247,6 +263,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         title="Embedded Legacy Form"
         className={clsx(classes.iframe, !dialogConfig.inProgress && 'complete')}
       />
+      <ErrorDialog error={error} onClose={onErrorClose} />
     </Dialog>
-  )
+  );
 }

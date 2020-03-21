@@ -143,7 +143,7 @@ export default function QuickCreate() {
           />
         </Typography>
 
-        {quickCreateContentList?.map(item => 
+        {quickCreateContentList?.map(item =>
           <MenuItem
             key={item.path}
             onClick={() => {

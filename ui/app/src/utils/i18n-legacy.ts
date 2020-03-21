@@ -808,6 +808,13 @@ const dashboardWidgetsMessages = defineMessages({
   }
 });
 
+const embeddedLegacyFormMessages = defineMessages({
+  contentFormFailedToLoadErrorMessage: {
+    id: 'embeddedLegacyFormMessages.error',
+    defaultMessage: 'An error occurred, please contact your system administrator'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -840,5 +847,6 @@ export default {
   fileNameControlMessages,
   rteControlMessages,
   ossAttribution,
-  dashboardWidgetsMessages
+  dashboardWidgetsMessages,
+  embeddedLegacyFormMessages
 };
