@@ -15,6 +15,7 @@
 -->
 <html>
 <head>
+  <#include "/templates/web/common/js-next-scripts.ftl" />
   <script>
     document.domain = "${Request.serverName}";
   </script>
@@ -30,7 +31,6 @@
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <#include "/templates/web/common/js-next-scripts.ftl" />
   <#-- Lang resources -->
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
   <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
@@ -180,7 +180,12 @@
                   !!isHidden);
               },
               failure: (error) => {
-                console.log(error);
+                console.error('Error', error);
+                window.top.postMessage({
+                  type: 'EMBEDDED_LEGACY_FORM_FAILURE',
+                  refresh: false, tab: type, action: 'failure',
+                  message: ' An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.' // TODO: replace value for formatMessage
+                }, '*');
               }
             },
             false, false
@@ -202,7 +207,7 @@
                   window.top.postMessage({
                     type: 'EMBEDDED_LEGACY_FORM_FAILURE',
                     refresh: false, tab: type, action: 'failure',
-                    message: 'An error occurred, please contact your system administrator' // TODO: replace value for formatMessage
+                    message: ' An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.' // TODO: replace value for formatMessage
                   }, '*');
                 },
                 cancelled: () => {

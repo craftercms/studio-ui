@@ -30,6 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     addIcon: {
+      width: 30,
+      height: 30,
       fill: palette.green.main
     },
 
