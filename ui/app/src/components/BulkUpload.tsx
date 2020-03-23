@@ -38,7 +38,7 @@ import toArray from '@uppy/utils/lib/toArray';
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/drag-drop/src/style.scss';
 
-import DialogTitle from './DialogTitle';
+import DialogHeader from './DialogHeader';
 import Button from '@material-ui/core/Button';
 import { getBulkUploadUrl } from '../services/content';
 import { LookupTable } from '../models/LookupTable';
@@ -659,7 +659,7 @@ export default function BulkUpload(props: any) {
         onDrop={preventWrongDrop}
         onDragOver={preventWrongDrop}
       >
-        <DialogTitle
+        <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
           onClose={dropZoneStatus.status === 'uploading' ? onMinimized : onClose}

@@ -44,18 +44,51 @@ const dialogTitleStyles = makeStyles((theme: Theme) => ({
 
 export interface DialogTitleProps {
   title: string;
+  titleTypographyProps?: {
+    variant?: any;
+    component?: string;
+    classes?: any;
+  },
+  subtitleTypographyProps?: {
+    variant?: any;
+    component?: string;
+    classes?: any;
+  }
   subtitle?: string;
   icon?: any;
+
   onClose(): void;
 }
 
-export default function DialogTitle(props: DialogTitleProps) {
+export default function DialogHeader(props: DialogTitleProps) {
   const classes = dialogTitleStyles({});
-  const { onClose, title, subtitle, icon: Icon = CloseIcon } = props;
+  const {
+    onClose,
+    title,
+    subtitle,
+    icon: Icon = CloseIcon,
+    titleTypographyProps = {
+      variant: 'h6',
+      component: 'initial',
+      classes: {}
+    },
+    subtitleTypographyProps = {
+      variant: 'subtitle1',
+      component: 'initial',
+      classes: {}
+    }
+  } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.titleRoot}>
       <div className={classes.title}>
-        <Typography variant="h6">{title}</Typography>
+        // @ts-ignore
+        <Typography
+          variant={titleTypographyProps.variant}
+          component={titleTypographyProps.component}
+          classes={titleTypographyProps.classes}
+        >
+          {title}
+        </Typography>
         {onClose ? (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
             <Icon/>
@@ -64,7 +97,14 @@ export default function DialogTitle(props: DialogTitleProps) {
       </div>
       {
         subtitle &&
-        <Typography variant="subtitle1" className={classes.subtitle}>{subtitle}</Typography>
+        <Typography
+          variant={subtitleTypographyProps.variant}
+          component={subtitleTypographyProps.component}
+          classes={subtitleTypographyProps.classes}
+          className={classes.subtitle}
+        >
+          {subtitle}
+        </Typography>
       }
     </MuiDialogTitle>
   );
