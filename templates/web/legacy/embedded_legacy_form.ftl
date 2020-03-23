@@ -84,8 +84,6 @@
   var contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   var isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent');
 
-  console.log('CrafterCMSNext.i18n.intl.messages', embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage);
-
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
   const changeTab = (e) => {
