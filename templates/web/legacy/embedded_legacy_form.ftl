@@ -76,13 +76,15 @@
 </head>
 <body>
 <script>
-  // const { formatMessage } = CrafterCMSNext.i18n.intl;
-  // const { embeddedLegacyFormMessages  } = CrafterCMSNext.i18n.intl.messages;
+  const { formatMessage } = CrafterCMSNext.i18n.intl;
+  const { embeddedLegacyFormMessages  } = CrafterCMSNext.i18n.messages;
   var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   var site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
   var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
   var contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   var isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent');
+
+  console.log('CrafterCMSNext.i18n.intl.messages', embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage);
 
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
@@ -149,8 +151,12 @@
                     success: () => {
                       window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
                     },
-                    failure: () => {
-                      console.log('failure');
+                    failure: error => {
+                      console.error(error);
+                      window.top.postMessage({
+                        type: 'EMBEDDED_LEGACY_FORM_FAILURE', refresh: false, tab: type, action: 'failure',
+                        message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
+                      }, '*');
                     },
                     cancelled: () => {
                       window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
@@ -179,13 +185,8 @@
                   null,
                   !!isHidden);
               },
-              failure: (error) => {
+              failure: error => {
                 console.error('Error', error);
-                window.top.postMessage({
-                  type: 'EMBEDDED_LEGACY_FORM_FAILURE',
-                  refresh: false, tab: type, action: 'failure',
-                  message: ' An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.' // TODO: replace value for formatMessage
-                }, '*');
               }
             },
             false, false
@@ -207,7 +208,7 @@
                   window.top.postMessage({
                     type: 'EMBEDDED_LEGACY_FORM_FAILURE',
                     refresh: false, tab: type, action: 'failure',
-                    message: ' An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.' // TODO: replace value for formatMessage
+                    message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
                   }, '*');
                 },
                 cancelled: () => {
