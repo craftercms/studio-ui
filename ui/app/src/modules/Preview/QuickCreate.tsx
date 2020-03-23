@@ -81,25 +81,19 @@ export default function QuickCreate() {
     type: 'form',
     inProgress: false
   });
-  const [newContentDialogConfig, setNewContentDialogConfig] = useSpreadState({
-    open: false
-  });
+  const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
 
-  const handleNewContentOpen = () => {
-    setNewContentDialogConfig({ open: true });
-  };
-
-  const handleClick = e => setAnchorEl(e.currentTarget);
+  const handleMenuBtnClick = e => setAnchorEl(e.currentTarget);
 
   const handleMenuClose = () => setAnchorEl(null);
 
-  useEffect(() => {
-    if (siteId) {
-      getQuickCreateContentList(siteId).subscribe(data =>
-        setQuickCreateContentList(data.items)
-      );
-    }
-  }, [siteId]);
+  const handleNewContentClick = () => {
+    setDisplayNewContentDialog(true);
+  };
+
+  const handleNewContentDialogClose = () => {
+    setDisplayNewContentDialog(false);
+  };
 
   const handleFormDisplay = srcData => {
     const { contentTypeId, path } = srcData;
@@ -119,10 +113,19 @@ export default function QuickCreate() {
     });
   };
 
+
+  useEffect(() => {
+    if (siteId) {
+      getQuickCreateContentList(siteId).subscribe(data =>
+        setQuickCreateContentList(data.items)
+      );
+    }
+  }, [siteId]);
+
   return (
     <>
       <IconButton
-        onClick={handleClick}
+        onClick={handleMenuBtnClick}
         aria-label={formatMessage(translations.quickCreateBtnLabel)}
         className={classes.addBtn}
         size="small"
@@ -138,7 +141,7 @@ export default function QuickCreate() {
       >
         <MenuItem
           className={classes.menuTitle}
-          onClick={handleNewContentOpen}>
+          onClick={handleNewContentClick}>
           <FormattedMessage
             id="quickCreateMenu.title"
             defaultMessage="New Content"
@@ -175,8 +178,12 @@ export default function QuickCreate() {
         setDialogConfig={setDialogConfig}
       />
       <NewContentDialog
-        dialogConfig={newContentDialogConfig}
-        setDialogConfig={setNewContentDialogConfig}/>
+        open={displayNewContentDialog}
+        handleClose={handleNewContentDialogClose}
+        contentTypesFetchConfig={{
+          site: 'editorial',
+          path: '/site/website/'
+        }} />
     </>
   );
 }
