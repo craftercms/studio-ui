@@ -15,6 +15,7 @@ import {
   useSelection
 } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
+import NewContentDialog from '../Content/Authoring/NewContentDialog';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -80,6 +81,13 @@ export default function QuickCreate() {
     type: 'form',
     inProgress: false
   });
+  const [newContentDialogConfig, setNewContentDialogConfig] = useSpreadState({
+    open: false
+  });
+
+  const handleNewContentOpen = () => {
+    setNewContentDialogConfig({ open: true });
+  };
 
   const handleClick = e => setAnchorEl(e.currentTarget);
 
@@ -128,7 +136,9 @@ export default function QuickCreate() {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem className={classes.menuTitle}>
+        <MenuItem
+          className={classes.menuTitle}
+          onClick={handleNewContentOpen}>
           <FormattedMessage
             id="quickCreateMenu.title"
             defaultMessage="New Content"
@@ -164,6 +174,9 @@ export default function QuickCreate() {
         dialogConfig={dialogConfig}
         setDialogConfig={setDialogConfig}
       />
+      <NewContentDialog
+        dialogConfig={newContentDialogConfig}
+        setDialogConfig={setNewContentDialogConfig}/>
     </>
   );
 }
