@@ -81,7 +81,6 @@ export default function DialogHeader(props: DialogTitleProps) {
   return (
     <MuiDialogTitle disableTypography className={classes.titleRoot}>
       <div className={classes.title}>
-        // @ts-ignore
         <Typography
           variant={titleTypographyProps.variant}
           component={titleTypographyProps.component}
