@@ -19,7 +19,7 @@ import React, { useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { InputBase, Theme } from '@material-ui/core';
 import { palette } from '../styles/theme';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@material-ui/icons/SearchRounded';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
@@ -70,6 +70,8 @@ const messages = defineMessages({
 interface SearchBarProps {
   keyword: string[] | string;
   closeIcon?: boolean;
+  showDecoratorIcon?: boolean;
+  decoratorIcon?: any;
   persistentCloseIcon?: boolean;
   autofocus?: boolean;
   backgroundColor?: string;
@@ -84,12 +86,25 @@ interface SearchBarProps {
 
 export default function SearchBar(props: SearchBarProps) {
   const classes = useStyles({ background: props.backgroundColor || palette.gray.light5 });
-  const { onChange, keyword, closeIcon = false, autofocus = false, placeholder, disabled = false, persistentCloseIcon = false } = props;
+  const {
+    onChange,
+    keyword,
+    closeIcon = false,
+    autofocus = false,
+    placeholder,
+    disabled = false,
+    persistentCloseIcon = false,
+    showDecoratorIcon = false,
+    decoratorIcon: DecoratorIcon = SearchIcon
+  } = props;
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
   return (
     <div className={clsx(classes.search, focus && 'focus', props.classes?.root)}>
-      <SearchIcon className={classes.searchIcon}/>
+      {
+        showDecoratorIcon &&
+        <DecoratorIcon className={classes.searchIcon}/>
+      }
       <InputBase
         onChange={e => onChange(e.target.value)}
         onFocus={() => setFocus(true)}

@@ -25,7 +25,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import { palette } from '../styles/theme';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import clsx from 'clsx';
 import ContextMenu, { Option, SectionItem } from './ContextMenu';
 import Link from '@material-ui/core/Link';
