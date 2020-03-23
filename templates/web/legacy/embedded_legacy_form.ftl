@@ -150,7 +150,7 @@
                       window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
                     },
                     failure: error => {
-                      console.error(error);
+                      error && console.error(error);
                       window.top.postMessage({
                         type: 'EMBEDDED_LEGACY_FORM_FAILURE', refresh: false, tab: type, action: 'failure',
                         message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
@@ -184,7 +184,11 @@
                   !!isHidden);
               },
               failure: error => {
-                console.error('Error', error);
+                error && console.error(error);
+                window.top.postMessage({
+                  type: 'EMBEDDED_LEGACY_FORM_FAILURE', refresh: false, tab: type, action: 'failure',
+                  message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
+                }, '*');
               }
             },
             false, false
@@ -202,7 +206,7 @@
                   window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_SAVE', refresh: false, tab: type, action: 'success', redirectUrl: data.item?.browserUri }, '*');
                 },
                 failure: (error) => {
-                  console.error('Error', error);
+                  error && console.error(error);
                   window.top.postMessage({
                     type: 'EMBEDDED_LEGACY_FORM_FAILURE',
                     refresh: false, tab: type, action: 'failure',
