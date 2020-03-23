@@ -17,7 +17,7 @@
 
 import React, { useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { InputBase, Theme } from '@material-ui/core';
+import { IconButton, InputBase, Theme } from '@material-ui/core';
 import { palette } from '../styles/theme';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import CloseIcon from '@material-ui/icons/Close';
@@ -41,8 +41,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   searchIcon: {
     color: theme.palette.text.secondary
   },
+  icon: {
+    padding: '6px'
+  },
   closeIcon: {
-    marginLeft: '10px',
     fontSize: '25px',
     color: theme.palette.text.secondary,
     cursor: 'pointer'
@@ -69,10 +71,10 @@ const messages = defineMessages({
 
 interface SearchBarProps {
   keyword: string[] | string;
-  closeIcon?: boolean;
+  showActionButton?: boolean;
+  actionButtonIcon?: any;
   showDecoratorIcon?: boolean;
   decoratorIcon?: any;
-  persistentCloseIcon?: boolean;
   autofocus?: boolean;
   backgroundColor?: string;
   placeholder?: string;
@@ -82,6 +84,8 @@ interface SearchBarProps {
   };
 
   onChange(value: string): any;
+
+  onActionButtonClick(): any;
 }
 
 export default function SearchBar(props: SearchBarProps) {
@@ -89,13 +93,14 @@ export default function SearchBar(props: SearchBarProps) {
   const {
     onChange,
     keyword,
-    closeIcon = false,
+    showActionButton = false,
+    actionButtonIcon: ActionButtonIcon = CloseIcon,
     autofocus = false,
     placeholder,
     disabled = false,
-    persistentCloseIcon = false,
     showDecoratorIcon = false,
-    decoratorIcon: DecoratorIcon = SearchIcon
+    decoratorIcon: DecoratorIcon = SearchIcon,
+    onActionButtonClick
   } = props;
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
@@ -120,8 +125,10 @@ export default function SearchBar(props: SearchBarProps) {
         inputProps={{ 'aria-label': 'search' }}
       />
       {
-        (closeIcon && (persistentCloseIcon || keyword)) &&
-        <CloseIcon className={classes.closeIcon} onClick={() => onChange('')}/>
+        showActionButton &&
+        <IconButton onClick={onActionButtonClick} className={classes.icon}>
+          <ActionButtonIcon className={classes.closeIcon}/>
+        </IconButton>
       }
     </div>
   )

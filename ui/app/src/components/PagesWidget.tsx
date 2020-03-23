@@ -494,8 +494,8 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
           <SearchBar
             onChange={onChange}
             keyword={keyword}
-            closeIcon={true}
-            persistentCloseIcon={true}
+            showActionButton={true}
+            onActionButtonClick={() => onChange('')}
             classes={{ root: classes.searchRoot }}
           />
         ) : (
