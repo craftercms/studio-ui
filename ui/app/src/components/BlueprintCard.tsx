@@ -15,23 +15,23 @@
  */
 
 import React, { useState } from 'react';
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
-import Typography from "@material-ui/core/Typography";
-import CardActions from "@material-ui/core/CardActions";
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Typography from '@material-ui/core/Typography';
+import CardActions from '@material-ui/core/CardActions';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Blueprint } from "../models/Blueprint";
-import { defineMessages, useIntl } from "react-intl";
-import MobileStepper from "./MobileStepper";
-import { backgroundColor } from "../styles/theme";
-import Button from "@material-ui/core/Button";
-import { Theme, Tooltip } from "@material-ui/core";
-import clsx from "clsx";
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Blueprint } from '../models/Blueprint';
+import { defineMessages, useIntl } from 'react-intl';
+import MobileStepper from './MobileStepper';
+import { backgroundColor } from '../styles/theme';
+import Button from '@material-ui/core/Button';
+import { Theme, Tooltip } from '@material-ui/core';
+import clsx from 'clsx';
 
 
 interface BlueprintCardProps {
@@ -289,6 +289,7 @@ function BlueprintCard(props: BlueprintCardProps) {
         {
           (id !== 'GIT') &&
           <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
+            // @ts-ignore
             <CardHeader
                 title={name}
                 subheader={id !== 'GIT'? renderSubtitle() :''}
