@@ -17,7 +17,8 @@
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { defineMessages, useIntl } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import createStyles from '@material-ui/core/styles/createStyles';
 import { Typography } from '@material-ui/core';
 import DialogTitle from './DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
