@@ -113,6 +113,19 @@ export default function QuickCreate() {
     });
   };
 
+  const handleOpenType = (srcData) => () => {
+    const { form } = srcData;
+    const path = '/site/website';
+    const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${form}&path=${path}&type=form`;
+
+    setDialogConfig({
+      open: true,
+      src
+    });
+
+    setDisplayNewContentDialog(false);
+  };
+
 
   useEffect(() => {
     if (siteId) {
@@ -180,6 +193,7 @@ export default function QuickCreate() {
       <NewContentDialog
         open={displayNewContentDialog}
         handleClose={handleNewContentDialogClose}
+        handleOpenType={handleOpenType}
         contentTypesFetchConfig={{
           site: 'editorial',
           path: '/site/website/'
