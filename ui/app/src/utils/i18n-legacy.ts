@@ -645,7 +645,7 @@ const checkboxGroupControlMessages = defineMessages({
 const transcodedVideoPickerControlMessages = defineMessages({
   label: {
     id: 'transcodedVideoPickerControl.label',
-    defaultMessage: 'Transcoded Video Picker'
+    defaultMessage: 'Transcoded Video'
   }
 });
 
