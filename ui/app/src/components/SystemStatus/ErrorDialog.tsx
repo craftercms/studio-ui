@@ -42,7 +42,7 @@ export default function ErrorDialog(props: ConfirmDialogProps) {
 
   return (
     <Dialog
-      open={!!props.error}
+      open={Boolean(error)}
       onClose={onClose}
     >
       <IconButton
@@ -52,7 +52,10 @@ export default function ErrorDialog(props: ConfirmDialogProps) {
       >
         <CloseIcon/>
       </IconButton>
-      <ErrorState error={error}/>
+      {
+        error &&
+        <ErrorState error={error}/>
+      }
     </Dialog>
-  )
+  );
 }

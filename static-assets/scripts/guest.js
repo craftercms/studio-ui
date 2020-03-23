@@ -384,7 +384,8 @@ crafterDefine('guest', [
   }
 
   function resizeProcess() {
-    communicator.publish(Topics.IS_REVIEWER, true);
+    // When window.top == window, communicator is not initialized
+    communicator && communicator.publish(Topics.IS_REVIEWER, true);
   }
 
 });
