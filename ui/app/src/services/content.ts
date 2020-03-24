@@ -1039,6 +1039,12 @@ export function uploadDataUrl(
   });
 }
 
+export function getQuickCreateContentList(siteId: string) {
+  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
+    pluck('response')
+  )
+}
+
 export default {
   getComponentInstanceHTML,
   getContent,
@@ -1056,5 +1062,6 @@ export default {
   deleteItem,
   getContentByContentType,
   fetchPublishingChannels,
-  uploadDataUrl
+  uploadDataUrl,
+  getQuickCreateContentList
 };
