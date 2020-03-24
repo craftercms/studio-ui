@@ -655,7 +655,7 @@ export default function BulkUpload(props: any) {
         <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
-          onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus.uploadedFiles)}
+          onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
           icon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
         />
         <DialogContent dividers className={classes.dialogContent}>
