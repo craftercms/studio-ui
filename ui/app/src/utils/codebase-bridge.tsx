@@ -116,7 +116,12 @@ export function createCodebaseBridge() {
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
       Login: lazy(() => import('../pages/Login')),
-      QuickCreate: lazy(() => import('../modules/Preview/QuickCreate')),
+      QuickCreateMenu: lazy(() => (
+        import('../modules/Preview/QuickCreate')
+          .then(module => ({
+            default: module.QuickCreateMenu
+          }))
+      ))
     },
 
     assets: {
