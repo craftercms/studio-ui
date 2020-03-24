@@ -682,7 +682,7 @@ export default function BulkUpload(props: any) {
           {
             dropZoneStatus.status === 'idle' ? (
               <Button
-                onClick={() => onClose(dropZoneStatus.uploadedFiles)}
+                onClick={() => onClose(dropZoneStatus)}
                 variant="contained"
                 color='default'
               >
@@ -698,7 +698,7 @@ export default function BulkUpload(props: any) {
                   {formatMessage(translations.browse)}
                 </Button>
                 <Button
-                  onClick={() => onClose(dropZoneStatus.uploadedFiles)}
+                  onClick={() => onClose(dropZoneStatus)}
                   disabled={dropZoneStatus.status === 'uploading'}
                   variant="contained"
                   color='primary'
