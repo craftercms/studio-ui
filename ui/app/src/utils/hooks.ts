@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction, useReducer } from 'react';
-
 /*
  * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
@@ -15,6 +13,8 @@ import { Dispatch, SetStateAction, useReducer } from 'react';
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import { Dispatch, SetStateAction, useReducer } from 'react';
 
 export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<Partial<S>>>] {
   return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);

@@ -111,7 +111,6 @@ export function createCodebaseBridge() {
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
       ConfirmDialog: lazy(() => import('../components/ConfirmDialog'))
-
     },
 
     assets: {

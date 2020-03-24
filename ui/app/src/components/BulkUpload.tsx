@@ -59,7 +59,7 @@ const translations = defineMessages({
   },
   subtitle: {
     id: 'bulkUpload.subtitle',
-    defaultMessage: 'Drop the desired files from your desktop into the browser\'s window.'
+    defaultMessage: 'Drop the desired files from your desktop into the browser window.'
   },
   close: {
     id: 'words.close',
@@ -83,7 +83,7 @@ const translations = defineMessages({
   },
   uploadInProgress: {
     id: 'bulkUpload.uploadInProgress',
-    defaultMessage: 'There is still a bulk upload in progress. Ares you sure you go away?'
+    defaultMessage: 'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
   }
 });
 
@@ -349,7 +349,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   }
 
   useEffect(() => {
-    if (dndRef?.current && generalProgress?.current) {
+    if (dndRef.current && generalProgress.current) {
       uppy.use(XHRUpload, {
         endpoint: getBulkUploadUrl(site, path),
         formData: true,
@@ -491,7 +491,6 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     </>
   )
 });
-
 
 const minimizedBarStyles = makeStyles((theme: Theme) => createStyles({
   root: {
