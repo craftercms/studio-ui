@@ -835,6 +835,13 @@ const dashboardWidgetsMessages = defineMessages({
   }
 });
 
+const nodeSelectorMessages = defineMessages({
+  createNew: {
+    id: 'nodeSelectorMessages.createNew',
+    defaultMessage: 'Create New'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,

@@ -165,6 +165,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       if(prop.name == "disableFlattening" && prop.value == "true"){
         this.disableFlattening = true;
       }
+      if (prop.name == 'contentTypes') {
+        this.contentTypes = prop.value.split(',');
+      }
     }
 
     var titleEl = document.createElement("span");
@@ -261,9 +264,44 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     this.defaultValue = config.defaultValue;
 
     this._renderItems();
-    this._setActions();
+    //this._setActions();
+    this._renderAddOptions();
 
     YAHOO.util.Event.addListener(nodeItemsContainerEl, "click", function(evt, context) { context.form.setFocusedField(context);}, this, true);
+  },
+
+  _renderAddOptions() {
+    const self = this;
+    if (this.contentTypes) {
+      //const messages = CrafterCMSNext.i18n.intl.messages.nodeSelectorMessages;
+      //debugger;
+      YAHOO.util.Dom.removeClass(this.addButtonEl, 'cstudio-button-disabled');
+      this.addButtonEl.disabled = false;
+      const $addContainerEl = $('<div class="cstudio-form-control-node-selector-add-container"></div>');
+      $addContainerEl.hide();
+      $(this.containerEl).append($addContainerEl);
+
+      this.contentTypes.forEach(contentType => {
+        let $newCreate = $(`<div class="cstudio-form-control-node-selector-add-container-item">${contentType}</div>`);
+        $addContainerEl.append($newCreate);
+        //YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
+        //CrafterCMSNext.i18n.intl.formatMessage
+      });
+
+      $(this.addButtonEl).on('click', function (event) {
+        debugger;
+        $addContainerEl.css({
+          left: self.addButtonEl.offsetLeft + 'px',
+          top: self.addButtonEl.offsetLeft + 22 + 'px'
+        });
+        $addContainerEl.show();
+      });
+
+      console.log(addContainerEl);
+      //YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
+
+    }
+    //console.log(this.contentTypes);
   },
 
   _setActions: function () {
