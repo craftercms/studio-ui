@@ -65,34 +65,25 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function QuickCreate() {
+export function QuickCreateMenu({ anchorEl, handleMenuClose }) {
   const classes = useStyles({});
-  const { formatMessage } = useIntl();
+  const [quickCreateContentList, setQuickCreateContentList] = useState(null);
+  const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>(
     state => state.env.AUTHORING_BASE
   );
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
     src: defaultFormSrc,
     type: 'form',
     inProgress: false
   });
-  const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
 
-  const handleMenuBtnClick = e => setAnchorEl(e.currentTarget);
-
-  const handleMenuClose = () => setAnchorEl(null);
 
   const handleNewContentClick = () => {
     setDisplayNewContentDialog(true);
-  };
-
-  const handleNewContentDialogClose = () => {
-    setDisplayNewContentDialog(false);
   };
 
   const handleFormDisplay = srcData => {
@@ -113,6 +104,10 @@ export default function QuickCreate() {
     });
   };
 
+  const handleNewContentDialogClose = () => {
+    setDisplayNewContentDialog(false);
+  };
+
   const handleOpenType = (srcData) => () => {
     const { form } = srcData;
     const path = '/site/website';
@@ -126,7 +121,6 @@ export default function QuickCreate() {
     setDisplayNewContentDialog(false);
   };
 
-
   useEffect(() => {
     if (siteId) {
       getQuickCreateContentList(siteId).subscribe(data =>
@@ -137,14 +131,6 @@ export default function QuickCreate() {
 
   return (
     <>
-      <IconButton
-        onClick={handleMenuBtnClick}
-        aria-label={formatMessage(translations.quickCreateBtnLabel)}
-        className={classes.addBtn}
-        size="small"
-      >
-        <AddCircleIcon fontSize="large" className={classes.addIcon} />
-      </IconButton>
       <Menu
         className={classes.menu}
         anchorEl={anchorEl}
@@ -195,9 +181,43 @@ export default function QuickCreate() {
         handleClose={handleNewContentDialogClose}
         handleOpenType={handleOpenType}
         contentTypesFetchConfig={{
-          site: 'editorial',
+          site: siteId,
           path: '/site/website/'
-        }} />
+        }}
+      />
+    </>
+  );
+
+}
+
+export function QuickCreateMenuBtn({ handleMenuBtnClick }) {
+  const classes = useStyles({});
+  const { formatMessage } = useIntl();
+
+  return (
+    <IconButton
+      onClick={handleMenuBtnClick}
+      aria-label={formatMessage(translations.quickCreateBtnLabel)}
+      className={classes.addBtn}
+      size="small"
+    >
+      <AddCircleIcon fontSize="large" className={classes.addIcon} />
+    </IconButton>
+  );
+}
+
+export default function QuickCreate() {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMenuBtnClick = e => setAnchorEl(e.currentTarget);
+
+  const handleMenuClose = () => setAnchorEl(null);
+
+
+  return (
+    <>
+      <QuickCreateMenuBtn handleMenuBtnClick={handleMenuBtnClick} />
+      <QuickCreateMenu anchorEl={anchorEl} handleMenuClose={handleMenuClose} />
     </>
   );
 }
