@@ -288,7 +288,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [filesPerPath, setFilesPerPath] = useSpreadState<LookupTable<any>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
-  const uppy = useMemo(() => Core({ debug: true, autoProceed: true }), []);
+  const uppy = useMemo(() => Core({ debug: false, autoProceed: true }), []);
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
   const retryFileUpload = (file: UppyFile) => {
@@ -655,7 +655,7 @@ export default function BulkUpload(props: any) {
         <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
-          onClose={dropZoneStatus.status === 'uploading' ? onMinimized : onClose}
+          onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
           icon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
         />
         <DialogContent dividers className={classes.dialogContent}>
@@ -682,7 +682,7 @@ export default function BulkUpload(props: any) {
           {
             dropZoneStatus.status === 'idle' ? (
               <Button
-                onClick={onClose}
+                onClick={() => onClose(dropZoneStatus)}
                 variant="contained"
                 color='default'
               >
@@ -698,7 +698,7 @@ export default function BulkUpload(props: any) {
                   {formatMessage(translations.browse)}
                 </Button>
                 <Button
-                  onClick={onClose}
+                  onClick={() => onClose(dropZoneStatus)}
                   disabled={dropZoneStatus.status === 'uploading'}
                   variant="contained"
                   color='primary'

@@ -1688,10 +1688,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       const bulkUpload = document.createElement('div');
       bulkUpload.setAttribute('id', 'bulkUpload');
       document.documentElement.append(bulkUpload);
-      const onClose = () => {
+      const onClose = (dropZoneStatus) => {
         CrafterCMSNext.ReactDOM.unmountComponentAtNode(bulkUpload);
         bulkUpload.remove();
-        RootFolder().refreshNodes(oCurrentTextNode, false, false, null, null, true);
+        if (dropZoneStatus.uploadedFiles > 0) {
+          RootFolder().refreshNodes(oCurrentTextNode, false, false, null, null, true);
+        }
       };
       CrafterCMSNext.render(
         bulkUpload,
