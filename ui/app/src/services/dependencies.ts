@@ -17,11 +17,49 @@
  *
  */
 
-import { get } from '../utils/ajax';
+import { get, post } from '../utils/ajax';
+import { map } from 'rxjs/operators';
 
 export function fetchDependencies(siteId: string, items: any) {
   return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`)
 }
+
+export function getSimpleDependencies(siteId: string, path: string) {
+  return post(
+    `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json?site=${siteId}&path=${path}`,
+    null,
+    {
+      'Content-Type': 'application/json'
+    }
+  ).pipe(
+    map((response: any) => {
+      if (response.response) {
+        return response.response;
+      } else {
+        return response;
+      }
+    })
+  );
+}
+
+export function getDependant(siteId: string, path: string) {
+  return post(
+    `/studio/api/1/services/api/1/dependency/get-dependant.json?site=${siteId}&path=${path}`,
+    null,
+    {
+      'Content-Type': 'application/json'
+    }
+  ).pipe(
+    map((response: any) => {
+      if (response.response) {
+        return response.response;
+      } else {
+        return response;
+      }
+    })
+  );
+}
+
 
 export default {
   fetchDependencies

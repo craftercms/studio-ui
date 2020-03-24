@@ -14,32 +14,90 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DependenciesDialogUI from './DependenciesDialogUI';
 import { Item } from '../../../models/Item';
+import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
+import { useActiveSiteId, useSpreadState } from '../../../utils/hooks';
+
+const dialogInitialState = {
+  selectedOption: 'depends-on',
+  dependantItems: [],
+  dependencies: []
+};
 
 interface DependenciesDialogProps {
   item: Item;
   dependenciesSelection: string;
+  handleDependencyEdit: Function;
 }
 
 function DependenciesDialog(props: DependenciesDialogProps) {
-  const { item } = props;
-  const [apiState, setApiState] = useState({
+  const { item, dependenciesSelection, handleDependencyEdit } = props;
+  const [dialog, setDialog] = useSpreadState({ ...dialogInitialState, selectedOption: dependenciesSelection });
+  const [deps, setDeps] = useState([]);
+  const [open, setOpen] = useState(true);
+  const [apiState, setApiState] = useSpreadState({
     error: false,
     global: false,
     errorResponse: null
   });
+  const siteId = useActiveSiteId();
 
   function handleErrorBack() {
-    setApiState({ ...apiState, error: false, global: false });
+    setApiState({ error: false, global: false });
   }
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    getDependant(siteId, item.uri).subscribe(
+      (response) => {
+        setApiState({ error: false });
+        setDialog({ dependantItems: response });
+      },
+      (response) => {
+        if (response) {
+          setApiState({ error: true, errorResponse: (response.response) ? response.response : response });
+        }
+      }
+    );
+
+    getSimpleDependencies(siteId, item.uri).subscribe(
+      (response) => {
+        setApiState({ error: false });
+        setDialog({ dependencies: response });
+      },
+      (response) => {
+        if (response) {
+          setApiState({ error: true, errorResponse: (response.response) ? response.response : response });
+        }
+      }
+    )
+
+  }, [item]);
+
+  useEffect(() => {
+    if (dialog.selectedOption === 'depends-on') {
+      setDeps(dialog.dependantItems);
+    } else {
+      setDeps(dialog.dependencies);
+    }
+  }, [dialog.selectedOption]);
 
   return (
     <DependenciesDialogUI
       item={item}
+      dependencies={deps}
+      state={dialog}
+      setState={setDialog}
+      open={open}
       apiState={apiState}
       handleErrorBack={handleErrorBack}
+      handleClose={handleClose}
+      handleDependencyEdit={handleDependencyEdit}
     />
   )
 }

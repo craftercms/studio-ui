@@ -32,10 +32,17 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const deleteDialogStyles = makeStyles((theme) => createStyles({
   root: {
     textAlign: 'left'
+  },
+  dialogPaper: {
+    minHeight: '530px'
   },
   titleRoot: {
     margin: 0,
@@ -56,6 +63,7 @@ const deleteDialogStyles = makeStyles((theme) => createStyles({
   dialogContent: {
     padding: theme.spacing(2),
     backgroundColor: palette.gray.light0,
+    display: 'flex',
     flex: '1 1 auto',
     overflowY: 'auto',
     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
@@ -78,30 +86,68 @@ const deleteDialogStyles = makeStyles((theme) => createStyles({
     padding: 0
   },
   tableWrapper: {
+    flex: 1,
     maxHeight: 440,
-    overflow: 'auto'
+    overflow: 'auto',
+    background: `${palette.white}`,
+    border: `1px solid ${palette.gray.light5}`
+  },
+  tableHeadCell: {
+    fontWeight: 600
+  },
+  formControl: {
+    margin: '10px 0',
+    minWidth: 120,
+    flexDirection: 'unset'
+  },
+  selectLabel: {
+    position: 'relative',
+    color: palette.gray.dark5,
+    fontSize: '14px',
+    padding: '10px 10px 10px 0'
+  },
+  select: {
+    fontSize: '14px'
   }
 }));
 
 interface DependenciesDialogUIProps {
   item: Item;
+  dependencies: Item[];
+  state: any;
+  setState: Function;
+  open: boolean;
   apiState: any;
   handleErrorBack: any;
+  handleClose: any;
+  handleDependencyEdit: Function;
 }
 
 function DependenciesDialogUI(props: DependenciesDialogUIProps) {
-  const { item, apiState, handleErrorBack } = props;
+  const {
+    item,
+    dependencies,
+    state,
+    setState,
+    open,
+    apiState,
+    handleErrorBack,
+    handleClose,
+    handleDependencyEdit
+  } = props;
   const classes = deleteDialogStyles({});
 
   return (
     <Dialog
-      // onClose={onClose}
+      onClose={handleClose}
       aria-labelledby="simple-dialog-title"
-      // open={open}
-      open={true}
+      open={open}
       fullWidth={true}
       maxWidth={'md'}
-      className={classes.root}
+      classes={{
+        root: classes.root,
+        paper: classes.dialogPaper
+      }}
     >
       {
         (!apiState.error) ?
@@ -116,7 +162,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                     />
                   </Typography>
                   {/*{onClose ? (*/}
-                  <IconButton aria-label="close" /*onClick={onClose}*/>
+                  <IconButton aria-label="close" onClick={handleClose}>
                     <CloseIcon/>
                   </IconButton>
                   {/*) : null}*/}
@@ -127,6 +173,30 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                     defaultMessage={`Dependencies Shown for: ${item.internalName}`}
                   />
                 </Typography>
+                <FormControl className={classes.formControl}>
+                  <InputLabel id="depend-selection-label" className={classes.selectLabel}>
+                    Show content that:
+                  </InputLabel>
+                  <Select
+                    labelId="depend-selection-label"
+                    id="depend-selection"
+                    value={state.selectedOption}
+                    onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                      setState({ selectedOption: event.target.value as string });
+                    }}
+                    inputProps={{
+                      className: classes.select
+                    }}
+                    ref={(el: HTMLElement) => {   // Style overriding with important, and need to set it inline
+                      if (el) {
+                        el.style.setProperty('margin-top', '0', 'important');
+                      }
+                    }}
+                  >
+                    <MenuItem value='depends-on'>Refers to this item</MenuItem>
+                    <MenuItem value='depends-on-me'>Is referenced by this item</MenuItem>
+                  </Select>
+                </FormControl>
               </MuiDialogTitle>
               <div className={classes.dialogContent}>
                 <div className={classes.tableWrapper}>
@@ -136,22 +206,54 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                         <TableCell
                           key={'item'}
                           align={'left'}
+                          className={classes.tableHeadCell}
                         >
                           <FormattedMessage
                             id="dependenciesDialog.item"
                             defaultMessage="Item"
                           />
                         </TableCell>
+                        <TableCell
+                          key={'uri'}
+                          align={'left'}
+                          className={classes.tableHeadCell}
+                        >
+                          <FormattedMessage
+                            id="dependenciesDialog.path"
+                            defaultMessage="Path"
+                          />
+                        </TableCell>
+                        <TableCell key={'edit'} align={'left'}/>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-
+                      {dependencies.map(dependency => (
+                        <TableRow key={dependency.name}>
+                          <TableCell component="th" scope="row">
+                            {dependency.internalName}
+                          </TableCell>
+                          <TableCell component="th" scope="row">
+                            {dependency.uri}
+                          </TableCell>
+                          <TableCell component="th" scope="row">
+                            <a href="" onClick={(e) => {
+                              e.preventDefault();
+                              handleDependencyEdit(dependency);
+                            }}>
+                              <FormattedMessage
+                                id="dependenciesDialog.edit"
+                                defaultMessage="Edit"
+                              />
+                            </a>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </div>
               </div>
               <div className={classes.dialogActions}>
-                <Button variant="contained" /*onClick={handleClose}*/ disabled={apiState.submitting}>
+                <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
                   <FormattedMessage
                     id="dependenciesDialog.close"
                     defaultMessage={`Close`}
