@@ -46,7 +46,6 @@
 
   function closeButtonClicked() {
     this.end();
-    $(document).off("keyup");
   }
 
   function eventsDelegation() {
@@ -68,11 +67,19 @@
 
     document.addEventListener('legacyTemplateEditor.closed', closeCallback);
 
+    const escapeEndDialog = (e) => {
+      if (e.keyCode === 27) {	// esc
+        depController.end();
+      }
+    };
+
     this.on('end', () => {
       document.removeEventListener('legacyTemplateEditor.opened', openCallback);
       document.removeEventListener('legacyTemplateEditor.closed', closeCallback);
+      $(document).off('keyup', escapeEndDialog);
     });
 
+    $(document).on('keyup', escapeEndDialog);
   }
 
   function loadItems(data, dependenciesSelection) {
@@ -99,15 +106,10 @@
       },
       select = $('.dependencies-option');
 
+    this.item = itemsData[0];
+
     select.val(dependenciesSelection);
     CStudioAuthoring.Service.loadItems(callback, data);
-
-    $(document).on("keyup", function (e) {
-      if (e.keyCode === 27) {	// esc
-        me.end();
-        $(document).off("keyup");
-      }
-    });
   }
 
   function traverse(items, referenceDate) {
@@ -176,7 +178,7 @@
 
     $container.empty();
 
-    var item = items[0];
+    var item = this.item;
 
     var temp = item.scheduledDate,
       itemDependenciesClass = "toggle-deps",
@@ -186,7 +188,6 @@
     item.index = itemDependenciesClass;
     var $parentRow = $(agent.get('ITEM_ROW', item));
     $container.empty();
-    // $container.append($parentRow);
     item.scheduledDate = temp;
 
     var $nameEl = $(me.getComponent('.view-caption .show-for-item'));
@@ -273,7 +274,7 @@
         });
 
       }
-    }
+    };
 
     if (optionSelected !== 'depends-on') {
       CStudioAuthoring.Service.loadDependencies(

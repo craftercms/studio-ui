@@ -559,14 +559,20 @@
               <span class="content-type-tools-panel-icon ttClose"></span>
               ${CMgs.format(langBundle, 'controls')}
             </h4>
-            <div id="widgets-container"></div>
+            <div>
+              <input id="controlsSearchInput" class="content-types--controls--search-input" type="text" value="" placeholder="Search controls...">
+              <div id="widgets-container"></div>
+            </div>
           </div>
           <div class="content-type-tools-panel">
             <h4 id="datasources-tools-panel">
               <span class="content-type-tools-panel-icon ttClose"></span>
               ${CMgs.format(langBundle, 'datasources')}
             </h4>
-            <div id="datasources-container"></div>
+            <div>
+              <input id="datasourcesSearchInput" class="content-types--controls--search-input" type="text" value="" placeholder="Search data sources...">
+              <div id="datasources-container"></div>
+            </div>
           </div>
         `;
 
@@ -574,6 +580,35 @@
         YAHOO.util.Event.addListener('control-tools-panel', 'click', this.togglePanel, this, true);
         YAHOO.util.Event.addListener('datasources-tools-panel', 'click', this.togglePanel, this, true);
 
+        let $controls = null;
+        let $dataSources = null;
+        const { fromEvent, operators: { map, debounceTime } } = CrafterCMSNext.rxjs;
+        fromEvent(document.querySelector('#controlsSearchInput'), 'keyup').pipe(
+          debounceTime(200),
+          map(e => e.target.value.trim().toLowerCase())
+        ).subscribe((value) => {
+          if ($controls === null) {
+            $controls = $('#widgets-container .control');
+          }
+          if (value === '') {
+            $controls.show();
+          } else {
+            $controls.hide().filter(`[data-label*="${value}"]`).show();
+          }
+        });
+        fromEvent(document.querySelector('#datasourcesSearchInput'), 'keyup').pipe(
+          debounceTime(200),
+          map(e => e.target.value.trim().toLowerCase())
+        ).subscribe((value) => {
+          if ($dataSources === null) {
+            $dataSources = $('#datasources-container .datasource');
+          }
+          if (value === '') {
+            $dataSources.show();
+          } else {
+            $dataSources.hide().filter(`[data-label*="${value}"]`).show();
+          }
+        });
 
         var propertiesPanelEl = document.getElementById('properties-container');
         var propertySheet = new CStudioAdminConsole.PropertySheet(propertiesPanelEl, CStudioAdminConsole.Tool.ContentTypes.visualization.definition, this.config);
@@ -586,6 +621,7 @@
         controlsPanelEl.appendChild(formContainerEl);
         YDom.addClass(formContainerEl, 'control');
         formContainerEl.innerHTML = CMgs.format(langBundle, 'formSection');
+        formContainerEl.setAttribute('data-label', CMgs.format(langBundle, 'formSection').toLowerCase());
         var dd = new DragAndDropDecorator(formContainerEl);
         YDom.addClass(formContainerEl, 'control-section');
         var iconEltFormSection = CStudioAuthoring.Utils.createIcon(formSection, 'fa-cube');
@@ -596,6 +632,7 @@
         controlsPanelEl.appendChild(repeatContainerEl);
         YDom.addClass(repeatContainerEl, 'control');
         repeatContainerEl.innerHTML = CMgs.format(langBundle, 'repeatingGroup');
+        repeatContainerEl.setAttribute('data-label', CMgs.format(langBundle, 'repeatingGroup').toLowerCase());
         var dd = new DragAndDropDecorator(repeatContainerEl);
         YDom.addClass(repeatContainerEl, 'new-control-type');
         YDom.addClass(repeatContainerEl, 'repeating-group');
@@ -660,19 +697,22 @@
                     if (plugin) {
                       CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()].plugin = plugin;
                     }
-                    YDom.addClass(this.controlContainerEl, 'control');
-                    this.controlContainerEl.innerHTML = tool.getLabel();
+                    const controlEl = this.controlContainerEl;
+                    YDom.addClass(controlEl, 'control');
+                    controlEl.innerHTML = tool.getLabel();
 
-                    var dd = new DragAndDropDecorator(this.controlContainerEl);
+                    controlEl.setAttribute('data-label', tool.getLabel().toLowerCase());
+
+                    var dd = new DragAndDropDecorator(controlEl);
                     tool.id = tool.getFixedId();
-                    this.controlContainerEl.prototypeField = tool;
+                    controlEl.prototypeField = tool;
                     controls[idx].supportedPostFixes = tool.getSupportedPostFixes ? tool.getSupportedPostFixes() : [];
 
-                    YDom.addClass(this.controlContainerEl, 'new-control-type');
-                    YDom.addClass(this.controlContainerEl, tool.getName().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase() + '-control');
+                    YDom.addClass(controlEl, 'new-control-type');
+                    YDom.addClass(controlEl, tool.getName().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase() + '-control');
 
                     var iconElt = CStudioAuthoring.Utils.createIcon(controls[idx], 'fa-cube');
-                    this.controlContainerEl.insertBefore(iconElt, this.controlContainerEl.firstChild);
+                    controlEl.insertBefore(iconElt, controlEl.firstChild);
                   } catch (e) {
                   }
                 },
@@ -723,6 +763,7 @@
                     YDom.addClass(this.dsourceContainerEl, 'datasource');
                     YDom.addClass(this.dsourceContainerEl, 'new-datasource-type');
                     this.dsourceContainerEl.innerHTML = datasource.getLabel();
+                    this.dsourceContainerEl.setAttribute('data-label', datasource.getLabel().toLowerCase());
                     YDom.addClass(this.dsourceContainerEl, datasource.getLabel().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
                     $(this.dsourceContainerEl).attr('data-item-id', datasource.getName());
 
@@ -1554,6 +1595,14 @@
                   item = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.insertNewDatasource(form, srcEl.prototypeDatasource);
                 }
                 handled = true;
+              }
+
+              if ($(srcEl).hasClass('control')) {
+                $('#controlsSearchInput').val('');
+                $('#widgets-container .control').show();
+              } else if ($(srcEl).hasClass('datasource')) {
+                $('#datasourcesSearchInput').val('');
+                $('#datasources-container .datasource').show();
               }
 
               if (handled == true) {

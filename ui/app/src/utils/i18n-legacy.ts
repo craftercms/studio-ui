@@ -634,7 +634,7 @@ const checkboxGroupControlMessages = defineMessages({
 const transcodedVideoPickerControlMessages = defineMessages({
   label: {
     id: 'transcodedVideoPickerControl.label',
-    defaultMessage: 'Transcoded Video Picker'
+    defaultMessage: 'Transcoded Video'
   }
 });
 
@@ -723,14 +723,42 @@ const adminConfigurationMessages = defineMessages({
     defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t}' +
       'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
   },
-  encryptHint: {
-    id: 'adminConfigurations.encryptHint',
-    defaultMessage: 'By adding the `encrypted=””` attribute to a tag on the config document you mark it for encryption.' +
-      ' By pressing the “Encrypt Marked” button, the system will encrypt the inner text of each of the marked tags. ' +
-      'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text). ' +
-      'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypted a chunk of XML. ' +
-      'The encrypted text result will be in the form of `${enc:..}`. This wrapping is a hint to the system that this is ' +
-      'an encrypted value. Please do not manipulate encryption results manually.'
+  encryptHintPt1: {
+    id: 'adminConfigurations.encryptHinPt1',
+    defaultMessage: 'To encrypt the content of a tag, (1) mark the desired tags for encryption, then (2) click on the "Encrypt Marked" button.'
+  },
+  encryptHintPt2: {
+    id: 'adminConfigurations.encryptHinPt2',
+    defaultMessage: '(1) Mark your tags for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
+  },
+  encryptHintPt3: {
+    id: 'adminConfigurations.encryptHinPt3',
+    defaultMessage: 'Example: {lt}accessKey encrypted=""{gt}AKIAIOSFODNN7EXAMPLE{lt}/accessKey{gt}'
+  },
+  encryptHintPt4: {
+    id: 'adminConfigurations.encryptHinPt4',
+    defaultMessage: '(2) Click on the <bold>`Encrypt Marked`</bold> button. Once the process completes, your tag should now look like:'
+  },
+  encryptHintPt5: {
+    id: 'adminConfigurations.encryptHinPt5',
+    // eslint-disable-next-line no-template-curly-in-string
+    defaultMessage: '{lt}accessKey encrypted="true"{gt}${lc}enc:xeJW23SomeEncryptedValuesListedHere{rc}{lt}/accessKey{gt}'
+  },
+  encryptHintPt6: {
+    id: 'adminConfigurations.encryptHinPt6',
+    defaultMessage: 'Remember:'
+  },
+  encryptHintPt7: {
+    id: 'adminConfigurations.encryptHinPt7',
+    defaultMessage: 'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).'
+  },
+  encryptHintPt8: {
+    id: 'adminConfigurations.encryptHinPt8',
+    defaultMessage: 'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML.'
+  },
+  encryptHintPt9: {
+    id: 'adminConfigurations.encryptHinPt9',
+    defaultMessage: 'Do not manipulate encryption results manually.'
   }
 });
 
