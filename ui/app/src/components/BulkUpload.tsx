@@ -588,7 +588,7 @@ function ProgressBar(props: any) {
 export default function BulkUpload(props: any) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
-  const { onClose, path, site, maxSimultaneousUploads = 1, open = true } = props;
+  const { onClose, path, site, maxSimultaneousUploads = 1, open } = props;
   const [dropZoneStatus, setDropZoneStatus] = useSpreadState({
     status: 'idle',
     files: null,
