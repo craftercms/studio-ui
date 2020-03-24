@@ -2951,10 +2951,11 @@ var CStudioForms = CStudioForms || function() {
             var
               repeatValue = item[j][repeatKey],
               isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
-              repeatAttr = isRemote ? ' remote="true"' : '';
+              isArray = Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1,
+              repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''}`;
 
             output += '\t<' + repeatKey + repeatAttr + '>';
-            if (Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1) {
+            if (isArray) {
               output = this.recursiveRetrieveItemValues(repeatValue, output, key);
             } else {
               output += this.escapeXml(repeatValue);
