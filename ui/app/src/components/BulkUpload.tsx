@@ -233,18 +233,12 @@ interface UppyItemProps {
 function UppyItem(props: UppyItemProps) {
   const classes = UppyItemStyles({});
   const { file, retryFileUpload } = props;
-  //const [failed, setFailed] = useState(null);
 
   const handleRetry = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, file: UppyFile) => {
     event.preventDefault();
     event.stopPropagation();
-    //setFailed(false);
     retryFileUpload(file);
   };
-
-  // useEffect(() => {
-  //   setFailed(file.progress.failed);
-  // }, [file.progress.failed]);
 
   return (
     <Card className={classes.cardRoot}>
