@@ -285,7 +285,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const generalProgress = useRef(null);
   const { onStatusChange, path, site, maxSimultaneousUploads } = props;
   const { formatMessage } = useIntl();
-  const [filesPerPath, setFilesPerPath] = useSpreadState<LookupTable<any>>(null);
+  const [filesPerPath, setFilesPerPath] = useState<LookupTable<any>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
   const uppy = useMemo(() => Core({ debug: false, autoProceed: true }), []);
@@ -385,8 +385,6 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
 
     const handleFileAdded = (file: UppyFile) => {
       const newPath = file.meta.relativePath ? path + file.meta.relativePath.substring(0, file.meta.relativePath.lastIndexOf('/')) : path;
-      const ids = (filesPerPath && filesPerPath[newPath]) ? [...filesPerPath[newPath], file.id] : [file.id];
-      setFilesPerPath({ [newPath]: ids });
       uppy.setFileMeta(file.id, { path: newPath });
       if (file.type.includes('image')) {
         const reader = new FileReader();
@@ -437,6 +435,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
 
   useEffect(() => {
     if (files) {
+      let filesPerPath: any = {};
+      Object.values(files).forEach((file: UppyFile) => {
+        if (!filesPerPath[file.meta.path]) {
+          filesPerPath[file.meta.path] = [];
+        }
+        filesPerPath[file.meta.path].push(file.id)
+      });
+      setFilesPerPath(filesPerPath);
       onStatusChange({ files: Object.keys(files).length })
     }
   }, [onStatusChange, files]);
@@ -582,7 +588,7 @@ function ProgressBar(props: any) {
 export default function BulkUpload(props: any) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
-  const { onClose, path, site, maxSimultaneousUploads = 1, open } = props;
+  const { onClose, path, site, maxSimultaneousUploads = 1, open = true } = props;
   const [dropZoneStatus, setDropZoneStatus] = useSpreadState({
     status: 'idle',
     files: null,
