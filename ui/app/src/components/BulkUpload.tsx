@@ -471,7 +471,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
               <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')}/>
               <Typography variant="subtitle1">
                 {formatMessage(translations.dropHere, {
-                  span: browse => <span className={classes.browseText}>browse</span>
+                  span: browse => <span key='browse' className={classes.browseText}>browse</span>
                 })}
               </Typography>
             </>
