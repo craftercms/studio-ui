@@ -1699,7 +1699,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         {
           path: oCurrentTextNode.data.path,
           site: oCurrentTextNode.data.site,
-          maxSimultaneousUploads: 1,
+          maxSimultaneousUploads: 2,
           onClose: onClose,
           open: true
         }
