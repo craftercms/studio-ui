@@ -874,5 +874,6 @@ export default {
   fileNameControlMessages,
   rteControlMessages,
   ossAttribution,
-  dashboardWidgetsMessages
+  dashboardWidgetsMessages,
+  nodeSelectorMessages
 };

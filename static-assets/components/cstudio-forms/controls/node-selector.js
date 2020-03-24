@@ -276,7 +276,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
   _renderAddOptions() {
     const self = this;
     if (this.contentTypes) {
-      //const messages = CrafterCMSNext.i18n.intl.messages.nodeSelectorMessages;
+      const messages = CrafterCMSNext.i18n.messages.nodeSelectorMessages;
       //debugger;
       YAHOO.util.Dom.removeClass(this.addButtonEl, 'cstudio-button-disabled');
       this.addButtonEl.disabled = false;
@@ -284,15 +284,10 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       $addContainerEl.hide();
       $(this.containerEl).append($addContainerEl);
 
+      //console.log(self.form.datasourceMap);
+
       this.contentTypes.forEach(contentType => {
-        let $newCreate = $(`
-          <div class="cstudio-form-control-node-selector-add-container-item">
-            ${CrafterCMSNext.i18n.intl.formatMessage(messages.createNew)} ${contentType}
-          </div>
-        `);
-        $addContainerEl.append($newCreate);
-        //YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-        //CrafterCMSNext.i18n.intl.formatMessage
+        self._createContentTypesControls(contentType, $addContainerEl);
       });
 
       $(this.addButtonEl).on('click', function (event) {
@@ -302,12 +297,25 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         });
         $addContainerEl.toggle();
       });
-
-      console.log(addContainerEl);
-      //YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-
     }
-    //console.log(this.contentTypes);
+  },
+
+  _createContentTypesControls(contentType, $addContainerEl) {
+    console.log(this.form.datasourceMap);
+    console.log(this.datasourceName);
+    let $newCreate = $(`
+            <div class="cstudio-form-control-node-selector-add-container-item">
+              ${CrafterCMSNext.i18n.intl.formatMessage(messages.createNew)} ${contentType}
+            </div>
+          `);
+    $addContainerEl.append($newCreate);
+    $newCreate.on('click', function () {
+      self._openContentTypeForm(contentType);
+    });
+  },
+
+  _openContentTypeForm(contentType) {
+    console.log(contentType);
   },
 
   _setActions: function () {
