@@ -17,6 +17,7 @@
 import { get } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { getRequestForgeryToken } from '../utils/auth';
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -28,6 +29,10 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(
     map((xml = '') => new DOMParser().parseFromString(xml, 'text/xml'))
   );
+}
+
+export function getBulkUploadUrl(site: string, path: string): string {
+  return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`
 }
 
 export default {

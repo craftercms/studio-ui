@@ -825,6 +825,17 @@ const dashboardWidgetsMessages = defineMessages({
   }
 });
 
+const bulkUploadConfirmDialogMessages = defineMessages({
+  title: {
+    id: 'bulkUploadConfirmDialogMessages.title',
+    defaultMessage: 'Upload in progress'
+  },
+  description: {
+    id: 'bulkUploadConfirmDialogMessages.description',
+    defaultMessage: 'There is still a bulk upload in progress. Only one bulk upload can be executed at the same time.'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -856,5 +867,6 @@ export default {
   fileNameControlMessages,
   rteControlMessages,
   ossAttribution,
-  dashboardWidgetsMessages
+  dashboardWidgetsMessages,
+  bulkUploadConfirmDialogMessages
 };
