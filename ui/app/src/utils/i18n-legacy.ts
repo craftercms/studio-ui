@@ -741,6 +741,7 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHintPt5: {
     id: 'adminConfigurations.encryptHinPt5',
+    // eslint-disable-next-line no-template-curly-in-string
     defaultMessage: '{lt}accessKey encrypted="true"{gt}${lc}enc:xeJW23SomeEncryptedValuesListedHere{rc}{lt}/accessKey{gt}'
   },
   encryptHintPt6: {
