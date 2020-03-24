@@ -17,7 +17,7 @@
  *
  */
 
-import { get, post } from '../utils/ajax';
+import { get, postJSON } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 
 export function fetchDependencies(siteId: string, items: any) {
@@ -25,12 +25,9 @@ export function fetchDependencies(siteId: string, items: any) {
 }
 
 export function getSimpleDependencies(siteId: string, path: string) {
-  return post(
+  return postJSON(
     `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json?site=${siteId}&path=${path}`,
-    null,
-    {
-      'Content-Type': 'application/json'
-    }
+    null
   ).pipe(
     map((response: any) => {
       if (response.response) {
@@ -43,12 +40,9 @@ export function getSimpleDependencies(siteId: string, path: string) {
 }
 
 export function getDependant(siteId: string, path: string) {
-  return post(
+  return postJSON(
     `/studio/api/1/services/api/1/dependency/get-dependant.json?site=${siteId}&path=${path}`,
-    null,
-    {
-      'Content-Type': 'application/json'
-    }
+    null
   ).pipe(
     map((response: any) => {
       if (response.response) {

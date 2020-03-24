@@ -140,7 +140,6 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   return (
     <Dialog
       onClose={handleClose}
-      aria-labelledby="simple-dialog-title"
       open={open}
       fullWidth={true}
       maxWidth={'md'}
@@ -161,11 +160,9 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                       defaultMessage="Dependencies"
                     />
                   </Typography>
-                  {/*{onClose ? (*/}
                   <IconButton aria-label="close" onClick={handleClose}>
                     <CloseIcon/>
                   </IconButton>
-                  {/*) : null}*/}
                 </div>
                 <Typography variant="subtitle1" className={classes.subtitle}>
                   <FormattedMessage
@@ -174,12 +171,13 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                   />
                 </Typography>
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="depend-selection-label" className={classes.selectLabel}>
-                    Show content that:
+                  <InputLabel className={classes.selectLabel}>
+                    <FormattedMessage
+                      id="deleteDialog.selectLabel"
+                      defaultMessage={'Show content that:'}
+                    />
                   </InputLabel>
                   <Select
-                    labelId="depend-selection-label"
-                    id="depend-selection"
                     value={state.selectedOption}
                     onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                       setState({ selectedOption: event.target.value as string });
