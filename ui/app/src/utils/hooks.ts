@@ -50,6 +50,10 @@ export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>(state => state.env);
 }
 
+export function useActiveUser(): GlobalState['user'] {
+  return useSelector<GlobalState, GlobalState['user']>(state => state.user);
+}
+
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
   let result, promise, resource, status = 'pending';
   promise = factoryFn().then(

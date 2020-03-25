@@ -18,9 +18,7 @@ import React, { useState } from 'react';
 import { Item } from '../../../models/Item';
 import DeleteDialogUI from './DeleteDialogUI';
 import { deleteItems } from '../../../services/content';
-import { useSelector } from 'react-redux';
-import GlobalState from '../../../models/GlobalState';
-import { useActiveSiteId, useSpreadState } from '../../../utils/hooks';
+import { useActiveSiteId, useActiveUser, useSpreadState } from '../../../utils/hooks';
 
 interface DeleteDialogProps {
   items: Item[];
@@ -45,7 +43,7 @@ function DeleteDialog(props: DeleteDialogProps) {
     global: false,
     errorResponse: null
   });
-  const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
+  const user = useActiveUser();
   const siteId = useActiveSiteId();
 
   const handleClose = () => {
