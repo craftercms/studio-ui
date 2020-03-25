@@ -18,6 +18,7 @@ import { catchApi1Error, CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
 import { map, pluck } from 'rxjs/operators';
 import { Observable, Observer } from 'rxjs';
 import { Item, LegacyItem } from '../models/Item';
+{ getRequestForgeryToken } from '../utils/auth';
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -29,6 +30,10 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(
     map((xml = '') => new DOMParser().parseFromString(xml, 'text/xml'))
   );
+}
+
+export function getBulkUploadUrl(site: string, path: string): string {
+  return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`
 }
 
 export function getChildrenByPath(site: string, path: string): Observable<any> {
@@ -107,6 +112,7 @@ export function getPages(site: string, item: any): Observable<any> {
 export default {
   getContent,
   getDOM,
+  getBulkUploadUrl,
   getChildrenByPath,
   copyItem,
   cutItem,

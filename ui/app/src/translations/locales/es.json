@@ -318,7 +318,7 @@
   "siteConfig.landingMessage": "Por favor, elija una herramienta de la izquierda.",
   "siteConfig.switchToMessage": "Cambiar a {type}",
   "targetingDialog.setNow": "Establecer ahora",
-  "transcodedVideoPickerControl.label": "Selector de video transcodificado",
+  "transcodedVideoPickerControl.label": "Video transcodificado",
   "usersAdmin.firstName": "Nombre de pila",
   "usersAdmin.lastName": "Apellido",
   "usersAdmin.maxLengthError": "{field} no puede tener más de {size} caracteres",

@@ -14,67 +14,77 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogActions from "@material-ui/core/DialogActions";
-import Button from "@material-ui/core/Button";
-import React from "react";
-import { defineMessages, useIntl } from "react-intl";
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import React from 'react';
+import { defineMessages, useIntl } from 'react-intl';
 
 const messages = defineMessages({
   ok: {
-    id: 'common.ok',
+    id: 'words.ok',
     defaultMessage: 'Ok'
   },
   cancel: {
-    id: 'common.cancel',
+    id: 'words.cancel',
     defaultMessage: 'Cancel'
   }
 });
 
 interface ConfirmDialogProps {
   open: boolean;
-  onOk(): any;
-  onClose(): any;
-  description: string;
+  description?: string;
   title: string;
-  disableEnforceFocus: boolean;
+  disableEnforceFocus?: boolean;
+
+  onOk?(): any;
+
+  onCancel?(): any;
+
+  onClose(): any;
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
-  const {open, onOk, onClose, description, title, disableEnforceFocus} = props;
-  const {formatMessage} = useIntl();
+  const { open, onOk, onClose, onCancel, description, title, disableEnforceFocus = false } = props;
+  const { formatMessage } = useIntl();
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
+      aria-labelledby="confirmDialogTitle"
+      aria-describedby="confirmDialogBody"
       disableEnforceFocus={disableEnforceFocus}
     >
       {
         title &&
-        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+        <DialogTitle id="confirmDialogTitle">{title}</DialogTitle>
       }
 
-      <DialogContent>
+      <DialogContent id="confirmDialogBody" dividers>
         {
           description &&
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText>
             {description}
           </DialogContentText>
         }
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} variant="outlined">
-          {formatMessage(messages.cancel)}
-        </Button>
-        <Button onClick={onOk} variant="contained" color="primary" autoFocus>
-          {formatMessage(messages.ok)}
-        </Button>
+        {
+          onCancel &&
+          <Button onClick={onCancel} variant="outlined">
+            {formatMessage(messages.cancel)}
+          </Button>
+        }
+        {
+          onOk &&
+          <Button onClick={onOk} variant="contained" color="primary" autoFocus>
+            {formatMessage(messages.ok)}
+          </Button>
+        }
       </DialogActions>
     </Dialog>
   )

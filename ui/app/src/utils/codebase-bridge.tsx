@@ -28,7 +28,7 @@ import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { filter, map, take, debounceTime } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import babel from '../utils/babelHelpers-legacy';
@@ -90,7 +90,7 @@ export function createCodebaseBridge() {
       Subject,
       fromEvent,
       forkJoin,
-      operators: { filter, map, take }
+      operators: { filter, map, take, debounceTime }
     },
 
     components: {
@@ -108,7 +108,9 @@ export function createCodebaseBridge() {
       PublishingQueue: lazy(() => import('../components/PublishingQueue')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
-      Login: lazy(() => import('../pages/Login'))
+      Login: lazy(() => import('../pages/Login')),
+      BulkUpload: lazy(() => import('../components/BulkUpload')),
+      ConfirmDialog: lazy(() => import('../components/ConfirmDialog'))
     },
 
     assets: {
