@@ -835,6 +835,13 @@ const dashboardWidgetsMessages = defineMessages({
   }
 });
 
+const embeddedLegacyFormMessages = defineMessages({
+  contentFormFailedToLoadErrorMessage: {
+    id: 'embeddedLegacyFormMessages.openContentFormFailedError',
+    defaultMessage: 'An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -867,5 +874,6 @@ export default {
   fileNameControlMessages,
   rteControlMessages,
   ossAttribution,
-  dashboardWidgetsMessages
+  dashboardWidgetsMessages,
+  embeddedLegacyFormMessages
 };

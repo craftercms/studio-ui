@@ -1039,6 +1039,12 @@ export function uploadDataUrl(
   });
 }
 
+export function getQuickCreateContentList(siteId: string) {
+  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
+    pluck('response')
+  )
+}
+
 export function deleteItems(siteId: string, user: string, submissionComment: string, data): Observable<any> {
   return post(
     `/studio/api/1/services/api/1/workflow/go-delete.json?site=${siteId}&user=${user}&submissionComment=${submissionComment}`,
@@ -1074,5 +1080,6 @@ export default {
   deleteItem,
   getContentByContentType,
   fetchPublishingChannels,
-  uploadDataUrl
+  uploadDataUrl,
+  getQuickCreateContentList
 };
