@@ -1045,7 +1045,7 @@ export function getQuickCreateContentList(siteId: string) {
   )
 }
 
-export function deleteItems(siteId: string, user: string, submissionComment: string, data): Observable<any> {
+export function deleteItems(siteId: string, user: string, submissionComment: string, data: AnyObject): Observable<any> {
   return postJSON(
     `/studio/api/1/services/api/1/workflow/go-delete.json?site=${siteId}&user=${user}&submissionComment=${submissionComment}`,
     data
