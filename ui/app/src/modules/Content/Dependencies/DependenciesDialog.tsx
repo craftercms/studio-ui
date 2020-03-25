@@ -26,6 +26,17 @@ const dialogInitialState = {
   dependencies: []
 };
 
+const editableAssets = [    // TODO: how are go going to keep track of this? Should this be somewhere else?
+  'ftl',
+  'css',
+  'js',
+  'groovy',
+  'txt',
+  'html',
+  'hbs',
+  'xml'
+];
+
 interface DependenciesDialogProps {
   item: Item;
   dependenciesSelection: string;
@@ -50,6 +61,11 @@ function DependenciesDialog(props: DependenciesDialogProps) {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const isEditableItem = (item: Item) => {
+    const extension = item.uri.substring(item.uri.lastIndexOf('.') + 1);  // +1 to remove the period
+    return editableAssets.includes(extension);
   };
 
   useEffect(() => {
@@ -98,6 +114,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       handleErrorBack={handleErrorBack}
       handleClose={handleClose}
       handleDependencyEdit={handleDependencyEdit}
+      isEditableItem={isEditableItem}
     />
   )
 }

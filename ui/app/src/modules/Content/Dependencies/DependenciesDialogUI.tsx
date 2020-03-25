@@ -121,6 +121,7 @@ interface DependenciesDialogUIProps {
   handleErrorBack: any;
   handleClose: any;
   handleDependencyEdit: Function;
+  isEditableItem: Function;
 }
 
 function DependenciesDialogUI(props: DependenciesDialogUIProps) {
@@ -133,7 +134,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     apiState,
     handleErrorBack,
     handleClose,
-    handleDependencyEdit
+    handleDependencyEdit,
+    isEditableItem
   } = props;
   const classes = deleteDialogStyles({});
 
@@ -234,15 +236,18 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                             {dependency.uri}
                           </TableCell>
                           <TableCell component="th" scope="row">
-                            <a href="" onClick={(e) => {
-                              e.preventDefault();
-                              handleDependencyEdit(dependency);
-                            }}>
-                              <FormattedMessage
-                                id="dependenciesDialog.edit"
-                                defaultMessage="Edit"
-                              />
-                            </a>
+                            {
+                              isEditableItem(dependency) &&
+                              <a href="" onClick={(e) => {
+                                e.preventDefault();
+                                handleDependencyEdit(dependency);
+                              }}>
+                                <FormattedMessage
+                                  id="dependenciesDialog.edit"
+                                  defaultMessage="Edit"
+                                />
+                              </a>
+                            }
                           </TableCell>
                         </TableRow>
                       ))}
