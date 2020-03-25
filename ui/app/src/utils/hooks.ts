@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import { Dispatch, SetStateAction, useReducer } from 'react';
-
-=======
->>>>>>> 44748d65ed5f16b14926a99308ca1520f1e479ef
 /*
  * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
