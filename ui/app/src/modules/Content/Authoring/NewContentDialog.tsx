@@ -3,6 +3,8 @@ import Dialog from '@material-ui/core/Dialog';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import { usePreviewState } from '../../../utils/hooks';
 import { fetchLegacyContentTypes } from '../../../services/content';
 
 interface ContentTypesFetchConfig {
@@ -16,15 +18,20 @@ interface NewContentProps {
 
   handleClose(): void;
 
-  handleOpenType(srcData: any): void;
+  handleOpenType(srcData: any, srcPath: string): void;
 }
 
 function NewContentUi({ open, handleClose, contentTypes, site, handleOpenType }) {
   const [selectContent, setSelectContent] = useState(contentTypes[0]);
+  const { computedUrl } = usePreviewState();
+  const [contextPath, setContextPath] = useState(computedUrl);
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
+  const defaultContextPath = !contextPath ? computedUrl : contextPath;
 
   const handleListItemClick = (contentData) => () => setSelectContent(contentData);
+
+  const handlePathChange = e => setContextPath(e.target.value);
 
   const prevImgSrc =
     (selectContent?.imageThumbnail) ?
@@ -44,9 +51,19 @@ function NewContentUi({ open, handleClose, contentTypes, site, handleOpenType })
       </List>
       <img
         src={prevImgSrc}
-        alt="preview" />
+        alt="preview"
+        style={{ maxWidth: '200px' }} />
 
-      <Button color="primary" onClick={handleOpenType(selectContent)}>
+      <TextField
+        id="sandboxBranch"
+        name="sandboxBranch"
+        label={<span>Content Path</span>}
+        onChange={handlePathChange}
+        InputLabelProps={{ shrink: true }}
+        value={contextPath}
+      />
+
+      <Button color="primary" onClick={handleOpenType(selectContent, defaultContextPath)}>
         Open
       </Button>
 

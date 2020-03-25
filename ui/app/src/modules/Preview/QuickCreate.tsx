@@ -108,9 +108,10 @@ export function QuickCreateMenu({ anchorEl, handleMenuClose }) {
     setDisplayNewContentDialog(false);
   };
 
-  const handleOpenType = (srcData) => () => {
+  const handleOpenType = (srcData, contextPath: string) => () => {
     const { form } = srcData;
-    const path = '/site/website';
+    const defaultPath = '/site/website';
+    const path = contextPath ? `${defaultPath}/${contextPath}` : defaultPath;
     const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${form}&path=${path}&type=form`;
 
     setDialogConfig({
@@ -182,7 +183,7 @@ export function QuickCreateMenu({ anchorEl, handleMenuClose }) {
         handleOpenType={handleOpenType}
         contentTypesFetchConfig={{
           site: siteId,
-          path: '/site/website/'
+          path: '/site/website'
         }}
       />
     </>
