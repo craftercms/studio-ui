@@ -19,7 +19,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import DialogTitle from './DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import { palette } from '../styles/theme';

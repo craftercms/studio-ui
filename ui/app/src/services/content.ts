@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
+import { catchApi1Error, CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
 import { map, pluck } from 'rxjs/operators';
 import { Observable, Observer } from 'rxjs';
 import { Item, LegacyItem } from '../models/Item';
@@ -77,19 +77,31 @@ export function getChildrenByPath(site: string, path: string): Observable<any> {
 
 export function copyItem(site: string, item: Partial<LegacyItem>): Observable<any> {
   let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
-  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(pluck('response'));
+  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
 }
 
 export function cutItem(site: string, item: Item): Observable<any> {
-  return post(`/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`, { item: [{ uri: item.path }] }, CONTENT_TYPE_JSON).pipe(pluck('response'));
+  return post(`/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`, { item: [{ uri: item.path }] }, CONTENT_TYPE_JSON).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
 }
 
 export function pasteItem(site: string, item: Item): Observable<any> {
-  return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(pluck('response'));
+  return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
 }
 
-export function getPages(site: string, item: any): Observable<LegacyItem> {
-  return get(`/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`).pipe(pluck('response', 'item'));
+export function getPages(site: string, item: any): Observable<any> {
+  return get(`/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`).pipe(
+    pluck('response', 'item'),
+    catchApi1Error
+  );
 }
 
 export default {

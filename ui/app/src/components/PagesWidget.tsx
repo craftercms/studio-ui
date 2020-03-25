@@ -682,10 +682,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
         setItems(response.items);
         setBreadcrumb([...breadcrumb, response.parent]);
       },
-      ({ response }) => {
-        //TODO: I'm wrapping the API response as a API2 response
-        const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-        setError(error);
+      (response) => {
+        setError(response);
       }
     )
   }, [site, activePath]);
@@ -751,18 +749,14 @@ export default function PagesWidget(props: PagesWidgetProps) {
                     setMenuState({ hasClipboard: true });
                   }
                 },
-                ({ response }) => {
-                  //TODO: I'm wrapping the API response as a API2 response
-                  const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-                  setError(error);
+                (response) => {
+                  setError(response);
                 }
               );
             }
           },
-          ({ response }) => {
-            //TODO: I'm wrapping the API response as a API2 response
-            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setError(error);
+          (response) => {
+            setError(response);
           }
         );
         break;
@@ -776,9 +770,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
             });
             setMenuState({ hasClipboard: false });
           },
-          ({ response }) => {
-            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setError(error);
+          (response) => {
+            setError(response);
           }
         );
         break;
@@ -797,10 +790,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
               setMenuState({ hasClipboard: true });
             }
           },
-          ({ response }) => {
-            //TODO: I'm wrapping the API response as a API2 response
-            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setError(error);
+          (response) => {
+            setError(response);
           }
         );
         break;
@@ -815,16 +806,13 @@ export default function PagesWidget(props: PagesWidgetProps) {
           (response) => {
             setTranslationDialog(response.items)
           },
-          ({ response }) => {
-            //TODO: I'm wrapping the API response as a API2 response
-            const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setError(error);
+          (response) => {
+            setError(response);
           }
         );
         break;
       }
       default: {
-        console.log('default');
         if (section.id.includes('locale')) {
           setMenu({
             ...menu,
@@ -920,10 +908,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
           setMenuState({ hasClipboard: true });
         }
       },
-      ({ response }) => {
-        //TODO: I'm wrapping the API response as a API2 response
-        const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-        setError(error);
+      (response) => {
+        setError(response);
       }
     );
   };
