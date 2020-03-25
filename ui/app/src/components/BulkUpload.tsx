@@ -285,10 +285,10 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const generalProgress = useRef(null);
   const { onStatusChange, path, site, maxSimultaneousUploads } = props;
   const { formatMessage } = useIntl();
-  const [filesPerPath, setFilesPerPath] = useSpreadState<LookupTable<any>>(null);
+  const [filesPerPath, setFilesPerPath] = useState<LookupTable<any>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
-  const uppy = useMemo(() => Core({ debug: true, autoProceed: true }), []);
+  const uppy = useMemo(() => Core({ debug: false, autoProceed: true }), []);
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
   const retryFileUpload = (file: UppyFile) => {
@@ -385,8 +385,6 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
 
     const handleFileAdded = (file: UppyFile) => {
       const newPath = file.meta.relativePath ? path + file.meta.relativePath.substring(0, file.meta.relativePath.lastIndexOf('/')) : path;
-      const ids = (filesPerPath && filesPerPath[newPath]) ? [...filesPerPath[newPath], file.id] : [file.id];
-      setFilesPerPath({ [newPath]: ids });
       uppy.setFileMeta(file.id, { path: newPath });
       if (file.type.includes('image')) {
         const reader = new FileReader();
@@ -437,6 +435,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
 
   useEffect(() => {
     if (files) {
+      let filesPerPath: any = {};
+      Object.values(files).forEach((file: UppyFile) => {
+        if (!filesPerPath[file.meta.path]) {
+          filesPerPath[file.meta.path] = [];
+        }
+        filesPerPath[file.meta.path].push(file.id)
+      });
+      setFilesPerPath(filesPerPath);
       onStatusChange({ files: Object.keys(files).length })
     }
   }, [onStatusChange, files]);
@@ -470,9 +476,12 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
             <>
               <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')}/>
               <Typography variant="subtitle1">
-                {formatMessage(translations.dropHere, {
-                  span: browse => <span className={classes.browseText}>browse</span>
-                })}
+                {
+                  formatMessage(
+                    translations.dropHere, 
+                    { span: browse => <span key="browse" className={classes.browseText}>{browse}</span> }
+                  )
+                }
               </Typography>
             </>
           )
@@ -655,7 +664,7 @@ export default function BulkUpload(props: any) {
         <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
-          onClose={dropZoneStatus.status === 'uploading' ? onMinimized : onClose}
+          onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
           icon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
         />
         <DialogContent dividers className={classes.dialogContent}>
@@ -682,7 +691,7 @@ export default function BulkUpload(props: any) {
           {
             dropZoneStatus.status === 'idle' ? (
               <Button
-                onClick={onClose}
+                onClick={() => onClose(dropZoneStatus)}
                 variant="contained"
                 color='default'
               >
@@ -698,7 +707,7 @@ export default function BulkUpload(props: any) {
                   {formatMessage(translations.browse)}
                 </Button>
                 <Button
-                  onClick={onClose}
+                  onClick={() => onClose(dropZoneStatus)}
                   disabled={dropZoneStatus.status === 'uploading'}
                   variant="contained"
                   color='primary'

@@ -69,12 +69,12 @@ export default function DialogHeader(props: DialogTitleProps) {
     icon: Icon = CloseIcon,
     titleTypographyProps = {
       variant: 'h6',
-      component: 'initial',
+      component: 'span',
       classes: {}
     },
     subtitleTypographyProps = {
       variant: 'subtitle1',
-      component: 'initial',
+      component: 'span',
       classes: {}
     }
   } = props;
