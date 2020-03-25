@@ -25,7 +25,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
 import { palette } from '../../../styles/theme';
 import { DependencySelectionDelete } from '../Dependencies/DependencySelection';
-import { TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
