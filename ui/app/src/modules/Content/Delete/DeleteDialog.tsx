@@ -20,7 +20,7 @@ import DeleteDialogUI from './DeleteDialogUI';
 import { deleteItems } from '../../../services/content';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
-import { useActiveSiteId } from '../../../utils/hooks';
+import { useActiveSiteId, useSpreadState } from '../../../utils/hooks';
 
 interface DeleteDialogProps {
   items: Item[];
@@ -36,10 +36,10 @@ function DeleteDialog(props: DeleteDialogProps) {
     onClose,
     onSuccess
   } = props;
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
   const [submissionComment, setSubmissionComment] = useState('');
-  const [apiState, setApiState] = useState({
+  const [apiState, setApiState] = useSpreadState({
     error: false,
     submitting: false,
     global: false,
@@ -60,18 +60,18 @@ function DeleteDialog(props: DeleteDialogProps) {
       items: selectedItems
     };
 
-    setApiState({ ...apiState, submitting: true });
+    setApiState({ submitting: true });
 
     deleteItems(siteId, user.username, submissionComment, data).subscribe(
       (response) => {
         setOpen(false);
-        setApiState({ ...apiState, error: false, submitting: false });
+        setApiState({ error: false, submitting: false });
         onSuccess?.(response);
         onClose?.(response);
       },
       (response) => {
         if (response) {
-          setApiState({ ...apiState, error: true, errorResponse: (response.response) ? response.response : response });
+          setApiState({ error: true, errorResponse: (response.response) ? response.response : response });
         }
       }
     );
@@ -79,7 +79,7 @@ function DeleteDialog(props: DeleteDialogProps) {
   };
 
   function handleErrorBack() {
-    setApiState({ ...apiState, error: false, global: false });
+    setApiState({ error: false, global: false });
   }
 
   return (
