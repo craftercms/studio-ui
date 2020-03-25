@@ -102,6 +102,7 @@ interface DeleteDialogUIProps {
   handleClose: any;
   handleSubmit: any;
   handleErrorBack: any;
+  siteId: string;
 
   onClose?(response?: any): any;
 }
@@ -117,6 +118,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
     handleClose,
     handleSubmit,
     handleErrorBack,
+    siteId,
     onClose
   } = props;
   const classes = deleteDialogStyles({});
@@ -126,7 +128,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
       onClose={onClose}
       aria-labelledby="simple-dialog-title"
       open={open}
-      fullWidth={true}
+      fullWidth
       maxWidth={'sm'}
       className={classes.root}
     >
@@ -159,14 +161,13 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
               <div className={classes.dialogContent}>
                 <DependencySelectionDelete
                   items={items}
-                  siteId={'editorial'}
+                  siteId={siteId}
                   onChange={(result) => {
                     setSelectedItems(result);
                   }}
                 />
                 <form className={classes.submissionCommentField} noValidate autoComplete="off">
                   <TextField
-                    id="outlined-multiline-static"
                     label={
                       <FormattedMessage
                         id="deleteDialog.submissionCommentLabel"

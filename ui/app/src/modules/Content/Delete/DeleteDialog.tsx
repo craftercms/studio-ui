@@ -91,6 +91,7 @@ function DeleteDialog(props: DeleteDialogProps) {
       handleClose={handleClose}
       handleSubmit={handleSubmit}
       handleErrorBack={handleErrorBack}
+      siteId={siteId}
       onClose={onClose}
     />
   )
