@@ -194,7 +194,6 @@
 
   // Listen to the guest site load
   communicator.subscribe(Topics.GUEST_SITE_LOAD, function (message, scope) {
-
     hasCheckIn = true;
 
     if (message.url) {
@@ -518,7 +517,6 @@
   }
 
   function goToHashPage() {
-
     var win = getEngineWindow();
     var hash = parseHash(window.location.hash);
     var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite');
@@ -527,6 +525,10 @@
     if (hash.site) {
       CrafterCMSNext.util.auth.setSiteCookie('crafterSite', hash.site);
       siteChanged = (site !== hash.site);
+
+      if(hash.page) {
+        CStudioAuthoringContext.previewCurrentPath = hash.page;
+      }
     }
 
     if (siteChanged || !hasCheckIn) {
@@ -648,7 +650,6 @@
   }, false);
 
   window.addEventListener('load', function () {
-
     if (window.location.hash.indexOf('page') === -1) {
       setHash({
         page: '/',

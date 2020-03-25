@@ -39,6 +39,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         container,
         'QuickCreateMenu',
         {
+          newContentPath: CStudioAuthoringContext?.previewCurrentPath,
           anchorEl,
           handleMenuClose: () => renderQuickCreate(null)
         }

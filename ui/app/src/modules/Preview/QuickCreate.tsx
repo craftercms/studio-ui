@@ -28,7 +28,7 @@ import { getQuickCreateContentList } from '../../services/content';
 import {
   useActiveSiteId,
   useSpreadState,
-  useSelection
+  useSelection, usePreviewState
 } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import NewContentDialog from '../Content/Authoring/NewContentDialog';
@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function QuickCreateMenu({ anchorEl, handleMenuClose }) {
+export function QuickCreateMenu({ anchorEl, handleMenuClose, newContentPath }) {
   const classes = useStyles({});
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
@@ -127,7 +127,7 @@ export function QuickCreateMenu({ anchorEl, handleMenuClose }) {
   const handleOpenType = (srcData, contextPath: string) => () => {
     const { form } = srcData;
     const defaultPath = '/site/website';
-    const path = contextPath ? `${defaultPath}/${contextPath}` : defaultPath;
+    const path = !contextPath ? `${defaultPath}${newContentPath}` : `${defaultPath}/${contextPath}`;
     const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${form}&path=${path}&type=form`;
 
     setDialogConfig({
@@ -225,6 +225,7 @@ export function QuickCreateMenuBtn({ handleMenuBtnClick }) {
 
 export default function QuickCreate() {
   const [anchorEl, setAnchorEl] = useState(null);
+  const { computedUrl } = usePreviewState();
 
   const handleMenuBtnClick = e => setAnchorEl(e.currentTarget);
 
@@ -234,7 +235,7 @@ export default function QuickCreate() {
   return (
     <>
       <QuickCreateMenuBtn handleMenuBtnClick={handleMenuBtnClick} />
-      <QuickCreateMenu anchorEl={anchorEl} handleMenuClose={handleMenuClose} />
+      <QuickCreateMenu anchorEl={anchorEl} handleMenuClose={handleMenuClose} newContentPath={computedUrl}/>
     </>
   );
 }

@@ -23,11 +23,9 @@ interface NewContentProps {
 
 function NewContentUi({ open, handleClose, contentTypes, site, handleOpenType }) {
   const [selectContent, setSelectContent] = useState(contentTypes[0]);
-  const { computedUrl } = usePreviewState();
-  const [contextPath, setContextPath] = useState(computedUrl);
+  const [contextPath, setContextPath] = useState('');
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  const defaultContextPath = !contextPath ? computedUrl : contextPath;
 
   const handleListItemClick = (contentData) => () => setSelectContent(contentData);
 
@@ -63,7 +61,7 @@ function NewContentUi({ open, handleClose, contentTypes, site, handleOpenType })
         value={contextPath}
       />
 
-      <Button color="primary" onClick={handleOpenType(selectContent, defaultContextPath)}>
+      <Button color="primary" onClick={handleOpenType(selectContent, contextPath)}>
         Open
       </Button>
 
