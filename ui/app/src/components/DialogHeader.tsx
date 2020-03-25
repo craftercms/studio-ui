@@ -69,21 +69,21 @@ export default function DialogHeader(props: DialogTitleProps) {
     icon: Icon = CloseIcon,
     titleTypographyProps = {
       variant: 'h6',
-      component: 'initial',
+      component: 'span',
       classes: {}
     },
     subtitleTypographyProps = {
       variant: 'subtitle1',
-      component: 'initial',
+      component: 'span',
       classes: {}
     }
   } = props;
-  // @ts-ignore
   return (
     <MuiDialogTitle disableTypography className={classes.titleRoot}>
       <div className={classes.title}>
         <Typography
           variant={titleTypographyProps.variant}
+          // @ts-ignore
           component={titleTypographyProps.component}
           classes={titleTypographyProps.classes}
         >
@@ -99,6 +99,7 @@ export default function DialogHeader(props: DialogTitleProps) {
         subtitle &&
         <Typography
           variant={subtitleTypographyProps.variant}
+          // @ts-ignore
           component={subtitleTypographyProps.component}
           classes={subtitleTypographyProps.classes}
           className={classes.subtitle}
