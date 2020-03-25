@@ -16,10 +16,7 @@
 
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseRoundedIcon from '@material-ui/icons/Close';
 import { Item } from '../../../models/Item';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
@@ -27,9 +24,21 @@ import { palette } from '../../../styles/theme';
 import { DependencySelectionDelete } from '../Dependencies/DependencySelection';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorState from '../../../components/SystemStatus/ErrorState';
+import DialogHeader from '../../../components/DialogHeader';
+
+const translations = defineMessages({
+  headerTitle: {
+    id: 'deleteDialog.headerTitle',
+    defaultMessage: 'Delete'
+  },
+  headerSubTitle: {
+    id: 'deleteDialog.headerSubTitle',
+    defaultMessage: 'Selected items will be deleted along with their child items. Please review dependent items before deleting as these will end-up with broken link references.'
+  }
+});
 
 const deleteDialogStyles = makeStyles((theme) => createStyles({
   root: {
@@ -122,6 +131,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
     onClose
   } = props;
   const classes = deleteDialogStyles({});
+  const { formatMessage } = useIntl();
 
   return (
     <Dialog
@@ -136,28 +146,12 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
         (!apiState.error) ?
           (
             <>
-              {/* TODO: this dialog title is the same as the one used in PublishDialog and can be reused, move to a global component? */}
-              <MuiDialogTitle disableTypography className={classes.titleRoot}>
-                <div className={classes.title}>
-                  <Typography variant="h6">
-                    <FormattedMessage
-                      id="deleteDialog.headerTitle"
-                      defaultMessage="Delete"
-                    />
-                  </Typography>
-                  {onClose ? (
-                    <IconButton aria-label="close" onClick={onClose}>
-                      <CloseIcon/>
-                    </IconButton>
-                  ) : null}
-                </div>
-                <Typography variant="subtitle1" className={classes.subtitle}>
-                  <FormattedMessage
-                    id="deleteDialog.headerSubTitle"
-                    defaultMessage="Selected items will be deleted along with their items. Please review dependent items before deleting as these will end-up with broken link references."
-                  />
-                </Typography>
-              </MuiDialogTitle>
+              <DialogHeader
+                title={formatMessage(translations.headerTitle)}
+                subtitle={formatMessage(translations.headerSubTitle)}
+                onClose={onClose}
+                icon={CloseRoundedIcon}
+              />
               <div className={classes.dialogContent}>
                 <DependencySelectionDelete
                   items={items}
