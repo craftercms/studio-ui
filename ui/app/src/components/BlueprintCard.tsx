@@ -30,8 +30,9 @@ import { defineMessages, useIntl } from 'react-intl';
 import MobileStepper from './MobileStepper';
 import { backgroundColor } from '../styles/theme';
 import Button from '@material-ui/core/Button';
-import { Theme, Tooltip } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import clsx from 'clsx';
+import { Theme } from '@material-ui/core';
 
 
 interface BlueprintCardProps {
