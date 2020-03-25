@@ -106,6 +106,8 @@ export const EMBEDDED_LEGACY_FORM_CLOSE = 'EMBEDDED_LEGACY_FORM_CLOSE';
 export const EMBEDDED_LEGACY_FORM_RENDERED = 'EMBEDDED_LEGACY_FORM_RENDERED';
 export const EDIT_FORM_CHANGE_TAB = 'EDIT_FORM_CHANGE_TAB';
 export const EMBEDDED_LEGACY_FORM_PENDING_CHANGES = 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES';
+export const EMBEDDED_LEGACY_FORM_SAVE = 'EMBEDDED_LEGACY_FORM_SAVE';
+export const EMBEDDED_LEGACY_FORM_FAILURE = 'EMBEDDED_LEGACY_FORM_FAILURE';
 // endregion
 
 // region Action Creators
@@ -142,7 +144,7 @@ export function toolsLoaded(tools: Array<any>): StandardAction {
   return {
     type: TOOLS_LOADED,
     payload: tools
-  }
+  };
 }
 
 export function setHostSize(dimensions: WidthAndHeight): StandardAction {
@@ -158,7 +160,7 @@ export function fetchContentTypesComplete(contentTypes: ContentType[]): Standard
   return {
     type: FETCH_CONTENT_TYPES_COMPLETE,
     payload: contentTypes
-  }
+  };
 }
 
 export function fetchContentTypesFailed(error): StandardAction {
@@ -172,7 +174,7 @@ export function fetchContentModelComplete(contentModels: ContentInstance[]): Sta
   return {
     type: FETCH_CONTENT_MODEL_COMPLETE,
     payload: contentModels
-  }
+  };
 }
 
 export function checkInGuest(data: GuestData): StandardAction {
@@ -185,7 +187,7 @@ export function checkInGuest(data: GuestData): StandardAction {
 export function checkOutGuest(): StandardAction {
   return {
     type: GUEST_CHECK_OUT
-  }
+  };
 }
 
 export function guestModelsReceived(data): StandardAction {
@@ -215,21 +217,21 @@ export function fetchAudiencesPanelFormDefinitionComplete(data): StandardAction 
   return {
     type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
     payload: data
-  }
+  };
 }
 
 export function fetchAudiencesPanelFormDefinitionFailed(error): StandardAction {
   return {
     type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
     payload: error
-  }
+  };
 }
 
 export function updateAudiencesPanelModel(data): StandardAction {
   return {
     type: UPDATE_AUDIENCES_PANEL_MODEL,
     payload: data
-  }
+  };
 }
 
 export function setActiveTargetingModel(): StandardAction {
@@ -273,7 +275,7 @@ export const browseSharedInstance = createAction<string>(BROWSE_COMPONENT_INSTAN
 
 export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 
-export const setContentTypeReceptacles = createAction<{ contentType: string; receptacle: ContentTypeReceptacle; }>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
+export const setContentTypeReceptacles = createAction<{ contentType: string; receptacle: ContentTypeReceptacle }>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
 
 export const setContentTypeFilter = createAction<string>(SET_CONTENT_TYPE_FILTER);
 
