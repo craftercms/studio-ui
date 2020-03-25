@@ -148,6 +148,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       if (prop.name == 'itemManager') {
         this.datasourceName = (Array.isArray(prop.value)) ? prop.value[0] : prop.value;
         this.datasourceName = this.datasourceName.replace('["', '').replace('"]', '');
+        //type === receptacleblabla
+        //receptacleblabla.(contentTypes) = prop.value ? prop.value.split(',') : [];
       }
       if (prop.name == 'minSize' && prop.value != '') {
         this.minSize = parseInt(prop.value, 10);
@@ -164,9 +166,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       if (prop.name == 'disableFlattening' && prop.value == 'true') {
         this.disableFlattening = true;
       }
-      if (prop.name == 'contentTypes') {
-        this.contentTypes = prop.value.split(',');
-      }
+      // if (prop.name == 'contentTypes') {
+      //   this.contentTypes = prop.value ? prop.value.split(',') : [];
+      // }
     }
 
     var titleEl = document.createElement('span');
@@ -265,8 +267,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     this.defaultValue = config.defaultValue;
 
     this._renderItems();
-    //this._setActions();
-    this._renderAddOptions();
+    this._setActions();
+    //this._renderAddOptions();
 
     YAHOO.util.Event.addListener(nodeItemsContainerEl, 'click', function (evt, context) {
       context.form.setFocusedField(context);
@@ -277,17 +279,16 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     const self = this;
     if (this.contentTypes) {
       const messages = CrafterCMSNext.i18n.messages.nodeSelectorMessages;
-      //debugger;
+
       YAHOO.util.Dom.removeClass(this.addButtonEl, 'cstudio-button-disabled');
       this.addButtonEl.disabled = false;
+
       const $addContainerEl = $('<div class="cstudio-form-control-node-selector-add-container"></div>');
       $addContainerEl.hide();
       $(this.containerEl).append($addContainerEl);
 
-      //console.log(self.form.datasourceMap);
-
       this.contentTypes.forEach(contentType => {
-        self._createContentTypesControls(contentType, $addContainerEl);
+        self._createContentTypesControls(contentType, $addContainerEl, messages);
       });
 
       $(this.addButtonEl).on('click', function (event) {
@@ -300,21 +301,63 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
   },
 
-  _createContentTypesControls(contentType, $addContainerEl) {
-    console.log(this.form.datasourceMap);
-    console.log(this.datasourceName);
-    let $newCreate = $(`
+  _createContentTypesControls(contentType, $addContainerEl, messages) {
+    const self = this;
+    let flattened = false;
+    let shared = false;
+    if (this.datasourceName) {
+      this.datasourceName.split(',').forEach((datasource) => {
+        flattened = this.form.datasourceMap[datasource].contentType === contentType;
+        shared = this.form.datasourceMap[datasource].type === contentType;
+      });
+    }
+
+    function createOption(message, type) {
+      let $option = $(`
             <div class="cstudio-form-control-node-selector-add-container-item">
-              ${CrafterCMSNext.i18n.intl.formatMessage(messages.createNew)} ${contentType}
+              ${message} ${contentType}
             </div>
           `);
-    $addContainerEl.append($newCreate);
-    $newCreate.on('click', function () {
-      self._openContentTypeForm(contentType);
-    });
+      $option.on('click', function () {
+        self._openContentTypeForm(contentType, type);
+      });
+      return $option;
+    }
+
+    if (!flattened) {
+      $addContainerEl.append(createOption(CrafterCMSNext.i18n.intl.formatMessage(messages.createNewEmbedded), 'embedded'));
+    }
+    if (!shared) {
+      $addContainerEl.append(createOption(CrafterCMSNext.i18n.intl.formatMessage(messages.createNewShared), 'shared'));
+    }
   },
 
-  _openContentTypeForm(contentType) {
+  _openContentTypeForm(contentType, type) {
+    const self = this;
+    if (type === 'shared') {
+      const path = `/site/components/${contentType.replace(/\//g, '_').substr(1)}`;
+      CStudioAuthoring.Operations.openContentWebForm(
+        contentType,
+        null,
+        null,
+        path,
+        false,
+        false,
+        {
+          success: function (contentTO, editorId, name, value) {
+            self.newInsertItem(name, value, type);
+            self._renderItems();
+            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+          },
+          failure: function () {
+          }
+        },
+        [
+          { name: 'childForm', value: 'true' }
+        ]);
+    } else {
+
+    }
     console.log(contentType);
   },
 
@@ -504,16 +547,19 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
   },
 
-  insertItem: function (key, value, fileType, fileSize, datasource, order) {
-    var successful = true;
-    var message = '';
+  checkValidations: function (key, value) {
+    let validation = {
+      successful: true,
+      message: ''
+    };
+
     if (!this.allowDuplicates) {
       var items = this.items;
       for (var i = 0; i < items.length; i++) {
         var item = items[i];
         if (item.key == key) {
-          successful = false;
-          message = `The item "${value}" already exists.`;
+          validation.successful = false;
+          validation.message = `The item "${value}" already exists.`;
           break;
         }
       }
@@ -521,12 +567,40 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     if (this.maxSize > 0) {
       if (this.items.length >= this.maxSize) {
-        successful = false;
-        message = 'You can\'t add more items, Remove one and try again.';
+        validation.successful = false;
+        validation.message = 'You can\'t add more items, Remove one and try again.';
       }
     }
 
-    if (successful) {
+    return validation;
+  },
+
+  newInsertItem: function (key, value, type) {
+    const validation = this.checkValidations(key, value);
+
+    if (validation.successful) {
+      var item = {};
+      item = { key: key, value: value };
+
+      if (type === 'shared') {
+        item.include = key;
+        item.disableFlattening = this.disableFlattening;
+      } else {
+        item.key = key;
+        item.inline = 'true';
+      }
+      this.items[this.items.length] = item;
+
+      this.count();
+      this._onChangeVal(this);
+    } else {
+      this.showValidationMessage(validation.message);
+    }
+  },
+
+  insertItem: function (key, value, fileType, fileSize, datasource, order) {
+    const validation = this.checkValidations(key, value);
+    if (validation.successful) {
       var item = {};
 
       if (this.useSingleValueFilename == true) {
@@ -577,10 +651,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       this.count();
       this._onChangeVal(this);
     } else {
-      this.showValidationMessage(message);
+      this.showValidationMessage(validation.message);
     }
-    this.count();
-    this._onChangeVal(this);
   },
 
   // Insert item may be called multiple times per item inserted.
@@ -696,8 +768,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
       { label: CMgs.format(langBundle, 'disableFlatteningSearch'), name: 'disableFlattening', type: 'boolean' },
       { label: CMgs.format(langBundle, 'singleValueFilename'), name: 'useSingleValueFilename', type: 'boolean' },
-      { label: 'Content Types', name: 'contentTypes', type: 'contentTypes' },
-      { label: 'Tags', name: 'tags', type: 'string' }
+      // { label: 'Content Types', name: 'contentTypes', type: 'contentTypes' },
+      //{ label: 'Tags', name: 'tags', type: 'string' }
     ];
   },
 

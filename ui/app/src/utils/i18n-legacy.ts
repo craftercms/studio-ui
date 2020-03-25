@@ -836,9 +836,13 @@ const dashboardWidgetsMessages = defineMessages({
 });
 
 const nodeSelectorMessages = defineMessages({
-  createNew: {
-    id: 'nodeSelectorMessages.createNew',
-    defaultMessage: 'Create New'
+  createNewEmbedded: {
+    id: 'nodeSelectorMessages.createNewEmbedded',
+    defaultMessage: 'Create New Embedded'
+  },
+  createNewShared: {
+    id: 'nodeSelectorMessages.createNewShared',
+    defaultMessage: 'Create New Shared'
   }
 });
 
