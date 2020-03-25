@@ -189,11 +189,16 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
                 <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
                   <FormattedMessage
                     id="deleteDialog.cancel"
-                    defaultMessage={`Cancel`}
+                    defaultMessage={'Cancel'}
                   />
                 </Button>
-                <Button variant="contained" autoFocus onClick={handleSubmit} color="primary"
-                        disabled={apiState.submitting}>
+                <Button
+                  variant="contained"
+                  autoFocus
+                  onClick={handleSubmit}
+                  color="primary"
+                  disabled={apiState.submitting}
+                >
                   {
                     apiState.submitting ?
                       (
@@ -204,7 +209,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
                       ) : (
                         <FormattedMessage
                           id="deleteDialog.submit"
-                          defaultMessage={`Delete`}
+                          defaultMessage={'Delete'}
                         />
                       )
                   }
