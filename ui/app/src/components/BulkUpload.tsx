@@ -386,6 +386,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     const handleFileAdded = (file: UppyFile) => {
       const newPath = file.meta.relativePath ? path + file.meta.relativePath.substring(0, file.meta.relativePath.lastIndexOf('/')) : path;
       uppy.setFileMeta(file.id, { path: newPath });
+      file.meta.path = newPath;
       if (file.type.includes('image')) {
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -478,7 +479,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
               <Typography variant="subtitle1">
                 {
                   formatMessage(
-                    translations.dropHere, 
+                    translations.dropHere,
                     { span: browse => <span key="browse" className={classes.browseText}>{browse}</span> }
                   )
                 }
