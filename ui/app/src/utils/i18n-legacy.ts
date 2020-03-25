@@ -835,14 +835,50 @@ const dashboardWidgetsMessages = defineMessages({
   }
 });
 
-const nodeSelectorMessages = defineMessages({
+const receptaclesMessages = defineMessages({
+  receptacles: {
+    id: 'receptaclesMessages.receptacles',
+    defaultMessage: 'Receptacles'
+  },
   createNewEmbedded: {
-    id: 'nodeSelectorMessages.createNewEmbedded',
+    id: 'receptaclesMessages.createNewEmbedded',
     defaultMessage: 'Create New Embedded'
   },
   createNewShared: {
-    id: 'nodeSelectorMessages.createNewShared',
+    id: 'receptaclesMessages.createNewShared',
     defaultMessage: 'Create New Shared'
+  },
+  allowShared: {
+    id: 'receptaclesMessages.allowShared',
+    defaultMessage: 'Allow Shared'
+  },
+  allowEmbedded: {
+    id: 'receptaclesMessages.allowEmbedded',
+    defaultMessage: 'Allow Embedded'
+  },
+  enableBrowse: {
+    id: 'receptaclesMessages.enableBrowse',
+    defaultMessage: 'Enable Browse'
+  },
+  enableSearch: {
+    id: 'receptaclesMessages.enableSearch',
+    defaultMessage: 'Enable Search'
+  },
+  baseRepositoryPath: {
+    id: 'receptaclesMessages.baseRepositoryPath',
+    defaultMessage: 'Base Repository Path'
+  },
+  baseBrowsePath: {
+    id: 'receptaclesMessages.baseBrowsePath',
+    defaultMessage: 'Base Browse Path'
+  },
+  contentTypes: {
+    id: 'receptaclesMessages.contentTypes',
+    defaultMessage: 'Content Types'
+  },
+  tags: {
+    id: 'receptaclesMessages.tags',
+    defaultMessage: 'Tags'
   }
 });
 
@@ -879,5 +915,5 @@ export default {
   rteControlMessages,
   ossAttribution,
   dashboardWidgetsMessages,
-  nodeSelectorMessages
+  receptaclesMessages
 };
