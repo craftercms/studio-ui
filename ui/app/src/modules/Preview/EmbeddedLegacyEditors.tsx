@@ -124,9 +124,10 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     filter((e: any) => e.data && e.data.type)
   );
 
-  const handleClose = () => {
-    setDialogConfig({ open: false, src: null, type: null, inProgress: true });
-  };
+  const handleClose = useCallback(
+    () => {
+      setDialogConfig({ open: false, src: null, type: null, inProgress: true });
+    }, [setDialogConfig]);
 
   const onErrorClose = () => {
     setError(null);
@@ -144,19 +145,21 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       }, '*');
     }, [getPath, setDialogConfig, tabsState]);
 
-  const closeEmbeddedLegacyForm = (refresh: boolean, tab?: string) => {
-    let hasSomeLoaded = filterBy('loaded', tabsState, tab);
+  const closeEmbeddedLegacyForm = useCallback(
+    (refresh: boolean, tab?: string) => {
+      let hasSomeLoaded = filterBy('loaded', tabsState, tab);
 
-    if (hasSomeLoaded.length && tab) {
-      setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
-      handleTabChange(null, hasSomeLoaded[0]);
-    } else {
-      handleClose();
-      if (refresh) {
-        getHostToGuestBus().next({ type: RELOAD_REQUEST });
+      if (hasSomeLoaded.length && tab) {
+        setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
+        handleTabChange(null, hasSomeLoaded[0]);
+      } else {
+        handleClose();
+        if (refresh) {
+          getHostToGuestBus().next({ type: RELOAD_REQUEST });
+        }
       }
-    }
-  };
+    }, [handleClose, handleTabChange, setTabsState, tabsState]);
+
 
   useEffect(() => {
     if (dialogConfig.open) {

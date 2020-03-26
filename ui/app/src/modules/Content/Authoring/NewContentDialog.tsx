@@ -36,68 +36,17 @@ const translations = defineMessages({
     id: 'newContentDialog.subtitle',
     defaultMessage: 'Choose a content type template for your new content item.'
   },
-  close: {
-    id: 'words.close',
-    defaultMessage: 'Close'
-  },
-  done: {
-    id: 'words.done',
-    defaultMessage: 'Done'
-  },
-  dropHere: {
-    id: 'bulkUpload.dropHere',
-    defaultMessage: 'Drop files here or <span>browse</span>'
-  },
-  browse: {
-    id: 'words.browse',
-    defaultMessage: 'Browse'
-  },
-  filesProgression: {
-    id: 'bulkUpload.filesProgression',
-    defaultMessage: '{start}/{end}'
-  },
-  uploadInProgress: {
-    id: 'bulkUpload.uploadInProgress',
-    defaultMessage: 'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
+  previewImage: {
+    id: 'previewImage.alt',
+    defaultMessage: 'preview'
   }
 });
 
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    titleRoot: {
-      margin: 0,
-      padding: '13px 20px 11px',
-      background: palette.white
-    },
-    title: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingBottom: 10
-    },
     dialogActions: {
       padding: '10px 22px'
-    },
-    leftAlignedAction: {
-      marginRight: 'auto'
-    },
-    errorPaperRoot: {
-      maxHeight: '586px',
-      height: '100vh',
-      padding: 0
-    },
-    loadingStateRoot: {
-      height: '100%'
-    },
-    loadingStateGraphic: {
-      flexGrow: 1,
-      padding: '50px 0'
-    },
-    btnSpinner: {
-      marginLeft: 11,
-      marginRight: 11,
-      color: '#fff'
     },
     dialogContent: {
       padding: theme.spacing(2),
@@ -149,7 +98,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       setContentTypes(data);
       setSelectContent(data[0]);
     });
-  }, [open, contextPath]);
+  }, [open, contextPath, site]);
 
   return (
     contentTypes &&
@@ -193,7 +142,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           <Grid item xs={12} sm={5}>
             <img
               src={prevImgSrc}
-              alt="preview"
+              alt={formatMessage(translations.previewImage)}
               className={classes.prevImg}
             />
           </Grid>
