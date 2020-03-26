@@ -151,7 +151,7 @@
 
       if (this.contentTypes) {
         this.contentTypes.split(',').forEach(contentType => {
-          self._createContentTypesControls(contentType, $(control.addContainerEl), self.messages);
+          self._createContentTypesControls(contentType, $(control.addContainerEl), self.messages, control);
         });
       }
 
@@ -342,7 +342,7 @@
       return [];
     },
 
-    _createContentTypesControls(contentType, $addContainerEl, messages) {
+    _createContentTypesControls(contentType, $addContainerEl, messages, control) {
       const self = this;
 
       function createOption(message, type) {
@@ -352,7 +352,9 @@
             </div>
           `);
         $option.on('click', function () {
-          self._openContentTypeForm(contentType, type);
+          control.addContainerEl = null;
+          $addContainerEl.remove();
+          self._openContentTypeForm(contentType, type, control);
         });
         return $option;
       }
@@ -365,9 +367,9 @@
       }
     },
 
-    _openContentTypeForm(contentType, type) {
+    _openContentTypeForm(contentType, type, control) {
       const self = this;
-      const path = `${self.baseRepoPath}${contentType.replace(/\//g, '_').substr(1)}`;
+      const path = `${self.baseRepoPath}/${contentType.replace(/\//g, '_').substr(1)}`;
       CStudioAuthoring.Operations.openContentWebForm(
         contentType,
         null,
@@ -377,8 +379,8 @@
         false,
         {
           success: function (contentTO, editorId, name, value) {
-            self.newInsertItem(name, value, type);
-            self._renderItems();
+            control.newInsertItem(name, value, type);
+            control._renderItems();
             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
           },
           failure: function () {
