@@ -94,16 +94,17 @@ export default function SiteCard(props: TitleCardProps) {
     >
       <CardHeader
         classes={{ root: classes.root, avatar: classes.avatar, action: classes.action }}
-        avatar={Icon && <Icon/>}
+        avatar={Icon && <Icon />}
         action={
           options &&
           <IconButton aria-label="settings" onClick={(e) => handleOptions(e)}>
-            <MoreVertIcon/>
+            <MoreVertIcon />
           </IconButton>
         }
         title={title}
         titleTypographyProps={{
           variant: 'subtitle2',
+          // @ts-ignore
           component: 'h2',
           className: 'cardTitle'
         }}
@@ -125,5 +126,5 @@ export default function SiteCard(props: TitleCardProps) {
         }
       </Menu>
     </Card>
-  )
+  );
 }

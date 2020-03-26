@@ -39,6 +39,7 @@ interface ConfirmDialogProps {
 export default function ErrorDialog(props: ConfirmDialogProps) {
   const { onClose, error } = props;
   const classes = useStyles({});
+
   return (
     <Dialog
       open={Boolean(error)}

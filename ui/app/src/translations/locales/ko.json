@@ -318,7 +318,7 @@
   "siteConfig.landingMessage": "왼쪽에서 도구를 선택하십시오.",
   "siteConfig.switchToMessage": " {type}으로 전환",
   "targetingDialog.setNow": "지금 설정",
-  "transcodedVideoPickerControl.label": "트랜스 코딩 된 비디오 피커",
+  "transcodedVideoPickerControl.label": "트랜스 코딩 된 비디오",
   "usersAdmin.firstName": "이름",
   "usersAdmin.lastName": "성",
   "usersAdmin.maxLengthError": "{field} 은 {size} 자보다 길 수 없습니다",

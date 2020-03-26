@@ -20,15 +20,15 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import IconButton from '@material-ui/core/IconButton';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Theme } from "@material-ui/core";
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
-import FormGroup from "@material-ui/core/FormGroup";
-import Checkbox from "@material-ui/core/Checkbox";
+import FormGroup from '@material-ui/core/FormGroup';
+import Checkbox from '@material-ui/core/Checkbox';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
-import { palette } from "../styles/theme";
-import cardTitleStyles from "../styles/card";
+import { palette } from '../styles/theme';
+import cardTitleStyles from '../styles/card';
 import { defineMessages, useIntl } from 'react-intl';
 
 const translations = defineMessages({
@@ -44,14 +44,14 @@ const useStyles = makeStyles((theme: Theme) => ({
       ...cardTitleStyles,
       '&.clickable': {
         textDecoration: 'underline',
-        cursor: 'pointer',
+        cursor: 'pointer'
       }
     },
     '& .cardSubtitle': {
       overflow: 'hidden',
       display: '-webkit-box',
       '-webkit-line-clamp': 1,
-      '-webkit-box-orient': 'vertical',
+      '-webkit-box-orient': 'vertical'
     }
   },
   cardHeaderRoot: {
@@ -64,14 +64,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   cardHeader: {
     display: 'flex',
     alignItems: 'center',
-    width: '100%',
+    width: '100%'
   },
   cardOptions: {
     marginLeft: 'auto'
   },
   media: {
     height: 0,
-    paddingTop: '56.25%', // 16:9
+    paddingTop: '56.25%' // 16:9
   },
   listActionArea: {
     paddingTop: 0,
@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '100%',
+    width: '100%'
   },
   checkbox: {}
 }));
@@ -204,11 +204,11 @@ function MediaCard(props: MediaCardProps) {
             {
               (type === 'Video') ? (
                 <video className={classes.videoThumbnail}>
-                  <source src={path} type="video/mp4"/>
-                  <i className={iconName}></i>
+                  <source src={path} type="video/mp4" />
+                  <i className={iconName}/>
                 </video>
               ) : (
-                <i className={iconName}></i>
+                <i className={iconName}/>
               )
             }
           </div>
@@ -218,16 +218,16 @@ function MediaCard(props: MediaCardProps) {
           {
             (type === 'Video') ? (
               <video className={classes.videoThumbnail}>
-                <source src={path} type="video/mp4"/>
-                <i className={iconName}></i>
+                <source src={path} type="video/mp4" />
+                <i className={iconName}/>
               </video>
             ) : (
-              <i className={iconName}></i>
+              <i className={iconName}/>
             )
           }
         </div>
       )
-    )
+    );
   };
 
   return (
@@ -243,7 +243,7 @@ function MediaCard(props: MediaCardProps) {
           <Checkbox
             checked={selected.includes(path)}
             onClick={(e: any) => onSelect(path, e.target.checked)}
-            color="primary"/>
+            color="primary" />
         </FormGroup>
       }
       <header className={clsx(classes.cardHeader, props.classes?.header)}>
@@ -253,25 +253,27 @@ function MediaCard(props: MediaCardProps) {
             <Checkbox
               checked={selected.includes(path)}
               onClick={(e: any) => onSelect(path, e.target.checked)}
-              color="primary"/>
+              color="primary" />
           </FormGroup>
         }
+        {/*
+        // @ts-ignore */}
         <CardHeader
           title={name}
           subheader={hasSubheader ? type : null}
-          avatar={Avatar ? <Avatar/> : null}
+          avatar={Avatar ? <Avatar /> : null}
           classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
           onClick={(type === 'Image' || type === 'Video' || type === 'Page') && onPreview ? () => onPreview(path) : null}
           titleTypographyProps={{
-            variant: "subtitle2",
-            component: "h2",
+            variant: 'subtitle2',
+            component: 'h2',
             className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && onPreview && 'clickable')
           }}
           subheaderTypographyProps={{
-            variant: "subtitle2",
-            component: "h2",
+            variant: 'subtitle2',
+            component: 'h2',
             className: 'cardSubtitle',
-            color: "textSecondary"
+            color: 'textSecondary'
           }}
         />
         {
@@ -281,7 +283,7 @@ function MediaCard(props: MediaCardProps) {
             className={classes.cardOptions}
             onClick={(e) => onHeaderButtonClick(e, item)}
           >
-            <HeaderButtonIcon/>
+            <HeaderButtonIcon />
           </IconButton>
         }
       </header>
@@ -310,7 +312,7 @@ function MediaCard(props: MediaCardProps) {
         )
       }
     </Card>
-  )
+  );
 }
 
 export default MediaCard;

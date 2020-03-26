@@ -49,7 +49,7 @@ crafterDefine('guest', [
   };
 
   function reportNavigation(location, url) {
-    communicator.publish(Topics.GUEST_SITE_URL_CHANGE, { location, url });
+    communicator && communicator.publish(Topics.GUEST_SITE_URL_CHANGE, { location, url });
   }
 
   function init(config) {
@@ -384,7 +384,8 @@ crafterDefine('guest', [
   }
 
   function resizeProcess() {
-    communicator.publish(Topics.IS_REVIEWER, true);
+    // When window.top == window, communicator is not initialized
+    communicator && communicator.publish(Topics.IS_REVIEWER, true);
   }
 
 });
