@@ -193,6 +193,12 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
   );
 }
 
+export function fetchLegacyContentTypes(site, path) {
+  return get(`/studio/api/1/services/api/1/content/get-content-types.json?site=${site}&path=${path}'`).pipe(
+    pluck('response')
+  );
+}
+
 const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
 
 export function fetchById(site: string, id: string): Observable<any> {
@@ -1039,10 +1045,14 @@ export function uploadDataUrl(
   });
 }
 
+export function getBulkUploadUrl(site: string, path: string): string {
+  return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`;
+}
+
 export function getQuickCreateContentList(siteId: string) {
   return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
     pluck('response')
-  )
+  );
 }
 
 export default {
@@ -1063,5 +1073,7 @@ export default {
   getContentByContentType,
   fetchPublishingChannels,
   uploadDataUrl,
-  getQuickCreateContentList
+  getBulkUploadUrl,
+  getQuickCreateContentList,
+  fetchLegacyContentTypes
 };

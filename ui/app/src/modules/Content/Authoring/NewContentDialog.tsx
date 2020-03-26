@@ -17,8 +17,97 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { usePreviewState } from '../../../utils/hooks';
 import { fetchLegacyContentTypes } from '../../../services/content';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { palette } from '../../../styles/theme';
+import DialogContent from '@material-ui/core/DialogContent';
+import Grid from '@material-ui/core/Grid';
+import DialogActions from '@material-ui/core/DialogActions';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import DialogHeader from '../../../components/DialogHeader';
+import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+
+const translations = defineMessages({
+  title: {
+    id: 'newContentDialog.title',
+    defaultMessage: 'Create Content'
+  },
+  subtitle: {
+    id: 'newContentDialog.subtitle',
+    defaultMessage: 'Choose a content type template for your new content item.'
+  },
+  close: {
+    id: 'words.close',
+    defaultMessage: 'Close'
+  },
+  done: {
+    id: 'words.done',
+    defaultMessage: 'Done'
+  },
+  dropHere: {
+    id: 'bulkUpload.dropHere',
+    defaultMessage: 'Drop files here or <span>browse</span>'
+  },
+  browse: {
+    id: 'words.browse',
+    defaultMessage: 'Browse'
+  },
+  filesProgression: {
+    id: 'bulkUpload.filesProgression',
+    defaultMessage: '{start}/{end}'
+  },
+  uploadInProgress: {
+    id: 'bulkUpload.uploadInProgress',
+    defaultMessage: 'Uploads are still in progress. Leaving this page would stop the pending uploads. Are you sure you wish to leave?'
+  }
+});
+
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    titleRoot: {
+      margin: 0,
+      padding: '13px 20px 11px',
+      background: palette.white
+    },
+    title: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingBottom: 10
+    },
+    dialogActions: {
+      padding: '10px 22px'
+    },
+    leftAlignedAction: {
+      marginRight: 'auto'
+    },
+    errorPaperRoot: {
+      maxHeight: '586px',
+      height: '100vh',
+      padding: 0
+    },
+    loadingStateRoot: {
+      height: '100%'
+    },
+    loadingStateGraphic: {
+      flexGrow: 1,
+      padding: '50px 0'
+    },
+    btnSpinner: {
+      marginLeft: 11,
+      marginRight: 11,
+      color: '#fff'
+    },
+    dialogContent: {
+      padding: theme.spacing(2),
+      backgroundColor: palette.gray.light0
+    },
+    prevImg: {
+      maxWidth: '150px'
+    }
+  })
+);
 
 
 interface NewContentDialogProps {
@@ -33,6 +122,8 @@ interface NewContentDialogProps {
 
 export default function NewContentDialog(props: NewContentDialogProps) {
   const { open, onDialogClose, onTypeOpen, site, path } = props;
+  const { formatMessage } = useIntl();
+  const classes = useStyles({});
   const defaultPath = '/site/website';
   const [contextPath, setContextPath] = useState(`${defaultPath}/`);
   const [selectContent, setSelectContent] = useState(null);
@@ -62,34 +153,70 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   return (
     contentTypes &&
-    <Dialog fullScreen open={open} onClose={onDialogClose}>
-      <List>
-        {
-          contentTypes?.map(content => (
-            <ListItem key={content.name} button={true} onClick={onListItemClick(content)}>
-              {content.label}
-            </ListItem>
-          ))
-        }
-      </List>
-      <img
-        src={prevImgSrc}
-        alt="preview"
-        style={{ maxWidth: '200px' }} />
-
-      <TextField
-        id="sandboxBranch"
-        name="sandboxBranch"
-        label={<span>Content Path</span>}
-        onChange={onPathChange}
-        InputLabelProps={{ shrink: true }}
-        value={contextPath}
+    <Dialog
+      open={open}
+      onClose={onDialogClose}
+      disableBackdropClick={true}
+      fullWidth
+      maxWidth={'md'}
+    >
+      <DialogHeader
+        title={formatMessage(translations.title)}
+        subtitle={formatMessage(translations.subtitle)}
+        onClose={onDialogClose}
+        icon={CloseRoundedIcon}
       />
+      <DialogContent dividers className={classes.dialogContent}>
+        <Grid container spacing={3}>
+          <Grid xs={12}>
+            <TextField
+              id="sandboxBranch"
+              name="sandboxBranch"
+              label={<span>Content Path</span>}
+              onChange={onPathChange}
+              InputLabelProps={{ shrink: true }}
+              value={contextPath}
+            />
+          </Grid>
+          <Grid item xs={12} sm={7}>
+            <List>
+              {
+                contentTypes.map(content => (
+                  <ListItem key={content.name} button={true} onClick={onListItemClick(content)}>
+                    {content.label}
+                  </ListItem>
+                ))
+              }
+            </List>
+          </Grid>
 
-      <Button color="primary" onClick={onTypeOpen(selectContent, contextPath)}>
-        Open
-      </Button>
+          <Grid item xs={12} sm={5}>
+            <img
+              src={prevImgSrc}
+              alt="preview"
+              className={classes.prevImg}
+            />
+          </Grid>
+        </Grid>
 
+
+      </DialogContent>
+
+      <DialogActions className={classes.dialogActions}>
+        <Button variant="contained" onClick={onDialogClose}>
+          <FormattedMessage
+            id="newContentDialog.cancel"
+            defaultMessage={`Cancel`}
+          />
+        </Button>
+
+        <Button color="primary" variant="contained" onClick={onTypeOpen(selectContent, contextPath)}>
+          <FormattedMessage
+            id="newContentDialog.submit"
+            defaultMessage={`Open Type`}
+          />
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

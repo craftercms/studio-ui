@@ -185,19 +185,25 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, path }) {
           </MenuItem>
         )}
       </Menu>
-      <EmbeddedLegacyEditors
-        showTabs={false}
-        showController={false}
-        dialogConfig={dialogConfig}
-        setDialogConfig={setDialogConfig}
-      />
-      <NewContentDialog
-        open={displayNewContentDialog}
-        onDialogClose={onDialogClose}
-        onTypeOpen={onTypeOpen}
-        site={siteId}
-        path={path}
-      />
+      {
+        dialogConfig.open &&
+        <EmbeddedLegacyEditors
+          showTabs={false}
+          showController={false}
+          dialogConfig={dialogConfig}
+          setDialogConfig={setDialogConfig}
+        />
+      }
+      {
+        displayNewContentDialog &&
+        <NewContentDialog
+          open={displayNewContentDialog}
+          onDialogClose={onDialogClose}
+          onTypeOpen={onTypeOpen}
+          site={siteId}
+          path={path}
+        />
+      }
     </>
   );
 

@@ -200,8 +200,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         messagesSubscription.unsubscribe();
       };
     }
-  }, [handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig, messages]);
-
+  }, [handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig, messages, closeEmbeddedLegacyForm, dispatch]);
 
   return (
     <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
