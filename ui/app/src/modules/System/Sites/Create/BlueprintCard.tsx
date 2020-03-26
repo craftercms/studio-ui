@@ -260,15 +260,25 @@ function BlueprintCard(props: BlueprintCardProps) {
     return merged.map((item, index) => {
       if (item.type !== 'video') {
         return (
-          <div key={index} className={clsx(classes.background, id === 'GIT' && 'git')}
-               onClick={(event) => onImageClick(event, index)}>
+          <div
+            key={index}
+            className={clsx(classes.background, id === 'GIT' && 'git')}
+            onClick={(event) => onImageClick(event, index)}
+          >
             <img className={clsx(classes.carouselImg, id === 'GIT' && 'git')} src={item.url} alt={item.description} />
           </div>
         );
       } else {
         return (
-          <video key={index} controls className={classes.video} autoPlay={play} onPlaying={handlePlay}
-                 onEnded={handleEnded}>
+          <video
+            muted
+            controls
+            key={index}
+            autoPlay={play}
+            onEnded={handleEnded}
+            className={classes.video}
+            onPlaying={handlePlay}
+          >
             <source src={item.url} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
@@ -286,7 +296,8 @@ function BlueprintCard(props: BlueprintCardProps) {
       {
         (id !== 'GIT') &&
         <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
-          // @ts-ignore
+          {/*
+          // @ts-ignore */}
           <CardHeader
             title={name}
             subheader={id !== 'GIT' ? renderSubtitle() : ''}
@@ -325,9 +336,17 @@ function BlueprintCard(props: BlueprintCardProps) {
           </CardContent>
         }
       </CardActionArea>
-      {steps > 0 && (id !== 'GIT') &&
-      <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'}
-                     activeStep={index} />}
+      {
+        (steps > 0) && (id !== 'GIT') &&
+        <MobileStepper
+          variant="dots"
+          steps={steps}
+          onDotClick={onDotClick}
+          className={classes.dots}
+          position={'static'}
+          activeStep={index}
+        />
+      }
       {
         (id !== 'GIT') &&
         <CardActions className={'cardActions'}>

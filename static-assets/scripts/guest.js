@@ -49,7 +49,7 @@ crafterDefine('guest', [
   };
 
   function reportNavigation(location, url) {
-    communicator.publish(Topics.GUEST_SITE_URL_CHANGE, { location, url });
+    communicator && communicator.publish(Topics.GUEST_SITE_URL_CHANGE, { location, url });
   }
 
   function init(config) {

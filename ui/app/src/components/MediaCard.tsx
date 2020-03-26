@@ -256,7 +256,8 @@ function MediaCard(props: MediaCardProps) {
               color="primary" />
           </FormGroup>
         }
-        // @ts-ignore
+        {/*
+        // @ts-ignore */}
         <CardHeader
           title={name}
           subheader={hasSubheader ? type : null}
