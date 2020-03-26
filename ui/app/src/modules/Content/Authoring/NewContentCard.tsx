@@ -21,7 +21,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import Divider from '@material-ui/core/Divider';
 import { palette } from '../../../styles/theme';
-
+import Collapse from '@material-ui/core/Collapse';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -42,10 +42,11 @@ interface NewContentCardProps {
   imgTitle: string;
   img: string;
   onClick: any;
+  collapseIn: boolean
 }
 
 export default function NewContentCard(props: NewContentCardProps) {
-  const { headerTitle, subheader, img, imgTitle, onClick } = props;
+  const { headerTitle, subheader, img, imgTitle, onClick, collapseIn } = props;
   const classes = useStyles();
 
   return (
@@ -63,11 +64,13 @@ export default function NewContentCard(props: NewContentCardProps) {
         }}
       />
       <Divider />
-      <CardMedia
-        className={classes.media}
-        image={img}
-        title={imgTitle}
-      />
+      <Collapse in={collapseIn} timeout="auto" unmountOnExit>
+        <CardMedia
+          className={classes.media}
+          image={img}
+          title={imgTitle}
+        />
+      </Collapse>
     </Card>
   );
 }

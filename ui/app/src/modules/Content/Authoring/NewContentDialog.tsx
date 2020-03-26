@@ -25,6 +25,9 @@ import DialogHeader from '../../../components/DialogHeader';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import NewContentCard from './NewContentCard';
 import NewContentSelect from './NewContentSelect';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
 
 const translations = defineMessages({
   title: {
@@ -45,17 +48,23 @@ const translations = defineMessages({
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     dialogActions: {
-      padding: '10px 22px'
+      padding: '10px 22px',
+      display: 'flex',
+      justifyContent: 'space-between'
     },
     dialogContent: {
       padding: theme.spacing(2),
-      backgroundColor: palette.gray.light0
+      backgroundColor: palette.gray.light0,
+      minHeight: 628
     },
     prevImg: {
       maxWidth: '150px'
     },
     cardsContainer: {
       marginTop: 14
+    },
+    submitBtn: {
+      marginLeft: 17
     }
   })
 );
@@ -79,10 +88,13 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [contextPath, setContextPath] = useState(`${defaultPath}/`);
   const [selectContent, setSelectContent] = useState(null);
   const [contentTypes, setContentTypes] = useState(null);
+  const [showPreviews, setShowPreviews] = useState(false);
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
 
   const onListItemClick = (contentData) => () => setSelectContent(contentData);
+
+  const onShowPreviewsCheck = () => setShowPreviews(!showPreviews);
 
   const getPrevImg = (content) =>
     (content?.imageThumbnail) ?
@@ -118,7 +130,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       <DialogContent dividers className={classes.dialogContent}>
         <Grid container>
           <Grid item xs={12}>
-            <NewContentSelect/>
+            <NewContentSelect />
           </Grid>
         </Grid>
         <Grid container spacing={3} className={classes.cardsContainer}>
@@ -126,6 +138,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             contentTypes.map(content => (
               <Grid item key={content.name} xs={12} sm={6} md={4} lg={3} xl={2}>
                 <NewContentCard
+                  collapseIn={showPreviews}
                   headerTitle={content.label}
                   subheader={content.form}
                   imgTitle={formatMessage(translations.previewImage)}
@@ -137,21 +150,38 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           }
         </Grid>
       </DialogContent>
-
       <DialogActions className={classes.dialogActions}>
-        <Button variant="contained" onClick={onDialogClose}>
-          <FormattedMessage
-            id="newContentDialog.cancel"
-            defaultMessage={`Cancel`}
-          />
-        </Button>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showPreviews}
+              onChange={onShowPreviewsCheck}
+              name="checkedB"
+              color="primary"
+            />
+          }
+          label="Show previews"
+        />
+        <FormGroup row>
+          <Button variant="contained" onClick={onDialogClose}>
+            <FormattedMessage
+              id="newContentDialog.cancel"
+              defaultMessage={`Cancel`}
+            />
+          </Button>
 
-        <Button color="primary" variant="contained" onClick={onTypeOpen(selectContent, contextPath)}>
-          <FormattedMessage
-            id="newContentDialog.submit"
-            defaultMessage={`Open Type`}
-          />
-        </Button>
+          <Button
+            className={classes.submitBtn}
+            color="primary"
+            variant="contained"
+            onClick={onTypeOpen(selectContent, contextPath)}
+          >
+            <FormattedMessage
+              id="newContentDialog.submit"
+              defaultMessage={`Open Type`}
+            />
+          </Button>
+        </FormGroup>
       </DialogActions>
     </Dialog>
   );
