@@ -268,97 +268,10 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     this._renderItems();
     this._setActions();
-    //this._renderAddOptions();
 
     YAHOO.util.Event.addListener(nodeItemsContainerEl, 'click', function (evt, context) {
       context.form.setFocusedField(context);
     }, this, true);
-  },
-
-  _renderAddOptions() {
-    const self = this;
-    if (this.contentTypes) {
-      const messages = CrafterCMSNext.i18n.messages.nodeSelectorMessages;
-
-      YAHOO.util.Dom.removeClass(this.addButtonEl, 'cstudio-button-disabled');
-      this.addButtonEl.disabled = false;
-
-      const $addContainerEl = $('<div class="cstudio-form-control-node-selector-add-container"></div>');
-      $addContainerEl.hide();
-      $(this.containerEl).append($addContainerEl);
-
-      this.contentTypes.forEach(contentType => {
-        self._createContentTypesControls(contentType, $addContainerEl, messages);
-      });
-
-      $(this.addButtonEl).on('click', function (event) {
-        $addContainerEl.css({
-          left: self.addButtonEl.offsetLeft + 'px',
-          top: self.addButtonEl.offsetTop + 22 + 'px'
-        });
-        $addContainerEl.toggle();
-      });
-    }
-  },
-
-  _createContentTypesControls(contentType, $addContainerEl, messages) {
-    const self = this;
-    let flattened = false;
-    let shared = false;
-    if (this.datasourceName) {
-      this.datasourceName.split(',').forEach((datasource) => {
-        flattened = this.form.datasourceMap[datasource].contentType === contentType;
-        shared = this.form.datasourceMap[datasource].type === contentType;
-      });
-    }
-
-    function createOption(message, type) {
-      let $option = $(`
-            <div class="cstudio-form-control-node-selector-add-container-item">
-              ${message} ${contentType}
-            </div>
-          `);
-      $option.on('click', function () {
-        self._openContentTypeForm(contentType, type);
-      });
-      return $option;
-    }
-
-    if (!flattened) {
-      $addContainerEl.append(createOption(CrafterCMSNext.i18n.intl.formatMessage(messages.createNewEmbedded), 'embedded'));
-    }
-    if (!shared) {
-      $addContainerEl.append(createOption(CrafterCMSNext.i18n.intl.formatMessage(messages.createNewShared), 'shared'));
-    }
-  },
-
-  _openContentTypeForm(contentType, type) {
-    const self = this;
-    if (type === 'shared') {
-      const path = `/site/components/${contentType.replace(/\//g, '_').substr(1)}`;
-      CStudioAuthoring.Operations.openContentWebForm(
-        contentType,
-        null,
-        null,
-        path,
-        false,
-        false,
-        {
-          success: function (contentTO, editorId, name, value) {
-            self.newInsertItem(name, value, type);
-            self._renderItems();
-            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-          },
-          failure: function () {
-          }
-        },
-        [
-          { name: 'childForm', value: 'true' }
-        ]);
-    } else {
-
-    }
-    console.log(contentType);
   },
 
   _setActions: function () {
@@ -420,11 +333,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
               for (var x = 0; x < datasources.length; x++) {
                 datasources[x].selectItemsCount = selectItemsCount;
-                //if (datasources.length > 1) {
                   datasources[x].add(_self, true);
-                //} else {
-                //datasources[x].add(_self);
-                //}
               }
             }
           }
@@ -777,8 +686,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
       { label: CMgs.format(langBundle, 'disableFlatteningSearch'), name: 'disableFlattening', type: 'boolean' },
       { label: CMgs.format(langBundle, 'singleValueFilename'), name: 'useSingleValueFilename', type: 'boolean' },
-      // { label: 'Content Types', name: 'contentTypes', type: 'contentTypes' },
-      //{ label: 'Tags', name: 'tags', type: 'string' }
     ];
   },
 

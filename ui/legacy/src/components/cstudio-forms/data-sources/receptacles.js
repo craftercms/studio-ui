@@ -40,7 +40,6 @@
       }
     });
 
-    console.log(properties);
     return this;
   }
 
@@ -147,10 +146,8 @@
       // }, searchContext.searchId);
     },
 
-    add: function (control, onlyAppend) {
+    add: function (control) {
       const self = this;
-      console.log(onlyAppend);
-      console.log(control.addContainerEl);
 
       if (this.contentTypes) {
         this.contentTypes.split(',').forEach(contentType => {
@@ -355,7 +352,7 @@
             </div>
           `);
         $option.on('click', function () {
-          //self._openContentTypeForm(contentType, type);
+          self._openContentTypeForm(contentType, type);
         });
         return $option;
       }
@@ -371,7 +368,7 @@
     _openContentTypeForm(contentType, type) {
       const self = this;
       if (type === 'shared') {
-        const path = `/site/components/${contentType.replace(/\//g, '_').substr(1)}`;
+        const path = `${self.baseRepoPath}${contentType.replace(/\//g, '_').substr(1)}`;
         CStudioAuthoring.Operations.openContentWebForm(
           contentType,
           null,
