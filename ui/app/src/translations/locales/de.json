@@ -318,7 +318,7 @@
   "siteConfig.landingMessage": "Bitte wählen Sie links ein Werkzeug aus.",
   "siteConfig.switchToMessage": "Wechseln Sie zu {type}",
   "targetingDialog.setNow": "jetzt einstellen",
-  "transcodedVideoPickerControl.label": "Transcodierter Video Picker",
+  "transcodedVideoPickerControl.label": "Transcodiertes Video",
   "usersAdmin.firstName": "Vorname",
   "usersAdmin.lastName": "Nachname",
   "usersAdmin.maxLengthError": "{field} darf nicht länger als {size} Zeichen sein",

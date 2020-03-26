@@ -3,15 +3,15 @@
 <#assign hostOrigin = authoringServer?replace("/${studioContext}", "") />
 <#assign staticAssets = "${authoringServer}/static-assets"/>
 
-var crafterRequire = crafterRequireJS.config({
-    baseUrl: '${staticAssets}/scripts',
-    paths: {
-        'libs': '${staticAssets}/libs/',
-        'jquery': '${staticAssets}/libs/jquery/dist/jquery',
-        'jquery-ui': '${staticAssets}/libs/jquery-ui/jquery-ui',
-        'amplify': '${staticAssets}/libs/amplify/lib/amplify.core',
-        'noty': '${staticAssets}/libs/notify/notify.min'
-    }
+crafterRequire.config({
+  baseUrl: '${staticAssets}/scripts',
+  paths: {
+    'libs': '${staticAssets}/libs/',
+    'jquery': '${staticAssets}/libs/jquery/dist/jquery',
+    'jquery-ui': '${staticAssets}/libs/jquery-ui/jquery-ui',
+    'amplify': '${staticAssets}/libs/amplify/lib/amplify.core',
+    'noty': '${staticAssets}/libs/notify/notify.min'
+  }
 });
 
 crafterRequire(['guest'], function (guest) {

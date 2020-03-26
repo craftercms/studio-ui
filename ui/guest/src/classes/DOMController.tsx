@@ -508,7 +508,8 @@ export class DOMController {
         <DroppedComponentPlaceholder
           // @ts-ignore
           component={Markers.draggedComponent}
-          node={newComponent}/>,
+          node={newComponent}
+        />,
         newComponent);
       return;
     }
