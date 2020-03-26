@@ -240,9 +240,9 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       }
       {
         error &&
-        <ErrorDialog error={error} onClose={onErrorClose}/>
+        <ErrorDialog error={error} onClose={onErrorClose} />
       }
     </>
-  )
+  );
 }
 

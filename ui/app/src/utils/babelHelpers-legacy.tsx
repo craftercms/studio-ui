@@ -184,7 +184,7 @@ export default {
   // temporalRef: _temporalRef,
   // temporalUndefined: _temporalUndefined,
   // toArray: _toArray,
-  toConsumableArray: _toConsumableArray
+  toConsumableArray: _toConsumableArray,
   // toPrimitive: _toPrimitive,
   // toPropertyKey: _toPropertyKey,
   // typeof: _typeof,

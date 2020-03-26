@@ -1732,8 +1732,8 @@ var nodeOpen = false,
                         isFlattenedInclude
                       );
                     },
-                    failure: function () {
-                      callback.failure();
+                    failure: function (response) {
+                      callback.failure(response);
                     },
                     isEdit: edit,
                     callback: callback,

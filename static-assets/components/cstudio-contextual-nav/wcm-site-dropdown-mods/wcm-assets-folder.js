@@ -1668,55 +1668,48 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
   },
 
   bulkUpload: function () {
+    if (document.querySelector('#bulkUpload')) {
+      const messages = CrafterCMSNext.i18n.messages.bulkUploadConfirmDialogMessages;
 
-    var CSA = CStudioAuthoring,
-      CSAC = CStudioAuthoringContext,
+      const confirm = document.createElement('div');
+      const onClose = () => {
+        CrafterCMSNext.ReactDOM.unmountComponentAtNode(confirm);
+      };
+      CrafterCMSNext.render(
+        confirm,
+        'ConfirmDialog',
+        {
+          title: CrafterCMSNext.i18n.intl.formatMessage(messages.title),
+          description: CrafterCMSNext.i18n.intl.formatMessage(messages.description),
+          onClose: onClose,
+          onOk: onClose,
+          open: true
+        }
+      );
+    } else {
+      const bulkUpload = document.createElement('div');
+      bulkUpload.setAttribute('id', 'bulkUpload');
+      document.documentElement.append(bulkUpload);
+      const onClose = (dropZoneStatus) => {
+        CrafterCMSNext.ReactDOM.unmountComponentAtNode(bulkUpload);
+        bulkUpload.remove();
+        if (dropZoneStatus.uploadedFiles > 0) {
+          RootFolder().refreshNodes(oCurrentTextNode, false, false, null, null, true);
+        }
+      };
+      CrafterCMSNext.render(
+        bulkUpload,
+        'BulkUpload',
+        {
+          path: oCurrentTextNode.data.path,
+          site: oCurrentTextNode.data.site,
+          maxSimultaneousUploads: 2,
+          onClose: onClose,
+          open: true
+        }
+      );
+    }
 
-      fmt = CSA.StringUtils.format;
-
-    CSA.Env.Loader.use('component-dropbox', 'dialog-bulkupload', function () {
-
-      var view = new CSA.Dialogs.BulkUpload(),
-        Dropbox = CSA.Component.Dropbox,
-        treeNode = oCurrentTextNode;
-
-      document.body.appendChild(view.element);
-      var serviceUrl = CStudioAuthoring.Service.createServiceUri(
-        CStudioAuthoring.Service.createWriteServiceUrl(
-          treeNode.data.uri,
-          treeNode.data.filename,
-          null,
-          treeNode.data.contentType,
-          CSAC.site,
-          true,
-          false,
-          false,
-          true));
-
-      var dropbox = new Dropbox({
-        element: view.element,
-        display: fmt(
-          '#{0} .file-display-container .pad',
-          view.id),
-        progress: '.progress .bar',
-        target: serviceUrl,
-        uploadPostKey: 'file',
-        formData: {
-          site: CSAC.site,
-          path: oCurrentTextNode.data.uri
-        },
-        template: fmt('template_{0}', view.id),
-        newOnTop: true
-      });
-
-      dropbox.showUploadProgress = function (elem, progress) {
-        elem.style.width = progress + '%';
-      }
-
-      dropbox.on(Dropbox.UPLOAD_SUCCESS_EVENT, function (data) {
-      });
-
-    });
   },
 
   /**

@@ -216,6 +216,14 @@ input[type="checkbox"].content-type-selector--checkbox {
   cursor: pointer;
 }
 
+.content-types--controls--search-input {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  border: 1px solid #C5D6E2;
+  border-style: none none solid;
+}
+
 #widgets-container, #datasources-container {
   overflow: scroll;
   overflow-x: hidden;
