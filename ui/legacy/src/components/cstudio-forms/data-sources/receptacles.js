@@ -367,31 +367,29 @@
 
     _openContentTypeForm(contentType, type) {
       const self = this;
-      if (type === 'shared') {
-        const path = `${self.baseRepoPath}${contentType.replace(/\//g, '_').substr(1)}`;
-        CStudioAuthoring.Operations.openContentWebForm(
-          contentType,
-          null,
-          null,
-          path,
-          false,
-          false,
-          {
-            success: function (contentTO, editorId, name, value) {
-              self.newInsertItem(name, value, type);
-              self._renderItems();
-              CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-            },
-            failure: function () {
-            }
+      const path = `${self.baseRepoPath}${contentType.replace(/\//g, '_').substr(1)}`;
+      CStudioAuthoring.Operations.openContentWebForm(
+        contentType,
+        null,
+        null,
+        type === 'shared' ? path : '',
+        false,
+        false,
+        {
+          success: function (contentTO, editorId, name, value) {
+            self.newInsertItem(name, value, type);
+            self._renderItems();
+            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
           },
-          [
-            { name: 'childForm', value: 'true' }
-          ]);
-      } else {
-
-      }
-      console.log(contentType);
+          failure: function () {
+          }
+        },
+        [
+          { name: 'childForm', value: 'true' }
+        ],
+        null,
+        type === 'embedded' ? true : null
+      );
     },
 
   };
