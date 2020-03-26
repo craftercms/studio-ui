@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function QuickCreateMenu({ anchorEl, handleMenuClose, newContentPath }) {
+export function QuickCreateMenu({ anchorEl, onMenuClose, path }) {
   const classes = useStyles({});
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
@@ -89,6 +89,7 @@ export function QuickCreateMenu({ anchorEl, handleMenuClose, newContentPath }) {
   const AUTHORING_BASE = useSelection<string>(
     state => state.env.AUTHORING_BASE
   );
+
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
@@ -97,42 +98,39 @@ export function QuickCreateMenu({ anchorEl, handleMenuClose, newContentPath }) {
     inProgress: false
   });
 
-
-  const handleNewContentClick = () => {
+  const onNewContentClick = () => {
     setDisplayNewContentDialog(true);
   };
 
-  const handleFormDisplay = srcData => {
-    const { contentTypeId, path } = srcData;
+  const onFormDisplay = srcData => {
+    const { contentTypeId, path: _path } = srcData;
     const today = new Date();
-    const formatPath = path.replace(
+    const formatPath = _path.replace(
       '{year}',
       today.getFullYear()
     ).replace(
       '{month}',
       ('0' + (today.getMonth() + 1)).slice(-2)
     );
-    const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
 
     setDialogConfig({
       open: true,
-      src
+      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`
     });
   };
 
-  const handleNewContentDialogClose = () => {
+  const onDialogClose = () => {
     setDisplayNewContentDialog(false);
   };
 
-  const handleOpenType = (srcData, contextPath: string) => () => {
+  const onTypeOpen = (srcData, contextPath: string) => () => {
     const { form } = srcData;
-    const defaultPath = '/site/website';
-    const path = !contextPath ? `${defaultPath}${newContentPath}` : `${defaultPath}/${contextPath}`;
-    const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${form}&path=${path}&type=form`;
+    const defaultPath = '/site/website/';
+    const _path = !contextPath ? defaultPath : contextPath;
 
     setDialogConfig({
       open: true,
-      src
+      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${form}&path=${_path}&type=form`
     });
 
     setDisplayNewContentDialog(false);
@@ -153,11 +151,11 @@ export function QuickCreateMenu({ anchorEl, handleMenuClose, newContentPath }) {
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
+        onClose={onMenuClose}
       >
         <MenuItem
           className={classes.menuTitle}
-          onClick={handleNewContentClick}>
+          onClick={onNewContentClick}>
           <FormattedMessage
             id="quickCreateMenu.title"
             defaultMessage="New Content"
@@ -178,8 +176,8 @@ export function QuickCreateMenu({ anchorEl, handleMenuClose, newContentPath }) {
           <MenuItem
             key={item.path}
             onClick={() => {
-              handleMenuClose();
-              handleFormDisplay(item);
+              onMenuClose();
+              onFormDisplay(item);
             }}
             className={classes.menuItem}
           >
@@ -195,25 +193,23 @@ export function QuickCreateMenu({ anchorEl, handleMenuClose, newContentPath }) {
       />
       <NewContentDialog
         open={displayNewContentDialog}
-        handleClose={handleNewContentDialogClose}
-        handleOpenType={handleOpenType}
-        contentTypesFetchConfig={{
-          site: siteId,
-          path: '/site/website'
-        }}
+        onDialogClose={onDialogClose}
+        onTypeOpen={onTypeOpen}
+        site={siteId}
+        path={path}
       />
     </>
   );
 
 }
 
-export function QuickCreateMenuBtn({ handleMenuBtnClick }) {
+export function QuickCreateMenuButton({ onMenuBtnClick }) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
 
   return (
     <IconButton
-      onClick={handleMenuBtnClick}
+      onClick={onMenuBtnClick}
       aria-label={formatMessage(translations.quickCreateBtnLabel)}
       className={classes.addBtn}
       size="small"
@@ -227,15 +223,18 @@ export default function QuickCreate() {
   const [anchorEl, setAnchorEl] = useState(null);
   const { computedUrl } = usePreviewState();
 
-  const handleMenuBtnClick = e => setAnchorEl(e.currentTarget);
+  const onMenuBtnClick = e => setAnchorEl(e.currentTarget);
 
-  const handleMenuClose = () => setAnchorEl(null);
-
+  const onMenuClose = () => setAnchorEl(null);
 
   return (
     <>
-      <QuickCreateMenuBtn handleMenuBtnClick={handleMenuBtnClick} />
-      <QuickCreateMenu anchorEl={anchorEl} handleMenuClose={handleMenuClose} newContentPath={computedUrl}/>
+      <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
+      <QuickCreateMenu
+        anchorEl={anchorEl}
+        onMenuClose={onMenuClose}
+        path={computedUrl}
+      />
     </>
   );
 }

@@ -525,10 +525,6 @@
     if (hash.site) {
       CrafterCMSNext.util.auth.setSiteCookie('crafterSite', hash.site);
       siteChanged = (site !== hash.site);
-
-      if(hash.page) {
-        CStudioAuthoringContext.previewCurrentPath = hash.page;
-      }
     }
 
     if (siteChanged || !hasCheckIn) {

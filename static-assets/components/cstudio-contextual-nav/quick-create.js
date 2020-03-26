@@ -31,7 +31,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
   initialize: function () {
     const quickCreateWrapper = $('.dropdown.quick-create');
 
-    function renderQuickCreate(anchorEl) {
+    function renderQuickCreate(anchorEl, path) {
       const container = $('#quick-create-menu')[0];
       let unmount;
 
@@ -39,14 +39,16 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         container,
         'QuickCreateMenu',
         {
-          newContentPath: CStudioAuthoringContext?.previewCurrentPath,
+          path,
           anchorEl,
-          handleMenuClose: () => renderQuickCreate(null)
+          onMenuClose: () => renderQuickCreate(null)
         }
       ).then(done => unmount = done.unmount);
     }
 
-    quickCreateWrapper.click(e => renderQuickCreate(e.currentTarget));
+    quickCreateWrapper.click(e =>
+      renderQuickCreate(e.currentTarget, CStudioAuthoringContext?.previewCurrentPath)
+    );
 
     // TODO:  remove commented code once the QuickCreateMenu.tsx implementation is done
     // var dropdown = $('#quick-create'),
