@@ -40,6 +40,12 @@ export function isBlank(str: string): boolean {
   return str === '';
 }
 
+export function decodeHTML(html: string): string {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+}
+
 export function bytesToSize(bytes: number, separator: string = '') {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   if (bytes === 0) return 'n/a';
@@ -52,5 +58,7 @@ export default {
   camelize,
   capitalize,
   underscore,
-  dasherize
+  dasherize,
+  decodeHTML,
+  bytesToSize
 };
