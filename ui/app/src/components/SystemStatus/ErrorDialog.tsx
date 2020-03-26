@@ -50,11 +50,11 @@ export default function ErrorDialog(props: ConfirmDialogProps) {
         className={classes.closeButton}
         onClick={() => onClose()}
       >
-        <CloseIcon/>
+        <CloseIcon />
       </IconButton>
       {
         error &&
-        <ErrorState error={error}/>
+        <ErrorState error={error} />
       }
     </Dialog>
   );

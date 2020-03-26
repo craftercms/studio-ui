@@ -847,6 +847,13 @@ const bulkUploadConfirmDialogMessages = defineMessages({
   }
 });
 
+const embeddedLegacyFormMessages = defineMessages({
+  contentFormFailedToLoadErrorMessage: {
+    id: 'embeddedLegacyFormMessages.openContentFormFailedError',
+    defaultMessage: 'An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -880,5 +887,6 @@ export default {
   rteControlMessages,
   ossAttribution,
   dashboardWidgetsMessages,
-  bulkUploadConfirmDialogMessages
+  bulkUploadConfirmDialogMessages,
+  embeddedLegacyFormMessages
 };
