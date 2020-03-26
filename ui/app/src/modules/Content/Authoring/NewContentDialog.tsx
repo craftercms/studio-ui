@@ -13,19 +13,18 @@
 
 import React, { useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import { fetchLegacyContentTypes } from '../../../services/content';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { palette } from '../../../styles/theme';
 import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
 import DialogActions from '@material-ui/core/DialogActions';
+import { palette } from '../../../styles/theme';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { fetchLegacyContentTypes } from '../../../services/content';
 import DialogHeader from '../../../components/DialogHeader';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+import NewContentCard from './NewContentCard';
+import NewContentSelect from './NewContentSelect';
 
 const translations = defineMessages({
   title: {
@@ -54,6 +53,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     prevImg: {
       maxWidth: '150px'
+    },
+    cardsContainer: {
+      marginTop: 14
     }
   })
 );
@@ -82,11 +84,9 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   const onListItemClick = (contentData) => () => setSelectContent(contentData);
 
-  const onPathChange = e => setContextPath(e.target.value);
-
-  const prevImgSrc =
-    (selectContent?.imageThumbnail) ?
-      `${contentTypesUrl}${selectContent.form}/${selectContent.imageThumbnail}` :
+  const getPrevImg = (content) =>
+    (content?.imageThumbnail) ?
+      `${contentTypesUrl}${content.form}/${content.imageThumbnail}` :
       defaultPrevImgUrl;
 
   useEffect(() => {
@@ -116,39 +116,26 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         icon={CloseRoundedIcon}
       />
       <DialogContent dividers className={classes.dialogContent}>
-        <Grid container spacing={3}>
-          <Grid xs={12}>
-            <TextField
-              id="sandboxBranch"
-              name="sandboxBranch"
-              label={<span>Content Path</span>}
-              onChange={onPathChange}
-              InputLabelProps={{ shrink: true }}
-              value={contextPath}
-            />
-          </Grid>
-          <Grid item xs={12} sm={7}>
-            <List>
-              {
-                contentTypes.map(content => (
-                  <ListItem key={content.name} button={true} onClick={onListItemClick(content)}>
-                    {content.label}
-                  </ListItem>
-                ))
-              }
-            </List>
-          </Grid>
-
-          <Grid item xs={12} sm={5}>
-            <img
-              src={prevImgSrc}
-              alt={formatMessage(translations.previewImage)}
-              className={classes.prevImg}
-            />
+        <Grid container>
+          <Grid item xs={12}>
+            <NewContentSelect/>
           </Grid>
         </Grid>
-
-
+        <Grid container spacing={3} className={classes.cardsContainer}>
+          {
+            contentTypes.map(content => (
+              <Grid item key={content.name} xs={12} sm={6} md={4} lg={3} xl={2}>
+                <NewContentCard
+                  headerTitle={content.label}
+                  subheader={content.form}
+                  imgTitle={formatMessage(translations.previewImage)}
+                  img={getPrevImg(content)}
+                  onClick={onListItemClick(content)}
+                />
+              </Grid>
+            ))
+          }
+        </Grid>
       </DialogContent>
 
       <DialogActions className={classes.dialogActions}>
