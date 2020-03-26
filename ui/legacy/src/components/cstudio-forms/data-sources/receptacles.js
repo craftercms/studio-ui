@@ -39,6 +39,8 @@
         this[prop.name] = prop.value;
       }
     });
+
+    console.log(properties);
     return this;
   }
 
@@ -146,6 +148,20 @@
     },
 
     add: function (control, onlyAppend) {
+      const self = this;
+      console.log(onlyAppend);
+      console.log(control.addContainerEl);
+
+      if (this.contentTypes) {
+        this.contentTypes.split(',').forEach(contentType => {
+          self._createContentTypesControls(contentType, $(control.addContainerEl), self.messages);
+        });
+      }
+
+
+      // const $addContainerEl = $('<div class="cstudio-form-control-node-selector-add-container"></div>');
+      //$(control.containerEl).append($addContainerEl);
+
       // var CMgs = CStudioAuthoring.Messages;
       // var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
       //
@@ -327,7 +343,59 @@
 
     getSupportedConstraints: function () {
       return [];
-    }
+    },
+
+    _createContentTypesControls(contentType, $addContainerEl, messages) {
+      const self = this;
+
+      function createOption(message, type) {
+        let $option = $(`
+            <div class="cstudio-form-control-node-selector-add-container-item">
+              ${message} ${contentType}
+            </div>
+          `);
+        $option.on('click', function () {
+          //self._openContentTypeForm(contentType, type);
+        });
+        return $option;
+      }
+
+      if (self.allowEmbedded) {
+        $addContainerEl.append(createOption(self.formatMessage(messages.createNewEmbedded), 'embedded'));
+      }
+      if (self.allowShared) {
+        $addContainerEl.append(createOption(self.formatMessage(messages.createNewShared), 'shared'));
+      }
+    },
+
+    _openContentTypeForm(contentType, type) {
+      const self = this;
+      if (type === 'shared') {
+        const path = `/site/components/${contentType.replace(/\//g, '_').substr(1)}`;
+        CStudioAuthoring.Operations.openContentWebForm(
+          contentType,
+          null,
+          null,
+          path,
+          false,
+          false,
+          {
+            success: function (contentTO, editorId, name, value) {
+              self.newInsertItem(name, value, type);
+              self._renderItems();
+              CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+            },
+            failure: function () {
+            }
+          },
+          [
+            { name: 'childForm', value: 'true' }
+          ]);
+      } else {
+
+      }
+      console.log(contentType);
+    },
 
   };
 

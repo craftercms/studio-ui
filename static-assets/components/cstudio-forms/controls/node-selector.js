@@ -409,13 +409,22 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
               _self.addContainerEl = null;
               _self.containerEl.removeChild(addContainerEl);
             } else {
+
+              const $addContainerEl = $('<div class="cstudio-form-control-node-selector-add-container"></div>');
+              $(_self.containerEl).append($addContainerEl);
+              _self.addContainerEl = $addContainerEl[0];
+              $addContainerEl.css({
+                left: _self.addButtonEl.offsetLeft + 'px',
+                top: _self.addButtonEl.offsetTop + 22 + 'px'
+              });
+
               for (var x = 0; x < datasources.length; x++) {
                 datasources[x].selectItemsCount = selectItemsCount;
-                if (datasources.length > 1) {
+                //if (datasources.length > 1) {
                   datasources[x].add(_self, true);
-                } else {
-                  datasources[x].add(_self);
-                }
+                //} else {
+                //datasources[x].add(_self);
+                //}
               }
             }
           }
