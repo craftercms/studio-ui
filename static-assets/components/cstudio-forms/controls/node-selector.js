@@ -624,7 +624,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
   updateEditedItem: function (value, datasource) {
     var item = this.items[this.selectedItemIndex];
     item.value = value;
-    item.datasource = datasource;
+    if (datasource) {
+      item.datasource = datasource;
+    }
     this._renderItems();
     this._onChangeVal(this);
   },

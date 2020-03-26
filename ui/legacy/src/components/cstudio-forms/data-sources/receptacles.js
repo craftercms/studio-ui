@@ -148,139 +148,23 @@
 
     add: function (control) {
       const self = this;
-
       if (this.contentTypes) {
         this.contentTypes.split(',').forEach(contentType => {
           self._createContentTypesControls(contentType, $(control.addContainerEl), self.messages, control);
         });
       }
-
-
-      // const $addContainerEl = $('<div class="cstudio-form-control-node-selector-add-container"></div>');
-      //$(control.containerEl).append($addContainerEl);
-
-      // var CMgs = CStudioAuthoring.Messages;
-      // var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
-      //
-      // var _self = this;
-      //
-      // var addContainerEl = control.addContainerEl ? control.addContainerEl : null;
-      //
-      // var datasourceDef = this.form.definition.datasources,
-      //   newElTitle = '';
-      //
-      // for(var x = 0; x < datasourceDef.length; x++){
-      //   if (datasourceDef[x].id === this.id){
-      //     newElTitle = datasourceDef[x].title;
-      //   }
-      // }
-      //
-      // if (!addContainerEl && (this.countOptions > 1 || onlyAppend)) {
-      //   addContainerEl = document.createElement("div");
-      //   control.containerEl.appendChild(addContainerEl);
-      //   YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-      //   control.addContainerEl = addContainerEl;
-      //   control.addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
-      //   control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
-      // }
-      //
-      // if (this.enableCreateNew || this.defaultEnableCreateNew) {
-      //   if(this.countOptions > 1 || onlyAppend) {
-      //     addContainerEl.create = document.createElement("div");
-      //     addContainerEl.appendChild(addContainerEl.create);
-      //     YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
-      //
-      //     var createEl = document.createElement("div");
-      //     YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-      //     createEl.innerHTML = CMgs.format(langBundle, "createNew") + " - " + newElTitle;
-      //     control.addContainerEl.create.appendChild(createEl);
-      //     var addContainerEl = control.addContainerEl;
-      //     YAHOO.util.Event.on(createEl, 'click', function () {
-      //       _self.createElementAction(control, _self, addContainerEl);
-      //     }, createEl);
-      //   }else{
-      //     _self.createElementAction(control, _self);
-      //   }
-      //
-      // }
-      //
-      // if (this.enableBrowseExisting || this.defaultEnableBrowseExisting) {
-      //   if(this.countOptions > 1 || onlyAppend) {
-      //     addContainerEl.browse = document.createElement("div");
-      //     addContainerEl.appendChild(addContainerEl.browse);
-      //     YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
-      //
-      //     var browseEl = document.createElement("div");
-      //     browseEl.innerHTML = CMgs.format(langBundle, "browseExisting") + " - " + newElTitle;
-      //     YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
-      //     control.addContainerEl.browse.appendChild(browseEl);
-      //     var addContainerEl = control.addContainerEl;
-      //     YAHOO.util.Event.on(browseEl, 'click', function () {
-      //       _self.browseExistingElementAction(control, _self, addContainerEl);
-      //     }, browseEl);
-      //   }else{
-      //     _self.browseExistingElementAction(control, _self);
-      //   }
-      // }
-      //
-      // if (this.enableSearchExisting || this.defaultEnableSearchExisting) {
-      //   if (this.countOptions > 1) {
-      //     addContainerEl.search = document.createElement("div");
-      //     addContainerEl.appendChild(addContainerEl.search);
-      //     YAHOO.util.Dom.addClass(addContainerEl.search, 'cstudio-form-controls-search-element');
-      //
-      //     var searchEl = document.createElement("div");
-      //     searchEl.innerHTML = CMgs.format(langBundle, "searchExisting") + " - " + newElTitle;
-      //     YAHOO.util.Dom.addClass(searchEl, 'cstudio-form-control-node-selector-add-container-item');
-      //     control.addContainerEl.search.appendChild(searchEl);
-      //     var addContainerEl = control.addContainerEl;
-      //     YAHOO.util.Event.on(searchEl, 'click', function () {
-      //       _self.searchExistingElementAction(control, _self, addContainerEl);
-      //     }, searchEl);
-      //   } else {
-      //     _self.searchExistingElementAction(control, _self);
-      //   }
-      // }
-
     },
 
     edit: function (key, control) {
-      // var _self = this;
-      // CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
-      //   success: function(contentTO) {
-      //     CStudioAuthoring.Operations.editContent(
-      //       contentTO.item.contentType,
-      //       CStudioAuthoringContext.siteId,
-      //       contentTO.item.uri,
-      //       contentTO.item.nodeRef,
-      //       contentTO.item.uri,
-      //       false,
-      //       {
-      //         success: function(contentTO, editorId, name, value) {
-      //           if(control){
-      //             control.updateEditedItem(value, _self.id);
-      //             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-      //           }
-      //         }
-      //       });
-      //   },
-      //   failure: function() {}
-      // });
+      const self = this;
+      if (key.endsWith('.xml')) {
+        self._editShared(key, control);
+      } else {
+        self._editEmbedded(key, control);
+      }
     },
 
     updateItem: function (item, control) {
-      // if(item.key && item.key.match(/\.xml$/)){
-      //   var getContentItemCb = {
-      //     success: function(contentTO) {
-      //       item.value =  contentTO.item.internalName || item.value;
-      //       control._renderItems();
-      //     },
-      //     failure: function() {
-      //     }
-      //   }
-      //
-      //   CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, item.key, getContentItemCb);
-      // }
     },
 
     getLabel: function () {
@@ -340,6 +224,52 @@
 
     getSupportedConstraints: function () {
       return [];
+    },
+
+    _editShared(key, control) {
+      CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
+        success: function (contentTO) {
+          CStudioAuthoring.Operations.editContent(
+            contentTO.item.contentType,
+            CStudioAuthoringContext.siteId,
+            contentTO.item.uri,
+            contentTO.item.nodeRef,
+            contentTO.item.uri,
+            false,
+            {
+              success: function (contentTO, editorId, name, value) {
+                if (control) {
+                  control.updateEditedItem(value);
+                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                }
+              }
+            });
+        },
+        failure: function () {
+        }
+      });
+    },
+    _editEmbedded(key, control) {
+      CStudioForms.communication.sendAndAwait(key, (message) => {
+        const contentType = CStudioForms.communication
+          .parseDOM(message.payload)
+          .querySelector('content-type')
+          .innerHTML;
+        CStudioAuthoring.Operations.performSimpleIceEdit(
+          { contentType: contentType, uri: key },
+          null,
+          true,
+          {
+            success: function (contentTO, editorId, name, value) {
+              if (control) {
+                control.updateEditedItem(value);
+              }
+            }
+          },
+          [],
+          true
+        );
+      });
     },
 
     _createContentTypesControls(contentType, $addContainerEl, messages, control) {
