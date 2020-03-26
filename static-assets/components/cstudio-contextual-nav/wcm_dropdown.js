@@ -318,7 +318,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                 $('html').removeClass('site-dropdown-open');
                 $(".studio-preview").css({ left :  0});
                 $(".site-dashboard").css({ left :  0});
-                $(".site-dropdown-open .cstudio-search").css({ left :  0});
+                $(".cstudio-search").css({ left :  0});
                 YDom.removeClass('acn-dropdown-wrapper', 'site-dropdown-open');
                 animator.slideOut();
               }
