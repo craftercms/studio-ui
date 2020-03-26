@@ -2909,45 +2909,7 @@ var CStudioForms = CStudioForms || function() {
         if (fieldRe.test(validFieldsStr)) {
           if (isModelItemArray) {
             output += '\t<' + key + (attributes.join(' ')) + '>';
-            for (var j = 0; j < modelItem.length; j++) {
-              var repeatItem = modelItem[j];
-              let attributes;
-              attributes = repeatItem.datasource? `datasource=\"${repeatItem.datasource}\"`: '';
-              if(repeatItem.inline) {
-                attributes += ` inline=\"${repeatItem.inline}\"`;
-              }
-              output += `\t<item ${attributes}>`;
-              for (var repeatKey in repeatItem) {
-                if(repeatKey !== 'datasource' && repeatKey !== 'inline' && repeatKey !== 'component') {
-                  var
-                    repeatValue = modelItem[j][repeatKey],
-                    isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
-                    repeatAttr = isRemote ? ' remote="true"' : '';
-
-                  output += '\t<' + repeatKey + repeatAttr + '>';
-                  if (Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1) {
-                    for (var k = 0; k < repeatValue.length; k++) {
-                      var subModelItem = repeatValue[k];
-                      output += '\t\t<item>';
-                      for (var subRepeatKey in subModelItem) {
-                        var subRepeatValue = subModelItem[subRepeatKey];
-                        output += '<' + subRepeatKey + '>';
-                        output += this.escapeXml(subRepeatValue);
-                        output += '</' + subRepeatKey + '>\r\n';
-                      }
-                      output += '\t\t</item>';
-                    }
-                  } else {
-                    output += this.escapeXml(repeatValue);
-                  }
-                  output += '</' + repeatKey + '>\r\n';
-                }else if( repeatItem.inline === 'true' && repeatKey === 'inline') {
-                  const objId = modelItem[j]['key'];
-                  output += (FlattenerState[objId] ? FlattenerState[objId] : `<component id="${objId}"/>`) + '\n';
-                }
-              }
-              output += '\t</item>';
-            }
+            output = this.recursiveRetrieveItemValues(modelItem, output, key);
             output += '</' + key + '>\r\n';
           } else {
             output += '\t<' + key + ' ' + (attributes.join(' ')) + ' >';
@@ -2972,6 +2934,40 @@ var CStudioForms = CStudioForms || function() {
       //    alert(invalidFieldsMsg);
       //}
 
+      return output;
+    },
+
+    recursiveRetrieveItemValues: function (item, output, key) {
+      for (var j = 0; j < item.length; j++) {
+        var repeatItem = item[j];
+        let attributes;
+        attributes = repeatItem.datasource ? `datasource=\"${repeatItem.datasource}\"` : '';
+        if (repeatItem.inline) {
+          attributes += ` inline=\"${repeatItem.inline}\"`;
+        }
+        output += `\t<item ${attributes}>`;
+        for (var repeatKey in repeatItem) {
+          if (repeatKey !== 'datasource' && repeatKey !== 'inline' && repeatKey !== 'component') {
+            var
+              repeatValue = item[j][repeatKey],
+              isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
+              isArray = Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1,
+              repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''}`;
+
+            output += '\t<' + repeatKey + repeatAttr + '>';
+            if (isArray) {
+              output = this.recursiveRetrieveItemValues(repeatValue, output, key);
+            } else {
+              output += this.escapeXml(repeatValue);
+            }
+            output += '</' + repeatKey + '>\r\n';
+          } else if (repeatItem.inline === 'true' && repeatKey === 'inline') {
+            const objId = item[j]['key'];
+            output += (FlattenerState[objId] ? FlattenerState[objId] : `<component id="${objId}"/>`) + '\n';
+          }
+        }
+        output += '\t</item>';
+      }
       return output;
     },
 
