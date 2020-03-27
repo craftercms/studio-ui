@@ -446,7 +446,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
   approveDialogItemsLiveNow: 'Artikel sollten jetzt veröffentlicht werden.',
   approveDialogItemsLiveDate: 'Die Artikel sollten zu einem bestimmten Datum und einer bestimmten Uhrzeit veröffentlicht werden:',
   approveDialogPublishContent: 'Elemente publizieren',
-  approveDialogPublishingOptions: 'Optionen',
+  approveDialogPublishingOptions: 'Veröffentlichungsziel',
   approveDialogBroadcastUpdate: 'Veröffentlichung bekannt geben',
 
   requestApproveDialogTitle: 'Publizierung anfordern',

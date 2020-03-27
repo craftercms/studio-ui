@@ -76,8 +76,8 @@ const messages: any = defineMessages({
     defaultMessage: 'Path Expression'
   },
   environment: {
-    id: 'publishingDashboard.environment',
-    defaultMessage: 'Environment'
+    id: 'dashboardWidgetsMessages.publishingTarget',
+    defaultMessage: 'Publishing Target'
   },
   state: {
     id: 'publishingDashboard.state',
@@ -195,7 +195,7 @@ export default function FilterDropdown(props: FilterDropdownProps) {
           </header>
           <div className={classes.formControl}>
             <RadioGroup
-              aria-label="environment"
+              aria-label={formatMessage(messages.environment)}
               name="environment"
               value={currentFilters.environment}
               onChange={handleFilterChange}

@@ -418,7 +418,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
   approveDialogItemsLiveNow: '항목이 지금 게시되어야합니다.',
   approveDialogItemsLiveDate: '특정 날짜와 시간에 항목을 게시해야합니다',
   approveDialogPublishContent: '콘텐츠를 게시',
-  approveDialogPublishingOptions: '출판 옵션',
+  approveDialogPublishingOptions: '게시 대상',
   approveDialogBroadcastUpdate: '방송 콘텐츠 업데이트',
 
   requestApproveDialogTitle: '게시를 요청할',
