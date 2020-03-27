@@ -15,22 +15,24 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import DialogContent from '@material-ui/core/DialogContent';
-import Grid from '@material-ui/core/Grid';
-import DialogActions from '@material-ui/core/DialogActions';
-import { palette } from '../../../styles/theme';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { fetchLegacyContentTypes } from '../../../services/content';
-import DialogHeader from '../../../components/DialogHeader';
-import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
-import NewContentCard from './NewContentCard';
-import NewContentSelect from './NewContentSelect';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import DialogActions from '@material-ui/core/DialogActions';
+import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+import { palette } from '../../../styles/theme';
+import { fetchLegacyContentTypes } from '../../../services/content';
+import DialogHeader from '../../../components/DialogHeader';
+import NewContentCard from './NewContentCard';
+import NewContentSelect from './NewContentSelect';
+import SearchBar from '../../../components/SearchBar';
 
 const translations = defineMessages({
   title: {
@@ -72,6 +74,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     submitBtn: {
       marginLeft: 17
+    },
+    searchBox: {
+      minWidth: '33%'
     }
   })
 );
@@ -102,6 +107,8 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const onListItemClick = (contentData) => () => setSelectContent(contentData);
 
   const onCompactCheck = () => setIsCompact(!isCompact);
+
+  const onSearchChange = value => setContextPath(value);
 
   const getPrevImg = (content) =>
     (content?.imageThumbnail)
@@ -135,11 +142,15 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         icon={CloseRoundedIcon}
       />
       <DialogContent dividers className={classes.dialogContent}>
-        <Grid container>
-          <Grid item xs={12}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box>
             <NewContentSelect />
-          </Grid>
-        </Grid>
+          </Box>
+          <Box className={classes.searchBox}>
+            <SearchBar onChange={onSearchChange} keyword={contextPath} autofocus />
+          </Box>
+        </Box>
+
         <Grid container spacing={3} className={classes.cardsContainer}>
           {
             contentTypes.map(content => (
