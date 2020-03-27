@@ -27,6 +27,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import DialogActions from '@material-ui/core/DialogActions';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
+import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import { palette } from '../../../styles/theme';
 import { fetchLegacyContentTypes } from '../../../services/content';
 import DialogHeader from '../../../components/DialogHeader';
@@ -144,7 +145,12 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       <DialogContent dividers className={classes.dialogContent}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
-            <NewContentSelect />
+            <NewContentSelect
+              title="Parent"
+              label="Home"
+              LabelIcon={InsertDriveFileOutlinedIcon}
+              onEditClick={() => null}
+            />
           </Box>
           <Box className={classes.searchBox}>
             <SearchBar onChange={onSearchChange} keyword={contextPath} autofocus />

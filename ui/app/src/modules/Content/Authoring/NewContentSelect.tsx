@@ -16,22 +16,27 @@
 
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
-import { palette } from '../../../styles/theme';
+import { OverridableComponent } from '@material-ui/core/OverridableComponent';
+import { SvgIconTypeMap } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
+import EditIcon from '@material-ui/icons/Edit';
+import clsx from 'clsx';
+import { palette } from '../../../styles/theme';
+import { Variant } from '@material-ui/core/styles/createTypography';
 
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: palette.white,
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '20px 10px'
+    padding: '10px 15px'
   },
   textWrapper: {
     display: 'flex',
     '& > *': {
-      marginRight: 17,
+      marginRight: 15,
     },
     '& > p': {
       color: palette.black
@@ -42,23 +47,46 @@ const useStyles = makeStyles(theme => ({
   },
   changeBtn: {
     padding: 0
+  },
+  labelIcon: {
+    fill: palette.teal.main,
+    marginRight: 10
+  },
+  editIcon: {
+    fontSize: 17
   }
 }));
 
-export default function NewContentSelect() {
+interface NewContentSelectProps {
+  LabelIcon: OverridableComponent<SvgIconTypeMap>;
+  editIconClass?: string;
+  rootClass?: string;
+  labelIconClass?: string;
+  title: string;
+  label: string;
+  titleVariant?: Variant;
+  labelVariant?: Variant;
+  onEditClick(): void;
+}
+
+export default function NewContentSelect(props: NewContentSelectProps) {
+  const { LabelIcon, editIconClass, labelIconClass, rootClass, titleVariant, labelVariant, onEditClick, title, label } = props;
   const classes = useStyles();
 
   return (
-    <Paper className={classes.root} elevation={0}>
+    <Paper className={clsx(classes.root, rootClass)} elevation={0}>
       <div className={classes.textWrapper}>
-        <Typography variant="body1" className={classes.title}>
-          Parent Item
+        <Typography variant={titleVariant || 'body1'} className={classes.title}>
+          { title }
         </Typography>
-        <Typography variant="body1">
-          Home
+        <LabelIcon className={clsx(classes.labelIcon, labelIconClass)}/>
+        <Typography variant={labelVariant || 'body1'}>
+          { label }
         </Typography>
       </div>
-      <Button color="primary" className={classes.changeBtn}>Change</Button>
+      <IconButton className={classes.changeBtn} onClick={() => onEditClick()}>
+        <EditIcon className={clsx(classes.editIcon, editIconClass)}/>
+      </IconButton>
     </Paper>
   );
 }
