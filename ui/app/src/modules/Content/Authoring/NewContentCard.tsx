@@ -21,15 +21,19 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import Divider from '@material-ui/core/Divider';
 import { palette } from '../../../styles/theme';
-import Collapse from '@material-ui/core/Collapse';
 
 const useStyles = makeStyles(theme => ({
-  root: {
+  defaultCard: {
     maxWidth: 345
   },
+  compactCard: {
+    display: 'flex'
+  },
   media: {
-    height: 0,
-    paddingTop: '56.25%'
+    paddingTop: '56.25%',
+  },
+  compactMedia: {
+    width: 151,
   },
   cardTitle: {
     color: palette.black
@@ -42,15 +46,13 @@ interface NewContentCardProps {
   imgTitle: string;
   img: string;
   onClick: any;
-  collapseIn: boolean
+  isCompact: boolean
 }
 
-export default function NewContentCard(props: NewContentCardProps) {
-  const { headerTitle, subheader, img, imgTitle, onClick, collapseIn } = props;
-  const classes = useStyles();
-
+const DefaultCardContent = props => {
+  const { headerTitle, subheader, classes, img, imgTitle } = props;
   return (
-    <Card className={classes.root} onClick={onClick}>
+    <>
       <CardHeader
         title={headerTitle}
         subheader={subheader}
@@ -64,13 +66,53 @@ export default function NewContentCard(props: NewContentCardProps) {
         }}
       />
       <Divider />
-      <Collapse in={collapseIn} timeout="auto" unmountOnExit>
-        <CardMedia
-          className={classes.media}
-          image={img}
-          title={imgTitle}
-        />
-      </Collapse>
+      <CardMedia
+        className={classes.media}
+        image={img}
+        title={imgTitle}
+      />
+    </>
+  );
+};
+
+const CompactCardContent = props => {
+  const { headerTitle, subheader, classes, img, imgTitle } = props;
+  return (
+    <>
+      <CardMedia
+        className={classes.compactMedia}
+        image={img}
+        title={imgTitle}
+      />
+      <Divider />
+      <CardHeader
+        title={headerTitle}
+        subheader={subheader}
+        titleTypographyProps={{
+          variant: 'subtitle2',
+          className: classes.cardTitle
+        }}
+        subheaderTypographyProps={{
+          variant: 'subtitle2',
+          color: 'textSecondary'
+        }}
+      />
+    </>
+  );
+};
+
+export default function NewContentCard(props: NewContentCardProps) {
+  const { onClick, isCompact } = props;
+  const classes = useStyles();
+  const rootClass = !isCompact ? classes.defaultCard : classes.compactCard;
+
+  return (
+    <Card className={rootClass} onClick={onClick}>
+      {
+        !isCompact
+        ? <DefaultCardContent {...props} classes={classes} />
+        : <CompactCardContent {...props} classes={classes}/>
+      }
     </Card>
   );
 }

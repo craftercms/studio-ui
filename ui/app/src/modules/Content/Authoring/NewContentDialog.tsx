@@ -44,6 +44,10 @@ const translations = defineMessages({
   previewImage: {
     id: 'previewImage.alt',
     defaultMessage: 'preview'
+  },
+  compactInput: {
+    id: 'compactInput.label',
+    defaultMessage: 'Compact'
   }
 });
 
@@ -91,13 +95,13 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [contextPath, setContextPath] = useState(`${defaultPath}/`);
   const [selectContent, setSelectContent] = useState(null);
   const [contentTypes, setContentTypes] = useState(null);
-  const [showPreviews, setShowPreviews] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
 
   const onListItemClick = (contentData) => () => setSelectContent(contentData);
 
-  const onShowPreviewsCheck = () => setShowPreviews(!showPreviews);
+  const onCompactCheck = () => setIsCompact(!isCompact);
 
   const getPrevImg = (content) =>
     (content?.imageThumbnail)
@@ -139,9 +143,9 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         <Grid container spacing={3} className={classes.cardsContainer}>
           {
             contentTypes.map(content => (
-              <Grid item key={content.name} xs={12} sm={4}>
+              <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
                 <NewContentCard
-                  collapseIn={showPreviews}
+                  isCompact={isCompact}
                   headerTitle={content.label}
                   subheader={content.form}
                   imgTitle={formatMessage(translations.previewImage)}
@@ -157,13 +161,12 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         <FormControlLabel
           control={
             <Checkbox
-              checked={showPreviews}
-              onChange={onShowPreviewsCheck}
-              name="checkedB"
+              checked={isCompact}
+              onChange={onCompactCheck}
               color="primary"
             />
           }
-          label="Show previews"
+          label={formatMessage(translations.compactInput)}
         />
         <FormGroup row>
           <Button variant="contained" onClick={onDialogClose}>
