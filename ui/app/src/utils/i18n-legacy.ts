@@ -645,7 +645,7 @@ const checkboxGroupControlMessages = defineMessages({
 const transcodedVideoPickerControlMessages = defineMessages({
   label: {
     id: 'transcodedVideoPickerControl.label',
-    defaultMessage: 'Transcoded Video Picker'
+    defaultMessage: 'Transcoded Video'
   }
 });
 
@@ -752,6 +752,7 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHintPt5: {
     id: 'adminConfigurations.encryptHinPt5',
+    // eslint-disable-next-line no-template-curly-in-string
     defaultMessage: '{lt}accessKey encrypted="true"{gt}${lc}enc:xeJW23SomeEncryptedValuesListedHere{rc}{lt}/accessKey{gt}'
   },
   encryptHintPt6: {
@@ -835,6 +836,17 @@ const dashboardWidgetsMessages = defineMessages({
   }
 });
 
+const bulkUploadConfirmDialogMessages = defineMessages({
+  title: {
+    id: 'bulkUploadConfirmDialogMessages.title',
+    defaultMessage: 'Upload in progress'
+  },
+  description: {
+    id: 'bulkUploadConfirmDialogMessages.description',
+    defaultMessage: 'There is still a bulk upload in progress. Only one bulk upload can be executed at the same time.'
+  }
+});
+
 const embeddedLegacyFormMessages = defineMessages({
   contentFormFailedToLoadErrorMessage: {
     id: 'embeddedLegacyFormMessages.openContentFormFailedError',
@@ -875,5 +887,6 @@ export default {
   rteControlMessages,
   ossAttribution,
   dashboardWidgetsMessages,
+  bulkUploadConfirmDialogMessages,
   embeddedLegacyFormMessages
 };
