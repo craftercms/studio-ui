@@ -898,6 +898,14 @@ const receptaclesMessages = defineMessages({
   tags: {
     id: 'receptaclesMessages.tags',
     defaultMessage: 'Tags'
+  },
+  browseExisting: {
+    id: 'receptaclesMessages.browseExisting',
+    defaultMessage: 'Browse Existing'
+  },
+  searchExisting: {
+    id: 'receptaclesMessages.searchExisting',
+    defaultMessage: 'Search Existing Components'
   }
 });
 

@@ -500,12 +500,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       var item = {};
       item = { key: key, value: value };
 
-      if (type === 'shared') {
-        item.include = key;
-        item.disableFlattening = this.disableFlattening;
-      } else {
+      if (type === 'embedded') {
         item.key = key;
         item.inline = 'true';
+      } else {
+        item.include = key;
+        item.disableFlattening = this.disableFlattening;
       }
       this.items[this.items.length] = item;
 

@@ -21,12 +21,11 @@
     this.form = form;
     this.properties = properties;
     this.constraints = constraints;
-    this.selectItemsCount = -1;
     this.type = '';
     this.allowShared = false;
     this.allowEmbedded = false;
-    this.defaultEnableBrowseExisting = false;
-    this.defaultEnableSearchExisting = false;
+    this.enableSearch = false;
+    this.enableBrowse = false;
     this.baseRepoPath = '/site/components';
     this.baseBrowsePath = '/site/components';
     //this.countOptions = 0;
@@ -44,114 +43,22 @@
   }
 
   Receptacles.prototype = {
-    itemsAreContentReferences: true,
-
-    createElementAction: function (control, _self, addContainerEl) {
-      // if(this.countOptions > 1) {
-      //   control.addContainerEl = null;
-      //   control.containerEl.removeChild(addContainerEl);
-      // }
-      // if (_self.type === "") {
-      //   CStudioAuthoring.Operations.createNewContent(
-      //     CStudioAuthoringContext.site,
-      //     _self.processPathsForMacros(_self.repoPath),
-      //     false, {
-      //       success: function (formName, name, value) {
-      //         control.insertItem(value, formName.item.internalName, null, null, _self.id);
-      //         control._renderItems();
-      //       },
-      //       failure: function () {
-      //       }
-      //     }, true);
-      // } else {
-      //   CStudioAuthoring.Operations.openContentWebForm(
-      //     _self.type,
-      //     null,
-      //     null,
-      //     _self.processPathsForMacros(_self.repoPath),
-      //     false,
-      //     false,
-      //     {
-      //       success: function (contentTO, editorId, name, value) {
-      //         control.insertItem(name, value, null, null, _self.id);
-      //         control._renderItems();
-      //         CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-      //       },
-      //       failure: function () {
-      //       }
-      //     },
-      //     [
-      //       { name: "childForm", value: "true"}
-      //     ]);
-      // }
-    },
-
-    browseExistingElementAction: function (control, _self, addContainerEl) {
-      // if(this.countOptions > 1) {
-      //   control.addContainerEl = null;
-      //   control.containerEl.removeChild(addContainerEl);
-      // }
-      // // if the browsePath property is set, use the property instead of the repoPath property
-      // // otherwise continue to use the repoPath for both cases for backward compatibility
-      // var browsePath = _self.repoPath;
-      // if (_self.browsePath != undefined && _self.browsePath != '') {
-      //   browsePath = _self.browsePath;
-      // }
-      // CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(browsePath), _self.selectItemsCount, "select", true, {
-      //   success: function (searchId, selectedTOs) {
-      //     for (var i = 0; i < selectedTOs.length; i++) {
-      //       var item = selectedTOs[i];
-      //       var value = (item.internalName && item.internalName != "") ? item.internalName : item.uri;
-      //       control.insertItem(item.uri, value, null, null, _self.id);
-      //       control._renderItems();
-      //     }
-      //   },
-      //   failure: function () {
-      //   }
-      // });
-    },
-
-    searchExistingElementAction: function (control, _self, addContainerEl) {
-      // if (this.countOptions > 1) {
-      //   control.addContainerEl = null;
-      //   control.containerEl.removeChild(addContainerEl);
-      // }
-      //
-      // var searchContext = {
-      //   searchId: null,
-      //   itemsPerPage: 12,
-      //   keywords: "",
-      //   filters: {},
-      //   sortBy: "internalName",
-      //   sortOrder: "asc",
-      //   numFilters: 1,
-      //   filtersShowing: 10,
-      //   currentPage: 1,
-      //   searchInProgress: false,
-      //   view: 'grid',
-      //   lastSelectedFilterSelector: '',
-      //   mode: "select"              // open search not in default but in select mode
-      // };
-      //
-      // CStudioAuthoring.Operations.openSearch(searchContext, true, {
-      //   success(searchId, selectedTOs) {
-      //     selectedTOs.forEach (function(item) {
-      //       var value = (item.internalName && item.internalName !== "") ? item.internalName : item.uri;
-      //       control.insertItem(item.uri, value, null, null, _self.id);
-      //       control._renderItems();
-      //     });
-      //   },
-      //   failure: function () {
-      //   }
-      // }, searchContext.searchId);
-    },
 
     add: function (control) {
       const self = this;
       if (this.contentTypes) {
         this.contentTypes.split(',').forEach(contentType => {
-          self._createContentTypesControls(contentType, $(control.addContainerEl), self.messages, control);
+          self._createContentTypesControls(contentType, control);
         });
+      }
+      if (this.allowShared && this.enableSearch) {
+        let message = `${self.formatMessage(self.messages.searchExisting)}`;
+        $(control.addContainerEl).append(
+          self._createOption(message, () => {
+            self._clearAddContainerEl(control);
+            self._openSearch(control);
+          })
+        );
       }
     },
 
@@ -226,6 +133,52 @@
       return [];
     },
 
+    _openBrowse: function (contentType, control) {
+      const path = `${this.baseBrowsePath}/${contentType.replace(/\//g, '_').substr(1)}`;
+      CStudioAuthoring.Operations.openBrowse('', path, -1, 'select', true, {
+        success: function (searchId, selectedTOs) {
+          for (let i = 0; i < selectedTOs.length; i++) {
+            let item = selectedTOs[i];
+            let value = (item.internalName && item.internalName !== '') ? item.internalName : item.uri;
+            control.newInsertItem(item.uri, value, 'shared');
+            control._renderItems();
+          }
+        },
+        failure: function () {
+        }
+      });
+    },
+
+    _openSearch: function (control) {
+      const searchContext = {
+        searchId: null,
+        itemsPerPage: 12,
+        keywords: '',
+        filters: {},
+        sortBy: 'internalName',
+        sortOrder: 'asc',
+        numFilters: 1,
+        filtersShowing: 10,
+        currentPage: 1,
+        searchInProgress: false,
+        view: 'grid',
+        lastSelectedFilterSelector: '',
+        mode: 'select'              // open search not in default but in select mode
+      };
+
+      CStudioAuthoring.Operations.openSearch(searchContext, true, {
+        success(searchId, selectedTOs) {
+          selectedTOs.forEach(function (item) {
+            const value = (item.internalName && item.internalName !== '') ? item.internalName : item.uri;
+            control.newInsertItem(item.uri, value, 'shared');
+            control._renderItems();
+          });
+        },
+        failure: function () {
+        }
+      }, searchContext.searchId);
+    },
+
     _editShared(key, control) {
       CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
         success: function (contentTO) {
@@ -249,6 +202,7 @@
         }
       });
     },
+
     _editEmbedded(key, control) {
       CStudioForms.communication.sendAndAwait(key, (message) => {
         const contentType = CStudioForms.communication
@@ -272,29 +226,59 @@
       });
     },
 
-    _createContentTypesControls(contentType, $addContainerEl, messages, control) {
+    _createContentTypesControls(contentType, control) {
       const self = this;
-
-      function createOption(message, type) {
-        let $option = $(`
-            <div class="cstudio-form-control-node-selector-add-container-item">
-              ${message} ${contentType}
-            </div>
-          `);
-        $option.on('click', function () {
-          control.addContainerEl = null;
-          $addContainerEl.remove();
-          self._openContentTypeForm(contentType, type, control);
-        });
-        return $option;
-      }
+      const $addContainerEl = $(control.addContainerEl);
 
       if (self.allowEmbedded) {
-        $addContainerEl.append(createOption(self.formatMessage(messages.createNewEmbedded), 'embedded'));
+        let message = `${self.formatMessage(self.messages.createNewEmbedded)} ${contentType}`;
+        let type = 'embedded';
+        $addContainerEl.append(
+          self._createOption(message, callback(type))
+        );
       }
+
       if (self.allowShared) {
-        $addContainerEl.append(createOption(self.formatMessage(messages.createNewShared), 'shared'));
+        let message = `${self.formatMessage(self.messages.createNewShared)} ${contentType}`;
+        let type = 'shared';
+        $addContainerEl.append(
+          self._createOption(message, callback(type))
+        );
       }
+
+      if (self.allowShared && self.enableBrowse) {
+        let message = `${self.formatMessage(self.messages.browseExisting)} ${contentType}`;
+        $addContainerEl.append(
+          self._createOption(message, () => {
+            self._clearAddContainerEl(control);
+            self._openBrowse(contentType, control);
+          })
+        );
+      }
+
+      function callback(type) {
+        return () => {
+          self._clearAddContainerEl(control);
+          self._openContentTypeForm(contentType, type, control);
+        };
+      }
+    },
+
+    _clearAddContainerEl(control) {
+      $(control.addContainerEl).remove();
+      control.addContainerEl = null;
+    },
+
+    _createOption(message, callback) {
+      let $option = $(`
+            <div class="cstudio-form-control-node-selector-add-container-item">
+              ${message} 
+            </div>
+          `);
+      $option.on('click', function () {
+        callback();
+      });
+      return $option;
     },
 
     _openContentTypeForm(contentType, type, control) {
