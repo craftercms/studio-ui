@@ -47,7 +47,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
     }
 
     quickCreateWrapper.click(e =>
-      renderQuickCreate(e.currentTarget, CStudioAuthoringContext?.previewCurrentPath)
+      renderQuickCreate(e.currentTarget, CStudioAuthoringContext.previewCurrentPath)
     );
 
     // TODO:  remove commented code once the QuickCreateMenu.tsx implementation is done
