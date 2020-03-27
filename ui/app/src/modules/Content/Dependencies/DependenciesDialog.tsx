@@ -23,7 +23,9 @@ import { useActiveSiteId, useSpreadState } from '../../../utils/hooks';
 const dialogInitialState = {
   selectedOption: 'depends-on',
   dependantItems: [],
-  dependencies: []
+  dependencies: [],
+  compactView: false,
+  showTypes: 'all-deps'
 };
 
 const editableAssets = [    // TODO: how are go going to keep track of this? Should this be somewhere else?

@@ -16,33 +16,41 @@
 
 import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import CloseIcon from '@material-ui/icons/Close';
 import { Item } from '../../../models/Item';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
 import { palette } from '../../../styles/theme';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ErrorState from '../../../components/SystemStatus/ErrorState';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Chip from '@material-ui/core/Chip';
+import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
+import CreateIcon from '@material-ui/icons/Create';
+import DialogHeader from '../../../components/DialogHeader';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Radio from '@material-ui/core/Radio';
 
-const deleteDialogStyles = makeStyles((theme) => createStyles({
+const translations = defineMessages({
+  headerTitle: {
+    id: 'dependenciesDialog.headerTitle',
+    defaultMessage: 'Content Item Dependencies'
+  }
+});
+
+const dependenciesDialogStyles = makeStyles((theme) => createStyles({
   root: {
     textAlign: 'left'
   },
   dialogPaper: {
-    minHeight: '530px'
+    height: '540px'
   },
   titleRoot: {
     margin: 0,
@@ -64,10 +72,15 @@ const deleteDialogStyles = makeStyles((theme) => createStyles({
     padding: theme.spacing(2),
     backgroundColor: palette.gray.light0,
     display: 'flex',
+    flexDirection: 'column',
     flex: '1 1 auto',
-    overflowY: 'auto',
+    // overflowY: 'auto',
     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
     borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+  },
+  selectionContent: {
+    marginBottom: '15px',
+    display: 'flex'
   },
   dialogActions: {
     flex: '0 0 auto',
@@ -85,31 +98,117 @@ const deleteDialogStyles = makeStyles((theme) => createStyles({
     height: '100vh',
     padding: 0
   },
-  tableWrapper: {
-    flex: 1,
-    maxHeight: 440,
-    overflow: 'auto',
-    background: `${palette.white}`,
-    border: `1px solid ${palette.gray.light5}`
-  },
-  tableHeadCell: {
-    fontWeight: 600
-  },
   formControl: {
-    margin: '10px 0',
     minWidth: 120,
-    flexDirection: 'unset'
+    marginLeft: 'auto'
   },
   selectLabel: {
     position: 'relative',
     color: palette.gray.dark5,
-    fontSize: '14px',
-    padding: '10px 10px 10px 0'
+    fontSize: '14px'
   },
   select: {
-    fontSize: '14px'
+    fontSize: '16px',
+    border: 'none'
+  },
+  selectedItem: {
+    backgroundColor: palette.white,
+    borderRadius: '5px',
+    padding: '10px',
+    height: '40px',
+    fontSize: '16px',
+    borderColor: palette.gray.light1
+  },
+  selectedItemLabel: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '0 10px 0 0',
+    '& .label': {
+      fontWeight: '600',
+      marginRight: '10px'
+    },
+    '& .item-icon': {
+      color: palette.teal.main,
+      marginRight: '10px',
+      width: '20px',
+      height: '20px'
+    },
+    '& .item-title': {
+      marginRight: '25px'
+    }
+  },
+  selectedItemEditIcon: {
+    fontSize: '14px',
+    color: palette.gray.medium5,
+    width: '16px',
+    height: '16px'
+  },
+  dependenciesList: {
+    backgroundColor: palette.white,
+    padding: 0,
+    borderRadius: '5px 5px 0 0',
+    overflowY: 'auto',
+    height: '305px'
+  },
+  dependenciesListItem: {
+    boxShadow: '0 1px 1px #EBEBF0',
+    padding: 0,
+    height: '70px'
+  },
+  dependenciesCompactListItem: {
+    height: '43px'
+  },
+  listItemPreview: {
+    width: '100px',
+    height: '70px',
+    borderRadius: 0
+  },
+  listItemContent: {
+    paddingLeft: '15px'
+  },
+  compactViewAction: {
+    marginRight: 'auto'
+  },
+  showTypesSelect: {
+    '& > .MuiRadio-root': {
+      display: 'none'
+    }
+  },
+  showTypesMenu: {
+    '& .MuiListItem-root': {
+      padding: '0 10px',
+      fontSize: '14px',
+      '& > .MuiRadio-root': {
+        padding: '6px',
+        '& .MuiSvgIcon-root': {
+          width: '16px',
+          height: '16px'
+        }
+      }
+    }
   }
 }));
+
+const assetsTypes = {
+  'all-deps': {
+    label: <FormattedMessage id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies"/>,
+    filter: () => true
+  },
+  'content-items': {
+    label: <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only"/>,
+    filter: (dependency: Item) => {
+      return (dependency.isComponent || dependency.isPage)      //TODO: returning isComponent=true on assets, verify with backend
+    }
+  },
+  'assets': {
+    label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only"/>,
+    filter: (dependency: Item) => dependency.isAsset
+  },
+  'code': {
+    label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only"/>,
+    filter: (dependency: Item) => false                         //TODO: pending filter
+  }
+};
 
 interface DependenciesDialogUIProps {
   item: Item;
@@ -137,7 +236,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     handleDependencyEdit,
     isEditableItem
   } = props;
-  const classes = deleteDialogStyles({});
+  const classes = dependenciesDialogStyles({});
+  const { formatMessage } = useIntl();
 
   return (
     <Dialog
@@ -154,114 +254,125 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         (!apiState.error) ?
           (
             <>
-              <MuiDialogTitle disableTypography className={classes.titleRoot}>
-                <div className={classes.title}>
-                  <Typography variant="h6">
-                    <FormattedMessage
-                      id="dependenciesDialog.headerTitle"
-                      defaultMessage="Dependencies"
-                    />
-                  </Typography>
-                  <IconButton aria-label="close" onClick={handleClose}>
-                    <CloseIcon/>
-                  </IconButton>
-                </div>
-                <Typography variant="subtitle1" className={classes.subtitle}>
-                  <FormattedMessage
-                    id="deleteDialog.headerSubTitle"
-                    defaultMessage={`Dependencies Shown for: ${item.internalName}`}
-                  />
-                </Typography>
-                <FormControl className={classes.formControl}>
-                  <InputLabel className={classes.selectLabel}>
-                    <FormattedMessage
-                      id="deleteDialog.selectLabel"
-                      defaultMessage={'Show content that:'}
-                    />
-                  </InputLabel>
-                  <Select
-                    value={state.selectedOption}
-                    onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                      setState({ selectedOption: event.target.value as string });
-                    }}
-                    inputProps={{
-                      className: classes.select
-                    }}
-                    ref={(el: HTMLElement) => {   // Style overriding with important, and need to set it inline
-                      if (el) {
-                        el.style.setProperty('margin-top', '0', 'important');
-                      }
-                    }}
-                  >
-                    <MenuItem value='depends-on'>Refers to this item</MenuItem>
-                    <MenuItem value='depends-on-me'>Is referenced by this item</MenuItem>
-                  </Select>
-                </FormControl>
-              </MuiDialogTitle>
+              <DialogHeader
+                title={formatMessage(translations.headerTitle)}
+                onClose={handleClose}
+              />
               <div className={classes.dialogContent}>
-                <div className={classes.tableWrapper}>
-                  <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell
-                          key={'item'}
-                          align={'left'}
-                          className={classes.tableHeadCell}
-                        >
-                          <FormattedMessage
-                            id="dependenciesDialog.item"
-                            defaultMessage="Item"
-                          />
-                        </TableCell>
-                        <TableCell
-                          key={'uri'}
-                          align={'left'}
-                          className={classes.tableHeadCell}
-                        >
-                          <FormattedMessage
-                            id="dependenciesDialog.path"
-                            defaultMessage="Path"
-                          />
-                        </TableCell>
-                        <TableCell key={'edit'} align={'left'}/>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {dependencies.map(dependency => (
-                        <TableRow key={dependency.name}>
-                          <TableCell component="th" scope="row">
-                            {dependency.internalName}
-                          </TableCell>
-                          <TableCell component="th" scope="row">
-                            {dependency.uri}
-                          </TableCell>
-                          <TableCell component="th" scope="row">
-                            {
-                              isEditableItem(dependency) &&
-                              <a href="" onClick={(e) => {
-                                e.preventDefault();
-                                handleDependencyEdit(dependency);
-                              }}>
-                                <FormattedMessage
-                                  id="dependenciesDialog.edit"
-                                  defaultMessage="Edit"
-                                />
-                              </a>
-                            }
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                <div className={classes.selectionContent}>
+                  <Chip
+                    variant="outlined"
+                    deleteIcon={<CreateIcon/>}
+                    onDelete={() => {             //TODO: edit item functionality
+
+                    }}
+                    classes={{
+                      root: classes.selectedItem,
+                      label: classes.selectedItemLabel,
+                      deleteIcon: classes.selectedItemEditIcon
+                    }}
+                    label={
+                      <>
+                        <span className='label'>Selected</span>
+                        <InsertDriveFileOutlinedIcon className='item-icon'/>
+                        <span className='item-title'>{item.internalName}</span>
+                      </>
+                    }
+                  />
+
+                  <FormControl className={classes.formControl}>
+                    <Select
+                      value={state.selectedOption}
+                      onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                        setState({ selectedOption: event.target.value as string });
+                      }}
+                      inputProps={{
+                        className: classes.select
+                      }}
+                    >
+                      <MenuItem value='depends-on'>Refers to this item</MenuItem>
+                      <MenuItem value='depends-on-me'>Is referenced by this item</MenuItem>
+                    </Select>
+                  </FormControl>
                 </div>
+                {/* isEditableItem(dependency) &&*/}
+                {/* <a href="" onClick={(e) => {*/}
+                {/*   e.preventDefault();*/}
+                {/*   handleDependencyEdit(dependency);*/}
+                {/* }}>*/}
+                <List className={classes.dependenciesList}>
+                  {
+                    dependencies
+                      .filter(dependency => assetsTypes[state.showTypes].filter(dependency))
+                      .map(dependency => {
+
+                        return (
+                          <ListItem
+                            className={`${classes.dependenciesListItem} ${(state.compactView) ? classes.dependenciesCompactListItem : ''}`}
+                          >
+                            {
+                              dependency.isPreviewable && !state.compactView &&
+                              <ListItemAvatar>
+                                <Avatar className={classes.listItemPreview} src={dependency.uri}/>
+                              </ListItemAvatar>
+                            }
+                            <ListItemText
+                              className={classes.listItemContent}
+                              primary={dependency.internalName}
+                              secondary={(!state.compactView) ? dependency.uri : null}/>
+                          </ListItem>
+                        )
+                      })
+                  }
+                </List>
               </div>
               <div className={classes.dialogActions}>
-                <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
-                  <FormattedMessage
-                    id="dependenciesDialog.close"
-                    defaultMessage={`Close`}
-                  />
-                </Button>
+                <FormControlLabel
+                  className={classes.compactViewAction}
+                  control={
+                    <Checkbox
+                      checked={state.compactView}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        setState({ compactView: event.target.checked });
+                      }}
+                      color="primary"
+                    />
+                  }
+                  label="Compact"
+                />
+                <FormControl className={classes.formControl}>
+                  <Select
+                    value={state.showTypes}
+                    onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                      setState({ showTypes: event.target.value as string });
+                    }}
+                    inputProps={{
+                      className: `${classes.select} ${classes.showTypesSelect}`
+                    }}
+                    MenuProps={{
+                      className: classes.showTypesMenu,
+                      transformOrigin: {
+                        vertical: 'bottom',
+                        horizontal: 'left'
+                      },
+                      getContentAnchorEl: null
+                    }}
+                  >
+                    {
+                      Object.keys(assetsTypes).map(typeId =>
+                        (
+                          <MenuItem value={typeId}>
+                            <Radio
+                              checked={state.showTypes === typeId}
+                              color="primary"
+                            />
+                            {assetsTypes[typeId].label}
+                          </MenuItem>
+                        )
+                      )
+                    }
+                  </Select>
+                </FormControl>
               </div>
             </>
           ) : (
