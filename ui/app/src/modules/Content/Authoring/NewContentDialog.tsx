@@ -15,14 +15,12 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import DialogContent from '@material-ui/core/DialogContent';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -34,6 +32,7 @@ import DialogHeader from '../../../components/DialogHeader';
 import NewContentCard from './NewContentCard';
 import NewContentSelect from './NewContentSelect';
 import SearchBar from '../../../components/SearchBar';
+import ContentTypesFilter from './ContentTypesFilter';
 
 const translations = defineMessages({
   title: {
@@ -99,17 +98,21 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const classes = useStyles({});
   const defaultPath = '/site/website';
   const [contextPath, setContextPath] = useState(`${defaultPath}/`);
-  const [selectContent, setSelectContent] = useState(null);
   const [contentTypes, setContentTypes] = useState(null);
+  const [filterContentTypes, setFilterContentTypes] = useState(null);
   const [isCompact, setIsCompact] = useState(false);
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
 
-  const onListItemClick = (contentData) => () => setSelectContent(contentData);
-
   const onCompactCheck = () => setIsCompact(!isCompact);
 
   const onSearchChange = value => setContextPath(value);
+
+  const onTypeChange = type =>
+    (type !== 'all')
+      ? setFilterContentTypes(contentTypes.filter(content => content.type === type))
+      : setFilterContentTypes(contentTypes);
+
 
   const getPrevImg = (content) =>
     (content?.imageThumbnail)
@@ -122,13 +125,13 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   useEffect(() => {
     open && fetchLegacyContentTypes(site, contextPath).subscribe(data => {
+      setFilterContentTypes(data);
       setContentTypes(data);
-      setSelectContent(data[0]);
     });
   }, [open, contextPath, site]);
 
   return (
-    contentTypes &&
+    filterContentTypes &&
     <Dialog
       open={open}
       onClose={onDialogClose}
@@ -159,7 +162,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
         <Grid container spacing={3} className={classes.cardsContainer}>
           {
-            contentTypes.map(content => (
+            filterContentTypes.map(content => (
               <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
                 <NewContentCard
                   isCompact={isCompact}
@@ -167,7 +170,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
                   subheader={content.form}
                   imgTitle={formatMessage(translations.previewImage)}
                   img={getPrevImg(content)}
-                  onClick={onListItemClick(content)}
+                  onClick={onTypeOpen(content, contextPath)}
                 />
               </Grid>
             ))
@@ -185,26 +188,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           }
           label={formatMessage(translations.compactInput)}
         />
-        <FormGroup row>
-          <Button variant="contained" onClick={onDialogClose}>
-            <FormattedMessage
-              id="newContentDialog.cancel"
-              defaultMessage={`Cancel`}
-            />
-          </Button>
-
-          <Button
-            className={classes.submitBtn}
-            color="primary"
-            variant="contained"
-            onClick={onTypeOpen(selectContent, contextPath)}
-          >
-            <FormattedMessage
-              id="newContentDialog.submit"
-              defaultMessage={`Open Type`}
-            />
-          </Button>
-        </FormGroup>
+        <ContentTypesFilter onTypeChange={onTypeChange} />
       </DialogActions>
     </Dialog>
   );
