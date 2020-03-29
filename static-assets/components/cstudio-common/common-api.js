@@ -1552,33 +1552,29 @@ var nodeOpen = false,
             /**
              * given a transfer object, open a preview URL
              */
-            openPreview: function(contentTO, windowId, soundTone, incontextEdit, targetWindowId) {
+            openPreview: function (contentTO, windowId, soundTone, incontextEdit, targetWindowId) {
 
-                if(!targetWindowId) {
-                    // if no target is supplied assume local call
-                    // basically mimics behavior before target was implmented
-                    targetWindowId = window.name;
+              if (!targetWindowId) {
+                // if no target is supplied assume local call
+                // basically mimics behavior before target was implmented
+                targetWindowId = window.name;
+              }
+
+              var url = this.getPreviewUrl(contentTO);
+
+              if (incontextEdit) {
+                window.location.reload();
+              } else {
+                // remove server name and port etc
+                if (url.indexOf('//') != -1) {
+                  url = url.replace('//', '--x--');
+                  url = url.substring(url.indexOf('/'));
+                  if (url.indexOf('--x--') != -1) {
+                    url = '/';
+                  }
                 }
-
-                var url = this.getPreviewUrl(contentTO);
-
-                if (incontextEdit) {
-                    window.location.reload();
-                } else {
-
-                    // remove server name and port etc
-                    if(url.indexOf("//") != -1) {
-                        url = url.replace("//","--x--");
-                        url = url.substring(url.indexOf("/"));
-                        if(url.indexOf("--x--") != -1) {
-                            url = "/";
-                        }
-
-                    }
-
-                    var Topics = crafter.studio.preview.Topics;
-                    window.location = '/studio/legacy/preview/#/?page='+url+'&site='+CStudioAuthoringContext.site;
-                }
+                window.location = `/studio/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;
+              }
 
             },
 
