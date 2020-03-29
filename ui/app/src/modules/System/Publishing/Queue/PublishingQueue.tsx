@@ -81,7 +81,7 @@ const messages = defineMessages({
   },
   filteredBy: {
     id: 'publishingDashboard.filteredBy',
-    defaultMessage: 'Showing: {state, select, all {} other {Status : {state}.}} {environment, select, all {} other {{environment} environment.}} {path, select, none {}  other {Filtered by {path}}}'
+    defaultMessage: 'Showing: {state, select, all {} other {Status: {state}.}} {environment, select, all {} other {{environment} target.}} {path, select, none {} other {Filtered by {path}}}'
   },
   packagesSelected: {
     id: 'publishingDashboard.packagesSelected',

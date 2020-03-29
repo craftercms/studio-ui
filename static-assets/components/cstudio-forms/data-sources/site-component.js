@@ -38,7 +38,7 @@ CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent 
               items = items.map((item) => {
                 let values = {};
                 Array.from(item.children).map((child) => {
-                  values[child.tagName] = child.innerHTML;
+                  values[child.tagName] = CrafterCMSNext.util.string.decodeHTML(child.innerHTML);
                 });
                 return values;
               });
