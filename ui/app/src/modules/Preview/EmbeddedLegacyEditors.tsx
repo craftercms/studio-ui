@@ -124,8 +124,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     filter((e: any) => e.data && e.data.type)
   );
 
-  const handleClose = useCallback(
-    () => {
+  const handleClose = useCallback(() => {
       setDialogConfig({ open: false, src: null, type: null, inProgress: true });
     }, [setDialogConfig]);
 
@@ -134,8 +133,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     closeEmbeddedLegacyForm(false);
   };
 
-  const handleTabChange = useCallback(
-    (event: React.ChangeEvent<{}>, type: string) => {
+  const handleTabChange = useCallback((event: React.ChangeEvent<{}>, type: string) => {
       let inProgress = !tabsState[type].loaded;
       setDialogConfig({ type, inProgress });
       iframeRef.current.contentWindow.postMessage({
@@ -145,8 +143,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       }, '*');
     }, [getPath, setDialogConfig, tabsState]);
 
-  const closeEmbeddedLegacyForm = useCallback(
-    (refresh: boolean, tab?: string) => {
+  const closeEmbeddedLegacyForm = useCallback((refresh: boolean, tab?: string) => {
       let hasSomeLoaded = filterBy('loaded', tabsState, tab);
 
       if (hasSomeLoaded.length && tab) {

@@ -150,8 +150,10 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <NewContentSelect
-              title="Parent"
-              label="Home"
+              label="Parent"
+              selectItem={{
+                name: 'Home'
+              }}
               LabelIcon={InsertDriveFileOutlinedIcon}
               onEditClick={() => null}
             />

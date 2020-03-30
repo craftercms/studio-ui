@@ -19,7 +19,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import { OverridableComponent } from '@material-ui/core/OverridableComponent';
-import { SvgIconTypeMap } from '@material-ui/core';
+import { SvgIconTypeMap } from '@material-ui/core/SvgIcon';
 import Paper from '@material-ui/core/Paper';
 import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
@@ -62,7 +62,7 @@ interface NewContentSelectProps {
   editIconClass?: string;
   rootClass?: string;
   labelIconClass?: string;
-  title: string;
+  selectItem: any;
   label: string;
   titleVariant?: Variant;
   labelVariant?: Variant;
@@ -70,18 +70,18 @@ interface NewContentSelectProps {
 }
 
 export default function NewContentSelect(props: NewContentSelectProps) {
-  const { LabelIcon, editIconClass, labelIconClass, rootClass, titleVariant, labelVariant, onEditClick, title, label } = props;
+  const { LabelIcon, editIconClass, labelIconClass, rootClass, titleVariant, labelVariant, onEditClick, selectItem, label } = props;
   const classes = useStyles();
 
   return (
     <Paper className={clsx(classes.root, rootClass)} elevation={0}>
       <div className={classes.textWrapper}>
         <Typography variant={titleVariant || 'body1'} className={classes.title}>
-          { title }
+          { label }
         </Typography>
         <LabelIcon className={clsx(classes.labelIcon, labelIconClass)}/>
         <Typography variant={labelVariant || 'body1'}>
-          { label }
+          { selectItem.name }
         </Typography>
       </div>
       <IconButton className={classes.changeBtn} onClick={() => onEditClick()}>
