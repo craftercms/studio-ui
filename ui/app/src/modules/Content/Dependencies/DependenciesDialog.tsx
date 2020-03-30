@@ -54,7 +54,6 @@ const assetsTypes = {
 interface DependenciesDialogProps {
   item: Item;
   dependenciesSelection: string;
-  handleDependencyEdit: Function;
 }
 
 function DependenciesDialog(props: DependenciesDialogProps) {

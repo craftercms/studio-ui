@@ -28,6 +28,7 @@ import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { APIError } from '../models/GlobalState';
 import ErrorDialog from './SystemStatus/ErrorDialog';
+import DependenciesDialog from '../modules/Content/Dependencies/DependenciesDialog';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -67,6 +68,12 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     scheduling: null
   });
 
+  const [dependenciesDialog, setDependenciesDialog] = useSpreadState({
+    open: false,
+    item: null,
+    dependenciesSelection: 'depends-on'
+  });
+
   const [error, setError] = useState<APIError>(null);
 
   //Effect used to open the publish Dialog
@@ -77,6 +84,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       getItem(site, path).subscribe(
         (item) => {
           setPublishDialog({ item });
+          setDependenciesDialog({ item })
         },
         ({ response }) => {
           //TODO: I'm wrapping the API response as a API2 response
@@ -100,6 +108,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       }
       case 'publish': {
         setPublishDialog({ open: true, scheduling: 'now' });
+        break;
+      }
+      case 'dependencies' : {
+        setDependenciesDialog({ open: true });
         break;
       }
       case 'form':
@@ -186,7 +198,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             defaultMessage="History"
           />
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleEdit('dependencies')}>
           <FormattedMessage
             id="previewToolBar.menu.dependencies"
             defaultMessage="Dependencies"
@@ -239,8 +251,15 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         />
       }
       {
+        dependenciesDialog.open &&
+        <DependenciesDialog
+          item={dependenciesDialog.item}
+          dependenciesSelection={dependenciesDialog.dependenciesSelection}
+        />
+      }
+      {
         error &&
-        <ErrorDialog error={error} onClose={onErrorClose} />
+        <ErrorDialog error={error} onClose={onErrorClose}/>
       }
     </>
   );
