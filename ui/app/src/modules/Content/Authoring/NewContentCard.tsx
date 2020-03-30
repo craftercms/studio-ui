@@ -84,7 +84,6 @@ const CompactCardContent = props => {
         image={img}
         title={imgTitle}
       />
-      <Divider />
       <CardHeader
         title={headerTitle}
         subheader={subheader}

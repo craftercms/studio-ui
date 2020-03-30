@@ -31,24 +31,21 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
   initialize: function () {
     const quickCreateWrapper = $('.dropdown.quick-create');
 
-    function renderQuickCreate(anchorEl, path) {
+    function renderQuickCreate(anchorEl) {
       const container = $('#quick-create-menu')[0];
       let unmount;
-
       CrafterCMSNext.render(
         container,
         'QuickCreateMenu',
         {
-          path,
+          path: CStudioAuthoringContext.previewCurrentPath,
           anchorEl,
           onMenuClose: () => renderQuickCreate(null)
         }
       ).then(done => unmount = done.unmount);
     }
 
-    quickCreateWrapper.click(e =>
-      renderQuickCreate(e.currentTarget, CStudioAuthoringContext.previewCurrentPath)
-    );
+    quickCreateWrapper.click(e => renderQuickCreate(e.currentTarget));
 
     // TODO:  remove commented code once the QuickCreateMenu.tsx implementation is done
     // var dropdown = $('#quick-create'),
