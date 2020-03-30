@@ -861,11 +861,11 @@ const receptaclesMessages = defineMessages({
   },
   createNewEmbedded: {
     id: 'receptaclesMessages.createNewEmbedded',
-    defaultMessage: 'Create New Embedded'
+    defaultMessage: 'Create new embedded'
   },
   createNewShared: {
     id: 'receptaclesMessages.createNewShared',
-    defaultMessage: 'Create New Shared'
+    defaultMessage: 'Create new shared'
   },
   allowShared: {
     id: 'receptaclesMessages.allowShared',
@@ -901,11 +901,11 @@ const receptaclesMessages = defineMessages({
   },
   browseExisting: {
     id: 'receptaclesMessages.browseExisting',
-    defaultMessage: 'Browse Existing'
+    defaultMessage: 'Browse existing'
   },
   searchExisting: {
     id: 'receptaclesMessages.searchExisting',
-    defaultMessage: 'Search Existing Components'
+    defaultMessage: 'Search existing components'
   }
 });
 

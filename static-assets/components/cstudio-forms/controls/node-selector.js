@@ -497,7 +497,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     const validation = this.checkValidations(key, value);
 
     if (validation.successful) {
-      var item = {};
+      let item = {};
       item = { key: key, value: value };
 
       if (type === 'embedded') {

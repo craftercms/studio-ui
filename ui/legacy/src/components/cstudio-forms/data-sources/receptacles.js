@@ -48,11 +48,28 @@
       const self = this;
       if (this.contentTypes) {
         this.contentTypes.split(',').forEach(contentType => {
-          self._createContentTypesControls(contentType, control);
+          if (contentType !== '*') {
+            self._createContentTypesControls(contentType, control);
+          } else {
+            let sharedMessage = self.formatMessage(self.messages.createNewShared);
+            let embeddedMessage = self.formatMessage(self.messages.createNewEmbedded);
+            $(control.addContainerEl).append(
+              self._createOption(sharedMessage, () => {
+                self._clearAddContainerEl(control);
+                self._openCreateAny(control, 'shared');
+              })
+            );
+            $(control.addContainerEl).append(
+              self._createOption(embeddedMessage, () => {
+                self._clearAddContainerEl(control);
+                self._openCreateAny(control, 'embedded');
+              })
+            );
+          }
         });
       }
       if (this.allowShared && this.enableSearch) {
-        let message = `${self.formatMessage(self.messages.searchExisting)}`;
+        let message = self.formatMessage(self.messages.searchExisting);
         $(control.addContainerEl).append(
           self._createOption(message, () => {
             self._clearAddContainerEl(control);
@@ -179,6 +196,26 @@
       }, searchContext.searchId);
     },
 
+    _openCreateAny: function (control, type) {
+      CStudioAuthoring.Operations.createNewContent(
+        CStudioAuthoringContext.site,
+        'getAllContentType',
+        false,
+        {
+          success: function (contentTO, editorId, name, value) {
+            control.newInsertItem(name, value, type);
+            control._renderItems();
+          },
+          failure: function () {
+          }
+        },
+        true,
+        type === 'embedded',
+        (item) => item.type === 'component',
+        this.baseRepoPath
+      );
+    },
+
     _editShared(key, control) {
       CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
         success: function (contentTO) {
@@ -231,7 +268,7 @@
       const $addContainerEl = $(control.addContainerEl);
 
       if (self.allowEmbedded) {
-        let message = `${self.formatMessage(self.messages.createNewEmbedded)} ${contentType}`;
+        let message = `${self.formatMessage(self.messages.createNewEmbedded)} ${self._getContentTypeName(contentType)}`;
         let type = 'embedded';
         $addContainerEl.append(
           self._createOption(message, callback(type))
@@ -239,7 +276,7 @@
       }
 
       if (self.allowShared) {
-        let message = `${self.formatMessage(self.messages.createNewShared)} ${contentType}`;
+        let message = `${self.formatMessage(self.messages.createNewShared)} ${self._getContentTypeName(contentType)}`;
         let type = 'shared';
         $addContainerEl.append(
           self._createOption(message, callback(type))
@@ -247,7 +284,7 @@
       }
 
       if (self.allowShared && self.enableBrowse) {
-        let message = `${self.formatMessage(self.messages.browseExisting)} ${contentType}`;
+        let message = `${self.formatMessage(self.messages.browseExisting)} ${self._getContentTypeName(contentType)}`;
         $addContainerEl.append(
           self._createOption(message, () => {
             self._clearAddContainerEl(control);
@@ -307,6 +344,10 @@
         type === 'embedded' ? true : null
       );
     },
+
+    _getContentTypeName(contentType) {
+      return CrafterCMSNext.util.string.capitalize(contentType.replace('/component/', '').replace(/-/g, ' '));
+    }
 
   };
 

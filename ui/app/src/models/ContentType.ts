@@ -30,7 +30,8 @@ export interface ContentTypeField {
   type: string;
   sortable: boolean;
   validations: {
-    contentTypes: string[];
+    tags?: string[];
+    contentTypes?: string[];
   };
   defaultValue: any;
   required: boolean;
