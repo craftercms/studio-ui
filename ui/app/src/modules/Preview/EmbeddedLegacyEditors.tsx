@@ -30,10 +30,10 @@ import {
   changeCurrentUrl,
   EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
+  EMBEDDED_LEGACY_FORM_FAILURE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
-  EMBEDDED_LEGACY_FORM_FAILURE,
   RELOAD_REQUEST
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
@@ -147,7 +147,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   const closeEmbeddedLegacyForm = (refresh: boolean, tab?: string) => {
     let hasSomeLoaded = filterBy('loaded', tabsState, tab);
 
-    if (hasSomeLoaded.length && tab) {
+    if (showTabs && hasSomeLoaded.length && tab) {
       setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
       handleTabChange(null, hasSomeLoaded[0]);
     } else {

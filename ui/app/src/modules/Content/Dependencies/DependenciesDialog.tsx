@@ -18,7 +18,9 @@ import React, { useEffect, useState } from 'react';
 import DependenciesDialogUI from './DependenciesDialogUI';
 import { Item } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
-import { useActiveSiteId, useSpreadState } from '../../../utils/hooks';
+import { useActiveSiteId, useSelection, useSpreadState } from '../../../utils/hooks';
+import { FormattedMessage } from 'react-intl';
+import { isAsset, isCode, isEditableAsset } from '../../../utils/content';
 
 const dialogInitialState = {
   selectedOption: 'depends-on',
@@ -28,16 +30,26 @@ const dialogInitialState = {
   showTypes: 'all-deps'
 };
 
-const editableAssets = [    // TODO: how are go going to keep track of this? Should this be somewhere else?
-  'ftl',
-  'css',
-  'js',
-  'groovy',
-  'txt',
-  'html',
-  'hbs',
-  'xml'
-];
+const assetsTypes = {
+  'all-deps': {
+    label: <FormattedMessage id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies"/>,
+    filter: () => true
+  },
+  'content-items': {
+    label: <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only"/>,
+    filter: (dependency: Item) => {
+      return ((dependency.isComponent && !dependency.isAsset) || dependency.isPage)
+    }
+  },
+  'assets': {
+    label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only"/>,
+    filter: (dependency: Item) => isAsset(dependency.uri)
+  },
+  'code': {
+    label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only"/>,
+    filter: (dependency: Item) => isCode(dependency.uri)
+  }
+};
 
 interface DependenciesDialogProps {
   item: Item;
@@ -46,8 +58,12 @@ interface DependenciesDialogProps {
 }
 
 function DependenciesDialog(props: DependenciesDialogProps) {
-  const { item, dependenciesSelection, handleDependencyEdit } = props;
-  const [dialog, setDialog] = useSpreadState({ ...dialogInitialState, selectedOption: dependenciesSelection });
+  const { item, dependenciesSelection } = props;
+  const [dialog, setDialog] = useSpreadState({
+    ...dialogInitialState,
+    item,
+    selectedOption: dependenciesSelection
+  });
   const [deps, setDeps] = useState([]);
   const [open, setOpen] = useState(true);
   const [apiState, setApiState] = useSpreadState({
@@ -56,6 +72,31 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     errorResponse: null
   });
   const siteId = useActiveSiteId();
+  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
+  const [editDialogConfig, setEditDialogConfig] = useSpreadState({
+    open: false,
+    src: defaultFormSrc,
+    type: 'form',
+    inProgress: false
+  });
+  const handleEditorDisplay = item => {
+    let type = 'controller';
+
+    if ((item.isComponent && !item.isAsset) || item.isPage) {
+      type = 'form'
+    } else if (item.contentType === 'renderingTemplate') {
+      type = 'template';
+    }
+    let src = `${defaultFormSrc}?site=${siteId}&path=${item.uri}&type=${type}`;
+
+    setEditDialogConfig(
+      {
+        open: true,
+        src,
+        type: 'form'
+      });
+  };
 
   function handleErrorBack() {
     setApiState({ error: false, global: false });
@@ -65,16 +106,12 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     setOpen(false);
   };
 
-  const isEditableItem = (item: Item) => {
-    const extension = item.uri.substring(item.uri.lastIndexOf('.') + 1);  // +1 to remove the period
-    return editableAssets.includes(extension);
-  };
-
   useEffect(() => {
-    getDependant(siteId, item.uri).subscribe(
+    getDependant(siteId, dialog.item.uri).subscribe(
       (response) => {
         setApiState({ error: false });
         setDialog({ dependantItems: response });
+        dialog.selectedOption === 'depends-on' && setDeps(response);
       },
       (response) => {
         if (response) {
@@ -83,10 +120,11 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       }
     );
 
-    getSimpleDependencies(siteId, item.uri).subscribe(
+    getSimpleDependencies(siteId, dialog.item.uri).subscribe(
       (response) => {
         setApiState({ error: false });
         setDialog({ dependencies: response });
+        dialog.selectedOption === 'depends-on-me' && setDeps(response);
       },
       (response) => {
         if (response) {
@@ -95,7 +133,8 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       }
     )
 
-  }, [item]);
+
+  }, [dialog.item]);
 
   useEffect(() => {
     if (dialog.selectedOption === 'depends-on') {
@@ -107,7 +146,6 @@ function DependenciesDialog(props: DependenciesDialogProps) {
 
   return (
     <DependenciesDialogUI
-      item={item}
       dependencies={deps}
       state={dialog}
       setState={setDialog}
@@ -115,8 +153,11 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       apiState={apiState}
       handleErrorBack={handleErrorBack}
       handleClose={handleClose}
-      handleDependencyEdit={handleDependencyEdit}
-      isEditableItem={isEditableItem}
+      isEditableItem={isEditableAsset}
+      assetsTypes={assetsTypes}
+      editDialogConfig={editDialogConfig}
+      setEditDialogConfig={setEditDialogConfig}
+      handleEditorDisplay={handleEditorDisplay}
     />
   )
 }

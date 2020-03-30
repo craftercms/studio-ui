@@ -17,19 +17,56 @@
 
 export function isEditableAsset(path: string) {
   return (
-       path.includes('.ftl')
-    || path.includes('.css')
-    || path.includes('.js')
-    || path.includes('.groovy')
-    || path.includes('.txt')
-    || path.includes('.html')
-    || path.includes('.hbs')
-    || path.includes('.xml')
-    || path.includes('.tmpl')
-    || path.includes('.htm')
+    path.endsWith('.ftl')
+    || path.endsWith('.css')
+    || path.endsWith('.js')
+    || path.endsWith('.groovy')
+    || path.endsWith('.txt')
+    || path.endsWith('.html')
+    || path.endsWith('.hbs')
+    || path.endsWith('.xml')
+    || path.endsWith('.tmpl')
+    || path.endsWith('.htm')
   );
 }
 
+export function isAsset(path: string) {
+  return (
+    path.endsWith('.jpg')
+    || path.endsWith('.png')
+    || path.endsWith('.pdf')
+    || path.endsWith('.doc')
+    || path.endsWith('.docx')
+    || path.endsWith('.xls')
+    || path.endsWith('.xlsx')
+    || path.endsWith('.ppt')
+    || path.endsWith('.pptx')
+    || path.endsWith('.mp4')
+    || path.endsWith('.avi')
+    || path.endsWith('.webm')
+    || path.endsWith('.mpg')
+  );
+}
+
+export function isCode(path: string) {
+  return (
+    path.endsWith('.ftl')
+    || path.endsWith('.css')
+    || path.endsWith('.js')
+    || path.endsWith('.groovy')
+    || path.endsWith('.html')
+    || path.endsWith('.hbs')
+    || path.endsWith('.tmpl')
+    || path.endsWith('.htm')
+  );
+}
+
+export function isImage(path: string) {
+  return (
+    path.endsWith('.jpg')
+    || path.endsWith('.png')
+  );
+}
 
 export default {
   isEditableAsset
