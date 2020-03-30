@@ -2287,7 +2287,7 @@ var nodeOpen = false,
              * opens a dialog if needed or goes directly to the form if no
              * template selection is require (only one option
              */
-            createNewContent: function(site, path, asPopup, formSaveCb, childForm, isFlattenedInclude, filterCB) {
+            createNewContent: function(site, path, asPopup, formSaveCb, childForm, isFlattenedInclude, filterCB, baseRepoPath) {
                 var auxParams = [];
                 if(childForm && childForm == true) {
                     auxParams = [ { name: "childForm", value: "true" }];
@@ -2331,20 +2331,26 @@ var nodeOpen = false,
                                 null,
                                 isFlattenedInclude);
                         } else {
-                            var selectTemplateCb = {
-                                success: function(selectedTemplate) {
-                                    CStudioAuthoring.Operations.openContentWebForm(
-                                        selectedTemplate,
-                                        null,
-                                        null,
-                                        path == CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES ? "" : path,
-                                        false,
-                                        this.asPopup,
-                                        this.formSaveCb,
-                                        auxParams,
-                                        null,
-                                        isFlattenedInclude);
-                                },
+                          var selectTemplateCb = {
+                            success: function (selectedTemplate) {
+                              if (path === CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES) {
+                                path = '';
+                                if (baseRepoPath) {
+                                  path = `${baseRepoPath}/${selectedTemplate.replace(/\//g, '_').substr(1)}`;
+                                }
+                              }
+                              CStudioAuthoring.Operations.openContentWebForm(
+                                selectedTemplate,
+                                null,
+                                null,
+                                path,
+                                false,
+                                this.asPopup,
+                                this.formSaveCb,
+                                auxParams,
+                                null,
+                                isFlattenedInclude);
+                            },
 
                                 failure: function() {
                                     this.formSaveCb.failure();
@@ -2376,7 +2382,6 @@ var nodeOpen = false,
                     failure: function() {
                     }
                 };
-
 
                 CStudioAuthoring.Service.lookupAllowedContentTypesForPath(site, path, callback);
             },
