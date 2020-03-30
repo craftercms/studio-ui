@@ -33,6 +33,7 @@ import NewContentCard from './NewContentCard';
 import NewContentSelect from './NewContentSelect';
 import SearchBar from '../../../components/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
+import EmptyState from '../../../components/SystemStatus/EmptyState';
 
 const translations = defineMessages({
   title: {
@@ -50,6 +51,18 @@ const translations = defineMessages({
   compactInput: {
     id: 'compactInput.label',
     defaultMessage: 'Compact'
+  },
+  noResultsTitle: {
+    id: 'noResults.title',
+    defaultMessage: 'No Content Types Found'
+  },
+  noResultsSubTitle: {
+    id: 'noResults.subTitle',
+    defaultMessage: 'Try changing your query or browse the'
+  },
+  noResultsLink: {
+    id: 'noResults.link',
+    defaultMessage: 'full catalog.'
   }
 });
 
@@ -77,10 +90,15 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     searchBox: {
       minWidth: '33%'
+    },
+    emptyStateRoot: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)'
     }
   })
 );
-
 
 interface NewContentDialogProps {
   open: boolean;
@@ -165,18 +183,26 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
         <Grid container spacing={3} className={classes.cardsContainer}>
           {
-            filterContentTypes.map(content => (
-              <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
-                <NewContentCard
-                  isCompact={isCompact}
-                  headerTitle={content.label}
-                  subheader={content.form}
-                  imgTitle={formatMessage(translations.previewImage)}
-                  img={getPrevImg(content)}
-                  onClick={onTypeOpen(content, contextPath)}
-                />
-              </Grid>
-            ))
+            !filterContentTypes.length ?
+              <EmptyState
+                title={formatMessage(translations.noResultsTitle)}
+                subtitle={formatMessage(translations.noResultsSubTitle)}
+                link={formatMessage(translations.noResultsLink)}
+                onLinkClick={e => onTypeChange('all')}
+                classes={{ root: classes.emptyStateRoot }}
+              /> :
+              filterContentTypes.map(content => (
+                <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
+                  <NewContentCard
+                    isCompact={isCompact}
+                    headerTitle={content.label}
+                    subheader={content.form}
+                    imgTitle={formatMessage(translations.previewImage)}
+                    img={getPrevImg(content)}
+                    onClick={onTypeOpen(content, contextPath)}
+                  />
+                </Grid>
+              ))
           }
         </Grid>
       </DialogContent>
