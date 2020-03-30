@@ -138,6 +138,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       disableBackdropClick={true}
       fullWidth
       maxWidth={'md'}
+      scroll="paper"
     >
       <DialogHeader
         title={formatMessage(translations.title)}

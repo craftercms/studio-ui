@@ -99,10 +99,11 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, path }) {
   });
 
   const onNewContentClick = () => {
+    onMenuClose();
     setDisplayNewContentDialog(true);
   };
 
-  const onFormDisplay = srcData => {
+  const onFormDisplay = srcData => () => {
     const { contentTypeId, path: _path } = srcData;
     const today = new Date();
     const formatPath = _path.replace(
@@ -112,6 +113,8 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, path }) {
       '{month}',
       ('0' + (today.getMonth() + 1)).slice(-2)
     );
+
+    onMenuClose();
 
     setDialogConfig({
       open: true,
@@ -175,10 +178,7 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, path }) {
         {quickCreateContentList?.map(item =>
           <MenuItem
             key={item.path}
-            onClick={() => {
-              onMenuClose();
-              onFormDisplay(item);
-            }}
+            onClick={onFormDisplay(item)}
             className={classes.menuItem}
           >
             {item.label}
