@@ -44,6 +44,8 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import PopupState, { bindMenu, bindTrigger } from 'material-ui-popup-state';
 import Menu from '@material-ui/core/Menu';
 import { isImage } from '../../../utils/content';
+import DialogBody from '../../../components/DialogBody';
+import DialogFooter from '../../../components/DialogFooter';
 
 const translations = defineMessages({
   headerTitle: {
@@ -76,30 +78,13 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
     lineHeight: '18px',
     paddingRight: '35px'
   },
-  dialogContent: {
-    padding: theme.spacing(2),
-    backgroundColor: palette.gray.light0,
-    display: 'flex',
-    flexDirection: 'column',
-    flex: '1 1 auto',
-    // overflowY: 'auto',
-    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
-  },
   selectionContent: {
     marginBottom: '15px',
     display: 'flex'
   },
-  dialogActions: {
-    flex: '0 0 auto',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    margin: 0,
-    padding: theme.spacing(2),
-    '& > :not(:first-child)': {
-      marginLeft: '8px'
-    }
+  dialogFooter: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2)
   },
   errorPaperRoot: {
     maxHeight: '586px',
@@ -133,7 +118,9 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
     padding: '0 10px 0 0',
     '& .label': {
       fontWeight: '600',
-      marginRight: '10px'
+      marginRight: '10px',
+      color: palette.black,
+      fontSize: '16px'
     },
     '& .item-icon': {
       color: palette.teal.main,
@@ -155,8 +142,7 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
     backgroundColor: palette.white,
     padding: 0,
     borderRadius: '5px 5px 0 0',
-    overflowY: 'auto',
-    height: '305px'
+    overflowY: 'auto'
   },
   dependenciesListItem: {
     boxShadow: '0 1px 1px #EBEBF0',
@@ -249,7 +235,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                 title={formatMessage(translations.headerTitle)}
                 onClose={handleClose}
               />
-              <div className={classes.dialogContent}>
+              <DialogBody>
                 <div className={classes.selectionContent}>
                   <Chip
                     variant="outlined"
@@ -370,8 +356,12 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                       })
                   }
                 </List>
-              </div>
-              <div className={classes.dialogActions}>
+              </DialogBody>
+              <DialogFooter
+                classes={{
+                  root: classes.dialogFooter
+                }}
+              >
                 <FormControlLabel
                   className={classes.compactViewAction}
                   control={
@@ -418,7 +408,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                     }
                   </Select>
                 </FormControl>
-              </div>
+              </DialogFooter>
               <EmbeddedLegacyEditors
                 showTabs={false}
                 dialogConfig={editDialogConfig}
