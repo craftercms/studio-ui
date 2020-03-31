@@ -22,12 +22,14 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import React from 'react';
+import createStyles from '@material-ui/styles/createStyles/createStyles';
 
-const dialogTitleStyles = makeStyles((theme: Theme) => ({
+const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
   titleRoot: {
     margin: 0,
     padding: '13px 20px 11px',
-    background: palette.white
+    background: palette.white,
+    borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
   },
   title: {
     display: 'flex',
