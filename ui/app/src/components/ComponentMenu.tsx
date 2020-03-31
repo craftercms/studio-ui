@@ -28,6 +28,7 @@ import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { APIError } from '../models/GlobalState';
 import ErrorDialog from './SystemStatus/ErrorDialog';
+import DeleteDialog from '../modules/Content/Delete/DeleteDialog';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -67,6 +68,11 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     scheduling: null
   });
 
+  const [deleteDialog, setDeleteDialog] = useSpreadState({
+    open: false,
+    items: []
+  });
+
   const [error, setError] = useState<APIError>(null);
 
   //Effect used to open the publish Dialog
@@ -77,6 +83,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       getItem(site, path).subscribe(
         (item) => {
           setPublishDialog({ item });
+          setDeleteDialog({ items: [item] });
         },
         ({ response }) => {
           //TODO: I'm wrapping the API response as a API2 response
@@ -85,7 +92,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, setPublishDialog, site, embeddedParentPath, parentId, publishDialog.item]);
+  }, [models, modelId, setPublishDialog, setDeleteDialog, site, embeddedParentPath, parentId, publishDialog.item]);
 
   const onErrorClose = () => {
     setError(null);
@@ -100,6 +107,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       }
       case 'publish': {
         setPublishDialog({ open: true, scheduling: 'now' });
+        break;
+      }
+      case 'delete': {
+        setDeleteDialog({ open: true });
         break;
       }
       case 'form':
@@ -148,6 +159,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     setPublishDialog({ open: false, scheduling: null });
   };
 
+  const onCloseDelete = () => {
+    setDeleteDialog({ open: false });
+  };
+
   return (
     <>
       <Menu
@@ -192,7 +207,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             defaultMessage="Dependencies"
           />
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleEdit('delete')}>
           <FormattedMessage
             id="previewToolBar.menu.delete"
             defaultMessage="Delete"
@@ -239,8 +254,15 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         />
       }
       {
+        deleteDialog.open &&
+        <DeleteDialog
+          items={deleteDialog.items}
+          onClose={onCloseDelete}
+        />
+      }
+      {
         error &&
-        <ErrorDialog error={error} onClose={onErrorClose} />
+        <ErrorDialog error={error} onClose={onErrorClose}/>
       }
     </>
   );
