@@ -17,30 +17,120 @@
 import React, { useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import {
+  defineMessages,
+  FormattedMessage,
+  FormattedDate,
+  useIntl,
+  FormattedTime,
+  FormattedDateParts
+} from 'react-intl';
 import DialogBody from '../../../components/DialogBody';
 import { getItemVersions } from '../../../services/content';
 import { LegacyItem } from '../../../../../guest/src/models/Item';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
 import { LegacyVersion } from '../../../../../guest/src/models/version';
-import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
-import { Theme } from '@material-ui/core';
-import createStyles from '@material-ui/styles/createStyles/createStyles';
+import makeStyles from '@material-ui/styles/makeStyles';
+import { Theme, Chip } from '@material-ui/core';
+import createStyles from '@material-ui/styles/createStyles';
+import { palette } from '../../../styles/theme';
+
 
 const translations = defineMessages({
   headerTitle: {
     id: 'historyDialog.headerTitle',
     defaultMessage: 'Content Item History'
+  },
+  current: {
+    id: 'historyDialog.current',
+    defaultMessage: 'current'
   }
 });
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
-  dialogBody: {
-    overflow: 'auto'
+  list: {
+    backgroundColor: palette.white,
+    padding: 0,
+    borderRadius: '5px 5px 0 0',
+    overflowY: 'auto'
+  },
+  listItem: {
+    padding: ' 15px 20px'
+  },
+  listItemTextMultiline: {
+    margin: 0
+  },
+  listItemTextPrimary: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  chip: {
+    padding: '1px',
+    backgroundColor: palette.green.main,
+    height: 'auto',
+    color: palette.white,
+    marginLeft: '10px'
   }
 }));
+
+function FancyFormattedDate(props) {
+  const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
+  return (
+    <FormattedDateParts
+      value={props.date}
+      month="long"
+      day="numeric"
+      weekday="long"
+      year="numeric"
+    >
+      {
+        parts =>
+          <>
+            {`${parts[0].value} ${parts[2].value} `}
+            <FormattedMessage
+              id="historyDialog.ordinals"
+              defaultMessage={`{day, ${ordinals}}`}
+              values={{ day: parts[4].value }}
+            /> {parts[6].value} @ <FormattedTime value={props.date}/>
+          </>
+      }
+    </FormattedDateParts>
+  )
+}
+
+function VersionsList(props) {
+  const { formatMessage } = useIntl();
+  const classes = useStyles({});
+  const { versions } = props;
+  return (
+    <List component="div" className={classes.list} disablePadding>
+      {
+        versions.map((version: LegacyVersion, i: number) =>
+          <ListItem key={version.versionNumber} divider={versions.length - 1 !== i} className={classes.listItem}>
+            <React.Fragment key={version.versionNumber}>
+              <ListItemText
+                classes={{ multiline: classes.listItemTextMultiline, primary: classes.listItemTextPrimary }}
+                primary={
+                  <>
+                    <FancyFormattedDate date={version.lastModifiedDate}/>
+                    {
+                      (i === 0) &&
+                      <Chip label={formatMessage(translations.current)} className={classes.chip}/>
+                    }
+                  </>
+                }
+                secondary={version.comment}
+              />
+            </React.Fragment>
+          </ListItem>
+        )
+      }
+    </List>
+  )
+}
 
 export default function HistoryDialog(props) {
   const {
@@ -48,7 +138,6 @@ export default function HistoryDialog(props) {
     }, site = 'editorial', path = '/site/website/index.xml'
   } = props;
   const { formatMessage } = useIntl();
-  const classes = useStyles({});
   const [data, setData] = useState<{ contentItem: LegacyItem, versions: LegacyVersion[] }>({
     contentItem: null,
     versions: null
@@ -76,18 +165,14 @@ export default function HistoryDialog(props) {
       <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose}/>
       {
         data.versions &&
-        <DialogBody className={classes.dialogBody}>
-          <List component="div">
-            {
-              data.versions.map((version: LegacyVersion) =>
-                <ListItemText key={version.versionNumber} primary="Photos" secondary="Jan 9, 2014"/>
-              )
-            }
-            <ListItem>
-            </ListItem>
-          </List>
+        <DialogBody>
+          <VersionsList versions={data.versions}/>
         </DialogBody>
       }
     </Dialog>
   )
+}
+
+
+{/*<ListItemText key={version.versionNumber} primary={version.lastModifiedDate} secondary={version.comment}/>*/
 }
