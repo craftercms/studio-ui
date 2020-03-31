@@ -31,6 +31,7 @@ import { checkState, onClickSetChecked, paths, selectAllDeps, updateCheckedList 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import { palette } from '../../../styles/theme';
+import clsx from 'clsx';
 
 interface DependencySelectionProps {
   items: Item[];
@@ -86,6 +87,10 @@ const useStyles = makeStyles(() => ({
     height: 'calc(100% - 24px)',
     minHeight: '374px',
     overflowY: 'hidden'
+  },
+  dependencySelectionDelete: {
+    overflowY: 'auto',
+    minHeight: '200px'
   },
   dependencySelectionDisabled: {
     backgroundColor: palette.gray.light1
@@ -283,8 +288,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
 
   return (
     <>
-      <div className={classes.dependencySelection}>
-
+      <div className={clsx(classes.dependencySelection, classes.dependencySelectionDelete)}>
         <SelectionList
           title={
             <FormattedMessage

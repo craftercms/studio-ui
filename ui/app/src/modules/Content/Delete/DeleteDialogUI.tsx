@@ -28,6 +28,8 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorState from '../../../components/SystemStatus/ErrorState';
 import DialogHeader from '../../../components/DialogHeader';
+import DialogBody from '../../../components/DialogBody';
+import DialogFooter from '../../../components/DialogFooter';
 
 const translations = defineMessages({
   headerTitle: {
@@ -44,45 +46,10 @@ const deleteDialogStyles = makeStyles((theme) => createStyles({
   root: {
     textAlign: 'left'
   },
-  titleRoot: {
-    margin: 0,
-    padding: '13px 20px 11px',
-    background: palette.white
-  },
-  title: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 10
-  },
-  subtitle: {
-    fontSize: '14px',
-    lineHeight: '18px',
-    paddingRight: '35px'
-  },
-  dialogContent: {
-    padding: theme.spacing(2),
-    backgroundColor: palette.gray.light0,
-    flex: '1 1 auto',
-    overflowY: 'auto',
-    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
-  },
   submissionCommentField: {
     marginTop: '20px',
     '& .MuiTextField-root': {
       width: '100%'
-    }
-  },
-  dialogActions: {
-    flex: '0 0 auto',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    margin: 0,
-    padding: theme.spacing(2),
-    '& > :not(:first-child)': {
-      marginLeft: '8px'
     }
   },
   btnSpinner: {
@@ -152,7 +119,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
                 onClose={onClose}
                 icon={CloseRoundedIcon}
               />
-              <div className={classes.dialogContent}>
+              <DialogBody>
                 <DependencySelectionDelete
                   items={items}
                   siteId={siteId}
@@ -179,8 +146,8 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
                     }}
                   />
                 </form>
-              </div>
-              <div className={classes.dialogActions}>
+              </DialogBody>
+              <DialogFooter>
                 <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
                   <FormattedMessage
                     id="deleteDialog.cancel"
@@ -209,7 +176,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
                       )
                   }
                 </Button>
-              </div>
+              </DialogFooter>
             </>
           ) : (
             <ErrorState
