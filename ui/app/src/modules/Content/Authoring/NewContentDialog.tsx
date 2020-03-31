@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -35,6 +35,7 @@ import SearchBar from '../../../components/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import { Item } from '../../../models/Item';
+import { useDebouncedInput } from '../../../utils/hooks';
 
 const translations = defineMessages({
   title: {
@@ -123,19 +124,33 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [contentTypes, setContentTypes] = useState(null);
   const [filterContentTypes, setFilterContentTypes] = useState(null);
   const [isCompact, setIsCompact] = useState(false);
+  const [search, setSearch] = useState('');
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  const [ previewItem, setPreviewItem] = useState(item || defaultPreviewItem);
+  const [previewItem, setPreviewItem] = useState(item || defaultPreviewItem);
   const path = previewItem.uri.replace(/[^/]*$/, '');
 
   const onCompactCheck = () => setIsCompact(!isCompact);
 
-  const onSearchChange = value => console.log(value);
-
-  const onTypeChange = type =>
+  const onTypeChange = useCallback(type =>
     (type !== 'all')
       ? setFilterContentTypes(contentTypes.filter(content => content.type === type))
-      : setFilterContentTypes(contentTypes);
+      : setFilterContentTypes(contentTypes), [contentTypes]);
+
+  const onSearch = useCallback(keyword => {
+    const formatValue = keyword.toLowerCase();
+
+    (!keyword)
+      ? onTypeChange('all')
+      : setFilterContentTypes(contentTypes.filter(content => content.label.toLowerCase().includes(formatValue)));
+  }, [onTypeChange, contentTypes]);
+
+  const onSearch$ = useDebouncedInput(onSearch, 400);
+
+  const onSearchChange = keyword => {
+    setSearch(keyword);
+    onSearch$.next(keyword);
+  };
 
   const getPrevImg = (content) =>
     (content?.imageThumbnail)
@@ -177,7 +192,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             />
           </Box>
           <Box className={classes.searchBox}>
-            <SearchBar onChange={onSearchChange} keyword={previewItem.uri} autofocus />
+            <SearchBar onChange={onSearchChange} keyword={search} autofocus />
           </Box>
         </Box>
 
