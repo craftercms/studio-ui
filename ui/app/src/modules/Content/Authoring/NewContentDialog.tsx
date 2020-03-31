@@ -36,6 +36,7 @@ import ContentTypesFilter from './ContentTypesFilter';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import { Item } from '../../../models/Item';
 import { useDebouncedInput } from '../../../utils/hooks';
+import LoadingState from '../../../components/SystemStatus/LoadingState';
 
 const translations = defineMessages({
   title: {
@@ -97,6 +98,12 @@ const useStyles = makeStyles((theme: Theme) =>
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)'
+    },
+    loadingRoot: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)'
     }
   })
 );
@@ -125,6 +132,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [filterContentTypes, setFilterContentTypes] = useState(null);
   const [isCompact, setIsCompact] = useState(false);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
   const [previewItem, setPreviewItem] = useState(item || defaultPreviewItem);
@@ -152,6 +160,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     onSearch$.next(keyword);
   };
 
+  const onParentItemClick = item => {
+    setLoading(true);
+    setPreviewItem(item);
+  };
+
   const getPrevImg = (content) =>
     (content?.imageThumbnail)
       ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}`
@@ -161,11 +174,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     open && fetchLegacyContentTypes(site, path).subscribe(data => {
       setFilterContentTypes(data);
       setContentTypes(data);
-    });
+      setLoading(false);
+    }, error => setLoading(false));
   }, [open, path, site]);
 
   return (
-    filterContentTypes &&
     <Dialog
       open={open}
       onClose={onDialogClose}
@@ -188,7 +201,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
               selectItem={previewItem}
               LabelIcon={InsertDriveFileOutlinedIcon}
               onEditClick={() => null}
-              onParentItemClick={item => setPreviewItem(item)}
+              onParentItemClick={onParentItemClick}
             />
           </Box>
           <Box className={classes.searchBox}>
@@ -198,30 +211,37 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
         <Grid container spacing={3} className={classes.cardsContainer}>
           {
-            !filterContentTypes.length ?
-              <EmptyState
-                title={formatMessage(translations.noResultsTitle)}
-                subtitle={formatMessage(translations.noResultsSubTitle)}
-                link={formatMessage(translations.noResultsLink)}
-                onLinkClick={e => onTypeChange('all')}
-                classes={{ root: classes.emptyStateRoot }}
-              /> :
-              filterContentTypes.map(content => (
-                <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
-                  <NewContentCard
-                    isCompact={isCompact}
-                    headerTitle={content.label}
-                    subheader={content.form}
-                    imgTitle={formatMessage(translations.previewImage)}
-                    img={getPrevImg(content)}
-                    onClick={onTypeOpen(content, path)}
-                  />
-                </Grid>
-              ))
+            loading &&
+            <LoadingState title='' classes={{ root: classes.loadingRoot }} />
+          }
+          {
+            (!loading && !filterContentTypes.length) &&
+            <EmptyState
+              title={formatMessage(translations.noResultsTitle)}
+              subtitle={formatMessage(translations.noResultsSubTitle)}
+              link={formatMessage(translations.noResultsLink)}
+              onLinkClick={e => onTypeChange('all')}
+              classes={{ root: classes.emptyStateRoot }}
+            />
+          }
+          {
+            (!loading && filterContentTypes) &&
+            filterContentTypes.map(content => (
+              <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
+                <NewContentCard
+                  isCompact={isCompact}
+                  headerTitle={content.label}
+                  subheader={content.form}
+                  imgTitle={formatMessage(translations.previewImage)}
+                  img={getPrevImg(content)}
+                  onClick={onTypeOpen(content, path)}
+                />
+              </Grid>
+            ))
           }
         </Grid>
       </DialogContent>
-      <DialogActions className={classes.dialogActions}>
+      < DialogActions className={classes.dialogActions}>
         <FormControlLabel
           control={
             <Checkbox
