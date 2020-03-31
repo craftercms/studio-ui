@@ -96,6 +96,8 @@ export const catchAjaxError = (fetchFailedCreator) => catchError((error: any) =>
   }
 });
 
+
+
 export default {
   OMIT_GLOBAL_HEADERS,
   getGlobalHeaders,
