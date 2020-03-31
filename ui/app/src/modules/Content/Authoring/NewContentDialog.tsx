@@ -33,10 +33,11 @@ import SearchBar from '../../../components/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import { Item } from '../../../models/Item';
-import { useDebouncedInput } from '../../../utils/hooks';
+import { useDebouncedInput, useSelection, useSpreadState } from '../../../utils/hooks';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import DialogBody from '../../../components/DialogBody';
 import DialogFooter from '../../../components/DialogFooter';
+import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 
 const translations = defineMessages({
   title: {
@@ -117,12 +118,10 @@ interface NewContentDialogProps {
   previewItem: Item;
 
   onDialogClose(): void;
-
-  onTypeOpen(srcData: any, srcPath: string): any;
 }
 
 export default function NewContentDialog(props: NewContentDialogProps) {
-  const { open, onDialogClose, onTypeOpen, site, previewItem: item } = props;
+  const { open, onDialogClose, site, previewItem: item } = props;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [contentTypes, setContentTypes] = useState(null);
@@ -130,10 +129,28 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [isCompact, setIsCompact] = useState(false);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const AUTHORING_BASE = useSelection<string>(
+    state => state.env.AUTHORING_BASE
+  );
+  const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
+  const [dialogConfig, setDialogConfig] = useSpreadState({
+    open: false,
+    src: defaultFormSrc,
+    type: 'form',
+    inProgress: false
+  });
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
   const [previewItem, setPreviewItem] = useState(item || defaultPreviewItem);
   const path = previewItem.uri.replace(/[^/]*$/, '');
+
+  const onTypeOpen = srcData => () => {
+    onDialogClose();
+    setDialogConfig({
+      open: true,
+      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`
+    });
+  };
 
   const onCompactCheck = () => setIsCompact(!isCompact);
 
@@ -176,85 +193,96 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   }, [open, path, site]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={onDialogClose}
-      disableBackdropClick={true}
-      fullWidth
-      maxWidth={'md'}
-      scroll="paper"
-    >
-      <DialogHeader
-        title={formatMessage(translations.title)}
-        subtitle={formatMessage(translations.subtitle)}
+    <>
+      <Dialog
+        open={open}
         onClose={onDialogClose}
-        icon={CloseRoundedIcon}
-      />
-      <DialogBody dividers classes={{ root: classes.dialogContent }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Box>
-            <NewContentSelect
-              label="Parent"
-              selectItem={previewItem}
-              LabelIcon={InsertDriveFileOutlinedIcon}
-              onEditClick={() => null}
-              onParentItemClick={onParentItemClick}
-            />
+        disableBackdropClick={true}
+        fullWidth
+        maxWidth={'md'}
+        scroll="paper"
+      >
+        <DialogHeader
+          title={formatMessage(translations.title)}
+          subtitle={formatMessage(translations.subtitle)}
+          onClose={onDialogClose}
+          icon={CloseRoundedIcon}
+        />
+        <DialogBody dividers classes={{ root: classes.dialogContent }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box>
+              <NewContentSelect
+                label="Parent"
+                selectItem={previewItem}
+                LabelIcon={InsertDriveFileOutlinedIcon}
+                onEditClick={() => null}
+                onParentItemClick={onParentItemClick}
+              />
+            </Box>
+            <Box className={classes.searchBox}>
+              <SearchBar onChange={onSearchChange} keyword={search} autofocus />
+            </Box>
           </Box>
-          <Box className={classes.searchBox}>
-            <SearchBar onChange={onSearchChange} keyword={search} autofocus />
-          </Box>
-        </Box>
 
-        <Grid container spacing={3} className={classes.cardsContainer}>
-          {
-            loading &&
-            <LoadingState title='' classes={{ root: classes.loadingRoot }} />
-          }
-          {
-            (!loading && !filterContentTypes.length) &&
-            <EmptyState
-              title={formatMessage(translations.noResultsTitle)}
-              subtitle={formatMessage(translations.noResultsSubTitle)}
-              link={formatMessage(translations.noResultsLink)}
-              onLinkClick={e => onTypeChange('all')}
-              classes={{ root: classes.emptyStateRoot }}
-            />
-          }
-          {
-            (!loading && filterContentTypes.length) &&
-            filterContentTypes.map(content => (
-              <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
-                <NewContentCard
-                  isCompact={isCompact}
-                  headerTitle={content.label}
-                  subheader={content.form}
-                  imgTitle={formatMessage(translations.previewImage)}
-                  img={getPrevImg(content)}
-                  onClick={onTypeOpen(content, path)}
-                />
-              </Grid>
-            ))
-          }
-        </Grid>
-      </DialogBody>
-      <DialogFooter classes={{ root: classes.dialogActions }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={isCompact}
-              onChange={onCompactCheck}
-              color="primary"
-              disabled={loading}
-            />
-          }
-          label={formatMessage(translations.compactInput)}
+          <Grid container spacing={3} className={classes.cardsContainer}>
+            {
+              loading &&
+              <LoadingState title='' classes={{ root: classes.loadingRoot }} />
+            }
+            {
+              (!loading && !filterContentTypes.length) &&
+              <EmptyState
+                title={formatMessage(translations.noResultsTitle)}
+                subtitle={formatMessage(translations.noResultsSubTitle)}
+                link={formatMessage(translations.noResultsLink)}
+                onLinkClick={e => onTypeChange('all')}
+                classes={{ root: classes.emptyStateRoot }}
+              />
+            }
+            {
+              (!loading && filterContentTypes.length) &&
+              filterContentTypes.map(content => (
+                <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
+                  <NewContentCard
+                    isCompact={isCompact}
+                    headerTitle={content.label}
+                    subheader={content.form}
+                    imgTitle={formatMessage(translations.previewImage)}
+                    img={getPrevImg(content)}
+                    onClick={onTypeOpen(content)}
+                  />
+                </Grid>
+              ))
+            }
+          </Grid>
+        </DialogBody>
+        <DialogFooter classes={{ root: classes.dialogActions }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isCompact}
+                onChange={onCompactCheck}
+                color="primary"
+                disabled={loading}
+              />
+            }
+            label={formatMessage(translations.compactInput)}
+          />
+          <ContentTypesFilter
+            onTypeChange={onTypeChange}
+            disabled={loading}
+          />
+        </DialogFooter>
+      </Dialog>
+      {
+        dialogConfig.open &&
+        <EmbeddedLegacyEditors
+          showTabs={false}
+          showController={false}
+          dialogConfig={dialogConfig}
+          setDialogConfig={setDialogConfig}
         />
-        <ContentTypesFilter
-          onTypeChange={onTypeChange}
-          disabled={loading}
-        />
-      </DialogFooter>
-    </Dialog>
+      }
+    </>
   );
 }

@@ -126,19 +126,6 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
     setDisplayNewContentDialog(false);
   };
 
-  const onTypeOpen = (srcData, contextPath: string) => () => {
-    const { form } = srcData;
-    const defaultPath = '/site/website/';
-    const _path = !contextPath ? defaultPath : contextPath;
-
-    setDialogConfig({
-      open: true,
-      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${form}&path=${_path}&type=form`
-    });
-
-    setDisplayNewContentDialog(false);
-  };
-
   useEffect(() => {
     if (siteId) {
       getQuickCreateContentList(siteId).subscribe(data =>
@@ -196,16 +183,12 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
           setDialogConfig={setDialogConfig}
         />
       }
-      {
-        displayNewContentDialog &&
-        <NewContentDialog
-          open={displayNewContentDialog}
-          onDialogClose={onDialogClose}
-          onTypeOpen={onTypeOpen}
-          site={siteId}
-          previewItem={previewItem}
-        />
-      }
+      <NewContentDialog
+        open={displayNewContentDialog}
+        onDialogClose={onDialogClose}
+        site={siteId}
+        previewItem={previewItem}
+      />
     </>
   );
 
