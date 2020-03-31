@@ -147,10 +147,12 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   const closeEmbeddedLegacyForm = (refresh: boolean, tab?: string) => {
     let hasSomeLoaded = filterBy('loaded', tabsState, tab);
 
-    if (showTabs && hasSomeLoaded.length && tab) {
+    if (hasSomeLoaded.length && tab) {
       setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
       handleTabChange(null, hasSomeLoaded[0]);
     } else {
+      !showTabs && setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
+
       handleClose();
       if (refresh) {
         getHostToGuestBus().next({ type: RELOAD_REQUEST });
