@@ -54,10 +54,12 @@ const assetsTypes = {
 interface DependenciesDialogProps {
   item: Item;
   dependenciesSelection: string;
+
+  onClose?(response?: any): any;
 }
 
 function DependenciesDialog(props: DependenciesDialogProps) {
-  const { item, dependenciesSelection } = props;
+  const { item, dependenciesSelection, onClose } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
@@ -103,6 +105,8 @@ function DependenciesDialog(props: DependenciesDialogProps) {
 
   const handleClose = () => {
     setOpen(false);
+
+    onClose?.();
   };
 
   useEffect(() => {

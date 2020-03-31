@@ -160,6 +160,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     setPublishDialog({ open: false, scheduling: null });
   };
 
+  const onCloseDependencies = () => {
+    setDependenciesDialog({ open: false });
+  };
+
   return (
     <>
       <Menu
@@ -255,6 +259,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         <DependenciesDialog
           item={dependenciesDialog.item}
           dependenciesSelection={dependenciesDialog.dependenciesSelection}
+          onClose={onCloseDependencies}
         />
       }
       {
