@@ -121,13 +121,14 @@ interface NewContentDialogProps {
 }
 
 export default function NewContentDialog(props: NewContentDialogProps) {
-  const { open, onDialogClose, site, previewItem: item } = props;
+  const { open, onDialogClose, site, previewItem: previewItemProp } = props;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [contentTypes, setContentTypes] = useState(null);
   const [filterContentTypes, setFilterContentTypes] = useState(null);
   const [isCompact, setIsCompact] = useState(false);
   const [search, setSearch] = useState('');
+  const [previewItem, setPreviewItem] = useState(defaultPreviewItem);
   const [loading, setLoading] = useState(true);
   const AUTHORING_BASE = useSelection<string>(
     state => state.env.AUTHORING_BASE
@@ -141,7 +142,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   });
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  const [previewItem, setPreviewItem] = useState(item || defaultPreviewItem);
   const path = previewItem.uri.replace(/[^/]*$/, '');
 
   const onTypeOpen = srcData => () => {
@@ -183,6 +183,10 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     (content?.imageThumbnail)
       ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}`
       : defaultPrevImgUrl;
+
+  useEffect(() => {
+    if(previewItemProp) setPreviewItem(previewItemProp)
+  }, [previewItemProp]);
 
   useEffect(() => {
     open && fetchLegacyContentTypes(site, path).subscribe(data => {

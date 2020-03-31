@@ -2818,34 +2818,26 @@
        * Creates new content. Opens the form to create content
        */
       createContent: function() {
-        var createCb = {
-          success: function(contentTO, editorId, name, value, draft) {
-            var page =  CStudioAuthoring.Utils.getQueryParameterURL("page");
-            var currentPage = page.split("/")[page.split("/").length - 1];
-            var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
-            eventYS.data = oCurrentTextNode;
-            eventYS.typeAction = "createContent";
-            eventYS.oldPath = null;
-            eventYS.parent = oCurrentTextNode.data.path == "/site/website" ? null : false;
-            document.dispatchEvent(eventYS);
-
-            if(contentTO.item.isPage){
-              CStudioAuthoring.Operations.refreshPreview(contentTO.item);
-              if(CStudioAuthoring.Utils.getQueryParameterURL("page") == contentTO.item.browserUri && acnDraftContent){
-                CStudioAuthoring.SelectedContent.setContent(contentTO.item);
-              }
-            }else{
-              CStudioAuthoring.Operations.refreshPreview();
+        function renderNewContentDialog(open) {
+          const { site, internalName, fileName, uri } = oCurrentTextNode.data;
+          const container = $('#acn-context-menu')[0];
+          let unmount;
+          CrafterCMSNext.render(
+            container,
+            'NewContentDialog',
+            {
+              previewItem: {
+                name: fileName,
+                internalName,
+                uri
+              },
+              open,
+              onDialogClose: () => renderNewContentDialog(false),
+              site
             }
-          },
-          failure: function() { },
-          callingWindow: window
-        };
-        CStudioAuthoring.Operations.createNewContent(
-          CStudioAuthoringContext.site,
-          oCurrentTextNode.data.path,
-          false,
-          createCb);
+          ).then(done => unmount = done.unmount);
+        }
+        renderNewContentDialog(true);
       },
       /**
        * Edits the label of the TextNode that was the target of the

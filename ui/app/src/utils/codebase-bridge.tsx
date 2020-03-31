@@ -123,7 +123,8 @@ export function createCodebaseBridge() {
           .then(module => ({
             default: module.QuickCreateMenu
           }))
-      ))
+      )),
+      NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog'))
     },
 
     assets: {
