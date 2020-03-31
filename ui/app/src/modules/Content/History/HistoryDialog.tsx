@@ -17,26 +17,24 @@
 import React, { useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
-import {
-  defineMessages,
-  FormattedMessage,
-  FormattedDate,
-  useIntl,
-  FormattedTime,
-  FormattedDateParts
-} from 'react-intl';
+import { defineMessages, FormattedDateParts, FormattedMessage, FormattedTime, useIntl } from 'react-intl';
 import DialogBody from '../../../components/DialogBody';
 import { getItemVersions } from '../../../services/content';
 import { LegacyItem } from '../../../../../guest/src/models/Item';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import IconButton from '@material-ui/core/IconButton';
+import Chip from '@material-ui/core/Chip';
 import { LegacyVersion } from '../../../../../guest/src/models/version';
 import makeStyles from '@material-ui/styles/makeStyles';
-import { Theme, Chip } from '@material-ui/core';
+import { Theme, Menu, MenuItem, Button } from '@material-ui/core';
 import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../../styles/theme';
+import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
+import { useSpreadState } from '../../../utils/hooks';
+import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 
 
 const translations = defineMessages({
@@ -47,6 +45,10 @@ const translations = defineMessages({
   current: {
     id: 'historyDialog.current',
     defaultMessage: 'current'
+  },
+  test: {
+    id: 'historyDialog.test',
+    defaultMessage: 'test'
   }
 });
 
@@ -104,25 +106,30 @@ function FancyFormattedDate(props) {
 function VersionsList(props) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
-  const { versions } = props;
+  const { versions, onOpenMenu } = props;
   return (
     <List component="div" className={classes.list} disablePadding>
       {
         versions.map((version: LegacyVersion, i: number) =>
           <ListItem key={version.versionNumber} divider={versions.length - 1 !== i} className={classes.listItem}>
-              <ListItemText
-                classes={{ multiline: classes.listItemTextMultiline, primary: classes.listItemTextPrimary }}
-                primary={
-                  <>
-                    <FancyFormattedDate date={version.lastModifiedDate}/>
-                    {
-                      (i === 0) &&
-                      <Chip label={formatMessage(translations.current)} className={classes.chip}/>
-                    }
-                  </>
-                }
-                secondary={version.comment}
-              />
+            <ListItemText
+              classes={{ multiline: classes.listItemTextMultiline, primary: classes.listItemTextPrimary }}
+              primary={
+                <>
+                  <FancyFormattedDate date={version.lastModifiedDate}/>
+                  {
+                    (i === 0) &&
+                    <Chip label={formatMessage(translations.current)} className={classes.chip}/>
+                  }
+                </>
+              }
+              secondary={version.comment}
+            />
+            <ListItemSecondaryAction>
+              <IconButton edge="end" onClick={(e) => onOpenMenu(e.currentTarget, version)}>
+                <MoreVertIcon/>
+              </IconButton>
+            </ListItemSecondaryAction>
           </ListItem>
         )
       }
@@ -130,22 +137,37 @@ function VersionsList(props) {
   )
 }
 
+const menuSection = [
+  [
+    {
+      id: 'test',
+      label: translations.test
+    }
+  ]
+]
+
+
 export default function HistoryDialog(props) {
   const {
     open = true, handleClose = () => {
     }, site = 'editorial', path = '/site/website/index.xml'
   } = props;
   const { formatMessage } = useIntl();
+
   const [data, setData] = useState<{ contentItem: LegacyItem, versions: LegacyVersion[] }>({
     contentItem: null,
     versions: null
+  });
+
+  const [menu, setMenu] = useSpreadState({
+    anchorEl: null,
+    activeVersion: null
   });
 
   useEffect(() => {
     getItemVersions(site, path).subscribe(
       (response) => {
         setData({ contentItem: response.item, versions: response.versions });
-        console.log(response);
       },
       (response) => {
         console.log(response);
@@ -153,24 +175,48 @@ export default function HistoryDialog(props) {
     )
   }, [site, path]);
 
+  const handleOpenMenu = (anchorEl, version) => {
+    setMenu({
+      anchorEl,
+      activeVersion: version
+    })
+  };
+
+  const handleMenuClose = () => {
+    setMenu({
+      anchorEl: null,
+      activeVersion: null
+    })
+  };
+
+  const handleMenuItemClicked = (section: SectionItem) => {
+    console.log(section)
+  };
+
   return (
-    <Dialog
-      onClose={handleClose}
-      open={open}
-      fullWidth
-      maxWidth="md"
-    >
-      <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose}/>
-      {
-        data.versions &&
-        <DialogBody>
-          <VersionsList versions={data.versions}/>
-        </DialogBody>
-      }
-    </Dialog>
+    <>
+      <Dialog
+        onClose={handleClose}
+        open={open}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose}/>
+        {
+          data.versions &&
+          <DialogBody>
+            <VersionsList versions={data.versions} onOpenMenu={handleOpenMenu}/>
+          </DialogBody>
+        }
+        <ContextMenu
+          open={!!menu.anchorEl}
+          anchorEl={menu.anchorEl}
+          onClose={handleMenuClose}
+          sections={menuSection}
+          onMenuItemClicked={handleMenuItemClicked}
+        />
+      </Dialog>
+    </>
   )
 }
 
-
-{/*<ListItemText key={version.versionNumber} primary={version.lastModifiedDate} secondary={version.comment}/>*/
-}
