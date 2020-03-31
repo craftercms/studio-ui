@@ -18,12 +18,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import DialogContent from '@material-ui/core/DialogContent';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import DialogActions from '@material-ui/core/DialogActions';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import { palette } from '../../../styles/theme';
@@ -37,6 +35,8 @@ import EmptyState from '../../../components/SystemStatus/EmptyState';
 import { Item } from '../../../models/Item';
 import { useDebouncedInput } from '../../../utils/hooks';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
+import DialogBody from '../../../components/DialogBody';
+import DialogFooter from '../../../components/DialogFooter';
 
 const translations = defineMessages({
   title: {
@@ -190,7 +190,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         onClose={onDialogClose}
         icon={CloseRoundedIcon}
       />
-      <DialogContent dividers className={classes.dialogContent}>
+      <DialogBody dividers classes={{ root: classes.dialogContent }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <NewContentSelect
@@ -237,8 +237,8 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             ))
           }
         </Grid>
-      </DialogContent>
-      < DialogActions className={classes.dialogActions}>
+      </DialogBody>
+      <DialogFooter classes={{ root: classes.dialogActions }}>
         <FormControlLabel
           control={
             <Checkbox
@@ -254,7 +254,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           onTypeChange={onTypeChange}
           disabled={loading}
         />
-      </DialogActions>
+      </DialogFooter>
     </Dialog>
   );
 }
