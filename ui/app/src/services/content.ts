@@ -1039,6 +1039,10 @@ export function uploadDataUrl(
   });
 }
 
+export function getBulkUploadUrl(site: string, path: string): string {
+  return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`
+}
+
 export function getQuickCreateContentList(siteId: string) {
   return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
     pluck('response')
@@ -1078,5 +1082,6 @@ export default {
   getContentByContentType,
   fetchPublishingChannels,
   uploadDataUrl,
+  getBulkUploadUrl,
   getQuickCreateContentList
 };

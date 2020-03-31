@@ -60,7 +60,7 @@
       "${site.siteId!""}": {
         "id": "${site.siteId!""}",
         "name": "${site.siteId!""}",
-        "description": "${site.desc!""}"
+        "description": "${(site.desc!"")?json_string}"
       }<#sep>,</#sep>
     </#list>
     }
