@@ -194,6 +194,7 @@
 
   // Listen to the guest site load
   communicator.subscribe(Topics.GUEST_SITE_LOAD, function (message, scope) {
+
     hasCheckIn = true;
 
     if (message.url) {
@@ -500,7 +501,7 @@
   communicator.subscribe(Topics.REQUEST_FORM_DEFINITION, function (message) {
     CStudioForms.Util.loadFormDefinition(message.contentType, { success: function(response){
         communicator.publish(Topics.REQUEST_FORM_DEFINITION_RESPONSE, response);
-    }});
+      }});
   });
 
   function setHash(params) {
@@ -517,6 +518,7 @@
   }
 
   function goToHashPage() {
+
     var win = getEngineWindow();
     var hash = parseHash(window.location.hash);
     var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite');
@@ -646,6 +648,7 @@
   }, false);
 
   window.addEventListener('load', function () {
+
     if (window.location.hash.indexOf('page') === -1) {
       setHash({
         page: '/',

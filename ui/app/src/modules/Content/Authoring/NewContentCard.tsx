@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex'
   },
   media: {
-    paddingTop: '56.25%',
+    paddingTop: '70.25%',
   },
   compactMedia: {
     width: 151,

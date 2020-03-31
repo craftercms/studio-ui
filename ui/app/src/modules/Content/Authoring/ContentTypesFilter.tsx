@@ -92,10 +92,11 @@ const useStyles = makeStyles(theme => ({
 
 interface ContentTypesFilterProps {
   onTypeChange(type: string): any;
+  disabled: boolean
 }
 
 export default function ContentTypesFilter(props: ContentTypesFilterProps) {
-  const { onTypeChange } = props;
+  const { onTypeChange, disabled } = props;
   const { formatMessage } = useIntl();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -130,11 +131,12 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
   const onChange = e => {
     onTypeChange(e.target.value);
     setType(e.target.value);
+    onMenuClose();
   };
 
   return (
     <>
-      <Button onClick={onMenuOpen} className={classes.openMenuBtn}>
+      <Button disabled={disabled} onClick={onMenuOpen} className={classes.openMenuBtn}>
         <FormattedMessage
           id="openMenuBtn.text"
           defaultMessage="Show all types"

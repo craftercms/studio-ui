@@ -81,9 +81,6 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: palette.gray.light0,
       minHeight: 628
     },
-    prevImg: {
-      maxWidth: '150px'
-    },
     cardsContainer: {
       marginTop: 14
     },
@@ -225,7 +222,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             />
           }
           {
-            (!loading && filterContentTypes) &&
+            (!loading && filterContentTypes.length) &&
             filterContentTypes.map(content => (
               <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
                 <NewContentCard
@@ -248,11 +245,15 @@ export default function NewContentDialog(props: NewContentDialogProps) {
               checked={isCompact}
               onChange={onCompactCheck}
               color="primary"
+              disabled={loading}
             />
           }
           label={formatMessage(translations.compactInput)}
         />
-        <ContentTypesFilter onTypeChange={onTypeChange} />
+        <ContentTypesFilter
+          onTypeChange={onTypeChange}
+          disabled={loading}
+        />
       </DialogActions>
     </Dialog>
   );
