@@ -110,7 +110,6 @@ function VersionsList(props) {
       {
         versions.map((version: LegacyVersion, i: number) =>
           <ListItem key={version.versionNumber} divider={versions.length - 1 !== i} className={classes.listItem}>
-            <React.Fragment key={version.versionNumber}>
               <ListItemText
                 classes={{ multiline: classes.listItemTextMultiline, primary: classes.listItemTextPrimary }}
                 primary={
@@ -124,7 +123,6 @@ function VersionsList(props) {
                 }
                 secondary={version.comment}
               />
-            </React.Fragment>
           </ListItem>
         )
       }
