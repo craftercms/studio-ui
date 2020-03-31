@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function QuickCreateMenu({ anchorEl, onMenuClose, path }) {
+export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
   const classes = useStyles({});
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
@@ -175,15 +175,17 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, path }) {
           />
         </Typography>
 
-        {quickCreateContentList?.map(item =>
-          <MenuItem
-            key={item.path}
-            onClick={onFormDisplay(item)}
-            className={classes.menuItem}
-          >
-            {item.label}
-          </MenuItem>
-        )}
+        {
+          quickCreateContentList?.map(item =>
+            <MenuItem
+              key={item.path}
+              onClick={onFormDisplay(item)}
+              className={classes.menuItem}
+            >
+              {item.label}
+            </MenuItem>
+          )
+        }
       </Menu>
       {
         dialogConfig.open &&
@@ -201,7 +203,7 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, path }) {
           onDialogClose={onDialogClose}
           onTypeOpen={onTypeOpen}
           site={siteId}
-          path={path}
+          previewItem={previewItem}
         />
       }
     </>
@@ -227,9 +229,22 @@ export function QuickCreateMenuButton({ onMenuBtnClick }) {
 
 export default function QuickCreate() {
   const [anchorEl, setAnchorEl] = useState(null);
-  const { computedUrl } = usePreviewState();
+  const [currentPreview, setCurrentPreview] = useState(null);
+  const { guest } = usePreviewState();
 
-  const onMenuBtnClick = e => setAnchorEl(e.currentTarget);
+  const onMenuBtnClick = e => {
+    if (guest) {
+      const { modelId, models } = guest;
+      const { craftercms: { label, path } } = models[modelId];
+      const item = {
+        name: label,
+        internalName: label,
+        uri: path
+      };
+      setCurrentPreview(item);
+    }
+    setAnchorEl(e.currentTarget);
+  };
 
   const onMenuClose = () => setAnchorEl(null);
 
@@ -239,7 +254,7 @@ export default function QuickCreate() {
       <QuickCreateMenu
         anchorEl={anchorEl}
         onMenuClose={onMenuClose}
-        path={computedUrl}
+        previewItem={currentPreview}
       />
     </>
   );

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,6 +25,33 @@ import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
 import { palette } from '../../../styles/theme';
 import { Variant } from '@material-ui/core/styles/createTypography';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { Item } from '../../../models/Item';
+
+// TODO remove mockup data as component menu is implemented
+const MENU_ITEMS = [
+  {
+    name: 'Style',
+    internalName: 'Style',
+    uri: '/site/website/style/index.xml'
+  },
+  {
+    name: 'Health',
+    internalName: 'Health',
+    uri: '/site/website/health/index.xml'
+  },
+  {
+    name: 'Technology',
+    internalName: 'Technology',
+    uri: '/site/website/technology/index.xml'
+  },
+  {
+    name: 'Root path',
+    internalName: 'Root',
+    uri: '/'
+  },
+];
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,7 +63,7 @@ const useStyles = makeStyles(theme => ({
   textWrapper: {
     display: 'flex',
     '& > *': {
-      marginRight: 15,
+      marginRight: 15
     },
     '& > p': {
       color: palette.black
@@ -62,31 +89,66 @@ interface NewContentSelectProps {
   editIconClass?: string;
   rootClass?: string;
   labelIconClass?: string;
-  selectItem: any;
+  selectItem: Item;
   label: string;
   titleVariant?: Variant;
   labelVariant?: Variant;
+
+  onParentItemClick(item: Item): any;
+
   onEditClick(): void;
 }
 
 export default function NewContentSelect(props: NewContentSelectProps) {
-  const { LabelIcon, editIconClass, labelIconClass, rootClass, titleVariant, labelVariant, onEditClick, selectItem, label } = props;
+  const {
+    LabelIcon,
+    editIconClass,
+    labelIconClass,
+    rootClass,
+    titleVariant,
+    labelVariant,
+    onEditClick,
+    selectItem,
+    label,
+    onParentItemClick
+  } = props;
   const classes = useStyles();
+  const [anchorEl, setanchorEl] = useState(null);
 
   return (
     <Paper className={clsx(classes.root, rootClass)} elevation={0}>
       <div className={classes.textWrapper}>
         <Typography variant={titleVariant || 'body1'} className={classes.title}>
-          { label }
+          {label}
         </Typography>
-        <LabelIcon className={clsx(classes.labelIcon, labelIconClass)}/>
+        <LabelIcon className={clsx(classes.labelIcon, labelIconClass)} />
         <Typography variant={labelVariant || 'body1'}>
-          { selectItem.name }
+          {selectItem.internalName}
         </Typography>
       </div>
-      <IconButton className={classes.changeBtn} onClick={() => onEditClick()}>
-        <EditIcon className={clsx(classes.editIcon, editIconClass)}/>
+      <IconButton
+        className={classes.changeBtn}
+        onClick={e => {
+          setanchorEl(e.currentTarget);
+          onEditClick();
+        }}
+      >
+        <EditIcon className={clsx(classes.editIcon, editIconClass)} />
       </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={() => setanchorEl(null)}
+      >
+        {
+          MENU_ITEMS.map(item => (
+            <MenuItem key={item.name} onClick={() => onParentItemClick(item)}>
+              {item.name}
+            </MenuItem>
+          ))
+        }
+      </Menu>
     </Paper>
   );
 }

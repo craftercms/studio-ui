@@ -34,6 +34,7 @@ import NewContentSelect from './NewContentSelect';
 import SearchBar from '../../../components/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
+import { Item } from '../../../models/Item';
 
 const translations = defineMessages({
   title: {
@@ -65,7 +66,6 @@ const translations = defineMessages({
     defaultMessage: 'full catalog.'
   }
 });
-
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -100,10 +100,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const defaultPreviewItem: Item = {
+  name: 'Home',
+  internalName: 'Home',
+  uri: '/site/website/index.xml'
+};
+
 interface NewContentDialogProps {
   open: boolean;
-  path: string;
   site: string;
+  previewItem: Item;
 
   onDialogClose(): void;
 
@@ -111,26 +117,25 @@ interface NewContentDialogProps {
 }
 
 export default function NewContentDialog(props: NewContentDialogProps) {
-  const { open, onDialogClose, onTypeOpen, site, path } = props;
+  const { open, onDialogClose, onTypeOpen, site, previewItem: item } = props;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
-  const defaultPath = '/site/website';
-  const [contextPath, setContextPath] = useState(`${defaultPath}/`);
   const [contentTypes, setContentTypes] = useState(null);
   const [filterContentTypes, setFilterContentTypes] = useState(null);
   const [isCompact, setIsCompact] = useState(false);
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
+  const [ previewItem, setPreviewItem] = useState(item || defaultPreviewItem);
+  const path = previewItem.uri.replace(/[^/]*$/, '');
 
   const onCompactCheck = () => setIsCompact(!isCompact);
 
-  const onSearchChange = value => setContextPath(value);
+  const onSearchChange = value => console.log(value);
 
   const onTypeChange = type =>
     (type !== 'all')
       ? setFilterContentTypes(contentTypes.filter(content => content.type === type))
       : setFilterContentTypes(contentTypes);
-
 
   const getPrevImg = (content) =>
     (content?.imageThumbnail)
@@ -138,15 +143,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       : defaultPrevImgUrl;
 
   useEffect(() => {
-    setContextPath(`${defaultPath}${!path ? '/' : path}`);
-  }, [path]);
-
-  useEffect(() => {
-    open && fetchLegacyContentTypes(site, contextPath).subscribe(data => {
+    open && fetchLegacyContentTypes(site, path).subscribe(data => {
       setFilterContentTypes(data);
       setContentTypes(data);
     });
-  }, [open, contextPath, site]);
+  }, [open, path, site]);
 
   return (
     filterContentTypes &&
@@ -169,15 +170,14 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           <Box>
             <NewContentSelect
               label="Parent"
-              selectItem={{
-                name: 'Home'
-              }}
+              selectItem={previewItem}
               LabelIcon={InsertDriveFileOutlinedIcon}
               onEditClick={() => null}
+              onParentItemClick={item => setPreviewItem(item)}
             />
           </Box>
           <Box className={classes.searchBox}>
-            <SearchBar onChange={onSearchChange} keyword={contextPath} autofocus />
+            <SearchBar onChange={onSearchChange} keyword={previewItem.uri} autofocus />
           </Box>
         </Box>
 
@@ -199,7 +199,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
                     subheader={content.form}
                     imgTitle={formatMessage(translations.previewImage)}
                     img={getPrevImg(content)}
-                    onClick={onTypeOpen(content, contextPath)}
+                    onClick={onTypeOpen(content, path)}
                   />
                 </Grid>
               ))
