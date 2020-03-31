@@ -83,6 +83,7 @@ function DeleteDialog(props: DeleteDialogProps) {
   return (
     <DeleteDialogUI
       items={items}
+      selectedItems={selectedItems}
       setSelectedItems={setSelectedItems}
       submissionComment={submissionComment}
       setSubmissionComment={setSubmissionComment}

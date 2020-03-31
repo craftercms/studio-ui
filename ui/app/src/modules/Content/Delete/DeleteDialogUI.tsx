@@ -70,6 +70,7 @@ const deleteDialogStyles = makeStyles((theme) => createStyles({
 
 interface DeleteDialogUIProps {
   items: Item[];
+  selectedItems: Item[];
   setSelectedItems: Function;
   submissionComment: string;
   setSubmissionComment: Function;
@@ -86,6 +87,7 @@ interface DeleteDialogUIProps {
 function DeleteDialogUI(props: DeleteDialogUIProps) {
   const {
     items,
+    selectedItems,
     setSelectedItems,
     submissionComment,
     setSubmissionComment,
@@ -159,7 +161,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
                   autoFocus
                   onClick={handleSubmit}
                   color="primary"
-                  disabled={apiState.submitting}
+                  disabled={apiState.submitting || selectedItems.length === 0}
                 >
                   {
                     apiState.submitting ?
