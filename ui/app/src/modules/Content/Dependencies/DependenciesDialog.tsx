@@ -137,7 +137,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     )
 
 
-  }, [dialog.item]);
+  }, [dialog.item, setApiState, setDialog, siteId]);
 
   useEffect(() => {
     if (dialog.selectedOption === 'depends-on') {
@@ -145,7 +145,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     } else {
       setDeps(dialog.dependencies);
     }
-  }, [dialog.selectedOption]);
+  }, [dialog.selectedOption, dialog.dependantItems, dialog.dependencies]);
 
   return (
     <DependenciesDialogUI

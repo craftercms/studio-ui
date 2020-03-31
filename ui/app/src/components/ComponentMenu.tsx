@@ -93,7 +93,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, setPublishDialog, site, embeddedParentPath, parentId, publishDialog.item]);
+  }, [models, modelId, setPublishDialog, setDependenciesDialog, site, embeddedParentPath, parentId, publishDialog.item]);
 
   const onErrorClose = () => {
     setError(null);
