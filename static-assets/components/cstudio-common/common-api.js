@@ -879,18 +879,6 @@ var nodeOpen = false,
                 {
                   item: items[0],
                   dependenciesSelection,
-                  handleDependencyEdit: (item) => {
-                    CStudioAuthoring.Operations.editContent(
-                      item.form,
-                      CStudioAuthoringContext.siteId,
-                      item.uri,
-                      item.nodeRef,
-                      item.uri,
-                      false,
-                      {},
-                      [{ 'ontop': true }]
-                    );
-                  },
                   onClose: () => {
                     unmount({ delay: 300, removeContainer: true });
                   }

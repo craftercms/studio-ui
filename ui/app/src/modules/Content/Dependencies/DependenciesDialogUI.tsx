@@ -340,7 +340,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                                           defaultMessage="Dependencies"
                                         />
                                       </MenuItem>
-                                      <MenuItem onClick={popupState.close}>
+                                      <MenuItem
+                                        onClick={popupState.close}>   {/* TODO: pending, waiting for new history dialog */}
                                         <FormattedMessage
                                           id="dependenciesDialog.history"
                                           defaultMessage="History"
