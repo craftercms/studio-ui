@@ -103,11 +103,13 @@ interface EmbeddedLegacyEditorsProps {
   showController?: boolean;
   showTabs?: boolean;
 
+  legacySuccessHandler?(response): any;
+
   getPath?(type: string): void;
 }
 
 export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
-  const { dialogConfig, setDialogConfig, getPath, showController = false, showTabs = true } = props;
+  const { dialogConfig, setDialogConfig, getPath, showController = false, showTabs = true, legacySuccessHandler } = props;
   const { formatMessage } = useIntl();
   const classes = styles({});
   const iframeRef = useRef(null);
@@ -125,8 +127,8 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   );
 
   const handleClose = useCallback(() => {
-      setDialogConfig({ open: false, src: null, type: null, inProgress: true });
-    }, [setDialogConfig]);
+    setDialogConfig({ open: false, src: null, type: null, inProgress: true });
+  }, [setDialogConfig]);
 
   const onErrorClose = () => {
     setError(null);
@@ -134,28 +136,28 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   };
 
   const handleTabChange = useCallback((event: React.ChangeEvent<{}>, type: string) => {
-      let inProgress = !tabsState[type].loaded;
-      setDialogConfig({ type, inProgress });
-      iframeRef.current.contentWindow.postMessage({
-        type: EDIT_FORM_CHANGE_TAB,
-        tab: type,
-        path: getPath(type)
-      }, '*');
-    }, [getPath, setDialogConfig, tabsState]);
+    let inProgress = !tabsState[type].loaded;
+    setDialogConfig({ type, inProgress });
+    iframeRef.current.contentWindow.postMessage({
+      type: EDIT_FORM_CHANGE_TAB,
+      tab: type,
+      path: getPath(type)
+    }, '*');
+  }, [getPath, setDialogConfig, tabsState]);
 
   const closeEmbeddedLegacyForm = useCallback((refresh: boolean, tab?: string) => {
-      let hasSomeLoaded = filterBy('loaded', tabsState, tab);
+    let hasSomeLoaded = filterBy('loaded', tabsState, tab);
 
-      if (hasSomeLoaded.length && tab) {
-        setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
-        handleTabChange(null, hasSomeLoaded[0]);
-      } else {
-        handleClose();
-        if (refresh) {
-          getHostToGuestBus().next({ type: RELOAD_REQUEST });
-        }
+    if (hasSomeLoaded.length && tab) {
+      setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
+      handleTabChange(null, hasSomeLoaded[0]);
+    } else {
+      handleClose();
+      if (refresh) {
+        getHostToGuestBus().next({ type: RELOAD_REQUEST });
       }
-    }, [handleClose, handleTabChange, setTabsState, tabsState]);
+    }
+  }, [handleClose, handleTabChange, setTabsState, tabsState]);
 
 
   useEffect(() => {
@@ -182,8 +184,11 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
           }
           case EMBEDDED_LEGACY_FORM_SAVE: {
             closeEmbeddedLegacyForm(e.data.refresh, tab);
+            if (legacySuccessHandler) {
+              legacySuccessHandler(e);
+            }
 
-            if (e.data.redirectUrl) {
+            if (!legacySuccessHandler && e.data.redirectUrl) {
               dispatch(changeCurrentUrl(e.data.redirectUrl));
             }
             break;
@@ -200,7 +205,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         messagesSubscription.unsubscribe();
       };
     }
-  }, [handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig, messages, closeEmbeddedLegacyForm, dispatch]);
+  }, [legacySuccessHandler, handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig, messages, closeEmbeddedLegacyForm, dispatch]);
 
   return (
     <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>

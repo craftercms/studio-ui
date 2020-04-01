@@ -2818,6 +2818,24 @@
        * Creates new content. Opens the form to create content
        */
       createContent: function() {
+        const success = currentTextNode => ({ data }) => {
+          const acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
+          eventYS.data = currentTextNode;
+          eventYS.typeAction = "createContent";
+          eventYS.oldPath = null;
+          eventYS.parent = currentTextNode.data.path == "/site/website" ? null : false;
+          document.dispatchEvent(eventYS);
+
+          if (data.item.isPage){
+            CStudioAuthoring.Operations.refreshPreview(data.item);
+            if (CStudioAuthoring.Utils.getQueryParameterURL("page") == data.redirectUrl && acnDraftContent){
+              CStudioAuthoring.SelectedContent.setContent(data.item);
+            }
+          } else {
+            CStudioAuthoring.Operations.refreshPreview();
+          }
+        };
+
         function renderNewContentDialog(open) {
           const { site, internalName, fileName, uri } = oCurrentTextNode.data;
           const container = $('#acn-context-menu')[0];
@@ -2826,6 +2844,7 @@
             container,
             'NewContentDialog',
             {
+              legacySuccessHandler: success(oCurrentTextNode),
               previewItem: {
                 name: fileName,
                 internalName,
