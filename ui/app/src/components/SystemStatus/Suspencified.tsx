@@ -18,6 +18,7 @@ import React from 'react';
 import { ErrorBoundary } from '../ErrorBoundary';
 import LoadingState from './LoadingState';
 
+// TODO: Need to figure the TS config to carry the props from the "component" to "componentProps"
 // interface SuspencifiedProps<ComponentType extends React.ElementType = 'div', ComponentProps = {}> {
 //   component: ComponentType;
 //   componentProps?: object;
@@ -31,10 +32,10 @@ export function Suspencified(props) {
     <ErrorBoundary {...errorStateProps}>
       <React.Suspense
         fallback={
-          <LoadingState {...loadingStateProps}/>
+          <LoadingState graphicProps={{ width: 150 }} {...loadingStateProps} />
         }
       >
-        <Component resource={resource} {...componentProps}/>
+        <Component resource={resource} {...componentProps} />
       </React.Suspense>
     </ErrorBoundary>
   )
