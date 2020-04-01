@@ -69,7 +69,7 @@ function DeleteDialog(props: DeleteDialogProps) {
       },
       (response) => {
         if (response) {
-          setApiState({ error: true, errorResponse: (response.response) ? response.response : response });
+          setApiState({ error: true, errorResponse: response });
         }
       }
     );
@@ -77,7 +77,7 @@ function DeleteDialog(props: DeleteDialogProps) {
   };
 
   function handleErrorBack() {
-    setApiState({ error: false, global: false });
+    setApiState({ error: false, global: false, submitting: false });
   }
 
   return (
