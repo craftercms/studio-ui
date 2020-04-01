@@ -41,7 +41,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface LoadingStateProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   Graphic?: ElementType<any>;
   graphicProps?: any;

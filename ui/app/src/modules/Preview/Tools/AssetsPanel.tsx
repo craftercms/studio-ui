@@ -54,11 +54,11 @@ const translations = defineMessages({
     defaultMessage: ' No results found.'
   },
   previousPage: {
-    id: 'craftercms.ice.assets.previousPage',
+    id: 'pagination.previousPage',
     defaultMessage: 'previous page'
   },
   nextPage: {
-    id: 'craftercms.ice.assets.nextPage',
+    id: 'pagination.nextPage',
     defaultMessage: 'next page'
   },
   retrieveAssets: {

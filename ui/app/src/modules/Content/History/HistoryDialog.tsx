@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
 import { defineMessages, FormattedDateParts, FormattedMessage, FormattedTime, useIntl } from 'react-intl';
@@ -33,8 +33,13 @@ import { Theme } from '@material-ui/core';
 import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../../styles/theme';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import { useSpreadState } from '../../../utils/hooks';
+import { useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
+import DialogFooter from '../../../components/DialogFooter';
+import TablePagination from '@material-ui/core/TablePagination';
+import { APIError } from '../../../models/GlobalState';
+import { Resource } from '../../../models/Resource';
+import { Suspencified } from '../../../components/SystemStatus/Suspencified';
 
 
 const translations = defineMessages({
@@ -49,10 +54,18 @@ const translations = defineMessages({
   test: {
     id: 'historyDialog.test',
     defaultMessage: 'test'
+  },
+  previousPage: {
+    id: 'pagination.previousPage',
+    defaultMessage: 'previous page'
+  },
+  nextPage: {
+    id: 'pagination.nextPage',
+    defaultMessage: 'next page'
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const versionListStyles = makeStyles((theme: Theme) => createStyles({
   list: {
     backgroundColor: palette.white,
     padding: 0,
@@ -75,6 +88,70 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     height: 'auto',
     color: palette.white,
     marginLeft: '10px'
+  },
+  pagination: {
+    marginLeft: 'auto',
+    position: 'fixed',
+    zIndex: 1,
+    bottom: 0,
+    background: 'white',
+    color: 'black',
+    //width: `calc(${DRAWER_WIDTH}px - 1px)`,
+    left: 0,
+    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+    '& p': {
+      padding: 0
+    },
+    '& svg': {
+      top: 'inherit'
+    },
+    '& .hidden': {
+      display: 'none'
+    }
+  },
+  toolbar: {
+    padding: 0,
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingLeft: '20px',
+    '& .MuiTablePagination-spacer': {
+      display: 'none'
+    },
+    '& .MuiTablePagination-spacer + p': {
+      display: 'none'
+    }
+  }
+}));
+
+const historyStyles = makeStyles((theme: Theme) => createStyles({
+  dialogFooter: {
+    padding: 0
+  },
+  pagination: {
+    marginLeft: 'auto',
+    background: 'white',
+    color: 'black',
+    '& p': {
+      padding: 0
+    },
+    '& svg': {
+      top: 'inherit'
+    },
+    '& .hidden': {
+      display: 'none'
+    }
+  },
+  toolbar: {
+    padding: 0,
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingLeft: '20px',
+    '& .MuiTablePagination-spacer': {
+      display: 'none'
+    },
+    '& .MuiTablePagination-spacer + p': {
+      display: 'none'
+    }
   }
 }));
 
@@ -103,10 +180,16 @@ function FancyFormattedDate(props) {
   )
 }
 
-function VersionsList(props) {
+interface VersionsListProps {
+  resource: Resource<LegacyVersion[]>;
+  onOpenMenu(anchorEl: Element, version: LegacyVersion): void;
+}
+
+function VersionsList(props: VersionsListProps) {
   const { formatMessage } = useIntl();
-  const classes = useStyles({});
-  const { versions, onOpenMenu } = props;
+  const classes = versionListStyles({});
+  const { resource, onOpenMenu } = props;
+  const versions = resource.read();
   return (
     <List component="div" className={classes.list} disablePadding>
       {
@@ -144,43 +227,66 @@ const menuSection = [
       label: translations.test
     }
   ]
-]
-
+];
 
 export default function HistoryDialog(props) {
   const {
-    open = true, handleClose = () => {
-    }, site = 'editorial', path = '/site/website/index.xml'
+    open = true,
+    handleClose = () => {
+    },
+    site = 'editorial',
+    path = '/site/website/index.xml'
   } = props;
   const { formatMessage } = useIntl();
-
-  const [data, setData] = useState<{ contentItem: LegacyItem, versions: LegacyVersion[] }>({
-    contentItem: null,
-    versions: null
-  });
+  const classes = historyStyles({});
 
   const [menu, setMenu] = useSpreadState({
     anchorEl: null,
     activeVersion: null
   });
 
+  const [pagination, setPagination] = useSpreadState({
+    limit: null,
+    offset: null
+  });
+
+  const [data, setData] = useState<{ contentItem: LegacyItem, versions: LegacyVersion[] }>({
+    contentItem: null,
+    versions: null
+  });
+
+  const [error, setError] = useState<APIError>(null);
+
+  const resource = useStateResource<LegacyVersion[], { contentItem: LegacyItem, versions: LegacyVersion[] }>(
+    data,
+    {
+      shouldResolve: (data) => Boolean(data.versions),
+      shouldReject: () => Boolean(error),
+      shouldRenew: () => false,
+      resultSelector: () => data.versions,
+      errorSelector: () => error
+    }
+  );
+
   useEffect(() => {
     getItemVersions(site, path).subscribe(
       (response) => {
-        setData({ contentItem: response.item, versions: response.versions });
+        setTimeout(() => {
+          setData({ contentItem: response.item, versions: response.versions });
+        }, 3000)
       },
       (response) => {
-        console.log(response);
+        setError(response);
       }
     )
   }, [site, path]);
 
-  const handleOpenMenu = (anchorEl, version) => {
+  const handleOpenMenu = useCallback((anchorEl, version) => {
     setMenu({
       anchorEl,
       activeVersion: version
     })
-  };
+  }, [setMenu]);
 
   const handleMenuClose = () => {
     setMenu({
@@ -193,6 +299,10 @@ export default function HistoryDialog(props) {
     console.log(section)
   };
 
+  const onPageChanged = (e, next: number) => {
+
+  }
+
   return (
     <>
       <Dialog
@@ -202,11 +312,29 @@ export default function HistoryDialog(props) {
         maxWidth="md"
       >
         <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose}/>
+        <DialogBody>
+          <Suspencified resource={resource} component={VersionsList} componentProps={{ onOpenMenu: handleOpenMenu }}/>
+        </DialogBody>
         {
           data.versions &&
-          <DialogBody>
-            <VersionsList versions={data.versions} onOpenMenu={handleOpenMenu}/>
-          </DialogBody>
+          <DialogFooter className={classes.dialogFooter}>
+            <TablePagination
+              className={classes.pagination}
+              classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+              component="div"
+              labelRowsPerPage=""
+              count={0}
+              rowsPerPage={20}
+              page={1}
+              backIconButtonProps={{
+                'aria-label': formatMessage(translations.previousPage)
+              }}
+              nextIconButtonProps={{
+                'aria-label': formatMessage(translations.nextPage)
+              }}
+              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * 20)}
+            />
+          </DialogFooter>
         }
         <ContextMenu
           open={!!menu.anchorEl}
