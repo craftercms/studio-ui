@@ -90,7 +90,7 @@ const messages = defineMessages({
   },
   preview: {
     id: 'globalMenu.preview',
-    defaultMessage: 'Page Builder'
+    defaultMessage: 'Preview 2.0'
   },
   legacyPreview: {
     id: 'globalMenu.legacyPreview',
@@ -322,7 +322,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   }
 
   function onPreviewClick(id: string = crafterSite) {
-    onLinkClick('/preview', id);
+    onLinkClick('/next/preview', id);
   }
 
   function onDashboardClick(id: string = crafterSite) {
