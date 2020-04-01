@@ -50,7 +50,7 @@ import {
   setChildrenMap,
   setContentTypeReceptacles,
   setItemBeingDragged,
-  SORT_ITEM_OPERATION,
+  SORT_ITEM_OPERATION, TRASHED,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
 import {
@@ -73,6 +73,7 @@ import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou, nou, pluckProps } from '../../utils/object';
+import RubbishBin from './Tools/RubbishBin';
 
 // WARNING: This assumes there will only ever be 1 PreviewConcierge. This wouldn't be viable
 // with multiple instances or multiple unrelated content type collections to hold per instance.
@@ -340,7 +341,7 @@ export function PreviewConcierge(props: any) {
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems());
+        (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems({}));
         break;
       case 'craftercms.ice.audiences':
         if (
@@ -391,6 +392,10 @@ export function PreviewConcierge(props: any) {
           action={snack.action}
         />
       }
+      <RubbishBin
+        open={guest?.itemBeingDragged}
+        onTrash={() => getHostToGuestBus().next({ type: TRASHED })}
+      />
     </>
   );
 

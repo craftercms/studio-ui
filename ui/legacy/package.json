@@ -1,5 +1,5 @@
 {
-  "name": "studio-ui-legacy",
+  "name": "@craftercms/studio-ui-intermediate",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -7,9 +7,9 @@
     "build": "babel ./src -d ../../static-assets",
     "watch": "babel -w ./src -d ../../static-assets"
   },
-  "dependencies": {
-    "@babel/cli": "^7.7.5",
-    "@babel/core": "7.7.4",
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-class-properties": "7.7.4",
     "@babel/plugin-proposal-decorators": "7.7.4",
     "@babel/plugin-proposal-nullish-coalescing-operator": "7.7.4",

@@ -20,12 +20,8 @@
  * @author: Roy Art
  * @date: 10.01.2011
  **/
-(function(){
+(function() {
+  CStudioAuthoring.register('TemplateHolder.History', {});
 
-    CStudioAuthoring.register("TemplateHolder.History", {
-
-    });
-
-    CStudioAuthoring.Env.ModuleMap.map("template-history", CStudioAuthoring.TemplateHolder.History);
-
+  CStudioAuthoring.Env.ModuleMap.map('template-history', CStudioAuthoring.TemplateHolder.History);
 })();
