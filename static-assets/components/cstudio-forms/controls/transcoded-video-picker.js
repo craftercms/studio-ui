@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Controls.TranscodedVideoPicker = CStudioForms.Controls.TranscodedVideoPicker ||
-  function (id, form, owner, properties, constraints, readonly) {
+CStudioForms.Controls.TranscodedVideoPicker =
+  CStudioForms.Controls.TranscodedVideoPicker ||
+  function(id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -40,12 +41,11 @@ CStudioForms.Controls.TranscodedVideoPicker = CStudioForms.Controls.TranscodedVi
   };
 
 YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFormField, {
-
-  getLabel: function () {
+  getLabel: function() {
     return this.formatMessage(this.messages.label);
   },
 
-  _onChange: function (evt, obj) {
+  _onChange: function(evt, obj) {
     obj.value = obj.inputEl.value === 'multiple' ? this.value : obj.inputEl.value;
 
     if (obj.required) {
@@ -69,7 +69,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     }
   },
 
-  _onChangeVal: function (evt, obj) {
+  _onChangeVal: function(evt, obj) {
     obj.edited = true;
     this._onChange(evt, obj);
   },
@@ -79,13 +79,12 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
    * @param evt event
    * @param el element
    */
-  count: function (evt, countEl, el) {
-  },
+  count: function(evt, countEl, el) {},
 
   /**
    * create dialog
    */
-  createDialog: function () {
+  createDialog: function() {
     YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
     var newdiv = YDom.get('cstudio-wcm-popup-div');
@@ -99,30 +98,40 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     newdiv.className = 'yui-pe-content video-dialog';
     var url = !this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value;
 
-    newdiv.innerHTML = '<embed src=\"' +
-      url + '\" width=\"500px\" height=\"500px\"></embed>' +
+    newdiv.innerHTML =
+      '<embed src="' +
+      url +
+      '" width="500px" height="500px"></embed>' +
       '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-cancel-button" id="zoomCancelButton" value="Close"/>' +
       '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-full-button" id="zoomFullButton" value="Full"/>';
 
     // Instantiate the Dialog
-    upload_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div',
-      {
-        fixedcenter: true,
-        visible: false,
-        modal: true,
-        close: true,
-        constraintoviewport: true,
-        underlay: 'none',
-        keylisteners: new YAHOO.util.KeyListener(document, { ctrl: false, keys: 27 },
-          { fn: this.uploadPopupCancel, correctScope: true })
-      });
+    upload_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
+      fixedcenter: true,
+      visible: false,
+      modal: true,
+      close: true,
+      constraintoviewport: true,
+      underlay: 'none',
+      keylisteners: new YAHOO.util.KeyListener(
+        document,
+        { ctrl: false, keys: 27 },
+        { fn: this.uploadPopupCancel, correctScope: true }
+      )
+    });
 
     // Render the Dialog
     upload_dialog.render();
     YAHOO.util.Event.addListener('zoomCancelButton', 'click', this.uploadPopupCancel, this, true);
-    YAHOO.util.Event.addListener('zoomFullButton', 'click', function () {
-      this.fullImageTab(!this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value);
-    }, this, true);
+    YAHOO.util.Event.addListener(
+      'zoomFullButton',
+      'click',
+      function() {
+        this.fullImageTab(!this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value);
+      },
+      this,
+      true
+    );
     this.upload_dialog = upload_dialog;
     upload_dialog.show();
   },
@@ -130,27 +139,35 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
   /**
    * event fired when the full is pressed
    */
-  fullImageTab: function (url) {
+  fullImageTab: function(url) {
     window.open(url);
   },
 
   /**
    * Show Alert
    */
-  showAlert: function (message) {
-    var dialog = new YAHOO.widget.SimpleDialog('alertDialog',
-      {
-        width: '400px', fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
-        text: message, icon: YAHOO.widget.SimpleDialog.ICON_ALARM,
-        constraintoviewport: true,
-        buttons: [{
-          text: 'OK', handler: function () {
+  showAlert: function(message) {
+    var dialog = new YAHOO.widget.SimpleDialog('alertDialog', {
+      width: '400px',
+      fixedcenter: true,
+      visible: false,
+      draggable: false,
+      close: false,
+      modal: true,
+      text: message,
+      icon: YAHOO.widget.SimpleDialog.ICON_ALARM,
+      constraintoviewport: true,
+      buttons: [
+        {
+          text: 'OK',
+          handler: function() {
             this.destroy();
             CStudioAuthoring.Utils.decreaseFormDialog();
-
-          }, isDefault: false
-        }]
-      });
+          },
+          isDefault: false
+        }
+      ]
+    });
     dialog.setHeader('CStudio Warning');
     dialog.render(document.body);
     dialog.show();
@@ -159,13 +176,16 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
   /**
    * event fired when the ok is pressed
    */
-  uploadPopupCancel: function (event) {
+  uploadPopupCancel: function(event) {
     this.upload_dialog.destroy();
   },
 
-  createVideoContainer: function (video) {
+  createVideoContainer: function(video) {
     var previewEl = document.createElement('div');
-    YAHOO.util.Dom.addClass(previewEl, 'cstudio-form-control-node-selector-item cstudio-form-control-video-selector-item');
+    YAHOO.util.Dom.addClass(
+      previewEl,
+      'cstudio-form-control-node-selector-item cstudio-form-control-video-selector-item'
+    );
     previewEl.style.wordWrap = 'break-word';
 
     previewEl.innerHTML = '<span>' + video.url + '</span>';
@@ -176,7 +196,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     previewBtn.setAttribute('data-url', video.url);
     previewBtn.innerHTML = '<i class="fa fa-search-plus" aria-hidden="true"></i>';
 
-    previewBtn.onclick = function (e) {
+    previewBtn.onclick = function(e) {
       e.preventDefault();
       CStudioAuthoring.Utils.previewAssetDialog(video.url, 'video');
     };
@@ -187,7 +207,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     return previewEl;
   },
 
-  addVideo: function () {
+  addVideo: function() {
     var _self = this;
     var videoManagerNames = this.datasources;
 
@@ -197,18 +217,19 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       return false;
     }
 
-    videoManagerNames = (!videoManagerNames) ? '' :
-      (Array.isArray(videoManagerNames)) ? videoManagerNames.join(',') : videoManagerNames;
+    videoManagerNames = !videoManagerNames
+      ? ''
+      : Array.isArray(videoManagerNames)
+      ? videoManagerNames.join(',')
+      : videoManagerNames;
     var datasourceMap = this.form.datasourceMap,
       datasourceDef = this.form.definition.datasources;
 
     if (videoManagerNames != '' && videoManagerNames.indexOf(',') != -1) {
-
       var addContainerEl = document.createElement('div');
       this.containerEl.appendChild(addContainerEl);
       YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-video-picker-add-container');
       this.addContainerEl = addContainerEl;
-
 
       addContainerEl.style.left = this.addEl.offsetLeft + 'px';
       addContainerEl.style.top = this.addEl.offsetTop + 22 + 'px';
@@ -216,7 +237,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       // The datasource title is only found in the definition.datasources. It'd make more sense to have all
       // the information in just one place.
 
-      var addMenuOption = function (el) {
+      var addMenuOption = function(el) {
         // We want to avoid possible substring conflicts by using a reg exp (a simple indexOf
         // would fail if a datasource id string is a substring of another datasource id)
         var mapDatasource;
@@ -229,13 +250,17 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
           itemEl.innerHTML = el.title;
           addContainerEl.appendChild(itemEl);
 
-          YAHOO.util.Event.on(itemEl, 'click', function () {
-            _self.addContainerEl = null;
-            _self.containerEl.removeChild(addContainerEl);
+          YAHOO.util.Event.on(
+            itemEl,
+            'click',
+            function() {
+              _self.addContainerEl = null;
+              _self.containerEl.removeChild(addContainerEl);
 
-            _self._addVideo(mapDatasource);
-
-          }, itemEl);
+              _self._addVideo(mapDatasource);
+            },
+            itemEl
+          );
         }
       };
       datasourceDef.forEach(addMenuOption);
@@ -245,7 +270,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     }
   },
 
-  _addVideo: function (datasourceEl) {
+  _addVideo: function(datasourceEl) {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
@@ -254,8 +279,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     if (datasource) {
       if (datasource.insertVideoAction) {
         var callback = {
-          success: function (videoData) {
-
+          success: function(videoData) {
             var videoContainer;
 
             this.videoPicker.noPreviewEl.style.display = 'none';
@@ -264,7 +288,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
             this.videoPicker.inputEl.value = 'multiple';
             this.videoPicker.remote = videoData.remote ? videoData.remote : false;
 
-            videoData.videos.forEach(function (video) {
+            videoData.videos.forEach(function(video) {
               videoContainer = self.createVideoContainer(video);
               videoContainer.videoData = videoData;
             });
@@ -283,7 +307,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
 
             CStudioAuthoring.Utils.decreaseFormDialog();
           },
-          failure: function (message) {
+          failure: function(message) {
             this.imagePicker.showAlert(message);
           }
         };
@@ -293,7 +317,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     }
   },
 
-  deleteVideo: function () {
+  deleteVideo: function() {
     var CMgs = CStudioAuthoring.Messages,
       langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang),
       inputValue = this.inputEl.value;
@@ -308,7 +332,9 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       YAHOO.util.Dom.removeClass(this.addEl, 'cstudio-button-disabled');
 
       if (inputValue === 'multiple') {
-        $(this.videoEl).find('.cstudio-form-control-video-selector-item').remove();
+        $(this.videoEl)
+          .find('.cstudio-form-control-video-selector-item')
+          .remove();
       } else {
         this.urlEl.innerHTML = '';
         this.previewEl.src = '';
@@ -321,7 +347,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     }
   },
 
-  render: function (config, containerEl) {
+  render: function(config, containerEl) {
     containerEl.id = this.id;
 
     var divPrefix = config.id + '-';
@@ -381,7 +407,10 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     var zoomEl = document.createElement('a');
     this.zoomEl = zoomEl;
 
-    YAHOO.util.Dom.addClass(zoomEl, 'cstudio-form-control-hover-btn cstudio-form-control-asset-picker-zoom-button fa fa-search-plus');
+    YAHOO.util.Dom.addClass(
+      zoomEl,
+      'cstudio-form-control-hover-btn cstudio-form-control-asset-picker-zoom-button fa fa-search-plus'
+    );
 
     if (this.inputEl.value === null || this.inputEl.value === '') {
       zoomEl.style.display = 'none';
@@ -396,7 +425,10 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     downloadEl.href = inputEl.value;
     downloadEl.target = '_new';
 
-    YAHOO.util.Dom.addClass(downloadEl, 'cstudio-form-control-hover-btn cstudio-form-control-asset-picker-download-button fa fa-download');
+    YAHOO.util.Dom.addClass(
+      downloadEl,
+      'cstudio-form-control-hover-btn cstudio-form-control-asset-picker-download-button fa fa-download'
+    );
 
     if (this.inputEl.value === null || this.inputEl.value === '') {
       downloadEl.style.display = 'none';
@@ -463,7 +495,6 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       }
     }
 
-
     var helpContainerEl = document.createElement('div');
     YAHOO.util.Dom.addClass(helpContainerEl, 'cstudio-form-field-help-container');
     controlWidgetContainerEl.appendChild(helpContainerEl);
@@ -488,21 +519,39 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       YAHOO.util.Dom.addClass(delEl, 'cstudio-button-disabled');
     }
 
-    YAHOO.util.Event.addListener(videoEl, 'click', function (evt, context) {
-      context.form.setFocusedField(context);
-    }, this, true);
-    YAHOO.util.Event.addListener(addEl, 'click', function (evt, context) {
-      context.form.setFocusedField(context);
-      this.addVideo();
-    }, this, true);
-    YAHOO.util.Event.addListener(delEl, 'click', function (evt, context) {
-      context.form.setFocusedField(context);
-      this.deleteVideo();
-    }, this, true);
+    YAHOO.util.Event.addListener(
+      videoEl,
+      'click',
+      function(evt, context) {
+        context.form.setFocusedField(context);
+      },
+      this,
+      true
+    );
+    YAHOO.util.Event.addListener(
+      addEl,
+      'click',
+      function(evt, context) {
+        context.form.setFocusedField(context);
+        this.addVideo();
+      },
+      this,
+      true
+    );
+    YAHOO.util.Event.addListener(
+      delEl,
+      'click',
+      function(evt, context) {
+        context.form.setFocusedField(context);
+        this.deleteVideo();
+      },
+      this,
+      true
+    );
     YAHOO.util.Event.addListener(zoomEl, 'click', this.createDialog, this, true);
   },
 
-  getValue: function () {
+  getValue: function() {
     var videoData = this.previewEl.videoData;
     multipleData = videoData ? videoData.multiple : false;
 
@@ -513,7 +562,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     return this.value;
   },
 
-  setValue: function (value, attribute) {
+  setValue: function(value, attribute) {
     var _self = this;
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
@@ -533,14 +582,13 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
         this.videoEl.style.minHeight = '100px';
         this.videoEl.style.height = 'auto';
 
-        value.forEach(function (video) {
+        value.forEach(function(video) {
           _self.createVideoContainer(video);
         });
 
         YAHOO.util.Dom.addClass(this.addEl, 'cstudio-button-disabled');
         YAHOO.util.Dom.removeClass(this.delEl, 'cstudio-button-disabled');
         this.delEl.disabled = false;
-
       } else {
         if (this.external) {
           this.previewEl.src = value;
@@ -566,26 +614,27 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     this.edited = false;
   },
 
-  getName: function () {
+  getName: function() {
     return 'transcoded-video-picker';
   },
 
-  getSupportedProperties: function () {
+  getSupportedProperties: function() {
     return [
       { label: CMgs.format(langBundle, 'datasource'), name: 'videoManager', type: 'datasource:transcoded-video' },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }
     ];
   },
 
-  getSupportedConstraints: function () {
-    return [
-      { label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }
-    ];
+  getSupportedConstraints: function() {
+    return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   },
 
-  getSupportedPostFixes: function () {
+  getSupportedPostFixes: function() {
     return this.supportedPostFixes;
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-transcoded-video-picker', CStudioForms.Controls.TranscodedVideoPicker);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-forms-controls-transcoded-video-picker',
+  CStudioForms.Controls.TranscodedVideoPicker
+);
