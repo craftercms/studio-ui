@@ -107,7 +107,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
       onClose={onClose}
       open={open}
       fullWidth
-      maxWidth={'sm'}
+      maxWidth='sm'
       className={classes.root}
     >
       {
