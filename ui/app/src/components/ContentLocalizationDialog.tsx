@@ -310,6 +310,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
   };
 
   const onOptionClicked = (option: Option) => {
+    // TODO: Widget menu option clicked
   };
 
   return (
