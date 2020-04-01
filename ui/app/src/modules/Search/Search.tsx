@@ -610,7 +610,12 @@ function Search(props: SearchProps) {
     >
       <header className={classes.searchHeader}>
         <div className={classes.search}>
-          <SearchBar onChange={handleSearchKeyword} keyword={keyword} closeIcon={true}/>
+          <SearchBar
+            onActionButtonClick={() => handleSearchKeyword('')}
+            onChange={handleSearchKeyword}
+            keyword={keyword}
+            showActionButton
+          />
         </div>
         <div className={classes.helperContainer}>
           {

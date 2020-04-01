@@ -1126,12 +1126,11 @@ export default {
   getComponentInstanceHTML,
   getContent,
   getDOM,
-  getBulkUploadUrl,
   getChildrenByPath,
   copyItem,
   cutItem,
   pasteItem,
-  getPages
+  getPages,
   getItem,
   getContentInstanceLookup,
   fetchContentTypes,

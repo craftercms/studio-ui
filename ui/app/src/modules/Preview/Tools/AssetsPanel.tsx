@@ -275,6 +275,7 @@ export default function AssetsPanel() {
         <div ref={elementRef}>
           <div className={classes.search}>
             <SearchBar
+              onActionButtonClick={() => handleSearchKeyword('')}
               onChange={handleSearchKeyword}
               keyword={keyword}
             />

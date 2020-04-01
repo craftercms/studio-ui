@@ -204,6 +204,7 @@ export default function BrowseComponentsPanel() {
       <ErrorBoundary>
         <div className={classes.search}>
           <SearchBar
+            onActionButtonClick={() => handleSearchKeyword('')}
             onChange={handleSearchKeyword}
             keyword={keyword}
             disabled={isFetching}

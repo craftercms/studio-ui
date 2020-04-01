@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Item } from '../../../models/Item';
+import { Item, LegacyItem } from '../../../models/Item';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
@@ -110,7 +110,7 @@ const DialogActions = withStyles((theme: Theme) => ({
 }))(MuiDialogActions);
 
 interface PublishDialogUIProps {
-  items: Item[];
+  items: LegacyItem[];
   publishingChannels: any[];
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
@@ -124,7 +124,7 @@ interface PublishDialogUIProps {
   open: boolean;
   title: string;
   subtitle?: string;
-  checkedItems: Item[];
+  checkedItems: LegacyItem[];
   setCheckedItems: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;

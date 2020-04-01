@@ -806,7 +806,13 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   {
                     (search.searchSelected && site.selectedView === 0) &&
                     <div className={classes.searchContainer}>
-                      <SearchBar onChange={handleOnSearchChange} keyword={search.searchKey} autofocus={true} backgroundColor={backgroundColor}/>
+                      <SearchBar
+                        onActionButtonClick={() => handleOnSearchChange('')}
+                        onChange={handleOnSearchChange}
+                        keyword={search.searchKey}
+                        autofocus={true}
+                        backgroundColor={backgroundColor}
+                      />
                     </div>
                   }
                   {
