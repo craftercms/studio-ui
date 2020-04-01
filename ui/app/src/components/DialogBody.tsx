@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import MuiDialogContent from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { Theme } from '@material-ui/core';
