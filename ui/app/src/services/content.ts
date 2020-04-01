@@ -1058,7 +1058,7 @@ export function deleteItems(siteId: string, user: string, submissionComment: str
       if (response.response.success) {
         return response.response;
       } else {
-        throw response;
+        throw { ...response, code: '', documentationUrl: '', remedialAction: '' }
       }
     })
   );
