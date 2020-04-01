@@ -40,7 +40,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { APIError } from '../../../models/GlobalState';
 import { Resource } from '../../../models/Resource';
 import { Suspencified } from '../../../components/SystemStatus/Suspencified';
-
+import EmptyState from '../../../components/SystemStatus/EmptyState';
 
 const translations = defineMessages({
   headerTitle: {
@@ -62,6 +62,10 @@ const translations = defineMessages({
   nextPage: {
     id: 'pagination.nextPage',
     defaultMessage: 'next page'
+  },
+  emptyMessage: {
+    id: 'historyDialog.emptyMessage',
+    defaultMessage: 'There are no results.'
   }
 });
 
@@ -182,41 +186,49 @@ function FancyFormattedDate(props) {
 
 interface VersionsListProps {
   resource: Resource<LegacyVersion[]>;
+  rowsPerPage: number;
+  page: number;
+  emptyMessage: string;
+
   onOpenMenu(anchorEl: Element, version: LegacyVersion): void;
 }
 
 function VersionsList(props: VersionsListProps) {
   const { formatMessage } = useIntl();
   const classes = versionListStyles({});
-  const { resource, onOpenMenu } = props;
-  const versions = resource.read();
+  const { resource, onOpenMenu, rowsPerPage, page, emptyMessage } = props;
+  const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   return (
-    <List component="div" className={classes.list} disablePadding>
-      {
-        versions.map((version: LegacyVersion, i: number) =>
-          <ListItem key={version.versionNumber} divider={versions.length - 1 !== i} className={classes.listItem}>
-            <ListItemText
-              classes={{ multiline: classes.listItemTextMultiline, primary: classes.listItemTextPrimary }}
-              primary={
-                <>
-                  <FancyFormattedDate date={version.lastModifiedDate}/>
-                  {
-                    (i === 0) &&
-                    <Chip label={formatMessage(translations.current)} className={classes.chip}/>
-                  }
-                </>
-              }
-              secondary={version.comment}
-            />
-            <ListItemSecondaryAction>
-              <IconButton edge="end" onClick={(e) => onOpenMenu(e.currentTarget, version)}>
-                <MoreVertIcon/>
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        )
-      }
-    </List>
+    (versions.length === 0) ? (
+      <EmptyState title={emptyMessage}/>
+    ) : (
+      <List component="div" className={classes.list} disablePadding>
+        {
+          versions.map((version: LegacyVersion, i: number) =>
+            <ListItem key={version.versionNumber} divider={versions.length - 1 !== i} className={classes.listItem}>
+              <ListItemText
+                classes={{ multiline: classes.listItemTextMultiline, primary: classes.listItemTextPrimary }}
+                primary={
+                  <>
+                    <FancyFormattedDate date={version.lastModifiedDate}/>
+                    {
+                      (i === 0) &&
+                      <Chip label={formatMessage(translations.current)} className={classes.chip}/>
+                    }
+                  </>
+                }
+                secondary={version.comment}
+              />
+              <ListItemSecondaryAction>
+                <IconButton edge="end" onClick={(e) => onOpenMenu(e.currentTarget, version)}>
+                  <MoreVertIcon/>
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          )
+        }
+      </List>
+    )
   )
 }
 
@@ -245,10 +257,8 @@ export default function HistoryDialog(props) {
     activeVersion: null
   });
 
-  const [pagination, setPagination] = useSpreadState({
-    limit: null,
-    offset: null
-  });
+  const rowsPerPage = 20;
+  const [page, setPage] = useState(0);
 
   const [data, setData] = useState<{ contentItem: LegacyItem, versions: LegacyVersion[] }>({
     contentItem: null,
@@ -299,9 +309,9 @@ export default function HistoryDialog(props) {
     console.log(section)
   };
 
-  const onPageChanged = (e, next: number) => {
-
-  }
+  const onPageChanged = (nextPage: number) => {
+    setPage(nextPage);
+  };
 
   return (
     <>
@@ -313,7 +323,16 @@ export default function HistoryDialog(props) {
       >
         <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose}/>
         <DialogBody>
-          <Suspencified resource={resource} component={VersionsList} componentProps={{ onOpenMenu: handleOpenMenu }}/>
+          <Suspencified
+            resource={resource}
+            component={VersionsList}
+            componentProps={{
+              onOpenMenu: handleOpenMenu,
+              emptyMessage: formatMessage(translations.emptyMessage),
+              rowsPerPage,
+              page
+            }}
+          />
         </DialogBody>
         {
           data.versions &&
@@ -323,16 +342,16 @@ export default function HistoryDialog(props) {
               classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
               component="div"
               labelRowsPerPage=""
-              count={0}
-              rowsPerPage={20}
-              page={1}
+              count={data.versions.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
               backIconButtonProps={{
                 'aria-label': formatMessage(translations.previousPage)
               }}
               nextIconButtonProps={{
                 'aria-label': formatMessage(translations.nextPage)
               }}
-              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * 20)}
+              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => onPageChanged(nextPage)}
             />
           </DialogFooter>
         }
