@@ -41,6 +41,7 @@ import { APIError } from '../../../models/GlobalState';
 import { Resource } from '../../../models/Resource';
 import { Suspencified } from '../../../components/SystemStatus/Suspencified';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
+import { LookupTable } from '../../../models/LookupTable';
 
 const translations = defineMessages({
   headerTitle: {
@@ -66,6 +67,30 @@ const translations = defineMessages({
   emptyMessage: {
     id: 'historyDialog.emptyMessage',
     defaultMessage: 'There are no results.'
+  },
+  view: {
+    id: 'words.view',
+    defaultMessage: 'View'
+  },
+  compareTo: {
+    id: 'historyDialog.options.compareTo',
+    defaultMessage: 'Compare to...'
+  },
+  compareToCurrent: {
+    id: 'historyDialog.options.compareToCurrent',
+    defaultMessage: 'Compare to current'
+  },
+  compareToPrevious: {
+    id: 'historyDialog.options.compareToPrevious',
+    defaultMessage: 'Compare to previous'
+  },
+  revertToPrevious: {
+    id: 'historyDialog.options.revertToPrevious',
+    defaultMessage: 'Revert to <b>previous</b>'
+  },
+  revertToThisVersion: {
+    id: 'historyDialog.options.revertToThisVersion',
+    defaultMessage: 'Revert to <b>this version</b>'
   }
 });
 
@@ -131,6 +156,9 @@ const historyStyles = makeStyles((theme: Theme) => createStyles({
   dialogFooter: {
     padding: 0
   },
+  menuList: {
+    padding: 0
+  },
   pagination: {
     marginLeft: 'auto',
     background: 'white',
@@ -190,13 +218,13 @@ interface VersionsListProps {
   page: number;
   emptyMessage: string;
 
-  onOpenMenu(anchorEl: Element, version: LegacyVersion): void;
+  handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
 }
 
 function VersionsList(props: VersionsListProps) {
   const { formatMessage } = useIntl();
   const classes = versionListStyles({});
-  const { resource, onOpenMenu, rowsPerPage, page, emptyMessage } = props;
+  const { resource, handleOpenMenu, rowsPerPage, page, emptyMessage } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   return (
     (versions.length === 0) ? (
@@ -212,7 +240,7 @@ function VersionsList(props: VersionsListProps) {
                   <>
                     <FancyFormattedDate date={version.lastModifiedDate}/>
                     {
-                      (i === 0) &&
+                      (i === 0 && page === 0) &&
                       <Chip label={formatMessage(translations.current)} className={classes.chip}/>
                     }
                   </>
@@ -220,7 +248,7 @@ function VersionsList(props: VersionsListProps) {
                 secondary={version.comment}
               />
               <ListItemSecondaryAction>
-                <IconButton edge="end" onClick={(e) => onOpenMenu(e.currentTarget, version)}>
+                <IconButton edge="end" onClick={(e) => handleOpenMenu(e.currentTarget, version, i === 0 && page === 0)}>
                   <MoreVertIcon/>
                 </IconButton>
               </ListItemSecondaryAction>
@@ -232,14 +260,34 @@ function VersionsList(props: VersionsListProps) {
   )
 }
 
-const menuSection = [
-  [
-    {
-      id: 'test',
-      label: translations.test
-    }
-  ]
-];
+const menuOptions: LookupTable<SectionItem> = {
+  view: {
+    id: 'view',
+    label: translations.view
+  },
+  compareTo: {
+    id: 'compareTo',
+    label: translations.compareTo
+  },
+  compareToCurrent: {
+    id: 'compareToCurrent',
+    label: translations.compareToCurrent
+  },
+  compareToPrevious: {
+    id: 'compareToPrevious',
+    label: translations.compareToPrevious
+  },
+  revertToPrevious: {
+    id: 'revertToPrevious',
+    label: translations.revertToPrevious,
+    values: { b: (msg) => <b key={'bold'}>&nbsp;{msg}</b> }
+  },
+  revertToThisVersion: {
+    id: 'revertToThisVersion',
+    label: translations.revertToThisVersion,
+    values: { b: (msg) => <b key={'bold'}>&nbsp;{msg}</b> }
+  }
+};
 
 export default function HistoryDialog(props) {
   const {
@@ -253,6 +301,7 @@ export default function HistoryDialog(props) {
   const classes = historyStyles({});
 
   const [menu, setMenu] = useSpreadState({
+    sections: [],
     anchorEl: null,
     activeVersion: null
   });
@@ -281,9 +330,7 @@ export default function HistoryDialog(props) {
   useEffect(() => {
     getItemVersions(site, path).subscribe(
       (response) => {
-        setTimeout(() => {
-          setData({ contentItem: response.item, versions: response.versions });
-        }, 3000)
+        setData({ contentItem: response.item, versions: response.versions });
       },
       (response) => {
         setError(response);
@@ -291,11 +338,43 @@ export default function HistoryDialog(props) {
     )
   }, [site, path]);
 
-  const handleOpenMenu = useCallback((anchorEl, version) => {
-    setMenu({
-      anchorEl,
-      activeVersion: version
-    })
+  const handleOpenMenu = useCallback((anchorEl, version, isCurrent = false) => {
+    if (isCurrent) {
+      setMenu({
+        sections: [
+          [
+            menuOptions.view
+          ],
+          [
+            menuOptions.compareTo,
+            menuOptions.compareToPrevious
+          ],
+          [
+            menuOptions.revertToPrevious
+          ]
+        ],
+        anchorEl,
+        activeVersion: version
+      })
+    } else {
+      setMenu({
+        sections: [
+          [
+            menuOptions.view
+          ],
+          [
+            menuOptions.compareTo,
+            menuOptions.compareToCurrent,
+            menuOptions.compareToPrevious
+          ],
+          [
+            menuOptions.revertToThisVersion
+          ]
+        ],
+        anchorEl,
+        activeVersion: version
+      })
+    }
   }, [setMenu]);
 
   const handleMenuClose = () => {
@@ -327,7 +406,7 @@ export default function HistoryDialog(props) {
             resource={resource}
             component={VersionsList}
             componentProps={{
-              onOpenMenu: handleOpenMenu,
+              handleOpenMenu,
               emptyMessage: formatMessage(translations.emptyMessage),
               rowsPerPage,
               page
@@ -342,6 +421,7 @@ export default function HistoryDialog(props) {
               classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
               component="div"
               labelRowsPerPage=""
+              rowsPerPageOptions={[20]}
               count={data.versions.length}
               rowsPerPage={rowsPerPage}
               page={page}
@@ -359,8 +439,9 @@ export default function HistoryDialog(props) {
           open={!!menu.anchorEl}
           anchorEl={menu.anchorEl}
           onClose={handleMenuClose}
-          sections={menuSection}
+          sections={menu.sections}
           onMenuItemClicked={handleMenuItemClicked}
+          classes={{menuList: classes.menuList}}
         />
       </Dialog>
     </>
