@@ -32,6 +32,7 @@ import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
 import DevicesIcon from '@material-ui/icons/Devices';
+import SearchIcon from '@material-ui/icons/SearchRounded';
 import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
@@ -89,11 +90,15 @@ const messages = defineMessages({
   },
   preview: {
     id: 'globalMenu.preview',
-    defaultMessage: 'Preview'
+    defaultMessage: 'Preview 2.0'
   },
   legacyPreview: {
     id: 'globalMenu.legacyPreview',
-    defaultMessage: 'Legacy Preview'
+    defaultMessage: 'Preview'
+  },
+  search: {
+    id: 'words.search',
+    defaultMessage: 'Search'
   },
   about: {
     id: 'GlobalMenu.AboutUs',
@@ -213,10 +218,11 @@ const globalNavUrlMapping = {
   'home.globalMenu.globalConfig': '#/globalMenu/global-config',
   'home.globalMenu.cluster': '#/globalMenu/cluster',
   'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool',
-  'preview': '/preview',
+  'preview': '/next/preview',
   'about': '#/about-us',
-  'legacy.preview': '/legacy/preview',
-  'siteConfig': '/site-config'
+  'legacy.preview': '/preview',
+  'siteConfig': '/site-config',
+  'search': '/search'
 };
 
 const siteMenuKeys = {
@@ -316,7 +322,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   }
 
   function onPreviewClick(id: string = crafterSite) {
-    onLinkClick('/preview', id);
+    onLinkClick('/next/preview', id);
   }
 
   function onDashboardClick(id: string = crafterSite) {
@@ -506,6 +512,12 @@ export default function GlobalNav(props: GlobalNavProps) {
                     onClick={onMenuClose}
                   />
                 }
+                <Tile
+                  title={formatMessage(messages.search)}
+                  icon={SearchIcon}
+                  link={getLink('search')}
+                  disabled={!crafterSite}
+                />
               </nav>
             </Grid>
           </Grid>

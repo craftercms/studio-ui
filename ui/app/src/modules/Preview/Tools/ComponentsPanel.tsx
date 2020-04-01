@@ -15,31 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import List from '@material-ui/core/List';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ContentType from '../../../models/ContentType';
-import DeleteRounded from '@material-ui/icons/DeleteRounded';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { getHostToGuestBus } from '../previewContext';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import { palette } from '../../../styles/theme';
-import { Typography } from '@material-ui/core';
-import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTilted';
 import {
   browseSharedInstance,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
-  selectTool,
-  TRASHED
+  selectTool
 } from '../../../state/actions/preview';
-import { usePreviewState, useStateResourceSelection } from '../../../utils/hooks';
+import { useStateResourceSelection } from '../../../utils/hooks';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { EntityState } from '../../../models/GlobalState';
 import { nnou } from '../../../utils/object';
@@ -57,36 +50,13 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) => createStyles({
-  root: {},
-  rubbishBin: {
-    height: 250,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: palette.orange.main,
-    margin: theme.spacing(1),
-    position: 'absolute',
-    left: theme.spacing(1),
-    right: theme.spacing(1),
-    bottom: theme.spacing(1),
-    color: palette.white
-  },
-  rubbishIcon: {
-    width: '100%',
-    height: '50%',
-    color: palette.white
-  },
-  rubbishIconHover: {
-    transform: ''
-  }
+const useStyles = makeStyles(() => createStyles({
+  root: {}
 }));
 
 export default function ComponentsPanel() {
 
   const classes = useStyles({});
-  const { guest } = usePreviewState();
   const resource = useStateResourceSelection<ContentType[], EntityState<ContentType>>(
     state => state.contentTypes,
     {
@@ -118,7 +88,6 @@ export default function ComponentsPanel() {
           <ComponentsPanelUI
             classes={classes}
             componentTypesResource={resource}
-            itemBeingDragged={guest?.itemBeingDragged}
           />
         </React.Suspense>
       </ErrorBoundary>
@@ -129,7 +98,7 @@ export default function ComponentsPanel() {
 
 export function ComponentsPanelUI(props) {
 
-  const { itemBeingDragged, classes, componentTypesResource } = props;
+  const { classes, componentTypesResource } = props;
 
   const contentTypes = componentTypesResource.read();
   const dispatch = useDispatch();
@@ -145,8 +114,6 @@ export function ComponentsPanelUI(props) {
   const onDragStart = (contentType) => hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
-
-  const onTrash = () => hostToGuest$.next({ type: TRASHED });
 
   const onMenuClose = () => setMenuContext(null);
 
@@ -191,69 +158,8 @@ export function ComponentsPanelUI(props) {
         <MenuItem onClick={onListReceptaclesClick}>List receptacles</MenuItem>
       </Menu>
 
-      <RubbishBin
-        in={itemBeingDragged}
-        onTrash={onTrash}
-      />
-
     </>
   );
 
 }
 
-function RubbishBin(props: any) {
-  const classes = useStyles({});
-  const [over, setOver] = useState(false);
-  const [trashed, setTrashed] = useState(false);
-  useEffect(() => {
-    if (props.in) {
-      setOver(false);
-      setTrashed(false);
-    }
-  }, [props.in]);
-  return (
-    <Grow in={props.in}>
-      <Paper
-        elevation={2}
-        className={classes.rubbishBin}
-        onDragOver={(e) => {
-          e.preventDefault();
-        }}
-        onDragEnter={(e) => {
-          e.preventDefault();
-          setOver(true);
-        }}
-        onDragLeave={(e) => {
-          e.preventDefault();
-          setOver(false);
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          setTrashed(true);
-          props.onTrash?.();
-        }}
-      >
-        {
-          (over)
-            ? <DeleteRoundedTilted className={classes.rubbishIcon}/>
-            : <DeleteRounded className={classes.rubbishIcon}/>
-        }
-        <Typography variant="caption">
-          {
-            (trashed) ? (
-              <FormattedMessage
-                id="ice.rubbishBin.itemTrashed"
-                defaultMessage="Trashed!"
-              />
-            ) : (
-              <FormattedMessage
-                id="ice.rubbishBin.dropToTrash"
-                defaultMessage="Drop Here To Trash"
-              />
-            )
-          }
-        </Typography>
-      </Paper>
-    </Grow>
-  );
-}

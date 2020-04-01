@@ -206,7 +206,7 @@ export default function AssetsPanel() {
         () => {
         },
         () => {
-          dispatch(fetchAssetsPanelItems());
+          dispatch(fetchAssetsPanelItems({}));
         },
       );
     };
