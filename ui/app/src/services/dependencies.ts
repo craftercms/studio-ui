@@ -17,7 +17,7 @@
  *
  */
 
-import { get, postJSON } from '../utils/ajax';
+import { catchApi1Error, get, postJSON } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 
 export function fetchDependencies(siteId: string, items: any) {
@@ -35,7 +35,8 @@ export function getSimpleDependencies(siteId: string, path: string) {
       } else {
         return response;
       }
-    })
+    }),
+    catchApi1Error
   );
 }
 
@@ -50,11 +51,14 @@ export function getDependant(siteId: string, path: string) {
       } else {
         return response;
       }
-    })
+    }),
+    catchApi1Error
   );
 }
 
 
 export default {
-  fetchDependencies
+  fetchDependencies,
+  getSimpleDependencies,
+  getDependant
 }
