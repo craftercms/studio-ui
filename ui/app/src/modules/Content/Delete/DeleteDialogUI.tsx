@@ -105,7 +105,6 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
   return (
     <Dialog
       onClose={onClose}
-      aria-labelledby="simple-dialog-title"
       open={open}
       fullWidth
       maxWidth={'sm'}
