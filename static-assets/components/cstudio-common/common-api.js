@@ -869,24 +869,23 @@ var nodeOpen = false,
         }).then((done) => (unmount = done.unmount));
       },
 
-      viewDependencies: function(site, items, approveType, defaultSelection) {
+      viewDependencies: function (site, items, approveType, defaultSelection) {
+        const container = ($('<div class="delete-dialog-container"/>').appendTo('body'))[0];
         //defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
+        const dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on';
 
-        var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on';
-
-        CSA.Operations._showDialogueView(
+        CrafterCMSNext.render(
+          container,
+          'DependenciesDialog',
           {
-            fn: CSA.Service.getDependenciesView,
-            controller: 'viewcontroller-dependencies',
-            callback: function(dialogue) {
-              CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
-              this.loadItems(items, dependenciesSelection);
+            item: items[0],
+            dependenciesSelection,
+            onClose: () => {
+              unmount({ delay: 300, removeContainer: true });
             }
-          },
-          true,
-          '800px',
-          approveType
-        );
+          }
+        ).then(done => unmount = done.unmount);
+
       },
 
       submitContent: function(site, items) {
