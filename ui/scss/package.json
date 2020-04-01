@@ -1,5 +1,5 @@
 {
-  "name": "studio-scss",
+  "name": "@craftercms/studio-ui-styles",
   "version": "1.0.0",
   "description": "SASS for studio",
   "private": true,

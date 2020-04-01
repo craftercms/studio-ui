@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "workspaces": [
+    "ui/app",
+    "ui/guest",
+    "ui/legacy",
+    "ui/scss"
+  ]
+}

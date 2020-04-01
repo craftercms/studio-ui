@@ -1,5 +1,5 @@
 {
-  "name": "guest",
+  "name": "@craftercms/studio-guest",
   "version": "0.1.0",
   "private": true,
   "main": "dist/craftercms-guest.cjs.js",
