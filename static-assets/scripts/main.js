@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function (angular) {
+(function(angular) {
   'use strict';
 
   var app = angular.module('studio', [
@@ -31,8 +31,7 @@
     'ngSanitize'
   ]);
 
-  let
-    i18n = CrafterCMSNext.i18n,
+  let i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
     globalConfigMessages = i18n.messages.globalConfigMessages,
@@ -41,75 +40,76 @@
     globalMenuMessages = i18n.messages.globalMenuMessages;
 
   app.run([
-    '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
-    function ($rootScope, $state, $stateParams, authService, sitesService, Constants, $http, $cookies, $location) {
-
+    '$rootScope',
+    '$state',
+    '$stateParams',
+    'authService',
+    'sitesService',
+    'Constants',
+    '$http',
+    '$cookies',
+    '$location',
+    function($rootScope, $state, $stateParams, authService, sitesService, Constants, $http, $cookies, $location) {
       $rootScope.$state = $state;
       $rootScope.$stateParams = $stateParams;
 
       $rootScope.imagesDirectory = Constants.PATH_IMG;
 
-      $rootScope.$on('$stateChangeStart', function (event, toState) {
-
+      $rootScope.$on('$stateChangeStart', function(event, toState) {
         // No need to re-check session if heading to the login page
         // 1. Is "public"
         // 2. Is where people authenticate
         if (toState.name !== 'login') {
-          authService.validateSession()
-            .then(
-              function (response) {
-                if (response.data && response.data.active) {
-                  var user = authService.getUser() || {};
-                  if (user.authenticationType === Constants.HEADERS) {
-                    $state.go('home.globalMenu');
-                  }
-                } else {
-                  authService.removeUser();
-                  if (toState.name.indexOf('login')) {
-                    if (toState.name.indexOf('reset') === -1) {
-                      event.preventDefault();
-                      $state.go('login');
-                    }
-                  }
+          authService.validateSession().then(function(response) {
+            if (response.data && response.data.active) {
+              var user = authService.getUser() || {};
+              if (user.authenticationType === Constants.HEADERS) {
+                $state.go('home.globalMenu');
+              }
+            } else {
+              authService.removeUser();
+              if (toState.name.indexOf('login')) {
+                if (toState.name.indexOf('reset') === -1) {
+                  event.preventDefault();
+                  $state.go('login');
                 }
               }
-            );
+            }
+          });
         }
 
         if (toState.name.indexOf('users') !== -1) {
-
           var user = authService.getUser();
 
           if (user && user.username) {
             var createSitePermissions = false;
-            sitesService.getPermissions('', '/', user.username || user)
-              .success(function (data) {
-                for (var i = 0; i < data.permissions.length; i++) {
-                  if (data.permissions[i] == 'create-site') {
-                    createSitePermissions = true;
-                  }
+            sitesService.getPermissions('', '/', user.username || user).success(function(data) {
+              for (var i = 0; i < data.permissions.length; i++) {
+                if (data.permissions[i] == 'create-site') {
+                  createSitePermissions = true;
                 }
+              }
 
-                if (!createSitePermissions) {
-                  $state.go('home.globalMenu');
-                }
-              });
+              if (!createSitePermissions) {
+                $state.go('home.globalMenu');
+              }
+            });
           }
-
         }
 
         function setDocTitle(globalMenuData, toState) {
           let docTitle;
 
           // check if state is a globalMenu Item
-          const globalMenuItem = globalMenuData.find(o => o.id === toState.name);
+          const globalMenuItem = globalMenuData.find((o) => o.id === toState.name);
 
           // if globalMenuItem exists => check if globalMenuMessages has the id, or use the label as docTitle
           if (globalMenuItem) {
             docTitle = globalMenuMessages[globalMenuItem.id]
               ? `${formatMessage(globalMenuMessages[globalMenuItem.id])} - Crafter CMS`
               : `${globalMenuItem.label} - Crafter CMS`;
-          } else {  // if not a globalMenuItem, use state id, if not in globalMenuMessages => just 'Crafter CMS'
+          } else {
+            // if not a globalMenuItem, use state id, if not in globalMenuMessages => just 'Crafter CMS'
             docTitle = globalMenuMessages[toState.name]
               ? `${formatMessage(globalMenuMessages[toState.name])} - Crafter CMS`
               : 'Crafter CMS';
@@ -121,11 +121,10 @@
         if ($rootScope.globalMenuData) {
           setDocTitle($rootScope.globalMenuData, toState);
         } else {
-          sitesService.getGlobalMenu()
-            .success(function (data) {
-              $rootScope.globalMenuData = data.menuItems;
-              setDocTitle(data.menuItems, toState);
-            });
+          sitesService.getGlobalMenu().success(function(data) {
+            $rootScope.globalMenuData = data.menuItems;
+            setDocTitle(data.menuItems, toState);
+          });
         }
       });
 
@@ -134,10 +133,11 @@
   ]);
 
   app.config([
-    '$stateProvider', '$urlRouterProvider', '$translateProvider',
-    function ($stateProvider, $urlRouterProvider, $translateProvider) {
-      $urlRouterProvider
-        .otherwise('/globalMenu');
+    '$stateProvider',
+    '$urlRouterProvider',
+    '$translateProvider',
+    function($stateProvider, $urlRouterProvider, $translateProvider) {
+      $urlRouterProvider.otherwise('/globalMenu');
 
       $stateProvider
         .state('home', {
@@ -339,9 +339,10 @@
         .state('login', {
           url: '/login',
           onEnter: [
-            '$rootScope', '$state', '$uibModal',
-            function ($rootScope, $state, $uibModal) {
-
+            '$rootScope',
+            '$state',
+            '$uibModal',
+            function($rootScope, $state, $uibModal) {
               $rootScope.loginModal = $uibModal.open({
                 templateUrl: '/studio/static-assets/ng-views/login.html',
                 controller: 'LoginCtrl',
@@ -350,16 +351,15 @@
                 size: 'sm'
               });
 
-              $rootScope.loginModal.result.finally(function () {
+              $rootScope.loginModal.result.finally(function() {
                 CrafterCMSNext.util.auth.setRequestForgeryToken();
                 $rootScope.loginModal = null;
               });
-
             }
           ],
           onExit: [
             '$rootScope',
-            function ($rootScope) {
+            function($rootScope) {
               if ($rootScope.loginModal) {
                 $rootScope.loginModal.close();
               }
@@ -369,9 +369,10 @@
         .state('login.recover', {
           url: '/recover',
           onEnter: [
-            '$rootScope', '$state', '$uibModal',
-            function ($rootScope, $state, $uibModal) {
-
+            '$rootScope',
+            '$state',
+            '$uibModal',
+            function($rootScope, $state, $uibModal) {
               $rootScope.recoverModal = $uibModal.open({
                 templateUrl: '/studio/static-assets/ng-views/recover.html',
                 controller: 'RecoverCtrl',
@@ -380,16 +381,15 @@
                 size: 'sm'
               });
 
-              $rootScope.recoverModal.result.finally(function () {
+              $rootScope.recoverModal.result.finally(function() {
                 $rootScope.recoverModal = null;
                 // $state.go('login');
               });
-
             }
           ],
           onExit: [
             '$rootScope',
-            function ($rootScope) {
+            function($rootScope) {
               if ($rootScope.recoverModal) {
                 $rootScope.recoverModal.close();
               }
@@ -399,9 +399,10 @@
         .state('home.reset', {
           url: 'reset-password',
           onEnter: [
-            '$rootScope', '$state', '$uibModal',
-            function ($rootScope, $state, $uibModal) {
-
+            '$rootScope',
+            '$state',
+            '$uibModal',
+            function($rootScope, $state, $uibModal) {
               $rootScope.resetModal = $uibModal.open({
                 templateUrl: '/studio/static-assets/ng-views/reset-password.html',
                 controller: 'ResetCtrl',
@@ -414,7 +415,7 @@
           ],
           onExit: [
             '$rootScope',
-            function ($rootScope) {
+            function($rootScope) {
               if ($rootScope.resetModal) {
                 $rootScope.resetModal.close();
               }
@@ -438,7 +439,6 @@
         prefix: '/studio/static-assets/scripts/resources/locale-',
         suffix: '.json'
       });
-
     }
   ]);
 
@@ -460,9 +460,12 @@
   });
 
   app.service('authService', [
-    '$rootScope', '$http', '$document', 'Constants', '$cookies',
-    function ($rootScope, $http, $document, Constants, $cookies) {
-
+    '$rootScope',
+    '$http',
+    '$document',
+    'Constants',
+    '$cookies',
+    function($rootScope, $http, $document, Constants, $cookies) {
       var user = null;
       var script = $document[0].getElementById('user');
       let unmountAuthMonitor;
@@ -476,12 +479,12 @@
         authLoop();
       }
 
-      this.isAuthenticated = function () {
+      this.isAuthenticated = function() {
         return !!user;
       };
 
-      this.login = function (data) {
-        return $http.post(security('login'), data).then(function (data) {
+      this.login = function(data) {
+        return $http.post(security('login'), data).then(function(data) {
           if (data.status == 200) {
             user = data.data;
             authLoop();
@@ -491,61 +494,59 @@
         });
       };
 
-      this.logout = function () {
+      this.logout = function() {
         return $http.post(security('logout'), null).then(() => {
           unmountAuthMonitor && unmountAuthMonitor();
           user = null;
         });
       };
 
-      this.getSSOLogoutInfo = function () {
+      this.getSSOLogoutInfo = function() {
         return $http.get(userActions('/me/logout/sso/url'));
       };
 
-      this.getUser = function () {
+      this.getUser = function() {
         return user;
       };
 
-      this.getCurrentUserData = function (action) {
+      this.getCurrentUserData = function(action) {
         if (this.getUser()) {
           return $http.get(userActions('/' + action));
         }
       };
 
-      this.removeUser = function () {
+      this.removeUser = function() {};
 
-      };
-
-      this.getStudioInfo = function () {
+      this.getStudioInfo = function() {
         return $http.get(api2('version', Constants.MONITORING_PATH));
       };
 
-      this.forgotPassword = function (username) {
+      this.forgotPassword = function(username) {
         return $http.get(userActions('/forgot_password'), {
           params: { username: username }
         });
       };
 
-      this.recoverPassword = function (data) {
+      this.recoverPassword = function(data) {
         return $http.post(userActions(user + '/reset_password'), data);
       };
 
-      this.setPassword = function (data) {
+      this.setPassword = function(data) {
         return $http.post(userActions('/set_password'), data);
       };
 
-      this.changePassword = function (data) {
+      this.changePassword = function(data) {
         var requestData = { username: data.username, current: data.current, new: data.new };
         return $http.post(userActions('/me/change_password'), requestData);
       };
 
-      this.validateToken = function (data) {
+      this.validateToken = function(data) {
         return $http.get(api('validate-token'), {
           params: { token: data.token }
         });
       };
 
-      this.validateSession = function () {
+      this.validateSession = function() {
         return $http.get(security('validate-session'));
       };
 
@@ -578,7 +579,6 @@
         } else {
           return Constants.SERVICE2 + 'users';
         }
-
       }
 
       function authLoop() {
@@ -593,93 +593,111 @@
       }
 
       return this;
-
     }
   ]);
 
   app.service('sitesService', [
-    '$rootScope', '$http', 'Constants', '$cookies', '$timeout', '$window', '$translate',
-    function ($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
-
+    '$rootScope',
+    '$http',
+    'Constants',
+    '$cookies',
+    '$timeout',
+    '$window',
+    '$translate',
+    function($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
       var me = this;
 
-      this.getSites = function (params) {
+      this.getSites = function(params) {
         return $http.get(api('get-per-user'), {
           params: params
         });
       };
 
-      this.getSite = function (id) {
+      this.getSite = function(id) {
         return $http.get(json('get-site'), {
           params: { siteId: id }
         });
       };
 
-      this.getSitesPerUser = function (id, params) {
+      this.getSitesPerUser = function(id, params) {
         return $http.get(userActions(id + '/sites'), {
           params: params
         });
       };
 
-      this.setCookie = function (cookieGenName, value) {
+      this.setCookie = function(cookieGenName, value) {
         CrafterCMSNext.util.auth.setSiteCookie(cookieGenName, value);
       };
 
-      this.editSite = function (site) {
+      this.editSite = function(site) {
         me.setCookie('crafterSite', site.siteId);
-        $timeout(function () {
-          $window.location.href = '/studio/preview';
-        }, 0, false);
+        $timeout(
+          function() {
+            $window.location.href = '/studio/preview';
+          },
+          0,
+          false
+        );
       };
 
-      this.goToDashboard = function (site) {
+      this.goToDashboard = function(site) {
         me.setCookie('crafterSite', site.siteId);
-        $timeout(function () {
-          $window.location.href = '/studio/site-dashboard';
-        }, 0, false);
+        $timeout(
+          function() {
+            $window.location.href = '/studio/site-dashboard';
+          },
+          0,
+          false
+        );
       };
 
-      this.create = function (site) {
+      this.create = function(site) {
         return $http.post(api('create'), site);
       };
 
-      this.exists = function (site) {
+      this.exists = function(site) {
         return $http.get(api('exists'), {
           params: { site: site.site }
         });
       };
 
-      this.removeSite = function (site) {
+      this.removeSite = function(site) {
         return $http.post(api('delete-site'), {
           siteId: site.siteId
         });
       };
 
-      this.getAvailableBlueprints = function () {
+      this.getAvailableBlueprints = function() {
         return $http.get(sitesApi('available_blueprints'));
       };
 
-      this.getPermissions = function (siteId, path, user) {
+      this.getPermissions = function(siteId, path, user) {
         return $http.get(security('get-user-permissions'), {
           params: { site: siteId, path: path, user: user }
         });
       };
 
-      this.getAvailableLanguages = function () {
+      this.getAvailableLanguages = function() {
         return $http.get(server('get-available-languages'));
       };
 
-      this.getDocumentCookie = function (name) {
+      this.getDocumentCookie = function(name) {
         var value = '; ' + document.cookie;
         var parts = value.split('; ' + name + '=');
-        if (parts.length == 2) return parts.pop().split(';').shift();
+        if (parts.length == 2)
+          return parts
+            .pop()
+            .split(';')
+            .shift();
       };
 
-      this.getLanguages = function (scope, setLang) {
+      this.getLanguages = function(scope, setLang) {
         var me = this;
         this.getAvailableLanguages()
-          .success(function (data) {
-            var userCookieLang = scope.user ? localStorage.getItem(scope.user.username + '_crafterStudioLanguage') : null,
+          .success(function(data) {
+            var userCookieLang = scope.user
+                ? localStorage.getItem(scope.user.username + '_crafterStudioLanguage')
+                : null,
               cookieLang = userCookieLang ? userCookieLang : localStorage.getItem('crafterStudioLanguage');
 
             if (cookieLang) {
@@ -699,28 +717,26 @@
               $translate.use(cookieLang);
             }
           })
-          .error(function () {
+          .error(function() {
             scope.languagesAvailable = [];
           });
-
-
       };
 
-      this.showLoaderProperty = function () {
+      this.showLoaderProperty = function() {
         var showLoader = false;
 
         return {
-          getProperty: function () {
+          getProperty: function() {
             return showLoader;
           },
-          setProperty: function (value) {
+          setProperty: function(value) {
             showLoader = value;
             $rootScope.$broadcast(Constants.SHOW_LOADER, value);
           }
         };
       };
 
-      this.getGlobalMenu = function () {
+      this.getGlobalMenu = function() {
         return $http.get(uiApi('global_menu'));
       };
 
@@ -757,70 +773,52 @@
       }
 
       return this;
-
     }
   ]);
 
   app.service('passwordRequirements', [
-    '$rootScope', '$http', 'Constants', '$cookies', '$timeout', '$window', '$translate',
-    function ($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
-
-      var
-        me = this,
+    '$rootScope',
+    '$http',
+    'Constants',
+    '$cookies',
+    '$timeout',
+    '$window',
+    '$translate',
+    function($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
+      var me = this,
         generalRegExp = passwordRequirementsRegex, // Global declared in entry.ftl, comes from FTL context.
         generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ''),
         captureGroups = generalRegExp.match(/\(\?<.*?>.*?\)/g);
 
-      const allowedChars = (
-        generalRegExp.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) ||
-        ['', '', '']
-      )[2];
+      const allowedChars = (generalRegExp.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) || ['', '', ''])[2];
 
-      const min = (
-        (
-          (
-            generalRegExp.match(/\(\?<minLength>(.*){(.*?)}\)/) ||
-            ['']
-          )[0].match(/{(.*?)}/) ||
-          ['', '']
-        )
-      )[1].split(',')[0];
+      const min = ((generalRegExp.match(/\(\?<minLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
+        '',
+        ''
+      ])[1].split(',')[0];
 
-      const max = (
-        (
-          (
-            generalRegExp.match(/\(\?<maxLength>(.*){(.*?)}\)/) ||
-            ['']
-          )[0].match(/{(.*?)}/) ||
-          ['', '']
-        )
-      )[1].split(',')[1];
+      const max = ((generalRegExp.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
+        '',
+        ''
+      ])[1].split(',')[1];
 
-      const minLength = (
-        (
-          (
-            generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) ||
-            ['']
-          )[0].match(/{(.*?)}/) ||
-          ['', '']
-        )
-      )[1].split(',')[0];
+      const minLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
+        '',
+        ''
+      ])[1].split(',')[0];
 
-      const maxLength = (
-        (
-          (
-            generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) ||
-            ['']
-          )[0].match(/{(.*?)}/) ||
-          ['', '']
-        )
-      )[1].split(',')[1];
+      const maxLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
+        '',
+        ''
+      ])[1].split(',')[1];
 
       const messages = {
         hasNumbers: formatMessage(passwordRequirementMessages.hasNumbers),
         hasLowercase: formatMessage(passwordRequirementMessages.hasLowercase),
         hasUppercase: formatMessage(passwordRequirementMessages.hasUppercase),
-        hasSpecialChars: formatMessage(passwordRequirementMessages.hasSpecialChars, { chars: (allowedChars ? `(${allowedChars})` : '') }),
+        hasSpecialChars: formatMessage(passwordRequirementMessages.hasSpecialChars, {
+          chars: allowedChars ? `(${allowedChars})` : ''
+        }),
         noSpaces: formatMessage(passwordRequirementMessages.noSpaces),
         minLength: formatMessage(passwordRequirementMessages.minLength, { min }),
         maxLength: formatMessage(passwordRequirementMessages.maxLength, { max }),
@@ -830,11 +828,11 @@
         invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
       };
 
-      this.init = function (scope, isValid, elt, placement) {
+      this.init = function(scope, isValid, elt, placement) {
         if (generalRegExp) {
           try {
             let isRegExpValid = new RegExp(generalRegExp);
-            if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
+            if (isRegExpValid && captureGroups && captureGroups.length > 0) {
               this.runValidation(scope, isValid, elt, 'groupsSupported', placement);
             } else {
               this.runValidation(scope, isValid, elt, 'noGroups', placement);
@@ -842,7 +840,7 @@
           } catch (error) {
             try {
               let isRegExpValid = new RegExp(generalRegExpWithoutGroups);
-              if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
+              if (isRegExpValid && captureGroups && captureGroups.length > 0) {
                 this.runValidation(scope, isValid, elt, 'groupsNotSupported', placement);
               } else {
                 this.runValidation(scope, isValid, elt, 'noGroups', placement);
@@ -854,7 +852,7 @@
         }
       };
 
-      this.creatingPassValHTML = function (content, templateType) {
+      this.creatingPassValHTML = function(content, templateType) {
         var html = '<div class="password-popover">';
         var validPass = false;
         var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpWithoutGroups) : false;
@@ -864,7 +862,7 @@
           } else {
             html += '<ul class="password-popover--list" >';
           }
-          captureGroups.forEach(captureGroup => {
+          captureGroups.forEach((captureGroup) => {
             let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
             let captureGroupNameClean = captureGroupName[0].replace(/\?<|>/g, '');
             html += '<li class="password-popover--list--item">';
@@ -882,35 +880,44 @@
                 validPass = true;
               }
             }
-            html += `<span class="password-popover--list-Info">${messages[captureGroupNameClean] || captureGroupNameClean}</span>`;
+            html += `<span class="password-popover--list-Info">${messages[captureGroupNameClean] ||
+              captureGroupNameClean}</span>`;
             html += '</li>';
           });
           html += '</ul>';
         }
         if (templateType === 'groupsNotSupported' || templateType === 'noGroups') {
           if (isGeneralRegExpWithoutGroupsValid) {
-            html += '<p class="password-popover--result password-popover--green"><span class="password-popover--list-icon fa fa-check-circle"></span>' + messages.validPassword + '</p>';
+            html +=
+              '<p class="password-popover--result password-popover--green"><span class="password-popover--list-icon fa fa-check-circle"></span>' +
+              messages.validPassword +
+              '</p>';
           } else {
-            html += '<p class="password-popover--result password-popover--red"><span class="password-popover--list-icon fa fa-times-circle"></span>' + messages.invalidPassword + '</p>';
+            html +=
+              '<p class="password-popover--result password-popover--red"><span class="password-popover--list-icon fa fa-times-circle"></span>' +
+              messages.invalidPassword +
+              '</p>';
             validPass = true;
           }
         }
         html += '</div>';
-        return { 'template': html, 'validPass': validPass };
+        return { template: html, validPass: validPass };
       };
 
-      this.runValidation = function (scope, isValid, elt, staticTemplate, placement) {
+      this.runValidation = function(scope, isValid, elt, staticTemplate, placement) {
         $('#' + elt)
-          .blur(function () {
+          .blur(function() {
             $(this).popover('destroy');
           })
-          .keyup(function () {
+          .keyup(function() {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
-            $('.popover').find('.popover-content').html(creatingPassValHTML.template);
+            $('.popover')
+              .find('.popover-content')
+              .html(creatingPassValHTML.template);
             scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           })
-          .focus(function () {
+          .focus(function() {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
             $(this).popover({
               title: messages.passwordValidation,
@@ -926,14 +933,40 @@
       };
 
       return this;
-
     }
   ]);
 
   app.controller('AppCtrl', [
-    '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements', '$element',
-    function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements, $element) {
-
+    '$rootScope',
+    '$scope',
+    '$state',
+    'authService',
+    'Constants',
+    'sitesService',
+    '$cookies',
+    '$uibModal',
+    '$translate',
+    '$timeout',
+    '$location',
+    '$window',
+    'passwordRequirements',
+    '$element',
+    function(
+      $rootScope,
+      $scope,
+      $state,
+      authService,
+      Constants,
+      sitesService,
+      $cookies,
+      $uibModal,
+      $translate,
+      $timeout,
+      $location,
+      $window,
+      passwordRequirements,
+      $element
+    ) {
       $scope.langSelected = '';
       $scope.modalInstance = '';
       $scope.authenticated = authService.isAuthenticated();
@@ -953,10 +986,10 @@
         unSavedConfirmation: formatMessage(profileSettingsMessages.unSavedConfirmation),
         unSavedConfirmationTitle: formatMessage(profileSettingsMessages.unSavedConfirmationTitle),
         yes: formatMessage(words.yes),
-        no: formatMessage(words.no),
+        no: formatMessage(words.no)
       };
 
-      $scope.showModal = function (template, size, verticalCentered, styleClass) {
+      $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
           windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
@@ -968,7 +1001,7 @@
 
         return modalInstance;
       };
-      $scope.hideModal = function () {
+      $scope.hideModal = function() {
         $scope.confirmationModal.close();
       };
 
@@ -978,13 +1011,10 @@
 
       const container = document.querySelector('#toolbarGlobalNav');
       CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-      CrafterCMSNext.render(
-        container,
-        'ToolbarGlobalNav', {
-          authHeaders: Constants.AUTH_HEADERS,
-          authSaml: Constants.SAML
-        }
-      );
+      CrafterCMSNext.render(container, 'ToolbarGlobalNav', {
+        authHeaders: Constants.AUTH_HEADERS,
+        authSaml: Constants.SAML
+      });
 
       if (authService.getUser()) {
         authService.getCurrentUserData('me').then(
@@ -995,17 +1025,16 @@
               response.data.authenticatedUser.authenticationType === Constants.SAML
             );
             if (!$scope.showLogoutLink) {
-              authService.getSSOLogoutInfo()
-                .success(function (data) {
-                  var result = data.logoutUrl ? true : false;
-                  if (result) {
-                    $scope.showLogoutLink = true;
-                    $scope.logoutInfo.url = data.logoutUrl;
-                  }
-                });
+              authService.getSSOLogoutInfo().success(function(data) {
+                var result = data.logoutUrl ? true : false;
+                if (result) {
+                  $scope.showLogoutLink = true;
+                  $scope.logoutInfo.url = data.logoutUrl;
+                }
+              });
             }
-          }, function errorCallback(response) {
-          }
+          },
+          function errorCallback(response) {}
         );
       }
 
@@ -1026,8 +1055,8 @@
         $translate.use($scope.langSelected);
 
         if ($scope.data.new == $scope.data.confirmation) {
-          authService.changePassword($scope.data)
-            .then(function (data) {
+          authService.changePassword($scope.data).then(
+            function(data) {
               $scope.error = $scope.message = null;
 
               if (data.type === 'error') {
@@ -1046,26 +1075,33 @@
                   keyboard: false,
                   size: 'sm'
                 });
-                $timeout(function () {
-                  $rootScope.modalInstance.close();
-                  $scope.data = {};
-                  logout();
-                }, 1500, false);
-
+                $timeout(
+                  function() {
+                    $rootScope.modalInstance.close();
+                    $scope.data = {};
+                    logout();
+                  },
+                  1500,
+                  false
+                );
               }
-            }, function (error) {
+            },
+            function(error) {
               var errorResponse = error.data.response;
               $('#current').focus();
 
               if (errorResponse.code === 6003) {
-                $scope.error = $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') + '. ' +
+                $scope.error =
+                  $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') +
+                  '. ' +
                   $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL');
               } else {
                 $scope.error = errorResponse.message + '. ' + errorResponse.remedialAction;
               }
-            });
+            }
+          );
         } else {
-          $scope.error = 'Passwords don\'t match.';
+          $scope.error = "Passwords don't match.";
         }
       }
 
@@ -1073,12 +1109,12 @@
 
       sitesService.getLanguages($scope);
 
-      $scope.selectActionLanguage = function (optSelected) {
+      $scope.selectActionLanguage = function(optSelected) {
         $scope.isModified = true;
         $scope.langSelected = optSelected;
       };
 
-      $scope.setLangCookie = function () {
+      $scope.setLangCookie = function() {
         try {
           $translate.use($scope.langSelected);
           // set max-age of language cookie to one year
@@ -1087,7 +1123,7 @@
           localStorage.setItem($scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
           $scope.isModified = false;
 
-          let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
+          let loginSuccess = new CustomEvent('setlocale', { detail: $scope.langSelected });
           document.dispatchEvent(loginSuccess);
 
           $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
@@ -1102,11 +1138,11 @@
         }
       };
 
-      $scope.cancel = function () {
+      $scope.cancel = function() {
         $rootScope.modalInstance.close();
       };
 
-      $scope.loadHomeState = function () {
+      $scope.loadHomeState = function() {
         var currentState = $state.current.name,
           homeState = 'home.globalMenu';
 
@@ -1116,45 +1152,45 @@
         } else {
           $state.go('home.globalMenu');
         }
-
       };
 
       $scope.user = authService.getUser();
 
       if ($scope.user && $scope.user.username) {
-        sitesService.getPermissions('', '/', $scope.user.username || $scope.user)
-          .success(function (data) {
-            for (var i = 0; i < data.permissions.length; i++) {
-              if (data.permissions[i] == 'create-site') {
-                $scope.createSites = true;
-              }
+        sitesService.getPermissions('', '/', $scope.user.username || $scope.user).success(function(data) {
+          for (var i = 0; i < data.permissions.length; i++) {
+            if (data.permissions[i] == 'create-site') {
+              $scope.createSites = true;
             }
-          });
+          }
+        });
       }
 
-      $scope.data = { email: ($scope.user || { 'email': '' }).email };
+      $scope.data = { email: ($scope.user || { email: '' }).email };
       $scope.error = null;
 
       $scope.logout = logout;
       $scope.changePassword = changePassword;
 
-      $scope.$on(Constants.AUTH_SUCCESS, function ($event, user) {
+      $scope.$on(Constants.AUTH_SUCCESS, function($event, user) {
         $scope.user = user;
         $scope.data.email = $scope.user.email;
       });
 
       if (authService.getUser()) {
-        authService.getStudioInfo().then(function (response) {
+        authService.getStudioInfo().then(function(response) {
           const packageVersion = response.data.version.packageVersion;
           const simpleVersion = packageVersion.substr(0, 3);
           $scope.aboutStudio = response.data.version;
           $scope.versionNumber = `${packageVersion}-${response.data.version.packageBuild.substring(0, 6)}`;
           $scope.simpleVersion = simpleVersion;
           $scope.helpUrl = `https://docs.craftercms.org/en/${simpleVersion}/index.html`;
-          $scope.attributionHTML = CrafterCMSNext.i18n.intl.formatMessage(
-            CrafterCMSNext.i18n.messages.ossAttribution.attribution,
-            { a: msg => `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>` }
-          ).join('');
+          $scope.attributionHTML = CrafterCMSNext.i18n.intl
+            .formatMessage(CrafterCMSNext.i18n.messages.ossAttribution.attribution, {
+              a: (msg) =>
+                `<a href="https://docs.craftercms.org/en/${simpleVersion}/acknowledgements/index.html" target="_blank">${msg}</a>`
+            })
+            .join('');
         });
       }
 
@@ -1163,7 +1199,13 @@
         isOpera = window.navigator.userAgent.indexOf('OPR') > -1,
         isIEedge = window.navigator.userAgent.indexOf('Edge') > -1;
 
-      if (isChromium !== null && isChromium !== undefined && vendorName === 'Google Inc.' && isOpera == false && isIEedge == false) {
+      if (
+        isChromium !== null &&
+        isChromium !== undefined &&
+        vendorName === 'Google Inc.' &&
+        isOpera == false &&
+        isIEedge == false
+      ) {
         isChromium = true;
       } else {
         isChromium = false;
@@ -1175,7 +1217,7 @@
         $scope.ieWarning = true;
       }
 
-      $scope.spinnerOverlay = function () {
+      $scope.spinnerOverlay = function() {
         return $uibModal.open({
           templateUrl: 'spinnerModal.html',
           backdrop: 'static',
@@ -1185,15 +1227,15 @@
         });
       };
       $scope.validPass = false;
-      $scope.passwordRequirements = function () {
+      $scope.passwordRequirements = function() {
         passwordRequirements.init($scope, 'validPass', 'password', 'top');
       };
 
-      $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams, options) {
+      $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options) {
         if ($scope.isModified) {
           event.preventDefault();
 
-          $scope.confirmationAction = function () {
+          $scope.confirmationAction = function() {
             $scope.isModified = false;
             $state.go(toState.name);
           };
@@ -1201,26 +1243,29 @@
           $scope.confirmationText = $scope.messages.unSavedConfirmation;
           $scope.confirmationTitle = $scope.messages.unSavedConfirmationTitle;
           $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
-
         }
       });
-
     }
   ]);
 
   app.controller('GlobalMenuCtrl', [
-    '$rootScope', '$scope', '$state', '$location', 'sitesService', '$window',
-    function ($rootScope, $scope, $state, $location, sitesService, $window) {
-
+    '$rootScope',
+    '$scope',
+    '$state',
+    '$location',
+    'sitesService',
+    '$window',
+    function($rootScope, $scope, $state, $location, sitesService, $window) {
       if ($rootScope.globalMenuData) {
         initGlobalMenu($rootScope.globalMenuData);
       } else {
-        sitesService.getGlobalMenu()
-          .success(function (data) {
+        sitesService
+          .getGlobalMenu()
+          .success(function(data) {
             $rootScope.globalMenuData = data.menuItems;
             initGlobalMenu(data.menuItems);
           })
-          .error(function (er) {
+          .error(function(er) {
             console.log(er);
           });
       }
@@ -1229,12 +1274,8 @@
         i18n = CrafterCMSNext.i18n;
         formatMessage = i18n.intl.formatMessage;
         globalMenuMessages = i18n.messages.globalMenuMessages;
-        $scope.entities.forEach(function (entry, i) {
-          entry.label = (
-            globalMenuMessages[entry.id]
-              ? formatMessage(globalMenuMessages[entry.id])
-              : entry.label
-          );
+        $scope.entities.forEach(function(entry, i) {
+          entry.label = globalMenuMessages[entry.id] ? formatMessage(globalMenuMessages[entry.id]) : entry.label;
         });
       }
 
@@ -1246,19 +1287,16 @@
         globalMenuMessages = i18n.messages.globalMenuMessages;
 
         if ($scope.entities.length > 1) {
-          let defaultView = $scope.entities[0].id;  // default view (first)
+          let defaultView = $scope.entities[0].id; // default view (first)
           const currentView = $state.current.name;
 
-          $scope.entities.forEach(function (entry, i) {
-            const label = (
-              globalMenuMessages[entry.id]
-                ? formatMessage(globalMenuMessages[entry.id])
-                : entry.label
-            );
+          $scope.entities.forEach(function(entry, i) {
+            const label = globalMenuMessages[entry.id] ? formatMessage(globalMenuMessages[entry.id]) : entry.label;
 
             entry.label = label;
 
-            if (currentView === entry.id) {   // if current view is an entry of globalMenu -> set as default view
+            if (currentView === entry.id) {
+              // if current view is an entry of globalMenu -> set as default view
               defaultView = entry.id;
             }
           });
@@ -1271,18 +1309,28 @@
         }
       }
 
-      document.addEventListener('setlocale', () => {
-        setLabels();
-      }, false);
+      document.addEventListener(
+        'setlocale',
+        () => {
+          setLabels();
+        },
+        false
+      );
     }
-
   ]);
 
   app.controller('SitesCtrl', [
-    '$scope', '$state', '$location', 'sitesService', 'authService', '$uibModal', '$cookies', '$timeout', 'Constants',
+    '$scope',
+    '$state',
+    '$location',
+    'sitesService',
+    'authService',
+    '$uibModal',
+    '$cookies',
+    '$timeout',
+    'Constants',
 
-    function ($scope, $state, $location, sitesService, authService, $uibModal, $cookies, $timeout, Constants) {
-
+    function($scope, $state, $location, sitesService, authService, $uibModal, $cookies, $timeout, Constants) {
       $scope.sites = null;
 
       $scope.editSite = sitesService.editSite;
@@ -1297,31 +1345,34 @@
 
       $scope.showLoader = sitesService.showLoaderProperty().getProperty();
 
-      $scope.$on(Constants.SHOW_LOADER, function ($event, showLoader) {
+      $scope.$on(Constants.SHOW_LOADER, function($event, showLoader) {
         $scope.showLoader = showLoader;
       });
 
       $scope.sitesPag = {
-        sitesPerPage: $cookies.get('crafterStudioSitesPagination') ? parseInt($cookies.get('crafterStudioSitesPagination'), 10) : 15
+        sitesPerPage: $cookies.get('crafterStudioSitesPagination')
+          ? parseInt($cookies.get('crafterStudioSitesPagination'), 10)
+          : 15
       };
 
       $scope.totalSites = 0;
       $scope.defaultDelay = 500;
 
-      $scope.pageChanged = function (newPage) {
+      $scope.pageChanged = function(newPage) {
         getResultsPage(newPage);
         sitesService.setCookie('crafterStudioSitesPagination', $scope.sitesPag.sitesPerPage);
       };
 
       function getSites(params) {
-        sitesService.getSitesPerUser('me', params)
-          .success(function (data) {
+        sitesService
+          .getSitesPerUser('me', params)
+          .success(function(data) {
             $scope.totalSites = data.total ? data.total : null;
             $scope.sites = data.sites;
             isRemove();
             createSitePermission();
           })
-          .error(function () {
+          .error(function() {
             $scope.sites = null;
           });
       }
@@ -1331,7 +1382,6 @@
       };
 
       function getResultsPage(pageNumber) {
-
         if (authService.getUser()) {
           var params = {};
 
@@ -1347,13 +1397,11 @@
 
           getSites(params);
         }
-
       }
 
       getResultsPage(1);
 
-      $scope.removeSiteSites = function (site) {
-
+      $scope.removeSiteSites = function(site) {
         var modalInstance = $uibModal.open({
           templateUrl: 'removeConfirmation.html',
           controller: 'RemoveSiteCtrl',
@@ -1361,16 +1409,15 @@
           keyboard: true,
           windowClass: 'studioMedium',
           resolve: {
-            siteToRemove: function () {
+            siteToRemove: function() {
               return site;
             }
           }
         });
 
-        modalInstance.result.then(function () {
+        modalInstance.result.then(function() {
           getResultsPage(1);
         });
-
       };
 
       function addingRemoveProperty(siteId) {
@@ -1382,16 +1429,16 @@
       }
 
       function removePermissionPerSite(siteId) {
-        sitesService.getPermissions(siteId, '/', $scope.user.username || $scope.user)
-          .success(function (data) {
+        sitesService
+          .getPermissions(siteId, '/', $scope.user.username || $scope.user)
+          .success(function(data) {
             for (var i = 0; i < data.permissions.length; i++) {
               if (data.permissions[i] == 'delete') {
                 addingRemoveProperty(siteId);
               }
             }
           })
-          .error(function () {
-          });
+          .error(function() {});
       }
 
       function isRemove() {
@@ -1401,30 +1448,26 @@
       }
 
       function createSitePermission() {
-        sitesService.getPermissions('', '/', $scope.user.username || $scope.user)
-          .success(function (data) {
+        sitesService
+          .getPermissions('', '/', $scope.user.username || $scope.user)
+          .success(function(data) {
             for (var i = 0; i < data.permissions.length; i++) {
               if (data.permissions[i] == 'create-site') {
                 $scope.createSites = true;
               }
             }
           })
-          .error(function () {
-          });
+          .error(function() {});
       }
 
-      $scope.createSitesDialog = function () {
+      $scope.createSitesDialog = function() {
         const container = document.getElementsByClassName('create-site-dialog-container')[0];
         const onClose = () => {
           CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
         };
-        CrafterCMSNext.render(
-          container,
-          'CreateSiteDialog',
-          {
-            onClose: onClose
-          }
-        );
+        CrafterCMSNext.render(container, 'CreateSiteDialog', {
+          onClose: onClose
+        });
       };
 
       if ($scope.siteValidation) {
@@ -1437,16 +1480,18 @@
           scope: $scope
         });
       }
-
-
     }
-
   ]);
 
   app.controller('GlobalConfigCtrl', [
-    '$rootScope', '$scope', '$element', '$http', '$timeout', '$uibModal', '$state',
-    function ($rootScope, $scope, $element, $http, $timeout, $uibModal, $state) {
-
+    '$rootScope',
+    '$scope',
+    '$element',
+    '$http',
+    '$timeout',
+    '$uibModal',
+    '$state',
+    function($rootScope, $scope, $element, $http, $timeout, $uibModal, $state) {
       $scope.globalConfig = {};
       let globalConfig = $scope.globalConfig;
       $scope.messages = {
@@ -1472,7 +1517,7 @@
       let defaultValue = '';
       let sampleValue = '';
 
-      $scope.showModal = function (template, size, verticalCentered, styleClass) {
+      $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
           windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
@@ -1484,7 +1529,7 @@
 
         return modalInstance;
       };
-      $scope.hideModal = function () {
+      $scope.hideModal = function() {
         $scope.confirmationModal.close();
       };
 
@@ -1494,93 +1539,100 @@
         readOnly: true,
         value: defaultValue,
         mode: 'ace/mode/yaml',
-        theme: 'ace/theme/textmate',
+        theme: 'ace/theme/textmate'
       });
 
-      aceEditor.getSession().on('change', function () {
+      aceEditor.getSession().on('change', function() {
         globalConfig.isModified = true;
       });
 
-      $http.get('/studio/api/2/configuration/get_configuration', {
-        params: {
-          'siteId': 'studio_root',
-          'module': 'studio',
-          'path': '/configuration/studio-config-override.yaml'
-        }
-      }).then((data) => {
-        aceEditor.setValue((data.data.content || defaultValue), -1);  // sets cursor in position 0, avoiding all editor content selection
-        aceEditor.focus();
-        defaultValue = data.data.content;
-        globalConfig.isModified = false;
-        enableUI(true);
-      });
+      $http
+        .get('/studio/api/2/configuration/get_configuration', {
+          params: {
+            siteId: 'studio_root',
+            module: 'studio',
+            path: '/configuration/studio-config-override.yaml'
+          }
+        })
+        .then((data) => {
+          aceEditor.setValue(data.data.content || defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
+          aceEditor.focus();
+          defaultValue = data.data.content;
+          globalConfig.isModified = false;
+          enableUI(true);
+        });
 
       // Differ the loading of the sample config file to the "background"
       // Loading the value from this higher order controller allows caching,
       // avoiding fetching it multiple times on every sample modal open.
       setTimeout(() => {
-        $http.get('/studio/api/1/services/api/1/content/get-content-at-path.bin', {
-          params: {
-            site: 'studio_root',
-            path: '/configuration/samples/sample-studio-config-override.yaml'
-          }
-        }).then((content) => {
-          sampleValue = content.data;
-        });
+        $http
+          .get('/studio/api/1/services/api/1/content/get-content-at-path.bin', {
+            params: {
+              site: 'studio_root',
+              path: '/configuration/samples/sample-studio-config-override.yaml'
+            }
+          })
+          .then((content) => {
+            sampleValue = content.data;
+          });
       });
 
-      $scope.save = function () {
+      $scope.save = function() {
         enableUI(false);
         const value = aceEditor.getValue();
-        $http.post('/studio/api/2/configuration/write_configuration', {
-          'siteId': 'studio_root',
-          'module': 'studio',
-          'path': '/configuration/studio-config-override.yaml',
-          'content': value
-        }).then(() => {
-          enableUI(true);
-          defaultValue = value;
-          aceEditor.focus();
-          $element.notify(formatMessage(globalConfigMessages.successfulSave), {
-            position: 'top left',
-            className: 'success'
+        $http
+          .post('/studio/api/2/configuration/write_configuration', {
+            siteId: 'studio_root',
+            module: 'studio',
+            path: '/configuration/studio-config-override.yaml',
+            content: value
+          })
+          .then(() => {
+            enableUI(true);
+            defaultValue = value;
+            aceEditor.focus();
+            $element.notify(formatMessage(globalConfigMessages.successfulSave), {
+              position: 'top left',
+              className: 'success'
+            });
+            globalConfig.isModified = false;
+          })
+          .catch(() => {
+            $element.notify(formatMessage(globalConfigMessages.failedSave), {
+              position: 'top left',
+              className: 'error'
+            });
           });
-          globalConfig.isModified = false;
-        }).catch(() => {
-          $element.notify(formatMessage(globalConfigMessages.failedSave), {
-            position: 'top left',
-            className: 'error'
-          });
-        });
       };
 
-      $scope.reset = function () {
-        aceEditor.setValue(defaultValue, -1);   // sets cursor in position 0, avoiding all editor content selection
+      $scope.reset = function() {
+        aceEditor.setValue(defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
         aceEditor.focus();
         aceEditor.gotoLine(0, 0, true);
         globalConfig.isModified = false;
       };
 
-      $scope.sample = function () {
-        $uibModal.open({
-          ariaLabelledBy: 'modal-title',
-          ariaDescribedBy: 'modal-body',
-          templateUrl: 'sampleModal.html',
-          controller: 'SampleGlobalConfigCtrl',
-          scope: $scope,
-          controllerAs: '$ctrl',
-          size: 'lg',
-          resolve: { sample: () => sampleValue }
-        }).result.then(function ({ mode, sample }) {
-          const value = aceEditor.getValue();
-          aceEditor.setValue(
-            (mode === 'replace')
-              ? sample
-              : `${value}${(value.trim() === '') ? '' : '\n\n'}${sample}`,
-            -1
-          );
-          aceEditor.focus();
-        });
+      $scope.sample = function() {
+        $uibModal
+          .open({
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'sampleModal.html',
+            controller: 'SampleGlobalConfigCtrl',
+            scope: $scope,
+            controllerAs: '$ctrl',
+            size: 'lg',
+            resolve: { sample: () => sampleValue }
+          })
+          .result.then(function({ mode, sample }) {
+            const value = aceEditor.getValue();
+            aceEditor.setValue(
+              mode === 'replace' ? sample : `${value}${value.trim() === '' ? '' : '\n\n'}${sample}`,
+              -1
+            );
+            aceEditor.focus();
+          });
       };
 
       function enableUI(enable = true, digest = false) {
@@ -1589,11 +1641,11 @@
         digest && $scope.$apply();
       }
 
-      $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams, options) {
+      $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options) {
         if (globalConfig.isModified) {
           event.preventDefault();
 
-          $scope.confirmationAction = function () {
+          $scope.confirmationAction = function() {
             globalConfig.isModified = false;
             $state.go(toState.name);
           };
@@ -1601,16 +1653,14 @@
           $scope.confirmationText = formatMessage(globalConfigMessages.unSavedConfirmation);
           $scope.confirmationTitle = formatMessage(globalConfigMessages.unSavedConfirmationTitle);
           $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, 'studioMedium');
-
         }
       });
-
     }
   ]);
 
   app.controller('EncryptionToolCtrl', [
     '$scope',
-    function ($scope) {
+    function($scope) {
       const workarea = document.querySelector('#encryption-tool-view');
       const el = document.createElement('div');
 
@@ -1621,8 +1671,7 @@
     }
   ]);
 
-  app.controller('SampleGlobalConfigCtrl', function ($uibModalInstance, sample) {
-
+  app.controller('SampleGlobalConfigCtrl', function($uibModalInstance, sample) {
     let editor;
     let $ctrl = this;
 
@@ -1636,80 +1685,85 @@
       });
     });
 
-    $ctrl.use = function (mode) {
+    $ctrl.use = function(mode) {
       $uibModalInstance.close({ mode, sample });
     };
-    $ctrl.cancel = function () {
+    $ctrl.cancel = function() {
       $uibModalInstance.dismiss('cancel');
     };
-
   });
 
   app.controller('RemoveSiteCtrl', [
-    '$scope', '$state', 'sitesService', '$modalInstance', 'siteToRemove',
-    function ($scope, $state, sitesService, $modalInstance, siteToRemove) {
-
+    '$scope',
+    '$state',
+    'sitesService',
+    '$modalInstance',
+    'siteToRemove',
+    function($scope, $state, sitesService, $modalInstance, siteToRemove) {
       $scope.siteToRemove = siteToRemove.siteId;
       $scope.confirmationSubmitDisabled = false;
 
       function removeSiteSitesModal(site) {
-
-        sitesService.removeSite(site)
-          .success(function (data) {
+        sitesService
+          .removeSite(site)
+          .success(function(data) {
             $modalInstance.close();
             sitesService.showLoaderProperty().setProperty(false);
           })
-          .error(function () {
+          .error(function() {
             //$scope.sites = null;
           });
-
       }
 
-      $scope.ok = function () {
+      $scope.ok = function() {
         sitesService.showLoaderProperty().setProperty(true);
         $scope.confirmationSubmitDisabled = true;
         removeSiteSitesModal(siteToRemove);
       };
 
-      $scope.cancel = function () {
+      $scope.cancel = function() {
         $scope.confirmationSubmitDisabled = false;
         $modalInstance.dismiss('cancel');
       };
-
     }
-
   ]);
 
   app.controller('ErrorSiteCtrl', [
-    '$scope', '$state', 'sitesService', '$modalInstance',
-    function ($scope, $state, sitesService, $modalInstance) {
-
-      $scope.cancel = function () {
+    '$scope',
+    '$state',
+    'sitesService',
+    '$modalInstance',
+    function($scope, $state, sitesService, $modalInstance) {
+      $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
       };
-
     }
-
   ]);
 
   app.controller('ErrorCreateSiteCtrl', [
-    '$scope', '$state', 'sitesService', '$modalInstance', 'errorToShow',
-    function ($scope, $state, sitesService, $modalInstance, errorToShow) {
-
+    '$scope',
+    '$state',
+    'sitesService',
+    '$modalInstance',
+    'errorToShow',
+    function($scope, $state, sitesService, $modalInstance, errorToShow) {
       $scope.error = errorToShow;
 
-      $scope.cancel = function () {
+      $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
       };
-
     }
-
   ]);
 
   app.controller('SiteCtrl', [
-    '$scope', '$state', 'sitesService', '$timeout', '$window', '$uibModal', '$translate',
-    function ($scope, $state, sitesService, $timeout, $window, $uibModal, $translate) {
-
+    '$scope',
+    '$state',
+    'sitesService',
+    '$timeout',
+    '$window',
+    '$uibModal',
+    '$translate',
+    function($scope, $state, sitesService, $timeout, $window, $uibModal, $translate) {
       // View models
       $scope.site = {};
       $scope.blueprints = [];
@@ -1720,18 +1774,21 @@
       $scope.isRemoteGit = false;
 
       function getBlueprints() {
-        sitesService.getAvailableBlueprints().success(function (data) {
-          $scope.blueprints = data;
-          $scope.site = {
-            siteId: '',
-            siteName: '',
-            description: '',
-            blueprint: $scope.blueprints[0],
-            search: 'ElasticSearch'
-          };
-        }).error(function () {
-          $scope.blueprints = [];
-        });
+        sitesService
+          .getAvailableBlueprints()
+          .success(function(data) {
+            $scope.blueprints = data;
+            $scope.site = {
+              siteId: '',
+              siteName: '',
+              description: '',
+              blueprint: $scope.blueprints[0],
+              search: 'ElasticSearch'
+            };
+          })
+          .error(function() {
+            $scope.blueprints = [];
+          });
       }
 
       getBlueprints();
@@ -1755,8 +1812,8 @@
       }
 
       function percent(data) {
-        (!data) && (data = {});
-        return Math.ceil((data.used * 100) / (data.total));
+        !data && (data = {});
+        return Math.ceil((data.used * 100) / data.total);
       }
 
       function select($event) {
@@ -1764,24 +1821,17 @@
       }
 
       function getSite() {
-
         var siteId = $state.params.siteId;
 
         if (!$scope.sites) {
           return;
         }
 
-        for (var i = 0,
-               sites = $scope.sites,
-               site = sites[i],
-               l = sites.length;
-             i < l;
-             site = sites[++i]) {
-          if ((site.siteId + '') === (siteId + '')) {
+        for (var i = 0, sites = $scope.sites, site = sites[i], l = sites.length; i < l; site = sites[++i]) {
+          if (site.siteId + '' === siteId + '') {
             $scope.site = site;
             break;
           }
-
         }
       }
 
@@ -1796,12 +1846,13 @@
           } else {
             $scope.isNumValid = false;
           }
-          sitesService.exists({
-            site: $scope.site.siteId
-          }).success(function (data) {
-            $scope.isValid = data.exists;
-
-          });
+          sitesService
+            .exists({
+              site: $scope.site.siteId
+            })
+            .success(function(data) {
+              $scope.isValid = data.exists;
+            });
         } else {
           $scope.isNumValid = false;
         }
@@ -1876,19 +1927,22 @@
               params.remote_private_key = $scope.site.push_key;
             }
           }
-
         }
         params.create_option = $scope.site.push_site ? 'push' : 'clone';
 
-        sitesService.create(params)
-          .success(function (data) {
-            $timeout(function () {
-              sitesService.editSite($scope.site);
-              $scope.createModalInstance.close();
-            }, 0, false);
+        sitesService
+          .create(params)
+          .success(function(data) {
+            $timeout(
+              function() {
+                sitesService.editSite($scope.site);
+                $scope.createModalInstance.close();
+              },
+              0,
+              false
+            );
           })
-          .error(function (data, error) {
-
+          .error(function(data, error) {
             if (error == 401) {
               $state.go('login');
               $scope.createModalInstance.close();
@@ -1902,7 +1956,7 @@
                 size: 'md',
                 controller: 'ErrorCreateSiteCtrl',
                 resolve: {
-                  errorToShow: function () {
+                  errorToShow: function() {
                     return $scope.error;
                   }
                 }
@@ -1945,7 +1999,7 @@
       ];
 
       //Functions
-      $scope.gotoStep = function (newStep, isPreviosBtn) {
+      $scope.gotoStep = function(newStep, isPreviosBtn) {
         for (var i = 0; i <= $scope.previousStep.length; i++) {
           if ($scope.previousStep[i] >= newStep) {
             $scope.previousStep.splice(i, 1);
@@ -1957,13 +2011,13 @@
         }
         $scope.currentStep = newStep;
         if (newStep == 2) {
-          $timeout(function () {
+          $timeout(function() {
             $('#siteId')[0].focus();
           });
         }
       };
 
-      $scope.getStepTemplate = function () {
+      $scope.getStepTemplate = function() {
         for (var i = 0; i < $scope.steps.length; i++) {
           if ($scope.currentStep == $scope.steps[i].step) {
             return $scope.steps[i].template;
@@ -1971,22 +2025,24 @@
         }
       };
 
-      $scope.gotoPreviousStep = function () {
+      $scope.gotoPreviousStep = function() {
         var previousStep = $scope.previousStep.slice(-1);
         $scope.previousStep.pop();
         $scope.gotoStep(previousStep, true);
       };
 
-      $scope.removeHide = function () {
-
-        $timeout(function () {
-          $('#wizard-content-container').removeClass('hide');
-        }, 300, false);
-
+      $scope.removeHide = function() {
+        $timeout(
+          function() {
+            $('#wizard-content-container').removeClass('hide');
+          },
+          300,
+          false
+        );
       };
 
-      $scope.flexSilderInit = function (flexslider, carousel) {
-        $timeout(function () {
+      $scope.flexSilderInit = function(flexslider, carousel) {
+        $timeout(function() {
           $('#' + flexslider).flexslider({
             animation: 'slide',
             controlNav: true
@@ -1994,12 +2050,12 @@
         });
       };
 
-      $scope.cancelCreateDialog = function (eve) {
+      $scope.cancelCreateDialog = function(eve) {
         $(document).off('keyup');
         $scope.adminModal.close();
       };
 
-      $(document).on('keyup', function (evt) {
+      $(document).on('keyup', function(evt) {
         if (evt.which == 13) {
           var isRemoteGit = $scope.isRemoteGit ? 'remoteGit' : 'BPAvailable',
             elt = $scope.getStepTemplate() + '-' + isRemoteGit + '-key';
@@ -2012,21 +2068,27 @@
       });
 
       // END NEW Create Site
-
     }
   ]);
 
   app.controller('LoginCtrl', [
-    '$rootScope', '$scope', '$state', 'authService', '$timeout', '$cookies', 'sitesService', '$translate', 'Constants',
-    function ($rootScope, $scope, $state, authService, $timeout, $cookies, sitesService, $translate, Constants) {
-
+    '$rootScope',
+    '$scope',
+    '$state',
+    'authService',
+    '$timeout',
+    '$cookies',
+    'sitesService',
+    '$translate',
+    'Constants',
+    function($rootScope, $scope, $state, authService, $timeout, $cookies, sitesService, $translate, Constants) {
       var credentials = {};
       $scope.credentials = credentials;
       $scope.langSelected = '';
       $rootScope.isFooter = false;
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
 
-      $scope.userInputChange = function () {
+      $scope.userInputChange = function() {
         var lang = localStorage.getItem(credentials.username + '_crafterStudioLanguage');
 
         if (lang) {
@@ -2036,35 +2098,32 @@
       };
 
       function login() {
-
-        authService.login(credentials)
-          .then(
-            function success(data) {
-              if (data.type === 'failure') {
-                $scope.error = data;
-              } else if (data.error) {
-                $scope.error = data.error;
-              } else {
-                // set selected language in localStorage
-                let userCookie = data.username + '_crafterStudioLanguage';
-                localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-                localStorage.setItem('userName', data.username);
-                localStorage.setItem(userCookie, $scope.langSelected);
-                let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
-                document.dispatchEvent(loginSuccess);
-                window.location.href = window.location.href.replace('#/login', '');
-              }
-            },
-            function error(response) {
-              $scope.error = {};
-              if (response.status == 401) {
-                $scope.error.message = $translate.instant('dashboard.login.USER_PASSWORD_INVALID');
-              } else {
-                $scope.error.message = $translate.instant('dashboard.login.LOGIN_ERROR');
-              }
+        authService.login(credentials).then(
+          function success(data) {
+            if (data.type === 'failure') {
+              $scope.error = data;
+            } else if (data.error) {
+              $scope.error = data.error;
+            } else {
+              // set selected language in localStorage
+              let userCookie = data.username + '_crafterStudioLanguage';
+              localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
+              localStorage.setItem('userName', data.username);
+              localStorage.setItem(userCookie, $scope.langSelected);
+              let loginSuccess = new CustomEvent('setlocale', { detail: $scope.langSelected });
+              document.dispatchEvent(loginSuccess);
+              window.location.href = window.location.href.replace('#/login', '');
             }
-          );
-
+          },
+          function error(response) {
+            $scope.error = {};
+            if (response.status == 401) {
+              $scope.error.message = $translate.instant('dashboard.login.USER_PASSWORD_INVALID');
+            } else {
+              $scope.error.message = $translate.instant('dashboard.login.LOGIN_ERROR');
+            }
+          }
+        );
       }
 
       function getModalEl() {
@@ -2099,7 +2158,7 @@
 
       $scope.login = login;
 
-      $scope.$on('$stateChangeSuccess', function () {
+      $scope.$on('$stateChangeSuccess', function() {
         if ($state.current.name === 'login') {
           showModal();
         } else if ($state.current.name === 'login.recover') {
@@ -2107,7 +2166,7 @@
         }
       });
 
-      $scope.$on('$viewContentLoaded', function () {
+      $scope.$on('$viewContentLoaded', function() {
         if ($state.current.name === 'login.recover') {
           $timeout(hideModal, 50);
         }
@@ -2119,117 +2178,133 @@
 
       sitesService.getLanguages($scope);
 
-      $scope.selectAction = function (optSelected) {
+      $scope.selectAction = function(optSelected) {
         $scope.langSelected = optSelected;
         $translate.use($scope.langSelected);
       };
-
     }
   ]);
 
   app.controller('RecoverCtrl', [
-    '$scope', '$state', 'authService', '$translate',
-    function ($scope, $state, authService, $translate) {
-
-      var credentials = $scope.credentials = {};
+    '$scope',
+    '$state',
+    'authService',
+    '$translate',
+    function($scope, $state, authService, $translate) {
+      var credentials = ($scope.credentials = {});
 
       $scope.forgotPassword = function recover() {
-
         //disable submit button and add spinner
         $scope.recoverProcessing = true;
 
-        authService.forgotPassword(credentials.username).success(function (data) {
-          if (data.response.message === 'OK') {
-            $scope.successMessage = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
-            $scope.recoverSuccess = true;
-          }
+        authService
+          .forgotPassword(credentials.username)
+          .success(function(data) {
+            if (data.response.message === 'OK') {
+              $scope.successMessage = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
+              $scope.recoverSuccess = true;
+            }
 
-          $scope.recoverProcessing = false;
-        }).error(function (error, status) {
-          if (status == 500) {
-            var errorMessage = error.message + ' - ' + $translate.instant('dashboard.login.RECOVER_ERROR');
-            $scope.error = errorMessage;
-          } else {
-            $scope.error = error.message;
-          }
+            $scope.recoverProcessing = false;
+          })
+          .error(function(error, status) {
+            if (status == 500) {
+              var errorMessage = error.message + ' - ' + $translate.instant('dashboard.login.RECOVER_ERROR');
+              $scope.error = errorMessage;
+            } else {
+              $scope.error = error.message;
+            }
 
-          $scope.recoverProcessing = false;
-        });
+            $scope.recoverProcessing = false;
+          });
       };
-
     }
   ]);
 
   app.controller('ResetCtrl', [
-    '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants', 'passwordRequirements',
-    function ($scope, $state, $location, authService, $timeout, $translate, Constants, passwordRequirements) {
-
+    '$scope',
+    '$state',
+    '$location',
+    'authService',
+    '$timeout',
+    '$translate',
+    'Constants',
+    'passwordRequirements',
+    function($scope, $state, $location, authService, $timeout, $translate, Constants, passwordRequirements) {
       var successDelay = 2500;
       $scope.user = {};
       $scope.passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
       $scope.validPass = false;
       $scope.messages = {
-        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
+        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage)
       };
 
-      $scope.passwordRequirements = function () {
+      $scope.passwordRequirements = function() {
         passwordRequirements.init($scope, 'validPass', 'password', 'top');
       };
 
-      authService.validateToken({
-        'token': $location.search().token,
-      }).then(function (data) {
-        $scope.validToken = true;
+      authService
+        .validateToken({
+          token: $location.search().token
+        })
+        .then(
+          function(data) {
+            $scope.validToken = true;
 
-        $scope.setPassword = function () {
-          authService.setPassword({
-            'token': $location.search().token,
-            'new': $scope.user.password
-          }).success(function (data) {
-            $scope.error = null;
-            $scope.successMessage = $translate.instant('dashboard.login.PASSWORD_UPDATED');
+            $scope.setPassword = function() {
+              authService
+                .setPassword({
+                  token: $location.search().token,
+                  new: $scope.user.password
+                })
+                .success(function(data) {
+                  $scope.error = null;
+                  $scope.successMessage = $translate.instant('dashboard.login.PASSWORD_UPDATED');
 
-            $timeout(function () {
-              $state.go('login');
-            }, successDelay);
-          }).error(function (error) {
-            if (error.response.code === 6003) {
-              $scope.error = $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') + '. ' +
-                $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL');
-            } else {
-              $scope.error = error.reponse.message + '. ' + error.response.remedialAction;
-            }
-          });
-        };
-      }, function (error) {
-        $scope.validToken = false;
-        //console.log(error.message);
-      });
-
+                  $timeout(function() {
+                    $state.go('login');
+                  }, successDelay);
+                })
+                .error(function(error) {
+                  if (error.response.code === 6003) {
+                    $scope.error =
+                      $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') +
+                      '. ' +
+                      $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL');
+                  } else {
+                    $scope.error = error.reponse.message + '. ' + error.response.remedialAction;
+                  }
+                });
+            };
+          },
+          function(error) {
+            $scope.validToken = false;
+            //console.log(error.message);
+          }
+        );
     }
   ]);
 
   app.controller('PreviewCtrl', [
-    '$scope', '$state', '$window', '$sce',
-    function ($scope, $state, $window, $sce) {
-
+    '$scope',
+    '$state',
+    '$window',
+    '$sce',
+    function($scope, $state, $window, $sce) {
       function getIFrame(getContentWindow) {
         var el = $window.document.getElementById('studioIFrame');
-        return (getContentWindow) ? el.contentWindow : el;
+        return getContentWindow ? el.contentWindow : el;
       }
 
       function sendMessage() {
-
         var message = data.message;
         var popup = getIFrame(true);
 
         popup.postMessage(message, url);
-
       }
 
       function receiveMessage(event) {
-
         // checking this here is not secure anyway and origin needs to be dynamic, not hardcoded
         //if (event.origin !== 'http://HOST:PORT') {
         //    return;
@@ -2238,10 +2313,9 @@
         //var frame = event.source;
         //var message = event.data;
 
-        $scope.$apply(function () {
+        $scope.$apply(function() {
           $scope.status = event.data;
         });
-
       }
 
       function reloadIFrame() {
@@ -2259,34 +2333,32 @@
       $scope.reloadIFrame = reloadIFrame;
 
       $window.addEventListener('message', receiveMessage, false);
-
     }
   ]);
 
-  app.directive('compareTo', function () {
+  app.directive('compareTo', function() {
     return {
       require: 'ngModel',
       scope: {
         otherModelValue: '=compareTo'
       },
-      link: function (scope, element, attributes, ngModel) {
-
-        ngModel.$validators.compareTo = function (modelValue) {
+      link: function(scope, element, attributes, ngModel) {
+        ngModel.$validators.compareTo = function(modelValue) {
           return modelValue == scope.otherModelValue;
         };
 
-        scope.$watch('otherModelValue', function () {
+        scope.$watch('otherModelValue', function() {
           ngModel.$validate();
         });
       }
     };
   });
 
-  app.directive('onlyDigits', function () {
+  app.directive('onlyDigits', function() {
     return {
       require: 'ngModel',
       restrict: 'A',
-      link: function (scope, element, attr, ctrl) {
+      link: function(scope, element, attr, ctrl) {
         function inputValue(val) {
           if (val) {
             if (!val.replace) {
@@ -2308,12 +2380,12 @@
     };
   });
 
-  app.directive('focusMe', function ($timeout) {
+  app.directive('focusMe', function($timeout) {
     return {
-      link: function (scope, element, attr) {
-        attr.$observe('focusMe', function (value) {
+      link: function(scope, element, attr) {
+        attr.$observe('focusMe', function(value) {
           if (value === 'true') {
-            $timeout(function () {
+            $timeout(function() {
               element[0].focus();
             });
           }
@@ -2322,19 +2394,19 @@
     };
   });
 
-  app.filter('nospace', function () {
-    return function (value) {
-      return (!value) ? '' : value.replace(/ /g, '');
+  app.filter('nospace', function() {
+    return function(value) {
+      return !value ? '' : value.replace(/ /g, '');
     };
   });
 
-  app.directive('stResetSearch', function () {
+  app.directive('stResetSearch', function() {
     return {
       restrict: 'EA',
       require: '^stTable',
-      link: function (scope, element, attrs, ctrl) {
-        return element.bind('click', function () {
-          return scope.$evalAsync(function () {
+      link: function(scope, element, attrs, ctrl) {
+        return element.bind('click', function() {
+          return scope.$evalAsync(function() {
             var tableState;
             tableState = ctrl.tableState();
             tableState.search.predicateObject = {};
@@ -2346,5 +2418,4 @@
       }
     };
   });
-
 })(angular);

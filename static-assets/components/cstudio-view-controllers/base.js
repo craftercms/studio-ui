@@ -20,8 +20,7 @@
  * @author: Roy Art
  * @date: 03.01.2011
  **/
-(function(CStudioAuthoring, undefined){
-
+(function(CStudioAuthoring, undefined) {
   var Base,
     CustomEvent = YAHOO.util.CustomEvent,
     Event = YAHOO.util.Event,
@@ -33,9 +32,9 @@
    * ViewController.Base holds common view controller methods.
    * @constructor
    */
-  CStudioAuthoring.register("ViewController.Base", function() {
-    this.initialisedEvt = new CustomEvent("view.controller.initialised");
-    this.endEvt = new CustomEvent("view.controller.end");
+  CStudioAuthoring.register('ViewController.Base', function() {
+    this.initialisedEvt = new CustomEvent('view.controller.initialised');
+    this.endEvt = new CustomEvent('view.controller.end');
     this.init.apply(this, arguments);
   });
 
@@ -48,7 +47,6 @@
      * @param cfg {Object} Configuration attributes for the instance
      */
     init: function(cfg) {
-
       this._initDefaultConfig();
       cfg && this.cfg.applyConfig(cfg, true);
 
@@ -57,7 +55,7 @@
       this._initActions();
 
       this.initialise && this.initialise.apply(this, arguments);
-      this.fire("initialised");
+      this.fire('initialised');
 
       return this;
     },
@@ -65,9 +63,9 @@
      * Initialises the Config Object of the instance
      */
     _initDefaultConfig: function() {
-      var cfg = this.cfg = new Config(this);
-      cfg.addProperty("context", {
-        value: ""
+      var cfg = (this.cfg = new Config(this));
+      cfg.addProperty('context', {
+        value: ''
       });
     },
     /**
@@ -76,10 +74,14 @@
      * each declared event. Events won't fire if not declared.
      */
     _initEvents: function() {
-      var suffix = "Evt";
-      CStudioAuthoring.Utils.each(this.events, function(i, evt) {
-        this[evt + suffix] = new CustomEvent("viewcontroller.event." + evt, this);
-      }, this);
+      var suffix = 'Evt';
+      CStudioAuthoring.Utils.each(
+        this.events,
+        function(i, evt) {
+          this[evt + suffix] = new CustomEvent('viewcontroller.event.' + evt, this);
+        },
+        this
+      );
       return this;
     },
     /**
@@ -93,17 +95,21 @@
      */
     _initActions: function() {
       var _this = this;
-      CStudioAuthoring.Utils.each(this.actions, function(i, selector) {
-        this._initAction(selector);
-      }, this);
+      CStudioAuthoring.Utils.each(
+        this.actions,
+        function(i, selector) {
+          this._initAction(selector);
+        },
+        this
+      );
       return this;
     },
-    _initAction: function (selector) {
+    _initAction: function(selector) {
       var me = this,
         handler = this._getFn(selector);
       if (handler) {
         var el = me.getComponent(selector);
-        Event.addListener(el, "click", function (evt) {
+        Event.addListener(el, 'click', function(evt) {
           handler.call(me, this, evt);
         });
       }
@@ -114,11 +120,15 @@
      * initialised, receiving no parameters. If constructor parameters are needed, use
      * the "initialise" method which is called with all constructor parameters
      */
-    _startup: function(){
-      CStudioAuthoring.Utils.each(this.startup, function(i, fnName) {
-        var fn = this[fnName];
-        fn && fn.call(this);
-      }, this);
+    _startup: function() {
+      CStudioAuthoring.Utils.each(
+        this.startup,
+        function(i, fnName) {
+          var fn = this[fnName];
+          fn && fn.call(this);
+        },
+        this
+      );
     },
     /**
      * Internal private method to find the function for a registered action.
@@ -129,8 +139,8 @@
      * @param selector
      */
     _getFn: function(selector) {
-      var suffix = "ActionClicked",
-        camelizedName = CStudioAuthoring.StringUtils.toCamelcase(selector.substr(selector.indexOf(".") + 1)),
+      var suffix = 'ActionClicked',
+        camelizedName = CStudioAuthoring.StringUtils.toCamelcase(selector.substr(selector.indexOf('.') + 1)),
         fn = this[camelizedName + suffix];
       return fn;
     },
@@ -141,8 +151,8 @@
      */
     getComponent: function(selector) {
       //return Selector.query(selector, this.cfg.getProperty("context"), true);
-      var parent = document.querySelector("#" + this.cfg.getProperty("context"));
-      return (parent) ? parent.querySelector(selector) : null;
+      var parent = document.querySelector('#' + this.cfg.getProperty('context'));
+      return parent ? parent.querySelector(selector) : null;
     },
     /**
      * Gets a set of elements by a CSS selector. The selection is
@@ -151,9 +161,9 @@
      */
     getComponents: function(selector) {
       //return Selector.query(selector, this.cfg.getProperty("context"));
-      var parent = document.querySelector("#" + this.cfg.getProperty("context"));
+      var parent = document.querySelector('#' + this.cfg.getProperty('context'));
       var components = parent.querySelectorAll(selector);
-      return Array.prototype.slice.call(components);//Convert to Array.
+      return Array.prototype.slice.call(components); //Convert to Array.
     },
     /**
      * Disables one, multiple or all actions
@@ -169,8 +179,7 @@
      * @see _actionEnable
      */
     enableActions: function(which) {
-      if(which)
-        this._actionEnable(true, which);
+      if (which) this._actionEnable(true, which);
     },
     /**
      * Internal private method to enable/disable one, various or
@@ -182,9 +191,13 @@
       if (Lang.isString(which)) {
         this.getComponent(which).disabled = !enable;
       } else {
-        CStudioAuthoring.Utils.each(which || this.actions, function(i, selector){
-          this.getComponent(selector).disabled = !enable;
-        }, this);
+        CStudioAuthoring.Utils.each(
+          which || this.actions,
+          function(i, selector) {
+            this.getComponent(selector).disabled = !enable;
+          },
+          this
+        );
       }
     },
     /**
@@ -194,7 +207,7 @@
      * @return {Boolean} True if the handler was subscribed successfully
      */
     on: function(event, handler) {
-      var evt = this[event + "Evt"];
+      var evt = this[event + 'Evt'];
       evt && evt.subscribe(handler);
       return !!evt;
     },
@@ -204,7 +217,7 @@
      * @param args {Object} Data that will be passed to the handler as the second param
      */
     fire: function(evt, args) {
-      var e = this[evt + "Evt"];
+      var e = this[evt + 'Evt'];
       e && e.fire(args);
       return this;
     },
@@ -214,25 +227,23 @@
      * or a primary action was completed successfully
      */
     end: function() {
-      this.fire("end");
+      this.fire('end');
       return this;
     },
 
-    $: function (selector) {
+    $: function(selector) {
       if (window.jQuery) {
-        return $("#" + this.cfg.getProperty("context")).find(selector);
+        return $('#' + this.cfg.getProperty('context')).find(selector);
       } else {
         return;
       }
     }
-
   };
 
-  Base.extend = function (className, classBody) {
-
+  Base.extend = function(className, classBody) {
     CStudioAuthoring.register(
-      ('ViewController.' + className),
-      new Function('CStudioAuthoring.ViewController.'+className+'.superclass.constructor.apply(this, arguments)')
+      'ViewController.' + className,
+      new Function('CStudioAuthoring.ViewController.' + className + '.superclass.constructor.apply(this, arguments)')
     );
 
     var Controller = CStudioAuthoring.ViewController[className];
@@ -242,9 +253,7 @@
     CStudioAuthoring.Env.ModuleMap.map('viewcontroller-' + className.toLowerCase(), Controller);
 
     return Controller;
-
   };
 
-  CStudioAuthoring.Env.ModuleMap.map("viewcontroller-base", Base);
-
+  CStudioAuthoring.Env.ModuleMap.map('viewcontroller-base', Base);
 })(CStudioAuthoring);
