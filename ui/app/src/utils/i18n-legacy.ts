@@ -547,6 +547,17 @@ const browseCMISMessages = defineMessages({
   }
 });
 
+const browseSearchMessages = defineMessages({
+  lookUpParentError: {
+    id: 'browseSearchMessages.lookUpChildError',
+    defaultMessage: 'Unable to lookup child form callback for search: {searchId}'
+  },
+  lookUpChildError: {
+    id: 'browseSearchMessages.lookUpParentError',
+    defaultMessage: 'Unable to lookup parent context for search: {searchId}'
+  }
+});
+
 const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
@@ -836,6 +847,13 @@ const bulkUploadConfirmDialogMessages = defineMessages({
   }
 });
 
+const embeddedLegacyFormMessages = defineMessages({
+  contentFormFailedToLoadErrorMessage: {
+    id: 'embeddedLegacyFormMessages.openContentFormFailedError',
+    defaultMessage: 'An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -857,6 +875,7 @@ export default {
   siteComponentDSMessages,
   formEngineMessages,
   browseCMISMessages,
+  browseSearchMessages,
   dragAndDropMessages,
   internalNameControlMessages,
   checkboxGroupControlMessages,
@@ -868,5 +887,6 @@ export default {
   rteControlMessages,
   ossAttribution,
   dashboardWidgetsMessages,
-  bulkUploadConfirmDialogMessages
+  bulkUploadConfirmDialogMessages,
+  embeddedLegacyFormMessages
 };

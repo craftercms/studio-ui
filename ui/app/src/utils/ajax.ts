@@ -14,23 +14,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ajax, AjaxResponse } from 'rxjs/ajax';
-import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/internal/operators/catchError';
+import { ajax, AjaxError, AjaxResponse } from 'rxjs/ajax';
+import { catchError } from 'rxjs/operators';
+import { reversePluckProps } from './object';
+import { Observable, of } from 'rxjs';
+import { sessionTimeout } from '../state/actions/user';
 
 const HEADERS = {};
 export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 export const OMIT_GLOBAL_HEADERS = {};
 
-export function setGlobalHeaders(props: object) {
+export function setGlobalHeaders(props: object): void {
   Object.assign(HEADERS, props);
 }
 
-export function getGlobalHeaders() {
+export function removeGlobalHeaders(...headersToDelete: string[]): void {
+  headersToDelete.forEach((header) => {
+    delete HEADERS[header];
+  });
+}
+
+export function getGlobalHeaders(): object {
   return { ...HEADERS };
 }
 
-/* private */ function mergeHeaders(headers: object = {}) {
+function mergeHeaders(headers: object = {}): object {
   if (headers === OMIT_GLOBAL_HEADERS) {
     return null;
   } else if (Object.values(headers).includes(OMIT_GLOBAL_HEADERS)) {
@@ -39,11 +47,19 @@ export function getGlobalHeaders() {
   return Object.assign({}, HEADERS, headers);
 }
 
-export function get(url: string, headers: object = {}) {
+export function get(url: string, headers: object = {}): Observable<AjaxResponse> {
   return ajax.get(url, mergeHeaders(headers));
 }
 
-export function post(url: string, body: any, headers: object = {}) {
+export function getText(url: string, headers?: object): Observable<AjaxResponse> {
+  return ajax({
+    url,
+    headers: mergeHeaders(headers),
+    responseType: 'text'
+  });
+}
+
+export function post(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders(headers));
 }
 
@@ -51,19 +67,34 @@ export function postJSON(url: string, body: any, headers: object = {}): Observab
   return ajax.post(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
 }
 
-export function patch(url: string, body: any, headers: object = {}) {
+export function patch(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.patch(url, body, mergeHeaders(headers));
 }
 
-export function put(url: string, body: any, headers: object = {}) {
+export function put(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.put(url, body, mergeHeaders(headers));
 }
 
-export function del(url: string, headers: object = {}) {
+export function del(url: string, headers: object = {}): Observable<AjaxResponse> {
   return ajax.delete(url, mergeHeaders(headers));
 }
 
-//const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+export const catchAjaxError = (fetchFailedCreator) => catchError((error: any) => {
+  if (error.name === 'AjaxError') {
+    const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
+    ajaxError.response = {
+      message: ajaxError.response?.message ?? 'An unknown error has occurred.'
+    };
+    if (ajaxError.status === 401) {
+      return of(fetchFailedCreator(ajaxError), sessionTimeout());
+    } else {
+      return of(fetchFailedCreator(ajaxError));
+    }
+  } else {
+    console.error('[ajax/catchAjaxError] An epic threw and hence it will be disabled. Check logic.', error);
+    throw error;
+  }
+});
 
 export const catchApi1Error = catchError((error: any) => {
   if (error.name === 'AjaxError') {
@@ -112,9 +143,13 @@ export default {
   OMIT_GLOBAL_HEADERS,
   getGlobalHeaders,
   setGlobalHeaders,
+  removeGlobalHeaders,
   get,
+  getText,
   post,
+  postJSON,
   patch,
   put,
-  del
+  del,
+  ajax
 }

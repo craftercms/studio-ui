@@ -15,7 +15,7 @@
  */
 
 import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
-import { catchError, map, pluck } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Credentials, User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
@@ -24,8 +24,10 @@ export function getLogoutInfoURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
 }
 
-export function logout() {
-  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON);
+export function logout(): Observable<boolean> {
+  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON).pipe(
+    mapTo(true)
+  );
 }
 
 export function login(credentials: Credentials): Observable<User> {

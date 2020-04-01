@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Blueprint } from "./Blueprint";
+import { Blueprint } from './Blueprint';
 
 interface View {
   title: string;
@@ -58,7 +58,7 @@ export interface SiteState {
   }
 }
 
-export interface Site {
+export interface CreateSiteMeta {
   [key:string]: any;
   siteId: string;
   description?: string;
@@ -93,4 +93,10 @@ export interface MarketplaceSite {
   siteParams?: {
     [key: string]: string;
   }
+}
+
+export interface Site {
+  id: string;
+  name: string;
+  description: string;
 }

@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useSelection } from '../../utils/hooks';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -21,18 +22,19 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import React, { CSSProperties, PropsWithChildren, useEffect, useReducer, useState } from 'react';
+import React, { CSSProperties, PropsWithChildren, useEffect, useState, useRef } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import LoadingState from '../LoadingState';
-import ErrorState from '../ErrorState';
+import { useDispatch } from 'react-redux';
+import { login, validateSession } from '../../state/actions/auth';
+import LoadingState from './LoadingState';
+import ErrorState from './ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { interval } from 'rxjs';
-import { getLogoutInfoURL, login, logout, me, validateSession } from '../../services/auth';
-import { pluck, switchMap } from 'rxjs/operators';
+import { getLogoutInfoURL, me } from '../../services/auth';
+import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
-import { setRequestForgeryToken } from '../../utils/auth';
 import { LogInForm } from './LoginForm';
 import { ClassNameMap } from '@material-ui/styles/withStyles';
 
@@ -78,84 +80,32 @@ const useStyles = makeStyles((theme) => createStyles({
 export default function AuthMonitor() {
 
   const classes = useStyles({});
+  const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
-  const authoringUrl = `${window.location.origin}/studio`;
-  const [{ active, error, isFetching, username, authType }, setState] = useReducer(
-    (state: any, nextState: any) => ({ ...state, ...nextState }),
-    {
-      active: true,
-      error: null,
-      isFetching: false,
-      username: '',
-      authType: 'DB'
-    },
-    (state) => {
-      let context: any;
-      const user: any = {};
-      // @ts-ignore
-      if (window.CStudioAuthoringContext) {
-        // @ts-ignore
-        context = window.CStudioAuthoringContext;
-        user.username = context.user;
-      } else {
-        context = JSON.parse(document.querySelector('#user').innerHTML);
-        user.username = context.username;
-      }
-      user.authType = context.authenticationType;
-      return { ...state, ...user };
-    }
-  );
+  const { username, authType } = useSelection(state => state.user);
+  const authoringUrl = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const { active, error, isFetching } = useSelection(state => state.auth);
   const [password, setPassword] = useState<string>('');
   const [logoutUrl, setLogoutUrl] = useState(authoringUrl);
   const isSSO = (authType.toLowerCase() !== 'db');
   const [ssoButtonClicked, setSSOButtonClicked] = useState(false);
   const styles: CSSProperties = isFetching ? { visibility: 'hidden' } : {};
+  const firstRender = useRef(true);
 
   const onSubmit = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
-    setRequestForgeryToken();
-    if (isSSO || !isBlank(password)) {
-      setState({ isFetching: true, error: null });
-    }
     if (isSSO) {
-      validateSession().subscribe(
-        (active) => {
-          setState({ active: active, isFetching: false });
-          me().subscribe((user) => {
-            if (user.username !== username) {
-              alert(formatMessage(translations.postSSOLoginMismatch));
-              window.location.reload();
-            }
-          });
-        },
-        () => {
-          setState({ isFetching: false });
-        }
-      );
+      dispatch(validateSession());
       setSSOButtonClicked(false);
     } else {
-      (!isBlank(password)) && login({ username, password }).subscribe(
-        () => {
-          setState({ active: true, isFetching: false });
-        },
-        () => {
-          setState({
-            isFetching: false,
-            error: { message: formatMessage(translations.incorrectPasswordMessage) }
-          });
-        }
-      );
+      !isBlank(password) && dispatch(login({ username, password }));
     }
   };
 
   const onClose = () => {
-    const redirect = () => (window.location.href = logoutUrl ?? authoringUrl);
-    logout().subscribe(redirect, (e) => {
-      console.error(e);
-      redirect();
-    });
+    window.location.href = logoutUrl ?? authoringUrl;
   };
 
   useEffect(() => {
@@ -167,14 +117,20 @@ export default function AuthMonitor() {
   useEffect(() => {
     if (active) {
       setPassword('');
-      const sub = interval(60000).pipe(
-        switchMap(() => validateSession())
-      ).subscribe((active) => {
-        setState({ active: active });
-      });
+      const sub = interval(60000).subscribe(() => dispatch(validateSession()));
+      if (firstRender.current) {
+        firstRender.current = false;
+      } else {
+        me().subscribe((user) => {
+          if (user.username !== username) {
+            alert(formatMessage(translations.postSSOLoginMismatch));
+            window.location.reload();
+          }
+        });
+      }
       return () => sub.unsubscribe();
     }
-  }, [active]);
+  }, [active, dispatch, formatMessage, username]);
 
   return (
     <Dialog
@@ -218,7 +174,7 @@ export default function AuthMonitor() {
                     ssoButtonClicked={ssoButtonClicked}
                     onSetSSOButtonClicked={setSSOButtonClicked}
                   />
-                ) : (
+                ) :(
                   <LogInForm
                     classes={classes}
                     username={username}
@@ -258,7 +214,7 @@ export default function AuthMonitor() {
 type SSOFormProps = PropsWithChildren<{
   username: string;
   authoringUrl: string;
-  onSubmit: (e: any) => any;
+  onSubmit: (e) => any;
   ssoButtonClicked: boolean;
   onSetSSOButtonClicked: Function;
   classes?: ClassNameMap<any>;
@@ -307,8 +263,8 @@ function SSOForm(props: SSOFormProps) {
           <FormattedMessage
             id="authMonitor.ssoOpenPopupMessage"
             defaultMessage={
-              'Make sure pop ups are not blocked. Once you log in, come back to ' +
-              'this window and click on `Resume` button below.'
+              "Make sure pop ups are not blocked. Once you log in, come back to " +
+              "this window and click on `Resume` button below."
             }
           />
         </Typography>

@@ -21,13 +21,12 @@ var YEvent = YAHOO.util.Event;
  * WCM Site Dropdown Plugin
  */
 CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmDropDown || {
-
   initialized: false,
 
   /**
    * initialize module
    */
-  initialize: function (config) {
+  initialize: function(config) {
     if (!CStudioAuthoring.ContextualNav.WcmSiteDropdown) {
       this.initialized = true;
       this.renderDropdown();
@@ -35,7 +34,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
     }
   },
 
-  renderDropdown: function () {
+  renderDropdown: function() {
     // Local Shortcuts
     var YDom = YAHOO.util.Dom,
       YEvent = YAHOO.util.Event,
@@ -46,20 +45,23 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
       $ = jQuery;
 
     var CMgs = CStudioAuthoring.Messages;
-    var contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
+    var contextNavLangBundle = CMgs.getBundle('contextnav', CStudioAuthoringContext.lang);
     var mainContainerEl = YDom.get('acn-dropdown-wrapper');
 
     var navBarSiteNameEl = YDom.get('navbar-site-name');
     navBarSiteNameEl.innerHTML = CStudioAuthoringContext.site;
 
-    if (/*window.location.pathname.indexOf("search") > -1 ||*/ window.location.pathname.indexOf("browse") > -1 || window.location.pathname.indexOf("site-config") > -1) {
+    if (
+      /*window.location.pathname.indexOf("search") > -1 ||*/ window.location.pathname.indexOf('browse') > -1 ||
+      window.location.pathname.indexOf('site-config') > -1
+    ) {
       mainContainerEl.innerHTML = '';
     } else {
       mainContainerEl.innerHTML =
         '<div id="acn-dropdown" class="acn-dropdown">' +
         '<div id="acn-dropdown-inner" class="acn-dropdown-inner">' +
         '<a id="acn-dropdown-toggler" href="#" class="acn-dropdown-toggler acn-drop-arrow">' +
-        CMgs.format(contextNavLangBundle, "sideBar") +
+        CMgs.format(contextNavLangBundle, 'sideBar') +
         '</a>' +
         '</div>' +
         '<div id="acn-dropdown-menu-wrapper" style="display:none" class="acn-dropdown-menu-wrapper unselectable">' +
@@ -69,7 +71,9 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
         '<div id="acn-context-tooltip" class="acn-context-tooltip"></div>' +
         '<div id="acn-dropdown-menu" style="height:100%" class="acn-dropdown-menu">' +
         '<div id="acn-dropdown-menu-inner" class="acn-dropdown-menu-inner unselectable"></div>' +
-        '<div id="acn-dropdown-footer" class="acn-dropdown-footer"><p>'+ entitlementValidator +'</p></div>' +
+        '<div id="acn-dropdown-footer" class="acn-dropdown-footer"><p>' +
+        entitlementValidator +
+        '</p></div>' +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -80,29 +84,27 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
        * WCM Site Dropdown Contextual Nav Widget
        */
       auth.register({
-        "ContextualNav.WcmSiteDropdown": {
+        'ContextualNav.WcmSiteDropdown': {
           /**
            * Static Members
            * In the Object oriented implementation this should members should be static
            */
           instanceCount: 0, // Instance Counter
-          STORED_CONFIG_KEY_TEMPLATE: "wcm-site-dropdown-prefs-{0}",
-          INSTANCE_ID_TEMPLATE: "wcm-site-dropdown-{0}",
+          STORED_CONFIG_KEY_TEMPLATE: 'wcm-site-dropdown-prefs-{0}',
+          INSTANCE_ID_TEMPLATE: 'wcm-site-dropdown-{0}',
           /**
            * Provides a unique instance Id to assign to new component instances
            * @return {String} A unique instance Id
            */
-          getNextInstanceId: function () {
+          getNextInstanceId: function() {
             var np = auth.ContextualNav.WcmSiteDropdown;
-            return (strUtils.format(
-              np.INSTANCE_ID_TEMPLATE,
-              np.instanceCount++));
+            return strUtils.format(np.INSTANCE_ID_TEMPLATE, np.instanceCount++);
           },
           /**
            * Closes the dropdown when the user clicks outside it
            * @param {MouseEvent} evt The DOM event this method listens to
            */
-          windowClickCloseFn: function (evt) {
+          windowClickCloseFn: function(evt) {
             /* For some reason YUI's context menu needs the click event propagation
              * further than the top parent element, so here: read the property set to
              ** the event in the dropdown container to see if the click was inside it */
@@ -112,26 +114,25 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                * the dropdown */
               var parent = YDom.get('acn-dropdown-wrapper'),
                 node = evt.target;
-              while (node != null && parent != node && node.id != "cstudio-wcm-popup-div")
-                node = node.parentNode;
+              while (node != null && parent != node && node.id != 'cstudio-wcm-popup-div') node = node.parentNode;
 
               /* when we click on copy/change template pop ups
                * context nav should be in open state	*/
-              if (node != null && node.id == "cstudio-wcm-popup-div") {
+              if (node != null && node.id == 'cstudio-wcm-popup-div') {
                 return;
               }
-              (parent != node) && this.setVisible(false);
+              parent != node && this.setVisible(false);
             } else if (evt.insidedropdown) {
               /**
                * canned searches are under drop-down menu, but when canned searches are
                * clicked drop-down need to be closed.
                */
-              if (evt.target.className == "canned-search-el") {
+              if (evt.target.className == 'canned-search-el') {
                 this.setVisible(false);
               }
             }
           },
-          dropdownWrapperClickFn: function (evt) {
+          dropdownWrapperClickFn: function(evt) {
             evt.insidedropdown = true;
             // Stopping the event even at this point caused
             // the contextual menu actions to stop being triggered
@@ -144,7 +145,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
           instanceId: null,
           oConfig: {
             persistState: true,
-            role: "default",
+            role: 'default',
             minHeight: 84,
             maxHeight: 600,
             minWidth: 225,
@@ -156,7 +157,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
             visible: false,
             scrollX: 0,
             scrollY: 0,
-            toString: function () {
+            toString: function() {
               return YAHOO.lang.JSON.stringify(this);
             }
           },
@@ -170,7 +171,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
            * @see oPreferences
            * @return {CStudioAuthoring.ContextualNav.WcmSiteDropdown} The instance of the object
            */
-          init: function (oConfig, oPreferences) {
+          init: function(oConfig, oPreferences) {
             this.instanceId = auth.ContextualNav.WcmSiteDropdown.getNextInstanceId();
             this.initializeConfig(oConfig);
             this.initializePreferences(oPreferences);
@@ -179,36 +180,34 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
             var cfg = this.oPreferences,
               self = this;
-            YEvent.onAvailable("acn-dropdown-menu", function () {
-              YEvent.addListener("acn-dropdown-menu", "scroll", function () {
+            YEvent.onAvailable('acn-dropdown-menu', function() {
+              YEvent.addListener('acn-dropdown-menu', 'scroll', function() {
                 cfg.scrollY = this.scrollTop;
                 cfg.scrollX = this.scrollLeft;
                 self.save();
               });
             });
-            CStudioAuthoring.Service.retrieveSiteDropdownConfiguration("default", {
-              success: function (config) {
+            CStudioAuthoring.Service.retrieveSiteDropdownConfiguration('default', {
+              success: function(config) {
                 this.context.buildModules(config);
                 this.context.save();
               },
 
-              failure: function () {
-              },
+              failure: function() {},
 
               context: this
             });
 
-            $( window ).resize(function() {
-              if( window.innerWidth >= 768 ){
-                $(".site-dropdown-open .studio-preview").css({ left :  cfg.width});
-                $(".site-dropdown-open .site-dashboard").css({ left :  cfg.width});
-                $(".site-dropdown-open .cstudio-search").css({ left :  cfg.width});
-              }else{
-                $(".site-dropdown-open .studio-preview").css({ left :  0});
-                $(".site-dropdown-open .site-dashboard").css({ left :  0});
-                $(".site-dropdown-open .cstudio-search").css({ left :  0});
+            $(window).resize(function() {
+              if (window.innerWidth >= 768) {
+                $('.site-dropdown-open .studio-preview').css({ left: cfg.width });
+                $('.site-dropdown-open .site-dashboard').css({ left: cfg.width });
+                $('.site-dropdown-open .cstudio-search').css({ left: cfg.width });
+              } else {
+                $('.site-dropdown-open .studio-preview').css({ left: 0 });
+                $('.site-dropdown-open .site-dashboard').css({ left: 0 });
+                $('.site-dropdown-open .cstudio-search').css({ left: 0 });
               }
-
             });
 
             return this;
@@ -217,7 +216,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
            * Initializes the widget's configuration
            * @param {Object} oConfig Set of values to override the defaults
            */
-          initializeConfig: function (oConfig) {
+          initializeConfig: function(oConfig) {
             oConfig && YAHOO.lang.augmentObject(this.oConfig, oConfig, true);
             return this;
           },
@@ -225,11 +224,9 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
            * Intializes the widget's user preferences
            * @param {String} oPreferences Set of values to override the defaults and stored
            */
-          initializePreferences: function (oPreferences) {
+          initializePreferences: function(oPreferences) {
             var storedstr = storage.retrieve(this.getStoredCfgKey()),
-              oStored = storedstr && storedstr !== ""
-                ? utils.decode(storedstr)
-                : null;
+              oStored = storedstr && storedstr !== '' ? utils.decode(storedstr) : null;
             oStored && YAHOO.lang.augmentObject(this.oPreferences, oStored, true);
             oPreferences && YAHOO.lang.augmentObject(this.oPreferences, oPreferences, true);
             return this;
@@ -237,15 +234,21 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
           /**
            *
            */
-          getStoredCfgKey: function () {
+          getStoredCfgKey: function() {
             return strUtils.format(auth.ContextualNav.WcmSiteDropdown.STORED_CONFIG_KEY_TEMPLATE, this.oConfig.role);
           },
-          initializeVisibility: function () {
+          initializeVisibility: function() {
             // Enable the link element to open & close the dropdown
-            YEvent.on('acn-dropdown-toggler', 'click', function (evt) {
-              YEvent.preventDefault(evt);
-              this.toggleDropdown();
-            }, null, this);
+            YEvent.on(
+              'acn-dropdown-toggler',
+              'click',
+              function(evt) {
+                YEvent.preventDefault(evt);
+                this.toggleDropdown();
+              },
+              null,
+              this
+            );
             YEvent.on('acn-dropdown-wrapper', 'click', auth.ContextualNav.WcmSiteDropdown.dropdownWrapperClickFn);
             if (this.oPreferences.visible) {
               // Set config visibility to false so that
@@ -258,67 +261,63 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
             return this;
           },
-          initializeResizing: function () {
-            var cookie_dropdown_heightWidth = "wcm_site_dropdown_heightWidth",
+          initializeResizing: function() {
+            var cookie_dropdown_heightWidth = 'wcm_site_dropdown_heightWidth',
               dom = YAHOO.util.Dom,
               query = YAHOO.util.Selector.query,
               $ = jQuery;
             var self = this;
-            $( "#acn-resize").width(self.oPreferences.width);
+            $('#acn-resize').width(self.oPreferences.width);
             $(function() {
-              $( "#acn-resize" ).resizable({
+              $('#acn-resize').resizable({
                 minHeight: 150,
                 minWidth: 265,
                 start: function(event, ui) {
-                  $('#engineWindow').css('pointer-events','none');
+                  $('#engineWindow').css('pointer-events', 'none');
                 },
-                stop: function( event, ui ) {
-                  $('#engineWindow').css('pointer-events','auto');
-                  self.oPreferences.width = ui.size.width + "px";
-                  self.oPreferences.height = ui.size.height + "px";
+                stop: function(event, ui) {
+                  $('#engineWindow').css('pointer-events', 'auto');
+                  self.oPreferences.width = ui.size.width + 'px';
+                  self.oPreferences.height = ui.size.height + 'px';
                   self.save();
                 },
                 resize: function(event, ui) {
                   ui.size.height = ui.originalSize.height;
-                  $(".site-dropdown-open .studio-preview").css({ left :  ui.size.width});
-                  $(".site-dropdown-open .site-dashboard").css({ left :  ui.size.width});
-                  $(".site-dropdown-open .cstudio-search").css({ left :  ui.size.width});
+                  $('.site-dropdown-open .studio-preview').css({ left: ui.size.width });
+                  $('.site-dropdown-open .site-dashboard').css({ left: ui.size.width });
+                  $('.site-dropdown-open .cstudio-search').css({ left: ui.size.width });
                 }
               });
             });
             return this;
           },
-          save: function () {
-            this.oConfig.persistState && storage.write(
-              this.getStoredCfgKey(),
-              this.oPreferences.toString(),
-              360);
+          save: function() {
+            this.oConfig.persistState && storage.write(this.getStoredCfgKey(), this.oPreferences.toString(), 360);
             return this;
           },
-          setVisible: function (visible) {
+          setVisible: function(visible) {
             var animator = new crafter.studio.Animator('#acn-dropdown-menu-wrapper'),
               setStyle = YDom.setStyle,
               cfg = this.oPreferences;
             if (cfg.visible !== visible) {
               if (visible) {
                 $('html').addClass('site-dropdown-open');
-                if( window.innerWidth >= 768 ){
-                  $(".site-dropdown-open .studio-preview").css({ left :  cfg.width});
-                  $(".site-dropdown-open .site-dashboard").css({ left :  cfg.width});
-                  $(".site-dropdown-open .cstudio-search").css({ left :  cfg.width});
-
-                }else{
-                  $(".site-dropdown-open .studio-preview").css({ left :  0});
-                  $(".site-dropdown-open .site-dashboard").css({ left :  0});
-                  $(".site-dropdown-open .cstudio-search").css({ left :  0});
+                if (window.innerWidth >= 768) {
+                  $('.site-dropdown-open .studio-preview').css({ left: cfg.width });
+                  $('.site-dropdown-open .site-dashboard').css({ left: cfg.width });
+                  $('.site-dropdown-open .cstudio-search').css({ left: cfg.width });
+                } else {
+                  $('.site-dropdown-open .studio-preview').css({ left: 0 });
+                  $('.site-dropdown-open .site-dashboard').css({ left: 0 });
+                  $('.site-dropdown-open .cstudio-search').css({ left: 0 });
                 }
                 YDom.addClass('acn-dropdown-wrapper', 'site-dropdown-open');
                 animator.slideIn();
               } else {
                 $('html').removeClass('site-dropdown-open');
-                $(".studio-preview").css({ left :  0});
-                $(".site-dashboard").css({ left :  0});
-                $(".site-dropdown-open .cstudio-search").css({ left :  0});
+                $('.studio-preview').css({ left: 0 });
+                $('.site-dashboard').css({ left: 0 });
+                $('.cstudio-search').css({ left: 0 });
                 YDom.removeClass('acn-dropdown-wrapper', 'site-dropdown-open');
                 animator.slideOut();
               }
@@ -333,12 +332,12 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
            * toggle visibility on nav element
            * state can be OPEN, CLOSED, TOGGLE
            */
-          toggleDropdown: function () {
+          toggleDropdown: function() {
             return this.setVisible(!this.oPreferences.visible);
           },
-          updateScrollPosition: function (visible) {
+          updateScrollPosition: function(visible) {
             if (this.handleScroll) {
-              var e = YDom.get("acn-dropdown-menu"),
+              var e = YDom.get('acn-dropdown-menu'),
                 cfg = this.oPreferences;
               if (visible) {
                 e.scrollTop = cfg.scrollY;
@@ -354,9 +353,15 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
           /**
            * given a dropdown configuration, build the dropdown
            */
-          buildModules: function (dropdownConfig) {
+          buildModules: function(dropdownConfig) {
             var groups = dropdownConfig.groups,
-              j, k, a, b, c, menuItems, modules;
+              j,
+              k,
+              a,
+              b,
+              c,
+              menuItems,
+              modules;
 
             if (!groups.length) {
               groups = new Array();
@@ -364,7 +369,6 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
             }
 
             for (var i = 0, a = groups.length; i < a; i++) {
-
               menuItems = groups[i].menuItems;
 
               if (!menuItems.length) {
@@ -380,15 +384,17 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                   modules = modules.concat(menuItems[j].modulehooks.modulehook);
                 }
 
-                CStudioAuthoring.Service.lookupAuthoringRole(CStudioAuthoringContext.site, CStudioAuthoringContext.user, {
-                  success: function (userRoles) {
-                    for (k = 0, c = modules.length; k < c; k++)
-                      this.initDropdownModule(userRoles, modules[k]);
-                  },
-                  failure: function () {
-                  },
-                  initDropdownModule: this.initDropdownModule
-                });
+                CStudioAuthoring.Service.lookupAuthoringRole(
+                  CStudioAuthoringContext.site,
+                  CStudioAuthoringContext.user,
+                  {
+                    success: function(userRoles) {
+                      for (k = 0, c = modules.length; k < c; k++) this.initDropdownModule(userRoles, modules[k]);
+                    },
+                    failure: function() {},
+                    initDropdownModule: this.initDropdownModule
+                  }
+                );
               }
             }
           },
@@ -396,22 +402,21 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
           /**
            * initialize a dropdown module
            */
-          initDropdownModule: function (userRoles, module) {
+          initDropdownModule: function(userRoles, module) {
             var allowed = false;
             if (!module.params || !module.params.roles) {
               allowed = true;
             } else {
               var roles;
-              if(module.params.roles.role instanceof Array){
+              if (module.params.roles.role instanceof Array) {
                 roles = module.params.roles.role;
-              }else{
+              } else {
                 roles = [module.params.roles.role];
               }
 
               if (roles.length == 0 || roles[0] == undefined) {
                 allowed = true;
-              }
-              else {
+              } else {
                 var allowed = false;
                 var userRoles = userRoles.roles;
                 for (var j = 0; j < userRoles.length; j++) {
@@ -429,10 +434,10 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
               }
             }
             if (allowed) {
-              var dropdownInnerEl = YDom.get("acn-dropdown-menu-inner");
-              var moduleContainerEl = document.createElement("div");
-              if (module.showDivider && module.showDivider == "true") {
-                YDom.addClass(moduleContainerEl, "acn-parent");
+              var dropdownInnerEl = YDom.get('acn-dropdown-menu-inner');
+              var moduleContainerEl = document.createElement('div');
+              if (module.showDivider && module.showDivider == 'true') {
+                YDom.addClass(moduleContainerEl, 'acn-parent');
               }
 
               // THIS CODE ABOVE will be removed when we make the entire nav aware of the users roles and centralize the permissions
@@ -441,13 +446,11 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                 dropdownInnerEl.appendChild(moduleContainerEl);
               }
 
-
               module.containerEl = moduleContainerEl;
 
-              var
-                self = this,
+              var self = this,
                 cb = {
-                  moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
+                  moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
                     try {
                       moduleClass.initialize(moduleConfig);
                     } catch (e) {
@@ -458,38 +461,38 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                   }
                 };
 
-              (module.name === "wcm-root-folder") && (cb.once = function () {
-                try {
-                  CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(function (evtType, aArgs) {
-                    if (aArgs[0] == aArgs[1]) {
-                      // number of instaces == number of times event has fired
-                      self.handleScroll = true;
-                      self.oPreferences.visible && self.updateScrollPosition(true);
-                    }
-                  });
-                } catch (ex) {
-                }
-              });
+              module.name === 'wcm-root-folder' &&
+                (cb.once = function() {
+                  try {
+                    CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(function(evtType, aArgs) {
+                      if (aArgs[0] == aArgs[1]) {
+                        // number of instaces == number of times event has fired
+                        self.handleScroll = true;
+                        self.oPreferences.visible && self.updateScrollPosition(true);
+                      }
+                    });
+                  } catch (ex) {}
+                });
 
               CStudioAuthoring.Module.requireModule(
                 module.plugin ? module.plugin.name : module.name,
                 module.plugin
-                  ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${module.plugin.name || module.name}&filename=${module.plugin.file}`
+                  ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${module
+                      .plugin.name || module.name}&filename=${module.plugin.file}`
                   : `/static-assets/components/cstudio-contextual-nav/wcm-site-dropdown-mods/${module.name}.js`,
                 module,
                 cb
               );
-
             }
           },
 
-          refreshDropdown: function () {
+          refreshDropdown: function() {
             // Get the dropdown wrapper
-            var container = document.getElementById("acn-dropdown-menu-inner"),
+            var container = document.getElementById('acn-dropdown-menu-inner'),
               // Get all the direct decendants of the wrapper
-              elems = YAHOO.util.Selector.query("> div", container),
+              elems = YAHOO.util.Selector.query('> div', container),
               // Find the parent node of the site selector select
-              siteSelectorParent = document.getElementById("acn-site-dropdown").parentNode,
+              siteSelectorParent = document.getElementById('acn-site-dropdown').parentNode,
               l = elems.length - 1;
             // Remove all but the site selector parent div
             while (l) {
@@ -501,12 +504,11 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
             // Re-initialise the dropdown (refresh)
             CStudioAuthoring.ContextualNav.WcmSiteDropdown.init();
           }
-
         }
       });
-      CStudioAuthoring.Events.widgetScriptLoaded.fire("wcm-site-dropdown");
+      CStudioAuthoring.Events.widgetScriptLoaded.fire('wcm-site-dropdown');
     }
   }
-}
+};
 
-CStudioAuthoring.Module.moduleLoaded("wcm_dropdown", CStudioAuthoring.ContextualNav.WcmDropDown);
+CStudioAuthoring.Module.moduleLoaded('wcm_dropdown', CStudioAuthoring.ContextualNav.WcmDropDown);

@@ -31,9 +31,12 @@ import { forkJoin, fromEvent, Subject } from 'rxjs';
 import { filter, map, take, debounceTime } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
+import { nou } from './object';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
+
+const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
 /**
  *
@@ -97,20 +100,24 @@ export function createCodebaseBridge() {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
-      DependencySelection: lazy(() => import('../components/DependencySelection')),
+      DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
       DependencySelectionDelete: lazy(() => (
-        import('../components/DependencySelection')
+        import('../modules/Content/Dependencies/DependencySelection')
           .then(module => ({
             default: module.DependencySelectionDelete
           }))
       )),
-      CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
-      PublishingQueue: lazy(() => import('../components/PublishingQueue')),
+      CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
+      PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
+      Search: lazy(() => import('../pages/Search')),
+      Preview: lazy(() => import('../pages/Preview')),
+      PublishDialog: lazy(() => import('../modules/Content/Publish/PublishDialog')),
+      ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
-      ConfirmDialog: lazy(() => import('../components/ConfirmDialog'))
+      ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog'))
     },
 
     assets: {
@@ -151,25 +158,36 @@ export function createCodebaseBridge() {
         typeof component !== 'string' &&
         !Object.values(Bridge.components).includes(component)
       ) {
-        throw new Error('The supplied module is not a know component of CrafterCMSNext.');
+        console.warn('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        throw new Error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
+        console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
-      if (typeof container === 'string') {
-        container = document.querySelector(container);
-      }
+      const element = (typeof container === 'string') ? document.querySelector(container) : container;
 
-      const element = container as Element;
-
-      const Component: JSXElementConstructor<any> = (typeof component === 'string')
+      let Component: JSXElementConstructor<any> = (typeof component === 'string')
         ? Bridge.components[component]
         : component;
+
+      if (nou(Component)) {
+        Component = function () {
+          return (
+            <ErrorState
+              graphicUrl="/studio/static-assets/images/warning_state.svg"
+              error={{
+                code: '',
+                message: `The supplied component name ('${component}') is not a know component of CrafterCMSNext`,
+                remedialAction: `Please re-check supplied name ('${component}'), make sure you've build the app and created the component.`
+              }}
+            />
+          );
+        };
+      }
 
       return (
         new Promise((resolve, reject) => {
           try {
-            const unmount = (options: any) => {
+            const unmount = (options) => {
               ReactDOM.unmountComponentAtNode(element);
               options.removeContainer && element.parentNode.removeChild(element);
             };
@@ -180,9 +198,9 @@ export function createCodebaseBridge() {
                 <CrafterCMSNextBridge>
                   <Component {...props} />
                 </CrafterCMSNextBridge>,
-                container,
+                element,
                 () => resolve({
-                  unmount: (options: any) => {
+                  unmount: (options) => {
                     options = Object.assign({
                       delay: false,
                       removeContainer: false

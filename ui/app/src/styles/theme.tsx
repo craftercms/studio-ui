@@ -70,12 +70,12 @@ export const themeOptions: ThemeOptions = {
   },
   palette: {
     primary: {
-      main: '#7E9DBB',
+      main: palette.blue.main,
       contrastText: '#FFFFFF'
     },
     text: {
       secondary: palette.gray.medium3
-    }
+    },
     // type: 'dark'
   },
   overrides: {
@@ -120,17 +120,17 @@ export const themeOptions: ThemeOptions = {
         padding: '10px 12px',
         transition: defaultTheme.transitions.create(['border-color', 'box-shadow']),
         '&:focus:invalid': {
-          boxShadow: `${fade('#7E9DBB', 0.25)} 0 0 0 0.2rem`
+          boxShadow: `${fade(palette.blue.main, 0.25)} 0 0 0 0.2rem`
         },
         '&:focus': {
-          boxShadow: `${fade('#7E9DBB', 0.25)} 0 0 0 0.2rem`,
-          borderColor: '#7E9DBB'
+          boxShadow: `${fade(palette.blue.main, 0.25)} 0 0 0 0.2rem`,
+          borderColor: palette.blue.main
         }
       }
     },
     MuiTabs: {
       indicator: {
-        backgroundColor: '#7E9DBB'
+        backgroundColor: palette.blue.main
       }
     },
     MuiButton: {
@@ -143,8 +143,8 @@ export const themeOptions: ThemeOptions = {
         }
       },
       outlinedPrimary: {
-        color: darken('#7E9DBB', 0.10),
-        border: `1px solid ${darken('#7E9DBB', 0.10)}`
+        color: darken(palette.blue.main, 0.10),
+        border: `1px solid ${darken(palette.blue.main, 0.10)}`
       }
     }
   }

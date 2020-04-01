@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import GlobalState from '../../models/GlobalState';
+import { createEntityState, createLookupTable } from '../../utils/object';
+import { createReducer } from '@reduxjs/toolkit';
+import { CHANGE_SITE } from '../actions/sites';
+import { FETCH_CONTENT_TYPES, FETCH_CONTENT_TYPES_COMPLETE, FETCH_CONTENT_TYPES_FAILED } from '../actions/preview';
+import ContentType from '../../models/ContentType';
+
+const reducer = createReducer<GlobalState['contentTypes']>(createEntityState(), {
+  [CHANGE_SITE]: () => createEntityState(),
+  [FETCH_CONTENT_TYPES]: (state) => ({
+    ...state,
+    isFetching: true
+  }),
+  [FETCH_CONTENT_TYPES_COMPLETE]: (state, { payload: contentTypes }) => ({
+    ...state,
+    byId: createLookupTable<ContentType>(contentTypes),
+    isFetching: false,
+    error: null
+  }),
+  [FETCH_CONTENT_TYPES_FAILED]: (state, { payload }) => ({
+    ...state,
+    error: payload.response,
+    isFetching: false
+  })
+});
+
+export default reducer;

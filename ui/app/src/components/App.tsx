@@ -20,6 +20,7 @@ import crafterIconUrl from '../assets/crafter-icon.svg';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { palette } from '../styles/theme';
 
+// eslint-disable-next-line
 const DevServerRoot = process.env.REACT_APP_COMPONENT ? lazy(() => import(process.env.REACT_APP_COMPONENT)) : Intro;
 
 export default function App() {
@@ -64,27 +65,28 @@ const useStyles = makeStyles((theme) => createStyles({
     backgroundColor: palette.gray.light1,
     padding: theme.spacing(1),
     borderRadius: 4,
-    textAlign: 'left'
+    textAlign: 'left',
   },
-  hint: {}
+  hint: {
+
+  }
 }));
 
 function Intro() {
   const classes = useStyles({});
   return (
     <section className={classes.container}>
-      <img className={classes.logo} src={crafterIconUrl} alt="" />
+      <img className={classes.logo} src={crafterIconUrl} alt=""/>
       <h1>Crafter CMS Codebase Next</h1>
       <p className={classes.hint}>
-        Create a <em>.env.local</em> file and add the content below. Point the <em>REACT_APP_COMPONENT</em> variable to
-        the component you'd like to see in your local dev server.
+        Create a <em>.env.local</em> file and add the content below. Point the <em>REACT_APP_COMPONENT</em> variable to the component you'd like to see in your local dev server.
       </p>
       <code className={classes.code}>
-        HOST=authoring.sample.com<br />
-        INLINE_RUNTIME_CHUNK=false<br />
-        PUBLIC_URL=/studio/static-assets/next/<br />
-        BROWSER=chrome<br />
-        REACT_APP_COMPONENT=../pages/Preview<br />
+        HOST=authoring.sample.com<br/>
+        INLINE_RUNTIME_CHUNK=false<br/>
+        PUBLIC_URL=/studio/static-assets/next/<br/>
+        BROWSER=chrome<br/>
+        REACT_APP_COMPONENT=../pages/Preview<br/>
       </code>
     </section>
   );

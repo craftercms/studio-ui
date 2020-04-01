@@ -43,7 +43,7 @@ export default function ErrorDialog(props: ErrorDialogProps) {
 
   return (
     <Dialog
-      open={!!props.error}
+      open={Boolean(error)}
       onClose={onClose}
     >
       <IconButton

@@ -68,13 +68,14 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 interface ErrorStateProps {
   graphicUrl?: string;
+
+  onBack?(event: any): any;
+
   classes?: {
     root?: string;
     graphic?: string;
   };
   error: APIError;
-
-  onBack?(event: any): any;
 }
 
 const messages = defineMessages({

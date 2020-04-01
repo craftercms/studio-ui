@@ -16,7 +16,7 @@
 
 import '../styles/index.scss';
 
-import React, { PropsWithChildren, Suspense, useEffect, useState } from 'react';
+import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { createIntl, createIntlCache, IntlShape, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from '../styles/theme';
@@ -25,6 +25,9 @@ import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
 import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
+import { setRequestForgeryToken } from '../utils/auth';
+import { Provider } from 'react-redux';
+import store from '../state/store';
 
 const Locales: any = {
   en,
@@ -52,7 +55,7 @@ function getIntl(locale: string): IntlShape {
   }, createIntlCache());
 }
 
-export function getCurrentLocale() {
+export function getCurrentLocale(): string {
   const username = localStorage.getItem('userName');
   const locale = username
     ? localStorage.getItem(`${username}_crafterStudioLanguage`)
@@ -64,16 +67,19 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
 
   const [, update] = useState();
 
+  useLayoutEffect(setRequestForgeryToken, []);
   useEffect(() => setUpLocaleChangeListener(update, intl), [update]);
 
   return (
-    <RawIntlProvider value={intl}>
-      <ThemeProvider theme={theme}>
-        <Suspense fallback="">
-          {props.children}
-        </Suspense>
-      </ThemeProvider>
-    </RawIntlProvider>
+    <Provider store={store}>
+      <RawIntlProvider value={intl}>
+        <ThemeProvider theme={theme}>
+          <Suspense fallback="">
+            {props.children}
+          </Suspense>
+        </ThemeProvider>
+      </RawIntlProvider>
+    </Provider>
   );
 
 }

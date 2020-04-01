@@ -16,7 +16,8 @@
   -->
 
 <page>
-	<content-type>/page/entry</content-type>	
+  <internal-name>User Dashboard</internal-name>
+	<content-type>/page/entry</content-type>
 	<placeInNav>true</placeInNav>
 	<display-template>/templates/web/entry.ftl</display-template>
 	<descriptor-mapper>hierarchical-mapper</descriptor-mapper>
