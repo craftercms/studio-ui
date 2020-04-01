@@ -19,12 +19,13 @@
 
 import { catchApi1Error, get, postJSON } from '../utils/ajax';
 import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 export function fetchDependencies(siteId: string, items: any) {
   return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`)
 }
 
-export function getSimpleDependencies(siteId: string, path: string) {
+export function getSimpleDependencies(siteId: string, path: string): Observable<any> {
   return postJSON(
     `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json?site=${siteId}&path=${path}`,
     null
@@ -40,7 +41,7 @@ export function getSimpleDependencies(siteId: string, path: string) {
   );
 }
 
-export function getDependant(siteId: string, path: string) {
+export function getDependant(siteId: string, path: string): Observable<any> {
   return postJSON(
     `/studio/api/1/services/api/1/dependency/get-dependant.json?site=${siteId}&path=${path}`,
     null
