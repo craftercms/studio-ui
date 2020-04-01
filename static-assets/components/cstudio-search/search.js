@@ -14,243 +14,264 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function (window, $, Handlebars) {
-    'use strict';
+(function(window, $, Handlebars) {
+  'use strict';
 
-    if (typeof window.CStudioSearch == "undefined" || !window.CStudioSearch) {
-        var CStudioSearch = {};
-        window.CStudioSearch = CStudioSearch;
-    }
+  if (typeof window.CStudioSearch == 'undefined' || !window.CStudioSearch) {
+    var CStudioSearch = {};
+    window.CStudioSearch = CStudioSearch;
+  }
 
-    /* default search context */
-    CStudioSearch.searchContext = {
-        searchId: null,
-        mode: "default"              // possible mode values: [default|select]
+  /* default search context */
+  CStudioSearch.searchContext = {
+    searchId: null,
+    mode: 'default' // possible mode values: [default|select]
+  };
+
+  CStudioSearch.init = function() {
+    CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
+    CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
+
+    this.messages = {
+      browseSearchMessages: CrafterCMSNext.i18n.messages.browseSearchMessages,
+      words: CrafterCMSNext.i18n.messages.words
     };
 
-    CStudioSearch.init = function() {
+    this.searchContext.mode = CStudioAuthoring.Utils.getQueryVariable(document.location.search, 'mode') || 'default';
+    this.searchContext.searchId = CStudioAuthoring.Utils.getQueryVariable(document.location.search, 'searchId');
+    $('section.cstudio-search').addClass(this.searchContext.mode);
 
-        CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
-        CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
+    // arrange iframe according to search mode
+    if (this.searchContext.mode != 'select') {
+      CStudioAuthoring.Events.contextNavLoaded.subscribe(function() {
+        CStudioAuthoring.ContextualNav.hookNavOverlayFromAuthoring();
+        CStudioAuthoring.InContextEdit.autoInitializeEditRegions();
+      });
+    } else this.renderFormControls();
 
-        this.messages = {
-          browseSearchMessages: CrafterCMSNext.i18n.messages.browseSearchMessages,
-          words: CrafterCMSNext.i18n.messages.words
-        };
+    this.bindEvents();
+    const container = document.querySelector('.cstudio-search');
+    CrafterCMSNext.render(container, 'Search', {
+      onEdit: CStudioSearch.editElement,
+      onDelete: CStudioSearch.deleteElement,
+      onPreview: CStudioSearch.previewElement,
+      onSelect: CStudioSearch.changeSelectStatus,
+      onGetUserPermissions: CStudioSearch.getUserPermissions,
+      mode: this.searchContext.mode,
+      siteId: CStudioAuthoringContext.siteId,
+      previewAppBaseUri: CStudioAuthoringContext.previewAppBaseUri
+    });
+  };
 
-        this.searchContext.mode = CStudioAuthoring.Utils.getQueryVariable(document.location.search, "mode") || 'default';
-        this.searchContext.searchId = CStudioAuthoring.Utils.getQueryVariable(document.location.search, "searchId");
-        $('section.cstudio-search').addClass(this.searchContext.mode);
+  CStudioSearch.bindEvents = function() {
+    $('#cstudio-command-controls').on('click', '#formSaveButton', function() {
+      CStudioSearch.saveContent();
+    });
+    $('#cstudio-command-controls').on('click', '#formCancelButton', function() {
+      window.close();
+      $(window.frameElement.parentElement)
+        .closest('.studio-ice-dialog')
+        .parent()
+        .remove(); //TODO: find a better way
+    });
+  };
 
-        // arrange iframe according to search mode
-        if (this.searchContext.mode != "select") {
-            CStudioAuthoring.Events.contextNavLoaded.subscribe(function() {
-              CStudioAuthoring.ContextualNav.hookNavOverlayFromAuthoring();
-              CStudioAuthoring.InContextEdit.autoInitializeEditRegions();
-            });
-        } else
-            this.renderFormControls();
+  CStudioSearch.renderFormControls = function(result) {
+    var $formControlContainer = $('#cstudio-command-controls-container'),
+      source = $('#hb-command-controls').html(),
+      template = Handlebars.compile(source),
+      html;
 
-        this.bindEvents();
-        const container = document.querySelector('.cstudio-search');
-        CrafterCMSNext
-          .render(
-            container,
-            'Search',
-            {
-              onEdit: CStudioSearch.editElement,
-              onDelete: CStudioSearch.deleteElement,
-              onPreview: CStudioSearch.previewElement,
-              onSelect: CStudioSearch.changeSelectStatus,
-              onGetUserPermissions: CStudioSearch.getUserPermissions,
-              mode: this.searchContext.mode,
-              siteId: CStudioAuthoringContext.siteId,
-              previewAppBaseUri: CStudioAuthoringContext.previewAppBaseUri
-            }
-          );
-    };
+    html = template(result);
+    $(html).appendTo($formControlContainer);
+  };
 
-    CStudioSearch.bindEvents = function() {
-        $('#cstudio-command-controls').on('click', '#formSaveButton', function(){
-            CStudioSearch.saveContent();
-        });
-        $('#cstudio-command-controls').on('click', '#formCancelButton', function(){
-            window.close();
-            $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
-        });
-    };
-
-    CStudioSearch.renderFormControls = function(result) {
-        var $formControlContainer = $('#cstudio-command-controls-container'),
-            source = $("#hb-command-controls").html(),
-            template = Handlebars.compile(source),
-            html;
-
-        html = template(result);
-        $(html).appendTo($formControlContainer);
-    };
-
-    CStudioSearch.changeSelectStatus = function(path, selected){
-        var callback = {
-            success: function (contentTO) {
-                if (selected == true) {
-                    CStudioAuthoring.SelectedContent.selectContent(contentTO.item);
-                }
-                else {
-                    CStudioAuthoring.SelectedContent.unselectContent(contentTO.item);
-                }
-                if($('#formSaveButton')) {
-                  $('#formSaveButton').prop("disabled", CStudioAuthoring.SelectedContent.getSelectedContentCount() === 0);
-                }
-            },
-            failure: function (error) {
-                console.error(error);
-            }
-        }
-
-        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
-    };
-
-    CStudioSearch.saveContent = function() {
-        var _self = this;
-        var searchId = this.searchContext ? this.searchContext.searchId : "" ;
-        var crossServerAccess = false;
-        var opener = window.opener ? window.opener : parent.iframeOpener;
-
-        try {
-            // unfortunately we cannot signal a form close across servers
-            // our preview is in one server
-            // our authoring is in another
-            // in this case we just close the window, no way to pass back details which is ok in some cases
-            if(opener.CStudioAuthoring) {}
-        } catch (crossServerAccessErr) {
-            crossServerAccess = true;
-        }
-        if (opener && !crossServerAccess) {
-
-            if (opener.CStudioAuthoring) {
-                var openerChildSearchMgr = opener.CStudioAuthoring.ChildSearchManager;
-
-                if (openerChildSearchMgr) {
-                    var searchConfig = openerChildSearchMgr.searches[searchId];
-                    if (searchConfig) {
-                        var callback = searchConfig.saveCallback;
-                        if (callback) {
-                            var selectedContentTOs = CStudioAuthoring.SelectedContent.getSelectedContent();
-                            openerChildSearchMgr.signalSearchClose(searchId, selectedContentTOs);
-                      } else {
-                          //TODO PUT THIS BACK
-                          //alert("no success callback provided for seach: " + searchId);
-                      }
-
-                      window.close();
-                      $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
-
-                    } else {
-                        CStudioAuthoring.Operations.showSimpleDialog(
-                          "lookUpChildError-dialog",
-                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
-                          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.browseSearchMessages.lookUpChildError, { searchId }),
-                          [{ text: "OK",  handler:function(){
-                              this.hide();
-                              window.close();
-                              $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
-                            }, isDefault:false }],
-                          YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                          "studioDialog"
-                        );
-                    }
-                } else {
-                    CStudioAuthoring.Operations.showSimpleDialog(
-                      "lookUpParentError-dialog",
-                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                      CMgs.format(langBundle, "notification"),
-                      CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
-                      CrafterCMSNext.i18n.intl.formatMessage(_self.messages.browseSearchMessages.lookUpParentError, { searchId }),
-                      [{ text: "OK",  handler:function(){
-                          this.hide();
-                          window.close();
-                          $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
-                        }, isDefault:false }],
-                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                      "studioDialog"
-                    );
-                }
-            }
+  CStudioSearch.changeSelectStatus = function(path, selected) {
+    var callback = {
+      success: function(contentTO) {
+        if (selected == true) {
+          CStudioAuthoring.SelectedContent.selectContent(contentTO.item);
         } else {
-            // no window opening context or cross server call
-            // the only thing we can do is close the window
-            window.close();
-            $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
+          CStudioAuthoring.SelectedContent.unselectContent(contentTO.item);
         }
+        if ($('#formSaveButton')) {
+          $('#formSaveButton').prop('disabled', CStudioAuthoring.SelectedContent.getSelectedContentCount() === 0);
+        }
+      },
+      failure: function(error) {
+        console.error(error);
+      }
     };
 
-    CStudioSearch.editElement = function(path, refreshSearch, readonly){
-        var editCallback = {
-                success: function(){
-                  refreshSearch();
-                }
-            },
-            callback = {
-            success: function (contentTO) {
-                var contentTO = contentTO.item;
-                CStudioAuthoring.Operations.editContent(
-                    contentTO.form,
-                    CStudioAuthoringContext.siteId,
-                    contentTO.uri,
-                    contentTO.nodeRef,
-                    contentTO.uri,
-                    false,
-                    editCallback,
-                    readonly? [{name: 'readonly'}] : null
-                  );
-            },
-            failure: function (error) {
-                console.error(error);
-            }
-        };
+    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
+  };
 
-        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
-    };
+  CStudioSearch.saveContent = function() {
+    var _self = this;
+    var searchId = this.searchContext ? this.searchContext.searchId : '';
+    var crossServerAccess = false;
+    var opener = window.opener ? window.opener : parent.iframeOpener;
 
-    CStudioSearch.deleteElement = function(path, refreshSearch){
-        var callback = {
-            success: function (contentTO) {
-                var contentTO = contentTO.item;
-                CStudioAuthoring.Operations.deleteContent([contentTO], null, refreshSearch);
-            },
-            failure: function (error) {
-                console.error(error);
-            }
-        };
-
-        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
-    };
-
-    CStudioSearch.previewElement = function(url){
-        CStudioAuthoring.Service.lookupContentItem(
-            CStudioAuthoringContext.site,
-            url,
-            { success:function(to) {
-                CStudioAuthoring.Operations.openPreview(to.item, 'undefined', false, false);
-            },
-            failure: function() {}
-        }, false);
-    };
-
-    CStudioSearch.getUserPermissions = function (path) {
-     return new Promise((resolve, reject) => {
-       CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, path, {
-         success: function (results) {
-           resolve(results);
-         },
-         failure: function () {
-           reject('unableToRetrieveUserPermissions');
-         }
-       });
-     });
-
+    try {
+      // unfortunately we cannot signal a form close across servers
+      // our preview is in one server
+      // our authoring is in another
+      // in this case we just close the window, no way to pass back details which is ok in some cases
+      if (opener.CStudioAuthoring) {
+      }
+    } catch (crossServerAccessErr) {
+      crossServerAccess = true;
     }
+    if (opener && !crossServerAccess) {
+      if (opener.CStudioAuthoring) {
+        var openerChildSearchMgr = opener.CStudioAuthoring.ChildSearchManager;
 
-}) (window, jQuery, Handlebars);
+        if (openerChildSearchMgr) {
+          var searchConfig = openerChildSearchMgr.searches[searchId];
+          if (searchConfig) {
+            var callback = searchConfig.saveCallback;
+            if (callback) {
+              var selectedContentTOs = CStudioAuthoring.SelectedContent.getSelectedContent();
+              openerChildSearchMgr.signalSearchClose(searchId, selectedContentTOs);
+            } else {
+              //TODO PUT THIS BACK
+              //alert("no success callback provided for seach: " + searchId);
+            }
+
+            window.close();
+            $(window.frameElement.parentElement)
+              .closest('.studio-ice-dialog')
+              .parent()
+              .remove(); //TODO: find a better way
+          } else {
+            CStudioAuthoring.Operations.showSimpleDialog(
+              'lookUpChildError-dialog',
+              CStudioAuthoring.Operations.simpleDialogTypeINFO,
+              CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
+              CrafterCMSNext.i18n.intl.formatMessage(_self.messages.browseSearchMessages.lookUpChildError, {
+                searchId
+              }),
+              [
+                {
+                  text: 'OK',
+                  handler: function() {
+                    this.hide();
+                    window.close();
+                    $(window.frameElement.parentElement)
+                      .closest('.studio-ice-dialog')
+                      .parent()
+                      .remove(); //TODO: find a better way
+                  },
+                  isDefault: false
+                }
+              ],
+              YAHOO.widget.SimpleDialog.ICON_BLOCK,
+              'studioDialog'
+            );
+          }
+        } else {
+          CStudioAuthoring.Operations.showSimpleDialog(
+            'lookUpParentError-dialog',
+            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+            CMgs.format(langBundle, 'notification'),
+            CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
+            CrafterCMSNext.i18n.intl.formatMessage(_self.messages.browseSearchMessages.lookUpParentError, { searchId }),
+            [
+              {
+                text: 'OK',
+                handler: function() {
+                  this.hide();
+                  window.close();
+                  $(window.frameElement.parentElement)
+                    .closest('.studio-ice-dialog')
+                    .parent()
+                    .remove(); //TODO: find a better way
+                },
+                isDefault: false
+              }
+            ],
+            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+            'studioDialog'
+          );
+        }
+      }
+    } else {
+      // no window opening context or cross server call
+      // the only thing we can do is close the window
+      window.close();
+      $(window.frameElement.parentElement)
+        .closest('.studio-ice-dialog')
+        .parent()
+        .remove(); //TODO: find a better way
+    }
+  };
+
+  CStudioSearch.editElement = function(path, refreshSearch, readonly) {
+    var editCallback = {
+        success: function() {
+          refreshSearch();
+        }
+      },
+      callback = {
+        success: function(contentTO) {
+          var contentTO = contentTO.item;
+          CStudioAuthoring.Operations.editContent(
+            contentTO.form,
+            CStudioAuthoringContext.siteId,
+            contentTO.uri,
+            contentTO.nodeRef,
+            contentTO.uri,
+            false,
+            editCallback,
+            readonly ? [{ name: 'readonly' }] : null
+          );
+        },
+        failure: function(error) {
+          console.error(error);
+        }
+      };
+
+    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
+  };
+
+  CStudioSearch.deleteElement = function(path, refreshSearch) {
+    var callback = {
+      success: function(contentTO) {
+        var contentTO = contentTO.item;
+        CStudioAuthoring.Operations.deleteContent([contentTO], null, refreshSearch);
+      },
+      failure: function(error) {
+        console.error(error);
+      }
+    };
+
+    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
+  };
+
+  CStudioSearch.previewElement = function(url) {
+    CStudioAuthoring.Service.lookupContentItem(
+      CStudioAuthoringContext.site,
+      url,
+      {
+        success: function(to) {
+          CStudioAuthoring.Operations.openPreview(to.item, 'undefined', false, false);
+        },
+        failure: function() {}
+      },
+      false
+    );
+  };
+
+  CStudioSearch.getUserPermissions = function(path) {
+    return new Promise((resolve, reject) => {
+      CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, path, {
+        success: function(results) {
+          resolve(results);
+        },
+        failure: function() {
+          reject('unableToRetrieveUserPermissions');
+        }
+      });
+    });
+  };
+})(window, jQuery, Handlebars);

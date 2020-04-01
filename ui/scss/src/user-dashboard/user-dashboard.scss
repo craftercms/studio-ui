@@ -18,7 +18,7 @@
 $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
 
 // bower:scss
-@import "../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
+@import "../../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
 // endbower
 
 @import "../util/util";
@@ -26,7 +26,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
 @import "type";
 @import "layout";
 @import "navbar";
-@import "repositories";
+@import "../repositories";
 
 @import "views";
 

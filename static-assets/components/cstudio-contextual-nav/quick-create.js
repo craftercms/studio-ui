@@ -114,7 +114,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
     // });
   },
 
-  rowTemplate: function (label, i) {
+  rowTemplate: function(label, i) {
     return '<li class="item' + i + '"><a class="pointer">' + label + '</a></li>';
   },
 
