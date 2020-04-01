@@ -29,7 +29,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import { LegacyVersion } from '../../../../../guest/src/models/version';
 import makeStyles from '@material-ui/styles/makeStyles';
-import { Theme, Menu, MenuItem, Button } from '@material-ui/core';
+import { Theme } from '@material-ui/core';
 import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../../styles/theme';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
