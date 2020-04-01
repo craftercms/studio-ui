@@ -199,7 +199,6 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
           }
           case EMBEDDED_LEGACY_FORM_SAVE: {
             closeEmbeddedLegacyForm(e.data.refresh, tab);
-
             legacySuccessHandler?.(e);
 
             if (!legacySuccessHandler && e.data.redirectUrl) {

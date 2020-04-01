@@ -77,13 +77,20 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
+interface QuickCreateMenuProps {
+  legacySuccessHandler?(response): any;
+  anchorEl: any;
+  onMenuClose: any;
+  previewItem: any;
+}
+
+export function QuickCreateMenu(props: QuickCreateMenuProps) {
+  const { anchorEl, onMenuClose, previewItem, legacySuccessHandler } = props;
   const classes = useStyles({});
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
-
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
@@ -145,6 +152,7 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
           showController={false}
           dialogConfig={dialogConfig}
           setDialogConfig={setDialogConfig}
+          legacySuccessHandler={legacySuccessHandler}
         />
       )}
       <NewContentDialog
@@ -152,6 +160,7 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
         onDialogClose={onDialogClose}
         site={siteId}
         previewItem={previewItem}
+        legacySuccessHandler={legacySuccessHandler}
       />
     </>
   );

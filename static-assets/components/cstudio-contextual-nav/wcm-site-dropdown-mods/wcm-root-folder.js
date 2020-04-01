@@ -3055,6 +3055,7 @@
        * Creates new content. Opens the form to create content
        */
       createContent: function() {
+        const container = document.createElement('div');
         const createSuccess = (currentTextNode) => ({ data }) => {
           const acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
           eventYS.data = currentTextNode;
@@ -3075,7 +3076,6 @@
 
         function renderNewContentDialog(open) {
           const { site, internalName, fileName, uri } = oCurrentTextNode.data;
-          const container = document.createElement('div');
           let unmount;
           CrafterCMSNext.render(container, 'NewContentDialog', {
             legacySuccessHandler: createSuccess(oCurrentTextNode),
@@ -3085,7 +3085,7 @@
               uri
             },
             open,
-            onDialogClose: () => unmount(),
+            onDialogClose: () => renderNewContentDialog(false),
             site
           }).then((done) => (unmount = done.unmount));
         }
