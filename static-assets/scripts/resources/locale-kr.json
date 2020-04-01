@@ -250,7 +250,7 @@
         "BULKPUBLISH": "대량 게시",
         "PATHPUBLISH": "게시 경로",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
-        "PUBLISHINGENVIRONMENT": "환경",
+        "PUBLISHINGENVIRONMENT": "게시 대상",
         "PUBLISHINGSUBMISSIONCOMMENT": "제출 코멘트",
         "PUBLISH": "게시",
         "PATH":"통로",

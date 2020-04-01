@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Controls.RTETINYMCE5 = CStudioForms.Controls.RTETINYMCE5 ||
-  function (id, form, owner, properties, constraints, readonly, pencilMode) {
+CStudioForms.Controls.RTETINYMCE5 =
+  CStudioForms.Controls.RTETINYMCE5 ||
+  function(id, form, owner, properties, constraints, readonly, pencilMode) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -38,26 +39,24 @@ CStudioForms.Controls.RTETINYMCE5 = CStudioForms.Controls.RTETINYMCE5 ||
     return this;
   };
 
-CStudioForms.Controls.RTETINYMCE5.plugins =  CStudioForms.Controls.RTETINYMCE5.plugins || {};
+CStudioForms.Controls.RTETINYMCE5.plugins = CStudioForms.Controls.RTETINYMCE5.plugins || {};
 
 CStudioAuthoring.Module.requireModule(
   'cstudio-forms-rte-config-manager',
   '/static-assets/components/cstudio-forms/controls/rte-config-manager.js',
   {},
   {
-    moduleLoaded: function () {
-
+    moduleLoaded: function() {
       const YDom = YAHOO.util.Dom;
       YAHOO.extend(CStudioForms.Controls.RTETINYMCE5, CStudioForms.CStudioFormField, {
-
-        getLabel: function () {
+        getLabel: function() {
           return CMgs.format(langBundle, 'rteTinyMCE5');
         },
 
         /**
          * render the RTE
          */
-        render: function (config, containerEl) {
+        render: function(config, containerEl) {
           var _thisControl = this,
             configuration = 'generic';
 
@@ -73,19 +72,23 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
-          CStudioForms.Controls.RTEManager.getRteConfiguration(configuration, 'no-role-support', {
-            success: function (rteConfig) {
-              _thisControl._initializeRte(config, rteConfig, containerEl);
+          CStudioForms.Controls.RTEManager.getRteConfiguration(
+            configuration,
+            'no-role-support',
+            {
+              success: function(rteConfig) {
+                _thisControl._initializeRte(config, rteConfig, containerEl);
+              },
+              failure: function() {}
             },
-            failure: function () {
-            }
-          }, '/form-control-config/rte/rte-setup-tinymce5.xml');
+            '/form-control-config/rte/rte-setup-tinymce5.xml'
+          );
         },
 
         /**
          * get the value of this control
          */
-        getValue: function () {
+        getValue: function() {
           if (this.editor) {
             this.editor.save();
             value = this.inputEl.value;
@@ -98,19 +101,18 @@ CStudioAuthoring.Module.requireModule(
         /**
          * set the value for the control
          */
-        setValue: function (value) {
+        setValue: function(value) {
           this.value = value;
 
           try {
             tinymce.activeEditor.setContent(value, { format: 'raw' });
-          } catch (err) {
-          }
+          } catch (err) {}
 
           this.updateModel(value);
           this.edited = false;
         },
 
-        updateModel: function (value) {
+        updateModel: function(value) {
           const newValue = this.escapeScripts ? value : CStudioForms.Util.unEscapeXml(value);
 
           this.form.updateModel(this.id, newValue);
@@ -119,14 +121,14 @@ CStudioAuthoring.Module.requireModule(
         /**
          * get the widget name
          */
-        getName: function () {
+        getName: function() {
           return 'rte-tinymce5';
         },
 
         /**
          * get supported properties
          */
-        getSupportedProperties: function () {
+        getSupportedProperties: function() {
           return [
             { label: this.formatMessage(this.contentTypesMessages.width), name: 'width', type: 'int' },
             { label: this.formatMessage(this.contentTypesMessages.height), name: 'height', type: 'int' },
@@ -186,20 +188,18 @@ CStudioAuthoring.Module.requireModule(
         /**
          * get the supported constraints
          */
-        getSupportedConstraints: function () {
-          return [
-            { label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }
-          ];
+        getSupportedConstraints: function() {
+          return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
         },
 
-        getSupportedPostFixes: function () {
+        getSupportedPostFixes: function() {
           return this.supportedPostFixes;
         },
 
         /**
          * render and initialization of editor
          */
-        _initializeRte: function (config, rteConfig, containerEl) {
+        _initializeRte: function(config, rteConfig, containerEl) {
           var _thisControl = this,
             editor,
             callback,
@@ -228,36 +228,36 @@ CStudioAuthoring.Module.requireModule(
             var prop = config.properties[i];
 
             switch (prop.name) {
-              case 'imageManager' :
-                this.imageManagerName = (prop.value && prop.Value != '') ? prop.value : null;
+              case 'imageManager':
+                this.imageManagerName = prop.value && prop.Value != '' ? prop.value : null;
                 break;
-              case 'videoManager' :
-                this.videoManagerName = (prop.value && prop.Value != '') ? prop.value : null;
+              case 'videoManager':
+                this.videoManagerName = prop.value && prop.Value != '' ? prop.value : null;
                 break;
-              case 'width' :
+              case 'width':
                 var value = isNaN(parseInt(prop.value)) ? prop.value : parseInt(prop.value);
-                this.rteWidth = (typeof prop.value == 'string' && prop.value) ? value : '100%';
+                this.rteWidth = typeof prop.value == 'string' && prop.value ? value : '100%';
                 break;
-              case 'fileManager' :
-                this.fileManagerName = (prop.value && prop.Value != '') ? prop.value : null;
+              case 'fileManager':
+                this.fileManagerName = prop.value && prop.Value != '' ? prop.value : null;
                 break;
-              case 'height' :
-                this.rteHeight = (prop.value === undefined || prop.value === '') ? 300 : parseInt(prop.value, 10);
+              case 'height':
+                this.rteHeight = prop.value === undefined || prop.value === '' ? 300 : parseInt(prop.value, 10);
                 break;
-              case 'autoGrow' :
-                this.autoGrow = (prop.value == 'false') ? false : true;
+              case 'autoGrow':
+                this.autoGrow = prop.value == 'false' ? false : true;
                 break;
-              case 'maxlength' :
+              case 'maxlength':
                 inputEl.maxlength = prop.value;
                 break;
-              case 'forcePTags' :
-                var forcePTags = (prop.value == 'false') ? false : true;
+              case 'forcePTags':
+                var forcePTags = prop.value == 'false' ? false : true;
                 break;
-              case 'forceBRTags' :
-                var forceBRTags = (prop.value == 'true') ? true : false;
+              case 'forceBRTags':
+                var forceBRTags = prop.value == 'true' ? true : false;
                 break;
-              case 'forceRootBlockPTag' :
-                var forceRootBlockPTag = (prop.value == 'false') ? false : 'p';
+              case 'forceRootBlockPTag':
+                var forceRootBlockPTag = prop.value == 'false' ? false : 'p';
                 break;
             }
           }
@@ -270,14 +270,21 @@ CStudioAuthoring.Module.requireModule(
 
           extendedValidElements = rteConfig.extendedElements ? rteConfig.extendedElements : '';
 
-          toolbarConfig1 = (rteConfig.toolbarItems1 && rteConfig.toolbarItems1.length != 0) ?
-            rteConfig.toolbarItems1 : 'bold italic | bullist numlist';
-          toolbarConfig2 = (rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length != 0) ? rteConfig.toolbarItems2 : '';
-          toolbarConfig3 = (rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length != 0) ? rteConfig.toolbarItems3 : '';
-          toolbarConfig4 = (rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length != 0) ? rteConfig.toolbarItems4 : '';
+          toolbarConfig1 =
+            rteConfig.toolbarItems1 && rteConfig.toolbarItems1.length != 0
+              ? rteConfig.toolbarItems1
+              : 'bold italic | bullist numlist';
+          toolbarConfig2 =
+            rteConfig.toolbarItems2 && rteConfig.toolbarItems2.length != 0 ? rteConfig.toolbarItems2 : '';
+          toolbarConfig3 =
+            rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length != 0 ? rteConfig.toolbarItems3 : '';
+          toolbarConfig4 =
+            rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length != 0 ? rteConfig.toolbarItems4 : '';
 
-          rteStylesheets = (rteConfig.rteStylesheets && typeof rteConfig.rteStylesheets === 'object')
-            ? rteConfig.rteStylesheets.link : null;
+          rteStylesheets =
+            rteConfig.rteStylesheets && typeof rteConfig.rteStylesheets === 'object'
+              ? rteConfig.rteStylesheets.link
+              : null;
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
@@ -308,15 +315,14 @@ CStudioAuthoring.Module.requireModule(
             extended_valid_elements: extendedValidElements,
 
             menu: {
-              tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' },
+              tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
             },
 
             automatic_uploads: true,
             file_picker_types: 'image media file',
-            file_picker_callback: function (cb, value, meta) {
+            file_picker_callback: function(cb, value, meta) {
               // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
               _thisControl.createControl(cb, meta);
-
             },
 
             templates: templates,
@@ -324,8 +330,8 @@ CStudioAuthoring.Module.requireModule(
             content_css: rteStylesheets,
             content_style: rteStyleOverride,
 
-            setup: function (editor) {
-              var addPadding = function () {
+            setup: function(editor) {
+              var addPadding = function() {
                 const formHeader = $('#formHeader');
                 if (formHeader.is(':visible')) {
                   formHeader.addClass('padded-top');
@@ -333,7 +339,7 @@ CStudioAuthoring.Module.requireModule(
                   $('#formContainer').addClass('padded-top');
                 }
               };
-              editor.on('init', function (e) {
+              editor.on('init', function(e) {
                 amplify.publish('/field/init/completed');
                 _thisControl.editorId = editor.id;
                 _thisControl.editor = editor;
@@ -341,36 +347,37 @@ CStudioAuthoring.Module.requireModule(
                 _thisControl._hideBars(this.editorContainer);
               });
 
-              editor.on('focus', function (e) {
+              editor.on('focus', function(e) {
                 addPadding();
                 _thisControl._showBars(this.editorContainer);
               });
 
-              editor.on('blur', function (e) {
+              editor.on('blur', function(e) {
                 addPadding();
                 _thisControl._hideBars(this.editorContainer);
               });
 
-              editor.on('keyup paste', function (e) {
+              editor.on('keyup paste', function(e) {
                 _thisControl.save();
                 _thisControl._onChangeVal(null, _thisControl);
               });
 
               // Save model when setting content into editor (images, tables, etc).
-              editor.on('SetContent', function (e) {
+              editor.on('SetContent', function(e) {
                 // Don't save model on initial setting of content (initializing editor)
                 if (!e.initial) {
                   _thisControl.save();
                 }
               });
 
-              editor.on('Change', function (e) {
+              editor.on('Change', function(e) {
                 const id = _thisControl.editorId,
                   windowHeight = $(window).height(),
                   $editorIframe = $('#' + id + '_ifr'),
-                  editorScrollTop = $editorIframe.offset().top,   // Top position in document
-                  editorPos = $editorIframe[0].getBoundingClientRect().top > 0 ? $editorIframe[0].getBoundingClientRect().top : 0, // Top position in current view
-                  currentSelectionPos = $(tinymce.activeEditor.selection.getNode()).offset().top,   // Top position of current node selected in editor
+                  editorScrollTop = $editorIframe.offset().top, // Top position in document
+                  editorPos =
+                    $editorIframe[0].getBoundingClientRect().top > 0 ? $editorIframe[0].getBoundingClientRect().top : 0, // Top position in current view
+                  currentSelectionPos = $(tinymce.activeEditor.selection.getNode()).offset().top, // Top position of current node selected in editor
                   editorHeight = $editorIframe.height();
 
                 // if current selection it out of view, scroll to selection
@@ -383,36 +390,35 @@ CStudioAuthoring.Module.requireModule(
                 }
               });
 
-              editor.on('DblClick', function (e) {
+              editor.on('DblClick', function(e) {
                 if (e.target.nodeName == 'IMG') {
                   tinyMCE.activeEditor.execCommand('mceImage');
                 }
               });
 
-              editor.on('Focus', function (e) {
+              editor.on('Focus', function(e) {
                 const id = _thisControl.editorId;
                 $('#' + id + ' + .tox-tinymce').addClass('focused');
               });
 
-              editor.on('Blur', function (e) {
+              editor.on('Blur', function(e) {
                 const id = _thisControl.editorId;
                 $('#' + id + ' + .tox-tinymce').removeClass('focused');
               });
-
             }
           });
 
           // Update all content before saving the form (all content is automatically updated on focusOut)
           callback = {};
-          callback.beforeSave = function () {
+          callback.beforeSave = function() {
             _thisControl.save();
           };
           _thisControl.form.registerBeforeSaveCallback(callback);
         },
 
-        createControl: function (cb, meta) {
+        createControl: function(cb, meta) {
           var datasourcesNames = '',
-            imageManagerNames = this.imageManagerName,  // List of image datasource IDs, could be an array or a string
+            imageManagerNames = this.imageManagerName, // List of image datasource IDs, could be an array or a string
             videoManagerNames = this.videoManagerName,
             fileManagerNames = this.fileManagerName,
             addContainerEl,
@@ -420,12 +426,21 @@ CStudioAuthoring.Module.requireModule(
             _self = this,
             type = meta.filetype == 'media' ? 'video' : meta.filetype == 'file' ? 'item' : meta.filetype;
 
-          imageManagerNames = (!imageManagerNames) ? '' :
-            (Array.isArray(imageManagerNames)) ? imageManagerNames.join(',') : imageManagerNames;  // Turn the list into a string
-          videoManagerNames = (!videoManagerNames) ? '' :
-            (Array.isArray(videoManagerNames)) ? videoManagerNames.join(',') : videoManagerNames;
-          fileManagerNames = (!fileManagerNames) ? '' :
-            (Array.isArray(fileManagerNames)) ? fileManagerNames.join(',') : fileManagerNames;
+          imageManagerNames = !imageManagerNames
+            ? ''
+            : Array.isArray(imageManagerNames)
+            ? imageManagerNames.join(',')
+            : imageManagerNames; // Turn the list into a string
+          videoManagerNames = !videoManagerNames
+            ? ''
+            : Array.isArray(videoManagerNames)
+            ? videoManagerNames.join(',')
+            : videoManagerNames;
+          fileManagerNames = !fileManagerNames
+            ? ''
+            : Array.isArray(fileManagerNames)
+            ? fileManagerNames.join(',')
+            : fileManagerNames;
 
           if (videoManagerNames !== '') {
             datasourcesNames = videoManagerNames;
@@ -460,7 +475,7 @@ CStudioAuthoring.Module.requireModule(
 
             var datasourceMap = this.form.datasourceMap,
               datasourceDef = this.form.definition.datasources,
-              addFunction;		//video or image add function
+              addFunction; //video or image add function
             switch (type) {
               case 'image':
                 addFunction = _self.addManagedImage;
@@ -472,13 +487,13 @@ CStudioAuthoring.Module.requireModule(
                 addFunction = _self.addManagedFile;
             }
 
-            var addMenuOption = function (el) {
+            var addMenuOption = function(el) {
               // We want to avoid possible substring conflicts by using a reg exp (a simple indexOf
               // would fail if a datasource id string is a substring of another datasource id)
               var regexpr = new RegExp('(' + el.id + ')[\\s,]|(' + el.id + ')$'),
                 mapDatasource;
 
-              if ((datasourcesNames.indexOf(el.id) != -1) && (el.interface === type)) {
+              if (datasourcesNames.indexOf(el.id) != -1 && el.interface === type) {
                 mapDatasource = datasourceMap[el.id];
 
                 var itemEl = document.createElement('div');
@@ -486,12 +501,17 @@ CStudioAuthoring.Module.requireModule(
                 itemEl.innerHTML = el.title;
                 addContainerEl.appendChild(itemEl);
 
-                YAHOO.util.Event.on(itemEl, 'click', function () {
-                  _self.addContainerEl = null;
-                  $('.cstudio-form-control-image-picker-add-container').remove();
+                YAHOO.util.Event.on(
+                  itemEl,
+                  'click',
+                  function() {
+                    _self.addContainerEl = null;
+                    $('.cstudio-form-control-image-picker-add-container').remove();
 
-                  addFunction(mapDatasource, cb);		//video or image add function
-                }, itemEl);
+                    addFunction(mapDatasource, cb); //video or image add function
+                  },
+                  itemEl
+                );
               }
             };
             datasourceDef.forEach(addMenuOption);
@@ -504,17 +524,16 @@ CStudioAuthoring.Module.requireModule(
               addContainerEl.appendChild(itemEl);
             }
           }
-
         },
 
         addManagedImage(datasource, cb) {
           if (datasource && datasource.insertImageAction) {
             datasource.insertImageAction({
-              success: function (imageData) {
-                var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
+              success: function(imageData) {
+                var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1'); //remove timestamp
                 cb(cleanUrl, { title: imageData.fileName });
               },
-              failure: function (message) {
+              failure: function(message) {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'message-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -532,12 +551,12 @@ CStudioAuthoring.Module.requireModule(
         addManagedVideo(datasource, cb) {
           if (datasource && datasource.insertVideoAction) {
             datasource.insertVideoAction({
-              success: function (videoData) {
+              success: function(videoData) {
                 cb(videoData.relativeUrl, { title: videoData.fileName });
 
                 // var cleanUrl = imageData.previewUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
               },
-              failure: function (message) {
+              failure: function(message) {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'message-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -554,35 +573,34 @@ CStudioAuthoring.Module.requireModule(
 
         addManagedFile(datasource, cb) {
           if (datasource && datasource.add) {
-            datasource.add({
-              insertItem: function (fileData) {
-                var cleanUrl = fileData;
-                cb(cleanUrl);
+            datasource.add(
+              {
+                insertItem: function(fileData) {
+                  var cleanUrl = fileData;
+                  cb(cleanUrl);
+                },
+                failure: function(message) {
+                  CStudioAuthoring.Operations.showSimpleDialog(
+                    'message-dialog',
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(langBundle, 'notification'),
+                    message,
+                    null,
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    'studioDialog'
+                  );
+                }
               },
-              failure: function (message) {
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  'message-dialog',
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(langBundle, 'notification'),
-                  message,
-                  null,
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
-                );
-              }
-            }, false);
+              false
+            );
           }
         },
 
         /**
          * render of control markup
          */
-        _renderInputMarkup: function (config, rteId) {
-          var titleEl,
-            controlWidgetContainerEl,
-            validEl,
-            inputEl,
-            descriptionEl;
+        _renderInputMarkup: function(config, rteId) {
+          var titleEl, controlWidgetContainerEl, validEl, inputEl, descriptionEl;
 
           YDom.addClass(this.containerEl, 'rte-inactive');
 
@@ -608,7 +626,7 @@ CStudioAuthoring.Module.requireModule(
           controlWidgetContainerEl.appendChild(inputEl);
           YDom.addClass(inputEl, 'datum');
           this.inputEl = inputEl;
-          inputEl.value = (this.value == '_not-set') ? config.defaultValue : this.value;
+          inputEl.value = this.value == '_not-set' ? config.defaultValue : this.value;
           inputEl.id = rteId;
           YDom.addClass(inputEl, 'cstudio-form-control-input');
 
@@ -648,7 +666,7 @@ CStudioAuthoring.Module.requireModule(
         /**
          * on change
          */
-        _onChange: function (evt, obj) {
+        _onChange: function(evt, obj) {
           obj.value = this.editor ? this.editor.getContent() : obj.value;
 
           if (obj.required) {
@@ -666,21 +684,21 @@ CStudioAuthoring.Module.requireModule(
           obj.owner.notifyValidation();
         },
 
-        _onChangeVal: function (evt, obj) {
+        _onChangeVal: function(evt, obj) {
           obj.edited = true;
           this._onChange(evt, obj);
-			    obj.owner.pendingChanges();
+          obj.owner.pendingChanges();
         },
 
         /**
          * call this instead of calling editor.save()
          */
-        save: function (a) {
+        save: function(a) {
           this.updateModel(this.editor.getContent());
         }
       });
 
       CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-rte-tinymce5', CStudioForms.Controls.RTETINYMCE5);
-
     }
-  });
+  }
+);
