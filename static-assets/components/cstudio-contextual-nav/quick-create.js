@@ -21,34 +21,29 @@ var YEvent = YAHOO.util.Event;
  * Branded Logo Plugin
  */
 CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.WcmQuickCreate || {
-
   CMgs: CStudioAuthoring.Messages,
   contextNavLangBundle: CStudioAuthoring.Messages.getBundle('contextnav', CStudioAuthoringContext.lang),
 
   /**
    * initialize module
    */
-  initialize: function () {
+  initialize: function() {
     const quickCreateWrapper = $('.dropdown.quick-create');
 
     function renderQuickCreate(anchorEl) {
       const container = $('#quick-create-menu')[0];
       let unmount;
-      CrafterCMSNext.render(
-        container,
-        'QuickCreateMenu',
-        {
-          previewItem:
-            (CStudioAuthoring && CStudioAuthoring.SelectedContent.selectedContent.length)
-              ? CStudioAuthoring.SelectedContent.selectedContent[0]
-              : null,
-          anchorEl,
-          onMenuClose: () => renderQuickCreate(null)
-        }
-      ).then(done => unmount = done.unmount);
+      CrafterCMSNext.render(container, 'QuickCreateMenu', {
+        previewItem:
+          CStudioAuthoring && CStudioAuthoring.SelectedContent.selectedContent.length
+            ? CStudioAuthoring.SelectedContent.selectedContent[0]
+            : null,
+        anchorEl,
+        onMenuClose: () => renderQuickCreate(null)
+      }).then((done) => (unmount = done.unmount));
     }
 
-    quickCreateWrapper.click(e => renderQuickCreate(e.currentTarget));
+    quickCreateWrapper.click((e) => renderQuickCreate(e.currentTarget));
 
     // TODO:  remove commented code once the QuickCreateMenu.tsx implementation is done
     // var dropdown = $('#quick-create'),
@@ -118,8 +113,12 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
     return '<li class="item' + i + '"><a class="pointer">' + label + '</a></li>';
   },
 
-  createEmptyTemplate: function () {
-    return '<li class="quickCreateEmpty"><i class="fa fa-exclamation-circle"></i>' + this.CMgs.format(this.contextNavLangBundle, 'quickCreateEmpty') + '</li>';
+  createEmptyTemplate: function() {
+    return (
+      '<li class="quickCreateEmpty"><i class="fa fa-exclamation-circle"></i>' +
+      this.CMgs.format(this.contextNavLangBundle, 'quickCreateEmpty') +
+      '</li>'
+    );
   }
 };
 

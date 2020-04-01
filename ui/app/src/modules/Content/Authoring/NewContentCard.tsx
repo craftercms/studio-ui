@@ -22,7 +22,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Divider from '@material-ui/core/Divider';
 import { palette } from '../../../styles/theme';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   defaultCard: {
     maxWidth: 345
   },
@@ -30,10 +30,10 @@ const useStyles = makeStyles(theme => ({
     display: 'flex'
   },
   media: {
-    paddingTop: '70.25%',
+    paddingTop: '70.25%'
   },
   compactMedia: {
-    width: 151,
+    width: 151
   },
   cardTitle: {
     color: palette.black
@@ -46,10 +46,10 @@ interface NewContentCardProps {
   imgTitle: string;
   img: string;
   onClick: any;
-  isCompact: boolean
+  isCompact: boolean;
 }
 
-const DefaultCardContent = props => {
+const DefaultCardContent = (props) => {
   const { headerTitle, subheader, classes, img, imgTitle } = props;
   return (
     <>
@@ -66,24 +66,16 @@ const DefaultCardContent = props => {
         }}
       />
       <Divider />
-      <CardMedia
-        className={classes.media}
-        image={img}
-        title={imgTitle}
-      />
+      <CardMedia className={classes.media} image={img} title={imgTitle} />
     </>
   );
 };
 
-const CompactCardContent = props => {
+const CompactCardContent = (props) => {
   const { headerTitle, subheader, classes, img, imgTitle } = props;
   return (
     <>
-      <CardMedia
-        className={classes.compactMedia}
-        image={img}
-        title={imgTitle}
-      />
+      <CardMedia className={classes.compactMedia} image={img} title={imgTitle} />
       <CardHeader
         title={headerTitle}
         subheader={subheader}
@@ -107,11 +99,11 @@ export default function NewContentCard(props: NewContentCardProps) {
 
   return (
     <Card className={rootClass} onClick={onClick}>
-      {
-        !isCompact
-        ? <DefaultCardContent {...props} classes={classes} />
-        : <CompactCardContent {...props} classes={classes}/>
-      }
+      {!isCompact ? (
+        <DefaultCardContent {...props} classes={classes} />
+      ) : (
+        <CompactCardContent {...props} classes={classes} />
+      )}
     </Card>
   );
 }

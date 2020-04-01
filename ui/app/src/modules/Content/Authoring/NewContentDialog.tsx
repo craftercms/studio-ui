@@ -132,9 +132,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [search, setSearch] = useState('');
   const [previewItem, setPreviewItem] = useState(defaultPreviewItem);
   const [loading, setLoading] = useState(true);
-  const AUTHORING_BASE = useSelection<string>(
-    state => state.env.AUTHORING_BASE
-  );
+  const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
@@ -146,7 +144,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
   const path = previewItem.uri.replace(/[^/]*$/, '');
 
-  const onTypeOpen = srcData => () => {
+  const onTypeOpen = (srcData) => () => {
     onDialogClose();
     setDialogConfig({
       open: true,
@@ -156,58 +154,59 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   const onCompactCheck = () => setIsCompact(!isCompact);
 
-  const onTypeChange = useCallback(type =>
-    (type !== 'all')
-      ? setFilterContentTypes(contentTypes.filter(content => content.type === type))
-      : setFilterContentTypes(contentTypes), [contentTypes]);
+  const onTypeChange = useCallback(
+    (type) =>
+      type !== 'all'
+        ? setFilterContentTypes(contentTypes.filter((content) => content.type === type))
+        : setFilterContentTypes(contentTypes),
+    [contentTypes]
+  );
 
-  const onSearch = useCallback(keyword => {
-    const formatValue = keyword.toLowerCase();
+  const onSearch = useCallback(
+    (keyword) => {
+      const formatValue = keyword.toLowerCase();
 
-    (!keyword)
-      ? onTypeChange('all')
-      : setFilterContentTypes(contentTypes.filter(content => content.label.toLowerCase().includes(formatValue)));
-  }, [onTypeChange, contentTypes]);
+      !keyword
+        ? onTypeChange('all')
+        : setFilterContentTypes(contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue)));
+    },
+    [onTypeChange, contentTypes]
+  );
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
-  const onSearchChange = keyword => {
+  const onSearchChange = (keyword) => {
     setSearch(keyword);
     onSearch$.next(keyword);
   };
 
-  const onParentItemClick = item => {
+  const onParentItemClick = (item) => {
     setLoading(true);
     setPreviewItem(item);
   };
 
   const getPrevImg = (content) =>
-    (content?.imageThumbnail)
-      ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}`
-      : defaultPrevImgUrl;
+    content?.imageThumbnail ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}` : defaultPrevImgUrl;
 
   useEffect(() => {
     if (previewItemProp) setPreviewItem(previewItemProp);
   }, [previewItemProp]);
 
   useEffect(() => {
-    open && fetchLegacyContentTypes(site, path).subscribe(data => {
-      setFilterContentTypes(data);
-      setContentTypes(data);
-      setLoading(false);
-    }, error => setLoading(false));
+    open &&
+      fetchLegacyContentTypes(site, path).subscribe(
+        (data) => {
+          setFilterContentTypes(data);
+          setContentTypes(data);
+          setLoading(false);
+        },
+        (error) => setLoading(false)
+      );
   }, [open, path, site]);
 
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={onDialogClose}
-        disableBackdropClick={true}
-        fullWidth
-        maxWidth={'md'}
-        scroll="paper"
-      >
+      <Dialog open={open} onClose={onDialogClose} disableBackdropClick={true} fullWidth maxWidth={'md'} scroll="paper">
         <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
@@ -231,23 +230,19 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           </Box>
 
           <Grid container spacing={3} className={classes.cardsContainer}>
-            {
-              loading &&
-              <LoadingState title='' classes={{ root: classes.loadingRoot }} />
-            }
-            {
-              (!loading && !filterContentTypes.length) &&
+            {loading && <LoadingState title="" classes={{ root: classes.loadingRoot }} />}
+            {!loading && !filterContentTypes.length && (
               <EmptyState
                 title={formatMessage(translations.noResultsTitle)}
                 subtitle={formatMessage(translations.noResultsSubTitle)}
                 link={formatMessage(translations.noResultsLink)}
-                onLinkClick={e => onTypeChange('all')}
+                onLinkClick={(e) => onTypeChange('all')}
                 classes={{ root: classes.emptyStateRoot }}
               />
-            }
-            {
-              (!loading && filterContentTypes.length) &&
-              filterContentTypes.map(content => (
+            )}
+            {!loading &&
+              filterContentTypes.length &&
+              filterContentTypes.map((content) => (
                 <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
                   <NewContentCard
                     isCompact={isCompact}
@@ -258,30 +253,18 @@ export default function NewContentDialog(props: NewContentDialogProps) {
                     onClick={onTypeOpen(content)}
                   />
                 </Grid>
-              ))
-            }
+              ))}
           </Grid>
         </DialogBody>
         <DialogFooter classes={{ root: classes.dialogActions }}>
           <FormControlLabel
-            control={
-              <Checkbox
-                checked={isCompact}
-                onChange={onCompactCheck}
-                color="primary"
-                disabled={loading}
-              />
-            }
+            control={<Checkbox checked={isCompact} onChange={onCompactCheck} color="primary" disabled={loading} />}
             label={formatMessage(translations.compactInput)}
           />
-          <ContentTypesFilter
-            onTypeChange={onTypeChange}
-            disabled={loading}
-          />
+          <ContentTypesFilter onTypeChange={onTypeChange} disabled={loading} />
         </DialogFooter>
       </Dialog>
-      {
-        dialogConfig.open &&
+      {dialogConfig.open && (
         <EmbeddedLegacyEditors
           showTabs={false}
           showController={false}
@@ -289,7 +272,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           setDialogConfig={setDialogConfig}
           legacySuccessHandler={legacySuccessHandler}
         />
-      }
+      )}
     </>
   );
 }

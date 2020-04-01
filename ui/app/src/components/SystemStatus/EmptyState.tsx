@@ -22,11 +22,11 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles(() => ({
   emptyContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    margin: 'auto',
+    'display': 'flex',
+    'alignItems': 'center',
+    'justifyContent': 'center',
+    'flexDirection': 'column',
+    'margin': 'auto',
     '& .title': {
       marginTop: '20px',
       marginBottom: '10px'
@@ -53,7 +53,7 @@ interface EmptyStateProps {
     subtitle?: string;
     image?: string;
     link?: string;
-  }
+  };
 }
 
 export default function EmptyState(props: EmptyStateProps) {
@@ -63,34 +63,30 @@ export default function EmptyState(props: EmptyStateProps) {
   return (
     <div className={clsx(classes.emptyContainer, propClasses?.root)}>
       <img className={propClasses?.image} src={image ? image : emptyImage} alt="" />
-      {
-        title &&
+      {title && (
         <Typography variant="h5" component="h3" className={propClasses?.title} color="textSecondary">
           {title}
         </Typography>
-      }
-      {
-        subtitle &&
+      )}
+      {subtitle && (
         <Typography variant="subtitle1" component="p" className={propClasses?.subtitle} color="textSecondary">
           {subtitle}
-          {
-            link && (
-              <>
-                {' '}
-                <Typography
-                  variant="subtitle1"
-                  component="a"
-                  className={clsx(classes.link, propClasses?.link)}
-                  color="textSecondary"
-                  onClick={onLinkClick}
-                >
-                  {link}
-                </Typography>
-              </>
-            )
-          }
+          {link && (
+            <>
+              {' '}
+              <Typography
+                variant="subtitle1"
+                component="a"
+                className={clsx(classes.link, propClasses?.link)}
+                color="textSecondary"
+                onClick={onLinkClick}
+              >
+                {link}
+              </Typography>
+            </>
+          )}
         </Typography>
-      }
+      )}
     </div>
   );
 }

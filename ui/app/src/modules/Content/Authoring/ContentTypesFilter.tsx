@@ -65,10 +65,10 @@ const translations = defineMessages({
   contentTypeFavoriteLabel: {
     id: 'contentTypeFavorite.label',
     defaultMessage: 'Favorites only'
-  },
+  }
 });
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   menu: {
     '& ul': {
       padding: '5px 10px'
@@ -92,7 +92,7 @@ const useStyles = makeStyles(theme => ({
 
 interface ContentTypesFilterProps {
   onTypeChange(type: string): any;
-  disabled: boolean
+  disabled: boolean;
 }
 
 export default function ContentTypesFilter(props: ContentTypesFilterProps) {
@@ -126,9 +126,9 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
 
   const onMenuClose = () => setAnchorEl(null);
 
-  const onMenuOpen = e => setAnchorEl(e.currentTarget);
+  const onMenuOpen = (e) => setAnchorEl(e.currentTarget);
 
-  const onChange = e => {
+  const onChange = (e) => {
     onTypeChange(e.target.value);
     setType(e.target.value);
     onMenuClose();
@@ -137,10 +137,7 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
   return (
     <>
       <Button disabled={disabled} onClick={onMenuOpen} className={classes.openMenuBtn}>
-        <FormattedMessage
-          id="openMenuBtn.text"
-          defaultMessage="Show all types"
-        />
+        <FormattedMessage id="openMenuBtn.text" defaultMessage="Show all types" />
         <ArrowDropDownIcon className={classes.openMenuBtnIcon} />
       </Button>
       <Menu
@@ -160,16 +157,14 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
         }}
       >
         <RadioGroup value={type} onChange={onChange} className={classes.radioGroup}>
-          {
-            CONTENT_TYPES.map(contentType => (
-              <FormControlLabel
-                key={contentType.type}
-                value={contentType.type}
-                control={<Radio color="primary" />}
-                label={contentType.label}
-              />
-            ))
-          }
+          {CONTENT_TYPES.map((contentType) => (
+            <FormControlLabel
+              key={contentType.type}
+              value={contentType.type}
+              control={<Radio color="primary" />}
+              label={contentType.label}
+            />
+          ))}
         </RadioGroup>
       </Menu>
     </>

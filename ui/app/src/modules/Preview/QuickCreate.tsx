@@ -25,11 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
-import {
-  useActiveSiteId,
-  useSpreadState,
-  useSelection, usePreviewState
-} from '../../utils/hooks';
+import { useActiveSiteId, useSpreadState, useSelection, usePreviewState } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import NewContentDialog from '../Content/Authoring/NewContentDialog';
 
@@ -53,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     menu: {
-      transform: 'translate(20px, 15px)',
+      'transform': 'translate(20px, 15px)',
       '& ul': {
         paddingTop: 0,
         minWidth: '140px'
@@ -69,10 +65,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     menuSectionTitle: {
-      fontSize: 12,
-      backgroundColor: palette.gray.light0,
-      color: palette.gray.medium3,
-      padding: '5px 16px',
+      'fontSize': 12,
+      'backgroundColor': palette.gray.light0,
+      'color': palette.gray.medium3,
+      'padding': '5px 16px',
       '&:hover': {
         backgroundColor: palette.gray.light0,
         cursor: 'text'
@@ -86,9 +82,7 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
   const siteId = useActiveSiteId();
-  const AUTHORING_BASE = useSelection<string>(
-    state => state.env.AUTHORING_BASE
-  );
+  const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
 
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [dialogConfig, setDialogConfig] = useSpreadState({
@@ -103,16 +97,12 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
     setDisplayNewContentDialog(true);
   };
 
-  const onFormDisplay = srcData => () => {
+  const onFormDisplay = (srcData) => () => {
     const { contentTypeId, path: _path } = srcData;
     const today = new Date();
-    const formatPath = _path.replace(
-      '{year}',
-      today.getFullYear()
-    ).replace(
-      '{month}',
-      ('0' + (today.getMonth() + 1)).slice(-2)
-    );
+    const formatPath = _path
+      .replace('{year}', today.getFullYear())
+      .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
 
     onMenuClose();
 
@@ -128,61 +118,35 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
 
   useEffect(() => {
     if (siteId) {
-      getQuickCreateContentList(siteId).subscribe(data =>
-        setQuickCreateContentList(data.items)
-      );
+      getQuickCreateContentList(siteId).subscribe((data) => setQuickCreateContentList(data.items));
     }
   }, [siteId]);
 
   return (
     <>
-      <Menu
-        className={classes.menu}
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={onMenuClose}
-      >
-        <MenuItem
-          className={classes.menuTitle}
-          onClick={onNewContentClick}>
-          <FormattedMessage
-            id="quickCreateMenu.title"
-            defaultMessage="New Content"
-          />
+      <Menu className={classes.menu} anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={onMenuClose}>
+        <MenuItem className={classes.menuTitle} onClick={onNewContentClick}>
+          <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
         </MenuItem>
         <Divider />
-        <Typography
-          component="h4"
-          className={classes.menuSectionTitle}
-        >
-          <FormattedMessage
-            id="quickCreateMenu.sectionTitle"
-            defaultMessage="Quick Create"
-          />
+        <Typography component="h4" className={classes.menuSectionTitle}>
+          <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
 
-        {
-          quickCreateContentList?.map(item =>
-            <MenuItem
-              key={item.path}
-              onClick={onFormDisplay(item)}
-              className={classes.menuItem}
-            >
-              {item.label}
-            </MenuItem>
-          )
-        }
+        {quickCreateContentList?.map((item) => (
+          <MenuItem key={item.path} onClick={onFormDisplay(item)} className={classes.menuItem}>
+            {item.label}
+          </MenuItem>
+        ))}
       </Menu>
-      {
-        dialogConfig.open &&
+      {dialogConfig.open && (
         <EmbeddedLegacyEditors
           showTabs={false}
           showController={false}
           dialogConfig={dialogConfig}
           setDialogConfig={setDialogConfig}
         />
-      }
+      )}
       <NewContentDialog
         open={displayNewContentDialog}
         onDialogClose={onDialogClose}
@@ -191,7 +155,6 @@ export function QuickCreateMenu({ anchorEl, onMenuClose, previewItem }) {
       />
     </>
   );
-
 }
 
 export function QuickCreateMenuButton({ onMenuBtnClick }) {
@@ -215,10 +178,12 @@ export default function QuickCreate() {
   const [currentPreview, setCurrentPreview] = useState(null);
   const { guest } = usePreviewState();
 
-  const onMenuBtnClick = e => {
+  const onMenuBtnClick = (e) => {
     if (guest) {
       const { modelId, models } = guest;
-      const { craftercms: { label, path } } = models[modelId];
+      const {
+        craftercms: { label, path }
+      } = models[modelId];
       const item = {
         name: label,
         internalName: label,
@@ -234,11 +199,7 @@ export default function QuickCreate() {
   return (
     <>
       <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
-      <QuickCreateMenu
-        anchorEl={anchorEl}
-        onMenuClose={onMenuClose}
-        previewItem={currentPreview}
-      />
+      <QuickCreateMenu anchorEl={anchorEl} onMenuClose={onMenuClose} previewItem={currentPreview} />
     </>
   );
 }

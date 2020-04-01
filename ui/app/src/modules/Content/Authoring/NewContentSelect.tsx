@@ -50,10 +50,10 @@ const MENU_ITEMS = [
     name: 'Root path',
     internalName: 'Root',
     uri: '/'
-  },
+  }
 ];
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: palette.white,
     display: 'flex',
@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
     padding: '10px 15px'
   },
   textWrapper: {
-    display: 'flex',
+    'display': 'flex',
     '& > *': {
       marginRight: 15
     },
@@ -122,32 +122,23 @@ export default function NewContentSelect(props: NewContentSelectProps) {
           {label}
         </Typography>
         <LabelIcon className={clsx(classes.labelIcon, labelIconClass)} />
-        <Typography variant={labelVariant || 'body1'}>
-          {selectItem.internalName}
-        </Typography>
+        <Typography variant={labelVariant || 'body1'}>{selectItem.internalName}</Typography>
       </div>
       <IconButton
         className={classes.changeBtn}
-        onClick={e => {
+        onClick={(e) => {
           setanchorEl(e.currentTarget);
           onEditClick();
         }}
       >
         <EditIcon className={clsx(classes.editIcon, editIconClass)} />
       </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={() => setanchorEl(null)}
-      >
-        {
-          MENU_ITEMS.map(item => (
-            <MenuItem key={item.name} onClick={() => onParentItemClick(item)}>
-              {item.name}
-            </MenuItem>
-          ))
-        }
+      <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={() => setanchorEl(null)}>
+        {MENU_ITEMS.map((item) => (
+          <MenuItem key={item.name} onClick={() => onParentItemClick(item)}>
+            {item.name}
+          </MenuItem>
+        ))}
       </Menu>
     </Paper>
   );
