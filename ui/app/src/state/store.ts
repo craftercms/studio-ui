@@ -28,6 +28,7 @@ const middleware = getDefaultMiddleware({ thunk: false }).concat(epicMiddleware)
 
 const store = configureStore<GlobalState, StandardAction>({
   reducer,
+  // @ts-ignore
   middleware,
   preloadedState: createInitialState()
 });
