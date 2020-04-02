@@ -58,7 +58,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: palette.white,
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '10px 15px'
+    padding: '10px 15px',
+    '& p': {
+      padding: 0
+    }
   },
   textWrapper: {
     'display': 'flex',
@@ -86,9 +89,12 @@ const useStyles = makeStyles((theme) => ({
 
 interface NewContentSelectProps {
   LabelIcon: OverridableComponent<SvgIconTypeMap>;
-  editIconClass?: string;
-  rootClass?: string;
-  labelIconClass?: string;
+  classes?: {
+    root?: string;
+    title?: string;
+    editIcon?: string;
+    labelIcon?: string;
+  };
   selectItem: Item;
   label: string;
   titleVariant?: Variant;
@@ -102,9 +108,7 @@ interface NewContentSelectProps {
 export default function NewContentSelect(props: NewContentSelectProps) {
   const {
     LabelIcon,
-    editIconClass,
-    labelIconClass,
-    rootClass,
+    classes: propClasses,
     titleVariant,
     labelVariant,
     onEditClick,
@@ -123,12 +127,12 @@ export default function NewContentSelect(props: NewContentSelectProps) {
   };
 
   return (
-    <Paper className={clsx(classes.root, rootClass)} elevation={0}>
+    <Paper className={clsx(classes.root, propClasses?.root)} elevation={0}>
       <div className={classes.textWrapper}>
-        <Typography variant={titleVariant || 'body1'} className={classes.title}>
+        <Typography variant={titleVariant || 'body1'} className={clsx(classes.title, propClasses?.title)}>
           {label}
         </Typography>
-        <LabelIcon className={clsx(classes.labelIcon, labelIconClass)} />
+        <LabelIcon className={clsx(classes.labelIcon, propClasses?.labelIcon)} />
         <Typography variant={labelVariant || 'body1'}>{selectItem.internalName}</Typography>
       </div>
       <IconButton
@@ -138,7 +142,7 @@ export default function NewContentSelect(props: NewContentSelectProps) {
           onEditClick();
         }}
       >
-        <EditIcon className={clsx(classes.editIcon, editIconClass)} />
+        <EditIcon className={clsx(classes.editIcon, propClasses?.editIcon)} />
       </IconButton>
       <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={onMenuClose}>
         {MENU_ITEMS.map((item) => (
