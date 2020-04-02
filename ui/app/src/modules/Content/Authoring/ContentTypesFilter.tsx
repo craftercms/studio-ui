@@ -101,7 +101,7 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
         }}
       >
         <RadioGroup value={type} onChange={onChange} className={classes.radioGroup}>
-          {filters.map(filter => (
+          {filters.map((filter) => (
             <FormControlLabel
               key={filter.type}
               value={filter.type}

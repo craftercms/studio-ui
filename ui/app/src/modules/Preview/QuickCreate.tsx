@@ -136,8 +136,13 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
   return (
     <>
-      <Menu classes={{ paper: classes.menu }} anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)}
-            onClose={onMenuClose}>
+      <Menu
+        classes={{ paper: classes.menu }}
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={onMenuClose}
+      >
         <MenuItem className={classes.menuTitle} onClick={onNewContentClick}>
           <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
         </MenuItem>

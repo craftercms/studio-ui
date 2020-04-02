@@ -262,8 +262,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   const emptyStateSubtitle = () => (
     <>
-      <FormattedMessage id="emptyState.subtitle" defaultMessage="Try changing your query or browse the" />
-      {' '}
+      <FormattedMessage id="emptyState.subtitle" defaultMessage="Try changing your query or browse the" />{' '}
       <Typography
         variant="subtitle1"
         component="a"
@@ -282,14 +281,14 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   useEffect(() => {
     open &&
-    fetchLegacyContentTypes(site, path).subscribe(
-      (data) => {
-        setFilterContentTypes(data);
-        setContentTypes(data);
-        setLoading(false);
-      },
-      (error) => setLoading(false)
-    );
+      fetchLegacyContentTypes(site, path).subscribe(
+        (data) => {
+          setFilterContentTypes(data);
+          setContentTypes(data);
+          setLoading(false);
+        },
+        (error) => setLoading(false)
+      );
   }, [open, path, site]);
 
   return (
@@ -327,19 +326,19 @@ export default function NewContentDialog(props: NewContentDialogProps) {
               />
             )}
             {!loading &&
-            filterContentTypes.length &&
-            filterContentTypes.map((content) => (
-              <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
-                <NewContentCard
-                  isCompact={isCompact}
-                  headerTitle={content.label}
-                  subheader={content.form}
-                  imgTitle={formatMessage(translations.previewImage)}
-                  img={getPrevImg(content)}
-                  onClick={onTypeOpen(content)}
-                />
-              </Grid>
-            ))}
+              filterContentTypes.length &&
+              filterContentTypes.map((content) => (
+                <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
+                  <NewContentCard
+                    isCompact={isCompact}
+                    headerTitle={content.label}
+                    subheader={content.form}
+                    imgTitle={formatMessage(translations.previewImage)}
+                    img={getPrevImg(content)}
+                    onClick={onTypeOpen(content)}
+                  />
+                </Grid>
+              ))}
           </Grid>
         </DialogBody>
         <DialogFooter classes={{ root: classes.dialogActions }}>
@@ -351,7 +350,8 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             filters={contentTypesFilters}
             onTypeChange={onTypeChange}
             disabled={loading}
-            resetType={resetFilterType} />
+            resetType={resetFilterType}
+          />
         </DialogFooter>
       </Dialog>
       {dialogConfig.open && (
