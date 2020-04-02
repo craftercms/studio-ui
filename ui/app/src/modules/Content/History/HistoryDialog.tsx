@@ -49,6 +49,7 @@ import { Suspencified } from '../../../components/SystemStatus/Suspencified';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import { LookupTable } from '../../../models/LookupTable';
 import clsx from 'clsx';
+import CardActionArea from '@material-ui/core/CardActionArea';
 
 const translations = defineMessages({
   headerTitle: {
@@ -229,51 +230,57 @@ interface HistoryListProps {
     nextVersion?: LegacyVersion
   }
 
+  handleItemClick(version: LegacyVersion): void;
+
   handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
 }
-
-//compareTo?.version && version.versionNumber !== compareTo?.version.versionNumber
 
 function HistoryList(props: HistoryListProps) {
   const { formatMessage } = useIntl();
   const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, emptyMessage, compareTo } = props;
+  const { resource, handleOpenMenu, rowsPerPage, page, emptyMessage, compareTo, handleItemClick } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   return versions.length === 0 ? (
     <EmptyState title={emptyMessage}/>
   ) : (
     <List component="div" className={classes.list} disablePadding>
-      {versions.map((version: LegacyVersion, i: number) => (
-        <ListItem
-          key={version.versionNumber}
-          divider={versions.length - 1 !== i}
-          className={clsx(classes.listItem, version.versionNumber === compareTo?.version.versionNumber && 'selected')}
-        >
-          <ListItemText
-            classes={{
-              multiline: classes.listItemTextMultiline,
-              primary: classes.listItemTextPrimary
-            }}
-            primary={
-              <>
-                <FancyFormattedDate date={version.lastModifiedDate}/>
-                {i === 0 && page === 0 && (
-                  <Chip label={formatMessage(translations.current)} className={classes.chip}/>
-                )}
-              </>
-            }
-            secondary={version.comment}
-          />
-          <ListItemSecondaryAction>
-            <IconButton
-              edge="end"
-              onClick={(e) => handleOpenMenu(e.currentTarget, version, i === 0 && page === 0)}
-            >
-              <MoreVertIcon/>
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
-      ))}
+      {versions.map((version: LegacyVersion, i: number) => {
+        let isSelected = version.versionNumber === compareTo?.version.versionNumber;
+        let isButton = compareTo?.version && !isSelected;
+        return (
+          <ListItem
+            key={version.versionNumber}
+            divider={versions.length - 1 !== i}
+            button={isButton as true}
+            onClick={isButton ? () => handleItemClick(version) : null}
+            className={clsx(classes.listItem, isSelected && 'selected')}
+          >
+            <ListItemText
+              classes={{
+                multiline: classes.listItemTextMultiline,
+                primary: classes.listItemTextPrimary
+              }}
+              primary={
+                <>
+                  <FancyFormattedDate date={version.lastModifiedDate}/>
+                  {i === 0 && page === 0 && (
+                    <Chip label={formatMessage(translations.current)} className={classes.chip}/>
+                  )}
+                </>
+              }
+              secondary={version.comment}
+            />
+            <ListItemSecondaryAction>
+              <IconButton
+                edge="end"
+                onClick={(e) => handleOpenMenu(e.currentTarget, version, i === 0 && page === 0)}
+              >
+                <MoreVertIcon/>
+              </IconButton>
+            </ListItemSecondaryAction>
+          </ListItem>
+        )
+      })}
     </List>
   );
 }
@@ -385,6 +392,10 @@ export default function HistoryDialog(props) {
     [setMenu]
   );
 
+  const handleItemClick = (version: LegacyVersion) => {
+    console.log(version);
+  };
+
   const handleMenuClose = () => {
     setMenu({
       anchorEl: null,
@@ -422,6 +433,7 @@ export default function HistoryDialog(props) {
             component={HistoryList}
             componentProps={{
               handleOpenMenu,
+              handleItemClick,
               emptyMessage: formatMessage(translations.emptyMessage),
               rowsPerPage,
               page,
@@ -436,7 +448,7 @@ export default function HistoryDialog(props) {
               classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
               component="div"
               labelRowsPerPage=""
-              rowsPerPageOptions={[20]}
+              rowsPerPageOptions={[10, 20, 30]}
               count={data.versions.length}
               rowsPerPage={rowsPerPage}
               page={page}
