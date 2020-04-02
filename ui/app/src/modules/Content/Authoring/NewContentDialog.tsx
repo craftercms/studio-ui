@@ -31,14 +31,21 @@ import NewContentCard from './NewContentCard';
 import NewContentSelect from './NewContentSelect';
 import SearchBar from '../../../components/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
-import EmptyState from '../../../components/SystemStatus/EmptyState';
 import { Item } from '../../../models/Item';
-import { useDebouncedInput, useSelection, useSpreadState } from '../../../utils/hooks';
-import LoadingState from '../../../components/SystemStatus/LoadingState';
+import {
+  useDebouncedInput,
+  useSelection,
+  useSpreadState,
+  useStateResource
+} from '../../../utils/hooks';
 import DialogBody from '../../../components/DialogBody';
 import DialogFooter from '../../../components/DialogFooter';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 import Typography from '@material-ui/core/Typography';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import { APIError, EntityState } from '../../../models/GlobalState';
+import { LegacyFormConfig } from '../../../models/ContentType';
+import { Resource } from '../../../models/Resource';
 
 const translations = defineMessages({
   title: {
@@ -56,10 +63,6 @@ const translations = defineMessages({
   compactInput: {
     id: 'compactInput.label',
     defaultMessage: 'Compact'
-  },
-  noResultsTitle: {
-    id: 'noResults.title',
-    defaultMessage: 'No Content Types Found'
   },
   contentTypeAll: {
     id: 'contentTypeAll.type',
@@ -153,12 +156,39 @@ interface NewContentDialogProps {
   open: boolean;
   site: string;
   previewItem: Item;
-
   onDialogClose(): void;
-
   onSaveLegacySuccess?(response): any;
-
   onSaveSuccess?(response): any;
+}
+
+interface ContentTypesGridProps {
+  resource: Resource<LegacyFormConfig[]>;
+  isCompact: boolean;
+  onTypeOpen(data: LegacyFormConfig): void;
+  getPrevImg(data: LegacyFormConfig): string;
+}
+
+function ContentTypesGrid(props: ContentTypesGridProps) {
+  const { resource, isCompact, onTypeOpen, getPrevImg } = props;
+  const classes = useStyles({});
+  const { formatMessage } = useIntl();
+  const filterContentTypes = resource.read();
+  return (
+    <Grid container spacing={3} className={classes.cardsContainer}>
+      {filterContentTypes.map((content) => (
+        <Grid item key={content.label} xs={12} sm={!isCompact ? 4 : 6}>
+          <NewContentCard
+            isCompact={isCompact}
+            headerTitle={content.label}
+            subheader={content.form}
+            imgTitle={formatMessage(translations.previewImage)}
+            img={getPrevImg(content)}
+            onClick={onTypeOpen(content)}
+          />
+        </Grid>
+      ))}
+    </Grid>
+  );
 }
 
 export default function NewContentDialog(props: NewContentDialogProps) {
@@ -214,6 +244,17 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       type: formatMessage(translations.contentTypeFavorite)
     }
   ];
+  const [error, setError] = useState<APIError>(null);
+  const resource = useStateResource<LegacyFormConfig[], EntityState<LegacyFormConfig>>(
+    filterContentTypes,
+    {
+      shouldResolve: (data) => Boolean(data),
+      shouldReject: () => Boolean(error),
+      shouldRenew: (source, resource) => resource.complete,
+      resultSelector: () => filterContentTypes,
+      errorSelector: () => error
+    }
+  );
 
   const onTypeOpen = (srcData) => () => {
     onDialogClose();
@@ -274,7 +315,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const emptyStateSubtitle = () => (
     <>
       <FormattedMessage
-        id="emptyState.subtitle"
+        id="newContentDialog.emptyStateMessageSubtitle"
         defaultMessage="Try changing your query or browse the"
       />{' '}
       <Typography
@@ -284,7 +325,10 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         color="textSecondary"
         onClick={onResetFilter}
       >
-        <FormattedMessage id="emptyState.link" defaultMessage="full catalog." />
+        <FormattedMessage
+          id="newContentDialog.emptyStateMessageLink"
+          defaultMessage="full catalog."
+        />
       </Typography>
     </>
   );
@@ -296,12 +340,12 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   useEffect(() => {
     open &&
       fetchLegacyContentTypes(site, path).subscribe(
-        (data) => {
-          setFilterContentTypes(data);
-          setContentTypes(data);
+        (response) => {
+          setFilterContentTypes(response);
+          setContentTypes(response);
           setLoading(false);
         },
-        (error) => setLoading(false)
+        (error) => setError(error)
       );
   }, [open, path, site]);
 
@@ -330,30 +374,26 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             </Box>
           </Box>
 
-          <Grid container spacing={3} className={classes.cardsContainer}>
-            {loading && <LoadingState title="" classes={{ root: classes.loadingRoot }} />}
-            {!loading && !filterContentTypes.length && (
-              <EmptyState
-                title={formatMessage(translations.noResultsTitle)}
-                subtitle={emptyStateSubtitle()}
-                classes={{ root: classes.emptyStateRoot }}
-              />
-            )}
-            {!loading &&
-              !!filterContentTypes.length &&
-              filterContentTypes.map((content) => (
-                <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
-                  <NewContentCard
-                    isCompact={isCompact}
-                    headerTitle={content.label}
-                    subheader={content.form}
-                    imgTitle={formatMessage(translations.previewImage)}
-                    img={getPrevImg(content)}
-                    onClick={onTypeOpen(content)}
+          <SuspenseWithEmptyState
+            resource={resource}
+            component={ContentTypesGrid}
+            componentProps={{
+              isCompact,
+              onTypeOpen,
+              getPrevImg
+            }}
+            withEmptyStateProps={{
+              emptyStateProps: {
+                title: (
+                  <FormattedMessage
+                    id="newContentDialog.emptyStateMessage"
+                    defaultMessage="No Content Types Found"
                   />
-                </Grid>
-              ))}
-          </Grid>
+                ),
+                subtitle: emptyStateSubtitle()
+              }
+            }}
+          />
         </DialogBody>
         <DialogFooter classes={{ root: classes.dialogActions }}>
           <FormControlLabel
