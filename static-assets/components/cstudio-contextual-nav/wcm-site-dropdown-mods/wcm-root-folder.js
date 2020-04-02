@@ -3084,22 +3084,9 @@
        */
       pasteContent: function (sType, args, tree) {
         //Check source and destination paths.
-        if ((Self.cutItem != null && Self.cutItem.contentElId == oCurrentTextNode.contentElId) ||
-          (Self.copiedItem != null && (Self.copiedItem.contentElId == oCurrentTextNode.contentElId) || Self.copiedItem == oCurrentTextNode.data.uri)) {
-          CStudioAuthoring.Operations.showSimpleDialog(
-            'pathSameError-dialog',
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(siteDropdownLangBundle, 'notification'),
-            CMgs.format(siteDropdownLangBundle, 'pathSameError'),
-            [{
-              text: 'OK', handler: function () {
-                this.hide();
-                return false;
-              }, isDefault: false
-            }],
-            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
-          );
+        if (Self.cutItem != null && Self.cutItem.contentElId == oCurrentTextNode.contentElId) {
+          // Cut/paste in the same directory, would have no consequence, so simply jump as if everything was done correctly.
+          return;
         } else {
           window.pasteFlag = true;
           var pasteCb = {
@@ -3171,6 +3158,7 @@
 
           CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
         }
+
       },
       duplicateContent: function(sType, args, tree) {
 
