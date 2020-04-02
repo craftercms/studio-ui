@@ -49,66 +49,68 @@ import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import ContentTree from './Tools/ContentTree';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  drawer: {
-    flexShrink: 0,
-    width: DRAWER_WIDTH
-  },
-  drawerPaper: {
-    top: 64,
-    bottom: 0,
-    height: 'auto',
-    width: DRAWER_WIDTH,
-    zIndex: (theme.zIndex.appBar - 1)
-  },
-  itemIconRoot: {
-    minWidth: 35
-  },
-  secondaryActionRoot: {
-    display: 'flex'
-  },
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    drawer: {
+      flexShrink: 0,
+      width: DRAWER_WIDTH
+    },
+    drawerPaper: {
+      top: 64,
+      bottom: 0,
+      height: 'auto',
+      width: DRAWER_WIDTH,
+      zIndex: theme.zIndex.appBar - 1
+    },
+    itemIconRoot: {
+      minWidth: 35
+    },
+    secondaryActionRoot: {
+      display: 'flex'
+    },
 
-  panelHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-start'
-  },
-  panelTitle: {},
-  panelBody: {},
-  panelBodyInner: {
-    padding: theme.spacing(1)
-  },
-  center: {
-    textAlign: 'center'
-  },
+    panelHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(0, 1),
+      ...theme.mixins.toolbar,
+      justifyContent: 'flex-start'
+    },
+    panelTitle: {},
+    panelBody: {},
+    panelBodyInner: {
+      padding: theme.spacing(1)
+    },
+    center: {
+      textAlign: 'center'
+    },
 
-  simulatorFlipColumn: {
-    display: 'flex',
-    alignItems: 'flex-end'
-  },
-  simulatorFlipButton: {
-    marginBottom: `${theme.spacing(1)}px`
-  },
-  presetFieldset: {
-    marginTop: theme.spacing(1)
-  },
+    simulatorFlipColumn: {
+      display: 'flex',
+      alignItems: 'flex-end'
+    },
+    simulatorFlipButton: {
+      marginBottom: `${theme.spacing(1)}px`
+    },
+    presetFieldset: {
+      marginTop: theme.spacing(1)
+    },
 
-  ellipsis: {
-    textOverflow: 'ellipsis',
-    whitespace: 'no-wrap',
-    overflow: 'hidden'
-  },
+    ellipsis: {
+      textOverflow: 'ellipsis',
+      whitespace: 'no-wrap',
+      overflow: 'hidden'
+    },
 
-  emptyState: {
-    margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
-  },
-  emptyStateImage: {
-    width: '50%',
-    marginBottom: theme.spacing(1)
-  },
-}));
+    emptyState: {
+      margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+    },
+    emptyStateImage: {
+      width: '50%',
+      marginBottom: theme.spacing(1)
+    }
+  })
+);
 
 const translations = defineMessages({
   unknownPanel: {
@@ -138,6 +140,10 @@ const translations = defineMessages({
   contentTreePanel: {
     id: 'craftercms.ice.contentTreePanel.title',
     defaultMessage: 'Content Tree'
+  },
+  loading: {
+    id: 'words.loading',
+    defaultMessage: 'Loading'
   }
 });
 
@@ -145,9 +151,13 @@ function UnknownPanel(props: any) {
   const classes = useStyles({});
   return (
     <ToolPanel title={translations.unknownPanel}>
-      <Typography component="div" variant="body1" className={`${classes.panelBodyInner} ${classes.center}`}>
+      <Typography
+        component="div"
+        variant="body1"
+        className={`${classes.panelBodyInner} ${classes.center}`}
+      >
         <div>
-          <WarningRounded/>
+          <WarningRounded />
         </div>
         <pre className={classes.ellipsis} title={props.id}>
           {props.id}
@@ -162,27 +172,30 @@ function UnknownPanel(props: any) {
 }
 
 function ToolSelector() {
-
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { tools } = usePreviewState();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
-  return (
-    (tools == null) ? (
-      <LoadingState title="Loading..." graphicProps={{ width: 150 }}/>
-    ) : <List>
-      {tools.map((tool) => ({
-        ...tool,
-        Icon: componentIconMap[tool.id] || WarningRounded,
-        title: getTranslation(tool.title, translations, formatMessage)
-      })).map(({ id, title, Icon }) =>
-        <ListItem key={id} button onClick={() => select(id)}>
-          <ListItemIcon className={classes.itemIconRoot}><Icon/></ListItemIcon>
-          <ListItemText primary={title}/>
-          <ChevronRightIcon/>
-        </ListItem>
-      )}
+  return tools == null ? (
+    <LoadingState title={`${formatMessage(translations.loading)}...`} />
+  ) : (
+    <List>
+      {tools
+        .map((tool) => ({
+          ...tool,
+          Icon: componentIconMap[tool.id] || WarningRounded,
+          title: getTranslation(tool.title, translations, formatMessage)
+        }))
+        .map(({ id, title, Icon }) => (
+          <ListItem key={id} button onClick={() => select(id)}>
+            <ListItemIcon className={classes.itemIconRoot}>
+              <Icon />
+            </ListItemIcon>
+            <ListItemText primary={title} />
+            <ChevronRightIcon />
+          </ListItem>
+        ))}
     </List>
   );
 }
@@ -208,32 +221,33 @@ const componentMap: any = {
 };
 
 export default function ToolsPanel() {
-
   const classes = useStyles({});
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const {
-    guest,
-    tools,
-    selectedTool,
-    showToolsPanel
-  } = usePreviewState();
-  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const { guest, tools, selectedTool, showToolsPanel } = usePreviewState();
+  const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
 
-  let Tool = guest?.selected ? EditFormPanel : (selectedTool ? (componentMap[selectedTool] || UnknownPanel) : ToolSelector);
+  let Tool = guest?.selected
+    ? EditFormPanel
+    : selectedTool
+    ? componentMap[selectedTool] || UnknownPanel
+    : ToolSelector;
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
   let config = toolMeta?.config;
 
   useEffect(() => {
-    const fetchConfigSubscription = (!tools && site) && getPreviewToolsConfig(site).subscribe(
-      (tools) => {
-        dispatch(toolsLoaded(tools.modules));
-      },
-      (e) => {
-        // TODO: Show error view.
-        console.error(`AAAWWHHGG!! Tools panel config didn't load`, e);
-      }
-    );
+    const fetchConfigSubscription =
+      !tools &&
+      site &&
+      getPreviewToolsConfig(site).subscribe(
+        (tools) => {
+          dispatch(toolsLoaded(tools.modules));
+        },
+        (e) => {
+          // TODO: Show error view.
+          console.error(`AAAWWHHGG!! Tools panel config didn't load`, e);
+        }
+      );
     return () => {
       fetchConfigSubscription && fetchConfigSubscription.unsubscribe();
     };
@@ -247,18 +261,20 @@ export default function ToolsPanel() {
       className={classes.drawer}
       classes={{ paper: classes.drawerPaper }}
     >
-      {
-        site
-          ? <Tool id={toolMeta?.id} config={config}/>
-          : (
-            <EmptyState
-              title="Please choose site."
-              image={`${AUTHORING_BASE}/static-assets/images/choose_option.svg`}
-              classes={{ root: classes.emptyState, image: classes.emptyStateImage }}
+      {site ? (
+        <Tool id={toolMeta?.id} config={config} />
+      ) : (
+        <EmptyState
+          title={
+            <FormattedMessage
+              id="previewTools.choseSiteMessage"
+              defaultMessage="Please choose site."
             />
-          )
-      }
+          }
+          image={`${AUTHORING_BASE}/static-assets/images/choose_option.svg`}
+          classes={{ root: classes.emptyState, image: classes.emptyStateImage }}
+        />
+      )}
     </Drawer>
   );
-
 }
