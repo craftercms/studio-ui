@@ -52,11 +52,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     menu: {
-      'transform': 'translate(20px, 15px)',
-      '& ul': {
-        paddingTop: 0,
-        minWidth: '140px'
-      }
+      paddingTop: 0,
+      minWidth: '140px'
     },
 
     menuItem: {
@@ -83,7 +80,9 @@ const useStyles = makeStyles((theme: Theme) =>
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
   previewItem: Item;
+
   onSaveLegacySuccess?(response): void;
+
   onMenuClose(): void;
 }
 
@@ -137,7 +136,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
   return (
     <>
-      <Menu className={classes.menu} anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={onMenuClose}>
+      <Menu classes={{ paper: classes.menu }} anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)}
+            onClose={onMenuClose}>
         <MenuItem className={classes.menuTitle} onClick={onNewContentClick}>
           <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
         </MenuItem>

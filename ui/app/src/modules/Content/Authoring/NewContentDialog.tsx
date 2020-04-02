@@ -60,6 +60,46 @@ const translations = defineMessages({
   noResultsTitle: {
     id: 'noResults.title',
     defaultMessage: 'No Content Types Found'
+  },
+  contentTypeAll: {
+    id: 'contentTypeAll.type',
+    defaultMessage: 'all'
+  },
+  contentTypeAllLabel: {
+    id: 'contentTypeAll.label',
+    defaultMessage: 'Show all types'
+  },
+  contentTypePage: {
+    id: 'contentTypePage.type',
+    defaultMessage: 'page'
+  },
+  contentTypePageLabel: {
+    id: 'contentTypePage.label',
+    defaultMessage: 'Pages only'
+  },
+  contentTypeComponent: {
+    id: 'contentTypeComponent.type',
+    defaultMessage: 'component'
+  },
+  contentTypeComponentLabel: {
+    id: 'contentTypeComponent.label',
+    defaultMessage: 'Components only'
+  },
+  contentTypeQuickCreate: {
+    id: 'contentTypeQuickCreate.type',
+    defaultMessage: 'quickCreate'
+  },
+  contentTypeQuickCreateLabel: {
+    id: 'contentTypeQuickCreate.label',
+    defaultMessage: 'Quick create only'
+  },
+  contentTypeFavorite: {
+    id: 'contentTypeFavorite.type',
+    defaultMessage: 'favorite'
+  },
+  contentTypeFavoriteLabel: {
+    id: 'contentTypeFavorite.label',
+    defaultMessage: 'Favorites only'
   }
 });
 
@@ -131,6 +171,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [search, setSearch] = useState('');
   const [previewItem, setPreviewItem] = useState(defaultPreviewItem);
   const [loading, setLoading] = useState(true);
+  const [resetFilterType, setResetFilterType] = useState('');
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [dialogConfig, setDialogConfig] = useSpreadState({
@@ -142,6 +183,28 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
   const path = previewItem.uri.replace(/[^/]*$/, '');
+  const contentTypesFilters = [
+    {
+      label: formatMessage(translations.contentTypeAllLabel),
+      type: formatMessage(translations.contentTypeAll)
+    },
+    {
+      label: formatMessage(translations.contentTypePageLabel),
+      type: formatMessage(translations.contentTypePage)
+    },
+    {
+      label: formatMessage(translations.contentTypeComponentLabel),
+      type: formatMessage(translations.contentTypeComponent)
+    },
+    {
+      label: formatMessage(translations.contentTypeQuickCreateLabel),
+      type: formatMessage(translations.contentTypeQuickCreate)
+    },
+    {
+      label: formatMessage(translations.contentTypeFavoriteLabel),
+      type: formatMessage(translations.contentTypeFavorite)
+    }
+  ];
 
   const onTypeOpen = (srcData) => () => {
     onDialogClose();
@@ -154,10 +217,12 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const onCompactCheck = () => setIsCompact(!isCompact);
 
   const onTypeChange = useCallback(
-    (type) =>
+    (type) => {
+      setResetFilterType('');
       type !== 'all'
         ? setFilterContentTypes(contentTypes.filter((content) => content.type === type))
-        : setFilterContentTypes(contentTypes),
+        : setFilterContentTypes(contentTypes);
+    },
     [contentTypes]
   );
 
@@ -165,11 +230,14 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     (keyword) => {
       const formatValue = keyword.toLowerCase();
 
-      !keyword
-        ? onTypeChange('all')
-        : setFilterContentTypes(contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue)));
+      if (!keyword) {
+        setResetFilterType('all');
+        setFilterContentTypes(contentTypes);
+      } else {
+        setFilterContentTypes(contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue)));
+      }
     },
-    [onTypeChange, contentTypes]
+    [contentTypes]
   );
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
@@ -184,6 +252,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     setPreviewItem(item);
   };
 
+  const onResetFilter = () => {
+    setResetFilterType('all');
+    setFilterContentTypes(contentTypes);
+  };
+
   const getPrevImg = (content) =>
     content?.imageThumbnail ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}` : defaultPrevImgUrl;
 
@@ -196,7 +269,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         component="a"
         className={classes.emptyStateLink}
         color="textSecondary"
-        onClick={() => onTypeChange('all')}
+        onClick={onResetFilter}
       >
         <FormattedMessage id="emptyState.link" defaultMessage="full catalog." />
       </Typography>
@@ -221,7 +294,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   return (
     <>
-      <Dialog open={open} onClose={onDialogClose} disableBackdropClick={true} fullWidth maxWidth="md" scroll="paper">
+      <Dialog open={open} onClose={onDialogClose} fullWidth maxWidth="md" scroll="paper">
         <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
@@ -274,7 +347,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             control={<Checkbox checked={isCompact} onChange={onCompactCheck} color="primary" disabled={loading} />}
             label={formatMessage(translations.compactInput)}
           />
-          <ContentTypesFilter onTypeChange={onTypeChange} disabled={loading} />
+          <ContentTypesFilter
+            filters={contentTypesFilters}
+            onTypeChange={onTypeChange}
+            disabled={loading}
+            resetType={resetFilterType} />
         </DialogFooter>
       </Dialog>
       {dialogConfig.open && (

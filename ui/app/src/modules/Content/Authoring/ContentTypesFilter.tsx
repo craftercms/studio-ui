@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
-import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
+import React, { useEffect, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
 import { palette } from '../../../styles/theme';
 import Button from '@material-ui/core/Button';
@@ -25,54 +25,9 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
-const translations = defineMessages({
-  contentTypeAll: {
-    id: 'contentTypeAll.type',
-    defaultMessage: 'all'
-  },
-  contentTypeAllLabel: {
-    id: 'contentTypeAll.label',
-    defaultMessage: 'Show all types'
-  },
-  contentTypePage: {
-    id: 'contentTypePage.type',
-    defaultMessage: 'page'
-  },
-  contentTypePageLabel: {
-    id: 'contentTypePage.label',
-    defaultMessage: 'Pages only'
-  },
-  contentTypeComponent: {
-    id: 'contentTypeComponent.type',
-    defaultMessage: 'component'
-  },
-  contentTypeComponentLabel: {
-    id: 'contentTypeComponent.label',
-    defaultMessage: 'Components only'
-  },
-  contentTypeQuickCreate: {
-    id: 'contentTypeQuickCreate.type',
-    defaultMessage: 'quickCreate'
-  },
-  contentTypeQuickCreateLabel: {
-    id: 'contentTypeQuickCreate.label',
-    defaultMessage: 'Quick create only'
-  },
-  contentTypeFavorite: {
-    id: 'contentTypeFavorite.type',
-    defaultMessage: 'favorite'
-  },
-  contentTypeFavoriteLabel: {
-    id: 'contentTypeFavorite.label',
-    defaultMessage: 'Favorites only'
-  }
-});
-
 const useStyles = makeStyles((theme) => ({
   menu: {
-    '& ul': {
-      padding: '5px 10px'
-    }
+    padding: '5px 10px'
   },
   openMenuBtn: {
     fontSize: '16px'
@@ -90,39 +45,24 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+interface Filter {
+  type: string;
+  label: string;
+}
+
 interface ContentTypesFilterProps {
   onTypeChange(type: string): any;
+
   disabled: boolean;
+  filters: Filter[];
+  resetType?: string;
 }
 
 export default function ContentTypesFilter(props: ContentTypesFilterProps) {
-  const { onTypeChange, disabled } = props;
-  const { formatMessage } = useIntl();
+  const { onTypeChange, disabled, filters, resetType } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
-  const CONTENT_TYPES = [
-    {
-      label: formatMessage(translations.contentTypeAllLabel),
-      type: formatMessage(translations.contentTypeAll)
-    },
-    {
-      label: formatMessage(translations.contentTypePageLabel),
-      type: formatMessage(translations.contentTypePage)
-    },
-    {
-      label: formatMessage(translations.contentTypeComponentLabel),
-      type: formatMessage(translations.contentTypeComponent)
-    },
-    {
-      label: formatMessage(translations.contentTypeQuickCreateLabel),
-      type: formatMessage(translations.contentTypeQuickCreate)
-    },
-    {
-      label: formatMessage(translations.contentTypeFavoriteLabel),
-      type: formatMessage(translations.contentTypeFavorite)
-    }
-  ];
-  const [type, setType] = useState(CONTENT_TYPES[0].type);
+  const [type, setType] = useState(filters[0].type);
 
   const onMenuClose = () => setAnchorEl(null);
 
@@ -133,6 +73,10 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
     setType(e.target.value);
     onMenuClose();
   };
+
+  useEffect(() => {
+    resetType && setType(resetType);
+  }, [resetType]);
 
   return (
     <>
@@ -145,7 +89,7 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
         keepMounted
         open={Boolean(anchorEl)}
         onClose={onMenuClose}
-        className={classes.menu}
+        classes={{ paper: classes.menu }}
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: 'bottom',
@@ -157,12 +101,12 @@ export default function ContentTypesFilter(props: ContentTypesFilterProps) {
         }}
       >
         <RadioGroup value={type} onChange={onChange} className={classes.radioGroup}>
-          {CONTENT_TYPES.map((contentType) => (
+          {filters.map(filter => (
             <FormControlLabel
-              key={contentType.type}
-              value={contentType.type}
+              key={filter.type}
+              value={filter.type}
               control={<Radio color="primary" />}
-              label={contentType.label}
+              label={filter.label}
             />
           ))}
         </RadioGroup>
