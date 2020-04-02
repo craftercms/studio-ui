@@ -48,6 +48,7 @@ import { Resource } from '../../../models/Resource';
 import { Suspencified } from '../../../components/SystemStatus/Suspencified';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import { LookupTable } from '../../../models/LookupTable';
+import clsx from 'clsx';
 
 const translations = defineMessages({
   headerTitle: {
@@ -109,7 +110,10 @@ const versionListStyles = makeStyles((theme: Theme) =>
       overflowY: 'auto'
     },
     listItem: {
-      padding: ' 15px 20px'
+      padding: ' 15px 20px',
+      '&.selected': {
+        backgroundColor: palette.blue.light
+      }
     },
     listItemTextMultiline: {
       margin: 0
@@ -208,36 +212,42 @@ function FancyFormattedDate(props) {
             defaultMessage={`{day, ${ordinals}}`}
             values={{ day: parts[4].value }}
           />{' '}
-          {parts[6].value} @ <FormattedTime value={props.date} />
+          {parts[6].value} @ <FormattedTime value={props.date}/>
         </>
       )}
     </FormattedDateParts>
   );
 }
 
-interface VersionsListProps {
+interface HistoryListProps {
   resource: Resource<LegacyVersion[]>;
   rowsPerPage: number;
   page: number;
   emptyMessage: string;
+  compareTo: {
+    version: LegacyVersion,
+    nextVersion?: LegacyVersion
+  }
 
   handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
 }
 
-function VersionsList(props: VersionsListProps) {
+//compareTo?.version && version.versionNumber !== compareTo?.version.versionNumber
+
+function HistoryList(props: HistoryListProps) {
   const { formatMessage } = useIntl();
   const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, emptyMessage } = props;
+  const { resource, handleOpenMenu, rowsPerPage, page, emptyMessage, compareTo } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   return versions.length === 0 ? (
-    <EmptyState title={emptyMessage} />
+    <EmptyState title={emptyMessage}/>
   ) : (
     <List component="div" className={classes.list} disablePadding>
       {versions.map((version: LegacyVersion, i: number) => (
         <ListItem
           key={version.versionNumber}
           divider={versions.length - 1 !== i}
-          className={classes.listItem}
+          className={clsx(classes.listItem, version.versionNumber === compareTo?.version.versionNumber && 'selected')}
         >
           <ListItemText
             classes={{
@@ -246,9 +256,9 @@ function VersionsList(props: VersionsListProps) {
             }}
             primary={
               <>
-                <FancyFormattedDate date={version.lastModifiedDate} />
+                <FancyFormattedDate date={version.lastModifiedDate}/>
                 {i === 0 && page === 0 && (
-                  <Chip label={formatMessage(translations.current)} className={classes.chip} />
+                  <Chip label={formatMessage(translations.current)} className={classes.chip}/>
                 )}
               </>
             }
@@ -259,7 +269,7 @@ function VersionsList(props: VersionsListProps) {
               edge="end"
               onClick={(e) => handleOpenMenu(e.currentTarget, version, i === 0 && page === 0)}
             >
-              <MoreVertIcon />
+              <MoreVertIcon/>
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
@@ -297,21 +307,26 @@ const menuOptions: LookupTable<SectionItem> = {
   }
 };
 
+const menuInitialState = {
+  sections: [],
+  anchorEl: null,
+  activeVersion: null
+};
+
 export default function HistoryDialog(props) {
   const {
     open = true,
-    handleClose = () => {},
+    handleClose = () => {
+    },
     site = 'editorial',
     path = '/site/website/index.xml'
   } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
 
-  const [menu, setMenu] = useSpreadState({
-    sections: [],
-    anchorEl: null,
-    activeVersion: null
-  });
+  const [compareTo, setCompareTo] = useSpreadState(null);
+
+  const [menu, setMenu] = useSpreadState(menuInitialState);
 
   const rowsPerPage = 20;
   const [page, setPage] = useState(0);
@@ -323,10 +338,8 @@ export default function HistoryDialog(props) {
 
   const [error, setError] = useState<APIError>(null);
 
-  const resource = useStateResource<
-    LegacyVersion[],
-    { contentItem: LegacyItem; versions: LegacyVersion[] }
-  >(data, {
+  const resource = useStateResource<LegacyVersion[],
+    { contentItem: LegacyItem; versions: LegacyVersion[] }>(data, {
     shouldResolve: (data) => Boolean(data.versions),
     shouldReject: () => Boolean(error),
     shouldRenew: () => false,
@@ -380,6 +393,18 @@ export default function HistoryDialog(props) {
   };
 
   const handleMenuItemClicked = (section: SectionItem) => {
+    switch (section.id) {
+      case 'view': {
+        break;
+      }
+      case 'compareTo': {
+        setCompareTo({ version: menu.activeVersion });
+        setMenu(menuInitialState);
+        break;
+      }
+      default:
+        break;
+    }
     console.log(section);
   };
 
@@ -390,16 +415,17 @@ export default function HistoryDialog(props) {
   return (
     <>
       <Dialog onClose={handleClose} open={open} fullWidth maxWidth="md">
-        <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose} />
+        <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose}/>
         <DialogBody>
           <Suspencified
             resource={resource}
-            component={VersionsList}
+            component={HistoryList}
             componentProps={{
               handleOpenMenu,
               emptyMessage: formatMessage(translations.emptyMessage),
               rowsPerPage,
-              page
+              page,
+              compareTo
             }}
           />
         </DialogBody>
