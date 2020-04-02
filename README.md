@@ -1,3 +1,6 @@
 ![build status](https://travis-ci.org/craftercms/studio-ui.svg?branch=develop)
+
 # studio-ui
-Crafter Studio UI is the AngularJS application responsible for the UI of Crafter Studio: https://github.com/craftercms/studio
+Studio UI is the authoring interface for Crafter CMS. See
+- https://github.com/craftercms/craftercms
+- https://github.com/craftercms/studio

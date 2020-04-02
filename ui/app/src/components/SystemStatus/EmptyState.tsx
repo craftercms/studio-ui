@@ -20,13 +20,13 @@ import Typography from '@material-ui/core/Typography';
 import emptyImage from '../../assets/desert.svg';
 import clsx from 'clsx';
 
-const useStyles = makeStyles(() => ({
-  emptyContainer: {
+const useStyles = makeStyles((theme) => ({
+  root: {
     'display': 'flex',
     'alignItems': 'center',
     'justifyContent': 'center',
     'flexDirection': 'column',
-    'margin': 'auto',
+    'margin': `${theme.spacing(2)}px auto`,
     '& .title': {
       marginTop: '20px',
       marginBottom: '10px'
@@ -34,13 +34,19 @@ const useStyles = makeStyles(() => ({
     '& .paragraph': {
       marginTop: '10px'
     }
+  },
+  graphic: {
+    width: 150
+  },
+  subtitle: {
+    textAlign: 'center'
   }
 }));
 
-interface EmptyStateProps {
+export interface EmptyStateProps {
   image?: string;
-  title: string;
-  subtitle?: string | ReactElement;
+  title: string | JSX.Element;
+  subtitle?: string | JSX.Element;
   classes?: {
     root?: string;
     title?: string;
@@ -55,15 +61,27 @@ export default function EmptyState(props: EmptyStateProps) {
   const { image, title, subtitle, classes: propClasses } = props;
 
   return (
-    <div className={clsx(classes.emptyContainer, propClasses?.root)}>
-      <img className={propClasses?.image} src={image ? image : emptyImage} alt="" />
+    <div className={clsx(classes.root, propClasses?.root)}>
+      <img
+        className={clsx(classes.graphic, propClasses?.image)} src={image ? image : emptyImage} alt=""
+      />
       {title && (
-        <Typography variant="h5" component="h3" className={propClasses?.title} color="textSecondary">
+        <Typography
+          variant="h6"
+          component="h3"
+          className={propClasses?.title}
+          color="textSecondary"
+        >
           {title}
         </Typography>
       )}
       {subtitle && (
-        <Typography variant="subtitle1" component="p" className={propClasses?.subtitle} color="textSecondary">
+        <Typography
+          variant="subtitle1"
+          component="p"
+          className={clsx(classes.subtitle, propClasses?.subtitle)}
+          color="textSecondary"
+        >
           {subtitle}
         </Typography>
       )}

@@ -133,7 +133,9 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     controller: { loaded: false, pendingChanges: false }
   });
 
-  const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
+  const messages = fromEvent(window, 'message').pipe(
+    filter((e: any) => e.data && e.data.type)
+  );
 
   const handleClose = useCallback(() => {
     setDialogConfig({ open: false, src: null, type: null, inProgress: true });
@@ -148,17 +150,12 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     (event: React.ChangeEvent<{}>, type: string) => {
       let inProgress = !tabsState[type].loaded;
       setDialogConfig({ type, inProgress });
-      iframeRef.current.contentWindow.postMessage(
-        {
-          type: EDIT_FORM_CHANGE_TAB,
-          tab: type,
-          path: getPath(type)
-        },
-        '*'
-      );
-    },
-    [getPath, setDialogConfig, tabsState]
-  );
+      iframeRef.current.contentWindow.postMessage({
+        type: EDIT_FORM_CHANGE_TAB,
+        tab: type,
+        path: getPath(type)
+      }, '*');
+    }, [getPath, setDialogConfig, tabsState]);
 
   const closeEmbeddedLegacyForm = useCallback(
     (refresh: boolean, tab?: string) => {
@@ -190,7 +187,9 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
             if (dialogConfig.inProgress) {
               setDialogConfig({ inProgress: false });
             }
-            setTabsState({ [tab]: { loaded: true, pendingChanges: tabsState[tab].pendingChanges } });
+            setTabsState({
+              [tab]: { loaded: true, pendingChanges: tabsState[tab].pendingChanges }
+            });
             break;
           }
           case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
@@ -234,13 +233,19 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
       {showTabs && (
         <AppBar position="static" color="default">
-          <Tabs value={dialogConfig.type} onChange={handleTabChange} aria-label="simple tabs example" centered>
+          <Tabs
+            value={dialogConfig.type}
+            onChange={handleTabChange}
+            aria-label="simple tabs example"
+            centered
+          >
             <Tab
               value="form"
               label={
                 <div>
                   {formatMessage(translations.contentForm)}
-                  {tabsState.form.pendingChanges && <CreateIcon className={classes.edited} />}
+                  {tabsState.form.pendingChanges &&
+                  <CreateIcon className={classes.edited} />}
                 </div>
               }
               disabled={dialogConfig.inProgress}
@@ -250,7 +255,8 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
               label={
                 <div>
                   {formatMessage(translations.template)}
-                  {tabsState.template.pendingChanges && <CreateIcon className={classes.edited} />}
+                  {tabsState.template.pendingChanges &&
+                  <CreateIcon className={classes.edited} />}
                 </div>
               }
               disabled={dialogConfig.inProgress}
@@ -261,7 +267,9 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
                 label={
                   <div>
                     {formatMessage(translations.controller)}
-                    {tabsState.controller.pendingChanges && <CreateIcon className={classes.edited} />}
+                    {tabsState.controller.pendingChanges &&(
+                      <CreateIcon className={classes.edited} />
+                    )}
                   </div>
                 }
                 disabled={dialogConfig.inProgress}
@@ -274,7 +282,6 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       {dialogConfig.inProgress && dialogConfig.open && (
         <LoadingState
           title={formatMessage(translations.loadingForm)}
-          graphicProps={{ width: 150 }}
           classes={{ root: classes.loadingRoot }}
         />
       )}
