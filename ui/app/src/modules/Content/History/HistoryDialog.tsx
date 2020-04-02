@@ -17,7 +17,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
-import { defineMessages, FormattedDateParts, FormattedMessage, FormattedTime, useIntl } from 'react-intl';
+import {
+  defineMessages,
+  FormattedDateParts,
+  FormattedMessage,
+  FormattedTime,
+  useIntl
+} from 'react-intl';
 import DialogBody from '../../../components/DialogBody';
 import { getItemVersions } from '../../../services/content';
 import { LegacyItem } from '../../../../../guest/src/models/Item';
@@ -94,122 +100,119 @@ const translations = defineMessages({
   }
 });
 
-const versionListStyles = makeStyles((theme: Theme) => createStyles({
-  list: {
-    backgroundColor: palette.white,
-    padding: 0,
-    borderRadius: '5px 5px 0 0',
-    overflowY: 'auto'
-  },
-  listItem: {
-    padding: ' 15px 20px'
-  },
-  listItemTextMultiline: {
-    margin: 0
-  },
-  listItemTextPrimary: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  chip: {
-    padding: '1px',
-    backgroundColor: palette.green.main,
-    height: 'auto',
-    color: palette.white,
-    marginLeft: '10px'
-  },
-  pagination: {
-    marginLeft: 'auto',
-    position: 'fixed',
-    zIndex: 1,
-    bottom: 0,
-    background: 'white',
-    color: 'black',
-    //width: `calc(${DRAWER_WIDTH}px - 1px)`,
-    left: 0,
-    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    '& p': {
-      padding: 0
+const versionListStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    list: {
+      backgroundColor: palette.white,
+      padding: 0,
+      borderRadius: '5px 5px 0 0',
+      overflowY: 'auto'
     },
-    '& svg': {
-      top: 'inherit'
+    listItem: {
+      padding: ' 15px 20px'
     },
-    '& .hidden': {
-      display: 'none'
+    listItemTextMultiline: {
+      margin: 0
+    },
+    listItemTextPrimary: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    chip: {
+      padding: '1px',
+      backgroundColor: palette.green.main,
+      height: 'auto',
+      color: palette.white,
+      marginLeft: '10px'
+    },
+    pagination: {
+      'marginLeft': 'auto',
+      'position': 'fixed',
+      'zIndex': 1,
+      'bottom': 0,
+      'background': 'white',
+      'color': 'black',
+      'left': 0,
+      'borderTop': '1px solid rgba(0, 0, 0, 0.12)',
+      '& p': {
+        padding: 0
+      },
+      '& svg': {
+        top: 'inherit'
+      },
+      '& .hidden': {
+        display: 'none'
+      }
+    },
+    toolbar: {
+      'padding': 0,
+      'display': 'flex',
+      'justifyContent': 'space-between',
+      'paddingLeft': '20px',
+      '& .MuiTablePagination-spacer': {
+        display: 'none'
+      },
+      '& .MuiTablePagination-spacer + p': {
+        display: 'none'
+      }
     }
-  },
-  toolbar: {
-    padding: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingLeft: '20px',
-    '& .MuiTablePagination-spacer': {
-      display: 'none'
-    },
-    '& .MuiTablePagination-spacer + p': {
-      display: 'none'
-    }
-  }
-}));
+  })
+);
 
-const historyStyles = makeStyles((theme: Theme) => createStyles({
-  dialogFooter: {
-    padding: 0
-  },
-  menuList: {
-    padding: 0
-  },
-  pagination: {
-    marginLeft: 'auto',
-    background: 'white',
-    color: 'black',
-    '& p': {
+const historyStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    dialogFooter: {
       padding: 0
     },
-    '& svg': {
-      top: 'inherit'
+    menuList: {
+      padding: 0
     },
-    '& .hidden': {
-      display: 'none'
-    }
-  },
-  toolbar: {
-    padding: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingLeft: '20px',
-    '& .MuiTablePagination-spacer': {
-      display: 'none'
+    pagination: {
+      'marginLeft': 'auto',
+      'background': 'white',
+      'color': 'black',
+      '& p': {
+        padding: 0
+      },
+      '& svg': {
+        top: 'inherit'
+      },
+      '& .hidden': {
+        display: 'none'
+      }
     },
-    '& .MuiTablePagination-spacer + p': {
-      display: 'none'
+    toolbar: {
+      'padding': 0,
+      'display': 'flex',
+      'justifyContent': 'space-between',
+      'paddingLeft': '20px',
+      '& .MuiTablePagination-spacer': {
+        display: 'none'
+      },
+      '& .MuiTablePagination-spacer + p': {
+        display: 'none'
+      }
     }
-  }
-}));
+  })
+);
 
 function FancyFormattedDate(props) {
   const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
   return (
-    <FormattedDateParts
-      value={props.date}
-      month="long"
-      day="numeric"
-      weekday="long"
-      year="numeric"
-    >
-      {
-        parts =>
-          <>
-            {`${parts[0].value} ${parts[2].value} `}
-            <FormattedMessage
-              id="historyDialog.ordinals"
-              defaultMessage={`{day, ${ordinals}}`}
-              values={{ day: parts[4].value }}
-            /> {parts[6].value} @ <FormattedTime value={props.date}/>
-          </>
-      }
+    <FormattedDateParts value={props.date} month="long" day="numeric" weekday="long" year="numeric">
+      {(parts) => (
+        <>
+          {`${parts[0].value} ${parts[2].value} `}
+          <FormattedMessage
+            id="historyDialog.ordinals"
+            defaultMessage={`{day, ${ordinals}}`}
+            values={{ day: parts[4].value }}
+          />{' '}
+          {parts[6].value} @ <FormattedTime value={props.date} />
+        </>
+      )}
     </FormattedDateParts>
-  )
+  );
 }
 
 interface VersionsListProps {
@@ -226,38 +229,43 @@ function VersionsList(props: VersionsListProps) {
   const classes = versionListStyles({});
   const { resource, handleOpenMenu, rowsPerPage, page, emptyMessage } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-  return (
-    (versions.length === 0) ? (
-      <EmptyState title={emptyMessage}/>
-    ) : (
-      <List component="div" className={classes.list} disablePadding>
-        {
-          versions.map((version: LegacyVersion, i: number) =>
-            <ListItem key={version.versionNumber} divider={versions.length - 1 !== i} className={classes.listItem}>
-              <ListItemText
-                classes={{ multiline: classes.listItemTextMultiline, primary: classes.listItemTextPrimary }}
-                primary={
-                  <>
-                    <FancyFormattedDate date={version.lastModifiedDate}/>
-                    {
-                      (i === 0 && page === 0) &&
-                      <Chip label={formatMessage(translations.current)} className={classes.chip}/>
-                    }
-                  </>
-                }
-                secondary={version.comment}
-              />
-              <ListItemSecondaryAction>
-                <IconButton edge="end" onClick={(e) => handleOpenMenu(e.currentTarget, version, i === 0 && page === 0)}>
-                  <MoreVertIcon/>
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          )
-        }
-      </List>
-    )
-  )
+  return versions.length === 0 ? (
+    <EmptyState title={emptyMessage} />
+  ) : (
+    <List component="div" className={classes.list} disablePadding>
+      {versions.map((version: LegacyVersion, i: number) => (
+        <ListItem
+          key={version.versionNumber}
+          divider={versions.length - 1 !== i}
+          className={classes.listItem}
+        >
+          <ListItemText
+            classes={{
+              multiline: classes.listItemTextMultiline,
+              primary: classes.listItemTextPrimary
+            }}
+            primary={
+              <>
+                <FancyFormattedDate date={version.lastModifiedDate} />
+                {i === 0 && page === 0 && (
+                  <Chip label={formatMessage(translations.current)} className={classes.chip} />
+                )}
+              </>
+            }
+            secondary={version.comment}
+          />
+          <ListItemSecondaryAction>
+            <IconButton
+              edge="end"
+              onClick={(e) => handleOpenMenu(e.currentTarget, version, i === 0 && page === 0)}
+            >
+              <MoreVertIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+      ))}
+    </List>
+  );
 }
 
 const menuOptions: LookupTable<SectionItem> = {
@@ -292,8 +300,7 @@ const menuOptions: LookupTable<SectionItem> = {
 export default function HistoryDialog(props) {
   const {
     open = true,
-    handleClose = () => {
-    },
+    handleClose = () => {},
     site = 'editorial',
     path = '/site/website/index.xml'
   } = props;
@@ -309,23 +316,23 @@ export default function HistoryDialog(props) {
   const rowsPerPage = 20;
   const [page, setPage] = useState(0);
 
-  const [data, setData] = useState<{ contentItem: LegacyItem, versions: LegacyVersion[] }>({
+  const [data, setData] = useState<{ contentItem: LegacyItem; versions: LegacyVersion[] }>({
     contentItem: null,
     versions: null
   });
 
   const [error, setError] = useState<APIError>(null);
 
-  const resource = useStateResource<LegacyVersion[], { contentItem: LegacyItem, versions: LegacyVersion[] }>(
-    data,
-    {
-      shouldResolve: (data) => Boolean(data.versions),
-      shouldReject: () => Boolean(error),
-      shouldRenew: () => false,
-      resultSelector: () => data.versions,
-      errorSelector: () => error
-    }
-  );
+  const resource = useStateResource<
+    LegacyVersion[],
+    { contentItem: LegacyItem; versions: LegacyVersion[] }
+  >(data, {
+    shouldResolve: (data) => Boolean(data.versions),
+    shouldReject: () => Boolean(error),
+    shouldRenew: () => false,
+    resultSelector: () => data.versions,
+    errorSelector: () => error
+  });
 
   useEffect(() => {
     getItemVersions(site, path).subscribe(
@@ -335,57 +342,45 @@ export default function HistoryDialog(props) {
       (response) => {
         setError(response);
       }
-    )
+    );
   }, [site, path]);
 
-  const handleOpenMenu = useCallback((anchorEl, version, isCurrent = false) => {
-    if (isCurrent) {
-      setMenu({
-        sections: [
-          [
-            menuOptions.view
+  const handleOpenMenu = useCallback(
+    (anchorEl, version, isCurrent = false) => {
+      if (isCurrent) {
+        setMenu({
+          sections: [
+            [menuOptions.view],
+            [menuOptions.compareTo, menuOptions.compareToPrevious],
+            [menuOptions.revertToPrevious]
           ],
-          [
-            menuOptions.compareTo,
-            menuOptions.compareToPrevious
+          anchorEl,
+          activeVersion: version
+        });
+      } else {
+        setMenu({
+          sections: [
+            [menuOptions.view],
+            [menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious],
+            [menuOptions.revertToThisVersion]
           ],
-          [
-            menuOptions.revertToPrevious
-          ]
-        ],
-        anchorEl,
-        activeVersion: version
-      })
-    } else {
-      setMenu({
-        sections: [
-          [
-            menuOptions.view
-          ],
-          [
-            menuOptions.compareTo,
-            menuOptions.compareToCurrent,
-            menuOptions.compareToPrevious
-          ],
-          [
-            menuOptions.revertToThisVersion
-          ]
-        ],
-        anchorEl,
-        activeVersion: version
-      })
-    }
-  }, [setMenu]);
+          anchorEl,
+          activeVersion: version
+        });
+      }
+    },
+    [setMenu]
+  );
 
   const handleMenuClose = () => {
     setMenu({
       anchorEl: null,
       activeVersion: null
-    })
+    });
   };
 
   const handleMenuItemClicked = (section: SectionItem) => {
-    console.log(section)
+    console.log(section);
   };
 
   const onPageChanged = (nextPage: number) => {
@@ -394,13 +389,8 @@ export default function HistoryDialog(props) {
 
   return (
     <>
-      <Dialog
-        onClose={handleClose}
-        open={open}
-        fullWidth
-        maxWidth="md"
-      >
-        <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose}/>
+      <Dialog onClose={handleClose} open={open} fullWidth maxWidth="md">
+        <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose} />
         <DialogBody>
           <Suspencified
             resource={resource}
@@ -413,8 +403,7 @@ export default function HistoryDialog(props) {
             }}
           />
         </DialogBody>
-        {
-          data.versions &&
+        {data.versions && (
           <DialogFooter className={classes.dialogFooter}>
             <TablePagination
               className={classes.pagination}
@@ -431,20 +420,21 @@ export default function HistoryDialog(props) {
               nextIconButtonProps={{
                 'aria-label': formatMessage(translations.nextPage)
               }}
-              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) => onPageChanged(nextPage)}
+              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) =>
+                onPageChanged(nextPage)
+              }
             />
           </DialogFooter>
-        }
+        )}
         <ContextMenu
           open={!!menu.anchorEl}
           anchorEl={menu.anchorEl}
           onClose={handleMenuClose}
           sections={menu.sections}
           onMenuItemClicked={handleMenuItemClicked}
-          classes={{menuList: classes.menuList}}
+          classes={{ menuList: classes.menuList }}
         />
       </Dialog>
     </>
-  )
+  );
 }
-
