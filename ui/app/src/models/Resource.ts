@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface Resource<T> {
+export interface Resource<T = unknown> {
   readonly complete: boolean;
 
   read(): T;

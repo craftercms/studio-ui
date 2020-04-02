@@ -18,7 +18,6 @@
 import React, { useMemo, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import LoadingState from '../../../components/SystemStatus/LoadingState';
 import List from '@material-ui/core/List';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ContentType from '../../../models/ContentType';
@@ -33,11 +32,15 @@ import {
   selectTool
 } from '../../../state/actions/preview';
 import { useStateResourceSelection } from '../../../utils/hooks';
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { EntityState } from '../../../models/GlobalState';
 import { nnou } from '../../../utils/object';
 import { DraggablePanelListItem } from './DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
+import {
+  PropsWithResource,
+  SuspenseWithEmptyState
+} from '../../../components/SystemStatus/Suspencified';
+import { LookupTable } from '../../../models/LookupTable';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -50,68 +53,83 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() => createStyles({
-  root: {}
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {}
+  })
+);
+
+type ComponentsPanelUIProps = PropsWithResource<
+  ContentType[],
+  {
+    classes: LookupTable<string>;
+  }
+>;
 
 export default function ComponentsPanel() {
-
   const classes = useStyles({});
   const resource = useStateResourceSelection<ContentType[], EntityState<ContentType>>(
-    state => state.contentTypes,
+    (state) => state.contentTypes,
     {
       shouldRenew: (source, resource) => resource.complete,
-      shouldResolve: source => (!source.isFetching) && nnou(source.byId),
-      shouldReject: source => nnou(source.error),
-      errorSelector: source => source.error,
-      resultSelector: source => Object.values(source.byId)
+      shouldResolve: (source) => !source.isFetching && nnou(source.byId),
+      shouldReject: (source) => nnou(source.error),
+      errorSelector: (source) => source.error,
+      resultSelector: (source) => Object.values(source.byId)
     }
   );
 
   return (
     <ToolPanel title={translations.componentsPanel}>
-      <ErrorBoundary>
-        <React.Suspense
-          fallback={
-            <LoadingState
-              // @ts-ignore
-              title={
-                <FormattedMessage
-                  id="componentsPanel.suspenseStateMessage"
-                  defaultMessage="Retrieving Page Model"
-                />
-              }
-              graphicProps={{ width: 150 }}
+      <SuspenseWithEmptyState
+        component={ComponentsPanelUI}
+        componentProps={{ classes }}
+        resource={resource}
+        loadingStateProps={{
+          title: (
+            <FormattedMessage
+              id="componentsPanel.suspenseStateMessage"
+              defaultMessage="Retrieving Page Model"
             />
+          )
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: (
+              <FormattedMessage
+                id="componentsPanel.emptyStateMessage"
+                defaultMessage="No components found"
+              />
+            ),
+            subtitle: (
+              <FormattedMessage
+                id="componentsPanel.emptyStateMessageSubtitle"
+                defaultMessage="Communicate with your developers to create the required components in the system."
+              />
+            )
           }
-        >
-          <ComponentsPanelUI
-            classes={classes}
-            componentTypesResource={resource}
-          />
-        </React.Suspense>
-      </ErrorBoundary>
+        }}
+      />
     </ToolPanel>
   );
-
 }
 
-export function ComponentsPanelUI(props) {
+export function ComponentsPanelUI(props: ComponentsPanelUIProps) {
+  const { classes, resource } = props;
 
-  const { classes, componentTypesResource } = props;
-
-  const contentTypes = componentTypesResource.read();
+  const contentTypes = resource.read();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
   const hostToGuest$ = getHostToGuestBus();
-  const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
+  const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
   const componentTypes = useMemo(
     () => contentTypes.filter((contentType) => contentType.type === 'component'),
     [contentTypes]
   );
 
-  const onDragStart = (contentType) => hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
+  const onDragStart = (contentType) =>
+    hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
 
@@ -120,7 +138,7 @@ export function ComponentsPanelUI(props) {
   const onMenuOptionClicked = () => setMenuContext(null);
 
   const onBrowseSharedInstancesClicked = () => {
-    dispatch(browseSharedInstance(menuContext.contentType.id))
+    dispatch(browseSharedInstance(menuContext.contentType.id));
   };
 
   const onListReceptaclesClick = () => {
@@ -134,32 +152,25 @@ export function ComponentsPanelUI(props) {
   return (
     <>
       <List className={classes.root}>
-        {
-          componentTypes.map((contentType) =>
-            <DraggablePanelListItem
-              key={contentType.id}
-              primaryText={contentType.name}
-              secondaryText={contentType.id}
-              onDragStart={() => onDragStart(contentType)}
-              onDragEnd={onDragEnd}
-              onMenu={(anchor) => setMenuContext({ anchor, contentType })}
-            />
-          )
-        }
+        {componentTypes.map((contentType) => (
+          <DraggablePanelListItem
+            key={contentType.id}
+            primaryText={contentType.name}
+            secondaryText={contentType.id}
+            onDragStart={() => onDragStart(contentType)}
+            onDragEnd={onDragEnd}
+            onMenu={(anchor) => setMenuContext({ anchor, contentType })}
+          />
+        ))}
       </List>
 
-      <Menu
-        open={!!menuContext}
-        anchorEl={menuContext?.anchor}
-        onClose={onMenuClose}
-      >
+      <Menu open={!!menuContext} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
         <MenuItem onClick={onMenuOptionClicked}>List in-page instances</MenuItem>
-        <MenuItem onClick={onBrowseSharedInstancesClicked}>{formatMessage(translations.browse)}</MenuItem>
+        <MenuItem onClick={onBrowseSharedInstancesClicked}>
+          {formatMessage(translations.browse)}
+        </MenuItem>
         <MenuItem onClick={onListReceptaclesClick}>List receptacles</MenuItem>
       </Menu>
-
     </>
   );
-
 }
-
