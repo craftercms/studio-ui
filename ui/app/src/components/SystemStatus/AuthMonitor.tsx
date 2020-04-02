@@ -49,46 +49,48 @@ const translations = defineMessages({
   },
   postSSOLoginMismatch: {
     id: 'authMonitor.postSSOLoginMismatchMessage',
-    defaultMessage: 'Looks like you\'ve logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed.'
+    defaultMessage:
+      "Looks like you've logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed."
   }
 });
 
-const useStyles = makeStyles((theme) => createStyles({
-  username: {
-    marginBottom: theme.spacing(2)
-  },
-  actions: {
-    placeContent: 'center space-between'
-  },
-  dialog: {
-    width: 400
-  },
-  graphic: {
-    width: 150
-  },
-  title: {
-    textAlign: 'center'
-  },
-  ssoAction: {
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    marginTop: theme.spacing(1)
-  }
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    username: {
+      marginBottom: theme.spacing(2)
+    },
+    actions: {
+      placeContent: 'center space-between'
+    },
+    dialog: {
+      width: 400
+    },
+    graphic: {
+      width: 150
+    },
+    title: {
+      textAlign: 'center'
+    },
+    ssoAction: {
+      textAlign: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      marginTop: theme.spacing(1)
+    }
+  })
+);
 
 export default function AuthMonitor() {
-
   const classes = useStyles({});
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
-  const { username, authType } = useSelection(state => state.user);
-  const authoringUrl = useSelection<string>(state => state.env.AUTHORING_BASE);
-  const { active, error, isFetching } = useSelection(state => state.auth);
+  const { username, authType } = useSelection((state) => state.user);
+  const authoringUrl = useSelection<string>((state) => state.env.AUTHORING_BASE);
+  const { active, error, isFetching } = useSelection((state) => state.auth);
   const [password, setPassword] = useState<string>('');
   const [logoutUrl, setLogoutUrl] = useState(authoringUrl);
-  const isSSO = (authType.toLowerCase() !== 'db');
+  const isSSO = authType.toLowerCase() !== 'db';
   const [ssoButtonClicked, setSSOButtonClicked] = useState(false);
   const styles: CSSProperties = isFetching ? { visibility: 'hidden' } : {};
   const firstRender = useRef(true);
@@ -110,7 +112,9 @@ export default function AuthMonitor() {
 
   useEffect(() => {
     if (isSSO) {
-      getLogoutInfoURL().pipe(pluck('logoutUrl')).subscribe(setLogoutUrl);
+      getLogoutInfoURL()
+        .pipe(pluck('logoutUrl'))
+        .subscribe(setLogoutUrl);
     }
   }, [isSSO]);
 
@@ -133,65 +137,49 @@ export default function AuthMonitor() {
   }, [active, dispatch, formatMessage, username]);
 
   return (
-    <Dialog
-      open={!active}
-      id="authMonitorDialog"
-      aria-labelledby="craftercmsReLoginDialog"
-    >
+    <Dialog open={!active} id="authMonitorDialog" aria-labelledby="craftercmsReLoginDialog">
       <DialogTitle id="craftercmsReLoginDialog" className={classes.title} style={styles}>
-        <FormattedMessage
-          id="authMonitor.dialogTitleText"
-          defaultMessage="Session Expired"
-        />
+        <FormattedMessage id="authMonitor.dialogTitleText" defaultMessage="Session Expired" />
       </DialogTitle>
       <DialogContent className={classes.dialog}>
-        {
-          isFetching ? (
-            <LoadingState
-              title=""
-              classes={{ graphic: classes.graphic }}
-            />
-          ) : (
-            <>
-              {
-                error ? (
-                  <ErrorState error={error} classes={{ graphic: classes.graphic }}/>
-                ) : (
-                  <ErrorState
-                    graphicUrl={loginGraphicUrl}
-                    classes={{ graphic: classes.graphic }}
-                    error={{ message: formatMessage(translations.sessionExpired) }}
-                  />
-                )
-              }
-              {
-                isSSO ? (
-                  <SSOForm
-                    classes={classes}
-                    authoringUrl={authoringUrl}
-                    username={username}
-                    onSubmit={onSubmit}
-                    ssoButtonClicked={ssoButtonClicked}
-                    onSetSSOButtonClicked={setSSOButtonClicked}
-                  />
-                ) :(
-                  <LogInForm
-                    classes={classes}
-                    username={username}
-                    isFetching={isFetching}
-                    onSubmit={onSubmit}
-                    password={password}
-                    onSetPassword={setPassword}
-                  />
-                )
-              }
-            </>
-          )
-        }
+        {isFetching ? (
+          <LoadingState classes={{ graphic: classes.graphic }} />
+        ) : (
+          <>
+            {error ? (
+              <ErrorState error={error} classes={{ graphic: classes.graphic }} />
+            ) : (
+              <ErrorState
+                graphicUrl={loginGraphicUrl}
+                classes={{ graphic: classes.graphic }}
+                error={{ message: formatMessage(translations.sessionExpired) }}
+              />
+            )}
+            {isSSO ? (
+              <SSOForm
+                classes={classes}
+                authoringUrl={authoringUrl}
+                username={username}
+                onSubmit={onSubmit}
+                ssoButtonClicked={ssoButtonClicked}
+                onSetSSOButtonClicked={setSSOButtonClicked}
+              />
+            ) : (
+              <LogInForm
+                classes={classes}
+                username={username}
+                isFetching={isFetching}
+                onSubmit={onSubmit}
+                password={password}
+                onSetPassword={setPassword}
+              />
+            )}
+          </>
+        )}
       </DialogContent>
       <DialogActions className={classes.actions} style={styles}>
         <Button type="button" onClick={onClose} disabled={isFetching}>
-          <FormattedMessage id="authMonitor.logOutButtonLabel" defaultMessage="Log Out"/>
+          <FormattedMessage id="authMonitor.logOutButtonLabel" defaultMessage="Log Out" />
         </Button>
         <Button
           type="button"
@@ -200,11 +188,11 @@ export default function AuthMonitor() {
           disabled={isFetching}
           variant={ssoButtonClicked ? 'contained' : 'text'}
         >
-          {
-            isSSO
-              ? <FormattedMessage id="authMonitor.validateSessionButtonLabel" defaultMessage="Resume"/>
-              : <FormattedMessage id="authMonitor.loginButtonLabel" defaultMessage="Log In"/>
-          }
+          {isSSO ? (
+            <FormattedMessage id="authMonitor.validateSessionButtonLabel" defaultMessage="Resume" />
+          ) : (
+            <FormattedMessage id="authMonitor.loginButtonLabel" defaultMessage="Log In" />
+          )}
         </Button>
       </DialogActions>
     </Dialog>
@@ -257,14 +245,17 @@ function SSOForm(props: SSOFormProps) {
           onClick={onOpenLogin}
           endIcon={<OpenInNewRounded />}
         >
-          <FormattedMessage id="authMonitor.openSSOLoginButtonLabel" defaultMessage="Open Login Form" />
+          <FormattedMessage
+            id="authMonitor.openSSOLoginButtonLabel"
+            defaultMessage="Open Login Form"
+          />
         </Button>
         <Typography variant="caption">
           <FormattedMessage
             id="authMonitor.ssoOpenPopupMessage"
             defaultMessage={
-              "Make sure pop ups are not blocked. Once you log in, come back to " +
-              "this window and click on `Resume` button below."
+              'Make sure pop ups are not blocked. Once you log in, come back to ' +
+              'this window and click on `Resume` button below.'
             }
           />
         </Typography>
