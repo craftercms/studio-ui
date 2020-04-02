@@ -109,7 +109,8 @@ function SingleFileUpload(props: UppyProps) {
         .use(XHRUpload, {
           endpoint: url,
           formData: true,
-          fieldName: 'file'
+          fieldName: 'file',
+          timeout: 0
         });
 
       uppy.on('file-added', (file) => {
