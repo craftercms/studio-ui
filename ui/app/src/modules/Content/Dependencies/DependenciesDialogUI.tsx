@@ -21,7 +21,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
 import { palette } from '../../../styles/theme';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import ErrorState from '../../../components/SystemStatus/ErrorState';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -46,6 +45,8 @@ import Menu from '@material-ui/core/Menu';
 import { isImage } from '../../../utils/content';
 import DialogBody from '../../../components/DialogBody';
 import DialogFooter from '../../../components/DialogFooter';
+import { Resource } from '../../../models/Resource';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 
 const translations = defineMessages({
   headerTitle: {
@@ -85,11 +86,6 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
   dialogFooter: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2)
-  },
-  errorPaperRoot: {
-    maxHeight: '586px',
-    height: '100vh',
-    padding: 0
   },
   formControl: {
     minWidth: 120,
@@ -180,16 +176,115 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
         }
       }
     }
+  },
+  suspense: {
+    height: '100%',
+    flexDirection: 'unset'
   }
 }));
 
+interface DependenciesListProps {
+  resource: Resource<Item[]>;
+  state: any;
+  setState: Function;
+  assetsTypes: any;
+  isEditableItem: Function;
+  handleEditorDisplay: Function;
+}
+
+function DependenciesList(props: DependenciesListProps) {
+  const {
+    resource,
+    state,
+    setState,
+    assetsTypes,
+    isEditableItem,
+    handleEditorDisplay
+  } = props;
+  const classes = dependenciesDialogStyles({});
+  const dependencies: Item[] = resource.read();
+
+  return (
+    <List className={classes.dependenciesList}>
+      {
+        dependencies
+          .filter(dependency => assetsTypes[state.showTypes].filter(dependency))
+          .map(dependency => {
+            return (
+              <ListItem
+                key={dependency.uri}
+                className={`${classes.dependenciesListItem} ${(state.compactView) ? classes.dependenciesCompactListItem : ''}`}
+              >
+                {
+                  isImage(dependency.uri) && !state.compactView &&
+                  <ListItemAvatar>
+                    <Avatar className={classes.listItemPreview} src={dependency.uri}/>
+                  </ListItemAvatar>
+                }
+                <ListItemText
+                  className={classes.listItemContent}
+                  primary={dependency.internalName}
+                  secondary={(!state.compactView) ? dependency.uri : null}
+                />
+
+                <ListItemSecondaryAction>
+                  <PopupState variant="popover">
+                    {popupState => (
+                      <React.Fragment>
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          {...bindTrigger(popupState)}
+                        >
+                          <MoreVertIcon/>
+                        </IconButton>
+                        <Menu {...bindMenu(popupState)}>
+                          {
+                            isEditableItem(dependency.uri) &&
+                            <MenuItem onClick={() => {
+                              handleEditorDisplay(dependency);
+                              popupState.close();
+                            }}>
+                              <FormattedMessage
+                                id="dependenciesDialog.edit"
+                                defaultMessage="Edit"
+                              />
+                            </MenuItem>
+                          }
+                          <MenuItem onClick={() => {
+                            setState({ item: dependency });
+                            popupState.close();
+                          }}>
+                            <FormattedMessage
+                              id="dependenciesDialog.dependencies"
+                              defaultMessage="Dependencies"
+                            />
+                          </MenuItem>
+                          <MenuItem
+                            onClick={popupState.close}>   {/* TODO: pending, waiting for new history dialog */}
+                            <FormattedMessage
+                              id="dependenciesDialog.history"
+                              defaultMessage="History"
+                            />
+                          </MenuItem>
+                        </Menu>
+                      </React.Fragment>
+                    )}
+                  </PopupState>
+                </ListItemSecondaryAction>
+              </ListItem>
+            )
+          })
+      }
+    </List>
+  )
+}
+
 interface DependenciesDialogUIProps {
-  dependencies: Item[];
+  resource: Resource<Item[]>
   state: any;
   setState: Function;
   open: boolean;
-  apiState: any;
-  handleErrorBack: any;
   handleClose: any;
   isEditableItem: Function;
   assetsTypes: any;
@@ -200,12 +295,10 @@ interface DependenciesDialogUIProps {
 
 function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const {
-    dependencies,
+    resource,
     state,
     setState,
     open,
-    apiState,
-    handleErrorBack,
     handleClose,
     isEditableItem,
     assetsTypes,
@@ -228,201 +321,149 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
       }}
     >
       {
-        (!apiState.error) ?
-          (
-            <>
-              <DialogHeader
-                title={formatMessage(translations.headerTitle)}
-                onClose={handleClose}
-              />
-              <DialogBody>
-                <div className={classes.selectionContent}>
-                  <Chip
-                    variant="outlined"
-                    deleteIcon={isEditableItem(state.item.uri) ? <CreateIcon/> : null}
-                    onDelete={isEditableItem(state.item.uri) ?
-                      () => {
-                        handleEditorDisplay(state.item);
-                      } :
-                      null
-                    }
-                    classes={{
-                      root: classes.selectedItem,
-                      label: classes.selectedItemLabel,
-                      deleteIcon: classes.selectedItemEditIcon
-                    }}
-                    label={
-                      <>
-                        <span className='label'>Selected</span>
-                        <InsertDriveFileOutlinedIcon className='item-icon'/>
-                        <span className='item-title'>{state.item.internalName}</span>
-                      </>
-                    }
-                  />
-
-                  <FormControl className={classes.formControl}>
-                    <Select
-                      value={state.selectedOption}
-                      onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                        setState({ selectedOption: event.target.value as string });
-                      }}
-                      inputProps={{
-                        className: classes.select
-                      }}
-                    >
-                      <MenuItem value='depends-on'>
-                        <FormattedMessage
-                          id="dependenciesDialog.dependsOn"
-                          defaultMessage="Items that depend on selected item"
-                        />
-                      </MenuItem>
-                      <MenuItem value='depends-on-me'>
-                        <FormattedMessage
-                          id="dependenciesDialog.dependsOnMe"
-                          defaultMessage="Dependencies of selected item"
-                        />
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-                <List className={classes.dependenciesList}>
-                  {
-                    dependencies
-                      .filter(dependency => assetsTypes[state.showTypes].filter(dependency))
-                      .map(dependency => {
-                        return (
-                          <ListItem
-                            key={dependency.uri}
-                            className={`${classes.dependenciesListItem} ${(state.compactView) ? classes.dependenciesCompactListItem : ''}`}
-                          >
-                            {
-                              isImage(dependency.uri) && !state.compactView &&
-                              <ListItemAvatar>
-                                <Avatar className={classes.listItemPreview} src={dependency.uri}/>
-                              </ListItemAvatar>
-                            }
-                            <ListItemText
-                              className={classes.listItemContent}
-                              primary={dependency.internalName}
-                              secondary={(!state.compactView) ? dependency.uri : null}
-                            />
-
-                            <ListItemSecondaryAction>
-                              <PopupState variant="popover" popupId="demo-popup-menu">
-                                {popupState => (
-                                  <React.Fragment>
-                                    <IconButton
-                                      edge="end"
-                                      aria-label="delete"
-                                      {...bindTrigger(popupState)}
-                                    >
-                                      <MoreVertIcon/>
-                                    </IconButton>
-                                    <Menu {...bindMenu(popupState)}>
-                                      {
-                                        isEditableItem(dependency.uri) &&
-                                        <MenuItem onClick={() => {
-                                          handleEditorDisplay(dependency);
-                                          popupState.close();
-                                        }}>
-                                          <FormattedMessage
-                                            id="dependenciesDialog.edit"
-                                            defaultMessage="Edit"
-                                          />
-                                        </MenuItem>
-                                      }
-                                      <MenuItem onClick={() => {
-                                        setState({ item: dependency });
-                                        popupState.close();
-                                      }}>
-                                        <FormattedMessage
-                                          id="dependenciesDialog.dependencies"
-                                          defaultMessage="Dependencies"
-                                        />
-                                      </MenuItem>
-                                      <MenuItem
-                                        onClick={popupState.close}>   {/* TODO: pending, waiting for new history dialog */}
-                                        <FormattedMessage
-                                          id="dependenciesDialog.history"
-                                          defaultMessage="History"
-                                        />
-                                      </MenuItem>
-                                    </Menu>
-                                  </React.Fragment>
-                                )}
-                              </PopupState>
-                            </ListItemSecondaryAction>
-                          </ListItem>
-                        )
-                      })
-                  }
-                </List>
-              </DialogBody>
-              <DialogFooter
+        <>
+          <DialogHeader
+            title={formatMessage(translations.headerTitle)}
+            onClose={handleClose}
+          />
+          <DialogBody>
+            <div className={classes.selectionContent}>
+              <Chip
+                variant="outlined"
+                deleteIcon={isEditableItem(state.item.uri) ? <CreateIcon/> : null}
+                onDelete={isEditableItem(state.item.uri) ?
+                  () => {
+                    handleEditorDisplay(state.item);
+                  } :
+                  null
+                }
                 classes={{
-                  root: classes.dialogFooter
+                  root: classes.selectedItem,
+                  label: classes.selectedItemLabel,
+                  deleteIcon: classes.selectedItemEditIcon
+                }}
+                label={
+                  <>
+                    <span className='label'>Selected</span>
+                    <InsertDriveFileOutlinedIcon className='item-icon'/>
+                    <span className='item-title'>{state.item.internalName}</span>
+                  </>
+                }
+              />
+
+              <FormControl className={classes.formControl}>
+                <Select
+                  value={state.selectedOption}
+                  onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                    setState({ selectedOption: event.target.value as string });
+                  }}
+                  inputProps={{
+                    className: classes.select
+                  }}
+                >
+                  <MenuItem value='depends-on'>
+                    <FormattedMessage
+                      id="dependenciesDialog.dependsOn"
+                      defaultMessage="Items that depend on selected item"
+                    />
+                  </MenuItem>
+                  <MenuItem value='depends-on-me'>
+                    <FormattedMessage
+                      id="dependenciesDialog.dependsOnMe"
+                      defaultMessage="Dependencies of selected item"
+                    />
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <SuspenseWithEmptyState
+              component={DependenciesList}
+              componentProps={{
+                state,
+                setState,
+                assetsTypes,
+                isEditableItem,
+                handleEditorDisplay
+              }}
+              resource={resource}
+              withEmptyStateProps={{
+                emptyStateProps: {
+                  title: (
+                    <FormattedMessage
+                      id="dependenciesDialog.emptyStateMessage"
+                      defaultMessage="No Dependencies found"
+                    />
+                  ),
+                  classes: {
+                    root: classes.suspense
+                  }
+                }
+              }}
+              loadingStateProps={{
+                classes: {
+                  root: classes.suspense
+                }
+              }}
+            />
+          </DialogBody>
+          <DialogFooter
+            classes={{
+              root: classes.dialogFooter
+            }}
+          >
+            <FormControlLabel
+              className={classes.compactViewAction}
+              control={
+                <Checkbox
+                  checked={state.compactView}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setState({ compactView: event.target.checked });
+                  }}
+                  color="primary"
+                />
+              }
+              label="Compact"
+            />
+            <FormControl className={classes.formControl}>
+              <Select
+                value={state.showTypes}
+                onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
+                  setState({ showTypes: event.target.value as string });
+                }}
+                inputProps={{
+                  className: `${classes.select} ${classes.showTypesSelect}`
+                }}
+                MenuProps={{
+                  className: classes.showTypesMenu,
+                  transformOrigin: {
+                    vertical: 'bottom',
+                    horizontal: 'left'
+                  },
+                  getContentAnchorEl: null
                 }}
               >
-                <FormControlLabel
-                  className={classes.compactViewAction}
-                  control={
-                    <Checkbox
-                      checked={state.compactView}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setState({ compactView: event.target.checked });
-                      }}
-                      color="primary"
-                    />
-                  }
-                  label="Compact"
-                />
-                <FormControl className={classes.formControl}>
-                  <Select
-                    value={state.showTypes}
-                    onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                      setState({ showTypes: event.target.value as string });
-                    }}
-                    inputProps={{
-                      className: `${classes.select} ${classes.showTypesSelect}`
-                    }}
-                    MenuProps={{
-                      className: classes.showTypesMenu,
-                      transformOrigin: {
-                        vertical: 'bottom',
-                        horizontal: 'left'
-                      },
-                      getContentAnchorEl: null
-                    }}
-                  >
-                    {
-                      Object.keys(assetsTypes).map(typeId =>
-                        (
-                          <MenuItem value={typeId} key={typeId}>
-                            <Radio
-                              checked={state.showTypes === typeId}
-                              color="primary"
-                            />
-                            {assetsTypes[typeId].label}
-                          </MenuItem>
-                        )
-                      )
-                    }
-                  </Select>
-                </FormControl>
-              </DialogFooter>
-              <EmbeddedLegacyEditors
-                showTabs={false}
-                dialogConfig={editDialogConfig}
-                setDialogConfig={setEditDialogConfig}
-              />
-            </>
-          ) : (
-            <ErrorState
-              classes={{ root: classes.errorPaperRoot }}
-              error={apiState.errorResponse}
-              onBack={handleErrorBack}
-            />
-          )
+                {
+                  Object.keys(assetsTypes).map(typeId =>
+                    (
+                      <MenuItem value={typeId} key={typeId}>
+                        <Radio
+                          checked={state.showTypes === typeId}
+                          color="primary"
+                        />
+                        {assetsTypes[typeId].label}
+                      </MenuItem>
+                    )
+                  )
+                }
+              </Select>
+            </FormControl>
+          </DialogFooter>
+          <EmbeddedLegacyEditors
+            showTabs={false}
+            dialogConfig={editDialogConfig}
+            setDialogConfig={setEditDialogConfig}
+          />
+        </>
       }
     </Dialog>
   )

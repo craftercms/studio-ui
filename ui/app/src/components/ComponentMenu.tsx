@@ -86,10 +86,8 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           setPublishDialog({ item });
           setDependenciesDialog({ item })
         },
-        ({ response }) => {
-          //TODO: I'm wrapping the API response as a API2 response
-          const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-          setError(error);
+        (response) => {
+          setError(response);
         }
       );
     }

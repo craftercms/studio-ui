@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, getText, post, postJSON } from '../utils/ajax';
+import { catchApi1Error, get, getText, post, postJSON } from '../utils/ajax';
 import { map, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
@@ -59,9 +59,10 @@ export function getContent(site: string, path: string): Observable<string> {
   );
 }
 
-export function getItem(site: string, path: string): Observable<Item> {
+export function getItem(site: string, path: string): Observable<any> {
   return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
-    pluck('response', 'item')
+    pluck('response', 'item'),
+    catchApi1Error
   );
 }
 

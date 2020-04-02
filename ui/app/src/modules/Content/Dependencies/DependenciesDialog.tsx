@@ -18,14 +18,17 @@ import React, { useEffect, useState } from 'react';
 import DependenciesDialogUI from './DependenciesDialogUI';
 import { Item } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
-import { useActiveSiteId, useSelection, useSpreadState } from '../../../utils/hooks';
+import { useActiveSiteId, useSelection, useSpreadState, useStateResource } from '../../../utils/hooks';
 import { FormattedMessage } from 'react-intl';
 import { isAsset, isCode, isEditableAsset } from '../../../utils/content';
+import { forkJoin } from 'rxjs';
+import { APIError } from '../../../models/GlobalState';
+import { nnou, nou } from '../../../utils/object';
 
 const dialogInitialState = {
   selectedOption: 'depends-on',
-  dependantItems: [],
-  dependencies: [],
+  dependantItems: null,
+  dependencies: null,
   compactView: false,
   showTypes: 'all-deps'
 };
@@ -65,13 +68,9 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     item,
     selectedOption: dependenciesSelection
   });
-  const [deps, setDeps] = useState([]);
+  const [deps, setDeps] = useState(null);
   const [open, setOpen] = useState(true);
-  const [apiState, setApiState] = useSpreadState({
-    error: false,
-    global: false,
-    errorResponse: null
-  });
+  const [error, setError] = useState<APIError>(null);
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
@@ -99,9 +98,16 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       });
   };
 
-  function handleErrorBack() {
-    setApiState({ error: false, global: false });
-  }
+  const resource = useStateResource<any, any>(
+    deps,
+    {
+      shouldResolve: (deps) => Boolean(deps),
+      shouldReject: () => nnou(error),
+      shouldRenew: (source, resource) => resource.complete,
+      resultSelector: () => deps,
+      errorSelector: () => error
+    }
+  );
 
   const handleClose = () => {
     setOpen(false);
@@ -110,34 +116,17 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   };
 
   useEffect(() => {
-    getDependant(siteId, dialog.item.uri).subscribe(
-      (response) => {
-        setApiState({ error: false });
-        setDialog({ dependantItems: response });
-        dialog.selectedOption === 'depends-on' && setDeps(response);
+    forkJoin({
+      dependant: getDependant(siteId, dialog.item.uri),
+      dependencies: getSimpleDependencies(siteId, dialog.item.uri)
+    }).subscribe(
+      ({dependant, dependencies}) => {
+        setDialog({ dependantItems: dependant, dependencies });
+        setDeps(dialog.selectedOption === 'depends-on' ? dependant: dependencies);
       },
-      (response) => {
-        if (response) {
-          setApiState({ error: true, errorResponse: (response.response) ? response.response : response });
-        }
-      }
+      (error) => setError(error)
     );
-
-    getSimpleDependencies(siteId, dialog.item.uri).subscribe(
-      (response) => {
-        setApiState({ error: false });
-        setDialog({ dependencies: response });
-        dialog.selectedOption === 'depends-on-me' && setDeps(response);
-      },
-      (response) => {
-        if (response) {
-          setApiState({ error: true, errorResponse: (response.response) ? response.response : response });
-        }
-      }
-    )
-
-
-  }, [dialog.item, setApiState, setDialog, siteId]);
+  }, [dialog.item, setError, setDialog, siteId]);
 
   useEffect(() => {
     if (dialog.selectedOption === 'depends-on') {
@@ -149,12 +138,10 @@ function DependenciesDialog(props: DependenciesDialogProps) {
 
   return (
     <DependenciesDialogUI
-      dependencies={deps}
+      resource={resource}
       state={dialog}
       setState={setDialog}
       open={open}
-      apiState={apiState}
-      handleErrorBack={handleErrorBack}
       handleClose={handleClose}
       isEditableItem={isEditableAsset}
       assetsTypes={assetsTypes}
