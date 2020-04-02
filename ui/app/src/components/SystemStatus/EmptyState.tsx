@@ -63,7 +63,9 @@ export default function EmptyState(props: EmptyStateProps) {
   return (
     <div className={clsx(classes.root, propClasses?.root)}>
       <img
-        className={clsx(classes.graphic, propClasses?.image)} src={image ? image : emptyImage} alt=""
+        className={clsx(classes.graphic, propClasses?.image)}
+        src={image ? image : emptyImage}
+        alt=""
       />
       {title && (
         <Typography

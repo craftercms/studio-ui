@@ -162,7 +162,14 @@ interface NewContentDialogProps {
 }
 
 export default function NewContentDialog(props: NewContentDialogProps) {
-  const { open, onDialogClose, site, previewItem: previewItemProp, onSaveLegacySuccess, onSaveSuccess } = props;
+  const {
+    open,
+    onDialogClose,
+    site,
+    previewItem: previewItemProp,
+    onSaveLegacySuccess,
+    onSaveSuccess
+  } = props;
   const defaultFilterType = 'all';
   const { formatMessage } = useIntl();
   const classes = useStyles({});
@@ -182,7 +189,8 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     inProgress: false
   });
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
-  const defaultPrevImgUrl = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
+  const defaultPrevImgUrl =
+    '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
   const path = previewItem.uri.replace(/[^/]*$/, '');
   const contentTypesFilters = [
     {
@@ -238,8 +246,10 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       const formatValue = keyword.toLowerCase();
 
       !keyword
-      ? onResetFilter()
-      : setFilterContentTypes(contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue)));
+        ? onResetFilter()
+        : setFilterContentTypes(
+            contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue))
+          );
     },
     [contentTypes, onResetFilter]
   );
@@ -257,11 +267,16 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   };
 
   const getPrevImg = (content) =>
-    content?.imageThumbnail ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}` : defaultPrevImgUrl;
+    content?.imageThumbnail
+      ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}`
+      : defaultPrevImgUrl;
 
   const emptyStateSubtitle = () => (
     <>
-      <FormattedMessage id="emptyState.subtitle" defaultMessage="Try changing your query or browse the" />{' '}
+      <FormattedMessage
+        id="emptyState.subtitle"
+        defaultMessage="Try changing your query or browse the"
+      />{' '}
       <Typography
         variant="subtitle1"
         component="a"
@@ -342,7 +357,14 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         </DialogBody>
         <DialogFooter classes={{ root: classes.dialogActions }}>
           <FormControlLabel
-            control={<Checkbox checked={isCompact} onChange={onCompactCheck} color="primary" disabled={loading} />}
+            control={
+              <Checkbox
+                checked={isCompact}
+                onChange={onCompactCheck}
+                color="primary"
+                disabled={loading}
+              />
+            }
             label={formatMessage(translations.compactInput)}
           />
           <ContentTypesFilter

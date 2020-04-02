@@ -17,7 +17,13 @@
 import { get, getText, post, postJSON } from '../utils/ajax';
 import { map, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
+import {
+  createElements,
+  fromString,
+  getInnerHtml,
+  serialize,
+  wrapElementInAuxDocument
+} from '../utils/xml';
 import {
   ContentType,
   ContentTypeField,
@@ -52,15 +58,15 @@ export function getComponentInstanceHTML(path: string): Observable<string> {
 }
 
 export function getContent(site: string, path: string): Observable<string> {
-  return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
-    pluck('response', 'content')
-  );
+  return get(
+    `/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`
+  ).pipe(pluck('response', 'content'));
 }
 
 export function getItem(site: string, path: string): Observable<Item> {
-  return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
-    pluck('response', 'item')
-  );
+  return get(
+    `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`
+  ).pipe(pluck('response', 'item'));
 }
 
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
@@ -180,7 +186,8 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
     map<AjaxResponse, ContentType[]>(({ response }) =>
       (query?.type
         ? response.filter(
-            (contentType) => contentType.type === query.type && contentType.name !== '/component/level-descriptor'
+            (contentType) =>
+              contentType.type === query.type && contentType.name !== '/component/level-descriptor'
           )
         : response.filter((contentType) => contentType.name !== '/component/level-descriptor')
       ).map((data) => {
@@ -223,9 +230,9 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
 }
 
 export function fetchLegacyContentTypes(site, path) {
-  return get(`/studio/api/1/services/api/1/content/get-content-types.json?site=${site}&path=${path}'`).pipe(
-    pluck('response')
-  );
+  return get(
+    `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}&path=${path}'`
+  ).pipe(pluck('response'));
 }
 
 const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
@@ -432,22 +439,27 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           };
 
           legacyField.constraints &&
-            asArray<LegacyFormDefinitionProperty>(legacyField.constraints.constraint).forEach((legacyProp) => {
-              const value = legacyProp.value.trim();
-              switch (legacyProp.name) {
-                case 'required':
-                  field.required = value === 'true';
-                  break;
-                case 'allowDuplicates':
-                  break;
-                case 'pattern':
-                  break;
-                case 'minSize':
-                  break;
-                default:
-                  console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
+            asArray<LegacyFormDefinitionProperty>(legacyField.constraints.constraint).forEach(
+              (legacyProp) => {
+                const value = legacyProp.value.trim();
+                switch (legacyProp.name) {
+                  case 'required':
+                    field.required = value === 'true';
+                    break;
+                  case 'allowDuplicates':
+                    break;
+                  case 'pattern':
+                    break;
+                  case 'minSize':
+                    break;
+                  default:
+                    console.log(
+                      `[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`,
+                      legacyProp
+                    );
+                }
               }
-            });
+            );
 
           if (legacyField.type === 'repeat') {
             field.fields = {};
@@ -463,9 +475,9 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
                 required: false
               };
               if (field.fields[_fieldId].type === 'node-selector') {
-                const map = asArray<LegacyFormDefinitionProperty>(_legacyField.properties.property).reduce<
-                  LookupTable<LegacyFormDefinitionProperty>
-                >((table, prop) => {
+                const map = asArray<LegacyFormDefinitionProperty>(
+                  _legacyField.properties.property
+                ).reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
                   table[prop.name] = prop;
                   return table;
                 }, {});
@@ -477,9 +489,9 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
               }
             });
           } else if (legacyField.type === 'node-selector') {
-            const map = asArray<LegacyFormDefinitionProperty>(legacyField.properties.property).reduce<
-              LookupTable<LegacyFormDefinitionProperty>
-            >((table, prop) => {
+            const map = asArray<LegacyFormDefinitionProperty>(
+              legacyField.properties.property
+            ).reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
               table[prop.name] = prop;
               return table;
             }, {});
@@ -828,7 +840,9 @@ export function getContentByContentType(
   }).pipe(
     map<AjaxResponse, { count: number; paths: string[] }>(({ response }) => ({
       count: response.result.total,
-      paths: response.result.items.filter((item) => item.type === options.type).map((item) => item.path)
+      paths: response.result.items
+        .filter((item) => item.type === options.type)
+        .map((item) => item.path)
     })),
     switchMap(({ paths, count }) =>
       zip(
@@ -891,7 +905,8 @@ interface AnyObject {
 // }
 
 function extractNode(doc: XMLDocument, fieldId: string, index: string | number) {
-  const indexes = index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
+  const indexes =
+    index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
   let aux: any = doc.documentElement;
   if (nou(index) || isBlank(`${index}`)) {
     return aux.querySelector(`:scope > ${fieldId}`);
@@ -956,11 +971,19 @@ function updateModifiedDateElement(doc: XMLDocument) {
 }
 
 function getComponentPath(id: string, contentType: string) {
-  const pathBase = `/site/components/${contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
+  const pathBase = `/site/components/${contentType.replace('/component/', '')}s/`.replace(
+    /\/{1,}$/m,
+    ''
+  );
   return `${pathBase}/${id}.xml`;
 }
 
-function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node): void {
+function insertCollectionItem(
+  doc: XMLDocument,
+  fieldId: string,
+  targetIndex: string | number,
+  newItem: Node
+): void {
   let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
   let index = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
 
@@ -980,10 +1003,17 @@ function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: st
 }
 
 export function fetchPublishingChannels(site: string) {
-  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`);
+  return get(
+    `/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`
+  );
 }
 
-export function uploadDataUrl(site: string, file: any, path: string, XSRF_CONFIG_ARGUMENT: string): Observable<any> {
+export function uploadDataUrl(
+  site: string,
+  file: any,
+  path: string,
+  XSRF_CONFIG_ARGUMENT: string
+): Observable<any> {
   return new Observable((subscriber) => {
     const uppy = Core({ autoProceed: true });
     const uploadAssetUrl = `/studio/asset-upload?${XSRF_CONFIG_ARGUMENT}=${getRequestForgeryToken()}`;
@@ -1027,7 +1057,9 @@ export function getBulkUploadUrl(site: string, path: string): string {
 }
 
 export function getQuickCreateContentList(siteId: string) {
-  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(pluck('response'));
+  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
+    pluck('response')
+  );
 }
 
 export default {

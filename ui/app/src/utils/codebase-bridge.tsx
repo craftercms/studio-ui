@@ -98,7 +98,9 @@ export function createCodebaseBridge() {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
-      DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
+      DependencySelection: lazy(() =>
+        import('../modules/Content/Dependencies/DependencySelection')
+      ),
       DependencySelectionDelete: lazy(() =>
         import('../modules/Content/Dependencies/DependencySelection').then((module) => ({
           default: module.DependencySelectionDelete
@@ -160,7 +162,9 @@ export function createCodebaseBridge() {
       if (typeof component !== 'string' && !Object.values(Bridge.components).includes(component)) {
         console.warn('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
+        console.warn(
+          `The supplied component name ('${component}') is not a know component of CrafterCMSNext.`
+        );
       }
 
       const element = typeof container === 'string' ? document.querySelector(container) : container;

@@ -102,7 +102,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     inProgress: false
   });
 
-  const onEmbeddedFormSaveSuccess = ({ data }) => data.item.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
+  const onEmbeddedFormSaveSuccess = ({ data }) =>
+    data.item.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
 
   const onNewContentClick = () => {
     onMenuClose();
