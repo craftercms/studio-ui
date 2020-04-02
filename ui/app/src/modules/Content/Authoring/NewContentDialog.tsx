@@ -163,6 +163,7 @@ interface NewContentDialogProps {
 
 export default function NewContentDialog(props: NewContentDialogProps) {
   const { open, onDialogClose, site, previewItem: previewItemProp, onSaveLegacySuccess, onSaveSuccess } = props;
+  const defaultFilterType = 'all';
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [contentTypes, setContentTypes] = useState(null);
@@ -171,7 +172,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [search, setSearch] = useState('');
   const [previewItem, setPreviewItem] = useState(defaultPreviewItem);
   const [loading, setLoading] = useState(true);
-  const [resetFilterType, setResetFilterType] = useState('');
+  const [resetFilterType, setResetFilterType] = useState(defaultFilterType);
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [dialogConfig, setDialogConfig] = useSpreadState({
@@ -218,10 +219,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   const onTypeChange = useCallback(
     (type) => {
-      setResetFilterType('');
-      type !== 'all'
+      resetFilterType && setResetFilterType('');
+
+      type !== defaultFilterType
         ? setFilterContentTypes(contentTypes.filter((content) => content.type === type))
-        : setFilterContentTypes(contentTypes);
+        : onResetFilter();
     },
     [contentTypes]
   );
@@ -230,12 +232,9 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     (keyword) => {
       const formatValue = keyword.toLowerCase();
 
-      if (!keyword) {
-        setResetFilterType('all');
-        setFilterContentTypes(contentTypes);
-      } else {
-        setFilterContentTypes(contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue)));
-      }
+      !keyword
+      ? onResetFilter()
+      : setFilterContentTypes(contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue)));
     },
     [contentTypes]
   );
@@ -253,7 +252,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   };
 
   const onResetFilter = () => {
-    setResetFilterType('all');
+    setResetFilterType(defaultFilterType);
     setFilterContentTypes(contentTypes);
   };
 
@@ -326,7 +325,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
               />
             )}
             {!loading &&
-              filterContentTypes.length &&
+              !!filterContentTypes.length &&
               filterContentTypes.map((content) => (
                 <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
                   <NewContentCard
