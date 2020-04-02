@@ -17,13 +17,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
-import {
-  defineMessages,
-  FormattedDateParts,
-  FormattedMessage,
-  FormattedTime,
-  useIntl
-} from 'react-intl';
+import { defineMessages, FormattedDateParts, FormattedMessage, FormattedTime, useIntl } from 'react-intl';
 import DialogBody from '../../../components/DialogBody';
 import { getItemVersions } from '../../../services/content';
 import { LegacyItem } from '../../../../../guest/src/models/Item';
@@ -45,25 +39,11 @@ import DialogFooter from '../../../components/DialogFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import { APIError } from '../../../models/GlobalState';
 import { Resource } from '../../../models/Resource';
-import { Suspencified } from '../../../components/SystemStatus/Suspencified';
-import EmptyState from '../../../components/SystemStatus/EmptyState';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
 import clsx from 'clsx';
-import CardActionArea from '@material-ui/core/CardActionArea';
 
 const translations = defineMessages({
-  headerTitle: {
-    id: 'historyDialog.headerTitle',
-    defaultMessage: 'Content Item History'
-  },
-  current: {
-    id: 'historyDialog.current',
-    defaultMessage: 'current'
-  },
-  test: {
-    id: 'historyDialog.test',
-    defaultMessage: 'test'
-  },
   previousPage: {
     id: 'pagination.previousPage',
     defaultMessage: 'previous page'
@@ -71,10 +51,6 @@ const translations = defineMessages({
   nextPage: {
     id: 'pagination.nextPage',
     defaultMessage: 'next page'
-  },
-  emptyMessage: {
-    id: 'historyDialog.emptyMessage',
-    defaultMessage: 'There are no results.'
   },
   view: {
     id: 'words.view',
@@ -224,9 +200,8 @@ interface HistoryListProps {
   resource: Resource<LegacyVersion[]>;
   rowsPerPage: number;
   page: number;
-  emptyMessage: string;
   compareTo: {
-    version: LegacyVersion,
+    version?: LegacyVersion,
     nextVersion?: LegacyVersion
   }
 
@@ -238,15 +213,13 @@ interface HistoryListProps {
 function HistoryList(props: HistoryListProps) {
   const { formatMessage } = useIntl();
   const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, emptyMessage, compareTo, handleItemClick } = props;
+  const { resource, handleOpenMenu, rowsPerPage, page, compareTo, handleItemClick } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-  return versions.length === 0 ? (
-    <EmptyState title={emptyMessage}/>
-  ) : (
+  return (
     <List component="div" className={classes.list} disablePadding>
       {versions.map((version: LegacyVersion, i: number) => {
-        let isSelected = version.versionNumber === compareTo?.version.versionNumber;
-        let isButton = compareTo?.version && !isSelected;
+        let isSelected = version.versionNumber === compareTo.version?.versionNumber;
+        let isButton = compareTo.version && !isSelected;
         return (
           <ListItem
             key={version.versionNumber}
@@ -264,7 +237,15 @@ function HistoryList(props: HistoryListProps) {
                 <>
                   <FancyFormattedDate date={version.lastModifiedDate}/>
                   {i === 0 && page === 0 && (
-                    <Chip label={formatMessage(translations.current)} className={classes.chip}/>
+                    <Chip
+                      label={
+                        <FormattedMessage
+                          id="historyDialog.current"
+                          defaultMessage="current"
+                        />
+                      }
+                      className={classes.chip}
+                    />
                   )}
                 </>
               }
@@ -282,7 +263,7 @@ function HistoryList(props: HistoryListProps) {
         )
       })}
     </List>
-  );
+  )
 }
 
 const menuOptions: LookupTable<SectionItem> = {
@@ -317,8 +298,29 @@ const menuOptions: LookupTable<SectionItem> = {
 const menuInitialState = {
   sections: [],
   anchorEl: null,
-  activeVersion: null
+  activeItem: null
 };
+
+const compareToInitialState = {
+  version: null,
+  nextVersion: null
+};
+
+interface CompareTo {
+  version: LegacyVersion;
+  nextVersion: LegacyVersion
+}
+
+interface Menu {
+  sections: SectionItem[][],
+  anchorEl: Element,
+  activeItem: LegacyVersion
+}
+
+interface Data {
+  contentItem: LegacyItem;
+  versions: LegacyVersion[]
+}
 
 export default function HistoryDialog(props) {
   const {
@@ -331,14 +333,14 @@ export default function HistoryDialog(props) {
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
 
-  const [compareTo, setCompareTo] = useSpreadState(null);
+  const [compareTo, setCompareTo] = useSpreadState<CompareTo>(compareToInitialState);
 
-  const [menu, setMenu] = useSpreadState(menuInitialState);
+  const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
   const rowsPerPage = 20;
   const [page, setPage] = useState(0);
 
-  const [data, setData] = useState<{ contentItem: LegacyItem; versions: LegacyVersion[] }>({
+  const [data, setData] = useState<Data>({
     contentItem: null,
     versions: null
   });
@@ -375,7 +377,7 @@ export default function HistoryDialog(props) {
             [menuOptions.revertToPrevious]
           ],
           anchorEl,
-          activeVersion: version
+          activeItem: version
         });
       } else {
         setMenu({
@@ -385,7 +387,7 @@ export default function HistoryDialog(props) {
             [menuOptions.revertToThisVersion]
           ],
           anchorEl,
-          activeVersion: version
+          activeItem: version
         });
       }
     },
@@ -393,13 +395,13 @@ export default function HistoryDialog(props) {
   );
 
   const handleItemClick = (version: LegacyVersion) => {
-    console.log(version);
+    setCompareTo({ nextVersion: version });
   };
 
   const handleMenuClose = () => {
     setMenu({
       anchorEl: null,
-      activeVersion: null
+      activeItem: null
     });
   };
 
@@ -409,7 +411,7 @@ export default function HistoryDialog(props) {
         break;
       }
       case 'compareTo': {
-        setCompareTo({ version: menu.activeVersion });
+        setCompareTo({ version: menu.activeItem });
         setMenu(menuInitialState);
         break;
       }
@@ -423,56 +425,75 @@ export default function HistoryDialog(props) {
     setPage(nextPage);
   };
 
+  const handleBack = () => {
+    setCompareTo({ version: menu.activeItem });
+  };
+
   return (
-    <>
-      <Dialog onClose={handleClose} open={open} fullWidth maxWidth="md">
-        <DialogHeader title={formatMessage(translations.headerTitle)} onClose={handleClose}/>
-        <DialogBody>
-          <Suspencified
-            resource={resource}
-            component={HistoryList}
-            componentProps={{
-              handleOpenMenu,
-              handleItemClick,
-              emptyMessage: formatMessage(translations.emptyMessage),
-              rowsPerPage,
-              page,
-              compareTo
-            }}
-          />
-        </DialogBody>
-        {data.versions && (
-          <DialogFooter className={classes.dialogFooter}>
-            <TablePagination
-              className={classes.pagination}
-              classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-              component="div"
-              labelRowsPerPage=""
-              rowsPerPageOptions={[10, 20, 30]}
-              count={data.versions.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              backIconButtonProps={{
-                'aria-label': formatMessage(translations.previousPage)
-              }}
-              nextIconButtonProps={{
-                'aria-label': formatMessage(translations.nextPage)
-              }}
-              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) =>
-                onPageChanged(nextPage)
-              }
-            />
-          </DialogFooter>
-        )}
-        <ContextMenu
-          open={!!menu.anchorEl}
-          anchorEl={menu.anchorEl}
-          onClose={handleMenuClose}
-          sections={menu.sections}
-          onMenuItemClicked={handleMenuItemClicked}
-          classes={{ menuList: classes.menuList }}
+    <Dialog onClose={handleClose} open={open} fullWidth maxWidth="md">
+      <DialogHeader
+        title={
+          compareTo.version ?
+            (
+              <FormattedMessage
+                id="historyDialog.selectedRevisionToCompare"
+                defaultMessage={`Select a revision to compare to "{version}"`}
+                values={{ version: <FancyFormattedDate date={compareTo.version.lastModifiedDate}/> }}
+              />
+            ) : (
+              <FormattedMessage
+                id="historyDialog.headerTitle"
+                defaultMessage="Content Item History"
+              />
+            )
+        }
+        onClose={handleClose}
+        onBack={compareTo.version ? handleBack : null}
+      />
+      <DialogBody>
+        <SuspenseWithEmptyState
+          resource={resource}
+          component={HistoryList}
+          componentProps={{
+            handleOpenMenu,
+            handleItemClick,
+            rowsPerPage,
+            page,
+            compareTo
+          }}
         />
-      </Dialog>
-    </>
-  );
+      </DialogBody>
+      {data.versions && (
+        <DialogFooter className={classes.dialogFooter}>
+          <TablePagination
+            className={classes.pagination}
+            classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+            component="div"
+            labelRowsPerPage=""
+            rowsPerPageOptions={[10, 20, 30]}
+            count={data.versions.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            backIconButtonProps={{
+              'aria-label': formatMessage(translations.previousPage)
+            }}
+            nextIconButtonProps={{
+              'aria-label': formatMessage(translations.nextPage)
+            }}
+            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) =>
+              onPageChanged(nextPage)
+            }
+          />
+        </DialogFooter>
+      )}
+      <ContextMenu
+        open={!!menu.anchorEl}
+        anchorEl={menu.anchorEl}
+        onClose={handleMenuClose}
+        sections={menu.sections}
+        onMenuItemClicked={handleMenuItemClicked}
+        classes={{ menuList: classes.menuList }}
+      />
+    </Dialog>
+  )
 }

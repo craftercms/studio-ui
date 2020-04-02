@@ -21,6 +21,7 @@ import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/CloseRounded';
+import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import React from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 
@@ -33,7 +34,6 @@ const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
   },
   title: {
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center'
   },
   subtitle: {
@@ -41,11 +41,14 @@ const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
     lineHeight: '18px',
     paddingRight: '35px'
   },
-  closeIcon: {}
+  closeIcon: {
+    marginLeft: 'auto'
+  },
+  backIcon: {}
 }));
 
 export interface DialogTitleProps {
-  title: string;
+  title: string | JSX.Element;
   titleTypographyProps?: {
     variant?: any;
     component?: string;
@@ -58,17 +61,21 @@ export interface DialogTitleProps {
   }
   subtitle?: string;
   icon?: any;
+  backIcon?: any;
 
-  onClose(): void;
+  onClose?(): void;
+  onBack?(): void;
 }
 
 export default function DialogHeader(props: DialogTitleProps) {
   const classes = dialogTitleStyles({});
   const {
     onClose,
+    onBack,
     title,
     subtitle,
     icon: Icon = CloseIcon,
+    backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
       component: 'span',
@@ -83,6 +90,11 @@ export default function DialogHeader(props: DialogTitleProps) {
   return (
     <MuiDialogTitle disableTypography className={classes.titleRoot}>
       <div className={classes.title}>
+        {onBack ? (
+          <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
+            <BackIcon/>
+          </IconButton>
+        ) : null}
         <Typography
           variant={titleTypographyProps.variant}
           // @ts-ignore
