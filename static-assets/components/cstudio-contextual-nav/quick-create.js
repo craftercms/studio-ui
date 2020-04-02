@@ -27,8 +27,9 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
   /**
    * initialize module
    */
-  initialize: function () {
+  initialize: function() {
     const quickCreateWrapper = $('.dropdown.quick-create');
+    const container = $('#quick-create-menu')[0];
 
     if (CStudioAuthoringContext.isPreview || CStudioAuthoringContext.isDashboard) {
       $(quickCreateWrapper).removeClass('hide');
@@ -54,10 +55,9 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
     };
 
     function renderQuickCreate(anchorEl) {
-      const container = $('#quick-create-menu')[0];
       let unmount;
       CrafterCMSNext.render(container, 'QuickCreateMenu', {
-        legacySuccessHandler: success,
+        onSaveLegacySuccess: success,
         previewItem:
           CStudioAuthoring && CStudioAuthoring.SelectedContent.selectedContent.length
             ? CStudioAuthoring.SelectedContent.selectedContent[0]

@@ -27,7 +27,6 @@ import { createStyles } from '@material-ui/core';
 import { useSpreadState } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
-  changeCurrentUrl,
   EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
@@ -105,7 +104,9 @@ interface EmbeddedLegacyEditorsProps {
   showController?: boolean;
   showTabs?: boolean;
 
-  legacySuccessHandler?(response): any;
+  onSaveLegacySuccess?(response): any;
+
+  onSaveSuccess?(response): any;
 
   getPath?(type: string): void;
 }
@@ -117,7 +118,8 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     getPath,
     showController = false,
     showTabs = true,
-    legacySuccessHandler
+    onSaveLegacySuccess,
+    onSaveSuccess
   } = props;
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -199,11 +201,8 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
           }
           case EMBEDDED_LEGACY_FORM_SAVE: {
             closeEmbeddedLegacyForm(e.data.refresh, tab);
-            legacySuccessHandler?.(e);
-
-            if (!legacySuccessHandler && e.data.redirectUrl) {
-              dispatch(changeCurrentUrl(e.data.redirectUrl));
-            }
+            onSaveLegacySuccess?.(e);
+            onSaveSuccess?.(e);
             break;
           }
           case EMBEDDED_LEGACY_FORM_FAILURE: {
@@ -219,7 +218,8 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       };
     }
   }, [
-    legacySuccessHandler,
+    onSaveSuccess,
+    onSaveLegacySuccess,
     handleTabChange,
     setDialogConfig,
     setTabsState,

@@ -119,11 +119,13 @@ interface NewContentDialogProps {
 
   onDialogClose(): void;
 
-  legacySuccessHandler?(response): any;
+  onSaveLegacySuccess?(response): any;
+
+  onSaveSuccess?(response): any;
 }
 
 export default function NewContentDialog(props: NewContentDialogProps) {
-  const { open, onDialogClose, site, previewItem: previewItemProp, legacySuccessHandler } = props;
+  const { open, onDialogClose, site, previewItem: previewItemProp, onSaveLegacySuccess, onSaveSuccess } = props;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [contentTypes, setContentTypes] = useState(null);
@@ -270,7 +272,8 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           showController={false}
           dialogConfig={dialogConfig}
           setDialogConfig={setDialogConfig}
-          legacySuccessHandler={legacySuccessHandler}
+          onSaveLegacySuccess={onSaveLegacySuccess}
+          onSaveSuccess={onSaveSuccess}
         />
       )}
     </>

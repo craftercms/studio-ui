@@ -3078,7 +3078,7 @@
           const { site, internalName, fileName, uri } = oCurrentTextNode.data;
           let unmount;
           CrafterCMSNext.render(container, 'NewContentDialog', {
-            legacySuccessHandler: createSuccess(oCurrentTextNode),
+            onSaveLegacySuccess: createSuccess(oCurrentTextNode),
             previewItem: {
               name: fileName,
               internalName,

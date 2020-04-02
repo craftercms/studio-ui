@@ -28,6 +28,8 @@ import { getQuickCreateContentList } from '../../services/content';
 import { useActiveSiteId, useSpreadState, useSelection, usePreviewState } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import NewContentDialog from '../Content/Authoring/NewContentDialog';
+import { useDispatch } from 'react-redux';
+import { changeCurrentUrl } from '../../state/actions/preview';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -78,17 +80,19 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface QuickCreateMenuProps {
-  legacySuccessHandler?(response): any;
+  onSaveLegacySuccess?(response): any;
+
   anchorEl: any;
   onMenuClose: any;
   previewItem: any;
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const { anchorEl, onMenuClose, previewItem, legacySuccessHandler } = props;
+  const { anchorEl, onMenuClose, previewItem, onSaveLegacySuccess } = props;
   const classes = useStyles({});
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
+  const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
@@ -98,6 +102,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     type: 'form',
     inProgress: false
   });
+
+  const onEmbeddedFormSaveSuccess = ({ data }) => data.item.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
 
   const onNewContentClick = () => {
     onMenuClose();
@@ -152,7 +158,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           showController={false}
           dialogConfig={dialogConfig}
           setDialogConfig={setDialogConfig}
-          legacySuccessHandler={legacySuccessHandler}
+          onSaveLegacySuccess={onSaveLegacySuccess}
+          onSaveSuccess={onEmbeddedFormSaveSuccess}
         />
       )}
       <NewContentDialog
@@ -160,7 +167,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         onDialogClose={onDialogClose}
         site={siteId}
         previewItem={previewItem}
-        legacySuccessHandler={legacySuccessHandler}
+        onSaveLegacySuccess={onSaveLegacySuccess}
+        onSaveSuccess={onEmbeddedFormSaveSuccess}
       />
     </>
   );
@@ -188,19 +196,21 @@ export default function QuickCreate() {
   const { guest } = usePreviewState();
 
   const onMenuBtnClick = (e) => {
+    setAnchorEl(e.currentTarget);
     if (guest) {
       const { modelId, models } = guest;
       const {
         craftercms: { label, path }
       } = models[modelId];
+
       const item = {
         name: label,
         internalName: label,
         uri: path
       };
+
       setCurrentPreview(item);
     }
-    setAnchorEl(e.currentTarget);
   };
 
   const onMenuClose = () => setAnchorEl(null);
