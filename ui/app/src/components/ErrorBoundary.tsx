@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import ErrorState from './SystemStatus/ErrorState';
 
-export class ErrorBoundary extends React.Component {
+export type ErrorBoundaryProps = PropsWithChildren<{}>;
 
+export class ErrorBoundary extends React.Component {
   state = { error: null };
 
   static getDerivedStateFromError(error) {
@@ -31,14 +32,16 @@ export class ErrorBoundary extends React.Component {
   }
 
   render() {
-    return (
-      (this.state.error) ? (
-        <ErrorState
-          error={{
-            message: this.state.error.message || this.state.error
-          }}
-        />
-      ) : this.props.children
+    return this.state.error ? (
+      <ErrorState
+        error={{
+          message: this.state.error.message || this.state.error
+        }}
+      />
+    ) : (
+      this.props.children
     );
   }
 }
+
+export default ErrorBoundary;

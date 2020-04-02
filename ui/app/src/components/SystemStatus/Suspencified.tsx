@@ -14,29 +14,104 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { ErrorBoundary } from '../ErrorBoundary';
-import LoadingState from './LoadingState';
+import React, {
+  Fragment,
+  ElementType,
+  // FunctionComponent,
+  PropsWithChildren,
+  Suspense,
+  SuspenseProps
+} from 'react';
+import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
+import LoadingState, { LoadingStateProps } from './LoadingState';
+import { Resource } from '../../models/Resource';
+import EmptyState, { EmptyStateProps } from './EmptyState';
+import { FormattedMessage } from 'react-intl';
 
-// TODO: Need to figure the TS config to carry the props from the "component" to "componentProps"
-// interface SuspencifiedProps<ComponentType extends React.ElementType = 'div', ComponentProps = {}> {
-//   component: ComponentType;
-//   componentProps?: object;
-//   loadingStateProps?: object;
-//   resource: any;
-// }
+export type PropsWithResource<ResourceType = unknown, Props = {}> = PropsWithChildren<
+  {
+    resource: Resource<ResourceType>;
+  } & Props
+>;
 
-export function Suspencified(props) {
-  const { component: Component, componentProps, loadingStateProps, errorStateProps, resource } = props;
-  return (
-    <ErrorBoundary {...errorStateProps}>
-      <React.Suspense
-        fallback={
-          <LoadingState graphicProps={{ width: 150 }} {...loadingStateProps} />
-        }
-      >
-        <Component resource={resource} {...componentProps} />
-      </React.Suspense>
-    </ErrorBoundary>
-  )
+type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<
+  PropsWithResource<ResourceType> & {
+    isEmpty?(value: unknown): boolean;
+    emptyStateProps?: EmptyStateProps;
+  }
+>;
+
+type SuspenseBoundaryProps = PropsWithChildren<{
+  suspenseProps?: SuspenseProps;
+  loadingStateProps?: LoadingStateProps;
+  errorBoundaryProps?: ErrorBoundaryProps;
+}>;
+
+// TODO: Is there a way for TS config to demand the props from the "component" to "componentProps"?
+interface SuspencifiedProps<
+  ResourceType = unknown,
+  // CompleteComponentProps extends PropsWithResource<ResourceType> = PropsWithResource<ResourceType>,
+  // ComponentProps extends Partial<CompleteComponentProps> = {},
+  // ComponentType extends ElementType<CompleteComponentProps> = FunctionComponent<CompleteComponentProps>,
+  ComponentProps = {},
+  ComponentType extends ElementType = ElementType
+> extends SuspenseBoundaryProps {
+  component: ComponentType;
+  componentProps?: ComponentProps;
+  resource: Resource<ResourceType>;
 }
+
+export function WithEmptyState(props: SuspenseWithEmptyStateProps) {
+  const {
+    children,
+    isEmpty = (value: any[]) => value.length === 0,
+    resource,
+    emptyStateProps = {
+      title: (
+        <FormattedMessage
+          id="withEmptyState.defaultEmptyStateMessage"
+          defaultMessage="No results found"
+        />
+      )
+    }
+  } = props;
+  const value = resource.read();
+  return <Fragment>{isEmpty(value) ? <EmptyState {...emptyStateProps} /> : children}</Fragment>;
+}
+
+export function Suspencified(props: SuspencifiedProps) {
+  const { component: Component, componentProps, resource } = props;
+  return (
+    <SuspenseBoundary {...props}>
+      <Component resource={resource} {...componentProps} />
+    </SuspenseBoundary>
+  );
+}
+
+export function SuspenseWithEmptyState(
+  props: SuspencifiedProps & { withEmptyStateProps?: Partial<SuspenseWithEmptyStateProps> }
+) {
+  const { component: Component, componentProps, resource, withEmptyStateProps } = props;
+  return (
+    <SuspenseBoundary {...props}>
+      <WithEmptyState resource={resource} {...withEmptyStateProps}>
+        <Component resource={resource} {...componentProps} />
+      </WithEmptyState>
+    </SuspenseBoundary>
+  );
+}
+
+export function SuspenseBoundary(props: SuspenseBoundaryProps) {
+  const { children, loadingStateProps, errorBoundaryProps, suspenseProps } = props;
+  return (
+    <ErrorBoundary {...errorBoundaryProps}>
+      <Suspense
+        fallback={<LoadingState {...loadingStateProps} />}
+        {...suspenseProps}
+        children={children}
+      />
+    </ErrorBoundary>
+  );
+}
+
+export default Suspencified;
