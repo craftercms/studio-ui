@@ -179,8 +179,15 @@ const historyStyles = makeStyles((theme: Theme) =>
 
 const CompareRevisionStyles = makeStyles((theme: Theme) =>
   createStyles({
-    compareBoxTitle: {
-      backgroundColor: palette.gray.light4
+    compareBoxHeader: {
+      display: 'flex',
+      justifyContent: 'space-around'
+    },
+    compareBoxHeaderItem: {
+      flexBasis: '50%',
+      '& .blackText': {
+        color: palette.black
+      }
     }
   })
 );
@@ -214,10 +221,44 @@ interface CompareRevisionProps {
 
 function CompareRevision(props: CompareRevisionProps) {
   const classes = CompareRevisionStyles({});
+  const { compareTo } = props;
   return (
-    <div className={classes.compareBoxTitle}>
-
-    </div>
+    <section className={classes.compareBoxHeader}>
+      <div className={classes.compareBoxHeaderItem}>
+        <ListItemText
+          primary={
+            <FancyFormattedDate date={compareTo.version.lastModifiedDate}/>
+          }
+          secondary={
+            <FormattedMessage
+              id="historyDialog.versionNumber"
+              defaultMessage="Version: <span>{versionNumber}</span>"
+              values={{
+                versionNumber: compareTo.nextVersion.versionNumber,
+                span: (msg) => <span className="blackText">{msg}</span>
+              }}
+            />
+          }
+        />
+      </div>
+      <div className={classes.compareBoxHeaderItem}>
+        <ListItemText
+          primary={
+            <FancyFormattedDate date={compareTo.nextVersion.lastModifiedDate}/>
+          }
+          secondary={
+            <FormattedMessage
+              id="historyDialog.versionNumber"
+              defaultMessage="Version: <span>{versionNumber}</span>"
+              values={{
+                versionNumber: compareTo.nextVersion.versionNumber,
+                span: (msg) => <span className="blackText">{msg}</span>
+              }}
+            />
+          }
+        />
+      </div>
+    </section>
   )
 }
 
@@ -443,7 +484,6 @@ export default function HistoryDialog(props) {
       default:
         break;
     }
-    console.log(section);
   };
 
   const onPageChanged = (nextPage: number) => {
@@ -489,7 +529,7 @@ export default function HistoryDialog(props) {
       />
       <DialogBody>
         {
-          compareTo.version && compareTo.nextVersion? (
+          compareTo.version && compareTo.nextVersion ? (
             <CompareRevision compareTo={compareTo}/>
           ) : (
             <SuspenseWithEmptyState
