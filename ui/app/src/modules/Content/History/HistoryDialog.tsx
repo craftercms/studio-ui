@@ -177,7 +177,19 @@ const historyStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function FancyFormattedDate(props) {
+const CompareRevisionStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    compareBoxTitle: {
+      backgroundColor: palette.gray.light4
+    }
+  })
+);
+
+interface FancyFormattedDateProps {
+  date: string;
+}
+
+function FancyFormattedDate(props: FancyFormattedDateProps) {
   const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
   return (
     <FormattedDateParts value={props.date} month="long" day="numeric" weekday="long" year="numeric">
@@ -194,6 +206,19 @@ function FancyFormattedDate(props) {
       )}
     </FormattedDateParts>
   );
+}
+
+interface CompareRevisionProps {
+  compareTo: CompareTo
+}
+
+function CompareRevision(props: CompareRevisionProps) {
+  const classes = CompareRevisionStyles({});
+  return (
+    <div className={classes.compareBoxTitle}>
+
+    </div>
+  )
 }
 
 interface HistoryListProps {
@@ -426,7 +451,11 @@ export default function HistoryDialog(props) {
   };
 
   const handleBack = () => {
-    setCompareTo({ version: menu.activeItem });
+    if (compareTo.nextVersion) {
+      setCompareTo({ nextVersion: null });
+    } else {
+      setCompareTo(compareToInitialState);
+    }
   };
 
   return (
@@ -435,11 +464,19 @@ export default function HistoryDialog(props) {
         title={
           compareTo.version ?
             (
-              <FormattedMessage
-                id="historyDialog.selectedRevisionToCompare"
-                defaultMessage={`Select a revision to compare to "{version}"`}
-                values={{ version: <FancyFormattedDate date={compareTo.version.lastModifiedDate}/> }}
-              />
+              compareTo.nextVersion ? (
+                <FormattedMessage
+                  id="historyDialog.comparingRevisions"
+                  defaultMessage={`Comparing Revisions -- {fileName}`}
+                  values={{ fileName: data.contentItem.internalName }}
+                />
+              ) : (
+                <FormattedMessage
+                  id="historyDialog.selectedRevisionToCompare"
+                  defaultMessage={`Select a revision to compare to "{version}"`}
+                  values={{ version: <FancyFormattedDate date={compareTo.version.lastModifiedDate}/> }}
+                />
+              )
             ) : (
               <FormattedMessage
                 id="historyDialog.headerTitle"
@@ -451,17 +488,24 @@ export default function HistoryDialog(props) {
         onBack={compareTo.version ? handleBack : null}
       />
       <DialogBody>
-        <SuspenseWithEmptyState
-          resource={resource}
-          component={HistoryList}
-          componentProps={{
-            handleOpenMenu,
-            handleItemClick,
-            rowsPerPage,
-            page,
-            compareTo
-          }}
-        />
+        {
+          compareTo.version && compareTo.nextVersion? (
+            <CompareRevision compareTo={compareTo}/>
+          ) : (
+            <SuspenseWithEmptyState
+              resource={resource}
+              component={HistoryList}
+              componentProps={{
+                handleOpenMenu,
+                handleItemClick,
+                rowsPerPage,
+                page,
+                compareTo
+              }}
+            />
+          )
+        }
+
       </DialogBody>
       {data.versions && (
         <DialogFooter className={classes.dialogFooter}>
