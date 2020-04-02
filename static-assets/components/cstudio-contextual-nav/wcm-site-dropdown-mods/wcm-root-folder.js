@@ -3082,92 +3082,95 @@
       /**
        * paste content to selected location
        */
-      pasteContent: function(sType, args, tree) {
+      pasteContent: function (sType, args, tree) {
         //Check source and destination paths.
         if ((Self.cutItem != null && Self.cutItem.contentElId == oCurrentTextNode.contentElId) ||
-          (Self.copiedItem != null && (Self.copiedItem.contentElId == oCurrentTextNode.contentElId) || Self.copiedItem == oCurrentTextNode.data.uri)){
+          (Self.copiedItem != null && (Self.copiedItem.contentElId == oCurrentTextNode.contentElId) || Self.copiedItem == oCurrentTextNode.data.uri)) {
           CStudioAuthoring.Operations.showSimpleDialog(
-            "pathSameError-dialog",
+            'pathSameError-dialog',
             CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(siteDropdownLangBundle, "notification"),
-            CMgs.format(siteDropdownLangBundle, "pathSameError"),
-            [{ text: "OK",  handler:function(){
+            CMgs.format(siteDropdownLangBundle, 'notification'),
+            CMgs.format(siteDropdownLangBundle, 'pathSameError'),
+            [{
+              text: 'OK', handler: function () {
                 this.hide();
                 return false;
-              }, isDefault:false }],
+              }, isDefault: false
+            }],
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            "studioDialog"
+            'studioDialog'
           );
-        }
-
-        window.pasteFlag = true;
-        var pasteCb = {
-          success: function(result) {
-            try {
-              var errorMsgExist=false;
-              var errorMsg='';
-              var cutItem = Self.cutItem;
-              if(!result.success){
-                if(typeof result.message!= 'undefined' && typeof result.message.paths != 'undefined') {
-                  errorMsg = result.message.paths[0];
-                  if(errorMsg!='') {
-                    errorMsgExist=true;
+        } else {
+          window.pasteFlag = true;
+          var pasteCb = {
+            success: function (result) {
+              try {
+                var errorMsgExist = false;
+                var errorMsg = '';
+                var cutItem = Self.cutItem;
+                if (!result.success) {
+                  if (typeof result.message != 'undefined' && typeof result.message.paths != 'undefined') {
+                    errorMsg = result.message.paths[0];
+                    if (errorMsg != '') {
+                      errorMsgExist = true;
+                    }
                   }
                 }
-              }
 
-              Self.refreshNodes(this.tree,!errorMsgExist, false, null, null, true);
+                Self.refreshNodes(this.tree, !errorMsgExist, false, null, null, true);
 
-              var isPreview = CStudioAuthoringContext.isPreview;
+                var isPreview = CStudioAuthoringContext.isPreview;
 
-              if(cutItem && isPreview){
-                var current = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
+                if (cutItem && isPreview) {
+                  var current = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
 
-                if(current.uri == cutItem.data.uri){
-                  var browserUri = result.status[0].split("/site/website").pop();
-                  browserUri = browserUri.split("/index.xml")[0];
+                  if (current.uri == cutItem.data.uri) {
+                    var browserUri = result.status[0].split('/site/website').pop();
+                    browserUri = browserUri.split('/index.xml')[0];
 
-                  cutItem.data.browserUri = browserUri;
-                  cutItem.data.uri = result.status[0];
+                    cutItem.data.browserUri = browserUri;
+                    cutItem.data.uri = result.status[0];
 
-                  CStudioAuthoring.Operations.refreshPreview(cutItem.data);
+                    CStudioAuthoring.Operations.refreshPreview(cutItem.data);
+                  }
                 }
+
+                WcmDashboardWidgetCommon.refreshDashboard('MyRecentActivity');
+
+                //code below to alert user if destination node url already exist during cut/paste
+                if (errorMsgExist && errorMsg == 'DESTINATION_NODE_EXIST') {
+                  CStudioAuthoring.Operations.showSimpleDialog(
+                    'pageExistError-dialog',
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(siteDropdownLangBundle, 'notification'),
+                    CMgs.format(siteDropdownLangBundle, 'pageExistError'),
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    'studioDialog'
+                  );
+                } else {
+                  Self.cutItem = null;
+                  Self.copiedItem = null;
+                }
+              } catch (e) {
               }
+            },
 
-              WcmDashboardWidgetCommon.refreshDashboard("MyRecentActivity");
+            failure: function () {
+              YDom.removeClass(oCurrentTextNode.html.parentElement.previousSibling, 'ygtvloading');
+            },
 
-              //code below to alert user if destination node url already exist during cut/paste
-              if (errorMsgExist && errorMsg=='DESTINATION_NODE_EXIST'){
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  "pageExistError-dialog",
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(siteDropdownLangBundle, "notification"),
-                  CMgs.format(siteDropdownLangBundle, "pageExistError"),
-                  null, // use default button
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  "studioDialog"
-                );
-              }else{
-                Self.cutItem = null;
-                Self.copiedItem = null;
-              }
-            } catch(e) { }
-          },
+            tree: oCurrentTextNode
+          };
 
-          failure: function() {
-            YDom.removeClass(oCurrentTextNode.html.parentElement.previousSibling, "ygtvloading");
-          },
+          try {
+            YDom.addClass(oCurrentTextNode.html.parentElement.previousSibling, 'ygtvloading');
+          } catch (e) {
+            console.error(e.message);
+          }
 
-          tree: oCurrentTextNode
-        };
-
-        try{
-          YDom.addClass(oCurrentTextNode.html.parentElement.previousSibling, "ygtvloading");
-        } catch(e) {
-          console.error(e.message);
+          CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
         }
-
-        CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
       },
       duplicateContent: function(sType, args, tree) {
 
