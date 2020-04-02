@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEvent } from 'react';
+import React, { MouseEvent, ReactElement } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import emptyImage from '../../assets/desert.svg';
@@ -34,19 +34,13 @@ const useStyles = makeStyles(() => ({
     '& .paragraph': {
       marginTop: '10px'
     }
-  },
-  link: {
-    cursor: 'pointer',
-    textDecoration: 'underline'
   }
 }));
 
 interface EmptyStateProps {
   image?: string;
   title: string;
-  subtitle?: string;
-  link?: string;
-  onLinkClick?(event?: MouseEvent<HTMLElement>): void;
+  subtitle?: string | ReactElement;
   classes?: {
     root?: string;
     title?: string;
@@ -58,7 +52,7 @@ interface EmptyStateProps {
 
 export default function EmptyState(props: EmptyStateProps) {
   const classes = useStyles({});
-  const { image, title, subtitle, classes: propClasses, link, onLinkClick } = props;
+  const { image, title, subtitle, classes: propClasses } = props;
 
   return (
     <div className={clsx(classes.emptyContainer, propClasses?.root)}>
@@ -71,20 +65,6 @@ export default function EmptyState(props: EmptyStateProps) {
       {subtitle && (
         <Typography variant="subtitle1" component="p" className={propClasses?.subtitle} color="textSecondary">
           {subtitle}
-          {link && (
-            <>
-              {' '}
-              <Typography
-                variant="subtitle1"
-                component="a"
-                className={clsx(classes.link, propClasses?.link)}
-                color="textSecondary"
-                onClick={onLinkClick}
-              >
-                {link}
-              </Typography>
-            </>
-          )}
         </Typography>
       )}
     </div>

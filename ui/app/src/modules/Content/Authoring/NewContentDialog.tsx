@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -38,6 +38,7 @@ import LoadingState from '../../../components/SystemStatus/LoadingState';
 import DialogBody from '../../../components/DialogBody';
 import DialogFooter from '../../../components/DialogFooter';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
+import Typography from '@material-ui/core/Typography';
 
 const translations = defineMessages({
   title: {
@@ -59,14 +60,6 @@ const translations = defineMessages({
   noResultsTitle: {
     id: 'noResults.title',
     defaultMessage: 'No Content Types Found'
-  },
-  noResultsSubTitle: {
-    id: 'noResults.subTitle',
-    defaultMessage: 'Try changing your query or browse the'
-  },
-  noResultsLink: {
-    id: 'noResults.link',
-    defaultMessage: 'full catalog.'
   }
 });
 
@@ -102,6 +95,10 @@ const useStyles = makeStyles((theme: Theme) =>
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)'
+    },
+    emptyStateLink: {
+      cursor: 'pointer',
+      textDecoration: 'underline'
     }
   })
 );
@@ -190,25 +187,41 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const getPrevImg = (content) =>
     content?.imageThumbnail ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}` : defaultPrevImgUrl;
 
+  const emptyStateSubtitle = () => (
+    <>
+      <FormattedMessage id="emptyState.subtitle" defaultMessage="Try changing your query or browse the" />
+      {' '}
+      <Typography
+        variant="subtitle1"
+        component="a"
+        className={classes.emptyStateLink}
+        color="textSecondary"
+        onClick={() => onTypeChange('all')}
+      >
+        <FormattedMessage id="emptyState.link" defaultMessage="full catalog." />
+      </Typography>
+    </>
+  );
+
   useEffect(() => {
     if (previewItemProp) setPreviewItem(previewItemProp);
   }, [previewItemProp]);
 
   useEffect(() => {
     open &&
-      fetchLegacyContentTypes(site, path).subscribe(
-        (data) => {
-          setFilterContentTypes(data);
-          setContentTypes(data);
-          setLoading(false);
-        },
-        (error) => setLoading(false)
-      );
+    fetchLegacyContentTypes(site, path).subscribe(
+      (data) => {
+        setFilterContentTypes(data);
+        setContentTypes(data);
+        setLoading(false);
+      },
+      (error) => setLoading(false)
+    );
   }, [open, path, site]);
 
   return (
     <>
-      <Dialog open={open} onClose={onDialogClose} disableBackdropClick={true} fullWidth maxWidth={'md'} scroll="paper">
+      <Dialog open={open} onClose={onDialogClose} disableBackdropClick={true} fullWidth maxWidth="md" scroll="paper">
         <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
@@ -236,26 +249,24 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             {!loading && !filterContentTypes.length && (
               <EmptyState
                 title={formatMessage(translations.noResultsTitle)}
-                subtitle={formatMessage(translations.noResultsSubTitle)}
-                link={formatMessage(translations.noResultsLink)}
-                onLinkClick={(e) => onTypeChange('all')}
+                subtitle={emptyStateSubtitle()}
                 classes={{ root: classes.emptyStateRoot }}
               />
             )}
             {!loading &&
-              filterContentTypes.length &&
-              filterContentTypes.map((content) => (
-                <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
-                  <NewContentCard
-                    isCompact={isCompact}
-                    headerTitle={content.label}
-                    subheader={content.form}
-                    imgTitle={formatMessage(translations.previewImage)}
-                    img={getPrevImg(content)}
-                    onClick={onTypeOpen(content)}
-                  />
-                </Grid>
-              ))}
+            filterContentTypes.length &&
+            filterContentTypes.map((content) => (
+              <Grid item key={content.name} xs={12} sm={!isCompact ? 4 : 6}>
+                <NewContentCard
+                  isCompact={isCompact}
+                  headerTitle={content.label}
+                  subheader={content.form}
+                  imgTitle={formatMessage(translations.previewImage)}
+                  img={getPrevImg(content)}
+                  onClick={onTypeOpen(content)}
+                />
+              </Grid>
+            ))}
           </Grid>
         </DialogBody>
         <DialogFooter classes={{ root: classes.dialogActions }}>

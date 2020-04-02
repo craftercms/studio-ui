@@ -30,6 +30,7 @@ import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import NewContentDialog from '../Content/Authoring/NewContentDialog';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
+import { Item } from '../../models/Item';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -80,11 +81,10 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface QuickCreateMenuProps {
-  onSaveLegacySuccess?(response): any;
-
-  anchorEl: any;
-  onMenuClose: any;
-  previewItem: any;
+  anchorEl: HTMLElement;
+  previewItem: Item;
+  onSaveLegacySuccess?(response): void;
+  onMenuClose(): void;
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
