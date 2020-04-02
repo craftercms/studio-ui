@@ -142,6 +142,13 @@ const useStyles = makeStyles((theme: Theme) =>
     emptyStateLink: {
       cursor: 'pointer',
       textDecoration: 'underline'
+    },
+    emptyStateImg: {
+      width: 250,
+      marginBottom: 17
+    },
+    emptyStateTitle: {
+      color: palette.gray.medium6
     }
   })
 );
@@ -384,6 +391,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             }}
             withEmptyStateProps={{
               emptyStateProps: {
+                classes: {
+                  root: classes.emptyStateRoot,
+                  image: classes.emptyStateImg,
+                  title: classes.emptyStateTitle
+                },
                 title: (
                   <FormattedMessage
                     id="newContentDialog.emptyStateMessage"
