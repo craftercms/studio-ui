@@ -3094,7 +3094,7 @@
           success: function(result) {
             try {
               const cutItem = Self.cutItem;
-
+              Self.copiedItem = null;
               Self.refreshNodes(oCurrentTextNode, true, false, null, null, true);
               if(cutItem) {
                 Self.refreshNodes(cutItem.parent, true, false, null, null, true);
@@ -3115,24 +3115,9 @@
                   CStudioAuthoring.Operations.refreshPreview(cutItem.data);
                 }
               }
+              Self.cutItem = null;
 
               WcmDashboardWidgetCommon.refreshDashboard("MyRecentActivity");
-
-              //code below to alert user if destination node url already exist during cut/paste
-              if (errorMsgExist && errorMsg=='DESTINATION_NODE_EXIST'){
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  "pageExistError-dialog",
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(siteDropdownLangBundle, "notification"),
-                  CMgs.format(siteDropdownLangBundle, "pageExistError"),
-                  null, // use default button
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  "studioDialog"
-                );
-              }else{
-                Self.cutItem = null;
-                Self.copiedItem = null;
-              }
             } catch(e) { }
           },
 
