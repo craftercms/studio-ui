@@ -3104,23 +3104,16 @@
         var pasteCb = {
           success: function(result) {
             try {
-              var errorMsgExist=false;
-              var errorMsg='';
-              var cutItem = Self.cutItem;
-              if(!result.success){
-                if(typeof result.message!= 'undefined' && typeof result.message.paths != 'undefined') {
-                  errorMsg = result.message.paths[0];
-                  if(errorMsg!='') {
-                    errorMsgExist=true;
-                  }
-                }
+              const cutItem = Self.cutItem;
+
+              Self.refreshNodes(oCurrentTextNode, true, false, null, null, true);
+              if(cutItem) {
+                Self.refreshNodes(cutItem.parent, true, false, null, null, true);
               }
 
-              Self.refreshNodes(this.tree,!errorMsgExist, false, null, null, true);
+              const isPreview = CStudioAuthoringContext.isPreview;
 
-              var isPreview = CStudioAuthoringContext.isPreview;
-
-              if(cutItem && isPreview){
+              if (cutItem && isPreview) {
                 var current = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
 
                 if(current.uri == cutItem.data.uri){
