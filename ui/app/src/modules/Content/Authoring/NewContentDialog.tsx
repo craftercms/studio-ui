@@ -147,6 +147,9 @@ const useStyles = makeStyles((theme: Theme) =>
       width: 250,
       marginBottom: 17
     },
+    loadingGraphic: {
+      width: 250
+    },
     emptyStateTitle: {
       color: palette.gray.medium6
     }
@@ -255,8 +258,8 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const resource = useStateResource<LegacyFormConfig[], EntityState<LegacyFormConfig>>(
     filterContentTypes,
     {
-      shouldResolve: (data) => Boolean(data),
-      shouldReject: () => Boolean(error),
+      shouldResolve: (data) => !!data,
+      shouldReject: () => !!error,
       shouldRenew: (source, resource) => resource.complete,
       resultSelector: () => filterContentTypes,
       errorSelector: () => error
@@ -403,6 +406,12 @@ export default function NewContentDialog(props: NewContentDialogProps) {
                   />
                 ),
                 subtitle: emptyStateSubtitle()
+              }
+            }}
+            loadingStateProps={{
+              classes: {
+                graphic: classes.loadingGraphic,
+                root: classes.loadingRoot
               }
             }}
           />
