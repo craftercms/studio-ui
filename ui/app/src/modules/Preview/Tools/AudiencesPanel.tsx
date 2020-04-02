@@ -40,33 +40,33 @@ import DateTime from '../../../components/Controls/FormEngine/DateTime';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     fab: {
-      margin: theme.spacing(1),
+      margin: theme.spacing(1)
     },
     formControl: {
-      width: '100%',
+      'width': '100%',
       '& .MuiFormGroup-root': {
-        marginLeft: '10px',
+        marginLeft: '10px'
       },
       '& .MuiInputBase-root': {
-        marginTop: '12px !important',
+        marginTop: '12px !important'
       }
     },
     panelMargin: {
       margin: `${theme.spacing(1)}px`
     },
     textField: {
-      width: '100%',
+      width: '100%'
     },
     actionButton: {
-      margin: '18px 0 80px 15px',
+      'margin': '18px 0 80px 15px',
       '& .MuiButton-contained': {
         marginRight: '8px'
       }
     },
     divider: {
-      margin: '23px 0 10px',
+      margin: '23px 0 10px'
     }
-  }),
+  })
 );
 
 const translations = defineMessages({
@@ -108,15 +108,8 @@ const getDefaultModel = (contentType: ContentType) => {
 };
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
-
   const classes = useStyles({});
-  const {
-    audiencesResource,
-    model,
-    modelApplying,
-    onChange,
-    onSaveModel
-  } = props;
+  const { audiencesResource, model, modelApplying, onChange, onSaveModel } = props;
   const contentType = audiencesResource.read();
 
   const onFieldChange = (fieldId: string, type: string) => (value: any) => {
@@ -146,44 +139,34 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
       {
         <>
           <Grid className={classes.panelMargin}>
-            {
-              Object.keys(contentType.fields).map((fieldId: string) => {
-                const type = contentType.fields[fieldId].type;
-                const Control = controlsMap[type];
+            {Object.keys(contentType.fields).map((fieldId: string) => {
+              const type = contentType.fields[fieldId].type;
+              const Control = controlsMap[type];
 
-                const controlProps = {
-                  field: contentType.fields[fieldId],
-                  value: model[fieldId] ?? undefined,
-                  onChange: onFieldChange(fieldId, type),
-                  disabled: modelApplying
-                };
+              const controlProps = {
+                field: contentType.fields[fieldId],
+                value: model[fieldId] ?? undefined,
+                onChange: onFieldChange(fieldId, type),
+                disabled: modelApplying
+              };
 
-                if (controlProps.field.type === 'date-time' && model[`${fieldId}_tz`]) {
-                  controlProps['timezone'] = model[`${fieldId}_tz`];
-                }
+              if (controlProps.field.type === 'date-time' && model[`${fieldId}_tz`]) {
+                controlProps['timezone'] = model[`${fieldId}_tz`];
+              }
 
-                return (
-                  <AudiencesFormSection field={contentType.fields[fieldId]} key={fieldId} showDivider>
-                    <Control
-                      {...controlProps}
-                    />
-                  </AudiencesFormSection>
-                );
-              })
-            }
+              return (
+                <AudiencesFormSection field={contentType.fields[fieldId]} key={fieldId} showDivider>
+                  <Control {...controlProps} />
+                </AudiencesFormSection>
+              );
+            })}
           </Grid>
           <Grid className={classes.actionButton}>
             <Button variant="contained" onClick={() => onChange(getDefaultModel(contentType))}>
-              <FormattedMessage
-                id="audiencesPanel.defaults"
-                defaultMessage={`Defaults`}
-              />
+              <FormattedMessage id="audiencesPanel.defaults" defaultMessage={`Defaults`} />
             </Button>
             <Button variant="contained" color="primary" onClick={() => onSaveModel()}>
-              <FormattedMessage
-                id="audiencesPanel.apply"
-                defaultMessage={`Apply`}
-              />
+              <FormattedMessage id="audiencesPanel.apply" defaultMessage={`Apply`} />
             </Button>
           </Grid>
         </>
@@ -193,17 +176,16 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 }
 
 export default function AudiencesPanel() {
-  const panelState = useSelection<GlobalState['preview']['audiencesPanel']>(state => state.preview.audiencesPanel);
-  const resource = useStateResource(
-    panelState,
-    {
-      shouldRenew: (source, resource) => resource.complete && nou(source.contentType),
-      shouldResolve: source => (!source.isFetching) && nnou(source.contentType) && nnou(source.model),
-      shouldReject: source => nnou(source.error),
-      errorSelector: source => source.error,
-      resultSelector: source => source.contentType
-    }
+  const panelState = useSelection<GlobalState['preview']['audiencesPanel']>(
+    (state) => state.preview.audiencesPanel
   );
+  const resource = useStateResource(panelState, {
+    shouldRenew: (source, resource) => resource.complete && nou(source.contentType),
+    shouldResolve: (source) => !source.isFetching && nnou(source.contentType) && nnou(source.model),
+    shouldReject: (source) => nnou(source.error),
+    errorSelector: (source) => source.error,
+    resultSelector: (source) => source.contentType
+  });
 
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -219,12 +201,7 @@ export default function AudiencesPanel() {
   return (
     <ErrorBoundary>
       <React.Suspense
-        fallback={
-          <LoadingState
-            title={formatMessage(translations.audiencesPanelLoading)}
-            graphicProps={{ width: 150 }}
-          />
-        }
+        fallback={<LoadingState title={formatMessage(translations.audiencesPanelLoading)} />}
       >
         <AudiencesPanelUI
           audiencesResource={resource}
@@ -237,13 +214,12 @@ export default function AudiencesPanel() {
       </React.Suspense>
     </ErrorBoundary>
   );
-
 }
 
 type AudiencesFormSectionProps = PropsWithChildren<{
   field: ContentTypeField;
   showDivider?: boolean;
-}>
+}>;
 
 function AudiencesFormSection(props: AudiencesFormSectionProps) {
   const classes = useStyles({});
@@ -255,10 +231,7 @@ function AudiencesFormSection(props: AudiencesFormSectionProps) {
         {children}
         <FormHelperText>{field.helpText}</FormHelperText>
       </Grid>
-      {
-        showDivider &&
-        <Divider className={classes.divider}/>
-      }
+      {showDivider && <Divider className={classes.divider} />}
     </>
-  )
+  );
 }
