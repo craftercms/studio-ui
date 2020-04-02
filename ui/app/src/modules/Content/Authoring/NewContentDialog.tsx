@@ -307,7 +307,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
                 selectItem={previewItem}
                 LabelIcon={InsertDriveFileOutlinedIcon}
                 onEditClick={() => null}
-                onParentItemClick={onParentItemClick}
+                onMenuItemClick={onParentItemClick}
               />
             </Box>
             <Box className={classes.searchBox}>

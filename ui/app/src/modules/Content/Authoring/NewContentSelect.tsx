@@ -94,7 +94,7 @@ interface NewContentSelectProps {
   titleVariant?: Variant;
   labelVariant?: Variant;
 
-  onParentItemClick(item: Item): any;
+  onMenuItemClick(item: Item): any;
 
   onEditClick(): void;
 }
@@ -110,10 +110,17 @@ export default function NewContentSelect(props: NewContentSelectProps) {
     onEditClick,
     selectItem,
     label,
-    onParentItemClick
+    onMenuItemClick: onMenuItemClickProp
   } = props;
   const classes = useStyles();
   const [anchorEl, setanchorEl] = useState(null);
+
+  const onMenuClose = () => setanchorEl(null);
+
+  const onMenuItemClick = (item) => () => {
+    onMenuItemClickProp(item);
+    onMenuClose();
+  };
 
   return (
     <Paper className={clsx(classes.root, rootClass)} elevation={0}>
@@ -133,9 +140,9 @@ export default function NewContentSelect(props: NewContentSelectProps) {
       >
         <EditIcon className={clsx(classes.editIcon, editIconClass)} />
       </IconButton>
-      <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={() => setanchorEl(null)}>
+      <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={onMenuClose}>
         {MENU_ITEMS.map((item) => (
-          <MenuItem key={item.name} onClick={() => onParentItemClick(item)}>
+          <MenuItem key={item.name} onClick={onMenuItemClick(item)}>
             {item.name}
           </MenuItem>
         ))}
