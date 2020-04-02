@@ -217,6 +217,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   const onCompactCheck = () => setIsCompact(!isCompact);
 
+  const onResetFilter = useCallback(() => {
+    setResetFilterType(defaultFilterType);
+    setFilterContentTypes(contentTypes);
+  }, [contentTypes]);
+
   const onTypeChange = useCallback(
     (type) => {
       resetFilterType && setResetFilterType('');
@@ -225,7 +230,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         ? setFilterContentTypes(contentTypes.filter((content) => content.type === type))
         : onResetFilter();
     },
-    [contentTypes]
+    [contentTypes, resetFilterType, onResetFilter]
   );
 
   const onSearch = useCallback(
@@ -236,7 +241,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       ? onResetFilter()
       : setFilterContentTypes(contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue)));
     },
-    [contentTypes]
+    [contentTypes, onResetFilter]
   );
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
@@ -249,11 +254,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const onParentItemClick = (item) => {
     setLoading(true);
     setPreviewItem(item);
-  };
-
-  const onResetFilter = () => {
-    setResetFilterType(defaultFilterType);
-    setFilterContentTypes(contentTypes);
   };
 
   const getPrevImg = (content) =>
