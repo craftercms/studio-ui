@@ -24,6 +24,7 @@ import Tools from './PreviewToolIDs';
 import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeReceptacle } from './ContentTypeReceptacle';
+import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog';
 
 export interface APIError {
   code?: number | string;
@@ -96,19 +97,22 @@ export interface GlobalState {
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
     audiencesPanel: {
-      isFetching: boolean,
-      isApplying: boolean,
-      error: APIError,
-      contentType: ContentType,
-      model: ContentInstance,
-      applied: boolean
+      isFetching: boolean;
+      isApplying: boolean;
+      error: APIError;
+      contentType: ContentType;
+      model: ContentInstance;
+      applied: boolean;
     };
     components: PagedEntityState<ContentInstance>;
     receptacles: {
       selectedContentType: string;
       byId: LookupTable<ContentTypeReceptacle>;
     };
-  }
+  };
+  dialogs: {
+    confirm: ConfirmDialogStateProps;
+  };
 }
 
 export default GlobalState;

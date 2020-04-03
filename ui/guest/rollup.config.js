@@ -30,11 +30,7 @@ const plugins = [
   replace({ 'process.env.NODE_ENV': '"production"' }),
   babel({
     exclude: 'node_modules/**',
-    presets: [
-      '@babel/preset-env',
-      '@babel/preset-react',
-      '@babel/preset-typescript'
-    ],
+    presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
     plugins: [
       'babel-plugin-transform-react-remove-prop-types',
       '@babel/plugin-proposal-nullish-coalescing-operator',
@@ -50,7 +46,14 @@ const plugins = [
   commonjs({
     include: /node_modules/,
     namedExports: {
-      'react-dom': ['createPortal', 'findDOMNode', 'hydrate', 'render', 'unmountComponentAtNode', 'flushSync'],
+      'react-dom': [
+        'createPortal',
+        'findDOMNode',
+        'hydrate',
+        'render',
+        'unmountComponentAtNode',
+        'flushSync'
+      ],
       'react-is': ['isValidElementType', 'ForwardRef'],
       'prop-types': ['elementType'],
       'react': [
@@ -82,6 +85,11 @@ const plugins = [
         'isValidElement',
         'version'
       ]
+      // TODO: WIP - jQuery is giving issues with rollup build.
+      // 'jquery': 'jquery',
+      // 'jquery/dist/jquery.slim': 'jquery',
+      // '../../node_modules/jquery/dist/jquery.js': 'jquery',
+      // '../../node_modules/jquery/dist/jquery.slim.js': 'jquery'
     }
   }),
   copy({
@@ -97,8 +105,12 @@ const external = [];
 
 const globals = {};
 
-export default [
+const baseConfig = {
+  // Addresses rollup's this replaced to undefined
+  context: 'this'
+};
 
+export default [
   /* UMD build */
   {
     input,
@@ -111,7 +123,8 @@ export default [
       format: 'umd',
       amd: { id: pkg.craftercms.id },
       globals
-    }
+    },
+    ...baseConfig
   },
   /* UMD build for preview landing controller */
   {
@@ -125,20 +138,20 @@ export default [
       format: 'umd',
       amd: { id: 'org.craftercms.previewLanding' },
       globals
-    }
-  },
-
-  /*
-  // CommonJS & ES module build
-  {
-    input,
-    external,
-    plugins,
-    output: [
-      { file: pkg.main, format: 'cjs' },
-      { file: pkg.module, format: 'es' }
-    ]
+    },
+    ...baseConfig
   }
-  */
-
 ];
+
+/*
+// CommonJS & ES module build
+{
+  input,
+  external,
+  plugins,
+  output: [
+    { file: pkg.main, format: 'cjs' },
+    { file: pkg.module, format: 'es' }
+  ]
+}
+*/
