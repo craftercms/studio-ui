@@ -69,25 +69,30 @@ const treeItemStyles = makeStyles((theme) =>
     icon: {
       ...iconWithStrokeAndFill
     },
-    treeItemIconContainer: {
+    displayNone: {
       display: 'none'
+    },
+    treeItemIconContainer: {
+      '& svg': {
+        fontSize: '1.5rem'
+      }
     },
     treeItemRoot: {
       '&:focus > .MuiTreeItem-content': {
-        background: 'none'
-      },
-      '&:hover > .MuiTreeItem-content': {
-        background: 'none'
+        '& .MuiTreeItem-label': {
+          backgroundColor: 'inherit'
+        }
       }
     },
     treeItemContent: {
       'paddingLeft': '8px',
       '&.padded': {
-        paddingLeft: '34px'
+        paddingLeft: '15px'
       }
     },
     treeItemGroup: {},
     treeItemExpanded: {},
+    treeItemLabelRoot: {},
     treeItemLabel: {
       'display': 'flex',
       'alignItems': 'center',
@@ -299,17 +304,13 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       nodeId={nodes.id}
       onMouseOver={(e) => setOverState(e, true)}
       onMouseOut={(e) => setOverState(e, false)}
+      icon={nodes.type === 'component' && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
           {nodes.id === 'root' && handlePrevious ? (
-            <ChevronLeftIcon onClick={(e) => handlePrevious(e)} />
+            <ChevronLeftIcon onClick={(e) => handlePrevious(e)}/>
           ) : (
-            <>
-              {nodes.type === 'component' && (
-                <ChevronRightIcon onClick={() => handleClick(nodes)} />
-              )}
-              <Icon className={classes.icon} />
-            </>
+            <Icon className={classes.icon}/>
           )}
           <p>{nodes.name}</p>
           {over && (nodes.type === 'component' || nodes.id === 'root') && (
@@ -320,26 +321,27 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
                 handleOptions(e, nodes.modelId, nodes.parentId, nodes.embeddedParentPath)
               }
             >
-              <MoreVertIcon />
+              <MoreVertIcon/>
             </IconButton>
           )}
         </div>
       }
       classes={{
         root: classes.treeItemRoot,
+        label: classes.treeItemLabelRoot,
         content: clsx(
           classes.treeItemContent,
-          !nodes.children?.length && nodes.type !== 'component' && 'padded'
+          !nodes.children?.length && nodes.type === 'component' && 'padded'
         ),
         expanded: classes.treeItemExpanded,
         group: classes.treeItemGroup,
-        iconContainer: nodes.id === 'root' ? classes.treeItemIconContainer : ''
+        iconContainer: nodes.id === 'root' ? classes.displayNone : classes.treeItemIconContainer
       }}
     >
       {Array.isArray(nodes.children)
         ? nodes.children.map((node) => (
-            <TreeItemCustom key={node.id} nodes={node} {...reversePluckProps(props, 'nodes')} />
-          ))
+          <TreeItemCustom key={node.id} nodes={node} {...reversePluckProps(props, 'nodes')} />
+        ))
         : null}
     </TreeItem>
   );
@@ -458,11 +460,12 @@ export default function ContentTree() {
 
   return (
     <ToolPanel title={translations.contentTree}>
-      {data.selected === null && <LoadingState title={formatMessage(translations.loading)} />}
+      {data.selected === null && <LoadingState title={formatMessage(translations.loading)}/>}
       <TreeView
         className={classes.root}
-        defaultCollapseIcon={<ExpandMoreIcon className="toggle" />}
-        defaultExpandIcon={<ChevronRightIcon className="toggle" />}
+        defaultCollapseIcon={<ExpandMoreIcon className="toggle"/>}
+        defaultExpandIcon={<ChevronRightIcon className="toggle"/>}
+        disableSelection
         expanded={expanded}
         onNodeToggle={handleChange}
       >
