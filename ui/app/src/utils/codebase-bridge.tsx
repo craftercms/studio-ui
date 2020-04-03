@@ -69,7 +69,7 @@ interface CodebaseBridge {
     intl: IntlShape;
     messages: object;
     translateElements: Function;
-  }
+  };
   services: object;
 }
 
@@ -82,9 +82,7 @@ export function updateIntl(nextIntl: IntlShape) {
 }
 
 export function createCodebaseBridge() {
-
   const Bridge: CodebaseBridge = {
-
     // React
     React,
     ReactDOM,
@@ -100,13 +98,14 @@ export function createCodebaseBridge() {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
-      DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
-      DependencySelectionDelete: lazy(() => (
+      DependencySelection: lazy(() =>
         import('../modules/Content/Dependencies/DependencySelection')
-          .then(module => ({
-            default: module.DependencySelectionDelete
-          }))
-      )),
+      ),
+      DependencySelectionDelete: lazy(() =>
+        import('../modules/Content/Dependencies/DependencySelection').then((module) => ({
+          default: module.DependencySelectionDelete
+        }))
+      ),
       CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
       Search: lazy(() => import('../pages/Search')),
@@ -151,27 +150,25 @@ export function createCodebaseBridge() {
 
     // Mechanics
     render(
-      container: (string | Element),
+      container: string | Element,
       component: string | JSXElementConstructor<any>,
-      props: object = {}): Promise<any> {
-
-      if (
-        typeof component !== 'string' &&
-        !Object.values(Bridge.components).includes(component)
-      ) {
+      props: object = {}
+    ): Promise<any> {
+      if (typeof component !== 'string' && !Object.values(Bridge.components).includes(component)) {
         console.warn('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
+        console.warn(
+          `The supplied component name ('${component}') is not a know component of CrafterCMSNext.`
+        );
       }
 
-      const element = (typeof container === 'string') ? document.querySelector(container) : container;
+      const element = typeof container === 'string' ? document.querySelector(container) : container;
 
-      let Component: JSXElementConstructor<any> = (typeof component === 'string')
-        ? Bridge.components[component]
-        : component;
+      let Component: JSXElementConstructor<any> =
+        typeof component === 'string' ? Bridge.components[component] : component;
 
       if (nou(Component)) {
-        Component = function () {
+        Component = function() {
           return (
             <ErrorState
               graphicUrl="/studio/static-assets/images/warning_state.svg"
@@ -185,45 +182,44 @@ export function createCodebaseBridge() {
         };
       }
 
-      return (
-        new Promise((resolve, reject) => {
-          try {
-            const unmount = (options) => {
-              ReactDOM.unmountComponentAtNode(element);
-              options.removeContainer && element.parentNode.removeChild(element);
-            };
+      return new Promise((resolve, reject) => {
+        try {
+          const unmount = (options) => {
+            ReactDOM.unmountComponentAtNode(element);
+            options.removeContainer && element.parentNode.removeChild(element);
+          };
+          // @ts-ignore
+          ReactDOM.render(
             // @ts-ignore
-            ReactDOM
-              .render(
-                // @ts-ignore
-                <CrafterCMSNextBridge>
-                  <Component {...props} />
-                </CrafterCMSNextBridge>,
-                element,
-                () => resolve({
-                  unmount: (options) => {
-                    options = Object.assign({
+            <CrafterCMSNextBridge isLegacy>
+              <Component {...props} />
+            </CrafterCMSNextBridge>,
+            element,
+            () =>
+              resolve({
+                unmount: (options) => {
+                  options = Object.assign(
+                    {
                       delay: false,
                       removeContainer: false
-                    }, options || {});
-                    if (options.delay) {
-                      setTimeout(() => unmount(options), options.delay);
-                    } else {
-                      unmount(options);
-                    }
+                    },
+                    options || {}
+                  );
+                  if (options.delay) {
+                    setTimeout(() => unmount(options), options.delay);
+                  } else {
+                    unmount(options);
                   }
-                })
-              );
-          } catch (e) {
-            reject(e);
-          }
-        })
-      );
+                }
+              })
+          );
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
-
   };
 
   // @ts-ignore
   window.CrafterCMSNext = Bridge;
-
 }

@@ -22,24 +22,21 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    'display': 'flex',
-    'alignItems': 'center',
-    'justifyContent': 'center',
-    'flexDirection': 'column',
-    'margin': `${theme.spacing(2)}px auto`,
-    '& .title': {
-      marginTop: '20px',
-      marginBottom: '10px'
-    },
-    '& .paragraph': {
-      marginTop: '10px'
-    }
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    margin: theme.spacing(2)
   },
-  graphic: {
-    width: 150
+  title: {
+    margin: `${theme.spacing(1)}px 0`
   },
   subtitle: {
     textAlign: 'center'
+  },
+  graphic: {
+    width: 150,
+    maxWidth: '80%'
   }
 }));
 
@@ -63,14 +60,14 @@ export default function EmptyState(props: EmptyStateProps) {
     <div className={clsx(classes.root, propClasses?.root)}>
       <img
         className={clsx(classes.graphic, propClasses?.image)}
-        src={image ? image : emptyImage}
+        src={image ?? emptyImage}
         alt=""
       />
       {title && (
         <Typography
           variant="h6"
           component="h3"
-          className={propClasses?.title}
+          className={clsx(classes.title, propClasses?.title)}
           color="textSecondary"
         >
           {title}

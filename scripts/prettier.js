@@ -11,6 +11,10 @@ const listChangedFiles = require('./listChangedFiles');
 function runPrettier(options) {
   const { changedFiles, shouldWrite, onlyLegacy, onlyNext } = options;
 
+  const cwd = process.cwd();
+  if (cwd.endsWith('/ui/app'))
+    process.chdir('../../');
+
   let didWarn = false;
   let didError = false;
 

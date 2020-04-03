@@ -54,7 +54,8 @@
     "build": "yarn; react-scripts --max_old_space_size=4096 build; node scripts/build.js",
     "test": "react-scripts test",
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
-    "i18n:manage": "node scripts/i18n.js"
+    "i18n:manage": "node scripts/i18n.js",
+    "prettier": "node ../../scripts/prettier.js"
   },
   "proxy": "http://authoring.sample.com:8080/",
   "eslintConfig": {
