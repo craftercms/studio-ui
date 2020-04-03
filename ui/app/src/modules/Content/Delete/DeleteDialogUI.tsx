@@ -21,15 +21,16 @@ import { Item } from '../../../models/Item';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
 import { palette } from '../../../styles/theme';
-import { DependencySelectionDelete } from '../Dependencies/DependencySelection';
+import { DependencySelectionDelete, DeleteDependencies } from '../Dependencies/DependencySelection';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ErrorState from '../../../components/SystemStatus/ErrorState';
 import DialogHeader from '../../../components/DialogHeader';
 import DialogBody from '../../../components/DialogBody';
 import DialogFooter from '../../../components/DialogFooter';
+import { Resource } from '../../../models/Resource';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 
 const translations = defineMessages({
   headerTitle: {
@@ -45,6 +46,9 @@ const translations = defineMessages({
 const deleteDialogStyles = makeStyles((theme) => createStyles({
   root: {
     textAlign: 'left'
+  },
+  dialogContent: {
+    minHeight: '388px'
   },
   submissionCommentField: {
     marginTop: '20px',
@@ -68,35 +72,83 @@ const deleteDialogStyles = makeStyles((theme) => createStyles({
   }
 }));
 
+interface DeleteDialogContentUIProps {
+  resource: Resource<DeleteDependencies>;
+  items: Item[];
+  submissionComment: string;
+  setSubmissionComment: Function;
+
+  onSelectionChange?: Function;
+};
+
+function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
+  const {
+    resource,
+    items,
+    submissionComment,
+    setSubmissionComment,
+    onSelectionChange
+  } = props;
+  const classes = deleteDialogStyles({});
+  const deleteDependencies: DeleteDependencies = resource.read();
+
+  return (
+    <>
+      <DependencySelectionDelete
+        items={items}
+        resultItems={deleteDependencies}
+        onChange={(result) => onSelectionChange?.(result)}
+      />
+      <form className={classes.submissionCommentField} noValidate autoComplete="off">
+        <TextField
+          label={
+            <FormattedMessage
+              id="deleteDialog.submissionCommentLabel"
+              defaultMessage="Submission Comment"
+            />
+          }
+          multiline
+          rows="4"
+          defaultValue={submissionComment}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setSubmissionComment(e.target.value)
+          }}
+          InputProps={{
+            className: classes.textField
+          }}
+        />
+      </form>
+    </>
+  )
+}
+
 interface DeleteDialogUIProps {
+  resource: Resource<DeleteDependencies>;
   items: Item[];
   selectedItems: Item[];
-  setSelectedItems: Function;
   submissionComment: string;
   setSubmissionComment: Function;
   open: boolean;
   apiState: any;
   handleClose: any;
   handleSubmit: any;
-  handleErrorBack: any;
-  siteId: string;
 
+  onSelectionChange?(selection?: any): any;
   onClose?(response?: any): any;
 }
 
 function DeleteDialogUI(props: DeleteDialogUIProps) {
   const {
+    resource,
     items,
     selectedItems,
-    setSelectedItems,
     submissionComment,
     setSubmissionComment,
     open,
     apiState,
     handleClose,
     handleSubmit,
-    handleErrorBack,
-    siteId,
+    onSelectionChange,
     onClose
   } = props;
   const classes = deleteDialogStyles({});
@@ -110,83 +162,55 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
       maxWidth='sm'
       className={classes.root}
     >
-      {
-        (!apiState.error) ?
-          (
-            <>
-              <DialogHeader
-                title={formatMessage(translations.headerTitle)}
-                subtitle={formatMessage(translations.headerSubTitle)}
-                onClose={onClose}
-                icon={CloseRoundedIcon}
-              />
-              <DialogBody>
-                <DependencySelectionDelete
-                  items={items}
-                  siteId={siteId}
-                  onChange={(result) => {
-                    setSelectedItems(result);
-                  }}
+      <DialogHeader
+        title={formatMessage(translations.headerTitle)}
+        subtitle={formatMessage(translations.headerSubTitle)}
+        onClose={onClose}
+        icon={CloseRoundedIcon}
+      />
+      <DialogBody className={classes.dialogContent}>
+        <SuspenseWithEmptyState
+          resource={resource}
+        >
+          <DeleteDialogContentUI
+            resource={resource}
+            items={items}
+            submissionComment={submissionComment}
+            setSubmissionComment={setSubmissionComment}
+            onSelectionChange={onSelectionChange}
+          />
+        </SuspenseWithEmptyState>
+      </DialogBody>
+      <DialogFooter>
+        <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
+          <FormattedMessage
+            id="deleteDialog.cancel"
+            defaultMessage={'Cancel'}
+          />
+        </Button>
+        <Button
+          variant="contained"
+          autoFocus
+          onClick={handleSubmit}
+          color="primary"
+          disabled={apiState.submitting || selectedItems.length === 0}
+        >
+          {
+            apiState.submitting ?
+              (
+                <CircularProgress
+                  className={classes.btnSpinner}
+                  size={20}
                 />
-                <form className={classes.submissionCommentField} noValidate autoComplete="off">
-                  <TextField
-                    label={
-                      <FormattedMessage
-                        id="deleteDialog.submissionCommentLabel"
-                        defaultMessage="Submission Comment"
-                      />
-                    }
-                    multiline
-                    rows="4"
-                    defaultValue={submissionComment}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setSubmissionComment(e.target.value)
-                    }}
-                    InputProps={{
-                      className: classes.textField
-                    }}
-                  />
-                </form>
-              </DialogBody>
-              <DialogFooter>
-                <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
-                  <FormattedMessage
-                    id="deleteDialog.cancel"
-                    defaultMessage={'Cancel'}
-                  />
-                </Button>
-                <Button
-                  variant="contained"
-                  autoFocus
-                  onClick={handleSubmit}
-                  color="primary"
-                  disabled={apiState.submitting || selectedItems.length === 0}
-                >
-                  {
-                    apiState.submitting ?
-                      (
-                        <CircularProgress
-                          className={classes.btnSpinner}
-                          size={20}
-                        />
-                      ) : (
-                        <FormattedMessage
-                          id="deleteDialog.submit"
-                          defaultMessage={'Delete'}
-                        />
-                      )
-                  }
-                </Button>
-              </DialogFooter>
-            </>
-          ) : (
-            <ErrorState
-              classes={{ root: classes.errorPaperRoot }}
-              error={apiState.errorResponse}
-              onBack={handleErrorBack}
-            />
-          )
-      }
+              ) : (
+                <FormattedMessage
+                  id="deleteDialog.submit"
+                  defaultMessage={'Delete'}
+                />
+              )
+          }
+        </Button>
+      </DialogFooter>
     </Dialog>
   )
 }

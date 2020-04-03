@@ -14,11 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Item } from '../../../models/Item';
 import DeleteDialogUI from './DeleteDialogUI';
 import { deleteItems } from '../../../services/content';
-import { useActiveSiteId, useActiveUser, useSpreadState } from '../../../utils/hooks';
+import { useActiveSiteId, useActiveUser, useSpreadState, useStateResource } from '../../../utils/hooks';
+import { fetchDeleteDependencies } from '../../../services/dependencies';
+import { DeleteDependencies } from '../Dependencies/DependencySelection';
 
 interface DeleteDialogProps {
   items: Item[];
@@ -35,16 +37,41 @@ function DeleteDialog(props: DeleteDialogProps) {
     onSuccess
   } = props;
   const [open, setOpen] = useState(true);
-  const [selectedItems, setSelectedItems] = useState([]);
   const [submissionComment, setSubmissionComment] = useState('');
   const [apiState, setApiState] = useSpreadState({
-    error: false,
-    submitting: false,
-    global: false,
-    errorResponse: null
+    error: null,
+    submitting: false
   });
   const user = useActiveUser();
   const siteId = useActiveSiteId();
+  //Dependency selection
+  const [deleteDependencies, setDeleteDependencies] = useState<DeleteDependencies>();
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  const resource = useStateResource<any, any>(
+    deleteDependencies,
+    {
+      shouldResolve: (deleteDependencies) => Boolean(deleteDependencies),
+      shouldReject: () => Boolean(apiState.error),
+      shouldRenew: (source, resource) => resource.complete,
+      resultSelector: () => deleteDependencies,
+      errorSelector: () => apiState.error
+    }
+  );
+
+  useEffect(() => {
+    fetchDeleteDependencies(siteId, selectedItems).subscribe(
+      (response: any) => {
+        setDeleteDependencies({
+          childItems: response.items.childItems,
+          dependentItems: response.items.dependentItems
+        });
+      },
+      (error) => {
+        setApiState({ error });
+      }
+    );
+  },[selectedItems]);
 
   const handleClose = () => {
     setOpen(false);
@@ -63,36 +90,33 @@ function DeleteDialog(props: DeleteDialogProps) {
     deleteItems(siteId, user.username, submissionComment, data).subscribe(
       (response) => {
         setOpen(false);
-        setApiState({ error: false, submitting: false });
+        setApiState({ submitting: false });
         onSuccess?.(response);
         onClose?.(response);
       },
-      (response) => {
-        if (response) {
-          setApiState({ error: true, errorResponse: response });
-        }
+      (error) => {
+        setApiState({ error });
       }
     );
 
   };
 
-  function handleErrorBack() {
-    setApiState({ error: false, global: false, submitting: false });
-  }
+  const onSelectionChange = (selection: Item[]) => {
+    setSelectedItems(selection);
+  };
 
   return (
     <DeleteDialogUI
+      resource={resource}
       items={items}
       selectedItems={selectedItems}
-      setSelectedItems={setSelectedItems}
       submissionComment={submissionComment}
       setSubmissionComment={setSubmissionComment}
       open={open}
       apiState={apiState}
       handleClose={handleClose}
       handleSubmit={handleSubmit}
-      handleErrorBack={handleErrorBack}
-      siteId={siteId}
+      onSelectionChange={onSelectionChange}
       onClose={onClose}
     />
   )

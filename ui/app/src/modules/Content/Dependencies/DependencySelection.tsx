@@ -19,7 +19,6 @@ import React, { useEffect, useState } from 'react';
 import { Item } from '../../../models/Item';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { get } from '../../../utils/ajax';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
 import List from '@material-ui/core/List';
@@ -27,7 +26,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-import { checkState, onClickSetChecked, paths, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
+import { checkState, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import { palette } from '../../../styles/theme';
@@ -63,9 +62,9 @@ interface SelectionListProps {
   disabled?: boolean;
 }
 
-interface ResultObject {
-  items1: [],
-  items2: []
+export interface DeleteDependencies {
+  childItems: [],
+  dependentItems: []
 }
 
 const CenterCircularProgress = withStyles({
@@ -266,29 +265,32 @@ export function DependencySelection(props: DependencySelectionProps) {
 
 interface DependencySelectionDeleteProps {
   items: Item[],
-  siteId: string,
+  resultItems: DeleteDependencies;
   onChange: Function;
 }
 
 export function DependencySelectionDelete(props: DependencySelectionDeleteProps) {
-  const [resultItems, setResultItems] = useState<ResultObject>();
-  const { items, siteId, onChange } = props;
-  const [checked, _setChecked] = useState<any>(
-    checkState(items)
-  );
+  const classes = useStyles({});
+  const {
+    items,
+    resultItems,
+    onChange
+  } = props;
+  const [checked, _setChecked] = useState<any>(checkState(items));
 
   const setChecked = (uri: string[], isChecked: boolean) => {
     _setChecked(updateCheckedList(uri, isChecked, checked));
-    setResultItems(null);
   };
 
-  const classes = useStyles({});
-
-  useEffect(checkedChange, [checked]);
+  useEffect(() => {
+    const result = Object.entries({ ...checked })
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+    onChange(result);
+  }, [checked]);
 
   return (
-    <>
-      <div className={clsx(classes.dependencySelection, classes.dependencySelectionDelete)}>
+    <div className={clsx(classes.dependencySelection, classes.dependencySelectionDelete)}>
         <SelectionList
           title={
             <FormattedMessage
@@ -303,44 +305,40 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
           checked={checked}
           setChecked={setChecked}
         />
-        {
-          resultItems == null ? (null) : (
-            <>
-              <SelectionList
-                title={
-                  <FormattedMessage
-                    id="deleteDialog.childItemsText"
-                    defaultMessage={`Child Items`}
-                  />
-                }
-                subtitle={
-                  <FormattedMessage
-                    id="deleteDialog.willGetDeleted"
-                    defaultMessage={` Will get deleted`}
-                  />
-                }
-                uris={resultItems.items1}
-                displayItemTitle={false}
+        <>
+          <SelectionList
+            title={
+              <FormattedMessage
+                id="deleteDialog.childItemsText"
+                defaultMessage={`Child Items`}
               />
-              <SelectionList
-                title={
-                  <FormattedMessage
-                    id="deleteDialog.dependentItems"
-                    defaultMessage={`Dependent Items`}
-                  />
-                }
-                subtitle={
-                  <FormattedMessage
-                    id="deleteDialog.brokenItems"
-                    defaultMessage={` Will have broken references`}
-                  />
-                }
-                uris={resultItems.items2}
-                displayItemTitle={false}
+            }
+            subtitle={
+              <FormattedMessage
+                id="deleteDialog.willGetDeleted"
+                defaultMessage={` Will get deleted`}
               />
-            </>
-          )
-        }
+            }
+            uris={resultItems.childItems}
+            displayItemTitle={false}
+          />
+          <SelectionList
+            title={
+              <FormattedMessage
+                id="deleteDialog.dependentItems"
+                defaultMessage={`Dependent Items`}
+              />
+            }
+            subtitle={
+              <FormattedMessage
+                id="deleteDialog.brokenItems"
+                defaultMessage={` Will have broken references`}
+              />
+            }
+            uris={resultItems.dependentItems}
+            displayItemTitle={false}
+          />
+        </>
         <div className={classes.bottomSection}>
           {
             (resultItems === null) && (
@@ -357,40 +355,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
           }
         </div>
       </div>
-    </>
-
   );
-
-  function checkedChange() {
-    showAllDependencies();
-    setRef();
-  }
-
-  function setRef() {
-    const result = Object.entries({ ...checked })
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key);
-    onChange(result);
-  }
-
-  function showAllDependencies() {
-    get(`/studio/api/2/content/get_delete_package?siteId=${siteId}&paths=${paths(checked)}`)
-      .subscribe(
-        (response: any) => {
-          setResultItems({
-            items1: response.response.items.childItems,
-            items2: response.response.items.dependentItems
-          });
-        },
-        () => {
-          setResultItems({
-            items1: [],
-            items2: []
-          });
-        }
-      );
-  }
-
 }
 
 function SelectionList(props: SelectionListProps) {
