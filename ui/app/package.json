@@ -1,5 +1,5 @@
 {
-  "name": "studio-ui-next",
+  "name": "@craftercms/studio-ui",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,7 +10,6 @@
     "@material-ui/pickers": "^3.2.8",
     "@prettier/plugin-xml": "^0.7.1",
     "@reduxjs/toolkit": "^1.1.0",
-    "@types/graphql": "^14.5.0",
     "@types/jest": "^24.0.23",
     "@types/js-cookie": "^2.2.2",
     "@types/node": "^12.12.17",
@@ -39,13 +38,13 @@
     "react-redux": "^7.1.3",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.0",
+    "react-scripts": "3.4.1",
     "react-swipeable-views": "^0.13.3",
     "react-swipeable-views-utils": "^0.13.3",
     "redux": "^4.0.4",
     "redux-observable": "^1.2.0",
-    "rxjs": "^6.5.1",
-    "typescript": "^3.7.3",
+    "rxjs": "^6.5.4",
+    "typescript": "^3.8.3",
     "uppy": "^1.6.0",
     "video.js": "^7.6.6"
   },
@@ -54,7 +53,8 @@
     "build": "yarn; react-scripts --max_old_space_size=4096 build; node scripts/build.js",
     "test": "react-scripts test",
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
-    "i18n:manage": "node scripts/i18n.js"
+    "i18n:manage": "node scripts/i18n.js",
+    "prettier": "node ../../scripts/prettier.js"
   },
   "proxy": "http://authoring.sample.com:8080/",
   "eslintConfig": {
@@ -79,6 +79,7 @@
     "babel-plugin-react-intl": "^5.1.16",
     "ncp": "^2.0.0",
     "node-sass": "^4.12.0",
+    "prop-types": "^15.7.2",
     "react-intl-translations-manager": "^5.0.3",
     "rimraf": "^3.0.0"
   }

@@ -32,6 +32,7 @@ import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
 import DevicesIcon from '@material-ui/icons/Devices';
+import SearchIcon from '@material-ui/icons/SearchRounded';
 import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
@@ -46,33 +47,35 @@ import { useDispatch } from 'react-redux';
 import { changeSite } from '../../state/actions/sites';
 import { camelize, popPiece } from '../../utils/string';
 
-const tileStyles = makeStyles(() => createStyles({
-  tile: {
-    width: '120px',
-    height: '100px',
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    textAlign: 'center',
-    '&:hover': {
-      textDecoration: 'none',
-      '& .MuiTypography-root': {
-        textDecoration: 'underline'
+const tileStyles = makeStyles(() =>
+  createStyles({
+    tile: {
+      'width': '120px',
+      'height': '100px',
+      'display': 'flex',
+      'alignItems': 'center',
+      'flexDirection': 'column',
+      'justifyContent': 'center',
+      'cursor': 'pointer',
+      'textAlign': 'center',
+      '&:hover': {
+        'textDecoration': 'none',
+        '& .MuiTypography-root': {
+          textDecoration: 'underline'
+        }
+      },
+      '&.disabled': {
+        opacity: '0.5',
+        pointerEvents: 'none'
       }
     },
-    '&.disabled': {
-      opacity: '0.5',
-      pointerEvents: 'none'
-    }
-  },
-  icon: {
-    fontSize: '35px !important',
-    color: palette.gray.medium5
-  },
-  tileTitle: {}
-}));
+    icon: {
+      fontSize: '35px !important',
+      color: palette.gray.medium5
+    },
+    tileTitle: {}
+  })
+);
 
 const messages = defineMessages({
   mySites: {
@@ -89,11 +92,15 @@ const messages = defineMessages({
   },
   preview: {
     id: 'globalMenu.preview',
-    defaultMessage: 'Preview'
+    defaultMessage: 'Preview 2.0'
   },
   legacyPreview: {
     id: 'globalMenu.legacyPreview',
-    defaultMessage: 'Legacy Preview'
+    defaultMessage: 'Preview'
+  },
+  search: {
+    id: 'words.search',
+    defaultMessage: 'Search'
   },
   about: {
     id: 'GlobalMenu.AboutUs',
@@ -188,19 +195,19 @@ function Tile(props: TileProps) {
     <Link
       className={clsx(classes.tile, disabled && 'disabled')}
       href={disabled ? null : link}
-      onClick={() => (!disabled && onClick) ? onClick() : null}
+      onClick={() => (!disabled && onClick ? onClick() : null)}
       target={target ? target : '_self'}
     >
-      {
-        typeof Icon === 'string'
-          ? <i className={clsx(classes.icon, 'fa', Icon)}/>
-          : <Icon className={classes.icon}/>
-      }
+      {typeof Icon === 'string' ? (
+        <i className={clsx(classes.icon, 'fa', Icon)} />
+      ) : (
+        <Icon className={classes.icon} />
+      )}
       <Typography variant="subtitle1" color="textSecondary" className={classes.tileTitle}>
         {title}
       </Typography>
     </Link>
-  )
+  );
 }
 
 const globalNavUrlMapping = {
@@ -213,10 +220,11 @@ const globalNavUrlMapping = {
   'home.globalMenu.globalConfig': '#/globalMenu/global-config',
   'home.globalMenu.cluster': '#/globalMenu/cluster',
   'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool',
-  'preview': '/preview',
+  'preview': '/next/preview',
   'about': '#/about-us',
-  'legacy.preview': '/legacy/preview',
-  'siteConfig': '/site-config'
+  'legacy.preview': '/preview',
+  'siteConfig': '/site-config',
+  'search': '/search'
 };
 
 const siteMenuKeys = {
@@ -226,57 +234,57 @@ const siteMenuKeys = {
 
 const maxHeight = '550px';
 
-const globalNavStyles = makeStyles((theme) => createStyles({
-  popover: {
-    maxWidth: '820px',
-    width: 'calc(100% - 32px)',
-    maxHeight,
-    borderRadius: '20px'
-  },
-  sitesPanel: {
-    ...(
-      theme.palette.type === 'dark'
+const globalNavStyles = makeStyles((theme) =>
+  createStyles({
+    popover: {
+      maxWidth: '820px',
+      width: 'calc(100% - 32px)',
+      maxHeight,
+      borderRadius: '20px'
+    },
+    sitesPanel: {
+      ...(theme.palette.type === 'dark'
         ? { backgroundColor: palette.gray.dark1 }
-        : { backgroundColor: palette.gray.light1 }
-    ),
-    padding: '30px 24px 30px 30px',
-    maxHeight,
-    overflow: 'auto'
-  },
-  sitesContent: {
-    padding: '30px 24px 30px 30px',
-    maxHeight,
-    overflow: 'auto'
-  },
-  title: {
-    textTransform: 'uppercase',
-    fontWeight: 600
-  },
-  titleCard: {
-    marginBottom: '20px'
-  },
-  sitesApps: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
-  errorPaperRoot: {
-    height: '100%'
-  },
-  closeButton: {
-    position: 'absolute',
-    top: '10px',
-    right: '10px'
-  },
-  simpleGear: {
-    margin: 'auto'
-  },
-  loadingContainer: {
-    height: '600px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-}));
+        : { backgroundColor: palette.gray.light1 }),
+      padding: '30px 24px 30px 30px',
+      maxHeight,
+      overflow: 'auto'
+    },
+    sitesContent: {
+      padding: '30px 24px 30px 30px',
+      maxHeight,
+      overflow: 'auto'
+    },
+    title: {
+      textTransform: 'uppercase',
+      fontWeight: 600
+    },
+    titleCard: {
+      marginBottom: '20px'
+    },
+    sitesApps: {
+      display: 'flex',
+      flexWrap: 'wrap'
+    },
+    errorPaperRoot: {
+      height: '100%'
+    },
+    closeButton: {
+      position: 'absolute',
+      top: '10px',
+      right: '10px'
+    },
+    simpleGear: {
+      margin: 'auto'
+    },
+    loadingContainer: {
+      height: '600px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }
+  })
+);
 
 interface GlobalNavProps {
   anchor: Element;
@@ -285,7 +293,6 @@ interface GlobalNavProps {
 }
 
 export default function GlobalNav(props: GlobalNavProps) {
-
   const { anchor, onMenuClose, rolesBySite } = props;
   const classes = globalNavStyles({});
   const [sites, setSites] = useState(null);
@@ -316,7 +323,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   }
 
   function onPreviewClick(id: string = crafterSite) {
-    onLinkClick('/preview', id);
+    onLinkClick('/next/preview', id);
   }
 
   function onDashboardClick(id: string = crafterSite) {
@@ -333,10 +340,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   }
 
   useEffect(() => {
-    const requests: Observable<any>[] = [
-      fetchSites(),
-      getGlobalMenuItems()
-    ];
+    const requests: Observable<any>[] = [fetchSites(), getGlobalMenuItems()];
     if (crafterSite) {
       requests.push(getDOM(crafterSite, '/context-nav/sidebar.xml', 'studio'));
     }
@@ -349,36 +353,43 @@ export default function GlobalNav(props: GlobalNavProps) {
           [siteMenuKeys.siteConfig]: false
         };
         if (xml) {
-          forEach(
-            xml.querySelectorAll('modulehook'),
-            (module) => {
-              if (getInnerHtml(module.querySelector('name')) === siteMenuKeys.siteConfig || getInnerHtml(module.querySelector('name')) === siteMenuKeys.dashboard) {
-                const roles = module.querySelectorAll('role');
-                roleFound[getInnerHtml(module.querySelector('name'))] = roles.length ? forEach(
-                  roles,
-                  (role) => {
-                    if (
-                      rolesBySite[crafterSite] &&
-                      rolesBySite[crafterSite].includes(getInnerHtml(role))
-                    ) {
-                      return true
-                    }
-                  },
-                  false
-                ) : true;
-              }
+          forEach(xml.querySelectorAll('modulehook'), (module) => {
+            if (
+              getInnerHtml(module.querySelector('name')) === siteMenuKeys.siteConfig ||
+              getInnerHtml(module.querySelector('name')) === siteMenuKeys.dashboard
+            ) {
+              const roles = module.querySelectorAll('role');
+              roleFound[getInnerHtml(module.querySelector('name'))] = roles.length
+                ? forEach(
+                    roles,
+                    (role) => {
+                      if (
+                        rolesBySite[crafterSite] &&
+                        rolesBySite[crafterSite].includes(getInnerHtml(role))
+                      ) {
+                        return true;
+                      }
+                    },
+                    false
+                  )
+                : true;
             }
-          );
+          });
         }
         setSiteMenu(roleFound);
       },
       (error) => {
         if (error.response) {
-          const _response = { ...error.response, code: '', documentationUrl: '', remedialAction: '' };
+          const _response = {
+            ...error.response,
+            code: '',
+            documentationUrl: '',
+            remedialAction: ''
+          };
           setApiState({ error: true, errorResponse: _response });
         }
       }
-    )
+    );
   }, [crafterSite, rolesBySite]);
 
   return (
@@ -401,122 +412,112 @@ export default function GlobalNav(props: GlobalNavProps) {
         className={classes.closeButton}
         onClick={(event) => onMenuClose(event)}
       >
-        <CloseIcon/>
+        <CloseIcon />
       </IconButton>
-      {
-        apiState.error ? (
-          <ErrorState
-            classes={{ root: classes.errorPaperRoot }}
-            error={apiState.errorResponse}
-            onBack={handleErrorBack}
-          />
-        ) : (sites !== null && siteMenu !== null && menuItems !== null) ? (
-          <Grid container spacing={0}>
-            <Hidden only={['xs', 'sm']}>
-              <Grid item md={4} className={classes.sitesPanel}>
-                <Typography
-                  variant="subtitle1"
-                  component="h2"
-                  className={classes.title}
-                  style={{ marginBottom: '24px' }}
-                >
-                  {formatMessage(messages.mySites)}
-                </Typography>
-                {
-                  sites.map((site, i) =>
-                    <SiteCard
-                      key={i}
-                      title={site.siteId}
-                      value={site.siteId}
-                      options={true}
-                      classes={{ root: classes.titleCard }}
-                      onCardClick={() => onSiteCardClick(site.siteId)}
-                      cardActions={cardActions}
-                    />
-                  )
-                }
-              </Grid>
-            </Hidden>
-            <Grid item xs={12} md={8} className={classes.sitesContent}>
+      {apiState.error ? (
+        <ErrorState
+          classes={{ root: classes.errorPaperRoot }}
+          error={apiState.errorResponse}
+          onBack={handleErrorBack}
+        />
+      ) : sites !== null && siteMenu !== null && menuItems !== null ? (
+        <Grid container spacing={0}>
+          <Hidden only={['xs', 'sm']}>
+            <Grid item md={4} className={classes.sitesPanel}>
               <Typography
                 variant="subtitle1"
                 component="h2"
                 className={classes.title}
-                style={{ margin: '0px 0 10px 0' }}
+                style={{ marginBottom: '24px' }}
               >
-                {formatMessage(messages.global)}
+                {formatMessage(messages.mySites)}
               </Typography>
-              <nav className={classes.sitesApps}>
-                {
-                  menuItems.map((item) =>
-                    <Tile
-                      key={item.id}
-                      title={formatMessage(messages[popPiece(camelize(item.id))])}
-                      icon={item.icon}
-                      link={getLink(item.id)}
-                      onClick={onMenuClose}
-                    />
-                  )
-                }
-                <Tile
-                  title={formatMessage(messages.docs)}
-                  icon={Docs}
-                  link="https://docs.craftercms.org/en/3.1/index.html"
-                  target="_blank"
+              {sites.map((site, i) => (
+                <SiteCard
+                  key={i}
+                  title={site.siteId}
+                  value={site.siteId}
+                  options={true}
+                  classes={{ root: classes.titleCard }}
+                  onCardClick={() => onSiteCardClick(site.siteId)}
+                  cardActions={cardActions}
                 />
-                <Tile
-                  title={formatMessage(messages.about)}
-                  icon={About}
-                  link={getLink('about')}
-                />
-              </nav>
-              <Typography
-                variant="subtitle1"
-                component="h2"
-                className={classes.title}
-              >
-                {formatMessage(messages.site)}
-              </Typography>
-              <nav className={classes.sitesApps}>
-                {
-                  siteMenu?.[siteMenuKeys.dashboard] &&
-                  <Tile
-                    title={formatMessage(messages.dashboard)}
-                    icon='fa-tasks'
-                    onClick={onDashboardClick}
-                  />
-                }
-                <Tile
-                  title={formatMessage(messages.preview)}
-                  icon={Preview}
-                  onClick={onPreviewClick}
-                />
-                <Tile
-                  title={formatMessage(messages.legacyPreview)}
-                  icon={DevicesIcon}
-                  link={getLink('legacy.preview')}
-                  disabled={!crafterSite}
-                />
-                {
-                  siteMenu?.[siteMenuKeys.siteConfig] &&
-                  <Tile
-                    title={formatMessage(messages.siteConfig)}
-                    icon='fa-sliders'
-                    link={getLink('siteConfig')}
-                    onClick={onMenuClose}
-                  />
-                }
-              </nav>
+              ))}
             </Grid>
+          </Hidden>
+          <Grid item xs={12} md={8} className={classes.sitesContent}>
+            <Typography
+              variant="subtitle1"
+              component="h2"
+              className={classes.title}
+              style={{ margin: '0px 0 10px 0' }}
+            >
+              {formatMessage(messages.global)}
+            </Typography>
+            <nav className={classes.sitesApps}>
+              {menuItems.map((item) => (
+                <Tile
+                  key={item.id}
+                  title={formatMessage(messages[popPiece(camelize(item.id))])}
+                  icon={item.icon}
+                  link={getLink(item.id)}
+                  onClick={onMenuClose}
+                />
+              ))}
+              <Tile
+                title={formatMessage(messages.docs)}
+                icon={Docs}
+                link="https://docs.craftercms.org/en/3.1/index.html"
+                target="_blank"
+              />
+              <Tile title={formatMessage(messages.about)} icon={About} link={getLink('about')} />
+            </nav>
+            <Typography variant="subtitle1" component="h2" className={classes.title}>
+              {formatMessage(messages.site)}
+            </Typography>
+            <nav className={classes.sitesApps}>
+              {siteMenu?.[siteMenuKeys.dashboard] && (
+                <Tile
+                  title={formatMessage(messages.dashboard)}
+                  icon="fa-tasks"
+                  onClick={onDashboardClick}
+                />
+              )}
+              <Tile
+                title={formatMessage(messages.preview)}
+                icon={Preview}
+                onClick={onPreviewClick}
+              />
+              <Tile
+                title={formatMessage(messages.legacyPreview)}
+                icon={DevicesIcon}
+                link={getLink('legacy.preview')}
+                disabled={!crafterSite}
+              />
+              {siteMenu?.[siteMenuKeys.siteConfig] && (
+                <Tile
+                  title={formatMessage(messages.siteConfig)}
+                  icon="fa-sliders"
+                  link={getLink('siteConfig')}
+                  onClick={onMenuClose}
+                />
+              )}
+              <Tile
+                title={formatMessage(messages.search)}
+                icon={SearchIcon}
+                link={getLink('search')}
+                disabled={!crafterSite}
+              />
+            </nav>
           </Grid>
-        ) : (
-          <div className={classes.loadingContainer}>
-            <LoadingState title=""/>
-          </div>
-        )
-      }
+        </Grid>
+      ) : (
+        <div className={classes.loadingContainer}>
+          <LoadingState />
+        </div>
+      )}
     </Popover>
-  )
+  );
 }
 
 function getLink(id: string) {

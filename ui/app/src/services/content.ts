@@ -840,7 +840,7 @@ export function deleteItem(
         fieldNode = extractNode(doc, fieldId, removeLastPiece(`${indexToDelete}`));
       }
 
-      $(fieldNode).children().eq(index).remove();
+      $(fieldNode).children().eq(index as number).remove();
 
     }
   );

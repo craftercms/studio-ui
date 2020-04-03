@@ -65,11 +65,11 @@ function SingleFileUpload(props: UppyProps) {
     } = props;
 
   const { formatMessage } = useIntl();
-  const [description, setDescription] = useState(
+  const [description, setDescription] = useState<string>(
     formatMessage(messages.selectFileMessage)
   );
-  const [fileName, setFileName] = useState();
-  const [fileNameErrorClass, setFileNameErrorClass] = useState();
+  const [fileName, setFileName] = useState<string>();
+  const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
 
   useEffect(
     () => {
@@ -109,7 +109,8 @@ function SingleFileUpload(props: UppyProps) {
         .use(XHRUpload, {
           endpoint: url,
           formData: true,
-          fieldName: 'file'
+          fieldName: 'file',
+          timeout: 0
         });
 
       uppy.on('file-added', (file) => {
@@ -120,11 +121,14 @@ function SingleFileUpload(props: UppyProps) {
         uploadBtn.disabled = true;
         onUploadStart();
       });
+
       uppy.on('upload-success', (file) => {
         setDescription(`${formatMessage(messages.uploadedFile)}:`);
         uploadBtn.disabled = false;
       });
+
       uppy.on('complete', onComplete);
+
       uppy.on('upload-error', (file, error, response) => {
         uppy.cancelAll();
         uploadBtn.disabled = false;

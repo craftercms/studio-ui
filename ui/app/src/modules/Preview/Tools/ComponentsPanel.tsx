@@ -15,36 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import LoadingState from '../../../components/SystemStatus/LoadingState';
 import List from '@material-ui/core/List';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ContentType from '../../../models/ContentType';
-import DeleteRounded from '@material-ui/icons/DeleteRounded';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { getHostToGuestBus } from '../previewContext';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import { palette } from '../../../styles/theme';
-import { Typography } from '@material-ui/core';
-import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTilted';
 import {
   browseSharedInstance,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
-  selectTool,
-  TRASHED
+  selectTool
 } from '../../../state/actions/preview';
-import { usePreviewState, useStateResourceSelection } from '../../../utils/hooks';
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import { useStateResourceSelection } from '../../../utils/hooks';
 import { EntityState } from '../../../models/GlobalState';
 import { nnou } from '../../../utils/object';
 import { DraggablePanelListItem } from './DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
+import {
+  PropsWithResource,
+  SuspenseWithEmptyState
+} from '../../../components/SystemStatus/Suspencified';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -57,103 +51,81 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) => createStyles({
-  root: {},
-  rubbishBin: {
-    height: 250,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: palette.orange.main,
-    margin: theme.spacing(1),
-    position: 'absolute',
-    left: theme.spacing(1),
-    right: theme.spacing(1),
-    bottom: theme.spacing(1),
-    color: palette.white
-  },
-  rubbishIcon: {
-    width: '100%',
-    height: '50%',
-    color: palette.white
-  },
-  rubbishIconHover: {
-    transform: ''
-  }
-}));
+type ComponentsPanelUIProps = PropsWithResource<ContentType[]>;
 
 export default function ComponentsPanel() {
-
-  const classes = useStyles({});
-  const { guest } = usePreviewState();
   const resource = useStateResourceSelection<ContentType[], EntityState<ContentType>>(
-    state => state.contentTypes,
+    (state) => state.contentTypes,
     {
       shouldRenew: (source, resource) => resource.complete,
-      shouldResolve: source => (!source.isFetching) && nnou(source.byId),
-      shouldReject: source => nnou(source.error),
-      errorSelector: source => source.error,
-      resultSelector: source => Object.values(source.byId)
+      shouldResolve: (source) => !source.isFetching && nnou(source.byId),
+      shouldReject: (source) => nnou(source.error),
+      errorSelector: (source) => source.error,
+      resultSelector: (source) => Object.values(source.byId)
     }
   );
 
   return (
     <ToolPanel title={translations.componentsPanel}>
-      <ErrorBoundary>
-        <React.Suspense
-          fallback={
-            <LoadingState
-              // @ts-ignore
-              title={
-                <FormattedMessage
-                  id="componentsPanel.suspenseStateMessage"
-                  defaultMessage="Retrieving Page Model"
-                />
-              }
-              graphicProps={{ width: 150 }}
+      <SuspenseWithEmptyState
+        resource={resource}
+        loadingStateProps={{
+          title: (
+            <FormattedMessage
+              id="componentsPanel.suspenseStateMessage"
+              defaultMessage="Retrieving Page Model"
             />
+          )
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: (
+              <FormattedMessage
+                id="componentsPanel.emptyStateMessage"
+                defaultMessage="No components found"
+              />
+            ),
+            subtitle: (
+              <FormattedMessage
+                id="componentsPanel.emptyStateMessageSubtitle"
+                defaultMessage="Communicate with your developers to create the required components in the system."
+              />
+            )
           }
-        >
-          <ComponentsPanelUI
-            classes={classes}
-            componentTypesResource={resource}
-            itemBeingDragged={guest?.itemBeingDragged}
-          />
-        </React.Suspense>
-      </ErrorBoundary>
+        }}
+      >
+        <ComponentsPanelUI resource={resource} />
+      </SuspenseWithEmptyState>
     </ToolPanel>
   );
-
 }
 
-export function ComponentsPanelUI(props) {
+// export function ComponentsPanelUI(props: ComponentsPanelUIProps) {
+export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
+  const { resource } = props;
 
-  const { itemBeingDragged, classes, componentTypesResource } = props;
-
-  const contentTypes = componentTypesResource.read();
+  const contentTypes = resource.read();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
   const hostToGuest$ = getHostToGuestBus();
-  const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
+  const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
   const componentTypes = useMemo(
     () => contentTypes.filter((contentType) => contentType.type === 'component'),
     [contentTypes]
   );
 
-  const onDragStart = (contentType) => hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
+  const onDragStart = (contentType) =>
+    hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
-
-  const onTrash = () => hostToGuest$.next({ type: TRASHED });
 
   const onMenuClose = () => setMenuContext(null);
 
   const onMenuOptionClicked = () => setMenuContext(null);
 
   const onBrowseSharedInstancesClicked = () => {
-    dispatch(browseSharedInstance(menuContext.contentType.id))
+    dispatch(browseSharedInstance(menuContext.contentType.id));
   };
 
   const onListReceptaclesClick = () => {
@@ -166,94 +138,26 @@ export function ComponentsPanelUI(props) {
 
   return (
     <>
-      <List className={classes.root}>
-        {
-          componentTypes.map((contentType) =>
-            <DraggablePanelListItem
-              key={contentType.id}
-              primaryText={contentType.name}
-              secondaryText={contentType.id}
-              onDragStart={() => onDragStart(contentType)}
-              onDragEnd={onDragEnd}
-              onMenu={(anchor) => setMenuContext({ anchor, contentType })}
-            />
-          )
-        }
+      <List>
+        {componentTypes.map((contentType) => (
+          <DraggablePanelListItem
+            key={contentType.id}
+            primaryText={contentType.name}
+            secondaryText={contentType.id}
+            onDragStart={() => onDragStart(contentType)}
+            onDragEnd={onDragEnd}
+            onMenu={(anchor) => setMenuContext({ anchor, contentType })}
+          />
+        ))}
       </List>
 
-      <Menu
-        open={!!menuContext}
-        anchorEl={menuContext?.anchor}
-        onClose={onMenuClose}
-      >
+      <Menu open={!!menuContext} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
         <MenuItem onClick={onMenuOptionClicked}>List in-page instances</MenuItem>
-        <MenuItem onClick={onBrowseSharedInstancesClicked}>{formatMessage(translations.browse)}</MenuItem>
+        <MenuItem onClick={onBrowseSharedInstancesClicked}>
+          {formatMessage(translations.browse)}
+        </MenuItem>
         <MenuItem onClick={onListReceptaclesClick}>List receptacles</MenuItem>
       </Menu>
-
-      <RubbishBin
-        in={itemBeingDragged}
-        onTrash={onTrash}
-      />
-
     </>
   );
-
-}
-
-function RubbishBin(props: any) {
-  const classes = useStyles({});
-  const [over, setOver] = useState(false);
-  const [trashed, setTrashed] = useState(false);
-  useEffect(() => {
-    if (props.in) {
-      setOver(false);
-      setTrashed(false);
-    }
-  }, [props.in]);
-  return (
-    <Grow in={props.in}>
-      <Paper
-        elevation={2}
-        className={classes.rubbishBin}
-        onDragOver={(e) => {
-          e.preventDefault();
-        }}
-        onDragEnter={(e) => {
-          e.preventDefault();
-          setOver(true);
-        }}
-        onDragLeave={(e) => {
-          e.preventDefault();
-          setOver(false);
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          setTrashed(true);
-          props.onTrash?.();
-        }}
-      >
-        {
-          (over)
-            ? <DeleteRoundedTilted className={classes.rubbishIcon}/>
-            : <DeleteRounded className={classes.rubbishIcon}/>
-        }
-        <Typography variant="caption">
-          {
-            (trashed) ? (
-              <FormattedMessage
-                id="ice.rubbishBin.itemTrashed"
-                defaultMessage="Trashed!"
-              />
-            ) : (
-              <FormattedMessage
-                id="ice.rubbishBin.dropToTrash"
-                defaultMessage="Drop Here To Trash"
-              />
-            )
-          }
-        </Typography>
-      </Paper>
-    </Grow>
-  );
-}
+};

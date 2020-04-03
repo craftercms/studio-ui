@@ -61,24 +61,26 @@ const translations = defineMessages({
   }
 });
 
-const styles = makeStyles(() => createStyles({
-  iframe: {
-    height: '0',
-    border: 0,
-    '&.complete': {
-      height: '100%'
+const styles = makeStyles(() =>
+  createStyles({
+    iframe: {
+      'height': '0',
+      'border': 0,
+      '&.complete': {
+        height: '100%'
+      }
+    },
+    loadingRoot: {
+      height: 'calc(100% - 104px)',
+      justifyContent: 'center'
+    },
+    edited: {
+      width: '12px',
+      height: '12px',
+      marginLeft: '5px'
     }
-  },
-  loadingRoot: {
-    height: 'calc(100% - 104px)',
-    justifyContent: 'center'
-  },
-  edited: {
-    width: '12px',
-    height: '12px',
-    marginLeft: '5px'
-  }
-}));
+  })
+);
 
 function filterBy(filter: string, changes: object, currentTab: string): Array<string> {
   let array = [];
@@ -91,10 +93,10 @@ function filterBy(filter: string, changes: object, currentTab: string): Array<st
 }
 
 interface dialogConfig {
-  open: boolean,
-  src: string,
-  type: string,
-  inProgress: boolean
+  open: boolean;
+  src: string;
+  type: string;
+  inProgress: boolean;
 }
 
 interface EmbeddedLegacyEditorsProps {
@@ -120,9 +122,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     controller: { loaded: false, pendingChanges: false }
   });
 
-  const messages = fromEvent(window, 'message').pipe(
-    filter((e: any) => e.data && e.data.type)
-  );
+  const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
   const handleClose = () => {
     setDialogConfig({ open: false, src: null, type: null, inProgress: true });
@@ -137,12 +137,17 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     (event: React.ChangeEvent<{}>, type: string) => {
       let inProgress = !tabsState[type].loaded;
       setDialogConfig({ type, inProgress });
-      iframeRef.current.contentWindow.postMessage({
-        type: EDIT_FORM_CHANGE_TAB,
-        tab: type,
-        path: getPath(type)
-      }, '*');
-    }, [getPath, setDialogConfig, tabsState]);
+      iframeRef.current.contentWindow.postMessage(
+        {
+          type: EDIT_FORM_CHANGE_TAB,
+          tab: type,
+          path: getPath(type)
+        },
+        '*'
+      );
+    },
+    [getPath, setDialogConfig, tabsState]
+  );
 
   const closeEmbeddedLegacyForm = (refresh: boolean, tab?: string) => {
     let hasSomeLoaded = filterBy('loaded', tabsState, tab);
@@ -171,7 +176,9 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
             if (dialogConfig.inProgress) {
               setDialogConfig({ inProgress: false });
             }
-            setTabsState({ [tab]: { loaded: true, pendingChanges: tabsState[tab].pendingChanges } });
+            setTabsState({
+              [tab]: { loaded: true, pendingChanges: tabsState[tab].pendingChanges }
+            });
             break;
           }
           case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
@@ -202,20 +209,22 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     }
   }, [handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig, messages]);
 
-
   return (
     <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
-      {
-        showTabs &&
-        <AppBar position="static" color='default'>
-          <Tabs value={dialogConfig.type} onChange={handleTabChange} aria-label="simple tabs example" centered>
+      {showTabs && (
+        <AppBar position="static" color="default">
+          <Tabs
+            value={dialogConfig.type}
+            onChange={handleTabChange}
+            aria-label="simple tabs example"
+            centered
+          >
             <Tab
               value="form"
               label={
                 <div>
                   {formatMessage(translations.contentForm)}
-                  {tabsState.form.pendingChanges &&
-                  <CreateIcon className={classes.edited} />}
+                  {tabsState.form.pendingChanges && <CreateIcon className={classes.edited} />}
                 </div>
               }
               disabled={dialogConfig.inProgress}
@@ -225,38 +234,35 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
               label={
                 <div>
                   {formatMessage(translations.template)}
-                  {tabsState.template.pendingChanges &&
-                  <CreateIcon className={classes.edited} />}
+                  {tabsState.template.pendingChanges && <CreateIcon className={classes.edited} />}
                 </div>
               }
               disabled={dialogConfig.inProgress}
             />
-            {
-              (showController) &&
+            {showController && (
               <Tab
                 value="controller"
                 label={
                   <div>
                     {formatMessage(translations.controller)}
-                    {tabsState.controller.pendingChanges &&
-                    <CreateIcon className={classes.edited} />}
+                    {tabsState.controller.pendingChanges && (
+                      <CreateIcon className={classes.edited} />
+                    )}
                   </div>
                 }
                 disabled={dialogConfig.inProgress}
               />
-            }
+            )}
           </Tabs>
         </AppBar>
-      }
+      )}
 
-      {
-        (dialogConfig.inProgress && dialogConfig.open) &&
+      {dialogConfig.inProgress && dialogConfig.open && (
         <LoadingState
           title={formatMessage(translations.loadingForm)}
-          graphicProps={{ width: 150 }}
           classes={{ root: classes.loadingRoot }}
         />
-      }
+      )}
       <iframe
         ref={iframeRef}
         src={dialogConfig.src}

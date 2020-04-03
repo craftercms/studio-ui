@@ -1,15 +1,15 @@
 {
-  "name": "studio-scss",
+  "name": "@craftercms/studio-ui-styles",
   "version": "1.0.0",
   "description": "SASS for studio",
   "private": true,
-  "main": "index.js",
   "scripts": {
-    "build": "node index.js",
-    "watch": "node watch.js"
+    "build": "node scripts/index.js",
+    "watch": "node scripts/watch.js"
   },
-  "dependencies": {
-    "node-sass": "^4.12.0",
-    "rxjs": "^6.5.3"
+  "dependencies": {},
+  "devDependencies": {
+    "node-sass": "^4.13.1",
+    "rxjs": "^6.5.4"
   }
 }
