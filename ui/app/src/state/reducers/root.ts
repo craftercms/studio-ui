@@ -24,6 +24,7 @@ import sites from './sites';
 import env from './env';
 import preview from './preview';
 import contentTypes from './contentTypes';
+import dialogs from './dialogs';
 
 const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   auth,
@@ -31,7 +32,8 @@ const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   sites,
   env,
   preview,
-  contentTypes
+  contentTypes,
+  dialogs
 };
 
 export default reducer;

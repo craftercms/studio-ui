@@ -24,11 +24,10 @@ import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 
 const epicMiddleware = createEpicMiddleware();
-const middleware = getDefaultMiddleware({ thunk: false }).concat(epicMiddleware);
+const middleware = [...getDefaultMiddleware<GlobalState>({ thunk: false }), epicMiddleware];
 
 const store = configureStore<GlobalState, StandardAction>({
   reducer,
-  // @ts-ignore
   middleware,
   preloadedState: createInitialState()
 });
@@ -49,7 +48,7 @@ function createInitialState(): GlobalState {
       console.error('[GlobalContext] Malformed initial global state.');
     }
   } else {
-    console.error('[GlobalContext] Initial global state not found.')
+    console.error('[GlobalContext] Initial global state not found.');
   }
   if (process.env.NODE_ENV === 'production') {
     script.parentNode.removeChild(script);

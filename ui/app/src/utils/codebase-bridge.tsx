@@ -196,7 +196,7 @@ export function createCodebaseBridge() {
           // @ts-ignore
           ReactDOM.render(
             // @ts-ignore
-            <CrafterCMSNextBridge>
+            <CrafterCMSNextBridge isLegacy>
               <Component {...props} />
             </CrafterCMSNextBridge>,
             element,
