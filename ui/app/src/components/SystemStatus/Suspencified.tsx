@@ -14,14 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  Fragment,
-  ElementType,
-  // FunctionComponent,
-  PropsWithChildren,
-  Suspense,
-  SuspenseProps
-} from 'react';
+import React, { Fragment, PropsWithChildren, Suspense, SuspenseProps } from 'react';
 import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
 import LoadingState, { LoadingStateProps } from './LoadingState';
 import { Resource } from '../../models/Resource';
@@ -36,35 +29,21 @@ export type PropsWithResource<ResourceType = unknown, Props = {}> = PropsWithChi
 
 type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<
   PropsWithResource<ResourceType> & {
-    isEmpty?(value: unknown): boolean;
+    isEmpty?(value: ResourceType): boolean;
     emptyStateProps?: EmptyStateProps;
   }
 >;
 
-type SuspenseBoundaryProps = PropsWithChildren<{
+type SuspencifiedProps = PropsWithChildren<{
   suspenseProps?: SuspenseProps;
   loadingStateProps?: LoadingStateProps;
   errorBoundaryProps?: ErrorBoundaryProps;
 }>;
 
-// TODO: Is there a way for TS config to demand the props from the "component" to "componentProps"?
-interface SuspencifiedProps<
-  ResourceType = unknown,
-  // CompleteComponentProps extends PropsWithResource<ResourceType> = PropsWithResource<ResourceType>,
-  // ComponentProps extends Partial<CompleteComponentProps> = {},
-  // ComponentType extends ElementType<CompleteComponentProps> = FunctionComponent<CompleteComponentProps>,
-  ComponentProps = {},
-  ComponentType extends ElementType = ElementType
-> extends SuspenseBoundaryProps {
-  component: ComponentType;
-  componentProps?: ComponentProps;
-  resource: Resource<ResourceType>;
-}
-
-export function WithEmptyState(props: SuspenseWithEmptyStateProps) {
+export function WithEmptyState<ResourceType = unknown>(props: SuspenseWithEmptyStateProps) {
   const {
     children,
-    isEmpty = (value: any[]) => value.length === 0,
+    isEmpty = (value: unknown[]) => value.length === 0,
     resource,
     emptyStateProps = {
       title: (
@@ -80,28 +59,6 @@ export function WithEmptyState(props: SuspenseWithEmptyStateProps) {
 }
 
 export function Suspencified(props: SuspencifiedProps) {
-  const { component: Component, componentProps, resource } = props;
-  return (
-    <SuspenseBoundary {...props}>
-      <Component resource={resource} {...componentProps} />
-    </SuspenseBoundary>
-  );
-}
-
-export function SuspenseWithEmptyState(
-  props: SuspencifiedProps & { withEmptyStateProps?: Partial<SuspenseWithEmptyStateProps> }
-) {
-  const { component: Component, componentProps, resource, withEmptyStateProps } = props;
-  return (
-    <SuspenseBoundary {...props}>
-      <WithEmptyState resource={resource} {...withEmptyStateProps}>
-        <Component resource={resource} {...componentProps} />
-      </WithEmptyState>
-    </SuspenseBoundary>
-  );
-}
-
-export function SuspenseBoundary(props: SuspenseBoundaryProps) {
   const { children, loadingStateProps, errorBoundaryProps, suspenseProps } = props;
   return (
     <ErrorBoundary {...errorBoundaryProps}>
@@ -111,6 +68,22 @@ export function SuspenseBoundary(props: SuspenseBoundaryProps) {
         children={children}
       />
     </ErrorBoundary>
+  );
+}
+
+export function SuspenseWithEmptyState(
+  props: SuspencifiedProps & {
+    resource: Resource;
+    withEmptyStateProps?: Partial<SuspenseWithEmptyStateProps>;
+  }
+) {
+  const { children, withEmptyStateProps, resource } = props;
+  return (
+    <Suspencified {...props}>
+      <WithEmptyState resource={resource} {...withEmptyStateProps}>
+        {children}
+      </WithEmptyState>
+    </Suspencified>
   );
 }
 
