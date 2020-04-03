@@ -386,12 +386,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
           <SuspenseWithEmptyState
             resource={resource}
-            component={ContentTypesGrid}
-            componentProps={{
-              isCompact,
-              onTypeOpen,
-              getPrevImg
-            }}
             withEmptyStateProps={{
               emptyStateProps: {
                 classes: {
@@ -414,7 +408,9 @@ export default function NewContentDialog(props: NewContentDialogProps) {
                 root: classes.loadingRoot
               }
             }}
-          />
+          >
+            <ContentTypesGrid resource={resource} isCompact={isCompact} onTypeOpen={onTypeOpen} getPrevImg={getPrevImg}/>
+          </SuspenseWithEmptyState>
         </DialogBody>
         <DialogFooter classes={{ root: classes.dialogActions }}>
           <FormControlLabel
