@@ -55,10 +55,10 @@ const MENU_ITEMS = [
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: palette.white,
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '10px 15px',
+    'backgroundColor': palette.white,
+    'display': 'flex',
+    'justifyContent': 'space-between',
+    'padding': '10px 15px',
     '& p': {
       padding: 0
     }
@@ -129,7 +129,10 @@ export default function NewContentSelect(props: NewContentSelectProps) {
   return (
     <Paper className={clsx(classes.root, propClasses?.root)} elevation={0}>
       <div className={classes.textWrapper}>
-        <Typography variant={titleVariant || 'body1'} className={clsx(classes.title, propClasses?.title)}>
+        <Typography
+          variant={titleVariant || 'body1'}
+          className={clsx(classes.title, propClasses?.title)}
+        >
           {label}
         </Typography>
         <LabelIcon className={clsx(classes.labelIcon, propClasses?.labelIcon)} />

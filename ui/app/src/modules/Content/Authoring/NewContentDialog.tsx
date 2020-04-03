@@ -409,7 +409,12 @@ export default function NewContentDialog(props: NewContentDialogProps) {
               }
             }}
           >
-            <ContentTypesGrid resource={resource} isCompact={isCompact} onTypeOpen={onTypeOpen} getPrevImg={getPrevImg}/>
+            <ContentTypesGrid
+              resource={resource}
+              isCompact={isCompact}
+              onTypeOpen={onTypeOpen}
+              getPrevImg={getPrevImg}
+            />
           </SuspenseWithEmptyState>
         </DialogBody>
         <DialogFooter classes={{ root: classes.dialogActions }}>
