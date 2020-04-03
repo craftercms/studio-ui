@@ -80,7 +80,11 @@
           var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
           //check if selected content is type page
           if (selectedContent != null && selectedContent.isPage) {
-            CStudioAuthoring.Operations.updateTreeCookiePath('pages', 'sitewebsite', selectedContent.uri);
+            CStudioAuthoring.Operations.updateTreeCookiePath(
+              'pages',
+              'sitewebsite',
+              selectedContent.uri
+            );
           }
         }
 
@@ -92,7 +96,11 @@
           instance.openArray = {};
           var latestStored = storage.read(Self.getStoredPathKey(instance));
           if (latestStored) {
-            if (latestStored.indexOf(',') != -1 || latestStored.indexOf('[') != -1 || latestStored.indexOf('{') != -1) {
+            if (
+              latestStored.indexOf(',') != -1 ||
+              latestStored.indexOf('[') != -1 ||
+              latestStored.indexOf('{') != -1
+            ) {
               instance.openArray = JSON.parse(latestStored);
             } else {
               instance.openArray = [];
@@ -116,29 +124,34 @@
 
           //Setup child folders icon configuration
           if (config.params['child-icon-open'] && config.params['child-icon-open'].class) {
-            Self.customIcons[key].childIcons.open.icon.class = config.params['child-icon-open'].class;
+            Self.customIcons[key].childIcons.open.icon.class =
+              config.params['child-icon-open'].class;
           } else {
             //default open folder icon
             Self.customIcons[key].childIcons.open.icon.class = Self.defaultIcons.childOpen;
           }
           if (config.params['child-icon-open'] && config.params['child-icon-open'].styles) {
-            Self.customIcons[key].childIcons.open.icon.styles = config.params['child-icon-open'].styles;
+            Self.customIcons[key].childIcons.open.icon.styles =
+              config.params['child-icon-open'].styles;
           }
           if (config.params['child-icon-closed'] && config.params['child-icon-closed'].class) {
-            Self.customIcons[key].childIcons.closed.icon.class = config.params['child-icon-closed'].class;
+            Self.customIcons[key].childIcons.closed.icon.class =
+              config.params['child-icon-closed'].class;
           } else {
             //default closed folder icon
             Self.customIcons[key].childIcons.closed.icon.class = Self.defaultIcons.childClosed;
           }
           if (config.params['child-icon-closed'] && config.params['child-icon-closed'].styles) {
-            Self.customIcons[key].childIcons.closed.icon.styles = config.params['child-icon-closed'].styles;
+            Self.customIcons[key].childIcons.closed.icon.styles =
+              config.params['child-icon-closed'].styles;
           }
 
           var module;
 
           //setup root folder icon configuration
           if (config.params['module-icon-open'] && config.params['module-icon-open'].class) {
-            Self.customIcons[key].moduleIcons.open.icon.class = config.params['module-icon-open'].class;
+            Self.customIcons[key].moduleIcons.open.icon.class =
+              config.params['module-icon-open'].class;
           } else {
             module = key.toLowerCase();
 
@@ -149,10 +162,12 @@
             }
           }
           if (config.params['module-icon-open'] && config.params['module-icon-open'].styles) {
-            Self.customIcons[key].moduleIcons.open.icon.styles = config.params['module-icon-open'].styles;
+            Self.customIcons[key].moduleIcons.open.icon.styles =
+              config.params['module-icon-open'].styles;
           }
           if (config.params['module-icon-closed'] && config.params['module-icon-closed'].class) {
-            Self.customIcons[key].moduleIcons.closed.icon.class = config.params['module-icon-closed'].class;
+            Self.customIcons[key].moduleIcons.closed.icon.class =
+              config.params['module-icon-closed'].class;
           } else {
             module = key.toLowerCase();
 
@@ -163,7 +178,8 @@
             }
           }
           if (config.params['module-icon-closed'] && config.params['module-icon-closed'].styles) {
-            Self.customIcons[key].moduleIcons.closed.icon.styles = config.params['module-icon-closed'].styles;
+            Self.customIcons[key].moduleIcons.closed.icon.styles =
+              config.params['module-icon-closed'].styles;
           }
 
           if (config.params.mods) {
@@ -212,7 +228,9 @@
                 if (!instance.cannedSearchCache[searchPath]) {
                   instance.cannedSearchCache[searchPath] = [];
                 }
-                instance.cannedSearchCache[searchPath].push(config.params.cannedSearches.cannedSearch);
+                instance.cannedSearchCache[searchPath].push(
+                  config.params.cannedSearches.cannedSearch
+                );
               }
             } else {
               for (var i = 0; i < config.params.cannedSearches.cannedSearch.length; i++) {
@@ -220,7 +238,9 @@
                 if (!instance.cannedSearchCache[searchPath]) {
                   instance.cannedSearchCache[searchPath] = [];
                 }
-                instance.cannedSearchCache[searchPath].push(config.params.cannedSearches.cannedSearch[i]);
+                instance.cannedSearchCache[searchPath].push(
+                  config.params.cannedSearches.cannedSearch[i]
+                );
               }
             }
           }
@@ -246,7 +266,10 @@
                 thisComponent.openLatest(instance);
               }
               YEvent.on('acn-dropdown-toggler', 'click', function() {
-                if (!window.firstClick && YAHOO.util.Dom.getStyle('acn-dropdown-menu-wrapper', 'display') != 'none') {
+                if (
+                  !window.firstClick &&
+                  YAHOO.util.Dom.getStyle('acn-dropdown-menu-wrapper', 'display') != 'none'
+                ) {
                   window.firstClick = true;
                   thisComponent.openLatest(instance);
                 }
@@ -395,7 +418,12 @@
        * to check, if extra ajax call can be reduced
        */
       pathOnlyHasCannedSearch: function(path, instance) {
-        if (!instance.showRootItem && instance.cannedSearchCache && instance.cannedSearchCache[path]) return true;
+        if (
+          !instance.showRootItem &&
+          instance.cannedSearchCache &&
+          instance.cannedSearchCache[path]
+        )
+          return true;
         return false;
       },
 
@@ -534,7 +562,9 @@
               editTemplateEl = icePanel.getElementsByClassName('edit-code template')[0].firstChild;
 
               if (
-                checkRenderingTemplates(CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates)
+                checkRenderingTemplates(
+                  CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates
+                )
               ) {
                 editTemplateEl.setAttributeNode(document.createAttribute('disabled'));
                 editTemplateEl.style.pointerEvents = 'none';
@@ -585,12 +615,16 @@
           self.expandTree(node);
 
           if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-            var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+            var treeChild = tree
+              .getEl()
+              .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
             for (var i = 0; i < treeChild.length; i++) {
               treeChild[i].setAttribute('num', instance.path[i].replace(/\//g, '').toLowerCase());
             }
           } else {
-            var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+            var treeChild = tree
+              .getEl()
+              .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
             treeChild[0].setAttribute('num', instance.path.replace(/\//g, '').toLowerCase());
           }
 
@@ -607,12 +641,16 @@
           self.collapseTree(node);
 
           if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-            var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+            var treeChild = tree
+              .getEl()
+              .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
             for (var i = 0; i < treeChild.length; i++) {
               treeChild[i].setAttribute('num', instance.path[i].replace(/\//g, '').toLowerCase());
             }
           } else {
-            var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+            var treeChild = tree
+              .getEl()
+              .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
             treeChild[0].setAttribute('num', instance.path.replace(/\//g, '').toLowerCase());
           }
 
@@ -744,12 +782,16 @@
 
         tree.draw();
         if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-          var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+          var treeChild = tree
+            .getEl()
+            .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
           for (var i = 0; i < treeChild.length; i++) {
             treeChild[i].setAttribute('num', instance.path[i].replace(/\//g, '').toLowerCase());
           }
         } else {
-          var treeChild = tree.getEl().querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
+          var treeChild = tree
+            .getEl()
+            .querySelectorAll('.acn-parent > div > div > .ygtvchildren > .ygtvitem');
           treeChild[0].setAttribute('num', instance.path.replace(/\//g, '').toLowerCase());
         }
         instance.pathNumber++;
@@ -845,7 +887,11 @@
             if (!treeItems[i].hideInAuthoring) {
               var itemCannedSearch = instance.cannedSearchCache[treeNodeTO.path];
 
-              if (itemCannedSearch && itemCannedSearch.length != 0 && itemCannedSearch[0].insertAs != 'append') {
+              if (
+                itemCannedSearch &&
+                itemCannedSearch.length != 0 &&
+                itemCannedSearch[0].insertAs != 'append'
+              ) {
                 replaceChildren.push(treeNodeTO.path);
               } else {
                 var treeNode = this.drawTreeItem(treeNodeTO, root, instance);
@@ -928,7 +974,11 @@
           Self.searchesToWire.push(treeNode);
         } else {
           searchConfig.label =
-            "<a style='display: inline;' id='" + searchId + "' href='#'>" + searchConfig.label + '</a>';
+            "<a style='display: inline;' id='" +
+            searchId +
+            "' href='#'>" +
+            searchConfig.label +
+            '</a>';
 
           treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
 
@@ -967,7 +1017,12 @@
           currentPreviewed = CStudioAuthoring.SelectedContent.getSelectedContent(),
           highlight = false;
 
-        if (isPreview && currentPreviewed[0] && currentPreviewed[0].path === treeNodeTO.path && !isLevelDescriptor) {
+        if (
+          isPreview &&
+          currentPreviewed[0] &&
+          currentPreviewed[0].path === treeNodeTO.path &&
+          !isLevelDescriptor
+        ) {
           highlight = true;
         }
 
@@ -994,7 +1049,8 @@
 
           nodeSpan.innerHTML += treeNodeTO.label;
           nodeSpan.setAttribute('title', treeNodeTO.title);
-          nodeSpan.className = treeNodeTO.style + ' yui-resize-label treenode-label over-effect-set';
+          nodeSpan.className =
+            treeNodeTO.style + ' yui-resize-label treenode-label over-effect-set';
 
           nodeSpan.className = highlight ? nodeSpan.className + ' highlighted' : nodeSpan.className;
 
@@ -1044,9 +1100,9 @@
         let $contextMenuEllipsis;
 
         if ($dropdownMenu.find('.context-menu--ellipsis').length === 0) {
-          $contextMenuEllipsis = $('<span class="context-menu--ellipsis fa fa-ellipsis-h" ></span>').appendTo(
-            $dropdownMenu
-          );
+          $contextMenuEllipsis = $(
+            '<span class="context-menu--ellipsis fa fa-ellipsis-h" ></span>'
+          ).appendTo($dropdownMenu);
           $sidebarHighlight = $('<span class="sidebar-highlight"></span>').appendTo($dropdownMenu);
         } else {
           $contextMenuEllipsis = $dropdownMenu.find('.context-menu--ellipsis');
@@ -1076,20 +1132,30 @@
 
         // Since context-menu ellipsis element is not under highlighted element, when hovering it, the target
         // element needs to be highlighted (show highlight element).
-        $dropdownMenu.on('mouseenter', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
-          $sidebarHighlight.show();
-        });
+        $dropdownMenu.on(
+          'mouseenter',
+          '.context-menu--ellipsis[data-tree="' + tree.id + '"]',
+          function(e) {
+            $sidebarHighlight.show();
+          }
+        );
 
-        $dropdownMenu.on('mouseleave', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
-          $sidebarHighlight.hide();
-        });
+        $dropdownMenu.on(
+          'mouseleave',
+          '.context-menu--ellipsis[data-tree="' + tree.id + '"]',
+          function(e) {
+            $sidebarHighlight.hide();
+          }
+        );
 
         $('#acn-dropdown-menu').on('scroll', function() {
           $sidebarHighlight.hide();
           $contextMenuEllipsis.hide();
         });
 
-        $dropdownMenu.on('click', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
+        $dropdownMenu.on('click', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(
+          e
+        ) {
           e.stopPropagation();
 
           const target = $(this).data().target;
@@ -1178,7 +1244,9 @@
       },
 
       getStoredPathKey: function(instance) {
-        return CStudioAuthoringContext.site + '-' + instance.label.replace(' ', '').toLowerCase() + '-opened';
+        return (
+          `${CStudioAuthoringContext.site}-${instance.label.replace(' ', '').toLowerCase()}-opened`
+        );
       },
 
       getNumKey: function(nodes, key, callback) {
@@ -1220,7 +1288,8 @@
             pathTrace = {},
             rooth = {},
             updatePathTrace = function(j, key) {
-              var appendedPath = paths[key] && paths[key][j] ? paths[key][j][counter[key][j]++] : '';
+              var appendedPath =
+                paths[key] && paths[key][j] ? paths[key][j][counter[key][j]++] : '';
               appendedPath = appendedPath !== '' ? '/' + appendedPath : '';
               return (pathTrace[key][j] = pathTrace[key][j] + appendedPath);
             },
@@ -1267,9 +1336,14 @@
                   (function() {
                     tmp[key][k[key]] = latestStored[key][k[key]].replace(rooth[key], '');
                     paths[key][k[key]] = tmp[key][k[key]].length
-                      ? (tmp[key][k[key]].charAt(0) == '/' ? tmp[key][k[key]].substr(1) : tmp[key][k[key]]).split('/')
+                      ? (tmp[key][k[key]].charAt(0) == '/'
+                          ? tmp[key][k[key]].substr(1)
+                          : tmp[key][k[key]]
+                        ).split('/')
                       : null;
-                    recursiveCalls[key][k[key]] = tmp[key][k[key]].length ? paths[key][k[key]].length : 0;
+                    recursiveCalls[key][k[key]] = tmp[key][k[key]].length
+                      ? paths[key][k[key]].length
+                      : 0;
                   })();
                   var node, loadEl;
                   for (var i = 0; recursiveCalls[key][k[key]] > i; i++) {
@@ -1324,7 +1398,10 @@
                 CStudioAuthoring.Service.lookupSiteContent(site, servPath, 1, 'default', {
                   success: function(treeData) {
                     var key = treeData.item.path.replace(/\//g, '').toLowerCase();
-                    (paths[key] = []), (counter[key] = []), (recursiveCalls[key] = []), (tmp[key] = {});
+                    (paths[key] = []),
+                      (counter[key] = []),
+                      (recursiveCalls[key] = []),
+                      (tmp[key] = {});
                     (k[key] = 0), (pathTrace[key] = []), (rooth[key] = treeData.item.path);
 
                     //if(servPath == "/site/website")
@@ -1352,13 +1429,19 @@
                       pathTrace[key][k[key]] = treeData.item.path;
                       counter[key][k[key]] = 0;
                       (function() {
-                        tmp[key][k[key]] = (latestStored[key][k[key]] || '').replace(treeData.item.path, '');
+                        tmp[key][k[key]] = (latestStored[key][k[key]] || '').replace(
+                          treeData.item.path,
+                          ''
+                        );
                         paths[key][k[key]] = tmp[key][k[key]].length
-                          ? (tmp[key][k[key]].charAt(0) === '/' ? tmp[key][k[key]].substr(1) : tmp[key][k[key]]).split(
-                              '/'
-                            )
+                          ? (tmp[key][k[key]].charAt(0) === '/'
+                              ? tmp[key][k[key]].substr(1)
+                              : tmp[key][k[key]]
+                            ).split('/')
                           : null;
-                        recursiveCalls[key][k[key]] = tmp[key][k[key]].length ? paths[key][k[key]].length : 0;
+                        recursiveCalls[key][k[key]] = tmp[key][k[key]].length
+                          ? paths[key][k[key]].length
+                          : 0;
                       })();
                       var nodes, node, loadEl;
                       nodes = tree.getNodesByProperty('path', treeData.item.path);
@@ -1457,12 +1540,19 @@
 
           searchEl.onclick = function() {
             var url =
-              CStudioAuthoringContext.authoringAppBaseUri + '/search?site=' + CStudioAuthoringContext.site + '&s=';
+              CStudioAuthoringContext.authoringAppBaseUri +
+              '/search?site=' +
+              CStudioAuthoringContext.site +
+              '&s=';
 
             var queryParams = this.searchTO.queryParams.queryParam;
 
             for (var i = 0; i < queryParams.length; i++) {
-              url += '&' + encodeURIComponent(queryParams[i].name) + '=' + encodeURIComponent(queryParams[i].value);
+              url +=
+                '&' +
+                encodeURIComponent(queryParams[i].name) +
+                '=' +
+                encodeURIComponent(queryParams[i].value);
             }
 
             window.location = url;
@@ -1636,7 +1726,10 @@
           instance.openArray[num].push(path);
         }
         for (var i = 0; i < instance.openArray[num].length; i++) {
-          if (instance.openArray[num].length > 1 && instance.openArray[num][i].indexOf('root-folder') > -1) {
+          if (
+            instance.openArray[num].length > 1 &&
+            instance.openArray[num][i].indexOf('root-folder') > -1
+          ) {
             instance.openArray[num].splice(i, 1);
           }
 
@@ -1675,7 +1768,9 @@
         note.fileName != treeData.fileName && treeData.fileName != undefined
           ? (note.fileName = treeData.fileName)
           : null;
-        note.formId != treeData.formId && treeData.formId != undefined ? (note.formId = treeData.formId) : null;
+        note.formId != treeData.formId && treeData.formId != undefined
+          ? (note.formId = treeData.formId)
+          : null;
         note.formPagePath != treeData.formPagePath && treeData.formPagePath != undefined
           ? (note.formPagePath = treeData.formPagePath)
           : null;
@@ -1694,10 +1789,13 @@
         note.isContainer != treeData.isContainer && treeData.isContainer != undefined
           ? (note.isContainer = treeData.isContainer)
           : null;
-        note.isLevelDescriptor != treeData.isLevelDescriptor && treeData.isLevelDescriptor != undefined
+        note.isLevelDescriptor != treeData.isLevelDescriptor &&
+        treeData.isLevelDescriptor != undefined
           ? (note.isLevelDescriptor = treeData.isLevelDescriptor)
           : null;
-        note.link != treeData.link && treeData.link != undefined ? (note.link = treeData.link) : null;
+        note.link != treeData.link && treeData.link != undefined
+          ? (note.link = treeData.link)
+          : null;
         note.linkToPreview != treeData.linkToPreview && treeData.linkToPreview != undefined
           ? (note.linkToPreview = treeData.linkToPreview)
           : null;
@@ -1707,16 +1805,24 @@
         note.modifier != treeData.modifier && treeData.modifier != undefined
           ? (note.modifier = treeData.modifier)
           : null;
-        note.nodeRef != treeData.nodeRef && treeData.nodeRef != undefined ? (note.nodeRef = treeData.nodeRef) : null;
-        note.path != treeData.path && treeData.path != undefined ? (note.path = treeData.path) : null;
+        note.nodeRef != treeData.nodeRef && treeData.nodeRef != undefined
+          ? (note.nodeRef = treeData.nodeRef)
+          : null;
+        note.path != treeData.path && treeData.path != undefined
+          ? (note.path = treeData.path)
+          : null;
         note.pathSegment != treeData.pathSegment && treeData.pathSegment != undefined
           ? (note.pathSegment = treeData.pathSegment)
           : null;
         note.previewable != treeData.previewable && treeData.previewable != undefined
           ? (note.previewable = treeData.previewable)
           : null;
-        note.site != treeData.site && treeData.site != undefined ? (note.site = treeData.site) : null;
-        note.status != treeData.status && treeData.status != undefined ? (note.status = treeData.status) : null;
+        note.site != treeData.site && treeData.site != undefined
+          ? (note.site = treeData.site)
+          : null;
+        note.status != treeData.status && treeData.status != undefined
+          ? (note.status = treeData.status)
+          : null;
         note.uri != treeData.uri && treeData.uri != undefined ? (note.uri = treeData.uri) : null;
       },
 
@@ -1739,7 +1845,9 @@
           isValidPath =
             instance &&
             treePath &&
-            (Array.isArray(instancePath) ? instancePath.indexOf(treePath) >= 0 : treePath.indexOf(instancePath) >= 0),
+            (Array.isArray(instancePath)
+              ? instancePath.indexOf(treePath) >= 0
+              : treePath.indexOf(instancePath) >= 0),
           refresh = typeAction == 'edit' ? isValidPath : true;
         if (refresh) {
           var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
@@ -1749,7 +1857,9 @@
             currentUri = treeNode.data ? treeNode.data.uri : treeNode.uri,
             currentBrowserUri = treeNode.data ? treeNode.data.browserUri : treeNode.browserUri,
             treePathsLocal = self.treePaths ? self.treePaths : WcmAssetsFolder.treePaths,
-            oldPath = Array.isArray(oldPath) ? oldPath[currentBrowserUri.replace(/\//g, '')] : oldPath;
+            oldPath = Array.isArray(oldPath)
+              ? oldPath[currentBrowserUri.replace(/\//g, '')]
+              : oldPath;
           if (tree && Self.myTree && !self.treePaths) {
             for (var i = 0; i < treePathsLocal.length; i++) {
               if (treePathsLocal[i] == Self.myTree.id) {
@@ -1775,7 +1885,9 @@
               }
             } else {
               if (oldPath && currentUri != oldPath && tree.getNodesByProperty('uri', oldPath)) {
-                node = tree.getNodesByProperty('uri', oldPath) ? tree.getNodesByProperty('uri', oldPath) : null;
+                node = tree.getNodesByProperty('uri', oldPath)
+                  ? tree.getNodesByProperty('uri', oldPath)
+                  : null;
               } else {
                 node = tree.getNodesByProperty('path', currentPath)
                   ? tree.getNodesByProperty('path', currentPath)
@@ -1783,7 +1895,11 @@
               }
             }
 
-            if (copiedItemNode != null && currentPath == copiedItemNode.data.path && treeNode.parent) {
+            if (
+              copiedItemNode != null &&
+              currentPath == copiedItemNode.data.path &&
+              treeNode.parent
+            ) {
               if (treeNode.parent.data.path) {
                 node = tree.getNodesByProperty('path', treeNode.parent.data.path);
                 Self.copiedItem = null;
@@ -1814,9 +1930,15 @@
                   var treeToUpdate = tree.getNodesByProperty('uri', oldPath);
                   for (var i = 0; i < treeToUpdate.length; i++) {
                     Self.updateNote(treeToUpdate[i].data, treeNode.data ? treeNode.data : treeNode);
-                    treeToUpdate[i].label = treeNode.data ? treeNode.data.internalName : treeNode.internalName;
-                    treeToUpdate[i].treeNodeTO.path = treeNode.data ? treeNode.data.path : treeNode.path;
-                    treeToUpdate[i].treeNodeTO.uri = treeNode.data ? treeNode.data.uri : treeNode.uri;
+                    treeToUpdate[i].label = treeNode.data
+                      ? treeNode.data.internalName
+                      : treeNode.internalName;
+                    treeToUpdate[i].treeNodeTO.path = treeNode.data
+                      ? treeNode.data.path
+                      : treeNode.path;
+                    treeToUpdate[i].treeNodeTO.uri = treeNode.data
+                      ? treeNode.data.uri
+                      : treeNode.uri;
                   }
                   nodeToChange = treeToUpdate;
                 }
@@ -1839,7 +1961,10 @@
                         for (var j = 0; j < treeToUpdateDependencies.length; j++) {
                           if (treeToUpdateDependencies[j].data.contentType != 'folder') {
                             (function(treeToUpdateDependencies, j) {
-                              lookupSiteContent(treeToUpdateDependencies[j], treeToUpdateDependencies[j].data.uri);
+                              lookupSiteContent(
+                                treeToUpdateDependencies[j],
+                                treeToUpdateDependencies[j].data.uri
+                              );
                               nodeOpen = true;
                             })(treeToUpdateDependencies, j);
                           }
@@ -1862,13 +1987,16 @@
                             var style = '',
                               cont = paramCont ? paramCont : 0,
                               currentInternalName =
-                                treeData.item.internalName != '' ? treeData.item.internalName : treeData.item.name,
+                                treeData.item.internalName != ''
+                                  ? treeData.item.internalName
+                                  : treeData.item.name,
                               curElt = YDom.get(curNode.labelElId);
                             // curElt ? curElt.innerHTML = currentInternalName : null;
                             curNode.data = Self.createTreeNodeTransferObject(treeData.item);
                             if (
                               typeAction === 'publish' &&
-                              treeData.item.inProgress && !treeData.item.scheduled &&
+                              treeData.item.inProgress &&
+                              !treeData.item.scheduled &&
                               cont < 5
                             ) {
                               treeData.item.inFlight = true;
@@ -1927,12 +2055,16 @@
                                   indexOfFolder = curNode.html.className.indexOf('folder');
                                 }
 
-                                if ((indexOfFolder != -1 && cont < 25) || (indexOfFolder == -1 && cont < 2)) {
+                                if (
+                                  (indexOfFolder != -1 && cont < 25) ||
+                                  (indexOfFolder == -1 && cont < 2)
+                                ) {
                                   setTimeout(function() {
                                     lookupSiteContent(curNode, currentUri, cont);
                                     if (
                                       typeof WcmDashboardWidgetCommon != 'undefined' &&
-                                      eventNS.typeAction == 'edit' && !eventNS.draft
+                                      eventNS.typeAction == 'edit' &&
+                                      !eventNS.draft
                                     ) {
                                       CStudioAuthoring.SelectedContent.getSelectedContent()[0]
                                         ? CStudioAuthoring.SelectedContent.unselectContent(
@@ -1975,7 +2107,8 @@
                     if (YDom.get(curNode.labelElId)) {
                       tree.removeChildren(curNode);
                       var loadEl = YAHOO.util.Selector.query('.ygtvtp', curNode.getEl(), true);
-                      loadEl == null && (loadEl = YAHOO.util.Selector.query('.ygtvlp', curNode.getEl(), true));
+                      loadEl == null &&
+                        (loadEl = YAHOO.util.Selector.query('.ygtvlp', curNode.getEl(), true));
                       YDom.addClass(loadEl, 'ygtvloading');
                       curNode.renderChildren();
                       curNode.refresh();
@@ -2055,7 +2188,8 @@
                     if (parNode && parNode.children && parNode.children.length == 1) {
                       tree.removeChildren(parNode);
                       var parLoadEl = YSelector('.ygtvtp', parNode.getEl(), true);
-                      parLoadEl == null && (parLoadEl = YSelector('.ygtvlp', parNode.getEl(), true));
+                      parLoadEl == null &&
+                        (parLoadEl = YSelector('.ygtvlp', parNode.getEl(), true));
                       YDom.addClass(parLoadEl, 'ygtvloading');
                       parNode.renderChildren();
                       parNode.refresh();
@@ -2193,9 +2327,15 @@
 
         var ttFormattedEditDate = '';
         if (treeItem.eventDate != '' && treeItem.eventDate != undefined) {
-          var formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
+          var formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(
+            treeItem.eventDate,
+            studioTimeZone
+          );
           retTransferObj.editedDate = formattedEditDate;
-          ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
+          ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(
+            treeItem.eventDate,
+            studioTimeZone
+          );
         }
 
         var icon = treeItem.folder
@@ -2205,9 +2345,15 @@
         if (treeItem.scheduled == true) {
           retTransferObj.scheduledDate = treeItem.scheduledDate;
 
-          formattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.scheduledDate, studioTimeZone);
+          formattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(
+            treeItem.scheduledDate,
+            studioTimeZone
+          );
           retTransferObj.formattedScheduledDate = formattedSchedDate;
-          var ttFormattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.scheduledDate, studioTimeZone);
+          var ttFormattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(
+            treeItem.scheduledDate,
+            studioTimeZone
+          );
 
           retTransferObj.title = this.buildToolTipScheduled(
             retTransferObj.label,
@@ -2318,7 +2464,14 @@
       /**
        * render the context menu
        */
-      _renderContextMenu: function(target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {
+      _renderContextMenu: function(
+        target,
+        p_aArgs,
+        component,
+        menuItems,
+        oCurrentTextNode,
+        isWrite
+      ) {
         var aMenuItems;
         var menuWidth = 'auto';
 
@@ -2333,10 +2486,14 @@
         var formPath = oCurrentTextNode.data.formPagePath,
           isContainer = oCurrentTextNode.data.isContainer,
           isComponent = oCurrentTextNode.data.isComponent,
-          isTaxonomy = oCurrentTextNode.data.contentType.toLowerCase().indexOf('taxonomy') !== -1 ? true : false,
+          isTaxonomy =
+            oCurrentTextNode.data.contentType.toLowerCase().indexOf('taxonomy') !== -1
+              ? true
+              : false,
           isLevelDescriptor = oCurrentTextNode.data.isLevelDescriptor,
           isLocked =
-            oCurrentTextNode.data.lockOwner != '' && oCurrentTextNode.data.lockOwner != CStudioAuthoringContext.user,
+            oCurrentTextNode.data.lockOwner != '' &&
+            oCurrentTextNode.data.lockOwner != CStudioAuthoringContext.user,
           isInProgress = oCurrentTextNode.data.inProgress,
           isLevelDescriptor = oCurrentTextNode.data.isLevelDescriptor,
           isFolder = isContainer && oCurrentTextNode.data.fileName != 'index.xml' ? true : false,
@@ -2346,11 +2503,16 @@
         var checkPermissionsCb = {
           success: function(results) {
             var isCreateFolder = CStudioAuthoring.Service.isCreateFolder(results.permissions);
-            var isCreateContentAllowed = CStudioAuthoring.Service.isCreateContentAllowed(results.permissions);
-            var isChangeContentTypeAllowed = CStudioAuthoring.Service.isChangeContentTypeAllowed(results.permissions);
+            var isCreateContentAllowed = CStudioAuthoring.Service.isCreateContentAllowed(
+              results.permissions
+            );
+            var isChangeContentTypeAllowed = CStudioAuthoring.Service.isChangeContentTypeAllowed(
+              results.permissions
+            );
             // check if the user is allowed to edit the content
             var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
-            var isDeleteAllowed = CStudioAuthoring.Service.isDeleteAllowed(results.permissions) && !isOpen;
+            var isDeleteAllowed =
+              CStudioAuthoring.Service.isDeleteAllowed(results.permissions) && !isOpen;
             var dependenciesAllowed = function() {
               //dependencies dialog
               p_aArgs.addItems([
@@ -2386,7 +2548,8 @@
             };
             var publishAllowed = function() {
               //add publish/request
-              var isRelevant = !(oCurrentTextNode.data.lockOwner != '') && !oCurrentTextNode.data.statusObj.live;
+              var isRelevant =
+                !(oCurrentTextNode.data.lockOwner != '') && !oCurrentTextNode.data.statusObj.live;
 
               if (isRelevant) {
                 if (CStudioAuthoring.Service.isPublishAllowed(results.permissions)) {
@@ -2482,7 +2645,8 @@
 
               if (
                 (oCurrentTextNode.data.lockOwner != '' &&
-                  (CStudioAuthoringContext.role === 'admin' || CStudioAuthoringContext.role === 'site_admin')) ||
+                  (CStudioAuthoringContext.role === 'admin' ||
+                    CStudioAuthoringContext.role === 'site_admin')) ||
                 oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user
               ) {
                 p_aArgs.addItems([menuItems.separator]);
@@ -2503,10 +2667,17 @@
                     isContainer &&
                     collection.item[0].uri.replace(/\/\//g, '/') != oCurrentTextNode.data.uri
                   ) {
-                    if (Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/'))) {
+                    if (
+                      Self.myTree.getNodeByProperty(
+                        'uri',
+                        collection.item[0].uri.replace(/\/\//g, '/')
+                      )
+                    ) {
                       if (
-                        Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/')).parent
-                          .contentElId != oCurrentTextNode.contentElId
+                        Self.myTree.getNodeByProperty(
+                          'uri',
+                          collection.item[0].uri.replace(/\/\//g, '/')
+                        ).parent.contentElId != oCurrentTextNode.contentElId
                       ) {
                         this.args.addItems([menuItems.pasteOption]);
                       }
@@ -2590,7 +2761,8 @@
 
               if (
                 (oCurrentTextNode.data.lockOwner != '' &&
-                  (CStudioAuthoringContext.role === 'admin' || CStudioAuthoringContext.role === 'site_admin')) ||
+                  (CStudioAuthoringContext.role === 'admin' ||
+                    CStudioAuthoringContext.role === 'site_admin')) ||
                 oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user
               ) {
                 p_aArgs.addItems([menuItems.separator]);
@@ -2785,11 +2957,18 @@
                     isContainer &&
                     collection.item[0].uri.replace(/\/\//g, '/') != oCurrentTextNode.data.uri
                   ) {
-                    if (Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/'))) {
+                    if (
+                      Self.myTree.getNodeByProperty(
+                        'uri',
+                        collection.item[0].uri.replace(/\/\//g, '/')
+                      )
+                    ) {
                       if (Self.cutItem) {
                         if (
-                          Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/')).parent
-                            .contentElId != oCurrentTextNode.contentElId
+                          Self.myTree.getNodeByProperty(
+                            'uri',
+                            collection.item[0].uri.replace(/\/\//g, '/')
+                          ).parent.contentElId != oCurrentTextNode.contentElId
                         ) {
                           var elementItem = Self.myTree.getNodeByProperty(
                               'uri',
@@ -2810,8 +2989,10 @@
                         }
                       } else if (Self.copiedItem) {
                         if (
-                          Self.myTree.getNodeByProperty('uri', collection.item[0].uri.replace(/\/\//g, '/')).parent
-                            .contentElId != oCurrentTextNode.contentElId
+                          Self.myTree.getNodeByProperty(
+                            'uri',
+                            collection.item[0].uri.replace(/\/\//g, '/')
+                          ).parent.contentElId != oCurrentTextNode.contentElId
                         ) {
                           this.args.addItems([menuItems.pasteOption]);
                         } else {
@@ -2836,7 +3017,8 @@
 
                   if (
                     (oCurrentTextNode.data.lockOwner != '' &&
-                      (CStudioAuthoringContext.role === 'admin' || CStudioAuthoringContext.role === 'site_admin')) ||
+                      (CStudioAuthoringContext.role === 'admin' ||
+                        CStudioAuthoringContext.role === 'site_admin')) ||
                     oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user
                   ) {
                     p_aArgs.addItems([menuItems.separator]);
@@ -2912,7 +3094,11 @@
           {
             success: function(itemTO) {
               isOpen = itemTO.item.lockOwner !== '';
-              CStudioAuthoring.Clipboard.getPermissions.call({}, oCurrentTextNode.data.uri, checkPermissionsCb);
+              CStudioAuthoring.Clipboard.getPermissions.call(
+                {},
+                oCurrentTextNode.data.uri,
+                checkPermissionsCb
+              );
             },
             failure: function() {
               CStudioAuthoring.Operations.showSimpleDialog(
@@ -2967,9 +3153,15 @@
             onclick: { fn: Self.renameContainer }
           },
 
-          editOption: { text: CMgs.format(siteDropdownLangBundle, 'edit'), onclick: { fn: Self.editContent } },
+          editOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'edit'),
+            onclick: { fn: Self.editContent }
+          },
 
-          viewOption: { text: CMgs.format(siteDropdownLangBundle, 'view'), onclick: { fn: Self.viewContent } },
+          viewOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'view'),
+            onclick: { fn: Self.viewContent }
+          },
 
           changeTemplateOption: {
             text: CMgs.format(siteDropdownLangBundle, 'changeTemplate'),
@@ -2981,11 +3173,20 @@
             onclick: { fn: Self.deleteContent, obj: tree }
           },
 
-          cutOption: { text: CMgs.format(siteDropdownLangBundle, 'cut'), onclick: { fn: Self.cutContent, obj: tree } },
+          cutOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'cut'),
+            onclick: { fn: Self.cutContent, obj: tree }
+          },
 
-          copyOption: { text: CMgs.format(siteDropdownLangBundle, 'copy'), onclick: { fn: Self.copyTree, obj: tree } },
+          copyOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'copy'),
+            onclick: { fn: Self.copyTree, obj: tree }
+          },
 
-          pasteOption: { text: CMgs.format(siteDropdownLangBundle, 'paste'), onclick: { fn: Self.pasteContent } },
+          pasteOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'paste'),
+            onclick: { fn: Self.pasteContent }
+          },
 
           duplicateOption: {
             text: CMgs.format(siteDropdownLangBundle, 'duplicate'),
@@ -2997,7 +3198,10 @@
             onclick: { fn: Self.revertContent, obj: tree }
           },
 
-          unlockOption: { text: CMgs.format(siteDropdownLangBundle, 'Unlock'), onclick: { fn: Self.unlockContent } }
+          unlockOption: {
+            text: CMgs.format(siteDropdownLangBundle, 'Unlock'),
+            onclick: { fn: Self.unlockContent }
+          }
         };
         p_aArgs.clearContent();
 
@@ -3007,14 +3211,35 @@
 
             if (isWrite) {
               Self.IS_WRITE = true;
-              this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, true);
+              this._self._renderContextMenu(
+                target,
+                p_aArgs,
+                this.component,
+                menuItems,
+                oCurrentTextNode,
+                true
+              );
             } else {
-              this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, false);
+              this._self._renderContextMenu(
+                target,
+                p_aArgs,
+                this.component,
+                menuItems,
+                oCurrentTextNode,
+                false
+              );
             }
           },
 
           failure: function() {
-            this._self._renderContextMenu(target, p_aArgs, this.component, menuItems, oCurrentTextNode, false);
+            this._self._renderContextMenu(
+              target,
+              p_aArgs,
+              this.component,
+              menuItems,
+              oCurrentTextNode,
+              false
+            );
           },
 
           _self: this,
@@ -3047,7 +3272,11 @@
           failure: function() {},
           callingWindow: window
         };
-        CStudioAuthoring.Service.unlockContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, unlockCb);
+        CStudioAuthoring.Service.unlockContentItem(
+          CStudioAuthoringContext.site,
+          oCurrentTextNode.data.uri,
+          unlockCb
+        );
       },
       /**
        * Creates new content. Opens the form to create content
@@ -3057,7 +3286,11 @@
           success: function(contentTO, editorId, name, value, draft) {
             var page = CStudioAuthoring.Utils.getQueryParameterURL('page');
             var currentPage = page.split('/')[page.split('/').length - 1];
-            var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
+            var acnDraftContent = YDom.getElementsByClassName(
+              'acnDraftContent',
+              null,
+              parent.document
+            )[0];
             eventYS.data = oCurrentTextNode;
             eventYS.typeAction = 'createContent';
             eventYS.oldPath = null;
@@ -3066,7 +3299,10 @@
 
             if (contentTO.item.isPage) {
               CStudioAuthoring.Operations.refreshPreview(contentTO.item);
-              if (CStudioAuthoring.Utils.getQueryParameterURL('page') == contentTO.item.browserUri && acnDraftContent) {
+              if (
+                CStudioAuthoring.Utils.getQueryParameterURL('page') == contentTO.item.browserUri &&
+                acnDraftContent
+              ) {
                 CStudioAuthoring.SelectedContent.setContent(contentTO.item);
               }
             } else {
@@ -3125,7 +3361,8 @@
               try {
                 var currentContentTO,
                   URLBrowseUri = pageParameter,
-                  contentTOBrowseUri = contentTO.item.browserUri == '' ? '/' : contentTO.item.browserUri;
+                  contentTOBrowseUri =
+                    contentTO.item.browserUri == '' ? '/' : contentTO.item.browserUri;
 
                 if (URLBrowseUri == contentTOBrowseUri) {
                   currentContentTO = null;
@@ -3314,7 +3551,11 @@
           var getChildNodeClass = YDom.getElementsByClassName('ygtvlp', null, parentTreeNode);
           var isExpandableNode = YDom.getElementsByClassName('ygtvtp', null, parentTreeNode);
 
-          if (oCurrentTextNode.hasChildren() || getChildNodeClass.length > 0 || isExpandableNode.length > 0) {
+          if (
+            oCurrentTextNode.hasChildren() ||
+            getChildNodeClass.length > 0 ||
+            isExpandableNode.length > 0
+          ) {
             // alert("The page and its child pages have been cut to the clipboard");
           }
 
@@ -3430,7 +3671,7 @@
         //Check source and destination paths.
         if (Self.cutItem && Self.cutItem.parent.contentElId === oCurrentTextNode.contentElId) {
           // Cut/paste in the same directory, would have no consequence, so simply jump as if everything was done correctly.
-          return false
+          return false;
         }
 
         window.pasteFlag = true;
@@ -3440,7 +3681,7 @@
               const cutItem = Self.cutItem;
               Self.copiedItem = null;
               Self.refreshNodes(oCurrentTextNode, true, false, null, null, true);
-              if(cutItem) {
+              if (cutItem) {
                 Self.refreshNodes(cutItem.parent, true, false, null, null, true);
               }
 
@@ -3461,7 +3702,7 @@
               }
               Self.cutItem = null;
 
-              WcmDashboardWidgetCommon.refreshDashboard("MyRecentActivity");
+              WcmDashboardWidgetCommon.refreshDashboard('MyRecentActivity');
             } catch (e) {}
           },
 
@@ -3553,7 +3794,11 @@
           var site = CStudioAuthoringContext.site;
 
           var context = copyContext;
-          context.request = CStudioAuthoringContext.baseUri + CStudioAuthoring.Service.copyServiceUrl + '?site=' + site;
+          context.request =
+            CStudioAuthoringContext.baseUri +
+            CStudioAuthoring.Service.copyServiceUrl +
+            '?site=' +
+            site;
 
           var uri = oCurrentTextNode.data.uri;
 
@@ -3808,7 +4053,10 @@
         var treeInner = YDom.get('acn-dropdown-menu-inner');
         var previousCutEl = YDom.getElementsByClassName('status-icon', null, treeInner);
         for (var i = 0; i < previousCutEl.length; i++) {
-          if (previousCutEl[i].style.color == Self.CUT_STYLE_RGB || previousCutEl[i].style.color == Self.CUT_STYLE) {
+          if (
+            previousCutEl[i].style.color == Self.CUT_STYLE_RGB ||
+            previousCutEl[i].style.color == Self.CUT_STYLE
+          ) {
             previousCutEl[i].removeAttribute('style');
           }
         }
@@ -3839,7 +4087,8 @@
         var contentTO = message.contentTO,
           reload = message.reload,
           $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');
-        (highlightVisible = $highlightEl.is(':visible')), (treeExists = $('#pages-tree + div').children().length > 0);
+        (highlightVisible = $highlightEl.is(':visible')),
+          (treeExists = $('#pages-tree + div').children().length > 0);
 
         if (!highlightVisible && treeExists && reload) {
           var $container = $(config.containerEl).empty();
@@ -3854,5 +4103,8 @@
       });
     }
   };
-  CStudioAuthoring.Module.moduleLoaded('wcm-root-folder', CStudioAuthoring.ContextualNav.WcmRootFolder);
+  CStudioAuthoring.Module.moduleLoaded(
+    'wcm-root-folder',
+    CStudioAuthoring.ContextualNav.WcmRootFolder
+  );
 })();

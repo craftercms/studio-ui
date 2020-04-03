@@ -15,13 +15,15 @@
  */
 
 import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
+import DialogHeader from '../DialogHeader';
+import DialogBody from '../DialogBody';
+import DialogFooter from '../DialogFooter';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
+import StandardAction from '../../models/StandardAction';
 
 const messages = defineMessages({
   ok: {
@@ -34,58 +36,71 @@ const messages = defineMessages({
   }
 });
 
-interface ConfirmDialogProps {
+interface ConfirmDialogBaseProps {
   open: boolean;
-  description?: string;
-  title: string;
+  title?: string;
+  body?: string;
   disableEnforceFocus?: boolean;
+  disableEscapeKeyDown?: boolean;
+  disableBackdropClick?: boolean;
+}
 
-  onOk?(): any;
+export type ConfirmDialogProps = PropsWithChildren<
+  ConfirmDialogBaseProps & {
+    onOk?(): any;
+    onCancel?(): any;
+    onClose?(): any;
+  }
+>;
 
-  onCancel?(): any;
-
-  onClose(): any;
+export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
+  onOk?: StandardAction;
+  onCancel?: StandardAction;
+  onClose?: StandardAction;
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
-  const { open, onOk, onClose, onCancel, description, title, disableEnforceFocus = false } = props;
+  const {
+    open,
+    onOk,
+    onClose,
+    onCancel,
+    body,
+    title,
+    children,
+    disableEscapeKeyDown = true,
+    disableBackdropClick = true,
+    disableEnforceFocus = false
+  } = props;
   const { formatMessage } = useIntl();
-
   return (
     <Dialog
       open={open}
       onClose={onClose}
       aria-labelledby="confirmDialogTitle"
       aria-describedby="confirmDialogBody"
+      disableEscapeKeyDown={disableEscapeKeyDown}
+      disableBackdropClick={disableBackdropClick}
       disableEnforceFocus={disableEnforceFocus}
     >
-      {
-        title &&
-        <DialogTitle id="confirmDialogTitle">{title}</DialogTitle>
-      }
-
-      <DialogContent id="confirmDialogBody" dividers>
-        {
-          description &&
-          <DialogContentText>
-            {description}
-          </DialogContentText>
-        }
-      </DialogContent>
-      <DialogActions>
-        {
-          onCancel &&
-          <Button onClick={onCancel} variant="outlined">
-            {formatMessage(messages.cancel)}
-          </Button>
-        }
-        {
-          onOk &&
-          <Button onClick={onOk} variant="contained" color="primary" autoFocus>
-            {formatMessage(messages.ok)}
-          </Button>
-        }
-      </DialogActions>
+      {title && <DialogHeader id="confirmDialogTitle" title={title} />}
+      <DialogBody id="confirmDialogBody">
+        {body ? <DialogContentText>{body}</DialogContentText> : children}
+      </DialogBody>
+      <DialogFooter>
+        <DialogActions>
+          {onCancel && (
+            <Button onClick={onCancel} variant="outlined">
+              {formatMessage(messages.cancel)}
+            </Button>
+          )}
+          {onOk && (
+            <Button onClick={onOk} variant="contained" color="primary" autoFocus>
+              {formatMessage(messages.ok)}
+            </Button>
+          )}
+        </DialogActions>
+      </DialogFooter>
     </Dialog>
-  )
+  );
 }

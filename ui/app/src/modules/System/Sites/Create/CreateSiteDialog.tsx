@@ -767,7 +767,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         open={dialog.inProgress}
         onOk={onConfirmOk}
         onClose={onConfirmCancel}
-        description={formatMessage(messages.dialogCloseMessage)}
+        body={formatMessage(messages.dialogCloseMessage)}
         title={formatMessage(messages.dialogCloseTitle)}
         disableEnforceFocus={disableEnforceFocus}
       />
