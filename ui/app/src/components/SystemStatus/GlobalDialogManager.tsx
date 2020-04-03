@@ -29,19 +29,55 @@ function createCallback(
   return action ? () => dispatch(action) : fallbackAction ? () => dispatch(fallbackAction) : null;
 }
 
-function DialogManager() {
+function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const dispatch = useDispatch();
   return (
-    <ConfirmDialog
-      open={state.confirm.open}
-      title={state.confirm.title}
-      body={state.confirm.body}
-      onOk={createCallback(state.confirm.onOk, dispatch)}
-      onCancel={createCallback(state.confirm.onCancel, dispatch)}
-      onClose={createCallback(state.confirm.onClose, dispatch)}
-    />
+    <>
+      {/* region Confirm */}
+      <ConfirmDialog
+        open={state.confirm.open}
+        title={state.confirm.title}
+        body={state.confirm.body}
+        onOk={createCallback(state.confirm.onOk, dispatch)}
+        onCancel={createCallback(state.confirm.onCancel, dispatch)}
+        onClose={createCallback(state.confirm.onClose, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Error */}
+
+      {/* endregion */}
+
+      {/* region Edit (Embedded Legacy Editor) */}
+
+      {/* endregion */}
+
+      {/* region Publish */}
+
+      {/* endregion */}
+
+      {/* region Create Content */}
+
+      {/* endregion */}
+
+      {/* region Dependencies */}
+
+      {/* endregion */}
+
+      {/* region Delete */}
+
+      {/* endregion */}
+
+      {/* region History */}
+
+      {/* endregion */}
+
+      {/* region SnackBar(s) */}
+
+      {/* endregion */}
+    </>
   );
 }
 
-export default React.memo(DialogManager);
+export default React.memo(GlobalDialogManager);
