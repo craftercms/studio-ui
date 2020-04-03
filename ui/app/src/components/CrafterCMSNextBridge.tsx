@@ -28,7 +28,7 @@ import ko from '../translations/locales/ko.json';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
 import store from '../state/store';
-import DialogManager from './SystemStatus/DialogManager';
+import DialogManager from './SystemStatus/GlobalDialogManager';
 
 const Locales: any = {
   en,
