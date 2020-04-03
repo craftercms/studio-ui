@@ -3152,20 +3152,26 @@
         };
 
         CStudioAuthoring.Operations.showSimpleDialog(
-          "duplicate-dialog",
+          'duplicate-dialog',
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          "Duplicate",
-          "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
-          [{ text:"Duplicate", handler: function() {
-              this.hide();
+          'Duplicate',
+          'A new copy of this item and all of it\'s item specific content will be created. Are you sure you wish to proceed?',
+          [{
+            text: 'Duplicate', handler: function () {
+              this.destroy();
               CStudioAuthoring.Operations.duplicateContent(
                 CStudioAuthoringContext.site,
                 oCurrentTextNode.data.uri,
                 duplicateContentCallback);
-            }, isDefault:false },
-            { text:CMgs.format(formsLangBundle, "cancel"),  handler:function(){this.hide();}, isDefault:true }],
+            }, isDefault: false
+          },
+            {
+              text: CMgs.format(formsLangBundle, 'cancel'), handler: function () {
+                this.destroy();
+              }, isDefault: true
+            }],
           YAHOO.widget.SimpleDialog.ICON_WARN,
-          "studioDialog"
+          'studioDialog'
         );
       },
       copyTree:function(sType, args, tree) {
