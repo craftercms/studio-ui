@@ -948,7 +948,7 @@ var storage = CStudioAuthoring.Storage;
                 YDom.removeClass(label, 'loading');
                 YDom.removeClass(YSelector('.ygtvloading', treeEl), 'ygtvloading');
                 // Add hover effect to nodes
-                CStudioAuthoring.ContextualNav.WcmAssetsFolder.nodeHoverEffects(this);
+                RootFolder().nodeHoverEffects(this);
                 RootFolder().firePathLoaded(instance);
               }
             } else {
@@ -993,7 +993,7 @@ var storage = CStudioAuthoring.Storage;
               YDom.removeClass(label, 'loading');
               YDom.removeClass(YSelector('.ygtvloading', treeEl), 'ygtvloading');
               // Add hover effect to nodes
-              CStudioAuthoring.ContextualNav.WcmAssetsFolder.nodeHoverEffects(this);
+              RootFolder().nodeHoverEffects(this);
               RootFolder().firePathLoaded(instance);
             }
           });

@@ -3679,7 +3679,7 @@
           success: function(result) {
             try {
               const cutItem = Self.cutItem;
-              Self.copiedItem = null;
+
               Self.refreshNodes(oCurrentTextNode, true, false, null, null, true);
               if (cutItem) {
                 Self.refreshNodes(cutItem.parent, true, false, null, null, true);
