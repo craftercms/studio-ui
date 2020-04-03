@@ -377,14 +377,6 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               </FormControl>
             </div>
             <SuspenseWithEmptyState
-              component={DependenciesList}
-              componentProps={{
-                state,
-                setState,
-                assetsTypes,
-                isEditableItem,
-                handleEditorDisplay
-              }}
               resource={resource}
               withEmptyStateProps={{
                 emptyStateProps: {
@@ -404,7 +396,16 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                   root: classes.suspense
                 }
               }}
-            />
+            >
+              <DependenciesList
+                resource={resource}
+                state={state}
+                setState={setState}
+                assetsTypes={assetsTypes}
+                isEditableItem={isEditableItem}
+                handleEditorDisplay={handleEditorDisplay}
+              />
+            </SuspenseWithEmptyState>
           </DialogBody>
           <DialogFooter
             classes={{

@@ -23,7 +23,6 @@ import { FormattedMessage } from 'react-intl';
 import { isAsset, isCode, isEditableAsset } from '../../../utils/content';
 import { forkJoin } from 'rxjs';
 import { APIError } from '../../../models/GlobalState';
-import { nnou, nou } from '../../../utils/object';
 
 const dialogInitialState = {
   selectedOption: 'depends-on',
@@ -98,11 +97,11 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       });
   };
 
-  const resource = useStateResource<any, any>(
+  const resource = useStateResource<Item[], Item[]>(
     deps,
     {
       shouldResolve: (deps) => Boolean(deps),
-      shouldReject: () => nnou(error),
+      shouldReject: () => Boolean(error),
       shouldRenew: (source, resource) => resource.complete,
       resultSelector: () => deps,
       errorSelector: () => error
