@@ -31,6 +31,8 @@ import {
   useSelection
 } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
+import { APIError } from '../../models/GlobalState';
+import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -89,6 +91,7 @@ export default function QuickCreate() {
   );
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [anchorEl, setAnchorEl] = useState(null);
+  const [error, setError] = useState<APIError>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
@@ -103,8 +106,9 @@ export default function QuickCreate() {
 
   useEffect(() => {
     if (siteId) {
-      getQuickCreateContentList(siteId).subscribe(data =>
-        setQuickCreateContentList(data.items)
+      getQuickCreateContentList(siteId).subscribe(
+        data => setQuickCreateContentList(data.items),
+        error => setError(error.response.response)
       );
     }
   }, [siteId]);
@@ -180,6 +184,7 @@ export default function QuickCreate() {
         dialogConfig={dialogConfig}
         setDialogConfig={setDialogConfig}
       />
+      <ErrorDialog error={error} onClose={() => setError(null)} />
     </>
   );
 }
