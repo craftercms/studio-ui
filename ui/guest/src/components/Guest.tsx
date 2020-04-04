@@ -54,7 +54,7 @@ import { debounceTime, delay, filter, map, share, switchMap, take, takeUntil, ta
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
 import { ElementRegistry } from '../classes/ElementRegistry';
-import $ from 'jquery/dist/jquery';
+import $ from 'jquery';
 import { GuestContext } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
 import { ZoneMarker } from './ZoneMarker';
