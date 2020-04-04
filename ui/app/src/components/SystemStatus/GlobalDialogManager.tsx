@@ -20,6 +20,7 @@ import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import ConfirmDialog from '../UserControl/ConfirmDialog';
+import NewContentDialog from '../../modules/Content/Authoring/NewContentDialog';
 
 function createCallback(
   action: StandardAction,
@@ -58,6 +59,12 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Create Content */}
+      <NewContentDialog
+        open={state.newContent.open}
+        site={state.newContent.site}
+        previewItem={state.newContent.previewItem}
+        onDialogClose={createCallback(state.newContent.onDialogClose, dispatch)}
+      />
 
       {/* endregion */}
 

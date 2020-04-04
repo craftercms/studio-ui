@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -46,6 +46,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { APIError, EntityState } from '../../../models/GlobalState';
 import { LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
+import StandardAction from '../../../models/StandardAction';
 
 const translations = defineMessages({
   title: {
@@ -162,20 +163,29 @@ const defaultPreviewItem: Item = {
   uri: '/site/website/index.xml'
 };
 
-interface NewContentDialogProps {
-  open: boolean;
-  site: string;
-  previewItem: Item;
-  onDialogClose(): void;
-  onSaveLegacySuccess?(response): any;
-  onSaveSuccess?(response): any;
-}
-
 interface ContentTypesGridProps {
   resource: Resource<LegacyFormConfig[]>;
   isCompact: boolean;
   onTypeOpen(data: LegacyFormConfig): void;
   getPrevImg(data: LegacyFormConfig): string;
+}
+
+interface NewContentDialogBaseProps {
+  open: boolean;
+  site: string;
+  previewItem: Item;
+  onSaveLegacySuccess?(response): any;
+  onSaveSuccess?(response): any;
+}
+
+export type NewContentDialogProps = PropsWithChildren<
+  NewContentDialogBaseProps & {
+    onDialogClose?(): any;
+  }
+>;
+
+export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
+  onDialogClose?: StandardAction;
 }
 
 function ContentTypesGrid(props: ContentTypesGridProps) {
