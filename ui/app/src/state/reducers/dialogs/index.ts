@@ -16,7 +16,9 @@
 
 import { combineReducers } from '@reduxjs/toolkit';
 import confirm from './confirm';
+import embeddedLegacyEditors from './embeddedLegacyEditors';
 
 export default combineReducers({
-  confirm
+  confirm,
+  embeddedLegacyEditors
 });

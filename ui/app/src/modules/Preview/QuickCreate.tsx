@@ -25,12 +25,9 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
-import {
-  useActiveSiteId,
-  useSpreadState,
-  useSelection
-} from '../../utils/hooks';
-import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
+import { useActiveSiteId, useSelection } from '../../utils/hooks';
+import { useDispatch } from 'react-redux';
+import { showEmbeddedLegacyEditors } from '../../state/reducers/dialogs/embeddedLegacyEditors';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -52,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     menu: {
-      transform: 'translate(20px, 15px)',
+      'transform': 'translate(20px, 15px)',
       '& ul': {
         paddingTop: 0,
         minWidth: '140px'
@@ -68,10 +65,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     menuSectionTitle: {
-      fontSize: 12,
-      backgroundColor: palette.gray.light0,
-      color: palette.gray.medium3,
-      padding: '5px 16px',
+      'fontSize': 12,
+      'backgroundColor': palette.gray.light0,
+      'color': palette.gray.medium3,
+      'padding': '5px 16px',
       '&:hover': {
         backgroundColor: palette.gray.light0,
         cursor: 'text'
@@ -82,49 +79,41 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function QuickCreate() {
   const classes = useStyles({});
+  const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const siteId = useActiveSiteId();
-  const AUTHORING_BASE = useSelection<string>(
-    state => state.env.AUTHORING_BASE
-  );
+  const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [anchorEl, setAnchorEl] = useState(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: defaultFormSrc,
-    type: 'form',
-    inProgress: false
-  });
 
-  const handleClick = e => setAnchorEl(e.currentTarget);
+  const handleClick = (e) => setAnchorEl(e.currentTarget);
 
   const handleMenuClose = () => setAnchorEl(null);
 
   useEffect(() => {
     if (siteId) {
-      getQuickCreateContentList(siteId).subscribe(data =>
-        setQuickCreateContentList(data.items)
-      );
+      getQuickCreateContentList(siteId).subscribe((data) => setQuickCreateContentList(data.items));
     }
   }, [siteId]);
 
-  const handleFormDisplay = srcData => {
+  const handleFormDisplay = (srcData) => {
     const { contentTypeId, path } = srcData;
     const today = new Date();
-    const formatPath = path.replace(
-      '{year}',
-      today.getFullYear()
-    ).replace(
-      '{month}',
-      ('0' + (today.getMonth() + 1)).slice(-2)
-    );
+    const formatPath = path
+      .replace('{year}', today.getFullYear())
+      .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
     const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
 
-    setDialogConfig({
-      open: true,
-      src
-    });
+    dispatch(
+      showEmbeddedLegacyEditors({
+        dialogConfig: {
+          type: 'form',
+          inProgress: false,
+          src
+        }
+      })
+    );
   };
 
   return (
@@ -145,23 +134,14 @@ export default function QuickCreate() {
         onClose={handleMenuClose}
       >
         <MenuItem className={classes.menuTitle}>
-          <FormattedMessage
-            id="quickCreateMenu.title"
-            defaultMessage="New Content"
-          />
+          <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
         </MenuItem>
         <Divider />
-        <Typography
-          component="h4"
-          className={classes.menuSectionTitle}
-        >
-          <FormattedMessage
-            id="quickCreateMenu.sectionTitle"
-            defaultMessage="Quick Create"
-          />
+        <Typography component="h4" className={classes.menuSectionTitle}>
+          <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
 
-        {quickCreateContentList?.map(item =>
+        {quickCreateContentList?.map((item) => (
           <MenuItem
             key={item.path}
             onClick={() => {
@@ -172,14 +152,8 @@ export default function QuickCreate() {
           >
             {item.label}
           </MenuItem>
-        )}
+        ))}
       </Menu>
-      <EmbeddedLegacyEditors
-        showTabs={false}
-        showController={false}
-        dialogConfig={dialogConfig}
-        setDialogConfig={setDialogConfig}
-      />
     </>
   );
 }

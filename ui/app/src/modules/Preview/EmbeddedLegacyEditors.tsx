@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar/AppBar';
 import Tabs from '@material-ui/core/Tabs';
@@ -41,6 +41,8 @@ import { filter } from 'rxjs/operators';
 import { getHostToGuestBus } from './previewContext';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { APIError } from '../../models/GlobalState';
+import StandardAction from '../../models/StandardAction';
+import { closeEmbeddedLegacyEditors } from '../../state/reducers/dialogs/embeddedLegacyEditors';
 
 const translations = defineMessages({
   contentForm: {
@@ -93,19 +95,27 @@ function filterBy(filter: string, changes: object, currentTab: string): Array<st
 }
 
 interface dialogConfig {
-  open: boolean;
-  src: string;
-  type: string;
-  inProgress: boolean;
+  open?: boolean;
+  src?: string;
+  type?: string;
+  inProgress?: boolean;
 }
 
-interface EmbeddedLegacyEditorsProps {
+interface EmbeddedLegacyEditorsBaseProps {
   dialogConfig: dialogConfig;
   setDialogConfig: any;
   showController?: boolean;
   showTabs?: boolean;
+}
 
-  getPath?(type: string): void;
+export type EmbeddedLegacyEditorsProps = PropsWithChildren<
+  EmbeddedLegacyEditorsBaseProps & {
+    getPath?(type: string): void;
+  }
+>;
+
+export interface EmbeddedLegacyEditorsStateProps extends EmbeddedLegacyEditorsBaseProps {
+  getPath?: StandardAction;
 }
 
 export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
@@ -125,7 +135,14 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
   const handleClose = () => {
-    setDialogConfig({ open: false, src: null, type: null, inProgress: true });
+    dispatch(
+      closeEmbeddedLegacyEditors({
+        type: '',
+        payload: {
+          dialogConfig: { src: null, type: null, inProgress: true }
+        }
+      })
+    );
   };
 
   const onErrorClose = () => {

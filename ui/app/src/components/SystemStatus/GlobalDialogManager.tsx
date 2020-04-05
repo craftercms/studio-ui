@@ -20,6 +20,7 @@ import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import ConfirmDialog from '../UserControl/ConfirmDialog';
+import EmbeddedLegacyEditors from '../../modules/Preview/EmbeddedLegacyEditors';
 
 function createCallback(
   action: StandardAction,
@@ -50,6 +51,12 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Edit (Embedded Legacy Editor) */}
+      <EmbeddedLegacyEditors
+        showTabs={state.embeddedLegacyEditors.showTabs}
+        showController={state.embeddedLegacyEditors.showController}
+        dialogConfig={state.embeddedLegacyEditors.dialogConfig}
+        setDialogConfig={state.embeddedLegacyEditors.setDialogConfig}
+      />
 
       {/* endregion */}
 
