@@ -16,7 +16,9 @@
 
 import { combineReducers } from '@reduxjs/toolkit';
 import confirm from './confirm';
+import deleteDialog from './delete';
 
 export default combineReducers({
-  confirm
+  confirm,
+  deleteDialog
 });

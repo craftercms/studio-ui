@@ -20,6 +20,7 @@ import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import ConfirmDialog from '../UserControl/ConfirmDialog';
+import DeleteDialog from '../../modules/Content/Delete/DeleteDialog';
 
 function createCallback(
   action: StandardAction,
@@ -66,7 +67,11 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Delete */}
-
+      <DeleteDialog
+        open={state.deleteDialog.open}
+        items={state.deleteDialog.items}
+        onClose={createCallback(state.deleteDialog.onClose, dispatch)}
+      />
       {/* endregion */}
 
       {/* region History */}

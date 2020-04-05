@@ -14,29 +14,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, PropsWithChildren } from 'react';
 import { Item } from '../../../models/Item';
 import DeleteDialogUI from './DeleteDialogUI';
 import { deleteItems } from '../../../services/content';
 import { useActiveSiteId, useActiveUser, useSpreadState, useStateResource } from '../../../utils/hooks';
 import { fetchDeleteDependencies } from '../../../services/dependencies';
 import { DeleteDependencies } from '../Dependencies/DependencySelection';
+import StandardAction from '../../../models/StandardAction';
 
-interface DeleteDialogProps {
-  items: Item[];
+interface DeleteDialogBaseProps {
+  open: boolean;
+  items?: Item[];
+}
 
-  onClose?(response?: any): any;
+export type DeleteDialogProps = PropsWithChildren<
+  DeleteDialogBaseProps & {
+    onClose(): any;
+    onSuccess?(response?: any): any;
+  }
+>;
 
-  onSuccess?(response?: any): any;
+export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
+  onClose?: StandardAction;
+  onSuccess?: StandardAction;
 }
 
 function DeleteDialog(props: DeleteDialogProps) {
   const {
+    open,
     items,
     onClose,
     onSuccess
   } = props;
-  const [open, setOpen] = useState(true);
   const [submissionComment, setSubmissionComment] = useState('');
   const [apiState, setApiState] = useSpreadState({
     error: null,
@@ -74,8 +84,6 @@ function DeleteDialog(props: DeleteDialogProps) {
   },[selectedItems]);
 
   const handleClose = () => {
-    setOpen(false);
-
     // call externalClose fn
     onClose?.();
   };
@@ -89,10 +97,8 @@ function DeleteDialog(props: DeleteDialogProps) {
 
     deleteItems(siteId, user.username, submissionComment, data).subscribe(
       (response) => {
-        setOpen(false);
         setApiState({ submitting: false });
         onSuccess?.(response);
-        onClose?.(response);
       },
       (error) => {
         setApiState({ error });

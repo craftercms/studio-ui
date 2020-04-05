@@ -28,7 +28,8 @@ import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { APIError } from '../models/GlobalState';
 import ErrorDialog from './SystemStatus/ErrorDialog';
-import DeleteDialog from '../modules/Content/Delete/DeleteDialog';
+import { useDispatch } from 'react-redux';
+import { showDeleteDialog } from '../state/reducers/dialogs/delete';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -55,6 +56,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const dispatch = useDispatch();
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
     src: null,
@@ -69,7 +71,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   });
 
   const [deleteDialog, setDeleteDialog] = useSpreadState({
-    open: false,
     items: []
   });
 
@@ -108,7 +109,9 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         break;
       }
       case 'delete': {
-        setDeleteDialog({ open: true });
+        dispatch(showDeleteDialog({
+          items: deleteDialog.items
+        }));
         break;
       }
       case 'form':
@@ -155,10 +158,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   const onClosePublish = () => {
     setPublishDialog({ open: false, scheduling: null });
-  };
-
-  const onCloseDelete = () => {
-    setDeleteDialog({ open: false });
   };
 
   return (
@@ -249,13 +248,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           items={[publishDialog.item]}
           onSuccess={onSuccessPublish}
           onClose={onClosePublish}
-        />
-      }
-      {
-        deleteDialog.open &&
-        <DeleteDialog
-          items={deleteDialog.items}
-          onClose={onCloseDelete}
         />
       }
       {
