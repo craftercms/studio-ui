@@ -46,7 +46,7 @@ interface PreviewToolsModuleDescriptor {
   config: string;
 }
 
-interface PreviewToolsConfig {
+export interface PreviewToolsConfig {
   modules: Array<PreviewToolsModuleDescriptor>;
 }
 

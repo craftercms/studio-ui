@@ -50,7 +50,7 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
-  TOOLS_LOADED,
+  fetchPreviewToolsConfigComplete,
   UPDATE_AUDIENCES_PANEL_MODEL
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
@@ -137,10 +137,10 @@ const reducer = createReducer<GlobalState['preview']>({
       showToolsPanel: false
     }
   },
-  [TOOLS_LOADED]: (state, { payload }) => {
+  [fetchPreviewToolsConfigComplete.type]: (state, { payload }) => {
     return {
       ...state,
-      tools: payload
+      tools: payload.modules
     }
   },
   [SET_HOST_SIZE]: (state, { payload }) => {

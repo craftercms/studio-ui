@@ -32,7 +32,6 @@ import Drawer from '@material-ui/core/Drawer';
 import { DRAWER_WIDTH } from './previewContext';
 import Typography from '@material-ui/core/Typography';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { getPreviewToolsConfig } from '../../services/configuration';
 import ToolPanel from './Tools/ToolPanel';
 import AudiencesPanel from './Tools/AudiencesPanel';
 import AssetsPanel from './Tools/AssetsPanel';
@@ -41,9 +40,13 @@ import SimulatorPanel from './Tools/SimulatorPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
-import { selectTool, toolsLoaded } from '../../state/actions/preview';
+import { fetchPreviewToolsConfig, selectTool } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  usePreviewState,
+  useSelection
+} from '../../utils/hooks';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
@@ -68,7 +71,6 @@ const useStyles = makeStyles((theme: Theme) =>
     secondaryActionRoot: {
       display: 'flex'
     },
-
     panelHeader: {
       display: 'flex',
       alignItems: 'center',
@@ -84,7 +86,6 @@ const useStyles = makeStyles((theme: Theme) =>
     center: {
       textAlign: 'center'
     },
-
     simulatorFlipColumn: {
       display: 'flex',
       alignItems: 'flex-end'
@@ -95,13 +96,11 @@ const useStyles = makeStyles((theme: Theme) =>
     presetFieldset: {
       marginTop: theme.spacing(1)
     },
-
     ellipsis: {
       textOverflow: 'ellipsis',
       whitespace: 'no-wrap',
       overflow: 'hidden'
     },
-
     emptyState: {
       margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
     },
@@ -181,21 +180,23 @@ function ToolSelector() {
     <LoadingState title={`${formatMessage(translations.loading)}...`} />
   ) : (
     <List>
-      {tools
-        .map((tool) => ({
-          ...tool,
-          Icon: componentIconMap[tool.id] || WarningRounded,
-          title: getTranslation(tool.title, translations, formatMessage)
-        }))
-        .map(({ id, title, Icon }) => (
-          <ListItem key={id} button onClick={() => select(id)}>
-            <ListItemIcon className={classes.itemIconRoot}>
-              <Icon />
-            </ListItemIcon>
-            <ListItemText primary={title} />
-            <ChevronRightIcon />
-          </ListItem>
-        ))}
+      {
+        tools
+          .map((tool) => ({
+            ...tool,
+            Icon: componentIconMap[tool.id] || WarningRounded,
+            title: getTranslation(tool.title, translations, formatMessage)
+          }))
+          .map(({ id, title, Icon }) => (
+            <ListItem key={id} button onClick={() => select(id)}>
+              <ListItemIcon className={classes.itemIconRoot}>
+                <Icon />
+              </ListItemIcon>
+              <ListItemText primary={title} />
+              <ChevronRightIcon />
+            </ListItem>
+          ))
+      }
     </List>
   );
 }
@@ -225,32 +226,19 @@ export default function ToolsPanel() {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { guest, tools, selectedTool, showToolsPanel } = usePreviewState();
-  const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
+  const baseUrl = useSelection<string>((state) => state.env.AUTHORING_BASE);
 
   let Tool = guest?.selected
     ? EditFormPanel
-    : selectedTool
-    ? componentMap[selectedTool] || UnknownPanel
-    : ToolSelector;
+    : Boolean(selectedTool)
+      ? componentMap[selectedTool] || UnknownPanel
+      : ToolSelector;
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
   let config = toolMeta?.config;
 
   useEffect(() => {
-    const fetchConfigSubscription =
-      !tools &&
-      site &&
-      getPreviewToolsConfig(site).subscribe(
-        (tools) => {
-          dispatch(toolsLoaded(tools.modules));
-        },
-        (e) => {
-          // TODO: Show error view.
-          console.error(`AAAWWHHGG!! Tools panel config didn't load`, e);
-        }
-      );
-    return () => {
-      fetchConfigSubscription && fetchConfigSubscription.unsubscribe();
-    };
+    // TODO: Move fetch out of component
+    !tools && site && dispatch(fetchPreviewToolsConfig(site));
   }, [site, dispatch, tools]);
 
   return (
@@ -271,7 +259,7 @@ export default function ToolsPanel() {
               defaultMessage="Please choose site."
             />
           }
-          image={`${AUTHORING_BASE}/static-assets/images/choose_option.svg`}
+          image={`${baseUrl}/static-assets/images/choose_option.svg`}
           classes={{ root: classes.emptyState, image: classes.emptyStateImage }}
         />
       )}

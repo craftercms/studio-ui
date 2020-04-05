@@ -24,6 +24,8 @@ import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
 import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
+import { AjaxError } from 'rxjs/ajax';
+import { PreviewToolsConfig } from '../../services/configuration';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -77,7 +79,6 @@ export const CLEAR_SELECT_FOR_EDIT = 'CLEAR_SELECT_FOR_EDIT';
 export const SELECT_PREVIOUS_TOOL = 'SELECT_PREVIOUS_TOOL';
 export const OPEN_TOOLS = 'OPEN_TOOLS';
 export const CLOSE_TOOLS = 'CLOSE_TOOLS';
-export const TOOLS_LOADED = 'TOOLS_LOADED';
 export const SET_HOST_SIZE = 'SET_HOST_SIZE';
 export const SET_HOST_WIDTH = 'SET_HOST_WIDTH';
 export const SET_HOST_HEIGHT = 'SET_HOST_HEIGHT';
@@ -138,13 +139,6 @@ export function openTools(): StandardAction {
 
 export function closeTools(): StandardAction {
   return { type: CLOSE_TOOLS };
-}
-
-export function toolsLoaded(tools: Array<any>): StandardAction {
-  return {
-    type: TOOLS_LOADED,
-    payload: tools
-  };
 }
 
 export function setHostSize(dimensions: WidthAndHeight): StandardAction {
@@ -280,5 +274,11 @@ export const setContentTypeReceptacles = createAction<{ contentType: string; rec
 export const setContentTypeFilter = createAction<string>(SET_CONTENT_TYPE_FILTER);
 
 export const setChildrenMap = createAction<object>(CHILDREN_MAP_UPDATE);
+
+export const fetchPreviewToolsConfig = createAction<string>('FETCH_PREVIEW_TOOLS_CONFIG');
+
+export const fetchPreviewToolsConfigComplete = createAction<PreviewToolsConfig>('FETCH_PREVIEW_TOOLS_CONFIG_COMPLETE');
+
+export const fetchPreviewToolsConfigFailed = createAction<AjaxError>('FETCH_PREVIEW_TOOLS_CONFIG_FAILED');
 
 // endregion
