@@ -50,14 +50,6 @@ export interface PreviewToolsConfig {
   modules: Array<PreviewToolsModuleDescriptor>;
 }
 
-interface ActiveTargetingModel {
-  id: string;
-
-  [prop: string]: string;
-}
-
-// region AudiencesPanelConfig
-
 const LegacyPanelIdMap: any = {
   'ice-tools-panel': 'craftercms.ice.ice',
   'component-panel': 'craftercms.ice.components',
@@ -111,6 +103,16 @@ export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConf
       }
     })
   );
+}
+
+// endregion
+
+// region AudiencesPanelConfig
+
+interface ActiveTargetingModel {
+  id: string;
+
+  [prop: string]: string;
 }
 
 export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
@@ -287,6 +289,8 @@ function parseSimulatorPanelConfig(element: Element) {
   }
 }
 
+// endregion
+
 function parsePreviewToolsPanelConfig(element: Element) {
   if (element === null) {
     return null;
@@ -299,9 +303,6 @@ function parsePreviewToolsPanelConfig(element: Element) {
     return element.outerHTML;
   }
 }
-
-
-// endregion
 
 export function getGlobalMenuItems() {
   return get('/studio/api/2/ui/views/global_menu.json');

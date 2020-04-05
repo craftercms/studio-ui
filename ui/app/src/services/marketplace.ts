@@ -14,17 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
-import { MarketplaceSite } from "../models/Site";
+import { get, postJSON } from '../utils/ajax';
+import { MarketplaceSite } from '../models/Site';
 
 export function fetchBlueprints() {
   return get('/studio/api/2/marketplace/search?type=blueprint&limit=1000');
 }
 
 export function createSite(site: MarketplaceSite) {
-  return post('/studio/api/2/sites/create_site_from_marketplace', site, {
-    'Content-Type': 'application/json'
-  })
+  return postJSON('/studio/api/2/sites/create_site_from_marketplace', site);
 }
 
 export default {

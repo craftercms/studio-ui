@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
-import { CreateSiteMeta } from "../models/Site";
+import { get, postJSON } from '../utils/ajax';
+import { CreateSiteMeta } from '../models/Site';
 import { PaginationOptions } from '../models/Search';
 
 export function fetchBlueprints() {
@@ -31,15 +31,11 @@ export function fetchSites(paginationOptions?: PaginationOptions) {
 }
 
 export function createSite(site: CreateSiteMeta) {
-  return post('/studio/api/1/services/api/1/site/create.json', site, {
-    'Content-Type': 'application/json'
-  })
+  return postJSON('/studio/api/1/services/api/1/site/create.json', site)
 }
 
 export function deleteSite(id: string) {
-  return post('/studio/api/1/services/api/1/site/delete-site.json', {siteId: id}, {
-    'Content-Type': 'application/json'
-  })
+  return postJSON('/studio/api/1/services/api/1/site/delete-site.json', {siteId: id})
 }
 
 export function checkHandleAvailability(name: string) {
