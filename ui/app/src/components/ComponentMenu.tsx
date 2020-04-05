@@ -28,7 +28,8 @@ import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { APIError } from '../models/GlobalState';
 import ErrorDialog from './SystemStatus/ErrorDialog';
-import DependenciesDialog from '../modules/Content/Dependencies/DependenciesDialog';
+import { useDispatch } from 'react-redux';
+import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -55,6 +56,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const dispatch = useDispatch();
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
     src: null,
@@ -69,7 +71,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   });
 
   const [dependenciesDialog, setDependenciesDialog] = useSpreadState({
-    open: false,
     item: null,
     dependenciesSelection: 'depends-on'
   });
@@ -109,7 +110,11 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         break;
       }
       case 'dependencies' : {
-        setDependenciesDialog({ open: true });
+        dispatch(showDependenciesDialog({
+          item: dependenciesDialog.item,
+          dependenciesSelection: dependenciesDialog.dependenciesSelection
+        }));
+
         break;
       }
       case 'form':
@@ -156,10 +161,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   const onClosePublish = () => {
     setPublishDialog({ open: false, scheduling: null });
-  };
-
-  const onCloseDependencies = () => {
-    setDependenciesDialog({ open: false });
   };
 
   return (
@@ -250,14 +251,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           items={[publishDialog.item]}
           onSuccess={onSuccessPublish}
           onClose={onClosePublish}
-        />
-      }
-      {
-        dependenciesDialog.open &&
-        <DependenciesDialog
-          item={dependenciesDialog.item}
-          dependenciesSelection={dependenciesDialog.dependenciesSelection}
-          onClose={onCloseDependencies}
         />
       }
       {

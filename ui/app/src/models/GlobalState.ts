@@ -25,6 +25,7 @@ import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeReceptacle } from './ContentTypeReceptacle';
 import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog';
+import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
 
 export interface APIError {
   code?: number | string;
@@ -112,6 +113,7 @@ export interface GlobalState {
   };
   dialogs: {
     confirm: ConfirmDialogStateProps;
+    dependencies: DependenciesDialogStateProps;
   };
 }
 

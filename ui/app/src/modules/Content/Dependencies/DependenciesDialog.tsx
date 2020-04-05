@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, PropsWithChildren } from 'react';
 import DependenciesDialogUI from './DependenciesDialogUI';
 import { Item } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
@@ -23,6 +23,7 @@ import { FormattedMessage } from 'react-intl';
 import { isAsset, isCode, isEditableAsset } from '../../../utils/content';
 import { forkJoin } from 'rxjs';
 import { APIError } from '../../../models/GlobalState';
+import StandardAction from '../../../models/StandardAction';
 
 const dialogInitialState = {
   selectedOption: 'depends-on',
@@ -53,22 +54,30 @@ const assetsTypes = {
   }
 };
 
-interface DependenciesDialogProps {
-  item: Item;
-  dependenciesSelection: string;
+interface DependenciesDialogBaseProps {
+  open: boolean;
+  item?: Item;
+  dependenciesSelection?: string;
+}
 
-  onClose?(response?: any): any;
+export type DependenciesDialogProps = PropsWithChildren<
+  DependenciesDialogBaseProps & {
+    onClose(): any;
+  }
+>;
+
+export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps {
+  onClose?: StandardAction
 }
 
 function DependenciesDialog(props: DependenciesDialogProps) {
-  const { item, dependenciesSelection, onClose } = props;
+  const { open, item, dependenciesSelection, onClose } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
     selectedOption: dependenciesSelection
   });
   const [deps, setDeps] = useState(null);
-  const [open, setOpen] = useState(true);
   const [error, setError] = useState<APIError>(null);
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
@@ -109,22 +118,30 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   );
 
   const handleClose = () => {
-    setOpen(false);
-
     onClose?.();
   };
 
   useEffect(() => {
-    forkJoin({
-      dependant: getDependant(siteId, dialog.item.uri),
-      dependencies: getSimpleDependencies(siteId, dialog.item.uri)
-    }).subscribe(
-      ({dependant, dependencies}) => {
-        setDialog({ dependantItems: dependant, dependencies });
-        setDeps(dialog.selectedOption === 'depends-on' ? dependant: dependencies);
-      },
-      (error) => setError(error)
-    );
+    setDialog({ item });
+  },[item]);
+
+  useEffect(() => {
+    setDialog({ selectedOption: dependenciesSelection });
+  },[dependenciesSelection]);
+
+  useEffect(() => {
+    if(dialog.item) {
+      forkJoin({
+        dependant: getDependant(siteId, dialog.item.uri),
+        dependencies: getSimpleDependencies(siteId, dialog.item.uri)
+      }).subscribe(
+        ({dependant, dependencies}) => {
+          setDialog({ dependantItems: dependant, dependencies });
+          setDeps(dialog.selectedOption === 'depends-on' ? dependant: dependencies);
+        },
+        (error) => setError(error)
+      );
+    }
   }, [dialog.item, setError, setDialog, siteId]);
 
   useEffect(() => {

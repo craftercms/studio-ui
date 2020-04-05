@@ -328,28 +328,31 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           />
           <DialogBody>
             <div className={classes.selectionContent}>
-              <Chip
-                variant="outlined"
-                deleteIcon={isEditableItem(state.item.uri) ? <CreateIcon/> : null}
-                onDelete={isEditableItem(state.item.uri) ?
-                  () => {
-                    handleEditorDisplay(state.item);
-                  } :
-                  null
-                }
-                classes={{
-                  root: classes.selectedItem,
-                  label: classes.selectedItemLabel,
-                  deleteIcon: classes.selectedItemEditIcon
-                }}
-                label={
-                  <>
-                    <span className='label'>Selected</span>
-                    <InsertDriveFileOutlinedIcon className='item-icon'/>
-                    <span className='item-title'>{state.item.internalName}</span>
-                  </>
-                }
-              />
+              {
+                state.item &&
+                <Chip
+                  variant="outlined"
+                  deleteIcon={isEditableItem(state.item.uri) ? <CreateIcon/> : null}
+                  onDelete={isEditableItem(state.item.uri) ?
+                    () => {
+                      handleEditorDisplay(state.item);
+                    } :
+                    null
+                  }
+                  classes={{
+                    root: classes.selectedItem,
+                    label: classes.selectedItemLabel,
+                    deleteIcon: classes.selectedItemEditIcon
+                  }}
+                  label={
+                    <>
+                      <span className='label'>Selected</span>
+                      <InsertDriveFileOutlinedIcon className='item-icon'/>
+                      <span className='item-title'>{state.item.internalName}</span>
+                    </>
+                  }
+                />
+              }
 
               <FormControl className={classes.formControl}>
                 <Select

@@ -20,6 +20,7 @@ import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import ConfirmDialog from '../UserControl/ConfirmDialog';
+import DependenciesDialog from '../../modules/Content/Dependencies/DependenciesDialog';
 
 function createCallback(
   action: StandardAction,
@@ -62,7 +63,12 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Dependencies */}
-
+      <DependenciesDialog
+        open={state.dependencies.open}
+        item={state.dependencies.item}
+        dependenciesSelection={state.dependencies.dependenciesSelection}
+        onClose={createCallback(state.dependencies.onClose, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Delete */}
