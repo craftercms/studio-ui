@@ -18,7 +18,7 @@
  */
 
 import { get } from '../utils/ajax';
-import { map } from 'rxjs/operators';
+import { pluck } from 'rxjs/operators';
 
 export function fetchDependencies(siteId: string, items: any) {
   return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`)
@@ -26,9 +26,7 @@ export function fetchDependencies(siteId: string, items: any) {
 
 export function fetchDeleteDependencies(siteId: string, paths: string[]) {
   return get(`/studio/api/2/content/get_delete_package?siteId=${siteId}&paths=${paths}`).pipe(
-    map((response: any) => {
-      return response.response
-    })
+    pluck('response')
   )
 }
 
