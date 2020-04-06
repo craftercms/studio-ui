@@ -163,7 +163,6 @@ export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
 function ContentTypesGrid(props: ContentTypesGridProps) {
   const { resource, isCompact, onTypeOpen, getPrevImg } = props;
   const classes = useStyles({});
-  const { formatMessage } = useIntl();
   const filterContentTypes = resource.read();
   return (
     <Grid container spacing={3} className={classes.cardsContainer}>
