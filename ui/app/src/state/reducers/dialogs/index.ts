@@ -21,6 +21,6 @@ import dependencies from './dependencies';
 
 export default combineReducers({
   confirm,
-  error
+  error,
   dependencies
 });
