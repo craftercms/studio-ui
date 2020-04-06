@@ -209,72 +209,70 @@ function DependenciesList(props: DependenciesListProps) {
       {
         dependencies
           .filter(dependency => assetsTypes[state.showTypes].filter(dependency))
-          .map(dependency => {
-            return (
-              <ListItem
-                key={dependency.uri}
-                className={`${classes.dependenciesListItem} ${(state.compactView) ? classes.dependenciesCompactListItem : ''}`}
-              >
-                {
-                  isImage(dependency.uri) && !state.compactView &&
-                  <ListItemAvatar>
-                    <Avatar className={classes.listItemPreview} src={dependency.uri}/>
-                  </ListItemAvatar>
-                }
-                <ListItemText
-                  className={classes.listItemContent}
-                  primary={dependency.internalName}
-                  secondary={(!state.compactView) ? dependency.uri : null}
-                />
+          .map(dependency =>
+            <ListItem
+              key={dependency.uri}
+              className={`${classes.dependenciesListItem} ${(state.compactView) ? classes.dependenciesCompactListItem : ''}`}
+            >
+              {
+                isImage(dependency.uri) && !state.compactView &&
+                <ListItemAvatar>
+                  <Avatar className={classes.listItemPreview} src={dependency.uri}/>
+                </ListItemAvatar>
+              }
+              <ListItemText
+                className={classes.listItemContent}
+                primary={dependency.internalName}
+                secondary={(!state.compactView) ? dependency.uri : null}
+              />
 
-                <ListItemSecondaryAction>
-                  <PopupState variant="popover">
-                    {popupState => (
-                      <React.Fragment>
-                        <IconButton
-                          edge="end"
-                          aria-label="delete"
-                          {...bindTrigger(popupState)}
-                        >
-                          <MoreVertIcon/>
-                        </IconButton>
-                        <Menu {...bindMenu(popupState)}>
-                          {
-                            isEditableItem(dependency.uri) &&
-                            <MenuItem onClick={() => {
-                              handleEditorDisplay(dependency);
-                              popupState.close();
-                            }}>
-                              <FormattedMessage
-                                id="dependenciesDialog.edit"
-                                defaultMessage="Edit"
-                              />
-                            </MenuItem>
-                          }
+              <ListItemSecondaryAction>
+                <PopupState variant="popover">
+                  {popupState => (
+                    <React.Fragment>
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        {...bindTrigger(popupState)}
+                      >
+                        <MoreVertIcon/>
+                      </IconButton>
+                      <Menu {...bindMenu(popupState)}>
+                        {
+                          isEditableItem(dependency.uri) &&
                           <MenuItem onClick={() => {
-                            setState({ item: dependency });
+                            handleEditorDisplay(dependency);
                             popupState.close();
                           }}>
                             <FormattedMessage
-                              id="dependenciesDialog.dependencies"
-                              defaultMessage="Dependencies"
+                              id="dependenciesDialog.edit"
+                              defaultMessage="Edit"
                             />
                           </MenuItem>
-                          <MenuItem
-                            onClick={popupState.close}>   {/* TODO: pending, waiting for new history dialog */}
-                            <FormattedMessage
-                              id="dependenciesDialog.history"
-                              defaultMessage="History"
-                            />
-                          </MenuItem>
-                        </Menu>
-                      </React.Fragment>
-                    )}
-                  </PopupState>
-                </ListItemSecondaryAction>
-              </ListItem>
-            )
-          })
+                        }
+                        <MenuItem onClick={() => {
+                          setState({ item: dependency });
+                          popupState.close();
+                        }}>
+                          <FormattedMessage
+                            id="dependenciesDialog.dependencies"
+                            defaultMessage="Dependencies"
+                          />
+                        </MenuItem>
+                        <MenuItem
+                          onClick={popupState.close}>   {/* TODO: pending, waiting for new history dialog */}
+                          <FormattedMessage
+                            id="dependenciesDialog.history"
+                            defaultMessage="History"
+                          />
+                        </MenuItem>
+                      </Menu>
+                    </React.Fragment>
+                  )}
+                </PopupState>
+              </ListItemSecondaryAction>
+            </ListItem>
+          )
       }
     </List>
   )
