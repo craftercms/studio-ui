@@ -54,7 +54,6 @@ import {
   UPDATE_AUDIENCES_PANEL_MODEL
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
-import { CHANGE_SITE } from '../actions/sites';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
@@ -64,6 +63,7 @@ import {
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
 import Tools from '../../models/PreviewToolIDs';
+import { changeSite } from './sites';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -280,7 +280,7 @@ const reducer = createReducer<GlobalState['preview']>({
         currentUrl: payload
       }
   ),
-  [CHANGE_SITE]: (state, { payload }) => {
+  [changeSite.type]: (state, { payload }) => {
 
     let nextState = {
       ...state,

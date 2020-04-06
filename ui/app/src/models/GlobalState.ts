@@ -75,6 +75,7 @@ export interface GlobalState {
   user: User;
   sites: {
     active: string;
+    isFetching: boolean;
     byId: LookupTable<Site>;
   };
   contentTypes: EntityState<ContentType>;
