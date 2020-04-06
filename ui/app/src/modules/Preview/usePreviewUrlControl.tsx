@@ -20,9 +20,9 @@ import { useDispatch } from 'react-redux';
 import { useEffect, useRef } from 'react';
 import { parse, stringify } from 'query-string';
 import { LookupTable } from '../../models/LookupTable';
-import { changeSite } from '../../state/actions/sites';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { nou } from '../../utils/object';
+import { changeSite } from '../../state/reducers/sites';
 
 export default function usePreviewUrlControl(history) {
 

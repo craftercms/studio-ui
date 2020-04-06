@@ -110,11 +110,7 @@ function BlueprintForm(props: BlueprintFormProps) {
 
   useEffect(() => {
     if (sites === null) {
-      fetchSites().subscribe(
-        ({ response }) => {
-          setSites(response.sites);
-        }
-      );
+      fetchSites().subscribe(setSites);
     }
   }, [sites]);
 

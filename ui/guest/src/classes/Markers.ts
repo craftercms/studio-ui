@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from 'jquery/dist/jquery.slim';
+import $ from 'jquery';
 import { Coordinates } from '../models/Positioning';
 import { CSSProperties } from 'react';
 

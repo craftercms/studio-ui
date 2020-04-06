@@ -22,6 +22,7 @@ import contentTypes from './contentTypes';
 import assets from './assets';
 import audiencesPanel from './audiencesPanel';
 import dialogs from './dialogs';
+import preview from './preview';
 
 const epic: any[] = combineEpics.apply(this, [
   ...auth,
@@ -29,6 +30,7 @@ const epic: any[] = combineEpics.apply(this, [
   ...contentTypes,
   ...assets,
   ...audiencesPanel,
+  ...preview,
   ...dialogs
 ]);
 

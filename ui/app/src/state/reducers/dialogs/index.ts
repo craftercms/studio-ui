@@ -16,9 +16,11 @@
 
 import { combineReducers } from '@reduxjs/toolkit';
 import confirm from './confirm';
+import error from './error';
 import dependencies from './dependencies';
 
 export default combineReducers({
   confirm,
+  error
   dependencies
 });

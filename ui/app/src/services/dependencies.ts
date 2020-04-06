@@ -22,7 +22,9 @@ import { pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export function fetchDependencies(siteId: string, items: any) {
-  return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`)
+  return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`).pipe(
+    pluck('response', 'items')
+  )
 }
 
 export function getSimpleDependencies(siteId: string, path: string): Observable<any> {
