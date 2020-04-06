@@ -31,7 +31,7 @@ import {
 import { useGuestContext } from './GuestContext';
 import { ElementRegistry } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
-import $ from 'jquery/dist/jquery.slim';
+import $ from 'jquery';
 import contentController, { ContentController } from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';

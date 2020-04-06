@@ -69,7 +69,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   const [error, setError] = useState<APIError>(null);
 
-  //Effect used to open the publish Dialog
+  // Effect used to open the publish Dialog
   useEffect(() => {
     if (models && modelId && publishDialog.item === null) {
       let path = models[modelId].craftercms.path;
@@ -211,7 +211,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          publishDialog.item && !embeddedParentPath && contentTypesBranch.byId[publishDialog.item.contentType]?.type === 'page' &&
+          publishDialog.item && !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.item.contentType]?.type === 'page' &&
           <MenuItem onClick={() => handleEdit('controller')}>
             <FormattedMessage
               id="previewToolBar.menu.editController"
@@ -226,7 +226,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           dialogConfig={dialogConfig}
           setDialogConfig={setDialogConfig}
           getPath={getPath}
-          showController={!embeddedParentPath && contentTypesBranch.byId[publishDialog.item.contentType]?.type === 'page'}
+          showController={!embeddedParentPath && contentTypesBranch.byId?.[publishDialog.item.contentType]?.type === 'page'}
         />
       }
       {

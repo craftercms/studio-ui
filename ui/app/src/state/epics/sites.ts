@@ -16,26 +16,34 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { CHANGE_SITE } from '../actions/sites';
-import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { setSiteCookie } from '../../utils/auth';
-
-const changeSite: Epic = (action$, state$) => action$.pipe(
-  ofType(CHANGE_SITE),
-  withLatestFrom(state$),
-  tap(
-    (
-      [
-        { payload: { nextSite } },
-        { env: { SITE_COOKIE } }
-      ]
-    ) => (
-      setSiteCookie(SITE_COOKIE, nextSite)
-    )
-  ),
-  ignoreElements()
-);
+import { fetchSites } from '../../services/sites';
+import { catchAjaxError } from '../../utils/ajax';
+import {
+  changeSite,
+  fetchSites as fetchSitesAction,
+  fetchSitesComplete,
+  fetchSitesFailed
+} from '../reducers/sites';
 
 export default [
-  changeSite
+  // region Change site
+  (action$, state$) =>
+    action$.pipe(
+      ofType(changeSite.type),
+      withLatestFrom(state$),
+      tap(([{ payload: { nextSite } }, { env: { SITE_COOKIE } }]) =>
+        setSiteCookie(SITE_COOKIE, nextSite)
+      ),
+      ignoreElements()
+    ),
+  // endregion
+  // region Fetch sites
+  (action$) =>
+    action$.pipe(
+      ofType(fetchSitesAction.type),
+      switchMap(() => fetchSites().pipe(map(fetchSitesComplete), catchAjaxError(fetchSitesFailed)))
+    )
+  // endregion
 ] as Epic[];

@@ -15,12 +15,12 @@
  */
 
 import { postJSON } from '../utils/ajax';
-import { map } from 'rxjs/operators';
+import { pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export function encrypt(text: string): Observable<string> {
   return postJSON(`/studio/api/2/security/encrypt.json`, { text }).pipe(
-    map(({ response }) => response.item)
+    pluck('response', 'item')
   );
 }
 
