@@ -105,7 +105,7 @@ interface NewContentSelectProps {
   onEditClick(): void;
 }
 
-export default function NewContentSelect(props: NewContentSelectProps) {
+export default function SingleItemSelector(props: NewContentSelectProps) {
   const {
     LabelIcon,
     classes: propClasses,

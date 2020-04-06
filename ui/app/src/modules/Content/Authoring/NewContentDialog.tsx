@@ -28,7 +28,7 @@ import { palette } from '../../../styles/theme';
 import { fetchLegacyContentTypes } from '../../../services/content';
 import DialogHeader from '../../../components/DialogHeader';
 import NewContentCard from './NewContentCard';
-import NewContentSelect from './NewContentSelect';
+import SingleItemSelector from './SingleItemSelector';
 import SearchBar from '../../../components/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
 import { Item } from '../../../models/Item';
@@ -342,7 +342,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         <DialogBody dividers classes={{ root: classes.dialogContent }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box>
-              <NewContentSelect
+              <SingleItemSelector
                 label="Parent"
                 selectItem={previewItem}
                 LabelIcon={InsertDriveFileOutlinedIcon}
