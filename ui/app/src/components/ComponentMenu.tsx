@@ -70,7 +70,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     scheduling: null
   });
 
-  const [deleteDialog, setDeleteDialog] = useSpreadState({
+  const [deleteDialog, setDeleteDialog] = useState({
     items: []
   });
 
