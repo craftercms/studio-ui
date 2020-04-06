@@ -45,7 +45,6 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { Item } from '../models/Item';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -59,7 +58,7 @@ export function getContent(site: string, path: string): Observable<string> {
   );
 }
 
-export function getItem(site: string, path: string): Observable<any> {
+export function getLegacyItem(site: string, path: string): Observable<any> {
   return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
     pluck('response', 'item'),
     catchApi1Error
@@ -1053,7 +1052,7 @@ export function getQuickCreateContentList(siteId: string) {
 export default {
   getComponentInstanceHTML,
   getContent,
-  getItem,
+  getItem: getLegacyItem,
   getDOM,
   getContentInstanceLookup,
   fetchContentTypes,
