@@ -18,7 +18,7 @@
  */
 
 import { catchApi1Error, get, post } from '../utils/ajax';
-import { map } from 'rxjs/operators';
+import { pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export function fetchDependencies(siteId: string, items: any) {
@@ -30,13 +30,7 @@ export function getSimpleDependencies(siteId: string, path: string): Observable<
     `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json?site=${siteId}&path=${path}`,
     null
   ).pipe(
-    map((response: any) => {
-      if (response.response) {
-        return response.response;
-      } else {
-        return response;
-      }
-    }),
+    pluck('response'),
     catchApi1Error
   );
 }
@@ -46,13 +40,7 @@ export function getDependant(siteId: string, path: string): Observable<any> {
     `/studio/api/1/services/api/1/dependency/get-dependant.json?site=${siteId}&path=${path}`,
     null
   ).pipe(
-    map((response: any) => {
-      if (response.response) {
-        return response.response;
-      } else {
-        return response;
-      }
-    }),
+    pluck('response'),
     catchApi1Error
   );
 }
