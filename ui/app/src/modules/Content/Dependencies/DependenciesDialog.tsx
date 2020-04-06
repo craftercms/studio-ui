@@ -40,9 +40,7 @@ const assetsTypes = {
   },
   'content-items': {
     label: <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only"/>,
-    filter: (dependency: Item) => {
-      return ((dependency.isComponent && !dependency.isAsset) || dependency.isPage)
-    }
+    filter: (dependency: Item) => ((dependency.isComponent && !dependency.isAsset) || dependency.isPage)
   },
   'assets': {
     label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only"/>,
