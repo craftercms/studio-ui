@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -43,7 +43,6 @@ import DialogFooter from '../../../components/DialogFooter';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 import Typography from '@material-ui/core/Typography';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { APIError, EntityState } from '../../../models/GlobalState';
 import { LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
@@ -134,7 +133,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface ContentTypesGridProps {
-  resource: Resource<LegacyFormConfig[]>;
+  resource: Resource<LegacyFormConfig[] | any>;
   isCompact: boolean;
 
   onTypeOpen(data: LegacyFormConfig): void;
@@ -193,8 +192,8 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const defaultFilterType = 'all';
   const { formatMessage } = useIntl();
   const classes = useStyles({});
-  const [contentTypes, setContentTypes] = useState(null);
-  const [filterContentTypes, setFilterContentTypes] = useState(null);
+  const contentTypes = useRef(null);
+  const [filterContentTypes, setFilterContentTypes] = useState([]);
   const [isCompact, setIsCompact] = useState(false);
   const [search, setSearch] = useState('');
   const [previewItem, setPreviewItem] = useState(null);
@@ -234,15 +233,14 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       type: 'favorite'
     }
   ];
-  const [error, setError] = useState<APIError>(null);
-  const resource = useStateResource<LegacyFormConfig[], EntityState<LegacyFormConfig>>(
+  const resource = useStateResource(
     filterContentTypes,
     {
-      shouldResolve: (data) => !!data,
-      shouldReject: () => !!error,
+      shouldResolve: (source) => !!source,
+      shouldReject: (source) => !source,
       shouldRenew: (source, resource) => resource.complete,
-      resultSelector: () => filterContentTypes,
-      errorSelector: () => error
+      resultSelector: (source) => source,
+      errorSelector: () => 'Error'
     }
   );
 
@@ -258,7 +256,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   const onResetFilter = useCallback(() => {
     setResetFilterType(defaultFilterType);
-    setFilterContentTypes(contentTypes);
+    setFilterContentTypes(contentTypes.current);
   }, [contentTypes]);
 
   const onTypeChange = useCallback(
@@ -266,7 +264,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       resetFilterType && setResetFilterType('');
 
       type !== defaultFilterType
-        ? setFilterContentTypes(contentTypes.filter((content) => content.type === type))
+        ? setFilterContentTypes(contentTypes.current.filter((content) => content.type === type))
         : onResetFilter();
     },
     [contentTypes, resetFilterType, onResetFilter]
@@ -279,7 +277,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       !keyword
         ? onResetFilter()
         : setFilterContentTypes(
-        contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue))
+        contentTypes.current.filter((content) => content.label.toLowerCase().includes(formatValue))
         );
     },
     [contentTypes, onResetFilter]
@@ -311,10 +309,10 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     fetchLegacyContentTypes(site, path).subscribe(
       (response) => {
         setFilterContentTypes(response);
-        setContentTypes(response);
+        contentTypes.current = response;
         setLoading(false);
       },
-      (error) => setError(error)
+      (error) => setFilterContentTypes(null)
     );
   }, [open, path, site]);
 
