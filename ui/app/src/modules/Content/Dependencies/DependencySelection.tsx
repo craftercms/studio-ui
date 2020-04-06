@@ -346,7 +346,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
                 <CenterCircularProgress/>
                 <span className={classes.circularProgressText}>
                   <FormattedMessage
-                    id="deleteDialog.uploadingDepenedents"
+                    id="deleteDialog.updatingDependents"
                     defaultMessage={`Updating dependents, please wait...`}
                   />
                 </span>
