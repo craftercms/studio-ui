@@ -47,6 +47,7 @@ import DialogBody from '../../../components/DialogBody';
 import DialogFooter from '../../../components/DialogFooter';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import clsx from 'clsx';
 
 const translations = defineMessages({
   headerTitle: {
@@ -212,7 +213,7 @@ function DependenciesList(props: DependenciesListProps) {
           .map(dependency =>
             <ListItem
               key={dependency.uri}
-              className={`${classes.dependenciesListItem} ${(state.compactView) ? classes.dependenciesCompactListItem : ''}`}
+              className={clsx(classes.dependenciesListItem, { [classes.dependenciesCompactListItem]: state.compactView })}
             >
               {
                 isImage(dependency.uri) && !state.compactView &&
