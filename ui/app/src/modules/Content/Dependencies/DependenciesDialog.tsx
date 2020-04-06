@@ -218,7 +218,6 @@ interface DependenciesListProps {
   resource: Resource<Item[]>;
   state: any;
   setState: Function;
-  assetsTypes: any;
   isEditableItem: Function;
   handleEditorDisplay: Function;
   contextMenuEl: HTMLElement;
@@ -233,7 +232,6 @@ function DependenciesList(props: DependenciesListProps) {
     resource,
     state,
     setState,
-    assetsTypes,
     isEditableItem,
     handleEditorDisplay,
     contextMenuEl,
@@ -320,7 +318,6 @@ interface DependenciesDialogUIProps {
   open: boolean;
   handleClose: any;
   isEditableItem: Function;
-  assetsTypes: any;
   editDialogConfig: any;
   setEditDialogConfig: Function;
   handleEditorDisplay: Function;
@@ -339,7 +336,6 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     open,
     handleClose,
     isEditableItem,
-    assetsTypes,
     editDialogConfig,
     setEditDialogConfig,
     handleEditorDisplay,
@@ -451,7 +447,6 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             resource={resource}
             state={state}
             setState={setState}
-            assetsTypes={assetsTypes}
             isEditableItem={isEditableItem}
             handleEditorDisplay={handleEditorDisplay}
             contextMenuEl={contextMenuEl}
@@ -635,7 +630,6 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       open={open}
       handleClose={handleClose}
       isEditableItem={isEditableAsset}
-      assetsTypes={assetsTypes}
       editDialogConfig={editDialogConfig}
       setEditDialogConfig={setEditDialogConfig}
       handleEditorDisplay={handleEditorDisplay}
