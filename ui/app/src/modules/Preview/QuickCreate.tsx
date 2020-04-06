@@ -91,13 +91,11 @@ interface QuickCreateMenuProps {
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const { anchorEl, onMenuClose, previewItem, onSaveLegacySuccess } = props;
   const classes = useStyles({});
-  const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [anchorEl, setAnchorEl] = useState(null);
   const [error, setError] = useState<APIError>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [dialogConfig, setDialogConfig] = useSpreadState({
