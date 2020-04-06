@@ -26,7 +26,7 @@ export const showNewContentDialog = createAction<Partial<NewContentDialogStatePr
 export const closeNewContentDialog = createAction<StandardAction>('CLOSE_NEW_CONTENT_DIALOG');
 
 export default createReducer<GlobalState['dialogs']['newContent']>(
-  { open: false, site: '', previewItem: { name: '', internalName: '', uri: '' } },
+  { open: false, site: '', compact: false, previewItem: { name: '', internalName: '', uri: '' } },
   {
     [showNewContentDialog.type]: (state, { payload }) => ({
       ...payload,

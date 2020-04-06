@@ -112,7 +112,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     dispatch(
       showNewContentDialog({
         site: siteId,
-        previewItem
+        previewItem,
+        compact: false
       })
     );
   };

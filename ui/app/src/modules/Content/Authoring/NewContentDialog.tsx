@@ -145,6 +145,7 @@ interface NewContentDialogBaseProps {
   open: boolean;
   site: string;
   previewItem: Item;
+  compact: boolean;
 
   onSaveLegacySuccess?(response): any;
 
@@ -187,14 +188,15 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     site,
     previewItem: previewItemProp,
     onSaveLegacySuccess,
-    onSaveSuccess
+    onSaveSuccess,
+    compact
   } = props;
   const defaultFilterType = 'all';
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const contentTypes = useRef(null);
   const [filterContentTypes, setFilterContentTypes] = useState([]);
-  const [isCompact, setIsCompact] = useState(false);
+  const [isCompact, setIsCompact] = useState(compact);
   const [search, setSearch] = useState('');
   const [previewItem, setPreviewItem] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -299,6 +301,10 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     content?.imageThumbnail
       ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}`
       : defaultPrevImgUrl;
+
+  useEffect(() => {
+    setIsCompact(compact)
+  }, [compact]);
 
   useEffect(() => {
     if (previewItemProp) setPreviewItem(previewItemProp);

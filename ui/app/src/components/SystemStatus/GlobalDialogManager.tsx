@@ -64,6 +64,7 @@ function GlobalDialogManager() {
         open={state.newContent.open}
         site={state.newContent.site}
         previewItem={state.newContent.previewItem}
+        compact={state.newContent.compact}
         onDialogClose={createCallback(state.newContent.onDialogClose, dispatch)}
       />
 
