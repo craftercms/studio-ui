@@ -163,7 +163,7 @@ export function DependencySelection(props: DependencySelectionProps) {
           title={
             <FormattedMessage
               id="publishDialog.itemsToPublish"
-              defaultMessage={`Items To Publish`}
+              defaultMessage="Items To Publish"
             />
           }
           items={items}
@@ -181,13 +181,13 @@ export function DependencySelection(props: DependencySelectionProps) {
                 title={
                   <FormattedMessage
                     id="publishDialog.hardDependencies"
-                    defaultMessage={`Hard Dependencies`}
+                    defaultMessage="Hard Dependencies"
                   />
                 }
                 subtitle={
                   <FormattedMessage
                     id="publishDialog.submissionMandatory"
-                    defaultMessage={`Submission Mandatory`}
+                    defaultMessage="Submission Mandatory"
                   />
                 }
                 uris={deps.items1}
@@ -198,13 +198,13 @@ export function DependencySelection(props: DependencySelectionProps) {
                 title={
                   <FormattedMessage
                     id="publishDialog.softDependencies"
-                    defaultMessage={`Soft Dependencies`}
+                    defaultMessage="Soft Dependencies"
                   />
                 }
                 subtitle={
                   <FormattedMessage
                     id="publishDialog.submissionOptional"
-                    defaultMessage={`Submission Optional`}
+                    defaultMessage="Submission Optional"
                   />
                 }
                 uris={deps.items2}
@@ -227,7 +227,7 @@ export function DependencySelection(props: DependencySelectionProps) {
               <span className={classes.circularProgressText}>
                 <FormattedMessage
                   id="publishDialog.loadingDependencies"
-                  defaultMessage={`Loading Dependencies, please wait{ellipsis}`}
+                  defaultMessage="Loading Dependencies, please wait{ellipsis}"
                   values={{ ellipsis: '&hellip;' }}
                 />
               </span>
@@ -243,7 +243,7 @@ export function DependencySelection(props: DependencySelectionProps) {
               >
                 <FormattedMessage
                   id="publishDialog.showAllDependencies"
-                  defaultMessage={`Show All Dependencies`}
+                  defaultMessage="Show All Dependencies"
                 />
               </Button>
             )
@@ -254,7 +254,7 @@ export function DependencySelection(props: DependencySelectionProps) {
           <p>
             <FormattedMessage
               id="publishDialog.changesInSelection"
-              defaultMessage={`Changes in the selection of items to publish will require "all dependencies" to be recalculated.`}
+              defaultMessage={'Changes in the selection of items to publish will require "all dependencies" to be recalculated.'}
             />
           </p>
         }
@@ -295,7 +295,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
           title={
             <FormattedMessage
               id="deleteDialog.deleteItems"
-              defaultMessage={`Delete Items`}
+              defaultMessage="Delete Items"
             />
           }
           items={items}
@@ -310,13 +310,13 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
             title={
               <FormattedMessage
                 id="deleteDialog.childItemsText"
-                defaultMessage={`Child Items`}
+                defaultMessage="Child Items"
               />
             }
             subtitle={
               <FormattedMessage
                 id="deleteDialog.willGetDeleted"
-                defaultMessage={` Will get deleted`}
+                defaultMessage="Will get deleted"
               />
             }
             uris={resultItems.childItems}
@@ -326,13 +326,13 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
             title={
               <FormattedMessage
                 id="deleteDialog.dependentItems"
-                defaultMessage={`Dependent Items`}
+                defaultMessage="Dependent Items"
               />
             }
             subtitle={
               <FormattedMessage
                 id="deleteDialog.brokenItems"
-                defaultMessage={` Will have broken references`}
+                defaultMessage="Will have broken references"
               />
             }
             uris={resultItems.dependentItems}
@@ -347,7 +347,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
                 <span className={classes.circularProgressText}>
                   <FormattedMessage
                     id="deleteDialog.updatingDependents"
-                    defaultMessage={`Updating dependents, please wait...`}
+                    defaultMessage="Updating dependents, please wait..."
                   />
                 </span>
               </div>
@@ -397,7 +397,7 @@ function SelectionList(props: SelectionListProps) {
           >
             <FormattedMessage
               id="common.selectAll"
-              defaultMessage={`Select All`}
+              defaultMessage="Select All"
             />
           </Button>
         ) : (null)
