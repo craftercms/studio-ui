@@ -255,13 +255,13 @@ function DeleteDialog(props: DeleteDialogProps) {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const resource = useStateResource<any, any>(
-    deleteDependencies,
+    { deleteDependencies, apiState },
     {
-      shouldResolve: (deleteDependencies) => Boolean(deleteDependencies),
-      shouldReject: () => Boolean(apiState.error),
+      shouldResolve: (source) => Boolean(source.deleteDependencies),
+      shouldReject: (source) => Boolean(source.apiState.error),
       shouldRenew: (source, resource) => resource.complete,
-      resultSelector: () => deleteDependencies,
-      errorSelector: () => apiState.error
+      resultSelector: (source) => source.deleteDependencies,
+      errorSelector: (source) => source.apiState.error
     }
   );
 
