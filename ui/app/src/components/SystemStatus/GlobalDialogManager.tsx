@@ -66,7 +66,7 @@ function GlobalDialogManager() {
       <DependenciesDialog
         open={state.dependencies.open}
         item={state.dependencies.item}
-        dependenciesSelection={state.dependencies.dependenciesSelection}
+        dependenciesShown={state.dependencies.dependenciesShown}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
       />
       {/* endregion */}

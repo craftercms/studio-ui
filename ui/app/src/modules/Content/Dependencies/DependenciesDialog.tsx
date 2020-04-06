@@ -53,7 +53,7 @@ import Radio from '@material-ui/core/Radio';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 
 const dialogInitialState = {
-  selectedOption: 'depends-on',
+  dependenciesShown: 'depends-on',
   dependantItems: null,
   dependencies: null,
   compactView: false,
@@ -391,9 +391,9 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 
           <FormControl className={classes.formControl}>
             <Select
-              value={state.selectedOption}
+              value={state.dependenciesShown}
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                setState({ selectedOption: event.target.value as string });
+                setState({ dependenciesShown: event.target.value as string });
               }}
               inputProps={{
                 className: classes.select
@@ -519,7 +519,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 interface DependenciesDialogBaseProps {
   open: boolean;
   item?: Item;
-  dependenciesSelection?: string;
+  dependenciesShown?: string;
 }
 
 export type DependenciesDialogProps = PropsWithChildren<DependenciesDialogBaseProps & {
@@ -532,11 +532,11 @@ export interface DependenciesDialogStateProps extends DependenciesDialogBaseProp
 }
 
 function DependenciesDialog(props: DependenciesDialogProps) {
-  const { open, item, dependenciesSelection, onClose } = props;
+  const { open, item, dependenciesShown, onClose } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
-    selectedOption: dependenciesSelection
+    dependenciesShown
   });
   const [deps, setDeps] = useState(null);
   const [error, setError] = useState<APIError>(null);
@@ -588,8 +588,8 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   },[item]);
 
   useEffect(() => {
-    setDialog({ selectedOption: dependenciesSelection });
-  },[dependenciesSelection]);
+    setDialog({ dependenciesShown });
+  }, [dependenciesShown]);
 
   useEffect(() => {
     if(dialog.item) {
@@ -599,7 +599,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       }).subscribe(
         ({dependant, dependencies}) => {
           setDialog({ dependantItems: dependant, dependencies });
-          setDeps(dialog.selectedOption === 'depends-on' ? dependant: dependencies);
+          setDeps(dialog.dependenciesShown === 'depends-on' ? dependant : dependencies);
         },
         (error) => setError(error)
       );
@@ -607,12 +607,12 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   }, [dialog.item, setError, setDialog, siteId]);
 
   useEffect(() => {
-    if (dialog.selectedOption === 'depends-on') {
+    if (dialog.dependenciesShown === 'depends-on') {
       setDeps(dialog.dependantItems);
     } else {
       setDeps(dialog.dependencies);
     }
-  }, [dialog.selectedOption, dialog.dependantItems, dialog.dependencies]);
+  }, [dialog.dependenciesShown, dialog.dependantItems, dialog.dependencies]);
 
   const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setContextMenuEl(event.currentTarget);

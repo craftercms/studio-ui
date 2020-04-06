@@ -72,7 +72,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   const [dependenciesDialog, setDependenciesDialog] = useSpreadState({
     item: null,
-    dependenciesSelection: 'depends-on'
+    dependenciesShown: 'depends-on'
   });
 
   const [error, setError] = useState<APIError>(null);
@@ -112,7 +112,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       case 'dependencies' : {
         dispatch(showDependenciesDialog({
           item: dependenciesDialog.item,
-          dependenciesSelection: dependenciesDialog.dependenciesSelection
+          dependenciesShown: dependenciesDialog.dependenciesShown
         }));
 
         break;
