@@ -21,7 +21,9 @@ import { get } from '../utils/ajax';
 import { pluck } from 'rxjs/operators';
 
 export function fetchDependencies(siteId: string, items: any) {
-  return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`)
+  return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`).pipe(
+    pluck('response', 'items')
+  )
 }
 
 export function fetchDeleteDependencies(siteId: string, paths: string[]) {

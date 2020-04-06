@@ -20,6 +20,7 @@ import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import ConfirmDialog from '../UserControl/ConfirmDialog';
+import ErrorDialog from './ErrorDialog';
 import DeleteDialog from '../../modules/Content/Delete/DeleteDialog';
 
 function createCallback(
@@ -47,7 +48,7 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Error */}
-
+      <ErrorDialog error={state.error.error} onClose={createCallback(state.error.onClose, dispatch)}/>
       {/* endregion */}
 
       {/* region Edit (Embedded Legacy Editor) */}

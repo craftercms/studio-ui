@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from 'jquery/dist/jquery';
+import $ from 'jquery';
 import { message$, post } from './communicator';
 import { filter, map } from 'rxjs/operators';
 import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './util';
