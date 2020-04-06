@@ -405,7 +405,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 
           <FormControl className={classes.formControl}>
             <Select
-              value={dependenciesShown}
+              value={dependenciesShown ?? 'depends-on'}
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
                 setDependenciesShown(event.target.value);
               }}
@@ -589,8 +589,8 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       shouldResolve: (deps) => Boolean(deps),
       shouldReject: () => Boolean(error),
       shouldRenew: (source, resource) => resource.complete,
-      resultSelector: () => deps,
-      errorSelector: () => error
+      resultSelector: (source) => source,
+      errorSelector: (error) => error
     }
   );
 
