@@ -65,41 +65,21 @@ const translations = defineMessages({
     id: 'compactInput.label',
     defaultMessage: 'Compact'
   },
-  contentTypeAll: {
-    id: 'contentTypeAll.type',
-    defaultMessage: 'all'
-  },
   contentTypeAllLabel: {
     id: 'contentTypeAll.label',
     defaultMessage: 'Show all types'
-  },
-  contentTypePage: {
-    id: 'contentTypePage.type',
-    defaultMessage: 'page'
   },
   contentTypePageLabel: {
     id: 'contentTypePage.label',
     defaultMessage: 'Pages only'
   },
-  contentTypeComponent: {
-    id: 'contentTypeComponent.type',
-    defaultMessage: 'component'
-  },
   contentTypeComponentLabel: {
     id: 'contentTypeComponent.label',
     defaultMessage: 'Components only'
   },
-  contentTypeQuickCreate: {
-    id: 'contentTypeQuickCreate.type',
-    defaultMessage: 'quickCreate'
-  },
   contentTypeQuickCreateLabel: {
     id: 'contentTypeQuickCreate.label',
     defaultMessage: 'Quick create only'
-  },
-  contentTypeFavorite: {
-    id: 'contentTypeFavorite.type',
-    defaultMessage: 'favorite'
   },
   contentTypeFavoriteLabel: {
     id: 'contentTypeFavorite.label',
@@ -247,23 +227,23 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const contentTypesFilters = [
     {
       label: formatMessage(translations.contentTypeAllLabel),
-      type: formatMessage(translations.contentTypeAll)
+      type: 'all'
     },
     {
       label: formatMessage(translations.contentTypePageLabel),
-      type: formatMessage(translations.contentTypePage)
+      type: 'page'
     },
     {
       label: formatMessage(translations.contentTypeComponentLabel),
-      type: formatMessage(translations.contentTypeComponent)
+      type: 'component'
     },
     {
       label: formatMessage(translations.contentTypeQuickCreateLabel),
-      type: formatMessage(translations.contentTypeQuickCreate)
+      type: 'quickCreate'
     },
     {
       label: formatMessage(translations.contentTypeFavoriteLabel),
-      type: formatMessage(translations.contentTypeFavorite)
+      type: 'favorite'
     }
   ];
   const [error, setError] = useState<APIError>(null);
