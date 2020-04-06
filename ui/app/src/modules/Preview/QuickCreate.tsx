@@ -91,7 +91,6 @@ interface QuickCreateMenuProps {
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const { anchorEl, onMenuClose, previewItem, onSaveLegacySuccess } = props;
   const classes = useStyles({});
-  const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
