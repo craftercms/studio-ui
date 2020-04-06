@@ -31,6 +31,8 @@ import NewContentDialog from '../Content/Authoring/NewContentDialog';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { Item } from '../../models/Item';
+import { APIError } from '../../models/GlobalState';
+import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -95,6 +97,9 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [error, setError] = useState<APIError>(null);
+  const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
     src: defaultFormSrc,
@@ -131,7 +136,10 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
   useEffect(() => {
     if (siteId) {
-      getQuickCreateContentList(siteId).subscribe((data) => setQuickCreateContentList(data.items));
+      getQuickCreateContentList(siteId).subscribe(
+        (data) => setQuickCreateContentList(data.items),
+        error => setError(error.response.response)
+      );
     }
   }, [siteId]);
 
@@ -176,6 +184,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         onSaveLegacySuccess={onSaveLegacySuccess}
         onSaveSuccess={onEmbeddedFormSaveSuccess}
       />
+      <ErrorDialog error={error} onClose={() => setError(null)} />
     </>
   );
 }

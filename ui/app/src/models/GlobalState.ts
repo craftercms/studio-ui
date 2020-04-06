@@ -25,6 +25,7 @@ import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeReceptacle } from './ContentTypeReceptacle';
 import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog';
+import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 
 export interface APIError {
   code?: number | string;
@@ -75,6 +76,7 @@ export interface GlobalState {
   user: User;
   sites: {
     active: string;
+    isFetching: boolean;
     byId: LookupTable<Site>;
   };
   contentTypes: EntityState<ContentType>;
@@ -112,6 +114,7 @@ export interface GlobalState {
   };
   dialogs: {
     confirm: ConfirmDialogStateProps;
+    error: ErrorDialogStateProps;
   };
 }
 
