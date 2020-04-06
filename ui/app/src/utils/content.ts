@@ -66,8 +66,8 @@ export function isImage(path: string) {
     path.endsWith('.jpg')
     || path.endsWith('.png')
     || path.endsWith('.svg')
-    || path.endsWith('jpeg')
-    || path.endsWith('gif')
+    || path.endsWith('.jpeg')
+    || path.endsWith('.gif')
   );
 }
 
