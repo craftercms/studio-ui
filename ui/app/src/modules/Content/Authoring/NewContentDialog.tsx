@@ -57,32 +57,28 @@ const translations = defineMessages({
     id: 'newContentDialog.subtitle',
     defaultMessage: 'Choose a content type template for your new content item.'
   },
-  previewImage: {
-    id: 'previewImage.alt',
-    defaultMessage: 'preview'
-  },
   compactInput: {
-    id: 'compactInput.label',
+    id: 'newContentDialog.compactInputLabel',
     defaultMessage: 'Compact'
   },
   contentTypeAllLabel: {
-    id: 'contentTypeAll.label',
+    id: 'newContentDialog.contentTypeAllLabel',
     defaultMessage: 'Show all types'
   },
   contentTypePageLabel: {
-    id: 'contentTypePage.label',
+    id: 'newContentDialog.contentTypePageLabel',
     defaultMessage: 'Pages only'
   },
   contentTypeComponentLabel: {
-    id: 'contentTypeComponent.label',
+    id: 'newContentDialog.contentTypeComponentLabel',
     defaultMessage: 'Components only'
   },
   contentTypeQuickCreateLabel: {
-    id: 'contentTypeQuickCreate.label',
+    id: 'newContentDialog.contentTypeQuickCreateLabel',
     defaultMessage: 'Quick create only'
   },
   contentTypeFavoriteLabel: {
-    id: 'contentTypeFavorite.label',
+    id: 'newContentDialog.contentTypeFavoriteLabel',
     defaultMessage: 'Favorites only'
   }
 });
@@ -177,7 +173,6 @@ function ContentTypesGrid(props: ContentTypesGridProps) {
             isCompact={isCompact}
             headerTitle={content.label}
             subheader={content.form}
-            imgTitle={formatMessage(translations.previewImage)}
             img={getPrevImg(content)}
             onClick={onTypeOpen(content)}
           />

@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 interface NewContentCardProps {
   headerTitle: string;
   subheader: string;
-  imgTitle: string;
+  imgTitle?: string;
   img: string;
   onClick: any;
   isCompact: boolean;
