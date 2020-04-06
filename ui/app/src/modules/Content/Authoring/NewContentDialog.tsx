@@ -137,12 +137,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const defaultPreviewItem: Item = {
-  name: 'Home',
-  internalName: 'Home',
-  uri: '/site/website/index.xml'
-};
-
 interface ContentTypesGridProps {
   resource: Resource<LegacyFormConfig[]>;
   isCompact: boolean;
@@ -209,7 +203,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [filterContentTypes, setFilterContentTypes] = useState(null);
   const [isCompact, setIsCompact] = useState(false);
   const [search, setSearch] = useState('');
-  const [previewItem, setPreviewItem] = useState(defaultPreviewItem);
+  const [previewItem, setPreviewItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [resetFilterType, setResetFilterType] = useState(defaultFilterType);
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
@@ -223,7 +217,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl =
     '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  const path = previewItem.uri.replace(/[^/]*$/, '');
+  const path = previewItem?.uri.replace(/[^/]*$/, '');
   const contentTypesFilters = [
     {
       label: formatMessage(translations.contentTypeAllLabel),

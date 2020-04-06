@@ -64,7 +64,11 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         previewItem:
           CStudioAuthoring && CStudioAuthoring.SelectedContent.selectedContent.length
             ? CStudioAuthoring.SelectedContent.selectedContent[0]
-            : null,
+            : {
+              name: 'Home',
+              internalName: 'Home',
+              uri: '/site/website/index.xml'
+            },
         anchorEl,
         onMenuClose: () => renderQuickCreate(null)
       }).then((done) => (unmount = done.unmount));
