@@ -21,6 +21,7 @@ import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import ConfirmDialog from '../UserControl/ConfirmDialog';
 import ErrorDialog from './ErrorDialog';
+import HistoryDialog from '../../modules/Content/History/HistoryDialog';
 
 function createCallback(
   action: StandardAction,
@@ -71,7 +72,12 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region History */}
-
+      <HistoryDialog
+        open={state.history.open}
+        site={state.history.site}
+        path={state.history.path}
+        onClose={createCallback(state.history.onClose, dispatch)}
+      />
       {/* endregion */}
 
       {/* region SnackBar(s) */}

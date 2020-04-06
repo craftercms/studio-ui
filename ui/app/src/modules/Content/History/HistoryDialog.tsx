@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
 import { defineMessages, FormattedDateParts, FormattedMessage, FormattedTime, useIntl } from 'react-intl';
@@ -42,6 +42,7 @@ import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
 import clsx from 'clsx';
+import StandardAction from '../../../models/StandardAction';
 
 const translations = defineMessages({
   previousPage: {
@@ -388,13 +389,28 @@ interface Data {
   versions: LegacyVersion[]
 }
 
-export default function HistoryDialog(props) {
+interface HistoryDialogBaseProps {
+  open: boolean;
+  site: string;
+  path: string;
+}
+
+export type HistoryDialogProps = PropsWithChildren<
+  HistoryDialogBaseProps & {
+  onClose?(): any;
+}
+>;
+
+export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
+  onClose?: StandardAction;
+}
+
+export default function HistoryDialog(props: HistoryDialogProps) {
   const {
-    open = true,
-    handleClose = () => {
-    },
-    site = 'editorial',
-    path = '/site/website/index.xml'
+    open,
+    onClose,
+    site,
+    path
   } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
@@ -423,15 +439,17 @@ export default function HistoryDialog(props) {
   });
 
   useEffect(() => {
-    getItemVersions(site, path).subscribe(
-      (response) => {
-        setData({ contentItem: response.item, versions: response.versions });
-      },
-      (response) => {
-        setError(response);
-      }
-    );
-  }, [site, path]);
+    if(open) {
+      getItemVersions(site, path).subscribe(
+        (response) => {
+          setData({ contentItem: response.item, versions: response.versions });
+        },
+        (response) => {
+          setError(response);
+        }
+      );
+    }
+  }, [site, path, open]);
 
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false) => {
@@ -499,7 +517,7 @@ export default function HistoryDialog(props) {
   };
 
   return (
-    <Dialog onClose={handleClose} open={open} fullWidth maxWidth="md">
+    <Dialog onClose={onClose} open={open} fullWidth maxWidth="md">
       <DialogHeader
         title={
           compareTo.version ?
@@ -524,7 +542,7 @@ export default function HistoryDialog(props) {
               />
             )
         }
-        onClose={handleClose}
+        onClose={onClose}
         onBack={compareTo.version ? handleBack : null}
       />
       <DialogBody>
@@ -532,17 +550,16 @@ export default function HistoryDialog(props) {
           compareTo.version && compareTo.nextVersion ? (
             <CompareRevision compareTo={compareTo}/>
           ) : (
-            <SuspenseWithEmptyState
-              resource={resource}
-              component={HistoryList}
-              componentProps={{
-                handleOpenMenu,
-                handleItemClick,
-                rowsPerPage,
-                page,
-                compareTo
-              }}
-            />
+            <SuspenseWithEmptyState resource={resource}>
+              <HistoryList
+                resource={resource}
+                handleOpenMenu={handleOpenMenu}
+                handleItemClick={handleItemClick}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                compareTo={compareTo}
+              />
+            </SuspenseWithEmptyState>
           )
         }
 

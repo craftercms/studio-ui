@@ -22,7 +22,6 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
-import React from 'react';
 import React, { PropsWithChildren } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 
@@ -49,6 +48,7 @@ const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
 }));
 
 export type DialogTitleProps = PropsWithChildren<{
+  id?: string;
   title: string | JSX.Element;
   titleTypographyProps?: {
     variant?: any;
@@ -64,7 +64,7 @@ export type DialogTitleProps = PropsWithChildren<{
   icon?: any;
   backIcon?: any;
 
-  onClose(): void;
+  onClose?(): void;
   onBack?(): void;
 }>;
 
