@@ -383,10 +383,18 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               withEmptyStateProps={{
                 emptyStateProps: {
                   title: (
-                    <FormattedMessage
-                      id="dependenciesDialog.emptyStateMessage"
-                      defaultMessage="No Dependencies found"
-                    />
+                    state.dependenciesSelection === 'depends-on' ?
+                      <FormattedMessage
+                        id="dependenciesDialog.emptyDependantsMessage"
+                        defaultMessage={'"{itemName}" has no dependencies'}
+                        values={{ itemName: state.item?.['internalName'] }}
+                      />
+                      :
+                      <FormattedMessage
+                        id="dependenciesDialog.emptyDependenciesMessage"
+                        defaultMessage={'Nothing depends on "{itemName}"'}
+                        values={{ itemName: state.item?.['internalName'] }}
+                      />
                   ),
                   classes: {
                     root: classes.suspense
