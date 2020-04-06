@@ -27,12 +27,12 @@ import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
 import { useActiveSiteId, useSpreadState, useSelection, usePreviewState } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
-import NewContentDialog from '../Content/Authoring/NewContentDialog';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { Item } from '../../models/Item';
 import { APIError } from '../../models/GlobalState';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
+import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -91,7 +91,7 @@ interface QuickCreateMenuProps {
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const { anchorEl, onMenuClose, previewItem, onSaveLegacySuccess } = props;
   const classes = useStyles({});
-  const [displayNewContentDialog, setDisplayNewContentDialog] = useState(false);
+  const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
@@ -110,7 +110,12 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
   const onNewContentClick = () => {
     onMenuClose();
-    setDisplayNewContentDialog(true);
+    dispatch(
+      showNewContentDialog({
+        site: siteId,
+        previewItem
+      })
+    );
   };
 
   const onFormDisplay = (srcData) => () => {
@@ -126,10 +131,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
       open: true,
       src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`
     });
-  };
-
-  const onDialogClose = () => {
-    setDisplayNewContentDialog(false);
   };
 
   useEffect(() => {
@@ -174,14 +175,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           onSaveSuccess={onEmbeddedFormSaveSuccess}
         />
       )}
-      <NewContentDialog
-        open={displayNewContentDialog}
-        onDialogClose={onDialogClose}
-        site={siteId}
-        previewItem={previewItem}
-        onSaveLegacySuccess={onSaveLegacySuccess}
-        onSaveSuccess={onEmbeddedFormSaveSuccess}
-      />
       <ErrorDialog error={error} onClose={() => setError(null)} />
     </>
   );

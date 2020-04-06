@@ -22,6 +22,7 @@ import {
   useActiveSiteId,
   useDebouncedInput,
   useSelection,
+  useStateResource,
   useStateResourceSelection
 } from '../../../utils/hooks';
 import { MediaItem } from '../../../models/Search';
@@ -32,7 +33,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../../models/GlobalState';
 import TablePagination from '@material-ui/core/TablePagination';
 import { fromEvent, interval } from 'rxjs';
-import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
 import {
@@ -40,14 +40,13 @@ import {
   ASSET_DRAG_STARTED,
   fetchAssetsPanelItems
 } from '../../../state/actions/preview';
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
-import EmptyState from '../../../components/SystemStatus/EmptyState';
 import UploadIcon from '@material-ui/icons/Publish';
 import { nnou, pluckProps } from '../../../utils/object';
 import { palette } from '../../../styles/theme';
 import { uploadDataUrl } from '../../../services/content';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 
 const translations = defineMessages({
   assetsPanel: {
@@ -73,6 +72,10 @@ const translations = defineMessages({
   retrieveAssets: {
     id: 'craftercms.ice.assets.retrieveAssets',
     defaultMessage: 'Retrieving Site Assets'
+  },
+  error: {
+    id: 'craftercms.ice.assets.loadingErrorMessage',
+    defaultMessage: 'Error Loading Site Assets'
   }
 });
 
@@ -166,6 +169,7 @@ export default function AssetsPanel() {
   const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [dragInProgress, setDragInProgress] = useState(false);
+  const [error, setError] = useState(null);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
   const resource = useStateResourceSelection<AssetResource, PagedEntityState<MediaItem>>(
@@ -173,7 +177,10 @@ export default function AssetsPanel() {
     {
       shouldRenew: (source, resource) => resource.complete,
       shouldResolve: (source) => !source.isFetching && nnou(source.page[source.pageNumber]),
-      shouldReject: (source) => nnou(source.error),
+      shouldReject: (source) => {
+        setError(source.error);
+        return nnou(source.error);
+      },
       errorSelector: (source) => source.error,
       resultSelector: (source) => {
         const items = source.page[source.pageNumber].map((id) => source.byId[id]);
@@ -187,7 +194,6 @@ export default function AssetsPanel() {
   const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelector<GlobalState, GlobalState['env']>(
     (state) => state.env
   );
-  const { formatMessage } = useIntl();
   const site = useActiveSiteId();
   const elementRef = useRef();
 
@@ -299,40 +305,73 @@ export default function AssetsPanel() {
       title={translations.assetsPanel}
       classes={dragInProgress ? { body: classes.noScroll } : null}
     >
-      <ErrorBoundary>
-        <div ref={elementRef}>
-          <div className={classes.search}>
-            <SearchBar onChange={handleSearchKeyword} keyword={keyword} />
-          </div>
-          <React.Suspense
-            fallback={<LoadingState title={formatMessage(translations.retrieveAssets)} />}
-          >
-            {dragInProgress && (
-              <div className={classes.uploadOverlay}>
-                <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
-              </div>
-            )}
-            <AssetsPanelUI
-              classes={classes}
-              assetsResource={resource}
-              onPageChanged={onPageChanged}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
-              GUEST_BASE={GUEST_BASE}
-              onDragDrop={onDragDrop}
-            />
-          </React.Suspense>
+      <div ref={elementRef}>
+        <div className={classes.search}>
+          <SearchBar onChange={handleSearchKeyword} keyword={keyword} />
         </div>
-      </ErrorBoundary>
+        {dragInProgress && (
+          <div className={classes.uploadOverlay}>
+            <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
+          </div>
+        )}
+        <AssetsPanelUI
+          classes={classes}
+          assetsResource={resource}
+          onPageChanged={onPageChanged}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
+          GUEST_BASE={GUEST_BASE}
+          onDragDrop={onDragDrop}
+          error={error}
+        />
+      </div>
     </ToolPanel>
   );
 }
 
+function Assets(props) {
+  const { classes, resource, GUEST_BASE, onDragStart, onDragEnd } = props;
+  const items = resource.read();
+  return (
+    <>
+      {items.map((item: MediaItem) => {
+        return (
+          <MediaCard
+            key={item.path}
+            item={item}
+            previewAppBaseUri={GUEST_BASE}
+            hasSubheader={false}
+            avatar={DragIndicatorRounded}
+            classes={{ root: classes.card }}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+          />
+        );
+      })}
+    </>
+  );
+}
+
 export function AssetsPanelUI(props) {
-  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, GUEST_BASE } = props;
+  const {
+    classes,
+    assetsResource,
+    onPageChanged,
+    onDragStart,
+    onDragEnd,
+    GUEST_BASE,
+    error
+  } = props;
   const assets: AssetResource = assetsResource.read();
   const { count, pageNumber, items, limit } = assets;
   const { formatMessage } = useIntl();
+  const resource = useStateResource(items, {
+    shouldResolve: (source) => !!source.length,
+    shouldReject: (source) => !source.length,
+    shouldRenew: (source, resource) => resource.complete,
+    resultSelector: (source) => source,
+    errorSelector: () => error || formatMessage(translations.error)
+  });
 
   return (
     <div className={classes.assetsPanelWrapper}>
@@ -354,26 +393,25 @@ export function AssetsPanelUI(props) {
           onPageChanged(e, page * limit)
         }
       />
-      {items.map((item: MediaItem) => {
-        return (
-          <MediaCard
-            key={item.path}
-            item={item}
-            previewAppBaseUri={GUEST_BASE}
-            hasSubheader={false}
-            avatar={DragIndicatorRounded}
-            classes={{ root: classes.card }}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-          />
-        );
-      })}
-      {count === 0 && (
-        <EmptyState
-          title={formatMessage(translations.noResults)}
-          classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+      <SuspenseWithEmptyState
+        resource={resource}
+        loadingStateProps={{
+          title: formatMessage(translations.retrieveAssets)
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: formatMessage(translations.noResults)
+          }
+        }}
+      >
+        <Assets
+          classes={classes}
+          resource={resource}
+          GUEST_BASE={GUEST_BASE}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
         />
-      )}
+      </SuspenseWithEmptyState>
     </div>
   );
 }
