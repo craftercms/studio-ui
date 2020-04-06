@@ -34,6 +34,9 @@ export function isAsset(path: string) {
   return (
     path.endsWith('.jpg')
     || path.endsWith('.png')
+    || path.endsWith('.svg')
+    || path.endsWith('.jpeg')
+    || path.endsWith('.gif')
     || path.endsWith('.pdf')
     || path.endsWith('.doc')
     || path.endsWith('.docx')

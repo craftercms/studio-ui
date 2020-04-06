@@ -216,8 +216,9 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
 
 interface DependenciesListProps {
   resource: Resource<Item[]>;
-  state: any;
-  setState: Function;
+  setItem: Function;
+  compactView: boolean;
+  showTypes: string;
   isEditableItem: Function;
   handleEditorDisplay: Function;
   contextMenuEl: HTMLElement;
@@ -230,8 +231,9 @@ interface DependenciesListProps {
 function DependenciesList(props: DependenciesListProps) {
   const {
     resource,
-    state,
-    setState,
+    setItem,
+    compactView,
+    showTypes,
     isEditableItem,
     handleEditorDisplay,
     contextMenuEl,
@@ -245,14 +247,14 @@ function DependenciesList(props: DependenciesListProps) {
     <List className={classes.dependenciesList}>
       {
         dependencies
-          .filter(dependency => assetsTypes[state.showTypes].filter(dependency))
+          .filter(dependency => assetsTypes[showTypes].filter(dependency))
           .map(dependency =>
             <ListItem
               key={dependency.uri}
-              className={clsx(classes.dependenciesListItem, { [classes.dependenciesCompactListItem]: state.compactView })}
+              className={clsx(classes.dependenciesListItem, { [classes.dependenciesCompactListItem]: compactView })}
             >
               {
-                isImage(dependency.uri) && !state.compactView &&
+                isImage(dependency.uri) && !compactView &&
                 <ListItemAvatar>
                   <Avatar className={classes.listItemPreview} src={dependency.uri}/>
                 </ListItemAvatar>
@@ -260,7 +262,7 @@ function DependenciesList(props: DependenciesListProps) {
               <ListItemText
                 className={classes.listItemContent}
                 primary={dependency.internalName}
-                secondary={(!state.compactView) ? dependency.uri : null}
+                secondary={(!compactView) ? dependency.uri : null}
               />
 
               <IconButton
@@ -288,7 +290,7 @@ function DependenciesList(props: DependenciesListProps) {
                   </MenuItem>
                 }
                 <MenuItem onClick={() => {
-                  setState({ item: dependency });
+                  setItem(dependency);
                   handleContextMenuClose();
                 }}>
                   <FormattedMessage
@@ -313,9 +315,15 @@ function DependenciesList(props: DependenciesListProps) {
 
 interface DependenciesDialogUIProps {
   resource: Resource<Item[]>
-  state: any;
-  setState: Function;
   open: boolean;
+  item: Item;
+  setItem: Function;
+  compactView: boolean;
+  setCompactView: Function;
+  showTypes: string;
+  setShowTypes: Function;
+  dependenciesShown: string;
+  setDependenciesShown: Function;
   handleClose: any;
   isEditableItem: Function;
   editDialogConfig: any;
@@ -331,9 +339,15 @@ interface DependenciesDialogUIProps {
 function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const {
     resource,
-    state,
-    setState,
     open,
+    item,
+    setItem,
+    compactView,
+    setCompactView,
+    showTypes,
+    setShowTypes,
+    dependenciesShown,
+    setDependenciesShown,
     handleClose,
     isEditableItem,
     editDialogConfig,
@@ -364,13 +378,13 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
       <DialogBody>
         <div className={classes.selectionContent}>
           {
-            state.item &&
+            item &&
             <Chip
               variant="outlined"
-              deleteIcon={isEditableItem(state.item.uri) ? <CreateIcon/> : null}
-              onDelete={isEditableItem(state.item.uri) ?
+              deleteIcon={isEditableItem(item.uri) ? <CreateIcon/> : null}
+              onDelete={isEditableItem(item.uri) ?
                 () => {
-                  handleEditorDisplay(state.item);
+                  handleEditorDisplay(item);
                 } :
                 null
               }
@@ -383,7 +397,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                 <>
                   <span className='label'>Selected</span>
                   <InsertDriveFileOutlinedIcon className='item-icon'/>
-                  <span className='item-title'>{state.item.internalName}</span>
+                  <span className='item-title'>{item.internalName}</span>
                 </>
               }
             />
@@ -391,9 +405,9 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 
           <FormControl className={classes.formControl}>
             <Select
-              value={state.dependenciesShown}
+              value={dependenciesShown}
               onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-                setState({ dependenciesShown: event.target.value as string });
+                setDependenciesShown(event.target.value);
               }}
               inputProps={{
                 className: classes.select
@@ -419,17 +433,17 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           withEmptyStateProps={{
             emptyStateProps: {
               title: (
-                state.dependenciesSelection === 'depends-on' ?
+                dependenciesShown === 'depends-on' ?
                   <FormattedMessage
                     id="dependenciesDialog.emptyDependantsMessage"
                     defaultMessage={'"{itemName}" has no dependencies'}
-                    values={{ itemName: state.item?.['internalName'] }}
+                    values={{ itemName: item?.['internalName'] }}
                   />
                   :
                   <FormattedMessage
                     id="dependenciesDialog.emptyDependenciesMessage"
                     defaultMessage={'Nothing depends on "{itemName}"'}
-                    values={{ itemName: state.item?.['internalName'] }}
+                    values={{ itemName: item?.['internalName'] }}
                   />
               ),
               classes: {
@@ -445,8 +459,9 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         >
           <DependenciesList
             resource={resource}
-            state={state}
-            setState={setState}
+            setItem={setItem}
+            compactView={compactView}
+            showTypes={showTypes}
             isEditableItem={isEditableItem}
             handleEditorDisplay={handleEditorDisplay}
             contextMenuEl={contextMenuEl}
@@ -464,9 +479,9 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           className={classes.compactViewAction}
           control={
             <Checkbox
-              checked={state.compactView}
+              checked={compactView}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setState({ compactView: event.target.checked });
+                setCompactView(event.target.checked);
               }}
               color="primary"
             />
@@ -475,9 +490,9 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         />
         <FormControl className={classes.formControl}>
           <Select
-            value={state.showTypes}
+            value={showTypes}
             onChange={(event: React.ChangeEvent<{ value: unknown }>) => {
-              setState({ showTypes: event.target.value as string });
+              setShowTypes(event.target.value);
             }}
             inputProps={{
               className: `${classes.select} ${classes.showTypesSelect}`
@@ -496,7 +511,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                 (
                   <MenuItem value={typeId} key={typeId}>
                     <Radio
-                      checked={state.showTypes === typeId}
+                      checked={showTypes === typeId}
                       color="primary"
                     />
                     {assetsTypes[typeId].label}
@@ -614,6 +629,22 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     }
   }, [dialog.dependenciesShown, dialog.dependantItems, dialog.dependencies]);
 
+  const setCompactView = (active: boolean) => {
+    setDialog({ compactView: active });
+  };
+
+  const setShowTypes = (showTypes: string) => {
+    setDialog({ showTypes });
+  };
+
+  const setItem = (item: Item) => {
+    setDialog({ item })
+  };
+
+  const setDependenciesShow = (dependenciesShown: string) => {
+    setDialog({ dependenciesShown });
+  };
+
   const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setContextMenuEl(event.currentTarget);
   };
@@ -625,9 +656,15 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   return (
     <DependenciesDialogUI
       resource={resource}
-      state={dialog}
-      setState={setDialog}
       open={open}
+      item={dialog.item}
+      setItem={setItem}
+      compactView={dialog.compactView}
+      setCompactView={setCompactView}
+      showTypes={dialog.showTypes}
+      setShowTypes={setShowTypes}
+      dependenciesShown={dialog.dependenciesShown}
+      setDependenciesShown={setDependenciesShow}
       handleClose={handleClose}
       isEditableItem={isEditableAsset}
       editDialogConfig={editDialogConfig}
