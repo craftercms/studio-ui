@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useEffect, useState } from 'react';
+import React, { ElementType, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { palette } from '../../styles/theme';
-import { fetchSites } from '../../services/sites';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -39,13 +38,13 @@ import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
 import { forkJoin, Observable } from 'rxjs';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, useEnv } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useSelection } from '../../utils/hooks';
 import { forEach } from '../../utils/array';
 import { getInnerHtml } from '../../utils/xml';
 import { createStyles } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
-import { changeSite } from '../../state/actions/sites';
 import { camelize, popPiece } from '../../utils/string';
+import { changeSite, fetchSites } from '../../state/reducers/sites';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -295,7 +294,8 @@ interface GlobalNavProps {
 export default function GlobalNav(props: GlobalNavProps) {
   const { anchor, onMenuClose, rolesBySite } = props;
   const classes = globalNavStyles({});
-  const [sites, setSites] = useState(null);
+  const sitesState = useSelection(state => state.sites);
+  const sites = useMemo(() => Object.values(sitesState.byId), [sitesState]);
   const [menuItems, setMenuItems] = useState(null);
   const [siteMenu, setSiteMenu] = useState(null);
   const [apiState, setApiState] = useState({
@@ -340,27 +340,26 @@ export default function GlobalNav(props: GlobalNavProps) {
   }
 
   useEffect(() => {
-    const requests: Observable<any>[] = [fetchSites(), getGlobalMenuItems()];
     if (crafterSite) {
+      dispatch(fetchSites());
+      const requests: Observable<any>[] = [getGlobalMenuItems()];
       requests.push(getDOM(crafterSite, '/context-nav/sidebar.xml', 'studio'));
-    }
-    forkJoin(requests).subscribe(
-      ([sitesResponse, globalMenuItemsResponse, xml]: any) => {
-        setSites(sitesResponse.response.sites);
-        setMenuItems(globalMenuItemsResponse.response.menuItems);
-        let roleFound = {
-          [siteMenuKeys.dashboard]: false,
-          [siteMenuKeys.siteConfig]: false
-        };
-        if (xml) {
-          forEach(xml.querySelectorAll('modulehook'), (module) => {
-            if (
-              getInnerHtml(module.querySelector('name')) === siteMenuKeys.siteConfig ||
-              getInnerHtml(module.querySelector('name')) === siteMenuKeys.dashboard
-            ) {
-              const roles = module.querySelectorAll('role');
-              roleFound[getInnerHtml(module.querySelector('name'))] = roles.length
-                ? forEach(
+      forkJoin(requests).subscribe(
+        ([globalMenuItemsResponse, xml]: any) => {
+          setMenuItems(globalMenuItemsResponse.response.menuItems);
+          let roleFound = {
+            [siteMenuKeys.dashboard]: false,
+            [siteMenuKeys.siteConfig]: false
+          };
+          if (xml) {
+            forEach(xml.querySelectorAll('modulehook'), (module) => {
+              if (
+                getInnerHtml(module.querySelector('name')) === siteMenuKeys.siteConfig ||
+                getInnerHtml(module.querySelector('name')) === siteMenuKeys.dashboard
+              ) {
+                const roles = module.querySelectorAll('role');
+                roleFound[getInnerHtml(module.querySelector('name'))] = roles.length
+                  ? forEach(
                     roles,
                     (role) => {
                       if (
@@ -372,25 +371,26 @@ export default function GlobalNav(props: GlobalNavProps) {
                     },
                     false
                   )
-                : true;
-            }
-          });
+                  : true;
+              }
+            });
+          }
+          setSiteMenu(roleFound);
+        },
+        (error) => {
+          if (error.response) {
+            const _response = {
+              ...error.response,
+              code: '',
+              documentationUrl: '',
+              remedialAction: ''
+            };
+            setApiState({ error: true, errorResponse: _response });
+          }
         }
-        setSiteMenu(roleFound);
-      },
-      (error) => {
-        if (error.response) {
-          const _response = {
-            ...error.response,
-            code: '',
-            documentationUrl: '',
-            remedialAction: ''
-          };
-          setApiState({ error: true, errorResponse: _response });
-        }
-      }
-    );
-  }, [crafterSite, rolesBySite]);
+      );
+    }
+  }, [crafterSite, dispatch, rolesBySite]);
 
   return (
     <Popover
@@ -414,108 +414,112 @@ export default function GlobalNav(props: GlobalNavProps) {
       >
         <CloseIcon />
       </IconButton>
-      {apiState.error ? (
-        <ErrorState
-          classes={{ root: classes.errorPaperRoot }}
-          error={apiState.errorResponse}
-          onBack={handleErrorBack}
-        />
-      ) : sites !== null && siteMenu !== null && menuItems !== null ? (
-        <Grid container spacing={0}>
-          <Hidden only={['xs', 'sm']}>
-            <Grid item md={4} className={classes.sitesPanel}>
+      {
+        apiState.error ? (
+          <ErrorState
+            classes={{ root: classes.errorPaperRoot }}
+            error={apiState.errorResponse}
+            onBack={handleErrorBack}
+          />
+        ) : (!sitesState.isFetching && siteMenu !== null && menuItems !== null) ? (
+          <Grid container spacing={0}>
+            <Hidden only={['xs', 'sm']}>
+              <Grid item md={4} className={classes.sitesPanel}>
+                <Typography
+                  variant="subtitle1"
+                  component="h2"
+                  className={classes.title}
+                  style={{ marginBottom: '24px' }}
+                >
+                  {formatMessage(messages.mySites)}
+                </Typography>
+                {
+                  sites.map((site, i) => (
+                    <SiteCard
+                      key={i}
+                      title={site.name}
+                      value={site.id}
+                      options={true}
+                      classes={{ root: classes.titleCard }}
+                      onCardClick={() => onSiteCardClick(site.id)}
+                      cardActions={cardActions}
+                    />
+                  ))
+                }
+              </Grid>
+            </Hidden>
+            <Grid item xs={12} md={8} className={classes.sitesContent}>
               <Typography
                 variant="subtitle1"
                 component="h2"
                 className={classes.title}
-                style={{ marginBottom: '24px' }}
+                style={{ margin: '0px 0 10px 0' }}
               >
-                {formatMessage(messages.mySites)}
+                {formatMessage(messages.global)}
               </Typography>
-              {sites.map((site, i) => (
-                <SiteCard
-                  key={i}
-                  title={site.siteId}
-                  value={site.siteId}
-                  options={true}
-                  classes={{ root: classes.titleCard }}
-                  onCardClick={() => onSiteCardClick(site.siteId)}
-                  cardActions={cardActions}
+              <nav className={classes.sitesApps}>
+                {menuItems.map((item) => (
+                  <Tile
+                    key={item.id}
+                    title={formatMessage(messages[popPiece(camelize(item.id))])}
+                    icon={item.icon}
+                    link={getLink(item.id)}
+                    onClick={onMenuClose}
+                  />
+                ))}
+                <Tile
+                  title={formatMessage(messages.docs)}
+                  icon={Docs}
+                  link="https://docs.craftercms.org/en/3.1/index.html"
+                  target="_blank"
                 />
-              ))}
+                <Tile title={formatMessage(messages.about)} icon={About} link={getLink('about')} />
+              </nav>
+              <Typography variant="subtitle1" component="h2" className={classes.title}>
+                {formatMessage(messages.site)}
+              </Typography>
+              <nav className={classes.sitesApps}>
+                {siteMenu?.[siteMenuKeys.dashboard] && (
+                  <Tile
+                    title={formatMessage(messages.dashboard)}
+                    icon="fa-tasks"
+                    onClick={onDashboardClick}
+                  />
+                )}
+                <Tile
+                  title={formatMessage(messages.preview)}
+                  icon={Preview}
+                  onClick={onPreviewClick}
+                />
+                <Tile
+                  title={formatMessage(messages.legacyPreview)}
+                  icon={DevicesIcon}
+                  link={getLink('legacy.preview')}
+                  disabled={!crafterSite}
+                />
+                {siteMenu?.[siteMenuKeys.siteConfig] && (
+                  <Tile
+                    title={formatMessage(messages.siteConfig)}
+                    icon="fa-sliders"
+                    link={getLink('siteConfig')}
+                    onClick={onMenuClose}
+                  />
+                )}
+                <Tile
+                  title={formatMessage(messages.search)}
+                  icon={SearchIcon}
+                  link={getLink('search')}
+                  disabled={!crafterSite}
+                />
+              </nav>
             </Grid>
-          </Hidden>
-          <Grid item xs={12} md={8} className={classes.sitesContent}>
-            <Typography
-              variant="subtitle1"
-              component="h2"
-              className={classes.title}
-              style={{ margin: '0px 0 10px 0' }}
-            >
-              {formatMessage(messages.global)}
-            </Typography>
-            <nav className={classes.sitesApps}>
-              {menuItems.map((item) => (
-                <Tile
-                  key={item.id}
-                  title={formatMessage(messages[popPiece(camelize(item.id))])}
-                  icon={item.icon}
-                  link={getLink(item.id)}
-                  onClick={onMenuClose}
-                />
-              ))}
-              <Tile
-                title={formatMessage(messages.docs)}
-                icon={Docs}
-                link="https://docs.craftercms.org/en/3.1/index.html"
-                target="_blank"
-              />
-              <Tile title={formatMessage(messages.about)} icon={About} link={getLink('about')} />
-            </nav>
-            <Typography variant="subtitle1" component="h2" className={classes.title}>
-              {formatMessage(messages.site)}
-            </Typography>
-            <nav className={classes.sitesApps}>
-              {siteMenu?.[siteMenuKeys.dashboard] && (
-                <Tile
-                  title={formatMessage(messages.dashboard)}
-                  icon="fa-tasks"
-                  onClick={onDashboardClick}
-                />
-              )}
-              <Tile
-                title={formatMessage(messages.preview)}
-                icon={Preview}
-                onClick={onPreviewClick}
-              />
-              <Tile
-                title={formatMessage(messages.legacyPreview)}
-                icon={DevicesIcon}
-                link={getLink('legacy.preview')}
-                disabled={!crafterSite}
-              />
-              {siteMenu?.[siteMenuKeys.siteConfig] && (
-                <Tile
-                  title={formatMessage(messages.siteConfig)}
-                  icon="fa-sliders"
-                  link={getLink('siteConfig')}
-                  onClick={onMenuClose}
-                />
-              )}
-              <Tile
-                title={formatMessage(messages.search)}
-                icon={SearchIcon}
-                link={getLink('search')}
-                disabled={!crafterSite}
-              />
-            </nav>
           </Grid>
-        </Grid>
-      ) : (
-        <div className={classes.loadingContainer}>
-          <LoadingState />
-        </div>
-      )}
+        ) : (
+          <div className={classes.loadingContainer}>
+            <LoadingState />
+          </div>
+        )
+      }
     </Popover>
   );
 }

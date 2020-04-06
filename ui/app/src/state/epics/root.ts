@@ -21,13 +21,17 @@ import sites from './sites';
 import contentTypes from './contentTypes';
 import assets from './assets';
 import audiencesPanel from './audiencesPanel';
+import dialogs from './dialogs';
+import preview from './preview';
 
 const epic: any[] = combineEpics.apply(this, [
   ...auth,
   ...sites,
   ...contentTypes,
   ...assets,
-  ...audiencesPanel
+  ...audiencesPanel,
+  ...preview,
+  ...dialogs
 ]);
 
 export default epic as any;

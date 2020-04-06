@@ -100,3 +100,8 @@ export interface Site {
   name: string;
   description: string;
 }
+
+export interface LegacySite {
+  siteId: string;
+  desc: string;
+}

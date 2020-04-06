@@ -17,6 +17,6 @@
 
 export interface Resource<T = unknown> {
   readonly complete: boolean;
-
+  readonly error: boolean;
   read(): T;
 }

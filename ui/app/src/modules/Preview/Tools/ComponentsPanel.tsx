@@ -19,7 +19,6 @@ import React, { useMemo, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@material-ui/core/List';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ContentType from '../../../models/ContentType';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
@@ -40,7 +39,6 @@ import {
   PropsWithResource,
   SuspenseWithEmptyState
 } from '../../../components/SystemStatus/Suspencified';
-import { LookupTable } from '../../../models/LookupTable';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -53,21 +51,9 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {}
-  })
-);
-
-type ComponentsPanelUIProps = PropsWithResource<
-  ContentType[],
-  {
-    classes: LookupTable<string>;
-  }
->;
+type ComponentsPanelUIProps = PropsWithResource<ContentType[]>;
 
 export default function ComponentsPanel() {
-  const classes = useStyles({});
   const resource = useStateResourceSelection<ContentType[], EntityState<ContentType>>(
     (state) => state.contentTypes,
     {
@@ -82,8 +68,6 @@ export default function ComponentsPanel() {
   return (
     <ToolPanel title={translations.componentsPanel}>
       <SuspenseWithEmptyState
-        component={ComponentsPanelUI}
-        componentProps={{ classes }}
         resource={resource}
         loadingStateProps={{
           title: (
@@ -109,13 +93,16 @@ export default function ComponentsPanel() {
             )
           }
         }}
-      />
+      >
+        <ComponentsPanelUI resource={resource} />
+      </SuspenseWithEmptyState>
     </ToolPanel>
   );
 }
 
-export function ComponentsPanelUI(props: ComponentsPanelUIProps) {
-  const { classes, resource } = props;
+// export function ComponentsPanelUI(props: ComponentsPanelUIProps) {
+export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
+  const { resource } = props;
 
   const contentTypes = resource.read();
   const dispatch = useDispatch();
@@ -151,7 +138,7 @@ export function ComponentsPanelUI(props: ComponentsPanelUIProps) {
 
   return (
     <>
-      <List className={classes.root}>
+      <List>
         {componentTypes.map((contentType) => (
           <DraggablePanelListItem
             key={contentType.id}
@@ -173,4 +160,4 @@ export function ComponentsPanelUI(props: ComponentsPanelUIProps) {
       </Menu>
     </>
   );
-}
+};
