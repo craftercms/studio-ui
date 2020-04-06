@@ -166,7 +166,9 @@ const defaultPreviewItem: Item = {
 interface ContentTypesGridProps {
   resource: Resource<LegacyFormConfig[]>;
   isCompact: boolean;
+
   onTypeOpen(data: LegacyFormConfig): void;
+
   getPrevImg(data: LegacyFormConfig): string;
 }
 
@@ -174,15 +176,15 @@ interface NewContentDialogBaseProps {
   open: boolean;
   site: string;
   previewItem: Item;
+
   onSaveLegacySuccess?(response): any;
+
   onSaveSuccess?(response): any;
 }
 
-export type NewContentDialogProps = PropsWithChildren<
-  NewContentDialogBaseProps & {
-    onDialogClose?(): any;
-  }
->;
+export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
+  onDialogClose?(): any;
+}>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
   onDialogClose?: StandardAction;
@@ -309,8 +311,8 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       !keyword
         ? onResetFilter()
         : setFilterContentTypes(
-            contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue))
-          );
+        contentTypes.filter((content) => content.label.toLowerCase().includes(formatValue))
+        );
     },
     [contentTypes, onResetFilter]
   );
@@ -332,41 +334,20 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       ? `${contentTypesUrl}${content.form}/${content.imageThumbnail}`
       : defaultPrevImgUrl;
 
-  const emptyStateSubtitle = () => (
-    <>
-      <FormattedMessage
-        id="newContentDialog.emptyStateMessageSubtitle"
-        defaultMessage="Try changing your query or browse the"
-      />{' '}
-      <Typography
-        variant="subtitle1"
-        component="a"
-        className={classes.emptyStateLink}
-        color="textSecondary"
-        onClick={onResetFilter}
-      >
-        <FormattedMessage
-          id="newContentDialog.emptyStateMessageLink"
-          defaultMessage="full catalog."
-        />
-      </Typography>
-    </>
-  );
-
   useEffect(() => {
     if (previewItemProp) setPreviewItem(previewItemProp);
   }, [previewItemProp]);
 
   useEffect(() => {
     open &&
-      fetchLegacyContentTypes(site, path).subscribe(
-        (response) => {
-          setFilterContentTypes(response);
-          setContentTypes(response);
-          setLoading(false);
-        },
-        (error) => setError(error)
-      );
+    fetchLegacyContentTypes(site, path).subscribe(
+      (response) => {
+        setFilterContentTypes(response);
+        setContentTypes(response);
+        setLoading(false);
+      },
+      (error) => setError(error)
+    );
   }, [open, path, site]);
 
   return (
@@ -409,7 +390,24 @@ export default function NewContentDialog(props: NewContentDialogProps) {
                     defaultMessage="No Content Types Found"
                   />
                 ),
-                subtitle: emptyStateSubtitle()
+                subtitle: (
+                  <FormattedMessage
+                    id="newContentDialog.emptyStateMessageSubtitle"
+                    defaultMessage="Try changing your query or browse the <catalog>full catalog</catalog>."
+                    values={{
+                      catalog: (msg) =>
+                        <Typography
+                          variant="subtitle1"
+                          component="a"
+                          className={classes.emptyStateLink}
+                          color="textSecondary"
+                          onClick={onResetFilter}
+                        >
+                          {msg}
+                        </Typography>
+                    }}
+                  />
+                )
               }
             }}
             loadingStateProps={{
