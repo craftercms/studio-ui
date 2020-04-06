@@ -82,7 +82,7 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) 
       <RawIntlProvider value={intl}>
         <ThemeProvider theme={theme}>
           <Suspense fallback="">{props.children}</Suspense>
-          {props.isLegacy ? null : <DialogManager />}
+          <DialogManager />
         </ThemeProvider>
       </RawIntlProvider>
     </Provider>
