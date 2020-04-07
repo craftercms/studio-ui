@@ -18,12 +18,12 @@
 import GlobalState from '../../models/GlobalState';
 import { createEntityState, createLookupTable } from '../../utils/object';
 import { createReducer } from '@reduxjs/toolkit';
-import { CHANGE_SITE } from '../actions/sites';
 import { FETCH_CONTENT_TYPES, FETCH_CONTENT_TYPES_COMPLETE, FETCH_CONTENT_TYPES_FAILED } from '../actions/preview';
 import ContentType from '../../models/ContentType';
+import { changeSite } from './sites';
 
 const reducer = createReducer<GlobalState['contentTypes']>(createEntityState(), {
-  [CHANGE_SITE]: () => createEntityState(),
+  [changeSite.type]: () => createEntityState(),
   [FETCH_CONTENT_TYPES]: (state) => ({
     ...state,
     isFetching: true

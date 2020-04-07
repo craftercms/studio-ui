@@ -50,11 +50,10 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
-  TOOLS_LOADED,
+  fetchPreviewToolsConfigComplete,
   UPDATE_AUDIENCES_PANEL_MODEL
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
-import { CHANGE_SITE } from '../actions/sites';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
@@ -64,6 +63,7 @@ import {
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
 import Tools from '../../models/PreviewToolIDs';
+import { changeSite } from './sites';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -137,10 +137,10 @@ const reducer = createReducer<GlobalState['preview']>({
       showToolsPanel: false
     }
   },
-  [TOOLS_LOADED]: (state, { payload }) => {
+  [fetchPreviewToolsConfigComplete.type]: (state, { payload }) => {
     return {
       ...state,
-      tools: payload
+      tools: payload.modules
     }
   },
   [SET_HOST_SIZE]: (state, { payload }) => {
@@ -280,7 +280,7 @@ const reducer = createReducer<GlobalState['preview']>({
         currentUrl: payload
       }
   ),
-  [CHANGE_SITE]: (state, { payload }) => {
+  [changeSite.type]: (state, { payload }) => {
 
     let nextState = {
       ...state,

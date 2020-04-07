@@ -14,12 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import ConfirmDialog from '../UserControl/ConfirmDialog';
+
+const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
+const ErrorDialog = lazy(() => import('./ErrorDialog'));
 
 function createCallback(
   action: StandardAction,
@@ -33,7 +35,7 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const dispatch = useDispatch();
   return (
-    <>
+    <Suspense fallback="">
       {/* region Confirm */}
       <ConfirmDialog
         open={state.confirm.open}
@@ -46,7 +48,7 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Error */}
-
+      <ErrorDialog error={state.error.error} onClose={createCallback(state.error.onClose, dispatch)}/>
       {/* endregion */}
 
       {/* region Edit (Embedded Legacy Editor) */}
@@ -76,7 +78,7 @@ function GlobalDialogManager() {
       {/* region SnackBar(s) */}
 
       {/* endregion */}
-    </>
+    </Suspense>
   );
 }
 

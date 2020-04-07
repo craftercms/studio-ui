@@ -30,7 +30,8 @@ const plugins = [
   replace({ 'process.env.NODE_ENV': '"production"' }),
   babel({
     exclude: 'node_modules/**',
-    presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
+    // TODO: @babel/preset-env breaks the build of AMD-style third party libs (e.g. jQuery, js-cookie)
+    presets: [/*'@babel/preset-env', */'@babel/preset-react', '@babel/preset-typescript'],
     plugins: [
       'babel-plugin-transform-react-remove-prop-types',
       '@babel/plugin-proposal-nullish-coalescing-operator',
@@ -85,11 +86,6 @@ const plugins = [
         'isValidElement',
         'version'
       ]
-      // TODO: WIP - jQuery is giving issues with rollup build.
-      // 'jquery': 'jquery',
-      // 'jquery/dist/jquery.slim': 'jquery',
-      // '../../node_modules/jquery/dist/jquery.js': 'jquery',
-      // '../../node_modules/jquery/dist/jquery.slim.js': 'jquery'
     }
   }),
   copy({
@@ -106,8 +102,9 @@ const external = [];
 const globals = {};
 
 const baseConfig = {
+  // TODO: Without @babel/preset-env this error doesn't occur.
   // Addresses rollup's this replaced to undefined
-  context: 'this'
+  // context: 'this'
 };
 
 export default [
