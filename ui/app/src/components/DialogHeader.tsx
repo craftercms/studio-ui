@@ -20,7 +20,7 @@ import { palette } from '../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/CloseRounded';
+import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import React, { PropsWithChildren } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
@@ -61,7 +61,7 @@ export type DialogTitleProps = PropsWithChildren<{
     classes?: any;
   };
   subtitle?: string;
-  icon?: any;
+  closeIcon?: any;
   backIcon?: any;
 
   onClose?(): void;
@@ -77,7 +77,7 @@ export default function DialogHeader(props: DialogTitleProps) {
     title,
     children,
     subtitle,
-    icon: Icon = CloseIcon,
+    closeIcon: CloseIcon = CloseIconRounded,
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
@@ -108,7 +108,7 @@ export default function DialogHeader(props: DialogTitleProps) {
         </Typography>
         {onClose && (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
-            <Icon />
+            <CloseIcon/>
           </IconButton>
         )}
       </div>
