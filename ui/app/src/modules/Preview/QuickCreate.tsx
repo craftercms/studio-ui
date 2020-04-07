@@ -86,10 +86,12 @@ interface QuickCreateMenuProps {
   onSaveLegacySuccess?(response): void;
 
   onClose(): void;
+
+  onItemClicked?(): void;
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const { anchorEl, onClose, previewItem, onSaveLegacySuccess } = props;
+  const { anchorEl, onClose, previewItem, onSaveLegacySuccess, onItemClicked } = props;
   const classes = useStyles({});
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
@@ -108,7 +110,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     data.item.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
 
   const onNewContentClick = () => {
-    onClose();
+    onItemClicked?.();
     dispatch(
       showNewContentDialog({
         site: siteId,
@@ -125,7 +127,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
       .replace('{year}', today.getFullYear())
       .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
 
-    onClose();
+    onItemClicked?.();
 
     setDialogConfig({
       open: true,
@@ -224,7 +226,7 @@ export default function QuickCreate() {
   return (
     <>
       <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
-      <QuickCreateMenu anchorEl={anchorEl} onClose={onMenuClose} previewItem={currentPreview} />
+      <QuickCreateMenu anchorEl={anchorEl} onClose={onMenuClose} previewItem={currentPreview} onItemClicked={onMenuClose}/>
     </>
   );
 }
