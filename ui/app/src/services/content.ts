@@ -1054,11 +1054,7 @@ export function deleteItems(siteId: string, user: string, submissionComment: str
     `/studio/api/1/services/api/1/workflow/go-delete.json?site=${siteId}&user=${user}&submissionComment=${submissionComment}`,
     data
   ).pipe(
-    map((response: any) => {
-      if (response.response.success) {
-        return response.response;
-      }
-    }),
+    pluck('response'),
     catchApi1Error
   );
 }
