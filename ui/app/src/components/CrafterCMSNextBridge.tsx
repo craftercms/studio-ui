@@ -84,7 +84,7 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) 
         <ThemeProvider theme={theme}>
           <SnackbarProvider maxSnack={5}>
             <Suspense fallback="" children={props.children} />
-            {props.isLegacy ? null : <DialogManager />}
+            <DialogManager />
           </SnackbarProvider>
         </ThemeProvider>
       </RawIntlProvider>
