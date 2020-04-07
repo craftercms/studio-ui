@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
@@ -26,10 +26,9 @@ import { getLegacyItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
-import { APIError } from '../models/GlobalState';
-import ErrorDialog from './SystemStatus/ErrorDialog';
 import { useDispatch } from 'react-redux';
 import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
+import { showErrorDialog } from '../state/reducers/dialogs/error';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -75,8 +74,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     dependenciesShown: 'depends-on'
   });
 
-  const [error, setError] = useState<APIError>(null);
-
   // Effect used to open the publish Dialog
   useEffect(() => {
     if (models && modelId && publishDialog.item === null) {
@@ -88,15 +85,13 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           setDependenciesDialog({ item })
         },
         (response) => {
-          setError(response);
+          dispatch(showErrorDialog({
+            error: response
+          }))
         }
       );
     }
   }, [models, modelId, setPublishDialog, setDependenciesDialog, site, embeddedParentPath, parentId, publishDialog.item]);
-
-  const onErrorClose = () => {
-    setError(null);
-  };
 
   const handleEdit = (type: string) => {
     handleClose();
@@ -252,10 +247,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           onSuccess={onSuccessPublish}
           onClose={onClosePublish}
         />
-      }
-      {
-        error &&
-        <ErrorDialog error={error} onClose={onErrorClose}/>
       }
     </>
   );
