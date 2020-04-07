@@ -1052,7 +1052,7 @@ export function getQuickCreateContentList(siteId: string) {
 export default {
   getComponentInstanceHTML,
   getContent,
-  getItem: getLegacyItem,
+  getLegacyItem,
   getDOM,
   getContentInstanceLookup,
   fetchContentTypes,
