@@ -84,7 +84,7 @@ export const catchAjaxError = (fetchFailedCreator) =>
     if (error.name === 'AjaxError') {
       const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
       ajaxError.response = {
-        message: ajaxError.response?.message ? ? 'An unknown error has occurred.'
+        message: ajaxError.response?.message ?? 'An unknown error has occurred.'
       };
       if (ajaxError.status === 401) {
         return of(fetchFailedCreator(ajaxError), sessionTimeout());

@@ -209,7 +209,7 @@ function FancyFormattedDate(props: FancyFormattedDateProps) {
             defaultMessage={`{day, ${ordinals}}`}
             values={{ day: parts[4].value }}
           />{' '}
-          {parts[6].value} @ <FormattedTime value={props.date}/>
+          {parts[6].value} @ <FormattedTime value={props.date} />
         </>
       )}
     </FormattedDateParts>
@@ -227,7 +227,7 @@ function CompareRevision(props: CompareRevisionProps) {
     <section className={classes.compareBoxHeader}>
       <div className={classes.compareBoxHeaderItem}>
         <ListItemText
-          primary={<FancyFormattedDate date={compareTo.version.lastModifiedDate}/>}
+          primary={<FancyFormattedDate date={compareTo.version.lastModifiedDate} />}
           secondary={
             <FormattedMessage
               id="historyDialog.versionNumber"
@@ -242,7 +242,7 @@ function CompareRevision(props: CompareRevisionProps) {
       </div>
       <div className={classes.compareBoxHeaderItem}>
         <ListItemText
-          primary={<FancyFormattedDate date={compareTo.nextVersion.lastModifiedDate}/>}
+          primary={<FancyFormattedDate date={compareTo.nextVersion.lastModifiedDate} />}
           secondary={
             <FormattedMessage
               id="historyDialog.versionNumber"
@@ -298,11 +298,11 @@ function HistoryList(props: HistoryListProps) {
               }}
               primary={
                 <>
-                  <FancyFormattedDate date={version.lastModifiedDate}/>
+                  <FancyFormattedDate date={version.lastModifiedDate} />
                   {i === 0 && page === 0 && (
                     <Chip
                       label={
-                        <FormattedMessage id="historyDialog.current" defaultMessage="current"/>
+                        <FormattedMessage id="historyDialog.current" defaultMessage="current" />
                       }
                       className={classes.chip}
                     />
@@ -316,7 +316,7 @@ function HistoryList(props: HistoryListProps) {
                 edge="end"
                 onClick={(e) => handleOpenMenu(e.currentTarget, version, i === 0 && page === 0)}
               >
-                <MoreVertIcon/>
+                <MoreVertIcon />
               </IconButton>
             </ListItemSecondaryAction>
           </ListItem>
@@ -389,8 +389,8 @@ interface HistoryDialogBaseProps {
 
 export type HistoryDialogProps = PropsWithChildren<
   HistoryDialogBaseProps & {
-  onClose?(): any;
-}
+    onClose?(): any;
+  }
 >;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
@@ -519,7 +519,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
                 id="historyDialog.selectedRevisionToCompare"
                 defaultMessage={`Select a revision to compare to "{version}"`}
                 values={{
-                  version: <FancyFormattedDate date={compareTo.version.lastModifiedDate}/>
+                  version: <FancyFormattedDate date={compareTo.version.lastModifiedDate} />
                 }}
               />
             )
@@ -535,7 +535,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
       />
       <DialogBody>
         {compareTo.version && compareTo.nextVersion ? (
-          <CompareRevision compareTo={compareTo}/>
+          <CompareRevision compareTo={compareTo} />
         ) : (
           <SuspenseWithEmptyState resource={resource}>
             <HistoryList
