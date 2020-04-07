@@ -731,6 +731,8 @@ export default function BulkUpload(props: any) {
         className={clsx(minimized && classes.minimized)}
         onDrop={preventWrongDrop}
         onDragOver={preventWrongDrop}
+        onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+        onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
       >
         <DialogHeader
           title={formatMessage(translations.title)}
