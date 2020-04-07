@@ -704,9 +704,6 @@ export default function BulkUpload(props: any) {
     }
   }, [dropZoneStatus.status, formatMessage]);
 
-
-  console.log(dropZoneStatus);
-
   return (
     <div className={'bulkUpload'}>
       {
