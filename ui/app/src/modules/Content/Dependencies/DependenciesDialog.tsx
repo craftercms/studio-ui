@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { Item } from '../../../models/Item';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { LegacyItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import { useActiveSiteId, useSelection, useSpreadState, useStateResource } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -58,15 +58,15 @@ const assetsTypes = {
   },
   'content-items': {
     label: <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only"/>,
-    filter: (dependency: Item) => ((dependency.isComponent && !dependency.isAsset) || dependency.isPage)
+    filter: (dependency: LegacyItem) => ((dependency.isComponent && !dependency.isAsset) || dependency.isPage)
   },
   'assets': {
     label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only"/>,
-    filter: (dependency: Item) => isAsset(dependency.uri)
+    filter: (dependency: LegacyItem) => isAsset(dependency.uri)
   },
   'code': {
     label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only"/>,
-    filter: (dependency: Item) => isCode(dependency.uri)
+    filter: (dependency: LegacyItem) => isCode(dependency.uri)
   }
 };
 
@@ -202,37 +202,29 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
   suspense: {
     height: '100%',
     flexDirection: 'unset'
+  },
+  suspenseImage: {
+    marginRight: '10px'
   }
 }));
 
 interface DependenciesListProps {
-  resource: Resource<Item[]>;
-  setItem: Function;
+  resource: Resource<LegacyItem[]>;
   compactView: boolean;
   showTypes: string;
-  isEditableItem: Function;
-  handleEditorDisplay: Function;
-  contextMenuEl: HTMLElement;
 
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>): void;
-
-  handleContextMenuClose(): void;
+  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: LegacyItem): void;
 }
 
 function DependenciesList(props: DependenciesListProps) {
   const {
     resource,
-    setItem,
     compactView,
     showTypes,
-    isEditableItem,
-    handleEditorDisplay,
-    contextMenuEl,
-    handleContextMenuClick,
-    handleContextMenuClose
+    handleContextMenuClick
   } = props;
   const classes = dependenciesDialogStyles({});
-  const dependencies: Item[] = resource.read();
+  const dependencies: LegacyItem[] = resource.read();
 
   return (
     <List className={classes.dependenciesList}>
@@ -258,45 +250,12 @@ function DependenciesList(props: DependenciesListProps) {
 
               <IconButton
                 aria-haspopup="true"
-                onClick={handleContextMenuClick}
+                onClick={(e) => {
+                  handleContextMenuClick(e, dependency);
+                }}
               >
                 <MoreVertIcon/>
               </IconButton>
-              <Menu
-                anchorEl={contextMenuEl}
-                keepMounted
-                open={Boolean(contextMenuEl)}
-                onClose={handleContextMenuClose}
-              >
-                {
-                  isEditableItem(dependency.uri) &&
-                  <MenuItem onClick={() => {
-                    handleEditorDisplay(dependency);
-                    handleContextMenuClose();
-                  }}>
-                    <FormattedMessage
-                      id="dependenciesDialog.edit"
-                      defaultMessage="Edit"
-                    />
-                  </MenuItem>
-                }
-                <MenuItem onClick={() => {
-                  setItem(dependency);
-                  handleContextMenuClose();
-                }}>
-                  <FormattedMessage
-                    id="dependenciesDialog.dependencies"
-                    defaultMessage="Dependencies"
-                  />
-                </MenuItem>
-                <MenuItem
-                  onClick={handleContextMenuClose}>   {/* TODO: pending, waiting for new history dialog */}
-                  <FormattedMessage
-                    id="dependenciesDialog.history"
-                    defaultMessage="History"
-                  />
-                </MenuItem>
-              </Menu>
             </ListItem>
           )
       }
@@ -305,9 +264,9 @@ function DependenciesList(props: DependenciesListProps) {
 }
 
 interface DependenciesDialogUIProps {
-  resource: Resource<Item[]>
+  resource: Resource<LegacyItem[]>
   open: boolean;
-  item: Item;
+  item: LegacyItem;
   setItem: Function;
   compactView: boolean;
   setCompactView: Function;
@@ -320,9 +279,9 @@ interface DependenciesDialogUIProps {
   editDialogConfig: any;
   setEditDialogConfig: Function;
   handleEditorDisplay: Function;
-  contextMenuEl: HTMLElement;
+  contextMenu: any;
 
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>): void;
+  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: LegacyItem): void;
 
   handleContextMenuClose(): void;
 }
@@ -344,7 +303,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     editDialogConfig,
     setEditDialogConfig,
     handleEditorDisplay,
-    contextMenuEl,
+    contextMenu,
     handleContextMenuClick,
     handleContextMenuClose
   } = props;
@@ -438,7 +397,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                   />
               ),
               classes: {
-                root: classes.suspense
+                root: classes.suspense,
+                image: classes.suspenseImage
               }
             }
           }}
@@ -450,15 +410,48 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         >
           <DependenciesList
             resource={resource}
-            setItem={setItem}
             compactView={compactView}
             showTypes={showTypes}
-            isEditableItem={isEditableItem}
-            handleEditorDisplay={handleEditorDisplay}
-            contextMenuEl={contextMenuEl}
             handleContextMenuClick={handleContextMenuClick}
-            handleContextMenuClose={handleContextMenuClose}
           />
+          <Menu
+            anchorEl={contextMenu.el}
+            keepMounted
+            open={Boolean(contextMenu.el)}
+            onClose={handleContextMenuClose}
+          >
+            {
+              contextMenu.dependency && isEditableItem(contextMenu.dependency.uri) &&
+              <MenuItem onClick={() => {
+                handleEditorDisplay(contextMenu.dependency);
+                handleContextMenuClose();
+              }}>
+                <FormattedMessage
+                  id="dependenciesDialog.edit"
+                  defaultMessage="Edit"
+                />
+              </MenuItem>
+            }
+            {
+              contextMenu.dependency &&
+              <MenuItem onClick={() => {
+                setItem(contextMenu.dependency);
+                handleContextMenuClose();
+              }}>
+                <FormattedMessage
+                  id="dependenciesDialog.dependencies"
+                  defaultMessage="Dependencies"
+                />
+              </MenuItem>
+            }
+            <MenuItem
+              onClick={handleContextMenuClose}>   {/* TODO: pending, waiting for new history dialog */}
+              <FormattedMessage
+                id="dependenciesDialog.history"
+                defaultMessage="History"
+              />
+            </MenuItem>
+          </Menu>
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter
@@ -524,7 +517,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 
 interface DependenciesDialogBaseProps {
   open: boolean;
-  item?: Item;
+  item?: LegacyItem;
   dependenciesShown?: string;
 }
 
@@ -562,7 +555,10 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     type: 'form',
     inProgress: false
   });
-  const [contextMenuEl, setContextMenuEl] = React.useState<null | HTMLElement>(null);
+  const [contextMenu, setContextMenu] = useSpreadState({
+    el: null,
+    dependency: null
+  });
 
   const handleEditorDisplay = item => {
     let type = 'controller';
@@ -582,8 +578,12 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       });
   };
 
-  const resource = useStateResource<Item[], { deps: Item[], error: APIError }>(
-    { deps, error },
+  const depsSource = useMemo(() => {
+    return { deps, error }
+  }, [deps, error]);
+
+  const resource = useStateResource<LegacyItem[], { deps: LegacyItem[], error: APIError }>(
+    depsSource,
     {
       shouldResolve: (source) => Boolean(source.deps),
       shouldReject: (source) => Boolean(source.error),
@@ -662,7 +662,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     setDialog({ showTypes });
   };
 
-  const setItem = (item: Item) => {
+  const setItem = (item: LegacyItem) => {
     setDialog({ item })
   };
 
@@ -670,12 +670,18 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     setDialog({ dependenciesShown });
   };
 
-  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setContextMenuEl(event.currentTarget);
+  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: LegacyItem) => {
+    setContextMenu({
+      el: event.currentTarget,
+      dependency
+    });
   };
 
   const handleContextMenuClose = () => {
-    setContextMenuEl(null);
+    setContextMenu({
+      el: null,
+      dependency: null
+    });
   };
 
   return (
@@ -695,7 +701,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       editDialogConfig={editDialogConfig}
       setEditDialogConfig={setEditDialogConfig}
       handleEditorDisplay={handleEditorDisplay}
-      contextMenuEl={contextMenuEl}
+      contextMenu={contextMenu}
       handleContextMenuClick={handleContextMenuClick}
       handleContextMenuClose={handleContextMenuClose}
     />
