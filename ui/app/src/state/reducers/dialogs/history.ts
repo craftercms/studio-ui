@@ -26,17 +26,16 @@ export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>(
 export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
 
 export default createReducer<GlobalState['dialogs']['history']>(
-  { open: false,
-    site: "",
-    path: ""
+  {
+    open: false,
+    path: ''
   },
   {
     [showHistoryDialog.type]: (state, { payload }) => ({
       open: true,
-      site: payload.site,
       path: payload.path,
       onClose: closeHistoryDialog()
     }),
-    [closeHistoryDialog.type]: (state) => ({ open: false, site: "", path: "", onClose: state.onClose })
+    [closeHistoryDialog.type]: (state) => ({ open: false, path: '', onClose: state.onClose })
   }
 );

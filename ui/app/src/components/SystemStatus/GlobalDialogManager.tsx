@@ -75,7 +75,6 @@ function GlobalDialogManager() {
       {/* region History */}
       <HistoryDialog
         open={state.history.open}
-        site={state.history.site}
         path={state.history.path}
         onClose={createCallback(state.history.onClose, dispatch)}
       />

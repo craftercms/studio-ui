@@ -33,7 +33,7 @@ import { Theme } from '@material-ui/core';
 import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../../styles/theme';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import { useSpreadState, useStateResource } from '../../../utils/hooks';
+import { useActiveSiteId, useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import DialogFooter from '../../../components/DialogFooter';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -46,12 +46,12 @@ import StandardAction from '../../../models/StandardAction';
 
 const translations = defineMessages({
   previousPage: {
-    id: 'pagination.previousPage',
-    defaultMessage: 'previous page'
+    id: 'pagination.PreviousPage',
+    defaultMessage: 'Previous page'
   },
   nextPage: {
     id: 'pagination.nextPage',
-    defaultMessage: 'next page'
+    defaultMessage: 'Next page'
   },
   view: {
     id: 'words.view',
@@ -90,7 +90,7 @@ const versionListStyles = makeStyles((theme: Theme) =>
     listItem: {
       padding: ' 15px 20px',
       '&.selected': {
-        backgroundColor: palette.blue.light
+        backgroundColor: palette.blue.highlight
       }
     },
     listItemTextMultiline: {
@@ -108,14 +108,14 @@ const versionListStyles = makeStyles((theme: Theme) =>
       marginLeft: '10px'
     },
     pagination: {
-      'marginLeft': 'auto',
-      'position': 'fixed',
-      'zIndex': 1,
-      'bottom': 0,
-      'background': 'white',
-      'color': 'black',
-      'left': 0,
-      'borderTop': '1px solid rgba(0, 0, 0, 0.12)',
+      marginLeft: 'auto',
+      position: 'fixed',
+      zIndex: 1,
+      bottom: 0,
+      background: 'white',
+      color: 'black',
+      left: 0,
+      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
       '& p': {
         padding: 0
       },
@@ -127,10 +127,10 @@ const versionListStyles = makeStyles((theme: Theme) =>
       }
     },
     toolbar: {
-      'padding': 0,
-      'display': 'flex',
-      'justifyContent': 'space-between',
-      'paddingLeft': '20px',
+      padding: 0,
+      display: 'flex',
+      justifyContent: 'space-between',
+      paddingLeft: '20px',
       '& .MuiTablePagination-spacer': {
         display: 'none'
       },
@@ -150,9 +150,9 @@ const historyStyles = makeStyles((theme: Theme) =>
       padding: 0
     },
     pagination: {
-      'marginLeft': 'auto',
-      'background': 'white',
-      'color': 'black',
+      marginLeft: 'auto',
+      background: 'white',
+      color: 'black',
       '& p': {
         padding: 0
       },
@@ -164,10 +164,10 @@ const historyStyles = makeStyles((theme: Theme) =>
       }
     },
     toolbar: {
-      'padding': 0,
-      'display': 'flex',
-      'justifyContent': 'space-between',
-      'paddingLeft': '20px',
+      padding: 0,
+      display: 'flex',
+      justifyContent: 'space-between',
+      paddingLeft: '20px',
       '& .MuiTablePagination-spacer': {
         display: 'none'
       },
@@ -217,7 +217,7 @@ function FancyFormattedDate(props: FancyFormattedDateProps) {
 }
 
 interface CompareRevisionProps {
-  compareTo: CompareTo
+  compareTo: CompareTo;
 }
 
 function CompareRevision(props: CompareRevisionProps) {
@@ -227,9 +227,7 @@ function CompareRevision(props: CompareRevisionProps) {
     <section className={classes.compareBoxHeader}>
       <div className={classes.compareBoxHeaderItem}>
         <ListItemText
-          primary={
-            <FancyFormattedDate date={compareTo.version.lastModifiedDate}/>
-          }
+          primary={<FancyFormattedDate date={compareTo.version.lastModifiedDate}/>}
           secondary={
             <FormattedMessage
               id="historyDialog.versionNumber"
@@ -244,9 +242,7 @@ function CompareRevision(props: CompareRevisionProps) {
       </div>
       <div className={classes.compareBoxHeaderItem}>
         <ListItemText
-          primary={
-            <FancyFormattedDate date={compareTo.nextVersion.lastModifiedDate}/>
-          }
+          primary={<FancyFormattedDate date={compareTo.nextVersion.lastModifiedDate}/>}
           secondary={
             <FormattedMessage
               id="historyDialog.versionNumber"
@@ -260,7 +256,7 @@ function CompareRevision(props: CompareRevisionProps) {
         />
       </div>
     </section>
-  )
+  );
 }
 
 interface HistoryListProps {
@@ -268,9 +264,9 @@ interface HistoryListProps {
   rowsPerPage: number;
   page: number;
   compareTo: {
-    version?: LegacyVersion,
-    nextVersion?: LegacyVersion
-  }
+    version?: LegacyVersion;
+    nextVersion?: LegacyVersion;
+  };
 
   handleItemClick(version: LegacyVersion): void;
 
@@ -306,10 +302,7 @@ function HistoryList(props: HistoryListProps) {
                   {i === 0 && page === 0 && (
                     <Chip
                       label={
-                        <FormattedMessage
-                          id="historyDialog.current"
-                          defaultMessage="current"
-                        />
+                        <FormattedMessage id="historyDialog.current" defaultMessage="current"/>
                       }
                       className={classes.chip}
                     />
@@ -327,10 +320,10 @@ function HistoryList(props: HistoryListProps) {
               </IconButton>
             </ListItemSecondaryAction>
           </ListItem>
-        )
+        );
       })}
     </List>
-  )
+  );
 }
 
 const menuOptions: LookupTable<SectionItem> = {
@@ -375,23 +368,22 @@ const compareToInitialState = {
 
 interface CompareTo {
   version: LegacyVersion;
-  nextVersion: LegacyVersion
+  nextVersion: LegacyVersion;
 }
 
 interface Menu {
-  sections: SectionItem[][],
-  anchorEl: Element,
-  activeItem: LegacyVersion
+  sections: SectionItem[][];
+  anchorEl: Element;
+  activeItem: LegacyVersion;
 }
 
 interface Data {
   contentItem: LegacyItem;
-  versions: LegacyVersion[]
+  versions: LegacyVersion[];
 }
 
 interface HistoryDialogBaseProps {
   open: boolean;
-  site: string;
   path: string;
 }
 
@@ -406,14 +398,10 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const {
-    open,
-    onClose,
-    site,
-    path
-  } = props;
+  const { open, onClose, path } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
+  const site = useActiveSiteId();
 
   const [compareTo, setCompareTo] = useSpreadState<CompareTo>(compareToInitialState);
 
@@ -429,8 +417,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
 
   const [error, setError] = useState<APIError>(null);
 
-  const resource = useStateResource<LegacyVersion[],
-    { contentItem: LegacyItem; versions: LegacyVersion[] }>(data, {
+  const resource = useStateResource<LegacyVersion[], Data>(data, {
     shouldResolve: (data) => Boolean(data.versions),
     shouldReject: () => Boolean(error),
     shouldRenew: () => false,
@@ -439,7 +426,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   });
 
   useEffect(() => {
-    if(open) {
+    if (open) {
       getItemVersions(site, path).subscribe(
         (response) => {
           setData({ contentItem: response.item, versions: response.versions });
@@ -520,49 +507,47 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     <Dialog onClose={onClose} open={open} fullWidth maxWidth="md">
       <DialogHeader
         title={
-          compareTo.version ?
-            (
-              compareTo.nextVersion ? (
-                <FormattedMessage
-                  id="historyDialog.comparingRevisions"
-                  defaultMessage={`Comparing Revisions -- {fileName}`}
-                  values={{ fileName: data.contentItem.internalName }}
-                />
-              ) : (
-                <FormattedMessage
-                  id="historyDialog.selectedRevisionToCompare"
-                  defaultMessage={`Select a revision to compare to "{version}"`}
-                  values={{ version: <FancyFormattedDate date={compareTo.version.lastModifiedDate}/> }}
-                />
-              )
+          compareTo.version ? (
+            compareTo.nextVersion ? (
+              <FormattedMessage
+                id="historyDialog.comparingRevisions"
+                defaultMessage={`Comparing Revisions -- {fileName}`}
+                values={{ fileName: data.contentItem.internalName }}
+              />
             ) : (
               <FormattedMessage
-                id="historyDialog.headerTitle"
-                defaultMessage="Content Item History"
+                id="historyDialog.selectedRevisionToCompare"
+                defaultMessage={`Select a revision to compare to "{version}"`}
+                values={{
+                  version: <FancyFormattedDate date={compareTo.version.lastModifiedDate}/>
+                }}
               />
             )
+          ) : (
+            <FormattedMessage
+              id="historyDialog.headerTitle"
+              defaultMessage="Content Item History"
+            />
+          )
         }
         onClose={onClose}
         onBack={compareTo.version ? handleBack : null}
       />
       <DialogBody>
-        {
-          compareTo.version && compareTo.nextVersion ? (
-            <CompareRevision compareTo={compareTo}/>
-          ) : (
-            <SuspenseWithEmptyState resource={resource}>
-              <HistoryList
-                resource={resource}
-                handleOpenMenu={handleOpenMenu}
-                handleItemClick={handleItemClick}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                compareTo={compareTo}
-              />
-            </SuspenseWithEmptyState>
-          )
-        }
-
+        {compareTo.version && compareTo.nextVersion ? (
+          <CompareRevision compareTo={compareTo}/>
+        ) : (
+          <SuspenseWithEmptyState resource={resource}>
+            <HistoryList
+              resource={resource}
+              handleOpenMenu={handleOpenMenu}
+              handleItemClick={handleItemClick}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              compareTo={compareTo}
+            />
+          </SuspenseWithEmptyState>
+        )}
       </DialogBody>
       {data.versions && (
         <DialogFooter className={classes.dialogFooter}>
@@ -596,5 +581,5 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         classes={{ menuList: classes.menuList }}
       />
     </Dialog>
-  )
+  );
 }
