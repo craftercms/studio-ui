@@ -26,10 +26,9 @@ import { getLegacyItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
-import { APIError } from '../models/GlobalState';
-import ErrorDialog from './SystemStatus/ErrorDialog';
 import { useDispatch } from 'react-redux';
 import { showDeleteDialog } from '../state/reducers/dialogs/delete';
+import { showErrorDialog } from '../state/reducers/dialogs/error';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -74,8 +73,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     items: []
   });
 
-  const [error, setError] = useState<APIError>(null);
-
   // Effect used to open the publish Dialog
   useEffect(() => {
     if (models && modelId && publishDialog.item === null) {
@@ -87,15 +84,13 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           setDeleteDialog({ items: [item] });
         },
         (response) => {
-          setError(response);
+          dispatch(showErrorDialog({
+            error: response
+          }))
         }
       );
     }
-  }, [models, modelId, setPublishDialog, setDeleteDialog, site, embeddedParentPath, parentId, publishDialog.item]);
-
-  const onErrorClose = () => {
-    setError(null);
-  };
+  }, [models, modelId, setPublishDialog, setDeleteDialog, site, embeddedParentPath, parentId, publishDialog.item, dispatch]);
 
   const handleEdit = (type: string) => {
     handleClose();
@@ -249,10 +244,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           onSuccess={onSuccessPublish}
           onClose={onClosePublish}
         />
-      }
-      {
-        error &&
-        <ErrorDialog error={error} onClose={onErrorClose}/>
       }
     </>
   );
