@@ -34,11 +34,10 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
         var valuesEl, controlEl;
 
         var datasources = this.form.datasources;
-        value = value.replace(/[^a-zA-Z0-9,-]/g, '');
 
         if (datasources.length) {
             this.fieldValue = (!value) ? [] :
-                (typeof value == "string") ? value.split(",") : value;
+                (typeof value == "string") ? value.split(",").filter(name => datasources.some(ds=> ds.id === name)) : value;
 
             valuesEl = document.createElement("div");
 
@@ -114,9 +113,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
         cbEl.value = datasource.id;
         cbEl.id = datasource.id;
 
-        var datasourceId = datasource.id.replace(/[^a-zA-Z0-9,-]/g, '');
-
-        if (this.fieldValue.indexOf(datasourceId) > -1) {
+        if (this.fieldValue.indexOf(datasource.id) > -1) {
             cbEl.checked = true;
         }
 
@@ -128,6 +125,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
     },
 
     addValue: function(elKey) {
+
         var idx = this.fieldValue.indexOf(elKey);
         if( 0 > idx )
             this.fieldValue.push(elKey);
