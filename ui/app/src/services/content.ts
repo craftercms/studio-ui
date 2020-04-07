@@ -447,7 +447,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
               }, {});
 
             field.fields[_fieldId].validations = {
-              // tags: (map.tags?.value || '').split(','),
+              tags: nou(map.tags) ? [] : map.tags.value.split(','),
               contentTypes: nou(map.contentTypes) ? [] : map.contentTypes.value.split(',')
             };
           }
