@@ -42,131 +42,134 @@ import ContextMenu, { SectionItem } from './ContextMenu';
 import SearchBar from './SearchBar';
 import { setRequestForgeryToken } from '../utils/auth';
 import { useSpreadState } from '../utils/hooks';
-import ErrorDialog from './SystemStatus/ErrorDialog';
 import CopyItemsDialog from './CopyItemsDialog';
 import ContentLocalizationDialog from './ContentLocalizationDialog';
 import { palette } from '../styles/theme';
+import { useDispatch } from 'react-redux';
+import { showErrorDialog } from '../state/reducers/dialogs/error';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 
-const useStyles = makeStyles((theme) => createStyles({
-  wrapper: {
-    padding: '10px',
-    border: '1px solid gray',
-    width: '260px',
-    margin: '0 auto'
-  },
-  primaryColor: {
-    color: theme.palette.primary.main
-  },
-  blackColor: {
-    color: palette.black
-  },
-  flag: {
-    color: flagColor,
-    fontSize: '1rem',
-    marginLeft: '5px'
-  },
-  optionsWrapper: {
-    marginLeft: 'auto',
-    display: 'flex'
-  },
-  pagesHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    paddingLeft: '5px'
-  },
-  pagesHeaderTitle: {
-    marginLeft: '6px',
-    flexGrow: 1
-  },
-  icon: {
-    padding: '6px'
-  },
-  searchRoot: {
-    //margin: '10px 0'
-  },
-  pagesBreadcrumbs: {
-    display: 'flex',
-    alignItems: 'center',
-    paddingLeft: '10px'
-  },
-  pagesBreadcrumbsOl: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '9px 0',
-    '& li': {
-      lineHeight: 1
-    }
-  },
-  PagesBreadCrumbsSeparator: {
-    margin: '0 2px'
-  },
-  pagesBreadcrumbsTypo: {
-    fontWeight: 'bold',
-    color: palette.gray.medium4
-  },
-  pagesNavItem: {
-    justifyContent: 'space-between',
-    padding: '0px 0px 0px 10px',
-    height: '36px',
-    '&.noLeftPadding': {
-      paddingLeft: 0
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    wrapper: {
+      padding: '10px',
+      border: '1px solid gray',
+      width: '260px',
+      margin: '0 auto'
     },
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.08)'
-    }
-  },
-  pagesNavItemText: {
-    color: theme.palette.primary.main,
-    marginRight: 'auto',
-    '&.opacity': {
-      opacity: '0.7'
-    }
-  },
-  pagesNavItemCheckbox: {
-    padding: '6px',
-    color: theme.palette.primary.main
-  },
-  pagination: {
-    marginTop: '10px',
-    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    '& p': {
+    primaryColor: {
+      color: theme.palette.primary.main
+    },
+    blackColor: {
+      color: palette.black
+    },
+    flag: {
+      color: flagColor,
+      fontSize: '1rem',
+      marginLeft: '5px'
+    },
+    optionsWrapper: {
+      marginLeft: 'auto',
+      display: 'flex'
+    },
+    pagesHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      paddingLeft: '5px'
+    },
+    pagesHeaderTitle: {
+      marginLeft: '6px',
+      flexGrow: 1
+    },
+    icon: {
+      padding: '6px'
+    },
+    searchRoot: {
+      //margin: '10px 0'
+    },
+    pagesBreadcrumbs: {
+      display: 'flex',
+      alignItems: 'center',
+      paddingLeft: '10px'
+    },
+    pagesBreadcrumbsOl: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '9px 0',
+      '& li': {
+        lineHeight: 1
+      }
+    },
+    PagesBreadCrumbsSeparator: {
+      margin: '0 2px'
+    },
+    pagesBreadcrumbsTypo: {
+      fontWeight: 'bold',
+      color: palette.gray.medium4
+    },
+    pagesNavItem: {
+      justifyContent: 'space-between',
+      padding: '0px 0px 0px 10px',
+      height: '36px',
+      '&.noLeftPadding': {
+        paddingLeft: 0
+      },
+      '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.08)'
+      }
+    },
+    pagesNavItemText: {
+      color: theme.palette.primary.main,
+      marginRight: 'auto',
+      '&.opacity': {
+        opacity: '0.7'
+      }
+    },
+    pagesNavItemCheckbox: {
+      padding: '6px',
+      color: theme.palette.primary.main
+    },
+    pagination: {
+      marginTop: '10px',
+      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+      '& p': {
+        padding: 0
+      },
+      '& svg': {
+        top: 'inherit'
+      },
+      '& .hidden': {
+        display: 'none'
+      }
+    },
+    toolbar: {
+      padding: 0,
+      display: 'flex',
+      justifyContent: 'space-between',
+      paddingLeft: '20px',
+      '& .MuiTablePagination-spacer': {
+        display: 'none'
+      },
+      '& .MuiTablePagination-spacer + p': {
+        display: 'none'
+      }
+    },
+    menuPaper: {
+      width: '182px'
+    },
+    menuList: {
       padding: 0
     },
-    '& svg': {
-      top: 'inherit'
+    menuItemRoot: {
+      whiteSpace: 'initial'
     },
-    '& .hidden': {
-      display: 'none'
+    helperText: {
+      padding: '10px 16px 10px 16px',
+      color: '#8E8E93'
     }
-  },
-  toolbar: {
-    padding: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingLeft: '20px',
-    '& .MuiTablePagination-spacer': {
-      display: 'none'
-    },
-    '& .MuiTablePagination-spacer + p': {
-      display: 'none'
-    }
-  },
-  menuPaper: {
-    width: '182px'
-  },
-  menuList: {
-    padding: 0
-  },
-  menuItemRoot: {
-    whiteSpace: 'initial'
-  },
-  helperText: {
-    padding: '10px 16px 10px 16px',
-    color: '#8E8E93'
-  }
-}));
+  })
+);
 
 const translations = defineMessages({
   title: {
@@ -191,7 +194,8 @@ const translations = defineMessages({
   },
   copyDialogSubtitle: {
     id: 'craftercms.copy.dialog.subtitle',
-    defaultMessage: 'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
+    defaultMessage:
+      'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
   },
   edit: {
     id: 'words.edit',
@@ -332,69 +336,35 @@ function generateMenuSections(item: Item, menuState: MenuState, count?: number) 
     if (count > 0) {
       let selectedMenuItems = menuOptions.itemsSelected;
       selectedMenuItems.values.count = count;
-      sections.push([
-        selectedMenuItems,
-        menuOptions.terminateSelection
-      ])
+      sections.push([selectedMenuItems, menuOptions.terminateSelection]);
     } else {
-      sections.push([
-        menuOptions.terminateSelection
-      ]);
+      sections.push([menuOptions.terminateSelection]);
     }
-    sections.push(menuState.hasClipboard ? [
-        menuOptions.cut,
-        menuOptions.copy,
-        menuOptions.paste,
-        menuOptions.duplicate,
-        menuOptions.delete
-      ] : [
-        menuOptions.cut,
-        menuOptions.copy,
-        menuOptions.duplicate,
-        menuOptions.delete
-      ]
+    sections.push(
+      menuState.hasClipboard
+        ? [
+            menuOptions.cut,
+            menuOptions.copy,
+            menuOptions.paste,
+            menuOptions.duplicate,
+            menuOptions.delete
+          ]
+        : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate, menuOptions.delete]
     );
-    sections.push([
-      menuOptions.translation
-    ])
+    sections.push([menuOptions.translation]);
   } else {
     sections.push(
-      [
-        menuOptions.edit,
-        menuOptions.view,
-        menuOptions.newContent,
-        menuOptions.newFolder
-      ],
-      [
-        menuOptions.delete,
-        menuOptions.changeTemplate
-      ]
+      [menuOptions.edit, menuOptions.view, menuOptions.newContent, menuOptions.newFolder],
+      [menuOptions.delete, menuOptions.changeTemplate]
     );
     sections.push(
-      menuState.hasClipboard ? [
-        menuOptions.cut,
-        menuOptions.copy,
-        menuOptions.paste,
-        menuOptions.duplicate
-      ] : [
-        menuOptions.cut,
-        menuOptions.copy,
-        menuOptions.duplicate
-      ]
+      menuState.hasClipboard
+        ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
+        : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
     );
-    sections.push(
-      [
-        menuOptions.dependencies
-      ],
-      [
-        menuOptions.history,
-        menuOptions.translation
-      ]
-    );
+    sections.push([menuOptions.dependencies], [menuOptions.history, menuOptions.translation]);
     if (!item) {
-      sections.push([
-        menuOptions.select
-      ])
+      sections.push([menuOptions.select]);
     }
   }
 
@@ -417,20 +387,20 @@ function PagesHeader(props: PagesHeaderProps) {
   const currentFlag = (locale: string) => {
     switch (locale) {
       case 'en': {
-        return <PhotoSizeSelectActualIcon className={classes.blackColor}/>
+        return <PhotoSizeSelectActualIcon className={classes.blackColor} />;
       }
       case 'es': {
-        return <PlaceRoundedIcon className={classes.blackColor}/>
+        return <PlaceRoundedIcon className={classes.blackColor} />;
       }
       default: {
-        return <PhotoSizeSelectActualIcon className={classes.blackColor}/>
+        return <PhotoSizeSelectActualIcon className={classes.blackColor} />;
       }
     }
   };
 
   return (
     <header className={classes.pagesHeader}>
-      <DescriptionOutlinedIcon/>
+      <DescriptionOutlinedIcon />
       <Typography variant="subtitle1" className={classes.pagesHeaderTitle}>
         {formatMessage(translations.title)}
       </Typography>
@@ -446,10 +416,10 @@ function PagesHeader(props: PagesHeaderProps) {
         className={classes.icon}
         onClick={(event) => onPagesMenuOpen(event.currentTarget, 'options')}
       >
-        <MoreVertIcon className={classes.blackColor}/>
+        <MoreVertIcon className={classes.blackColor} />
       </IconButton>
     </header>
-  )
+  );
 }
 
 interface Breadcrumb {
@@ -471,13 +441,7 @@ interface PagesBreadcrumbsProps {
 
 function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
   const classes = useStyles({});
-  const {
-    breadcrumb,
-    onBreadcrumbSelected,
-    onOpenBreadcrumbsMenu,
-    keyword,
-    onSearch
-  } = props;
+  const { breadcrumb, onBreadcrumbSelected, onOpenBreadcrumbsMenu, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(false);
 
   const onChange = (keyword: string) => {
@@ -489,63 +453,69 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
 
   return (
     <section className={classes.pagesBreadcrumbs}>
-      {
-        showSearch ? (
-          <SearchBar
-            onChange={onChange}
-            keyword={keyword}
-            showActionButton={true}
-            onActionButtonClick={() => onChange('')}
-            classes={{ root: classes.searchRoot }}
-          />
-        ) : (
-          <>
-            <Breadcrumbs
-              aria-label="breadcrumb"
-              maxItems={2}
-              separator={<NavigateNextIcon fontSize="small"/>}
-              classes={{ ol: classes.pagesBreadcrumbsOl, separator: classes.PagesBreadCrumbsSeparator }}
+      {showSearch ? (
+        <SearchBar
+          onChange={onChange}
+          keyword={keyword}
+          showActionButton={true}
+          onActionButtonClick={() => onChange('')}
+          classes={{ root: classes.searchRoot }}
+        />
+      ) : (
+        <>
+          <Breadcrumbs
+            aria-label="breadcrumb"
+            maxItems={2}
+            separator={<NavigateNextIcon fontSize="small" />}
+            classes={{
+              ol: classes.pagesBreadcrumbsOl,
+              separator: classes.PagesBreadCrumbsSeparator
+            }}
+          >
+            {breadcrumb.map((item: Breadcrumb, i: number) => {
+              return breadcrumb.length !== i + 1 ? (
+                <Link
+                  key={item.id}
+                  color="inherit"
+                  component="button"
+                  variant="subtitle2"
+                  underline="always"
+                  TypographyClasses={{ root: classes.pagesBreadcrumbsTypo }}
+                  onClick={() => onBreadcrumbSelected(item)}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <Typography
+                  key={item.id}
+                  variant="subtitle2"
+                  className={classes.pagesBreadcrumbsTypo}
+                >
+                  {item.label}
+                </Typography>
+              );
+            })}
+          </Breadcrumbs>
+          <div className={classes.optionsWrapper}>
+            <IconButton
+              aria-label="options"
+              className={clsx(classes.icon, classes.primaryColor)}
+              onClick={(event) => onOpenBreadcrumbsMenu(event.currentTarget)}
             >
-              {
-                breadcrumb.map((item: Breadcrumb, i: number) => {
-                  return (breadcrumb.length !== i + 1) ? (
-                      <Link
-                        key={item.id}
-                        color="inherit"
-                        component="button"
-                        variant="subtitle2"
-                        underline="always"
-                        TypographyClasses={{ root: classes.pagesBreadcrumbsTypo }}
-                        onClick={() => onBreadcrumbSelected(item)}
-                      >
-                        {item.label}
-                      </Link>
-                    ) :
-                    (
-                      <Typography key={item.id} variant="subtitle2"
-                                  className={classes.pagesBreadcrumbsTypo}>{item.label}</Typography>
-                    )
-                })
-              }
-            </Breadcrumbs>
-            <div className={classes.optionsWrapper}>
-              <IconButton
-                aria-label="options"
-                className={clsx(classes.icon, classes.primaryColor)}
-                onClick={(event) => onOpenBreadcrumbsMenu(event.currentTarget)}
-              >
-                <MoreVertIcon/>
-              </IconButton>
-              <IconButton aria-label="search" className={clsx(classes.icon, classes.primaryColor)}
-                          onClick={() => setShowSearch(true)}>
-                <SearchRoundedIcon/>
-              </IconButton>
-            </div>
-          </>
-        )
-      }
+              <MoreVertIcon />
+            </IconButton>
+            <IconButton
+              aria-label="search"
+              className={clsx(classes.icon, classes.primaryColor)}
+              onClick={() => setShowSearch(true)}
+            >
+              <SearchRoundedIcon />
+            </IconButton>
+          </div>
+        </>
+      )}
     </section>
-  )
+  );
 }
 
 interface PagesNavItemProps {
@@ -570,41 +540,43 @@ function PagesNavItem(props: PagesNavItemProps) {
       onMouseOver={() => setOver(true)}
       onMouseLeave={() => setOver(false)}
     >
-      {
-        selectMode &&
+      {selectMode && (
         <Checkbox
           color="default"
           className={classes.pagesNavItemCheckbox}
           onChange={(e) => {
-            onSelectItem(item, e.currentTarget.checked)
+            onSelectItem(item, e.currentTarget.checked);
           }}
           value="primary"
         />
-      }
+      )}
       <Typography
         variant="body2"
-        className={clsx(classes.pagesNavItemText, (currentLocale !== item.localeCode) && 'opacity')}
+        className={clsx(classes.pagesNavItemText, currentLocale !== item.localeCode && 'opacity')}
       >
         {item.label}
-        {
-          (currentLocale !== item.localeCode) &&
-          <FlagRoundedIcon className={classes.flag}/>
-        }
+        {currentLocale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
       </Typography>
-      {
-        over &&
+      {over && (
         <div className={classes.optionsWrapper}>
-          <IconButton aria-label="options" className={classes.icon}
-                      onClick={(event) => onOpenItemMenu(event.currentTarget, item)}>
-            <MoreVertIcon/>
+          <IconButton
+            aria-label="options"
+            className={classes.icon}
+            onClick={(event) => onOpenItemMenu(event.currentTarget, item)}
+          >
+            <MoreVertIcon />
           </IconButton>
-          <IconButton aria-label="options" className={classes.icon} onClick={() => onItemSelected(item)}>
-            <ChevronRightRoundedIcon/>
+          <IconButton
+            aria-label="options"
+            className={classes.icon}
+            onClick={() => onItemSelected(item)}
+          >
+            <ChevronRightRoundedIcon />
           </IconButton>
         </div>
-      }
+      )}
     </ListItem>
-  )
+  );
 }
 
 interface PagesNavProps {
@@ -623,21 +595,19 @@ function PagesNav(props: PagesNavProps) {
   const { items, onItemSelected, currentLocale, selectMode, onSelectItem, onOpenItemMenu } = props;
   return (
     <List component="nav" aria-label="pages nav" disablePadding={true}>
-      {
-        items.map((item: Item) =>
-          <PagesNavItem
-            item={item}
-            key={item.id}
-            onItemSelected={onItemSelected}
-            currentLocale={currentLocale}
-            selectMode={selectMode}
-            onSelectItem={onSelectItem}
-            onOpenItemMenu={onOpenItemMenu}
-          />
-        )
-      }
+      {items.map((item: Item) => (
+        <PagesNavItem
+          item={item}
+          key={item.id}
+          onItemSelected={onItemSelected}
+          currentLocale={currentLocale}
+          selectMode={selectMode}
+          onSelectItem={onSelectItem}
+          onOpenItemMenu={onOpenItemMenu}
+        />
+      ))}
     </List>
-  )
+  );
 }
 
 interface PagesWidgetProps {
@@ -647,12 +617,13 @@ interface PagesWidgetProps {
 }
 
 interface MenuState {
-  selectMode: boolean,
-  hasClipboard: boolean
+  selectMode: boolean;
+  hasClipboard: boolean;
 }
 
 export default function PagesWidget(props: PagesWidgetProps) {
   const classes = useStyles({});
+  const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { site = 'editorial', path = 'site/website', locale = 'en' } = props;
   const [currentLocale, setCurrentLocale] = React.useState(locale);
@@ -671,8 +642,6 @@ export default function PagesWidget(props: PagesWidgetProps) {
   });
   const [keyword, setKeyword] = useState('');
 
-  const [error, setError] = useState(null);
-
   const [copyDialog, setCopyDialog] = useState(null);
   const [translationDialog, setTranslationDialog] = useState(null);
 
@@ -683,9 +652,13 @@ export default function PagesWidget(props: PagesWidgetProps) {
         setBreadcrumb([...breadcrumb, response.parent]);
       },
       (response) => {
-        setError(response);
+        dispatch(
+          showErrorDialog({
+            error: response
+          })
+        );
       }
-    )
+    );
   }, [site, activePath]);
 
   setRequestForgeryToken();
@@ -703,11 +676,10 @@ export default function PagesWidget(props: PagesWidgetProps) {
     setActivePath(item.path);
   };
 
-  const onPageChanged = (page: number) => {
-  };
+  const onPageChanged = (page: number) => {};
 
   const onSelectItem = (item: Item, select: boolean) => {
-    setSelectedItems({ ...selectedItems, [item.id]: select ? item : false })
+    setSelectedItems({ ...selectedItems, [item.id]: select ? item : false });
   };
 
   const onMenuItemClicked = (section: SectionItem) => {
@@ -750,20 +722,28 @@ export default function PagesWidget(props: PagesWidgetProps) {
                   }
                 },
                 (response) => {
-                  setError(response);
+                  dispatch(
+                    showErrorDialog({
+                      error: response
+                    })
+                  );
                 }
               );
             }
           },
           (response) => {
-            setError(response);
+            dispatch(
+              showErrorDialog({
+                error: response
+              })
+            );
           }
         );
         break;
       }
       case 'paste': {
         pasteItem(site, menu.activeItem).subscribe(
-          (response) => {
+          () => {
             setMenu({
               activeItem: null,
               anchorEl: null
@@ -771,7 +751,11 @@ export default function PagesWidget(props: PagesWidgetProps) {
             setMenuState({ hasClipboard: false });
           },
           (response) => {
-            setError(response);
+            dispatch(
+              showErrorDialog({
+                error: response
+              })
+            );
           }
         );
         break;
@@ -791,7 +775,11 @@ export default function PagesWidget(props: PagesWidgetProps) {
             }
           },
           (response) => {
-            setError(response);
+            dispatch(
+              showErrorDialog({
+                error: response
+              })
+            );
           }
         );
         break;
@@ -804,10 +792,14 @@ export default function PagesWidget(props: PagesWidgetProps) {
         });
         getTargetLocales(site, path).subscribe(
           (response) => {
-            setTranslationDialog(response.items)
+            setTranslationDialog(response.items);
           },
           (response) => {
-            setError(response);
+            dispatch(
+              showErrorDialog({
+                error: response
+              })
+            );
           }
         );
         break;
@@ -826,7 +818,9 @@ export default function PagesWidget(props: PagesWidgetProps) {
   };
 
   const onOpenBreadcrumbsMenu = (element: Element) => {
-    const count = selectedItems && Object.values(selectedItems).filter((item: Item | false) => item !== false).length;
+    const count =
+      selectedItems &&
+      Object.values(selectedItems).filter((item: Item | false) => item !== false).length;
     setMenu({
       sections: generateMenuSections(null, menuState, count),
       anchorEl: element,
@@ -888,10 +882,6 @@ export default function PagesWidget(props: PagesWidgetProps) {
     setMenu({ ...menu, anchorEl: null, activeItem: null });
   };
 
-  const onErrorClose = () => {
-    setError(null);
-  };
-
   const onCopyDialogClose = () => {
     setCopyDialog(null);
   };
@@ -909,7 +899,11 @@ export default function PagesWidget(props: PagesWidgetProps) {
         }
       },
       (response) => {
-        setError(response);
+        dispatch(
+          showErrorDialog({
+            error: response
+          })
+        );
       }
     );
   };
@@ -920,8 +914,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
 
   return (
     <section className={classes.wrapper}>
-      {
-        (items !== null) &&
+      {items !== null && (
         <>
           <PagesHeader
             currentLocale={currentLocale}
@@ -935,8 +928,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
             keyword={keyword}
             onSearch={onSearch}
           />
-          {
-            items &&
+          {items && (
             <PagesNav
               items={items}
               onItemSelected={onItemSelected}
@@ -945,7 +937,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
               onSelectItem={onSelectItem}
               onOpenItemMenu={onOpenItemMenu}
             />
-          }
+          )}
           <TablePagination
             className={classes.pagination}
             classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
@@ -960,7 +952,9 @@ export default function PagesWidget(props: PagesWidgetProps) {
             nextIconButtonProps={{
               'aria-label': formatMessage(translations.nextPage)
             }}
-            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(page)}
+            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
+              onPageChanged(page)
+            }
           />
           <ContextMenu
             anchorEl={menu.anchorEl}
@@ -976,13 +970,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
             onMenuItemClicked={onMenuItemClicked}
           />
         </>
-      }
-      {
-        error &&
-        <ErrorDialog error={error} onClose={onErrorClose}/>
-      }
-      {
-        copyDialog &&
+      )}
+      {copyDialog && (
         <CopyItemsDialog
           title={formatMessage(translations.copyDialogTitle)}
           subtitle={formatMessage(translations.copyDialogSubtitle)}
@@ -991,19 +980,15 @@ export default function PagesWidget(props: PagesWidgetProps) {
           onOk={onCopyDialogOk}
           item={copyDialog}
         />
-      }
-      {
-        translationDialog &&
+      )}
+      {translationDialog && (
         <ContentLocalizationDialog
           locales={translationDialog}
           open={true}
           onClose={onTranslationDialogClose}
           site={site}
-          setError={setError}
         />
-      }
-
+      )}
     </section>
-  )
+  );
 }
-

@@ -30,7 +30,8 @@ import clsx from 'clsx';
 import ContextMenu, { Option, SectionItem } from './ContextMenu';
 import Link from '@material-ui/core/Link';
 import { markForTranslation } from '../services/translation';
-import { APIError } from '../models/GlobalState';
+import { showErrorDialog } from '../state/reducers/dialogs/error';
+import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({
   title: {
@@ -79,50 +80,52 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) => createStyles({
-  dialogContentRoot: {
-    padding: theme.spacing(2),
-    backgroundColor: palette.gray.light0
-  },
-  contentLocalizationRoot: {
-    background: palette.white,
-    border: '1px solid rgba(0, 0, 0, .125)',
-    minHeight: '30vh',
-    '& header': {
-      marginBottom: '5px'
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    dialogContentRoot: {
+      padding: theme.spacing(2),
+      backgroundColor: palette.gray.light0
+    },
+    contentLocalizationRoot: {
+      background: palette.white,
+      border: '1px solid rgba(0, 0, 0, .125)',
+      minHeight: '30vh',
+      '& header': {
+        marginBottom: '5px'
+      }
+    },
+    icon: {
+      marginLeft: 'auto',
+      padding: '9px'
+    },
+    checkbox: {
+      color: theme.palette.primary.main
+    },
+    flex: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    headerTitle: {
+      fontWeight: 'bold',
+      paddingRight: '20px'
+    },
+    locale: {
+      paddingRight: '20px'
+    },
+    width30: {
+      width: '30%'
+    },
+    menuPaper: {
+      width: '182px'
+    },
+    menuList: {
+      padding: 0
+    },
+    menuItemRoot: {
+      whiteSpace: 'initial'
     }
-  },
-  icon: {
-    marginLeft: 'auto',
-    padding: '9px'
-  },
-  checkbox: {
-    color: theme.palette.primary.main
-  },
-  flex: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  headerTitle: {
-    fontWeight: 'bold',
-    paddingRight: '20px'
-  },
-  locale: {
-    paddingRight: '20px'
-  },
-  width30: {
-    width: '30%'
-  },
-  menuPaper: {
-    width: '182px'
-  },
-  menuList: {
-    padding: 0
-  },
-  menuItemRoot: {
-    whiteSpace: 'initial'
-  }
-}));
+  })
+);
 
 const localizationMap: any = {
   en: 'English, US (en)',
@@ -174,20 +177,22 @@ const menuOptions = [
   }
 ];
 
-const contextSelectionOptionsOverlayStyles = makeStyles((theme) => createStyles({
-  itemHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    background: 'rgba(0, 122, 255, 0.1)'
-  },
-  optionTypography: {
-    color: palette.blue.main,
-    marginRight: '25px'
-  },
-  checkbox: {
-    color: theme.palette.primary.main
-  }
-}));
+const contextSelectionOptionsOverlayStyles = makeStyles((theme) =>
+  createStyles({
+    itemHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      background: 'rgba(0, 122, 255, 0.1)'
+    },
+    optionTypography: {
+      color: palette.blue.main,
+      marginRight: '25px'
+    },
+    checkbox: {
+      color: theme.palette.primary.main
+    }
+  })
+);
 
 interface ContextSelectionOptionsOverlayProps {
   options: Option[];
@@ -213,22 +218,20 @@ function ContextSelectionOptionsOverlay(props: ContextSelectionOptionsOverlayPro
         className={classes.checkbox}
         onChange={toggleSelectAll}
       />
-      {
-        options.map((option: Option) =>
-          <Link
-            key={option.id}
-            color="inherit"
-            component="button"
-            variant="subtitle2"
-            TypographyClasses={{ root: classes.optionTypography }}
-            onClick={() => onOptionClicked(option)}
-          >
-            {formatMessage(option.label)}
-          </Link>
-        )
-      }
+      {options.map((option: Option) => (
+        <Link
+          key={option.id}
+          color="inherit"
+          component="button"
+          variant="subtitle2"
+          TypographyClasses={{ root: classes.optionTypography }}
+          onClick={() => onOptionClicked(option)}
+        >
+          {formatMessage(option.label)}
+        </Link>
+      ))}
     </header>
-  )
+  );
 }
 
 interface ContentLocalizationDialogProps {
@@ -237,14 +240,13 @@ interface ContentLocalizationDialogProps {
   site: string;
 
   onClose(): void;
-
-  setError(error: APIError): void;
 }
 
 export default function ContentLocalizationDialog(props: ContentLocalizationDialogProps) {
   const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
   const classes = useStyles({});
-  const { open, onClose, locales, site, setError } = props;
+  const { open, onClose, locales, site } = props;
   const [selected, setSelected] = useState([]);
   const [menu, setMenu] = useState({
     activeItem: null,
@@ -255,14 +257,14 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
     setMenu({
       activeItem: locale,
       anchorEl
-    })
+    });
   };
 
   const onCloseCustomMenu = () => {
     setMenu({
       activeItem: null,
       anchorEl: null
-    })
+    });
   };
 
   const onMenuItemClicked = (section: SectionItem) => {
@@ -273,10 +275,14 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
             setMenu({
               activeItem: null,
               anchorEl: null
-            })
+            });
           },
           ({ response }) => {
-            setError(response);
+            dispatch(
+              showErrorDialog({
+                error: response
+              })
+            );
           }
         );
         break;
@@ -290,7 +296,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
     const _selected = [...selected];
     if (checked) {
       if (!_selected.includes(id)) {
-        _selected.push(id)
+        _selected.push(id);
       }
     } else {
       let index = _selected.indexOf(id);
@@ -314,67 +320,61 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      disableBackdropClick={true}
-      fullWidth={true}
-    >
-      <DialogTitle title={formatMessage(translations.title)} subtitle={'breadcrumb'} onClose={onClose}/>
+    <Dialog open={open} onClose={onClose} disableBackdropClick={true} fullWidth={true}>
+      <DialogTitle
+        title={formatMessage(translations.title)}
+        subtitle={'breadcrumb'}
+        onClose={onClose}
+      />
       <DialogContent dividers classes={{ root: classes.dialogContentRoot }}>
         <section className={classes.contentLocalizationRoot}>
-          {
-            selected.length > 0 ? (
-              <ContextSelectionOptionsOverlay
-                isIndeterminate={(selected.length > 0 && selected.length < locales.length)}
-                onOptionClicked={onOptionClicked}
-                options={menuOptions}
-                isChecked={selected.length === locales.length}
-                toggleSelectAll={toggleSelectAll}
-              />
-            ) : (
-              <header className={classes.flex}>
-                <Checkbox
-                  color="primary"
-                  className={classes.checkbox}
-                  onChange={toggleSelectAll}
-                />
-                <>
-                  <Typography variant="subtitle2" className={clsx(classes.headerTitle, classes.width30)}>
-                    {formatMessage(translations.locales)}
-                  </Typography>
-                  <Typography variant="subtitle2" className={classes.headerTitle}>
-                    {formatMessage(translations.status)}
-                  </Typography>
-                </>
-              </header>
-            )
-          }
-          {
-            locales.map((locale: any) =>
-              <div className={classes.flex} key={locale.id}>
-                <Checkbox
-                  color="primary"
-                  className={classes.checkbox}
-                  checked={selected?.includes(locale.id)}
-                  onChange={(event) => handleSelect(event.currentTarget.checked, locale.id)}
-                />
-                <Typography variant="subtitle2" className={clsx(classes.locale, classes.width30)}>
-                  {localizationMap[locale.localeCode]}
-                </Typography>
-                <Typography variant="subtitle2" className={classes.locale}>
-                  {locale.status}
-                </Typography>
-                <IconButton
-                  aria-label="options"
-                  className={classes.icon}
-                  onClick={(e) => onOpenCustomMenu(locale, e.currentTarget)}
+          {selected.length > 0 ? (
+            <ContextSelectionOptionsOverlay
+              isIndeterminate={selected.length > 0 && selected.length < locales.length}
+              onOptionClicked={onOptionClicked}
+              options={menuOptions}
+              isChecked={selected.length === locales.length}
+              toggleSelectAll={toggleSelectAll}
+            />
+          ) : (
+            <header className={classes.flex}>
+              <Checkbox color="primary" className={classes.checkbox} onChange={toggleSelectAll} />
+              <>
+                <Typography
+                  variant="subtitle2"
+                  className={clsx(classes.headerTitle, classes.width30)}
                 >
-                  <MoreVertIcon/>
-                </IconButton>
-              </div>
-            )
-          }
+                  {formatMessage(translations.locales)}
+                </Typography>
+                <Typography variant="subtitle2" className={classes.headerTitle}>
+                  {formatMessage(translations.status)}
+                </Typography>
+              </>
+            </header>
+          )}
+          {locales.map((locale: any) => (
+            <div className={classes.flex} key={locale.id}>
+              <Checkbox
+                color="primary"
+                className={classes.checkbox}
+                checked={selected?.includes(locale.id)}
+                onChange={(event) => handleSelect(event.currentTarget.checked, locale.id)}
+              />
+              <Typography variant="subtitle2" className={clsx(classes.locale, classes.width30)}>
+                {localizationMap[locale.localeCode]}
+              </Typography>
+              <Typography variant="subtitle2" className={classes.locale}>
+                {locale.status}
+              </Typography>
+              <IconButton
+                aria-label="options"
+                className={classes.icon}
+                onClick={(e) => onOpenCustomMenu(locale, e.currentTarget)}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            </div>
+          ))}
         </section>
       </DialogContent>
       <ContextMenu
@@ -388,5 +388,5 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
         onMenuItemClicked={onMenuItemClicked}
       />
     </Dialog>
-  )
+  );
 }

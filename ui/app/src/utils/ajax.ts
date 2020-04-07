@@ -79,22 +79,26 @@ export function del(url: string, headers: object = {}): Observable<AjaxResponse>
   return ajax.delete(url, mergeHeaders(headers));
 }
 
-export const catchAjaxError = (fetchFailedCreator) => catchError((error: any) => {
-  if (error.name === 'AjaxError') {
-    const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
-    ajaxError.response = {
-      message: ajaxError.response?.message ?? 'An unknown error has occurred.'
-    };
-    if (ajaxError.status === 401) {
-      return of(fetchFailedCreator(ajaxError), sessionTimeout());
+export const catchAjaxError = (fetchFailedCreator) =>
+  catchError((error: any) => {
+    if (error.name === 'AjaxError') {
+      const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
+      ajaxError.response = {
+        message: ajaxError.response?.message ?? 'An unknown error has occurred.'
+      };
+      if (ajaxError.status === 401) {
+        return of(fetchFailedCreator(ajaxError), sessionTimeout());
+      } else {
+        return of(fetchFailedCreator(ajaxError));
+      }
     } else {
-      return of(fetchFailedCreator(ajaxError));
+      console.error(
+        '[ajax/catchAjaxError] An epic threw and hence it will be disabled. Check logic.',
+        error
+      );
+      throw error;
     }
-  } else {
-    console.error('[ajax/catchAjaxError] An epic threw and hence it will be disabled. Check logic.', error);
-    throw error;
-  }
-});
+  });
 
 export const catchApi1Error = catchError((error: any) => {
   if (error.name === 'AjaxError') {
@@ -104,7 +108,7 @@ export const catchApi1Error = catchError((error: any) => {
         throw {
           code: 1001,
           message: 'Invalid parameter(s)',
-          remedialAction: 'Check API and make sure you\'re sending the correct parameters'
+          remedialAction: "Check API and make sure you're sending the correct parameters"
         };
       case 401:
         // eslint-disable-next-line no-throw-literal
@@ -118,7 +122,8 @@ export const catchApi1Error = catchError((error: any) => {
         throw {
           code: 2001,
           message: 'Unauthorized',
-          remedialAction: 'You don\'t have permission to perform this task, please contact your'
+          remedialAction:
+            "You don't have permission to perform this task, please contact your administrator"
         };
       case 500:
       default:
@@ -152,4 +157,4 @@ export default {
   put,
   del,
   ajax
-}
+};
