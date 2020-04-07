@@ -268,7 +268,7 @@ interface HistoryListProps {
     nextVersion?: LegacyVersion;
   };
 
-  handleItemClick(version: LegacyVersion): void;
+  handleHistoryItemClick(version: LegacyVersion): void;
 
   handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
 }
@@ -276,7 +276,7 @@ interface HistoryListProps {
 function HistoryList(props: HistoryListProps) {
   const { formatMessage } = useIntl();
   const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, compareTo, handleItemClick } = props;
+  const { resource, handleOpenMenu, rowsPerPage, page, compareTo, handleHistoryItemClick } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   return (
     <List component="div" className={classes.list} disablePadding>
@@ -288,7 +288,7 @@ function HistoryList(props: HistoryListProps) {
             key={version.versionNumber}
             divider={versions.length - 1 !== i}
             button={isButton as true}
-            onClick={isButton ? () => handleItemClick(version) : null}
+            onClick={isButton ? () => handleHistoryItemClick(version) : null}
             className={clsx(classes.listItem, isSelected && 'selected')}
           >
             <ListItemText
@@ -469,14 +469,14 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     setCompareTo({ nextVersion: version });
   };
 
-  const handleMenuClose = () => {
+  const handleContextMenuClose = () => {
     setMenu({
       anchorEl: null,
       activeItem: null
     });
   };
 
-  const handleMenuItemClicked = (section: SectionItem) => {
+  const handleContextMenuItemClicked = (section: SectionItem) => {
     switch (section.id) {
       case 'view': {
         break;
@@ -495,7 +495,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     setPage(nextPage);
   };
 
-  const handleBack = () => {
+  const handleDialogHeaderBack = () => {
     if (compareTo.nextVersion) {
       setCompareTo({ nextVersion: null });
     } else {
@@ -531,7 +531,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
           )
         }
         onClose={onClose}
-        onBack={compareTo.version ? handleBack : null}
+        onBack={compareTo.version ? handleDialogHeaderBack : null}
       />
       <DialogBody>
         {compareTo.version && compareTo.nextVersion ? (
@@ -541,7 +541,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
             <HistoryList
               resource={resource}
               handleOpenMenu={handleOpenMenu}
-              handleItemClick={handleItemClick}
+              handleHistoryItemClick={handleItemClick}
               rowsPerPage={rowsPerPage}
               page={page}
               compareTo={compareTo}
@@ -575,9 +575,9 @@ export default function HistoryDialog(props: HistoryDialogProps) {
       <ContextMenu
         open={!!menu.anchorEl}
         anchorEl={menu.anchorEl}
-        onClose={handleMenuClose}
+        onClose={handleContextMenuClose}
         sections={menu.sections}
-        onMenuItemClicked={handleMenuItemClicked}
+        onMenuItemClicked={handleContextMenuItemClicked}
         classes={{ menuList: classes.menuList }}
       />
     </Dialog>
