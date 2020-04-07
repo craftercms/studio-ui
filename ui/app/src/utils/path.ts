@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { parse } from 'query-string';
+
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string) {
   let pagePath = previewURL;
@@ -40,6 +42,11 @@ export function getPathFromPreviewURL(previewURL: string) {
   return `/site/website${pagePath}`;
 }
 
+export function parseQueryString() {
+  return parse(window.location.search);
+}
+
 export default {
-  getPathFromPreviewURL
+  getPathFromPreviewURL,
+  parseQueryString
 };

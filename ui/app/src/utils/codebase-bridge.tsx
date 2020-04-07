@@ -94,6 +94,8 @@ export function createCodebaseBridge() {
     },
 
     components: {
+      ErrorState: lazy(() => import('../components/ErrorState')),
+      CrafterCMSNextBridge,
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
