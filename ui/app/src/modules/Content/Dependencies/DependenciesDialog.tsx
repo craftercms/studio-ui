@@ -20,7 +20,6 @@ import { getDependant, getSimpleDependencies } from '../../../services/dependenc
 import { useActiveSiteId, useSelection, useSpreadState, useStateResource } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { isAsset, isCode, isEditableAsset, isImage } from '../../../utils/content';
-import { forkJoin } from 'rxjs';
 import { APIError } from '../../../models/GlobalState';
 import StandardAction from '../../../models/StandardAction';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -51,14 +50,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
-
-const dialogInitialState = {
-  dependenciesShown: 'depends-on',
-  dependantItems: null,
-  dependencies: null,
-  compactView: false,
-  showTypes: 'all-deps'
-};
 
 const assetsTypes = {
   'all-deps': {
@@ -539,12 +530,19 @@ interface DependenciesDialogBaseProps {
 
 export type DependenciesDialogProps = PropsWithChildren<DependenciesDialogBaseProps & {
   onClose(): any;
-  }
->;
+}>;
 
 export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps {
   onClose?: StandardAction
 }
+
+const dialogInitialState = {
+  dependenciesShown: 'depends-on',
+  dependantItems: null,
+  dependencies: null,
+  compactView: false,
+  showTypes: 'all-deps'
+};
 
 function DependenciesDialog(props: DependenciesDialogProps) {
   const { open, item, dependenciesShown, onClose } = props;
@@ -565,6 +563,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     inProgress: false
   });
   const [contextMenuEl, setContextMenuEl] = React.useState<null | HTMLElement>(null);
+
   const handleEditorDisplay = item => {
     let type = 'controller';
 
@@ -598,6 +597,42 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     onClose?.();
   };
 
+  const getDepsItems = (siteId: string, path: string, newItem?: boolean) => {
+    if (dialog.dependenciesShown === 'depends-on') {
+      if (dialog.dependantItems === null || newItem) {
+        getDependant(siteId, path)
+          .subscribe(dependantItems => {
+              setDialog({
+                dependantItems,
+                ...(
+                  newItem ? { dependencies: null } : {}
+                )
+              });
+              setDeps(dependantItems);
+            },
+            (error) => setError(error));
+      } else {
+        setDeps(dialog.dependantItems);
+      }
+    } else {
+      if (dialog.dependencies === null || newItem) {
+        getSimpleDependencies(siteId, path)
+          .subscribe(dependencies => {
+              setDialog({
+                dependencies,
+                ...(
+                  newItem ? { dependantItems: null } : {}
+                )
+              });
+              setDeps(dependencies);
+            },
+            (error) => setError(error));
+      } else {
+        setDeps(dialog.dependencies);
+      }
+    }
+  };
+
   useEffect(() => {
     setDialog({ item });
   }, [item, setDialog]);
@@ -607,27 +642,17 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   }, [dependenciesShown, setDialog]);
 
   useEffect(() => {
-    if(dialog.item) {
-      forkJoin({
-        dependant: getDependant(siteId, dialog.item.uri),
-        dependencies: getSimpleDependencies(siteId, dialog.item.uri)
-      }).subscribe(
-        ({dependant, dependencies}) => {
-          setDialog({ dependantItems: dependant, dependencies });
-          setDeps(dialog.dependenciesShown === 'depends-on' ? dependant : dependencies);
-        },
-        (error) => setError(error)
-      );
+
+    if (dialog.item) {
+      getDepsItems(siteId, dialog.item.uri, true);
     }
   }, [dialog.item, setError, setDialog, siteId]);
 
   useEffect(() => {
-    if (dialog.dependenciesShown === 'depends-on') {
-      setDeps(dialog.dependantItems);
-    } else {
-      setDeps(dialog.dependencies);
+    if (dialog.item) {
+      getDepsItems(siteId, dialog.item.uri);
     }
-  }, [dialog.dependenciesShown, dialog.dependantItems, dialog.dependencies]);
+  }, [dialog.dependenciesShown]);
 
   const setCompactView = (active: boolean) => {
     setDialog({ compactView: active });
