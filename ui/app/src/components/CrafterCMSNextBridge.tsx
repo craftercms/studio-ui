@@ -29,6 +29,7 @@ import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
 import store from '../state/store';
 import DialogManager from './SystemStatus/GlobalDialogManager';
+import { SnackbarProvider } from 'notistack';
 
 const Locales: any = {
   en,
@@ -81,8 +82,10 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) 
     <Provider store={store}>
       <RawIntlProvider value={intl}>
         <ThemeProvider theme={theme}>
-          <Suspense fallback="">{props.children}</Suspense>
-          {props.isLegacy ? null : <DialogManager />}
+          <SnackbarProvider maxSnack={5}>
+            <Suspense fallback="" children={props.children} />
+            <DialogManager />
+          </SnackbarProvider>
         </ThemeProvider>
       </RawIntlProvider>
     </Provider>
