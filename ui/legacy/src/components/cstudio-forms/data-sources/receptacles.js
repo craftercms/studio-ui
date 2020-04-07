@@ -16,10 +16,8 @@
 
 (function () {
 
-  const i18n = CrafterCMSNext.i18n;
-
   function formatMessage(id) {
-    return i18n.intl.formatMessage(i18n.messages.receptaclesMessages[id]);
+    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.receptaclesMessages[id]);
   }
 
   function Receptacles(id, form, properties, constraints) {
