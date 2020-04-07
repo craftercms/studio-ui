@@ -703,9 +703,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       { label: CMgs.format(langBundle, 'itemManager'), name: 'itemManager', type: 'datasource:item' },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
       { label: CMgs.format(langBundle, 'disableFlatteningSearch'), name: 'disableFlattening', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'singleValueFilename'), name: 'useSingleValueFilename', type: 'boolean' },
-      { label: 'Content Types', name: 'contentTypes', type: 'contentTypes' },
-      { label: 'Tags', name: 'tags', type: 'string' }
+      { label: CMgs.format(langBundle, 'singleValueFilename'), name: 'useSingleValueFilename', type: 'boolean' }
     ];
   },
 
