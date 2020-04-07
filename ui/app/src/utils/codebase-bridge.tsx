@@ -117,11 +117,7 @@ export function createCodebaseBridge() {
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
       ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
-      QuickCreateMenu: lazy(() =>
-        import('../modules/Preview/QuickCreate').then((module) => ({
-          default: module.QuickCreateMenu
-        }))
-      ),
+      QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog'))
     },
 

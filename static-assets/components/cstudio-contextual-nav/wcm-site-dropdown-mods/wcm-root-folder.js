@@ -3319,7 +3319,8 @@
               uri
             },
             open,
-            onDialogClose: () => renderNewContentDialog(false),
+            onClose: () => renderNewContentDialog(false),
+            onDismiss: () => unmount(),
             site
           }).then((done) => (unmount = done.unmount));
         }

@@ -65,7 +65,8 @@ function GlobalDialogManager() {
         site={state.newContent.site}
         previewItem={state.newContent.previewItem}
         compact={state.newContent.compact}
-        onDialogClose={createCallback(state.newContent.onDialogClose, dispatch)}
+        onClose={createCallback(state.newContent.onClose, dispatch)}
+        onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />
 
       {/* endregion */}

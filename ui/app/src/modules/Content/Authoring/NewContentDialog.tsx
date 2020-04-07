@@ -153,11 +153,13 @@ interface NewContentDialogBaseProps {
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
-  onDialogClose?(): any;
+  onClose?(): any;
+  onDismiss?(): any;
 }>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
-  onDialogClose?: StandardAction;
+  onClose?: StandardAction;
+  onDismiss?: StandardAction;
 }
 
 function ContentTypesGrid(props: ContentTypesGridProps) {
@@ -184,7 +186,8 @@ function ContentTypesGrid(props: ContentTypesGridProps) {
 export default function NewContentDialog(props: NewContentDialogProps) {
   const {
     open,
-    onDialogClose,
+    onClose,
+    onDismiss,
     site,
     previewItem: previewItemProp,
     onSaveLegacySuccess,
@@ -247,7 +250,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   );
 
   const onTypeOpen = (srcData) => () => {
-    onDialogClose();
+    onClose();
     setDialogConfig({
       open: true,
       src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`
@@ -324,11 +327,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
 
   return (
     <>
-      <Dialog open={open} onClose={onDialogClose} fullWidth maxWidth="md" scroll="paper">
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" scroll="paper">
         <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
-          onClose={onDialogClose}
+          onClose={onDismiss}
           icon={CloseRoundedIcon}
         />
         <DialogBody dividers classes={{ root: classes.dialogContent }}>
@@ -401,7 +404,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           <FormControlLabel
             control={
               <Checkbox
-                checked={isCompact}
+                checked={isCompact || false}
                 onChange={onCompactCheck}
                 color="primary"
                 disabled={loading}

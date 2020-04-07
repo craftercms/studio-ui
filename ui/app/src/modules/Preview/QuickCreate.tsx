@@ -85,11 +85,11 @@ interface QuickCreateMenuProps {
 
   onSaveLegacySuccess?(response): void;
 
-  onMenuClose(): void;
+  onClose(): void;
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const { anchorEl, onMenuClose, previewItem, onSaveLegacySuccess } = props;
+  const { anchorEl, onClose, previewItem, onSaveLegacySuccess } = props;
   const classes = useStyles({});
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
@@ -108,7 +108,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     data.item.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
 
   const onNewContentClick = () => {
-    onMenuClose();
+    onClose();
     dispatch(
       showNewContentDialog({
         site: siteId,
@@ -125,7 +125,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
       .replace('{year}', today.getFullYear())
       .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
 
-    onMenuClose();
+    onClose();
 
     setDialogConfig({
       open: true,
@@ -149,7 +149,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={onMenuClose}
+        onClose={onClose}
       >
         <MenuItem className={classes.menuTitle} onClick={onNewContentClick}>
           <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
@@ -224,7 +224,7 @@ export default function QuickCreate() {
   return (
     <>
       <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
-      <QuickCreateMenu anchorEl={anchorEl} onMenuClose={onMenuClose} previewItem={currentPreview} />
+      <QuickCreateMenu anchorEl={anchorEl} onClose={onMenuClose} previewItem={currentPreview} />
     </>
   );
 }

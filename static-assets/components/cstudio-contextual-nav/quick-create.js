@@ -70,7 +70,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
               uri: '/site/website/index.xml'
             },
         anchorEl,
-        onMenuClose: () => renderQuickCreate(null)
+        onClose: () => unmount()
       }).then((done) => (unmount = done.unmount));
     }
 
