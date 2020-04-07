@@ -57,7 +57,7 @@ const translations = defineMessages({
     defaultMessage: 'Choose a content type template for your new content item.'
   },
   compactInput: {
-    id: 'newContentDialog.compactInputLabel',
+    id: 'words.compact',
     defaultMessage: 'Compact'
   },
   contentTypeAllLabel: {
