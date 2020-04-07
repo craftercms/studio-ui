@@ -35,6 +35,7 @@ type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<
 >;
 
 type SuspencifiedProps = PropsWithChildren<{
+  resource: Resource;
   suspenseProps?: SuspenseProps;
   loadingStateProps?: LoadingStateProps;
   errorBoundaryProps?: ErrorBoundaryProps;
