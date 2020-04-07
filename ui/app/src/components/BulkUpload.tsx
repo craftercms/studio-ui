@@ -659,7 +659,16 @@ const initialDropZoneStatus: DropZoneStatus = {
   progress: 0
 };
 
-export default function BulkUpload(props: any) {
+interface BulkUploadProps {
+  open: boolean;
+  path: string;
+  site: string;
+  maxSimultaneousUploads?: number;
+
+  onClose(dropZoneStatus: DropZoneStatus): void;
+}
+
+export default function BulkUpload(props: BulkUploadProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const { onClose, path, site, maxSimultaneousUploads = 1, open } = props;
