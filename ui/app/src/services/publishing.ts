@@ -14,43 +14,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
-import { Observable } from "rxjs";
+import { get, postJSON } from '../utils/ajax';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export function fetchPackages(siteId: string, filters: any) {
   let queryS = new URLSearchParams(filters).toString();
-  return get(`/studio/api/2/publish/packages?siteId=${siteId}&${queryS}`)
+  return get(`/studio/api/2/publish/packages?siteId=${siteId}&${queryS}`);
 }
 
 export function fetchPackage(siteId: string, packageId: string) {
-  return get(`/studio/api/2/publish/package?siteId=${siteId}&packageId=${packageId}`)
+  return get(`/studio/api/2/publish/package?siteId=${siteId}&packageId=${packageId}`);
 }
 
 export function cancelPackage(siteId: string, packageIds: any) {
-  return post(
-    '/studio/api/2/publish/cancel',
-    {siteId, packageIds},
-    {
-      'Content-Type': 'application/json'
-    }
-  );
+  return postJSON('/studio/api/2/publish/cancel', { siteId, packageIds });
 }
 
 export function fetchEnvironments(siteId: string) {
-  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`)
+  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`);
 }
 
-export function submitToGoLive(siteId: string, user:string, data): Observable<any> {
-  return post(
+export function submitToGoLive(siteId: string, user: string, data): Observable<any> {
+  return postJSON(
     `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
-    data,
-    {
-      'Content-Type': 'application/json'
-    }
+    data
   ).pipe(
     map((response: any) => {
-      if(response.response.success) {
+      if (response.response.success) {
         return response.response;
       } else {
         throw response;
@@ -59,16 +50,13 @@ export function submitToGoLive(siteId: string, user:string, data): Observable<an
   );
 }
 
-export function goLive(siteId: string, user:string, data): Observable<any> {
-  return post(
+export function goLive(siteId: string, user: string, data): Observable<any> {
+  return postJSON(
     `/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`,
-    data,
-    {
-      'Content-Type': 'application/json'
-    }
+    data
   ).pipe(
     map((response: any) => {
-      if(response.response.success) {
+      if (response.response.success) {
         return response.response;
       } else {
         throw response;
@@ -84,4 +72,4 @@ export default {
   fetchEnvironments,
   submitToGoLive,
   goLive
-}
+};

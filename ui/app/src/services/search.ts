@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { post } from "../utils/ajax";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { SearchResult } from "../models/Search";
+import { post } from '../utils/ajax';
+import { Observable } from 'rxjs';
+import { pluck } from 'rxjs/operators';
+import { SearchResult } from '../models/Search';
 
 export function search(siteId: string, parameters: any = {}): Observable<SearchResult> {
-  return post(`/studio/api/2/search/search.json?siteId=${siteId}`, parameters , {
+  return post(`/studio/api/2/search/search.json?siteId=${siteId}`, parameters, {
     'Content-Type': 'application/json'
-  }).pipe(map(({ response }) => response.result))
+  }).pipe(pluck('response', 'result'));
 }
 
 export default {
   search
-}
+};

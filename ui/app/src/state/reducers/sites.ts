@@ -15,19 +15,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
-import { CHANGE_SITE } from '../actions/sites';
+import { StandardAction } from '../../models/StandardAction';
+import { Site } from '../../models/Site';
+import { createLookupTable } from '../../utils/object';
 
-const reducer = createReducer<GlobalState['sites']>({ byId: {}, active: null }, {
-  [CHANGE_SITE]: (state, { payload }) => (
-    payload.nextSite === state.active
-      ? state
-      : ({
-        ...state,
-        active: payload.nextSite
-      })
-  )
-});
+const CHANGE_SITE = 'CHANGE_SITE';
+export function changeSite(nextSite: string, nextUrl: string = '/'): StandardAction {
+  return {
+    type: CHANGE_SITE,
+    payload: { nextSite, nextUrl }
+  };
+}
+
+changeSite.type = CHANGE_SITE;
+
+export const fetchSites = createAction('FETCH_SITES');
+export const fetchSitesComplete = createAction<Site[]>('FETCH_SITES_COMPLETE');
+export const fetchSitesFailed = createAction('FETCH_SITES_FAILED');
+
+const reducer = createReducer<GlobalState['sites']>(
+  { byId: {}, active: null, isFetching: false },
+  {
+    [CHANGE_SITE]: (state, { payload }) =>
+      payload.nextSite === state.active
+        ? state
+        : {
+          ...state,
+          active: payload.nextSite
+        },
+    [fetchSites.type]: (state, action) => ({
+      ...state,
+      isFetching: true
+    }),
+    [fetchSitesComplete.type]: (state, { payload }) => ({
+      ...state,
+      byId: createLookupTable(payload),
+      isFetching: false
+    }),
+    [fetchSitesFailed.type]: (state, action) => ({
+      ...state,
+      isFetching: false
+    })
+  }
+);
 
 export default reducer;

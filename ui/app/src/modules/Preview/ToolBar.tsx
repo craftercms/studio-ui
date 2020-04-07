@@ -33,7 +33,6 @@ import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 import CustomMenu from '../../components/Icons/CustomMenu';
 import { changeCurrentUrl, closeTools, openTools, RELOAD_REQUEST } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { changeSite } from '../../state/actions/sites';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
 import { useActiveSiteId, useEnv, usePreviewState, useSelection } from '../../utils/hooks';
@@ -42,6 +41,7 @@ import { isBlank } from '../../utils/string';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ComponentMenu from '../../components/ComponentMenu';
 import QuickCreate from './QuickCreate';
+import { changeSite } from '../../state/reducers/sites';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -242,7 +242,7 @@ export default function ToolBar() {
   if (addressBarUrl === PREVIEW_LANDING_BASE) {
     addressBarUrl = '';
   }
-  
+
   return (
     <AppBar position="static" color="default">
       <Toolbar className={classes.toolBar}>
