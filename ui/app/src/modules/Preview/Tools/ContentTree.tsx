@@ -54,57 +54,66 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) => createStyles({
-  root: {
-    '& > li > ul': {
-      marginLeft: '0px'
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      '& > li > ul': {
+        marginLeft: '0px'
+      }
     }
-  }
-}));
+  })
+);
 
-const treeItemStyles = makeStyles((theme) => createStyles({
-  icon: {
-    ...iconWithStrokeAndFill
-  },
-  treeItemIconContainer: {
-    display: 'none'
-  },
-  treeItemRoot: {
-    '&:focus > .MuiTreeItem-content': {
-      background: 'none'
+const treeItemStyles = makeStyles((theme) =>
+  createStyles({
+    icon: {
+      ...iconWithStrokeAndFill
     },
-    '&:hover > .MuiTreeItem-content': {
-      background: 'none'
+    displayNone: {
+      display: 'none'
+    },
+    treeItemIconContainer: {
+      '& svg': {
+        fontSize: '1.5rem'
+      }
+    },
+    treeItemRoot: {
+      '&:focus > .MuiTreeItem-content': {
+        '& .MuiTreeItem-label': {
+          backgroundColor: 'inherit'
+        }
+      }
+    },
+    treeItemContent: {
+      'paddingLeft': '8px',
+      '&.padded': {
+        paddingLeft: '15px'
+      }
+    },
+    treeItemGroup: {},
+    treeItemExpanded: {},
+    treeItemLabelRoot: {},
+    treeItemLabel: {
+      'display': 'flex',
+      'alignItems': 'center',
+      'height': '36px',
+      '& p': {
+        'marginTop': 0,
+        'marginLeft': '5px',
+        'overflow': 'hidden',
+        'display': '-webkit-box',
+        '-webkit-line-clamp': 1,
+        '-webkit-box-orient': 'vertical',
+        'marginBottom': 0,
+        'wordBreak': 'break-all'
+      }
+    },
+    options: {
+      marginLeft: 'auto',
+      padding: '6px'
     }
-  },
-  treeItemContent: {
-    paddingLeft: '8px',
-    '&.padded': {
-      paddingLeft: '34px'
-    }
-  },
-  treeItemGroup: {},
-  treeItemExpanded: {},
-  treeItemLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    height: '36px',
-    '& p': {
-      marginTop: 0,
-      marginLeft: '5px',
-      overflow: 'hidden',
-      'display': '-webkit-box',
-      '-webkit-line-clamp': 1,
-      '-webkit-box-orient': 'vertical',
-      marginBottom: 0,
-      wordBreak: 'break-all'
-    }
-  },
-  options: {
-    marginLeft: 'auto',
-    padding: '6px'
-  }
-}));
+  })
+);
 
 interface RenderTree {
   id: string;
@@ -121,10 +130,17 @@ interface RenderTree {
 interface Data {
   selected: string;
   previous: Array<string>;
-  lookupTable: LookupTable<RenderTree>
+  lookupTable: LookupTable<RenderTree>;
 }
 
-function getNodeSelectorChildren(model: ContentInstance, parentModelId: string, path: string, itemContentTypeName: string, fieldId: string, index: number | string) {
+function getNodeSelectorChildren(
+  model: ContentInstance,
+  parentModelId: string,
+  path: string,
+  itemContentTypeName: string,
+  fieldId: string,
+  index: number | string
+) {
   return {
     id: `${parentModelId}_${fieldId}_${index}`,
     name: `${itemContentTypeName}: ${model.craftercms.label}`,
@@ -137,7 +153,15 @@ function getNodeSelectorChildren(model: ContentInstance, parentModelId: string, 
   };
 }
 
-function getRepeatGroupChildren(item: LookupTable<any>, contentTypeField: ContentTypeField, contentTypes: LookupTable<ContentType>, parentTreeItemId: string, model: ContentInstance, models: LookupTable<ContentInstance>, index: number) {
+function getRepeatGroupChildren(
+  item: LookupTable<any>,
+  contentTypeField: ContentTypeField,
+  contentTypes: LookupTable<ContentType>,
+  parentTreeItemId: string,
+  model: ContentInstance,
+  models: LookupTable<ContentInstance>,
+  index: number
+) {
   let children = [];
   Object.keys(item).forEach((fieldName) => {
     let subChildren = [];
@@ -148,7 +172,14 @@ function getRepeatGroupChildren(item: LookupTable<any>, contentTypeField: Conten
       item[fieldName].forEach((id: string, i: number) => {
         let itemContentTypeName = contentTypes[models[id].craftercms.contentType].name;
         subChildren.push(
-          getNodeSelectorChildren(models[id], model.craftercms.id, models[id].craftercms.path ? null : model.craftercms.path, itemContentTypeName, fieldId, `${index}.${i}`)
+          getNodeSelectorChildren(
+            models[id],
+            model.craftercms.id,
+            models[id].craftercms.path ? null : model.craftercms.path,
+            itemContentTypeName,
+            fieldId,
+            `${index}.${i}`
+          )
         );
       });
     }
@@ -160,23 +191,34 @@ function getRepeatGroupChildren(item: LookupTable<any>, contentTypeField: Conten
       modelId: model.craftercms.id,
       fieldId,
       index
-    })
+    });
   });
   return children;
 }
 
-function getChildren(model: ContentInstance, contentType: ContentType, models: LookupTable<ContentInstance>, contentTypes: LookupTable<ContentType>) {
+function getChildren(
+  model: ContentInstance,
+  contentType: ContentType,
+  models: LookupTable<ContentInstance>,
+  contentTypes: LookupTable<ContentType>
+) {
   let children = [];
   Object.keys(model).forEach((fieldName) => {
-    if (fieldName === 'craftercms')
-      return;
+    if (fieldName === 'craftercms') return;
     const { type, name } = contentType.fields[fieldName];
     let subChildren = [];
     if (type === 'node-selector') {
       model[fieldName].forEach((id: string, i: number) => {
         let itemContentTypeName = contentTypes[models[id].craftercms.contentType].name;
         subChildren.push(
-          getNodeSelectorChildren(models[id], model.craftercms.id, models[id].craftercms.path ? null : model.craftercms.path, itemContentTypeName, fieldName, i)
+          getNodeSelectorChildren(
+            models[id],
+            model.craftercms.id,
+            models[id].craftercms.path ? null : model.craftercms.path,
+            itemContentTypeName,
+            fieldName,
+            i
+          )
         );
       });
     } else if (type === 'repeat') {
@@ -186,11 +228,19 @@ function getChildren(model: ContentInstance, contentType: ContentType, models: L
           id,
           name: `Item ${index + 1}`,
           type: 'item',
-          children: getRepeatGroupChildren(item, contentType.fields[fieldName], contentTypes, id, model, models, index),
+          children: getRepeatGroupChildren(
+            item,
+            contentType.fields[fieldName],
+            contentTypes,
+            id,
+            model,
+            models,
+            index
+          ),
           modelId: model.craftercms.id,
           fieldId: `${fieldName}`,
           index
-        })
+        });
       });
     }
     children.push({
@@ -205,17 +255,16 @@ function getChildren(model: ContentInstance, contentType: ContentType, models: L
   return children;
 }
 
-
 interface TreeItemCustomInterface {
   nodes: RenderTree;
 
   handleScroll?(node: RenderTree): void;
 
-  handlePrevious?(e: any): void
+  handlePrevious?(e: any): void;
 
-  handleClick?(node: RenderTree): void
+  handleClick?(node: RenderTree): void;
 
-  handleOptions?(e: any, modelId: string, parentId: string, embeddedParentPath: string): void
+  handleOptions?(e: any, modelId: string, parentId: string, embeddedParentPath: string): void;
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
@@ -243,7 +292,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
     if (!isOver) {
       timeout.current = setTimeout(() => {
         setOver(false);
-      }, 10)
+      }, 10);
     } else {
       setOver(isOver);
     }
@@ -255,60 +304,54 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       nodeId={nodes.id}
       onMouseOver={(e) => setOverState(e, true)}
       onMouseOut={(e) => setOverState(e, false)}
+      icon={nodes.type === 'component' && <ChevronRightIcon onClick={() => handleClick(nodes)} />}
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
-          {
-            (nodes.id === 'root' && handlePrevious) ? (
-              <ChevronLeftIcon onClick={(e) => handlePrevious(e)}/>
-            ) : (
-              <>
-                {(nodes.type === 'component') && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
-                <Icon className={classes.icon}/>
-              </>
-            )
-          }
+          {nodes.id === 'root' && handlePrevious ? (
+            <ChevronLeftIcon onClick={(e) => handlePrevious(e)} />
+          ) : (
+            <Icon className={classes.icon} />
+          )}
           <p>{nodes.name}</p>
-          {
-            over && (nodes.type === 'component' || nodes.id === 'root') &&
+          {over && (nodes.type === 'component' || nodes.id === 'root') && (
             <IconButton
               className={classes.options}
               onMouseOver={(e) => setOverState(e, true)}
-              onClick={(e) => handleOptions(e, nodes.modelId, nodes.parentId, nodes.embeddedParentPath)}
+              onClick={(e) =>
+                handleOptions(e, nodes.modelId, nodes.parentId, nodes.embeddedParentPath)
+              }
             >
-              <MoreVertIcon/>
+              <MoreVertIcon />
             </IconButton>
-          }
+          )}
         </div>
       }
       classes={{
         root: classes.treeItemRoot,
-        content: clsx(classes.treeItemContent, (!nodes.children?.length && nodes.type !== 'component') && 'padded'),
+        label: classes.treeItemLabelRoot,
+        content: clsx(
+          classes.treeItemContent,
+          !nodes.children?.length && nodes.type === 'component' && 'padded'
+        ),
         expanded: classes.treeItemExpanded,
         group: classes.treeItemGroup,
-        iconContainer: nodes.id === 'root' ? classes.treeItemIconContainer : ''
+        iconContainer: nodes.id === 'root' ? classes.displayNone : classes.treeItemIconContainer
       }}
     >
-      {
-        Array.isArray(nodes.children)
-          ? nodes.children.map(node =>
-            <TreeItemCustom
-              key={node.id}
-              nodes={node}
-              {...reversePluckProps(props, 'nodes')}
-            />
-          )
-          : null
-      }
+      {Array.isArray(nodes.children)
+        ? nodes.children.map((node) => (
+            <TreeItemCustom key={node.id} nodes={node} {...reversePluckProps(props, 'nodes')} />
+          ))
+        : null}
     </TreeItem>
-  )
+  );
 }
-
 
 export default function ContentTree() {
   const classes = useStyles({});
   const guest = usePreviewGuest();
   const { formatMessage } = useIntl();
-  const contentTypesBranch = useSelection(state => state.contentTypes);
+  const contentTypesBranch = useSelection((state) => state.contentTypes);
   const hostToGuest$ = getHostToGuestBus();
   const [expanded, setExpanded] = React.useState<string[]>(['root']);
   const site = useActiveSiteId();
@@ -387,12 +430,20 @@ export default function ContentTree() {
   };
 
   const handleChange = (event: any, nodes: string[]) => {
-    if (event.target.classList.contains('toggle') || event.target.parentElement.classList.contains('toggle')) {
+    if (
+      event.target.classList.contains('toggle') ||
+      event.target.parentElement.classList.contains('toggle')
+    ) {
       setExpanded([...nodes, 'root']);
     }
   };
 
-  const handleOptions = (event: any, modelId: string, parentId: string, embeddedParentPath: string) => {
+  const handleOptions = (
+    event: any,
+    modelId: string,
+    parentId: string,
+    embeddedParentPath: string
+  ) => {
     event.stopPropagation();
     setOptionsMenu({
       ...optionsMenu,
@@ -409,22 +460,16 @@ export default function ContentTree() {
 
   return (
     <ToolPanel title={translations.contentTree}>
-      {
-        data.selected === null &&
-        <LoadingState
-          title={formatMessage(translations.loading)}
-          graphicProps={{ width: 150 }}
-        />
-      }
+      {data.selected === null && <LoadingState title={formatMessage(translations.loading)} />}
       <TreeView
         className={classes.root}
-        defaultCollapseIcon={<ExpandMoreIcon className='toggle'/>}
-        defaultExpandIcon={<ChevronRightIcon className='toggle'/>}
+        defaultCollapseIcon={<ExpandMoreIcon className="toggle" />}
+        defaultExpandIcon={<ChevronRightIcon className="toggle" />}
+        disableSelection
         expanded={expanded}
         onNodeToggle={handleChange}
       >
-        {
-          data.selected &&
+        {data.selected && (
           <>
             <TreeItemCustom
               nodes={data.lookupTable[data.selected]}
@@ -446,7 +491,7 @@ export default function ContentTree() {
               }}
             />
           </>
-        }
+        )}
       </TreeView>
     </ToolPanel>
   );

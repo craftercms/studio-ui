@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from 'jquery/dist/jquery';
+import $ from 'jquery';
 import { Markers } from './classes/Markers';
 import { fromEvent, interval, Subscription } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';

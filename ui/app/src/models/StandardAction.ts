@@ -19,3 +19,5 @@ export interface StandardAction<T = any> {
   type: string;
   payload?: T;
 }
+
+export default StandardAction;

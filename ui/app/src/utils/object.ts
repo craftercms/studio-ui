@@ -61,7 +61,7 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
 }
 
 export function retrieveProperty(object: object, prop: string): any {
-  return (object == null) ? null : prop.split('.').reduce((value, prop) => value[prop], object);
+  return object == null ? null : prop.split('.').reduce((value, prop) => value[prop], object);
 }
 
 export function setProperty(object: object, prop: string, value: any) {
@@ -108,26 +108,30 @@ export function ref<T = any>(ref: MutableRefObject<T>): T {
   return ref.current;
 }
 
-export function findParentModelId(modelId: string, childrenMap: LookupTable<Array<string>>, models: any) {
+export function findParentModelId(
+  modelId: string,
+  childrenMap: LookupTable<Array<string>>,
+  models: any
+) {
   const parentId = forEach(
     Object.entries(childrenMap),
     ([id, children]) => {
-      if (
-        nnou(children) &&
-        (id !== modelId) &&
-        children.includes(modelId)
-      ) {
+      if (nnou(children) && id !== modelId && children.includes(modelId)) {
         return id;
       }
     },
     null
   );
   return nnou(parentId)
-    // If it has a path, it is not embedded and hence the parent
-    // Otherwise, need to keep looking.
-    ? nnou(models[parentId].craftercms.path)
+    ? // If it has a path, it is not embedded and hence the parent
+      // Otherwise, need to keep looking.
+      nnou(models[parentId].craftercms.path)
       ? parentId
       : findParentModelId(parentId, childrenMap, models)
-    // No parent found for this model
-    : null;
+    : // No parent found for this model
+      null;
+}
+
+export function isPlainObject(obj) {
+  return typeof obj === 'object' && obj !== null && obj.constructor === Object;
 }

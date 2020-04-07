@@ -59,7 +59,7 @@ import { backgroundColor } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
-import SearchBar from "../../../../components/SearchBar";
+import SearchBar from '../../../../components/SearchBar';
 import { useEnv, useSpreadState } from '../../../../utils/hooks';
 
 const messages = defineMessages({
@@ -113,7 +113,8 @@ const messages = defineMessages({
   },
   gitBlueprintDescription: {
     id: 'createSiteDialog.gitBlueprintDescription',
-    defaultMessage: 'Create a new site based on a Crafter CMS project in an existing, remote git repository.'
+    defaultMessage:
+      'Create a new site based on a Crafter CMS project in an existing, remote git repository.'
   },
   createSite: {
     id: 'createSiteDialog.createSite',
@@ -137,7 +138,8 @@ const messages = defineMessages({
   },
   chooseCreationStrategy: {
     id: 'createSiteDialog.chooseCreationStrategy',
-    defaultMessage: 'Choose creation strategy: start from an existing Git repo or create based on a blueprint that suits you best.'
+    defaultMessage:
+      'Choose creation strategy: start from an existing Git repo or create based on a blueprint that suits you best.'
   }
 });
 
@@ -191,101 +193,106 @@ const dialogTitleStyles = () => ({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  '@keyframes fadeIn': fadeIn,
-  fadeIn: {
-    animationName: '$fadeIn',
-    animationDuration: '1s'
-  },
-  paperScrollPaper: {
-    height: 'calc(100% - 100px)',
-    maxHeight: '1200px'
-  },
-  searchContainer: {
-    position: 'absolute',
-    background: 'white',
-    padding: '20px',
-    width: '100%',
-    left: '50%',
-    transform: 'translate(-50%)',
-    zIndex: 1
-  },
-  dialogContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%'
-  },
-  dialogContent: {
-    padding: '0',
-    position: 'relative'
-  },
-  slide: {
-    padding: 20,
-    flexWrap: 'wrap',
-    height: '100%',
-    overflow: 'auto',
-    display: 'flex',
-    '&.selected': {
-      height: '100%',
-      paddingTop: '77px'
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    '@keyframes fadeIn': fadeIn,
+    'fadeIn': {
+      animationName: '$fadeIn',
+      animationDuration: '1s'
+    },
+    'paperScrollPaper': {
+      height: 'calc(100% - 100px)',
+      maxHeight: '1200px'
+    },
+    'searchContainer': {
+      position: 'absolute',
+      background: 'white',
+      padding: '20px',
+      width: '100%',
+      left: '50%',
+      transform: 'translate(-50%)',
+      zIndex: 1
+    },
+    'dialogContainer': {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%'
+    },
+    'dialogContent': {
+      padding: '0',
+      position: 'relative'
+    },
+    'slide': {
+      'padding': 20,
+      'flexWrap': 'wrap',
+      'height': '100%',
+      'overflow': 'auto',
+      'display': 'flex',
+      '&.selected': {
+        height: '100%',
+        paddingTop: '77px'
+      }
+    },
+    'dialogActions': {
+      background: backgroundColor,
+      padding: '8px 20px'
+    },
+    'backBtn': {
+      marginRight: 'auto'
+    },
+    'tabs': {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0 20px',
+      background: backgroundColor
+    },
+    'simpleTab': {
+      'minWidth': '80px',
+      'minHeight': '0',
+      'padding': '0 0 5px 0',
+      'marginRight': '20px',
+      'opacity': 1,
+      '& span': {
+        textTransform: 'none',
+        color: '#2F2707'
+      }
+    },
+    'tabIcon': {
+      'color': '#000000',
+      'fontSize': '1.2rem',
+      'cursor': 'pointer',
+      '&.selected': {
+        color: theme.palette.primary.main
+      }
+    },
+    'loading': {
+      position: 'relative',
+      padding: 16,
+      flexGrow: 1
+    },
+    'spinner': {
+      marginRight: '10px',
+      color: theme.palette.text.secondary
+    },
+    'statePaper': {
+      background: '#e7e7e7',
+      height: '100%'
+    },
+    'loadingStateRoot': {
+      height: '100%'
+    },
+    'loadingStateGraphicRoot': {
+      flexGrow: 1,
+      paddingBottom: '100px'
+    },
+    'loadingStateGraphic': {
+      width: 200
+    },
+    'errorPaperRoot': {
+      height: '100%'
     }
-  },
-  dialogActions: {
-    background: backgroundColor,
-    padding: '8px 20px'
-  },
-  backBtn: {
-    marginRight: 'auto'
-  },
-  tabs: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 20px',
-    background: backgroundColor
-  },
-  simpleTab: {
-    minWidth: '80px',
-    minHeight: '0',
-    padding: '0 0 5px 0',
-    marginRight: '20px',
-    opacity: 1,
-    '& span': {
-      textTransform: 'none',
-      color: '#2F2707'
-    }
-  },
-  tabIcon: {
-    color: '#000000',
-    fontSize: '1.2rem',
-    cursor: 'pointer',
-    '&.selected': {
-      color: theme.palette.primary.main
-    }
-  },
-  loading: {
-    position: 'relative',
-    padding: 16,
-    flexGrow: 1
-  },
-  spinner: {
-    marginRight: '10px',
-    color: theme.palette.text.secondary
-  },
-  statePaper: {
-    background: '#e7e7e7',
-    height: '100%'
-  },
-  loadingStateRoot: {
-    height: '100%',
-  },
-  loadingStateGraphic: {
-    flexGrow: 1,
-    paddingBottom: '100px'
-  },
-  errorPaperRoot: {
-    height: '100%'
-  }
-}));
+  })
+);
 
 const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
   const { classes, onClose, selectedView, views } = props;
@@ -295,11 +302,8 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
-          <IconButton
-            aria-label="close"
-            onClick={(event) => onClose(event, 'closeButton')}
-          >
-            <CloseIcon/>
+          <IconButton aria-label="close" onClick={(event) => onClose(event, 'closeButton')}>
+            <CloseIcon />
           </IconButton>
         ) : null}
       </div>
@@ -359,7 +363,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function filterBlueprints(blueprints: Blueprint[], searchKey: string) {
     searchKey = searchKey.toLowerCase();
     return searchKey && blueprints
-      ? blueprints.filter(blueprint => blueprint.name.toLowerCase().includes(searchKey))
+      ? blueprints.filter((blueprint) => blueprint.name.toLowerCase().includes(searchKey))
       : blueprints;
   }
 
@@ -369,7 +373,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   setRequestForgeryToken();
 
   useEffect(() => {
-    const loginListener = function (event: any) {
+    const loginListener = function(event: any) {
       if (event.detail.state === 'logged') {
         setDisableEnforceFocus(false);
       } else if (event.detail.state === 'reLogin') {
@@ -379,30 +383,32 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     document.addEventListener('login', loginListener, false);
     return () => {
       document.removeEventListener('login', loginListener, false);
-    }
+    };
   }, []);
 
-  useEffect(
-    () => {
-      let subscriptions: Subscription[] = [];
-      if (tab === 0 && blueprints === null && !apiState.error) {
-        subscriptions.push(fetchBuiltInBlueprints().subscribe(
+  useEffect(() => {
+    let subscriptions: Subscription[] = [];
+    if (tab === 0 && blueprints === null && !apiState.error) {
+      subscriptions.push(
+        fetchBuiltInBlueprints().subscribe(
           ({ response }) => {
-            const _blueprints: [Blueprint] = [{
-              id: 'GIT',
-              name: formatMessage(messages.gitBlueprintName),
-              description: formatMessage(messages.gitBlueprintDescription),
-              media: {
-                screenshots: [
-                  {
-                    description: '',
-                    title: formatMessage(messages.gitBlueprintName),
-                    url: gitLogo
-                  }
-                ],
-                videos: []
+            const _blueprints: [Blueprint] = [
+              {
+                id: 'GIT',
+                name: formatMessage(messages.gitBlueprintName),
+                description: formatMessage(messages.gitBlueprintDescription),
+                media: {
+                  screenshots: [
+                    {
+                      description: '',
+                      title: formatMessage(messages.gitBlueprintName),
+                      url: gitLogo
+                    }
+                  ],
+                  videos: []
+                }
               }
-            }];
+            ];
             response.blueprints.forEach((bp: any) => {
               _blueprints.push(bp.plugin);
             });
@@ -413,10 +419,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               setApiState({ creatingSite: false, error: true, errorResponse: response.response });
             }
           }
-        ));
-      }
-      if (tab === 1 && marketplace === null && !apiState.error) {
-        subscriptions.push(fetchMarketplaceBlueprints().subscribe(
+        )
+      );
+    }
+    if (tab === 1 && marketplace === null && !apiState.error) {
+      subscriptions.push(
+        fetchMarketplaceBlueprints().subscribe(
           ({ response }) => {
             setMarketplace(response.plugins);
           },
@@ -425,20 +433,19 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               setApiState({ creatingSite: false, error: true, errorResponse: response.response });
             }
           }
-        ));
-      }
-      if (finishRef && finishRef.current && site.selectedView === 2) {
-        finishRef.current.focus();
-      }
-      return () => {
-        subscriptions.forEach(sub => sub.unsubscribe());
-      }
-    },
-    [apiState.error, blueprints, formatMessage, marketplace, setApiState, site.selectedView, tab]
-  );
+        )
+      );
+    }
+    if (finishRef && finishRef.current && site.selectedView === 2) {
+      finishRef.current.focus();
+    }
+    return () => {
+      subscriptions.forEach((sub) => sub.unsubscribe());
+    };
+  }, [apiState.error, blueprints, formatMessage, marketplace, setApiState, site.selectedView, tab]);
 
   function handleClose(event?: any, reason?: string) {
-    if ((reason === 'escapeKeyDown') && site.details.blueprint) {
+    if (reason === 'escapeKeyDown' && site.details.blueprint) {
       setSite({ details: { blueprint: null, index: null } });
     } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
       setDialog({ inProgress: true });
@@ -501,7 +508,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function handleOnSearchChange(searchKey: string) {
-    setSearch({ ...search, searchKey});
+    setSearch({ ...search, searchKey });
   }
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
@@ -513,7 +520,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         pushSite: false,
         createAsOrphan: false,
         details: { blueprint: null, index: null }
-      })
+      });
     } else if (blueprint.source === 'GIT') {
       setSite({
         selectedView: view,
@@ -522,7 +529,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         pushSite: false,
         createAsOrphan: true,
         details: { blueprint: null, index: null }
-      })
+      });
     } else {
       setSite({
         selectedView: view,
@@ -530,7 +537,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         blueprint: blueprint,
         createAsOrphan: true,
         details: { blueprint: null, index: null }
-      })
+      });
     }
   }
 
@@ -588,8 +595,10 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       return false;
     } else if (site.pushSite || site.blueprint.id === 'GIT') {
       if (!site.repoUrl) return false;
-      else if (site.repoAuthentication === 'basic' && (!site.repoUsername || !site.repoPassword)) return false;
-      else if (site.repoAuthentication === 'token' && (!site.repoUsername || !site.repoToken)) return false;
+      else if (site.repoAuthentication === 'basic' && (!site.repoUsername || !site.repoPassword))
+        return false;
+      else if (site.repoAuthentication === 'token' && (!site.repoUsername || !site.repoToken))
+        return false;
       else return !(site.repoAuthentication === 'key' && !site.repoKey);
     } else {
       return checkAdditionalFields();
@@ -650,7 +659,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
       //TODO# remove this when change to Api2
       let _params: any = {};
-      Object.keys(params).forEach(key => {
+      Object.keys(params).forEach((key) => {
         _params[underscore(key)] = params[key];
       });
       return _params;
@@ -658,10 +667,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function createNewSite(site: CreateSiteMeta | MarketplaceSite, fromMarketplace = false) {
-    (
-      fromMarketplace
-        ? createSiteFromMarketplace(site as MarketplaceSite)
-        : createSite(site as CreateSiteMeta)
+    (fromMarketplace
+      ? createSiteFromMarketplace(site as MarketplaceSite)
+      : createSite(site as CreateSiteMeta)
     ).subscribe(
       () => {
         setApiState({ creatingSite: false });
@@ -673,15 +681,25 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       ({ response }) => {
         if (response) {
           if (fromMarketplace) {
-            setApiState({ creatingSite: false, error: true, errorResponse: response, global: true });
+            setApiState({
+              creatingSite: false,
+              error: true,
+              errorResponse: response,
+              global: true
+            });
           } else {
             //TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
             const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setApiState({ creatingSite: false, error: true, errorResponse: _response, global: true });
+            setApiState({
+              creatingSite: false,
+              error: true,
+              errorResponse: _response,
+              global: true
+            });
           }
         }
       }
-    )
+    );
   }
 
   function createNewSiteFromMarketplace(site: MarketplaceSite) {
@@ -690,21 +708,20 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function checkNameExist(siteId: string) {
     if (siteId) {
-      checkHandleAvailability(siteId)
-        .subscribe(
-          ({ response }) => {
-            if (response.exists) {
-              refts.setSite({ siteIdExist: response.exists, selectedView: 1 });
-            } else {
-              refts.setSite({ siteIdExist: false });
-            }
-          },
-          ({ response }) => {
-            //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
-            const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-            setApiState({ creatingSite: false, error: true, errorResponse: _response });
+      checkHandleAvailability(siteId).subscribe(
+        ({ response }) => {
+          if (response.exists) {
+            refts.setSite({ siteIdExist: response.exists, selectedView: 1 });
+          } else {
+            refts.setSite({ siteIdExist: false });
           }
-        );
+        },
+        ({ response }) => {
+          //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
+          const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+          setApiState({ creatingSite: false, error: true, errorResponse: _response });
+        }
+      );
     }
   }
 
@@ -715,17 +732,24 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function renderBlueprints(list: Blueprint[]) {
     if (list.length === 0) {
       return (
-        <EmptyState title={formatMessage(messages.noBlueprints)} subtitle={formatMessage(messages.changeQuery)}/>
-      )
+        <EmptyState
+          title={formatMessage(messages.noBlueprints)}
+          subtitle={formatMessage(messages.changeQuery)}
+        />
+      );
     }
     return list.map((item: Blueprint) => {
       return (
         <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={item.id}>
-          <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected} interval={5000}
-                         onDetails={onDetails}/>
+          <BlueprintCard
+            blueprint={item}
+            onBlueprintSelected={handleBlueprintSelected}
+            interval={5000}
+            onDetails={onDetails}
+          />
         </Grid>
       );
-    })
+    });
   }
 
   return (
@@ -743,140 +767,138 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         open={dialog.inProgress}
         onOk={onConfirmOk}
         onClose={onConfirmCancel}
-        description={formatMessage(messages.dialogCloseMessage)}
+        body={formatMessage(messages.dialogCloseMessage)}
         title={formatMessage(messages.dialogCloseTitle)}
         disableEnforceFocus={disableEnforceFocus}
       />
-      {
-        (
-          (apiState.creatingSite) ||
-          (apiState.error && apiState.global) ||
-          (site.details.blueprint)
-        ) ? (
-
-          (
-            apiState.creatingSite &&
-            <div className={classes.statePaper}>
-              <LoadingState
-                title={formatMessage(messages.creatingSite)}
-                subtitle={formatMessage(messages.pleaseWait)}
-                classes={{
-                  root: classes.loadingStateRoot,
-                  graphicRoot: classes.loadingStateGraphic
-                }}
+      {apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint ? (
+        (apiState.creatingSite && (
+          <div className={classes.statePaper}>
+            <LoadingState
+              title={formatMessage(messages.creatingSite)}
+              subtitle={formatMessage(messages.pleaseWait)}
+              classes={{
+                root: classes.loadingStateRoot,
+                graphicRoot: classes.loadingStateGraphicRoot,
+                graphic: classes.loadingStateGraphic
+              }}
+            />
+          </div>
+        )) ||
+        (apiState.error && (
+          <ErrorState
+            classes={{ root: classes.errorPaperRoot }}
+            error={apiState.errorResponse}
+            onBack={handleErrorBack}
+          />
+        )) ||
+        (site.details && (
+          <PluginDetailsView
+            blueprint={site.details.blueprint}
+            selectedIndex={site.details.index}
+            onBlueprintSelected={handleBlueprintSelected}
+            onCloseDetails={handleCloseDetails}
+            interval={5000}
+          />
+        ))
+      ) : (
+        <div className={classes.dialogContainer}>
+          <DialogTitle
+            id="create-site-dialog"
+            onClose={handleClose}
+            views={views}
+            selectedView={site.selectedView}
+          />
+          {site.selectedView === 0 && (
+            <div className={classes.tabs}>
+              <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
+                <Tab
+                  label={formatMessage(messages.privateBlueprints)}
+                  className={classes.simpleTab}
+                />
+                <Tab
+                  label={formatMessage(messages.publicMarketplace)}
+                  className={classes.simpleTab}
+                />
+              </CustomTabs>
+              <SearchIcon
+                className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
+                onClick={handleSearchClick}
               />
             </div>
-          ) || (
-            apiState.error &&
-            <ErrorState
-              classes={{ root: classes.errorPaperRoot }}
-              error={apiState.errorResponse}
-              onBack={handleErrorBack}
-            />
-          ) || (
-            site.details &&
-            <PluginDetailsView
-              blueprint={site.details.blueprint}
-              selectedIndex={site.details.index}
-              onBlueprintSelected={handleBlueprintSelected}
-              onCloseDetails={handleCloseDetails}
-              interval={5000}
-            />
-          )
-
-        ) : (
-          <div className={classes.dialogContainer}>
-            <DialogTitle id="create-site-dialog" onClose={handleClose} views={views} selectedView={site.selectedView}/>
-            {
-              (site.selectedView === 0) &&
-              <div className={classes.tabs}>
-                <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-                  <Tab label={formatMessage(messages.privateBlueprints)} className={classes.simpleTab}/>
-                  <Tab label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab}/>
-                </CustomTabs>
-                <SearchIcon
-                  className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
-                  onClick={handleSearchClick}
-                />
-              </div>
-            }
-            {
-              ((tab === 0 && blueprints) || (tab === 1 && marketplace)) ?
-                <DialogContent className={classes.dialogContent}>
-                  {
-                    (search.searchSelected && site.selectedView === 0) &&
-                    <div className={classes.searchContainer}>
-                      <SearchBar
-                        onActionButtonClick={() => handleOnSearchChange('')}
-                        onChange={handleOnSearchChange}
-                        keyword={search.searchKey}
-                        autofocus={true}
-                        backgroundColor={backgroundColor}
-                      />
-                    </div>
-                  }
-                  {
-                    (site.selectedView === 0) &&
-                    <div className={clsx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
-                      {
-                        (tab === 0)
-                          ? <Grid container spacing={3}>{renderBlueprints(filteredBlueprints)}</Grid>
-                          : <Grid container spacing={3}>{renderBlueprints(filteredMarketplace)}</Grid>
-                      }
-                    </div>
-                  }
-                  {
-                    (site.selectedView === 1) &&
-                    <div className={clsx(classes.slide, classes.fadeIn)}>
-                      {
-                        site.blueprint &&
-                        <BlueprintForm
-                          inputs={site}
-                          setInputs={setSite}
-                          onCheckNameExist={checkNameExist}
-                          onSubmit={handleFinish}
-                          blueprint={site.blueprint}
-                        />
-                      }
-                    </div>
-                  }
-                  {
-                    (site.selectedView === 2) &&
-                    <div className={clsx(classes.slide, classes.fadeIn)}>
-                      {
-                        site.blueprint &&
-                        <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>
-                      }
-                    </div>
-                  }
-                </DialogContent>
-                : (
-                  (apiState.error) ? (
-                    <ErrorState
-                      classes={{ root: classes.errorPaperRoot }}
-                      error={apiState.errorResponse}
-                    />
+          )}
+          {(tab === 0 && blueprints) || (tab === 1 && marketplace) ? (
+            <DialogContent className={classes.dialogContent}>
+              {search.searchSelected && site.selectedView === 0 && (
+                <div className={classes.searchContainer}>
+                  <SearchBar
+                    onActionButtonClick={() => handleOnSearchChange('')}
+                    onChange={handleOnSearchChange}
+                    keyword={search.searchKey}
+                    autofocus={true}
+                    backgroundColor={backgroundColor}
+                  />
+                </div>
+              )}
+              {site.selectedView === 0 && (
+                <div
+                  className={clsx(
+                    classes.slide,
+                    classes.fadeIn,
+                    search.searchSelected && 'selected'
+                  )}
+                >
+                  {tab === 0 ? (
+                    <Grid container spacing={3}>
+                      {renderBlueprints(filteredBlueprints)}
+                    </Grid>
                   ) : (
-                    <div className={classes.loading}>
-                      <Spinner/>
-                    </div>
-                  )
-                )
-            }
-            {
-              (site.selectedView !== 0) &&
-              <DialogActions className={clsx(classes.dialogActions, classes.fadeIn)}>
-                <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
-                  {formatMessage(messages.back)}
-                </Button>
-                <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
-                  {views[site.selectedView].btnText}
-                </Button>
-              </DialogActions>
-            }
-          </div>
-        )
-      }
+                    <Grid container spacing={3}>
+                      {renderBlueprints(filteredMarketplace)}
+                    </Grid>
+                  )}
+                </div>
+              )}
+              {site.selectedView === 1 && (
+                <div className={clsx(classes.slide, classes.fadeIn)}>
+                  {site.blueprint && (
+                    <BlueprintForm
+                      inputs={site}
+                      setInputs={setSite}
+                      onCheckNameExist={checkNameExist}
+                      onSubmit={handleFinish}
+                      blueprint={site.blueprint}
+                    />
+                  )}
+                </div>
+              )}
+              {site.selectedView === 2 && (
+                <div className={clsx(classes.slide, classes.fadeIn)}>
+                  {site.blueprint && (
+                    <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint} />
+                  )}
+                </div>
+              )}
+            </DialogContent>
+          ) : apiState.error ? (
+            <ErrorState classes={{ root: classes.errorPaperRoot }} error={apiState.errorResponse} />
+          ) : (
+            <div className={classes.loading}>
+              <Spinner />
+            </div>
+          )}
+          {site.selectedView !== 0 && (
+            <DialogActions className={clsx(classes.dialogActions, classes.fadeIn)}>
+              <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
+                {formatMessage(messages.back)}
+              </Button>
+              <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
+                {views[site.selectedView].btnText}
+              </Button>
+            </DialogActions>
+          )}
+        </div>
+      )}
     </Dialog>
   );
 }

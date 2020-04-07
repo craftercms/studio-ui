@@ -17,7 +17,15 @@
 
 import { shallowEqual, useSelector } from 'react-redux';
 import GlobalState, { GuestData } from '../models/GlobalState';
-import { Dispatch, EffectCallback, SetStateAction, useEffect, useReducer, useRef, useState } from 'react';
+import {
+  Dispatch,
+  EffectCallback,
+  SetStateAction,
+  useEffect,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
@@ -27,31 +35,35 @@ export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) 
   return useSelector<GlobalState, T>(selector, shallowEqual);
 }
 
-export const useSelection: (<T = any>(
+export const useSelection: <T = any>(
   selectorFn: (state: GlobalState) => T,
   equalityFn?: (left: T, right: T) => boolean
-) => T) = (process.env.NODE_ENV === 'production') ? useSelector : <T = any>(
-  selector, equalityFn
-) => useSelector<GlobalState, T>(selector, equalityFn);
+) => T =
+  process.env.NODE_ENV === 'production'
+    ? useSelector
+    : <T = any>(selector, equalityFn) => useSelector<GlobalState, T>(selector, equalityFn);
 
 export function useActiveSiteId(): string {
-  return useSelector<GlobalState, string>(state => state.sites.active);
+  return useSelector<GlobalState, string>((state) => state.sites.active);
 }
 
 export function usePreviewGuest(): GuestData {
-  return useSelector<GlobalState, GuestData>(state => state.preview.guest);
+  return useSelector<GlobalState, GuestData>((state) => state.preview.guest);
 }
 
 export function usePreviewState(): GlobalState['preview'] {
-  return useSelector<GlobalState, GlobalState['preview']>(state => state.preview);
+  return useSelector<GlobalState, GlobalState['preview']>((state) => state.preview);
 }
 
 export function useEnv(): GlobalState['env'] {
-  return useSelector<GlobalState, GlobalState['env']>(state => state.env);
+  return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
-  let result, promise, resource, status = 'pending';
+  let result,
+    promise,
+    resource,
+    status = 'pending';
   promise = factoryFn().then(
     (response) => {
       status = 'success';
@@ -64,11 +76,13 @@ export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
   );
   resource = {
     complete: false,
+    error: false,
     read() {
       if (status === 'pending') {
         throw promise;
       } else if (status === 'error') {
         resource.complete = true;
+        resource.error = true;
         throw result;
       } else if (status === 'success') {
         resource.complete = true;
@@ -79,21 +93,20 @@ export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
   return resource;
 }
 
-export function createResourceBundle<T>(): [Resource<T>, (value?: unknown) => void, (reason?: any) => void] {
+export function createResourceBundle<T>(): [
+  Resource<T>,
+  (value?: unknown) => void,
+  (reason?: any) => void
+] {
   let resolve, reject;
   let promise = new Promise<T>((resolvePromise, rejectPromise) => {
     resolve = resolvePromise;
     reject = rejectPromise;
   });
-  return [
-    createResource(() => promise),
-    resolve,
-    reject
-  ];
+  return [createResource(() => promise), resolve, reject];
 }
 
 export function useResolveWhenNotNullResource(source) {
-
   const [bundle, setBundle] = useState(createResourceBundle);
   const [resource, resolve] = bundle;
   const effect = () => {
@@ -107,34 +120,38 @@ export function useResolveWhenNotNullResource(source) {
   useEffect(effect, [source, bundle]);
 
   return resource;
-
 }
 
-export function useStateResourceSelection<ReturnType = any, SourceType = GlobalState, ErrorType = any>(
+// TODO: Rename to useStateResource
+export function useStateResourceSelection<
+  ReturnType = unknown,
+  SourceType = GlobalState,
+  ErrorType = unknown
+>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: {
-    shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean,
-    shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean,
-    shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean,
-    resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType,
-    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType
+    shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+    shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+    shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+    resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType;
+    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
   }
 ): Resource<ReturnType> {
   const state = useSelection<SourceType>(sourceSelector);
-  return useStateResource(state, checkers);
+  return useStateResource<ReturnType, SourceType, ErrorType>(state, checkers);
 }
 
-export function useStateResource<ReturnType = any, SourceType = GlobalState>(
+// TODO: Rename to useCustomResource or simply useResource
+export function useStateResource<ReturnType = unknown, SourceType = unknown, ErrorType = unknown>(
   source: SourceType,
   checkers: {
-    shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean,
-    shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean,
-    shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean,
-    resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType,
-    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => any
+    shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+    shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+    shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+    resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType;
+    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
   }
 ): Resource<ReturnType> {
-
   const [bundle, setBundle] = useState(() => createResourceBundle<ReturnType>());
   const [resource, resolve, reject] = bundle;
   const effectFn = () => {
@@ -155,20 +172,21 @@ export function useStateResource<ReturnType = any, SourceType = GlobalState>(
   useEffect(effectFn, [source, bundle]);
 
   return resource;
-
 }
 
 export function useOnMount(componentDidMount: EffectCallback): void {
   useEffect(componentDidMount, []);
 }
 
-export function useDebouncedInput(observer: (keywords: string) => any, time: number = 250): Subject<string> {
+export function useDebouncedInput(
+  observer: (keywords: string) => any,
+  time: number = 250
+): Subject<string> {
   const subject$Ref = useRef(new Subject<string>());
   useEffect(() => {
-    const subscription = subject$Ref.current.pipe(
-      debounceTime(time),
-      distinctUntilChanged()
-    ).subscribe(observer);
+    const subscription = subject$Ref.current
+      .pipe(debounceTime(time), distinctUntilChanged())
+      .subscribe(observer);
     return () => subscription.unsubscribe();
   }, [observer, time]);
   return subject$Ref.current;

@@ -245,10 +245,10 @@ function PublishDialog(props: PublishDialogProps) {
   function showAllDependencies() {
     setShowDepsButton(false);
     fetchDependencies(siteId, paths(checkedItems)).subscribe(
-      (response: any) => {
+      (items) => {
         setDeps({
-          items1: response.response.items.hardDependencies,
-          items2: response.response.items.softDependencies
+          items1: items.hardDependencies,
+          items2: items.softDependencies
         });
       },
       () => {

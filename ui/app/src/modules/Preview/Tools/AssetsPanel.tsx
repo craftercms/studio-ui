@@ -18,7 +18,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { useActiveSiteId, useDebouncedInput, useSelection, useStateResourceSelection } from '../../../utils/hooks';
+import {
+  useActiveSiteId,
+  useDebouncedInput,
+  useSelection,
+  useStateResourceSelection
+} from '../../../utils/hooks';
 import { MediaItem } from '../../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -30,7 +35,11 @@ import { fromEvent, interval } from 'rxjs';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
-import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../../state/actions/preview';
+import {
+  ASSET_DRAG_ENDED,
+  ASSET_DRAG_STARTED,
+  fetchAssetsPanelItems
+} from '../../../state/actions/preview';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
@@ -67,81 +76,83 @@ const translations = defineMessages({
   }
 });
 
-const assetsPanelStyles = makeStyles(() => createStyles({
-  assetsPanelWrapper: {
-    padding: '15px 15px 55px 15px',
-    '&.dragInProgress': {
-      background: 'red'
-    }
-  },
-  search: {
-    padding: '15px 15px 0px 15px',
-  },
-  card: {
-    cursor: 'move',
-    marginBottom: '16px',
-  },
-  pagination: {
-    marginLeft: 'auto',
-    position: 'fixed',
-    zIndex: 1,
-    bottom: 0,
-    background: 'white',
-    color: 'black',
-    width: `calc(${DRAWER_WIDTH}px - 1px)`,
-    left: 0,
-    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    '& p': {
-      padding: 0
+const assetsPanelStyles = makeStyles(() =>
+  createStyles({
+    assetsPanelWrapper: {
+      'padding': '15px 15px 55px 15px',
+      '&.dragInProgress': {
+        background: 'red'
+      }
     },
-    '& svg': {
-      top: 'inherit'
+    search: {
+      padding: '15px 15px 0px 15px'
     },
-    '& .hidden': {
-      display: 'none'
-    }
-  },
-  toolbar: {
-    padding: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingLeft: '20px',
-    '& .MuiTablePagination-spacer': {
-      display: 'none'
+    card: {
+      cursor: 'move',
+      marginBottom: '16px'
     },
-    '& .MuiTablePagination-spacer + p': {
-      display: 'none'
+    pagination: {
+      'marginLeft': 'auto',
+      'position': 'fixed',
+      'zIndex': 1,
+      'bottom': 0,
+      'background': 'white',
+      'color': 'black',
+      'width': `calc(${DRAWER_WIDTH}px - 1px)`,
+      'left': 0,
+      'borderTop': '1px solid rgba(0, 0, 0, 0.12)',
+      '& p': {
+        padding: 0
+      },
+      '& svg': {
+        top: 'inherit'
+      },
+      '& .hidden': {
+        display: 'none'
+      }
+    },
+    toolbar: {
+      'padding': 0,
+      'display': 'flex',
+      'justifyContent': 'space-between',
+      'paddingLeft': '20px',
+      '& .MuiTablePagination-spacer': {
+        display: 'none'
+      },
+      '& .MuiTablePagination-spacer + p': {
+        display: 'none'
+      }
+    },
+    noResultsImage: {
+      width: '150px'
+    },
+    noResultsTitle: {
+      fontSize: 'inherit',
+      marginTop: '10px'
+    },
+    uploadOverlay: {
+      position: 'fixed',
+      background: fade(palette.black, 0.9),
+      width: `calc(${DRAWER_WIDTH}px - 1px)`,
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      display: 'flex',
+      justifyContent: 'center',
+      alignContent: 'center',
+      zIndex: 2
+    },
+    uploadIcon: {
+      fontSize: '8em',
+      color: palette.gray.light5,
+      margin: 'auto'
+    },
+    noScroll: {
+      overflow: 'hidden'
     }
-  },
-  noResultsImage: {
-    width: '150px'
-  },
-  noResultsTitle: {
-    fontSize: 'inherit',
-    marginTop: '10px'
-  },
-  uploadOverlay: {
-    position: 'fixed',
-    background: fade(palette.black, 0.9),
-    width: `calc(${DRAWER_WIDTH}px - 1px)`,
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    alignContent: 'center',
-    zIndex: 2
-  },
-  uploadIcon: {
-    fontSize: '8em',
-    color: palette.gray.light5,
-    margin: 'auto',
-  },
-  noScroll: {
-    overflow: 'hidden'
-  }
-}));
+  })
+);
 
 interface AssetResource {
   count: number;
@@ -152,76 +163,84 @@ interface AssetResource {
 
 export default function AssetsPanel() {
   const classes = assetsPanelStyles({});
-  const initialKeyword = useSelection(state => state.preview.assets.query.keywords);
+  const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [dragInProgress, setDragInProgress] = useState(false);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
-  const resource = useStateResourceSelection<AssetResource, PagedEntityState<MediaItem>>(state => state.preview.assets, {
-    shouldRenew: (source, resource) => resource.complete,
-    shouldResolve: source => (!source.isFetching) && nnou(source.page[source.pageNumber]),
-    shouldReject: source => nnou(source.error),
-    errorSelector: source => source.error,
-    resultSelector: source => {
-      const items = source.page[source.pageNumber].map((id) => source.byId[id]);
-      return {
-        ...pluckProps(source, 'count', 'query.limit', 'pageNumber'),
-        items
-      } as AssetResource
+  const resource = useStateResourceSelection<AssetResource, PagedEntityState<MediaItem>>(
+    (state) => state.preview.assets,
+    {
+      shouldRenew: (source, resource) => resource.complete,
+      shouldResolve: (source) => !source.isFetching && nnou(source.page[source.pageNumber]),
+      shouldReject: (source) => nnou(source.error),
+      errorSelector: (source) => source.error,
+      resultSelector: (source) => {
+        const items = source.page[source.pageNumber].map((id) => source.byId[id]);
+        return {
+          ...pluckProps(source, 'count', 'query.limit', 'pageNumber'),
+          items
+        } as AssetResource;
+      }
     }
-  });
-  const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
+  );
+  const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelector<GlobalState, GlobalState['env']>(
+    (state) => state.env
+  );
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();
   const elementRef = useRef();
 
-  const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
-    type: ASSET_DRAG_STARTED,
-    payload: mediaItem
-  });
+  const onDragStart = (mediaItem: MediaItem) =>
+    hostToGuest$.next({
+      type: ASSET_DRAG_STARTED,
+      payload: mediaItem
+    });
 
-  const onDragEnd = () => hostToGuest$.next({
-    type: ASSET_DRAG_ENDED
-  });
+  const onDragEnd = () =>
+    hostToGuest$.next({
+      type: ASSET_DRAG_ENDED
+    });
 
-  const onDragDrop = useCallback((e) => {
-    const file = e.dataTransfer.files[0];
-    if (!file) {
-      return;
-    }
+  const onDragDrop = useCallback(
+    (e) => {
+      const file = e.dataTransfer.files[0];
+      if (!file) {
+        return;
+      }
 
-    const reader = new FileReader();
-    reader.onloadend = function () {
-      uploadDataUrl(
-        site,
-        {
-          ...pluckProps(file, 'name', 'type'),
-          dataUrl: reader.result
-        },
-        '/static-assets/images/',
-        XSRF_CONFIG_ARGUMENT
-      ).subscribe(
-        () => {
-        },
-        () => {
-        },
-        () => {
-          dispatch(fetchAssetsPanelItems({}));
-        },
-      );
-    };
-    reader.readAsDataURL(file);
-    setDragInProgress(false);
-  }, [XSRF_CONFIG_ARGUMENT, dispatch, site]);
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        uploadDataUrl(
+          site,
+          {
+            ...pluckProps(file, 'name', 'type'),
+            dataUrl: reader.result
+          },
+          '/static-assets/images/',
+          XSRF_CONFIG_ARGUMENT
+        ).subscribe(
+          () => {},
+          () => {},
+          () => {
+            dispatch(fetchAssetsPanelItems({}));
+          }
+        );
+      };
+      reader.readAsDataURL(file);
+      setDragInProgress(false);
+    },
+    [XSRF_CONFIG_ARGUMENT, dispatch, site]
+  );
 
   useEffect(() => {
-    const subscription = fromEvent(elementRef.current, 'dragenter').pipe(
-      filter((e: any) => e.dataTransfer?.types.includes('Files'))
-    ).subscribe((e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDragInProgress(true);
-    });
+    const subscription = fromEvent(elementRef.current, 'dragenter')
+      .pipe(filter((e: any) => e.dataTransfer?.types.includes('Files')))
+      .subscribe((e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragInProgress(true);
+      });
     return () => subscription.unsubscribe();
   }, []);
 
@@ -235,17 +254,19 @@ export default function AssetsPanel() {
         share()
       );
       const dragoverSubscription = dragover$.subscribe();
-      const dragleaveSubscription = fromEvent(elementRef.current, 'dragleave').pipe(
-        switchMap(() => interval(100).pipe(takeUntil(dragover$))),
-        mapTo(false)
-      ).subscribe(setDragInProgress);
-      const dropSubscription = fromEvent(elementRef.current, 'drop').pipe(
-        filter((e: any) => e.dataTransfer?.types.includes('Files'))
-      ).subscribe((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onDragDrop(e);
-      });
+      const dragleaveSubscription = fromEvent(elementRef.current, 'dragleave')
+        .pipe(
+          switchMap(() => interval(100).pipe(takeUntil(dragover$))),
+          mapTo(false)
+        )
+        .subscribe(setDragInProgress);
+      const dropSubscription = fromEvent(elementRef.current, 'drop')
+        .pipe(filter((e: any) => e.dataTransfer?.types.includes('Files')))
+        .subscribe((e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onDragDrop(e);
+        });
       return () => {
         dragoverSubscription.unsubscribe();
         dragleaveSubscription.unsubscribe();
@@ -254,13 +275,17 @@ export default function AssetsPanel() {
     }
   }, [dragInProgress, onDragDrop]);
 
-  const onSearch = useCallback((
-    (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 }))
-  ), [dispatch]);
+  const onSearch = useCallback(
+    (keywords: string) => dispatch(fetchAssetsPanelItems({ keywords, offset: 0 })),
+    [dispatch]
+  );
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
-  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
+  function onPageChanged(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    newPage: number
+  ) {
     dispatch(fetchAssetsPanelItems({ offset: newPage }));
   }
 
@@ -270,7 +295,10 @@ export default function AssetsPanel() {
   }
 
   return (
-    <ToolPanel title={translations.assetsPanel} classes={dragInProgress ? { body: classes.noScroll } : null}>
+    <ToolPanel
+      title={translations.assetsPanel}
+      classes={dragInProgress ? { body: classes.noScroll } : null}
+    >
       <ErrorBoundary>
         <div ref={elementRef}>
           <div className={classes.search}>
@@ -281,19 +309,13 @@ export default function AssetsPanel() {
             />
           </div>
           <React.Suspense
-            fallback={
-              <LoadingState
-                title={formatMessage(translations.retrieveAssets)}
-                graphicProps={{ width: 150 }}
-              />
-            }
+            fallback={<LoadingState title={formatMessage(translations.retrieveAssets)} />}
           >
-            {
-              dragInProgress &&
+            {dragInProgress && (
               <div className={classes.uploadOverlay}>
-                <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon}/>
+                <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
               </div>
-            }
+            )}
             <AssetsPanelUI
               classes={classes}
               assetsResource={resource}
@@ -310,16 +332,8 @@ export default function AssetsPanel() {
   );
 }
 
-
 export function AssetsPanelUI(props) {
-  const {
-    classes,
-    assetsResource,
-    onPageChanged,
-    onDragStart,
-    onDragEnd,
-    GUEST_BASE,
-  } = props;
+  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, GUEST_BASE } = props;
   const assets: AssetResource = assetsResource.read();
   const { count, pageNumber, items, limit } = assets;
   const { formatMessage } = useIntl();
@@ -335,37 +349,35 @@ export function AssetsPanelUI(props) {
         rowsPerPage={limit}
         page={pageNumber}
         backIconButtonProps={{
-          'aria-label': formatMessage(translations.previousPage),
+          'aria-label': formatMessage(translations.previousPage)
         }}
         nextIconButtonProps={{
-          'aria-label': formatMessage(translations.nextPage),
+          'aria-label': formatMessage(translations.nextPage)
         }}
-        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
+        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
+          onPageChanged(e, page * limit)
+        }
       />
-      {
-        items.map((item: MediaItem) => {
-            return (
-              <MediaCard
-                key={item.path}
-                item={item}
-                previewAppBaseUri={GUEST_BASE}
-                hasSubheader={false}
-                avatar={DragIndicatorRounded}
-                classes={{ root: classes.card }}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
-              />
-            )
-          }
-        )
-      }
-      {
-        count === 0 &&
+      {items.map((item: MediaItem) => {
+        return (
+          <MediaCard
+            key={item.path}
+            item={item}
+            previewAppBaseUri={GUEST_BASE}
+            hasSubheader={false}
+            avatar={DragIndicatorRounded}
+            classes={{ root: classes.card }}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+          />
+        );
+      })}
+      {count === 0 && (
         <EmptyState
           title={formatMessage(translations.noResults)}
           classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
         />
-      }
+      )}
     </div>
-  )
+  );
 }

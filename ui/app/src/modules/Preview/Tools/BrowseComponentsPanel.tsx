@@ -73,70 +73,72 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) => createStyles({
-  browsePanelWrapper: {
-    padding: '15px 0 55px 0'
-  },
-  list: {
-    padding: 0
-  },
-  search: {
-    padding: '15px 15px 0px 15px',
-  },
-  pagination: {
-    marginLeft: 'auto',
-    position: 'fixed',
-    zIndex: 1,
-    bottom: 0,
-    background: 'white',
-    color: 'black',
-    width: `calc(${DRAWER_WIDTH}px - 1px)`,
-    left: 0,
-    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    '& p': {
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    browsePanelWrapper: {
+      padding: '15px 0 55px 0'
+    },
+    list: {
       padding: 0
     },
-    '& svg': {
-      top: 'inherit'
+    search: {
+      padding: '15px 15px 0px 15px'
     },
-    '& .hidden': {
-      display: 'none'
-    }
-  },
-  toolbar: {
-    padding: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingLeft: '20px',
-    '& .MuiTablePagination-spacer': {
-      display: 'none'
+    pagination: {
+      'marginLeft': 'auto',
+      'position': 'fixed',
+      'zIndex': 1,
+      'bottom': 0,
+      'background': 'white',
+      'color': 'black',
+      'width': `calc(${DRAWER_WIDTH}px - 1px)`,
+      'left': 0,
+      'borderTop': '1px solid rgba(0, 0, 0, 0.12)',
+      '& p': {
+        padding: 0
+      },
+      '& svg': {
+        top: 'inherit'
+      },
+      '& .hidden': {
+        display: 'none'
+      }
     },
-    '& .MuiTablePagination-spacer + p': {
-      display: 'none'
+    toolbar: {
+      'padding': 0,
+      'display': 'flex',
+      'justifyContent': 'space-between',
+      'paddingLeft': '20px',
+      '& .MuiTablePagination-spacer': {
+        display: 'none'
+      },
+      '& .MuiTablePagination-spacer + p': {
+        display: 'none'
+      }
+    },
+    noResultsImage: {
+      width: '150px'
+    },
+    noResultsTitle: {
+      fontSize: 'inherit',
+      marginTop: '10px'
+    },
+    Select: {
+      width: '100%',
+      marginTop: '15px'
+    },
+    emptyState: {
+      margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+    },
+    emptyStateImage: {
+      width: '50%',
+      marginBottom: theme.spacing(1)
+    },
+    emptyStateTitle: {
+      fontSize: '1em'
     }
-  },
-  noResultsImage: {
-    width: '150px'
-  },
-  noResultsTitle: {
-    fontSize: 'inherit',
-    marginTop: '10px'
-  },
-  Select: {
-    width: '100%',
-    marginTop: '15px'
-  },
-  emptyState: {
-    margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
-  },
-  emptyStateImage: {
-    width: '50%',
-    marginBottom: theme.spacing(1)
-  },
-  emptyStateTitle: {
-    fontSize: '1em'
-  }
-}));
+  })
+);
 
 interface ComponentResource {
   count: number;
@@ -147,46 +149,64 @@ interface ComponentResource {
 }
 
 export default function BrowseComponentsPanel() {
-
   const classes = useStyles({});
   const dispatch = useDispatch();
-  const initialKeyword = useSelection(state => state.preview.components.query.keywords);
-  const contentTypeFilter = useSelection(state => state.preview.components.contentTypeFilter);
+  const initialKeyword = useSelection((state) => state.preview.components.query.keywords);
+  const contentTypeFilter = useSelection((state) => state.preview.components.contentTypeFilter);
   const [keyword, setKeyword] = useState(initialKeyword);
-  const contentTypesBranch = useSelection(state => state.contentTypes);
-  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component') : null;
-  const isFetching = useSelection(state => state.preview.components.isFetching);
-  const resource = useStateResourceSelection<ComponentResource, PagedEntityState<ContentInstance>>(state => state.preview.components, {
-    shouldRenew: (source, resource) => resource.complete,
-    shouldResolve: source => ((!source.isFetching) && nnou(source.pageNumber) && nnou(source.page[source.pageNumber])) || !source.contentTypeFilter,
-    shouldReject: source => nnou(source.error),
-    errorSelector: source => source.error,
-    resultSelector: source => {
-      const items = source.page[source.pageNumber]?.map((id: string) => source.byId[id]).filter((item: ContentInstance) => item.craftercms.contentType === source.contentTypeFilter) || [];
-      return {
-        ...pluckProps(source, 'count', 'query.limit', 'pageNumber', 'contentTypeFilter'),
-        items
-      } as ComponentResource
+  const contentTypesBranch = useSelection((state) => state.contentTypes);
+  const contentTypes = contentTypesBranch.byId
+    ? Object.values(contentTypesBranch.byId).filter(
+        (contentType) => contentType.type === 'component'
+      )
+    : null;
+  const isFetching = useSelection((state) => state.preview.components.isFetching);
+  const resource = useStateResourceSelection<ComponentResource, PagedEntityState<ContentInstance>>(
+    (state) => state.preview.components,
+    {
+      shouldRenew: (source, resource) => resource.complete,
+      shouldResolve: (source) =>
+        (!source.isFetching && nnou(source.pageNumber) && nnou(source.page[source.pageNumber])) ||
+        !source.contentTypeFilter,
+      shouldReject: (source) => nnou(source.error),
+      errorSelector: (source) => source.error,
+      resultSelector: (source) => {
+        const items =
+          source.page[source.pageNumber]
+            ?.map((id: string) => source.byId[id])
+            .filter(
+              (item: ContentInstance) => item.craftercms.contentType === source.contentTypeFilter
+            ) || [];
+        return {
+          ...pluckProps(source, 'count', 'query.limit', 'pageNumber', 'contentTypeFilter'),
+          items
+        } as ComponentResource;
+      }
     }
-  });
+  );
   const { formatMessage } = useIntl();
-  const authoringBase = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const authoringBase = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const hostToGuest$ = getHostToGuestBus();
 
-  const onDragStart = (item: ContentInstance) => hostToGuest$.next({
-    type: COMPONENT_INSTANCE_DRAG_STARTED,
-    payload: item
-  });
+  const onDragStart = (item: ContentInstance) =>
+    hostToGuest$.next({
+      type: COMPONENT_INSTANCE_DRAG_STARTED,
+      payload: item
+    });
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
 
-  const onSearch = useCallback((
-    (keywords: string) => dispatch(fetchComponentsByContentType(null, { keywords, offset: 0 }))
-  ), [dispatch]);
+  const onSearch = useCallback(
+    (keywords: string) => dispatch(fetchComponentsByContentType(null, { keywords, offset: 0 })),
+    [dispatch]
+  );
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
-  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
+  function onPageChanged(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    newPage: number
+  ) {
     dispatch(fetchComponentsByContentType(null, { offset: newPage }));
   }
 
@@ -209,8 +229,7 @@ export default function BrowseComponentsPanel() {
             keyword={keyword}
             disabled={isFetching}
           />
-          {
-            contentTypes &&
+          {contentTypes && (
             <Select
               value={contentTypeFilter}
               displayEmpty
@@ -218,23 +237,20 @@ export default function BrowseComponentsPanel() {
               onChange={(event: any) => handleSelectChange(event.target.value)}
               disabled={isFetching}
             >
-              <MenuItem value="" disabled>{formatMessage(translations.selectContentType)}</MenuItem>
-              {
-                contentTypes.map((contentType: ContentType, i: number) => {
-                  return <MenuItem value={contentType.id} key={i}>{contentType.name}</MenuItem>
-                })
-              }
+              <MenuItem value="" disabled>
+                {formatMessage(translations.selectContentType)}
+              </MenuItem>
+              {contentTypes.map((contentType: ContentType, i: number) => {
+                return (
+                  <MenuItem value={contentType.id} key={i}>
+                    {contentType.name}
+                  </MenuItem>
+                );
+              })}
             </Select>
-          }
+          )}
         </div>
-        <React.Suspense
-          fallback={
-            <LoadingState
-              title={formatMessage(translations.loading)}
-              graphicProps={{ width: 150 }}
-            />
-          }
-        >
+        <React.Suspense fallback={<LoadingState title={formatMessage(translations.loading)} />}>
           <BrowsePanelUI
             componentsResource={resource}
             classes={classes}
@@ -247,7 +263,6 @@ export default function BrowseComponentsPanel() {
       </ErrorBoundary>
     </ToolPanel>
   );
-
 }
 
 function BrowsePanelUI(props) {
@@ -257,60 +272,61 @@ function BrowsePanelUI(props) {
     onPageChanged,
     onDragStart,
     onDragEnd,
-    chooseContentTypeImageUrl,
+    chooseContentTypeImageUrl
   } = props;
   const { formatMessage } = useIntl();
   const components: ComponentResource = componentsResource.read();
   const { count, pageNumber, items, limit, contentTypeFilter } = components;
   return (
     <div className={classes.browsePanelWrapper}>
-      {
-        contentTypeFilter ? (
-          <>
-            <TablePagination
-              className={classes.pagination}
-              classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-              component="div"
-              labelRowsPerPage=""
-              count={count}
-              rowsPerPage={limit}
-              page={pageNumber}
-              backIconButtonProps={{
-                'aria-label': formatMessage(translations.previousPage),
-              }}
-              nextIconButtonProps={{
-                'aria-label': formatMessage(translations.nextPage),
-              }}
-              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
-            />
-            <List className={classes.list}>
-              {
-                items.map((item: ContentInstance) =>
-                  <DraggablePanelListItem
-                    key={item.craftercms.id}
-                    primaryText={item.craftercms.label}
-                    onDragStart={() => onDragStart(item)}
-                    onDragEnd={onDragEnd}
-                  />
-                )
-              }
-            </List>
-            {
-              count === 0 &&
-              <EmptyState
-                title={formatMessage(translations.noResults)}
-                classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
-              />
+      {contentTypeFilter ? (
+        <>
+          <TablePagination
+            className={classes.pagination}
+            classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+            component="div"
+            labelRowsPerPage=""
+            count={count}
+            rowsPerPage={limit}
+            page={pageNumber}
+            backIconButtonProps={{
+              'aria-label': formatMessage(translations.previousPage)
+            }}
+            nextIconButtonProps={{
+              'aria-label': formatMessage(translations.nextPage)
+            }}
+            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
+              onPageChanged(e, page * limit)
             }
-          </>
-        ) : (
-          <EmptyState
-            title={formatMessage(translations.chooseContentType)}
-            image={chooseContentTypeImageUrl}
-            classes={{ root: classes.emptyState, image: classes.emptyStateImage, title: classes.emptyStateTitle }}
           />
-        )
-      }
+          <List className={classes.list}>
+            {items.map((item: ContentInstance) => (
+              <DraggablePanelListItem
+                key={item.craftercms.id}
+                primaryText={item.craftercms.label}
+                onDragStart={() => onDragStart(item)}
+                onDragEnd={onDragEnd}
+              />
+            ))}
+          </List>
+          {count === 0 && (
+            <EmptyState
+              title={formatMessage(translations.noResults)}
+              classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+            />
+          )}
+        </>
+      ) : (
+        <EmptyState
+          title={formatMessage(translations.chooseContentType)}
+          image={chooseContentTypeImageUrl}
+          classes={{
+            root: classes.emptyState,
+            image: classes.emptyStateImage,
+            title: classes.emptyStateTitle
+          }}
+        />
+      )}
     </div>
-  )
+  );
 }

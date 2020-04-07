@@ -15,12 +15,13 @@
  */
 
 import Dialog from '@material-ui/core/Dialog';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { APIError } from '../../models/GlobalState';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import ErrorState from './ErrorState';
+import StandardAction from '../../models/StandardAction';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   closeButton: {
@@ -30,15 +31,23 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-interface ErrorDialogProps {
-  error: APIError;
-  errorStateProps?: any;
 
-  onClose(): void;
+interface ErrorDialogBaseProps {
+  error: APIError;
+}
+
+export type  ErrorDialogProps =  PropsWithChildren<
+  ErrorDialogBaseProps & {
+    onClose(): any;
+  }
+>;
+
+export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
+  onClose?: StandardAction;
 }
 
 export default function ErrorDialog(props: ErrorDialogProps) {
-  const { onClose, error, errorStateProps } = props;
+  const { onClose, error } = props;
   const classes = useStyles({});
 
   return (
@@ -49,11 +58,14 @@ export default function ErrorDialog(props: ErrorDialogProps) {
       <IconButton
         aria-label="close"
         className={classes.closeButton}
-        onClick={onClose}
+        onClick={() => onClose()}
       >
-        <CloseIcon/>
+        <CloseIcon />
       </IconButton>
-      <ErrorState {...errorStateProps} error={error}/>
+      {
+        error &&
+        <ErrorState error={error} />
+      }
     </Dialog>
-  )
+  );
 }

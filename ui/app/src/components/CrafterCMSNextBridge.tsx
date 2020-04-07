@@ -28,6 +28,8 @@ import ko from '../translations/locales/ko.json';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
 import store from '../state/store';
+import DialogManager from './SystemStatus/GlobalDialogManager';
+import { SnackbarProvider } from 'notistack';
 
 const Locales: any = {
   en,
@@ -40,19 +42,26 @@ const Locales: any = {
 export let intl = getIntl(getCurrentLocale());
 
 // @ts-ignore
-document.addEventListener('setlocale', (e: CustomEvent<string>) => {
-  if (e.detail && e.detail !== intl.locale) {
-    intl = getIntl(e.detail);
-    updateIntl(intl);
-    document.documentElement.setAttribute('lang', e.detail);
-  }
-}, false);
+document.addEventListener(
+  'setlocale',
+  (e: CustomEvent<string>) => {
+    if (e.detail && e.detail !== intl.locale) {
+      intl = getIntl(e.detail);
+      updateIntl(intl);
+      document.documentElement.setAttribute('lang', e.detail);
+    }
+  },
+  false
+);
 
 function getIntl(locale: string): IntlShape {
-  return createIntl({
-    locale: locale,
-    messages: Locales[locale] || en
-  }, createIntlCache());
+  return createIntl(
+    {
+      locale: locale,
+      messages: Locales[locale] || en
+    },
+    createIntlCache()
+  );
 }
 
 export function getCurrentLocale(): string {
@@ -63,8 +72,7 @@ export function getCurrentLocale(): string {
   return locale ? locale : 'en';
 }
 
-function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
-
+function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) {
   const [, update] = useState();
 
   useLayoutEffect(setRequestForgeryToken, []);
@@ -74,14 +82,14 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
     <Provider store={store}>
       <RawIntlProvider value={intl}>
         <ThemeProvider theme={theme}>
-          <Suspense fallback="">
-            {props.children}
-          </Suspense>
+          <SnackbarProvider maxSnack={5}>
+            <Suspense fallback="" children={props.children} />
+            <DialogManager />
+          </SnackbarProvider>
         </ThemeProvider>
       </RawIntlProvider>
     </Provider>
   );
-
 }
 
 function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {

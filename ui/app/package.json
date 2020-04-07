@@ -30,6 +30,7 @@
     "jquery": "^3.4.1",
     "js-cookie": "^2.2.1",
     "moment-timezone": "^0.5.27",
+    "notistack": "^0.9.9",
     "prettier": "^1.19.1",
     "query-string": "^6.9.0",
     "react": "^16.12.0",
@@ -54,7 +55,8 @@
     "build": "yarn; react-scripts --max_old_space_size=4096 build; node scripts/build.js",
     "test": "react-scripts test",
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
-    "i18n:manage": "node scripts/i18n.js"
+    "i18n:manage": "node scripts/i18n.js",
+    "prettier": "node ../../scripts/prettier.js"
   },
   "proxy": "http://authoring.sample.com:8080/",
   "eslintConfig": {
