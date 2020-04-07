@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { fetchPublishingChannels } from '../../../services/content';
 import { goLive, submitToGoLive } from '../../../services/publishing';
@@ -25,6 +25,7 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { useActiveSiteId, useOnMount, useSpreadState } from '../../../utils/hooks';
+import StandardAction from '../../../models/StandardAction';
 
 const goLiveMessages = defineMessages({
   title: {
@@ -94,13 +95,21 @@ export const paths = (checked: any) => (
     .map(([key]) => key)
 );
 
-interface PublishDialogProps {
-  items: Item[];
+
+interface PublishDialogBaseProps {
+  open: boolean;
+  items?: Item[];
   scheduling?: string;
+}
 
+export type PublishDialogProps = PropsWithChildren<PublishDialogBaseProps & {
   onClose?(response?: any): any;
-
   onSuccess?(response?: any): any;
+}>;
+
+export interface PublishDialogStateProps extends PublishDialogBaseProps {
+  onClose?: StandardAction;
+  onSuccess?: StandardAction;
 }
 
 const submitMap = {
@@ -110,13 +119,13 @@ const submitMap = {
 
 function PublishDialog(props: PublishDialogProps) {
   const {
+    open,
     items,
     scheduling = 'now',
     onClose,
     onSuccess
   } = props;
 
-  const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useSpreadState({ ...dialogInitialState, scheduling });
   const [publishingChannels, setPublishingChannels] = useState(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
@@ -180,8 +189,6 @@ function PublishDialog(props: PublishDialogProps) {
   }, [checkedItems, checkedSoftDep, setSelectedItems]);
 
   const handleClose = () => {
-    setOpen(false);
-
     // call externalClose fn
     onClose?.();
   };
@@ -204,7 +211,6 @@ function PublishDialog(props: PublishDialogProps) {
 
     submit(siteId, user.username, data).subscribe(
       (response) => {
-        setOpen(false);
         setApiState({ ...apiState, error: false, submitting: false });
         onSuccess?.(response);
         onClose?.(response);

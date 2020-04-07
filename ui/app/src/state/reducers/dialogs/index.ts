@@ -17,8 +17,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import confirm from './confirm';
 import error from './error';
+import publish from './publish';
 
 export default combineReducers({
   confirm,
-  error
+  error,
+  publish
 });

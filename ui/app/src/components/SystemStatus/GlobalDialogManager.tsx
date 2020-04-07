@@ -22,6 +22,7 @@ import { useDispatch } from 'react-redux';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
+const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
 
 function createCallback(
   action: StandardAction,
@@ -56,7 +57,13 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Publish */}
-
+      <PublishDialog
+        open={state.publish.open}
+        items={state.publish.items}
+        scheduling={state.publish.scheduling}
+        onClose={createCallback(state.publish.onClose, dispatch)}
+        onSuccess={createCallback(state.publish.onSuccess, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Create Content */}
