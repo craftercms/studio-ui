@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { LegacyItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import { useActiveSiteId, useSelection, useSpreadState, useStateResource } from '../../../utils/hooks';
@@ -597,7 +597,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     onClose?.();
   };
 
-  const getDepsItems = (siteId: string, path: string, newItem?: boolean) => {
+  const getDepsItems = useCallback((siteId: string, path: string, newItem?: boolean) => {
     if (dialog.dependenciesShown === 'depends-on') {
       if (dialog.dependantItems === null || newItem) {
         getDependant(siteId, path)
@@ -631,7 +631,8 @@ function DependenciesDialog(props: DependenciesDialogProps) {
         setDeps(dialog.dependencies);
       }
     }
-  };
+    // eslint-disable-next-line
+  }, [dialog.item, dialog.dependenciesShown, setDialog]);
 
   useEffect(() => {
     setDialog({ item });
@@ -642,17 +643,16 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   }, [dependenciesShown, setDialog]);
 
   useEffect(() => {
-
     if (dialog.item) {
       getDepsItems(siteId, dialog.item.uri, true);
     }
-  }, [dialog.item, setError, setDialog, siteId]);
+  }, [dialog.item, siteId, getDepsItems]);
 
   useEffect(() => {
     if (dialog.item) {
       getDepsItems(siteId, dialog.item.uri);
     }
-  }, [dialog.dependenciesShown]);
+  }, [dialog.dependenciesShown, dialog.item, getDepsItems, siteId]);
 
   const setCompactView = (active: boolean) => {
     setDialog({ compactView: active });

@@ -91,7 +91,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, setPublishDialog, setDependenciesDialog, site, embeddedParentPath, parentId, publishDialog.item]);
+  }, [models, modelId, setPublishDialog, setDependenciesDialog, site, embeddedParentPath, parentId, publishDialog.item, dispatch]);
 
   const handleEdit = (type: string) => {
     handleClose();
