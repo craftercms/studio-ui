@@ -22,5 +22,5 @@ import deleteDialog from './delete';
 export default combineReducers({
   confirm,
   error,
-  deleteDialog
+  delete: deleteDialog
 });

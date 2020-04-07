@@ -23,7 +23,7 @@ export const showDeleteDialog = createAction<Partial<DeleteDialogStateProps>>('S
 
 export const closeDeleteDialog = createAction<StandardAction>('CLOSE_DELETE_DIALOG');
 
-export default createReducer<GlobalState['dialogs']['deleteDialog']>(
+export default createReducer<GlobalState['dialogs']['delete']>(
   { open: false },
   {
     [showDeleteDialog.type]: (state, { payload }) => ({

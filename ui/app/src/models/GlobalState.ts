@@ -116,7 +116,7 @@ export interface GlobalState {
   dialogs: {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;
-    deleteDialog: DeleteDialogStateProps;
+    delete: DeleteDialogStateProps;
   };
 }
 

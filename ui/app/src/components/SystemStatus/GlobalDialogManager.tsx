@@ -69,10 +69,10 @@ function GlobalDialogManager() {
 
       {/* region Delete */}
       <DeleteDialog
-        open={state.deleteDialog.open}
-        items={state.deleteDialog.items}
-        onClose={createCallback(state.deleteDialog.onClose, dispatch)}
-        onSuccess={createCallback(state.deleteDialog.onSuccess, dispatch)}
+        open={state.delete.open}
+        items={state.delete.items}
+        onClose={createCallback(state.delete.onClose, dispatch)}
+        onSuccess={createCallback(state.delete.onSuccess, dispatch)}
       />
       {/* endregion */}
 
