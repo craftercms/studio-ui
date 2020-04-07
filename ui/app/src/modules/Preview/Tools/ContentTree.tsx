@@ -27,7 +27,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeftRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
-import { useActiveSiteId, usePreviewGuest, useSelection } from '../../../utils/hooks';
+import { useActiveSiteId, usePreviewGuest, useSelection, useStateResource } from '../../../utils/hooks';
 import { ContentType, ContentTypeField } from '../../../models/ContentType';
 import Page from '../../../components/Icons/Page';
 import ContentTypeFieldIcon from '../../../components/Icons/ContentTypeField';
@@ -42,6 +42,7 @@ import { createLookupTable, reversePluckProps } from '../../../utils/object';
 import { CONTENT_TREE_FIELD_SELECTED } from '../../../state/actions/preview';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
 import ComponentMenu from '../../../components/ComponentMenu';
+import Suspencified from '../../../components/SystemStatus/Suspencified';
 
 const translations = defineMessages({
   contentTree: {
@@ -131,6 +132,7 @@ interface Data {
   selected: string;
   previous: Array<string>;
   lookupTable: LookupTable<RenderTree>;
+  error: string;
 }
 
 function getNodeSelectorChildren(
@@ -256,7 +258,7 @@ function getChildren(
 }
 
 interface TreeItemCustomInterface {
-  nodes: RenderTree;
+  nodes: any;
 
   handleScroll?(node: RenderTree): void;
 
@@ -268,10 +270,12 @@ interface TreeItemCustomInterface {
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
-  const { nodes, handleScroll, handlePrevious, handleClick, handleOptions } = props;
+  const { nodes: resource, handleScroll, handlePrevious, handleClick, handleOptions } = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
+  const nodesResource = !resource.read ? resource : resource.read();
+  const nodes = !nodesResource.selected ? nodesResource : nodesResource.lookupTable[nodesResource.selected];
 
   let Icon;
   if (nodes.type === 'page') {
@@ -364,7 +368,8 @@ export default function ContentTree() {
   const [data, setData] = React.useState<Data>({
     previous: [],
     selected: null,
-    lookupTable: null
+    lookupTable: null,
+    error: null
   });
 
   useEffect(() => {
@@ -381,7 +386,8 @@ export default function ContentTree() {
       setData({
         previous: [],
         selected: parent.craftercms.id,
-        lookupTable: createLookupTable<RenderTree>([data], 'modelId')
+        lookupTable: createLookupTable<RenderTree>([data], 'modelId'),
+        error: null
       });
     }
   }, [contentTypesBranch, data.selected, guest]);
@@ -407,7 +413,8 @@ export default function ContentTree() {
             parentId,
             embeddedParentPath
           }
-        }
+        },
+        error: null
       });
       setExpanded(['root']);
     }
@@ -458,6 +465,14 @@ export default function ContentTree() {
     setOptionsMenu({ ...optionsMenu, anchorEl: null });
   };
 
+  const resource = useStateResource<Data, Data>(data, {
+    shouldResolve: (source) => !source.error && !!source.selected,
+    shouldReject: (source) => !!source.error,
+    shouldRenew: (source, resource) => resource.complete,
+    resultSelector: (source) => source,
+    errorSelector: (source) => source.error
+  });
+
   return (
     <ToolPanel title={translations.contentTree}>
       {data.selected === null && <LoadingState title={formatMessage(translations.loading)} />}
@@ -471,12 +486,20 @@ export default function ContentTree() {
       >
         {data.selected && (
           <>
-            <TreeItemCustom
-              nodes={data.lookupTable[data.selected]}
-              handleScroll={handleScroll}
-              handlePrevious={data.previous.length ? handlePrevious : null}
-              handleClick={handleClick}
-              handleOptions={handleOptions}
+            <Suspencified
+              resource={resource}
+              loadingStateProps={{
+                title: 'Loading'
+              }}
+              children={
+                <TreeItemCustom
+                  nodes={resource}
+                  handleScroll={handleScroll}
+                  handlePrevious={data.previous.length ? handlePrevious : null}
+                  handleClick={handleClick}
+                  handleOptions={handleOptions}
+                />
+              }
             />
             <ComponentMenu
               anchorEl={optionsMenu.anchorEl}
