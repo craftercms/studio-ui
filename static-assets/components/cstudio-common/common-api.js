@@ -858,6 +858,7 @@ var nodeOpen = false,
 
         let unmount;
         CrafterCMSNext.render(container, 'PublishDialog', {
+          open: true,
           onClose: (response) => {
             if (response) {
               _self.reloadItems(items, response);
