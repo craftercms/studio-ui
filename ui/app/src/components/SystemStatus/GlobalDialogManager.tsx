@@ -68,7 +68,6 @@ function GlobalDialogManager() {
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />
-
       {/* endregion */}
 
       {/* region Dependencies */}
