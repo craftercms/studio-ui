@@ -1055,8 +1055,6 @@ export function getItemVersions(siteId: string, path: string) {
   )
 }
 
-///studio/api/1/services/api/1/content/get-item-versions.json?
-
 export default {
   getComponentInstanceHTML,
   getContent,
