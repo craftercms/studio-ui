@@ -52,7 +52,7 @@
 
     const script = document.createElement('script');
 
-    script.src = `/studio/api/2/plugin/file?siteId=${'$'}{qs.site}&type=${'$'}{qs.type}&name=${'$'}{qs.name}&filename=${'$'}{qs.file}`;
+    script.src = `/studio/api/2/plugin/file?siteId=${'$'}{qs.site}&type=${'$'}{qs.type}&name=${'$'}{qs.name}&filename=${'$'}{qs.file || 'main.js'}`;
 
     script.onload = function () {
       if (['yes', 'true', 'enable', '1'].includes(qs.monitor)) {
