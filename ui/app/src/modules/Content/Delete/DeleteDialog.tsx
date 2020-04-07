@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Item } from '../../../models/Item';
 import { deleteItems } from '../../../services/content';
 import { useActiveSiteId, useActiveUser, useSpreadState, useStateResource } from '../../../utils/hooks';
@@ -254,8 +254,12 @@ function DeleteDialog(props: DeleteDialogProps) {
   const [deleteDependencies, setDeleteDependencies] = useState<DeleteDependencies>();
   const [selectedItems, setSelectedItems] = useState([]);
 
+  const depsSource = useMemo(() => {
+    return { deleteDependencies, apiState }
+  }, [deleteDependencies, apiState.error]);
+
   const resource = useStateResource<any, any>(
-    { deleteDependencies, apiState },
+    depsSource,
     {
       shouldResolve: (source) => Boolean(source.deleteDependencies),
       shouldReject: (source) => Boolean(source.apiState.error),
