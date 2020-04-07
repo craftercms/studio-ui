@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
-import DependenciesDialog from '../../modules/Content/Dependencies/DependenciesDialog';
+const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
 
 function createCallback(
   action: StandardAction,
