@@ -58,7 +58,7 @@ export function getContent(site: string, path: string): Observable<string> {
   );
 }
 
-export function getItem(site: string, path: string): Observable<any> {
+export function getLegacyItem(site: string, path: string): Observable<any> {
   return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
     pluck('response', 'item'),
     catchApi1Error
@@ -1062,7 +1062,7 @@ export function deleteItems(siteId: string, user: string, submissionComment: str
 export default {
   getComponentInstanceHTML,
   getContent,
-  getItem,
+  getLegacyItem,
   getDOM,
   getContentInstanceLookup,
   fetchContentTypes,

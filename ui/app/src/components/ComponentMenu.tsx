@@ -22,7 +22,7 @@ import EmbeddedLegacyEditors from '../modules/Preview/EmbeddedLegacyEditors';
 import PublishDialog from '../modules/Content/Publish/PublishDialog';
 import { palette } from '../styles/theme';
 import { useSelection, useSpreadState } from '../utils/hooks';
-import { getItem } from '../services/content';
+import { getLegacyItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
@@ -81,7 +81,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     if (models && modelId && publishDialog.item === null) {
       let path = models[modelId].craftercms.path;
       if (embeddedParentPath) path = models[parentId].craftercms.path;
-      getItem(site, path).subscribe(
+      getLegacyItem(site, path).subscribe(
         (item) => {
           setPublishDialog({ item });
           setDeleteDialog({ items: [item] });
