@@ -21,6 +21,7 @@ import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import ConfirmDialog from '../UserControl/ConfirmDialog';
 import ErrorDialog from './ErrorDialog';
+import DialogsTabsManager from './DialogsTabsManager';
 
 function createCallback(
   action: StandardAction,
@@ -75,7 +76,7 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region SnackBar(s) */}
-
+        <DialogsTabsManager tabs={state.tabsManager.tabs}/>
       {/* endregion */}
     </>
   );

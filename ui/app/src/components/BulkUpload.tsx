@@ -566,7 +566,6 @@ const minimizedBarStyles = makeStyles((theme: Theme) => createStyles({
     position: 'absolute',
     bottom: '20px',
     right: '20px'
-
   },
   title: {
     display: 'flex',
@@ -607,7 +606,6 @@ function MinimizedBar(props: MinimizedBarProps) {
   )
 }
 
-
 const progressBarStyles = makeStyles((theme: Theme) => createStyles({
   progressBar: {
     position: 'absolute',
@@ -632,7 +630,7 @@ const progressBarStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-function ProgressBar(props: any) {
+export function ProgressBar(props: any) {
   const { status, progress } = props;
   const classes = progressBarStyles({});
   return (
