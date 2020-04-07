@@ -3084,43 +3084,25 @@
        */
       pasteContent: function(sType, args, tree) {
         //Check source and destination paths.
-        if ((Self.cutItem != null && Self.cutItem.contentElId == oCurrentTextNode.contentElId) ||
-          (Self.copiedItem != null && (Self.copiedItem.contentElId == oCurrentTextNode.contentElId) || Self.copiedItem == oCurrentTextNode.data.uri)){
-          CStudioAuthoring.Operations.showSimpleDialog(
-            "pathSameError-dialog",
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(siteDropdownLangBundle, "notification"),
-            CMgs.format(siteDropdownLangBundle, "pathSameError"),
-            [{ text: "OK",  handler:function(){
-                this.hide();
-                return false;
-              }, isDefault:false }],
-            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            "studioDialog"
-          );
+        if (Self.cutItem && Self.cutItem.parent.contentElId === oCurrentTextNode.contentElId) {
+          // Cut/paste in the same directory, would have no consequence, so simply jump as if everything was done correctly.
+          return false
         }
 
         window.pasteFlag = true;
         var pasteCb = {
           success: function(result) {
             try {
-              var errorMsgExist=false;
-              var errorMsg='';
-              var cutItem = Self.cutItem;
-              if(!result.success){
-                if(typeof result.message!= 'undefined' && typeof result.message.paths != 'undefined') {
-                  errorMsg = result.message.paths[0];
-                  if(errorMsg!='') {
-                    errorMsgExist=true;
-                  }
-                }
+              const cutItem = Self.cutItem;
+              Self.copiedItem = null;
+              Self.refreshNodes(oCurrentTextNode, true, false, null, null, true);
+              if(cutItem) {
+                Self.refreshNodes(cutItem.parent, true, false, null, null, true);
               }
 
-              Self.refreshNodes(this.tree,!errorMsgExist, false, null, null, true);
+              const isPreview = CStudioAuthoringContext.isPreview;
 
-              var isPreview = CStudioAuthoringContext.isPreview;
-
-              if(cutItem && isPreview){
+              if (cutItem && isPreview) {
                 var current = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
 
                 if(current.uri == cutItem.data.uri){
@@ -3133,24 +3115,9 @@
                   CStudioAuthoring.Operations.refreshPreview(cutItem.data);
                 }
               }
+              Self.cutItem = null;
 
               WcmDashboardWidgetCommon.refreshDashboard("MyRecentActivity");
-
-              //code below to alert user if destination node url already exist during cut/paste
-              if (errorMsgExist && errorMsg=='DESTINATION_NODE_EXIST'){
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  "pageExistError-dialog",
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(siteDropdownLangBundle, "notification"),
-                  CMgs.format(siteDropdownLangBundle, "pageExistError"),
-                  null, // use default button
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  "studioDialog"
-                );
-              }else{
-                Self.cutItem = null;
-                Self.copiedItem = null;
-              }
             } catch(e) { }
           },
 
@@ -3185,20 +3152,26 @@
         };
 
         CStudioAuthoring.Operations.showSimpleDialog(
-          "duplicate-dialog",
+          'duplicate-dialog',
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          "Duplicate",
-          "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
-          [{ text:"Duplicate", handler: function() {
-              this.hide();
+          'Duplicate',
+          'A new copy of this item and all of it\'s item specific content will be created. Are you sure you wish to proceed?',
+          [{
+            text: 'Duplicate', handler: function () {
+              this.destroy();
               CStudioAuthoring.Operations.duplicateContent(
                 CStudioAuthoringContext.site,
                 oCurrentTextNode.data.uri,
                 duplicateContentCallback);
-            }, isDefault:false },
-            { text:CMgs.format(formsLangBundle, "cancel"),  handler:function(){this.hide();}, isDefault:true }],
+            }, isDefault: false
+          },
+            {
+              text: CMgs.format(formsLangBundle, 'cancel'), handler: function () {
+                this.destroy();
+              }, isDefault: true
+            }],
           YAHOO.widget.SimpleDialog.ICON_WARN,
-          "studioDialog"
+          'studioDialog'
         );
       },
       copyTree:function(sType, args, tree) {
