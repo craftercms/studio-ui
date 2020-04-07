@@ -16,6 +16,12 @@
 
 (function () {
 
+  const i18n = CrafterCMSNext.i18n;
+
+  function formatMessage(id) {
+    return i18n.intl.formatMessage(i18n.messages.receptaclesMessages[id]);
+  }
+
   function Receptacles(id, form, properties, constraints) {
     this.id = id;
     this.form = form;
@@ -28,10 +34,6 @@
     this.enableBrowse = false;
     this.baseRepoPath = '/site/components';
     this.baseBrowsePath = '/site/components';
-    //this.countOptions = 0;
-    const i18n = CrafterCMSNext.i18n;
-    this.formatMessage = i18n.intl.formatMessage;
-    this.messages = i18n.messages.receptaclesMessages;
 
     properties.forEach(prop => {
       if (prop.value) {
@@ -51,8 +53,8 @@
           if (contentType !== '*') {
             self._createContentTypesControls(contentType, control);
           } else {
-            let sharedMessage = self.formatMessage(self.messages.createNewShared);
-            let embeddedMessage = self.formatMessage(self.messages.createNewEmbedded);
+            let sharedMessage = formatMessage('createNewShared');
+            let embeddedMessage = formatMessage('createNewEmbedded');
             $(control.addContainerEl).append(
               self._createOption(sharedMessage, () => {
                 self._clearAddContainerEl(control);
@@ -69,7 +71,7 @@
         });
       }
       if (this.allowShared && this.enableSearch) {
-        let message = self.formatMessage(self.messages.searchExisting);
+        let message = formatMessage('searchExisting');
         $(control.addContainerEl).append(
           self._createOption(message, () => {
             self._clearAddContainerEl(control);
@@ -92,7 +94,7 @@
     },
 
     getLabel: function () {
-      return this.formatMessage(this.messages.receptacles);
+      return formatMessage('receptacles');
     },
 
     getInterface: function () {
@@ -106,43 +108,43 @@
     getSupportedProperties: function () {
       return [
         {
-          label: this.formatMessage(this.messages.allowShared),
+          label: formatMessage('allowShared'),
           name: 'allowShared',
           type: 'boolean',
           defaultValue: 'true'
         },
         {
-          label: this.formatMessage(this.messages.allowEmbedded),
+          label: formatMessage('allowEmbedded'),
           name: 'allowEmbedded',
           type: 'boolean',
           defaultValue: 'true'
         },
         {
-          label: this.formatMessage(this.messages.enableBrowse),
+          label: formatMessage('enableBrowse'),
           name: 'enableBrowse',
           type: 'boolean',
           defaultValue: 'false'
         },
         {
-          label: this.formatMessage(this.messages.enableSearch),
+          label: formatMessage('enableSearch'),
           name: 'enableSearch',
           type: 'boolean',
           defaultValue: 'false'
         },
         {
-          label: this.formatMessage(this.messages.baseRepositoryPath),
+          label: formatMessage('baseRepositoryPath'),
           name: 'baseRepositoryPath',
           type: 'string',
           defaultValue: '/site/components'
         },
         {
-          label: this.formatMessage(this.messages.baseBrowsePath),
+          label: formatMessage('baseBrowsePath'),
           name: 'baseBrowsePath',
           type: 'string',
           defaultValue: '/site/components'
         },
-        { label: this.formatMessage(this.messages.contentTypes), name: 'contentTypes', type: 'contentTypes' },
-        { label: this.formatMessage(this.messages.tags), name: 'tags', type: 'string' }
+        { label: formatMessage('contentTypes'), name: 'contentTypes', type: 'contentTypes' },
+        { label: formatMessage('tags'), name: 'tags', type: 'string' }
       ];
     },
 
@@ -268,7 +270,7 @@
       const $addContainerEl = $(control.addContainerEl);
 
       if (self.allowEmbedded) {
-        let message = `${self.formatMessage(self.messages.createNewEmbedded)} ${self._getContentTypeName(contentType)}`;
+        let message = `${formatMessage('createNewEmbedded')} ${self._getContentTypeName(contentType)}`;
         let type = 'embedded';
         $addContainerEl.append(
           self._createOption(message, callback(type))
@@ -276,7 +278,7 @@
       }
 
       if (self.allowShared) {
-        let message = `${self.formatMessage(self.messages.createNewShared)} ${self._getContentTypeName(contentType)}`;
+        let message = `${formatMessage('createNewShared')} ${self._getContentTypeName(contentType)}`;
         let type = 'shared';
         $addContainerEl.append(
           self._createOption(message, callback(type))
@@ -284,7 +286,7 @@
       }
 
       if (self.allowShared && self.enableBrowse) {
-        let message = `${self.formatMessage(self.messages.browseExisting)} ${self._getContentTypeName(contentType)}`;
+        let message = `${formatMessage('browseExisting')} ${self._getContentTypeName(contentType)}`;
         $addContainerEl.append(
           self._createOption(message, () => {
             self._clearAddContainerEl(control);
