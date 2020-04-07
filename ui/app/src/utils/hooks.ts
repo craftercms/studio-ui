@@ -17,15 +17,7 @@
 
 import { shallowEqual, useSelector } from 'react-redux';
 import GlobalState, { GuestData } from '../models/GlobalState';
-import {
-  Dispatch,
-  EffectCallback,
-  SetStateAction,
-  useEffect,
-  useReducer,
-  useRef,
-  useState
-} from 'react';
+import { Dispatch, EffectCallback, SetStateAction, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
@@ -123,11 +115,9 @@ export function useResolveWhenNotNullResource(source) {
 }
 
 // TODO: Rename to useStateResource
-export function useStateResourceSelection<
-  ReturnType = unknown,
+export function useStateResourceSelection<ReturnType = unknown,
   SourceType = GlobalState,
-  ErrorType = unknown
->(
+  ErrorType = unknown>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: {
     shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
@@ -194,4 +184,8 @@ export function useDebouncedInput(
 
 export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<Partial<S>>>] {
   return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);
+}
+
+export function useSubject<T = unknown>() {
+  return useMemo(() => new Subject<T>(), [])
 }
