@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
-import NewContentDialog from '../../modules/Content/Authoring/NewContentDialog';
+const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 
 function createCallback(
   action: StandardAction,
