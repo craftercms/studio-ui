@@ -129,8 +129,6 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
         var idx = this.fieldValue.indexOf(elKey);
         if( 0 > idx )
             this.fieldValue.push(elKey);
-
-        console.log(this.fieldValue)
     },
 
     removeAll: function() {
@@ -140,7 +138,6 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
     removeValue: function (elKey) {
         var idx = this.fieldValue.indexOf(elKey);
         this.fieldValue.splice(idx, 1);
-        console.log(this.fieldValue)
     },
 
     getValue: function() {
