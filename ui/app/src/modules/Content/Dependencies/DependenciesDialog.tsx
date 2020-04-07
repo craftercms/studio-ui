@@ -583,14 +583,14 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       });
   };
 
-  const resource = useStateResource<Item[], Item[]>(
-    deps,
+  const resource = useStateResource<Item[], { deps: Item[], error: APIError }>(
+    { deps, error },
     {
-      shouldResolve: (deps) => Boolean(deps),
-      shouldReject: () => Boolean(error),
+      shouldResolve: (source) => Boolean(source.deps),
+      shouldReject: (source) => Boolean(source.error),
       shouldRenew: (source, resource) => resource.complete,
-      resultSelector: (source) => source,
-      errorSelector: (error) => error
+      resultSelector: (source) => source.deps,
+      errorSelector: (source) => source.error
     }
   );
 
@@ -600,11 +600,11 @@ function DependenciesDialog(props: DependenciesDialogProps) {
 
   useEffect(() => {
     setDialog({ item });
-  },[item]);
+  }, [item, setDialog]);
 
   useEffect(() => {
     setDialog({ dependenciesShown });
-  }, [dependenciesShown]);
+  }, [dependenciesShown, setDialog]);
 
   useEffect(() => {
     if(dialog.item) {
