@@ -131,7 +131,6 @@ interface Data {
   selected: string;
   previous: Array<string>;
   lookupTable: LookupTable<RenderTree>;
-  error: string;
 }
 
 function getNodeSelectorChildren(
@@ -373,8 +372,7 @@ export default function ContentTree() {
   const [data, setData] = React.useState<Data>({
     previous: [],
     selected: null,
-    lookupTable: null,
-    error: null
+    lookupTable: null
   });
 
   useEffect(() => {
@@ -391,8 +389,7 @@ export default function ContentTree() {
       setData({
         previous: [],
         selected: parent.craftercms.id,
-        lookupTable: createLookupTable<RenderTree>([data], 'modelId'),
-        error: null
+        lookupTable: createLookupTable<RenderTree>([data], 'modelId')
       });
     }
   }, [contentTypesBranch, data.selected, guest]);
@@ -418,8 +415,7 @@ export default function ContentTree() {
             parentId,
             embeddedParentPath
           }
-        },
-        error: null
+        }
       });
       setExpanded(['root']);
     }
@@ -471,11 +467,11 @@ export default function ContentTree() {
   };
 
   const resource = useStateResource<Data, Data>(data, {
-    shouldResolve: (source) => !source.error && !!source.selected,
-    shouldReject: (source) => !!source.error,
+    shouldResolve: (source) => Boolean(source.selected),
+    shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => source,
-    errorSelector: (source) => source.error
+    errorSelector: null
   });
 
   return (
