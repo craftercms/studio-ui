@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, postJSON } from '../utils/ajax';
+import { catchApi1Error, get, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { pluck } from 'rxjs/operators';
 
 export function fetchPackages(siteId: string, filters: any) {
   let queryS = new URLSearchParams(filters).toString();
@@ -40,13 +40,8 @@ export function submitToGoLive(siteId: string, user: string, data): Observable<a
     `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
     data
   ).pipe(
-    map((response: any) => {
-      if (response.response.success) {
-        return response.response;
-      } else {
-        throw response;
-      }
-    })
+    pluck('response'),
+    catchApi1Error
   );
 }
 
@@ -55,13 +50,8 @@ export function goLive(siteId: string, user: string, data): Observable<any> {
     `/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`,
     data
   ).pipe(
-    map((response: any) => {
-      if (response.response.success) {
-        return response.response;
-      } else {
-        throw response;
-      }
-    })
+    pluck('response'),
+    catchApi1Error
   );
 }
 

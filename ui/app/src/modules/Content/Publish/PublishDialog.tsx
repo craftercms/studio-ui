@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { fetchPublishingChannels } from '../../../services/content';
 import { goLive, submitToGoLive } from '../../../services/publishing';
@@ -23,8 +23,8 @@ import PublishDialogUI from './PublishDialogUI';
 import { Item } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
-import GlobalState from '../../../models/GlobalState';
-import { useActiveSiteId, useOnMount, useSpreadState } from '../../../utils/hooks';
+import GlobalState, { APIError } from '../../../models/GlobalState';
+import { useActiveSiteId, useOnMount, useSpreadState, useStateResource } from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 
 const goLiveMessages = defineMessages({
@@ -135,11 +135,9 @@ function PublishDialog(props: PublishDialogProps) {
   const [showDepsButton, setShowDepsButton] = useState(true);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const [showDepsDisabled, setShowDepsDisabled] = useState(false);
-  const [apiState, setApiState] = useState({
-    error: false,
-    submitting: false,
-    global: false,
-    errorResponse: null
+  const [apiState, setApiState] = useSpreadState<{ error: APIError, submitting: boolean }>({
+    error: null,
+    submitting: false
   });
 
   const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
@@ -176,6 +174,30 @@ function PublishDialog(props: PublishDialogProps) {
       }
     );
   }, [siteId]);
+
+  const publishSource = useMemo(() => {
+    return {
+      items,
+      publishingChannels,
+      apiState
+    }
+  },[items, publishingChannels, apiState]);
+
+  const resource = useStateResource<any, any>(
+    publishSource,
+    {
+      shouldResolve: (source) => (Boolean(source.items) && Boolean(source.publishingChannels)),
+      shouldReject: (source) => Boolean(source.apiState.error),
+      shouldRenew: (source, resource) => resource.complete,
+      resultSelector: (source) => {
+        return {
+          items: source.items,
+          publishingChannels: source.publishingChannels
+        }
+      },
+      errorSelector: (source) => source.apiState.error
+    }
+  )
 
   useOnMount(getPublishingChannels);
 
@@ -219,14 +241,12 @@ function PublishDialog(props: PublishDialogProps) {
 
     submit(siteId, user.username, data).subscribe(
       (response) => {
-        setApiState({ ...apiState, error: false, submitting: false });
+        setApiState({ error: null, submitting: false });
         onSuccess?.(response);
         onClose?.(response);
       },
-      (response) => {
-        if (response) {
-          setApiState({ ...apiState, error: true, errorResponse: (response.response) ? response.response : response });
-        }
+      (error) => {
+        setApiState({ error });
       }
     );
 
@@ -274,14 +294,9 @@ function PublishDialog(props: PublishDialogProps) {
     );
   }
 
-  function handleErrorBack() {
-    setApiState({ ...apiState, error: false, global: false });
-  }
-
   return (
     <PublishDialogUI
-      items={items}
-      publishingChannels={publishingChannels}
+      resource={resource}
       publishingChannelsStatus={publishingChannelsStatus}
       onPublishingChannelsFailRetry={getPublishingChannels}
       handleClose={handleClose}
@@ -305,7 +320,6 @@ function PublishDialog(props: PublishDialogProps) {
       selectAllSoft={selectAllSoft}
       onClickShowAllDeps={showAllDependencies}
       apiState={apiState}
-      handleErrorBack={handleErrorBack}
       showEmailCheckbox={!(userRole === 'admin')}
     />
   );
