@@ -27,6 +27,7 @@ import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
+const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 
 function createCallback(
   action: StandardAction,
@@ -90,7 +91,11 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region History */}
-
+      <HistoryDialog
+        open={state.history.open}
+        path={state.history.path}
+        onClose={createCallback(state.history.onClose, dispatch)}
+      />
       {/* endregion */}
 
       {/* region SnackBar(s) */}
