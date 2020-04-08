@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import ExtensionRounded from '@material-ui/icons/ExtensionRounded';
 import ImageRounded from '@material-ui/icons/ImageRounded';
@@ -51,6 +51,7 @@ import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import ContentTree from './Tools/ContentTree';
+import SearchBar from '../../components/SearchBar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -67,6 +68,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     itemIconRoot: {
       minWidth: 35
+    },
+    itemSearch: {
+      padding: '0 16px'
     },
     secondaryActionRoot: {
       display: 'flex'
@@ -156,7 +160,7 @@ function UnknownPanel(props: any) {
         className={`${classes.panelBodyInner} ${classes.center}`}
       >
         <div>
-          <WarningRounded />
+          <WarningRounded/>
         </div>
         <pre className={classes.ellipsis} title={props.id}>
           {props.id}
@@ -176,10 +180,27 @@ function ToolSelector() {
   const { tools } = usePreviewState();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
+  const [keyword, setKeyword] = useState('');
+
+  const onKeyPress = (key: string) => {
+    if(key === 'Enter') {
+      window.location.href = `//${window.location.host.replace('3000', '8080')}/studio/search#/?keywords=${keyword}`
+    }
+  };
+
   return tools == null ? (
-    <LoadingState title={`${formatMessage(translations.loading)}...`} />
+    <LoadingState title={`${formatMessage(translations.loading)}...`}/>
   ) : (
     <List>
+      <ListItem className={classes.itemSearch}>
+        <SearchBar
+          onChange={(keyword) => setKeyword(keyword)}
+          keyword={keyword}
+          showActionButton={Boolean(keyword)}
+          showDecoratorIcon
+          onKeyPress={onKeyPress}
+        />
+      </ListItem>
       {
         tools
           .map((tool) => ({
@@ -190,10 +211,10 @@ function ToolSelector() {
           .map(({ id, title, Icon }) => (
             <ListItem key={id} button onClick={() => select(id)}>
               <ListItemIcon className={classes.itemIconRoot}>
-                <Icon />
+                <Icon/>
               </ListItemIcon>
-              <ListItemText primary={title} />
-              <ChevronRightIcon />
+              <ListItemText primary={title}/>
+              <ChevronRightIcon/>
             </ListItem>
           ))
       }
@@ -250,7 +271,7 @@ export default function ToolsPanel() {
       classes={{ paper: classes.drawerPaper }}
     >
       {site ? (
-        <Tool id={toolMeta?.id} config={config} />
+        <Tool id={toolMeta?.id} config={config}/>
       ) : (
         <EmptyState
           title={

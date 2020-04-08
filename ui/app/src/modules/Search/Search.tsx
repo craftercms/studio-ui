@@ -115,7 +115,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '25px 30px',
     background: palette.gray.light0
   },
-  container: {},
+  empty: {
+    height: '100%',
+    justifyContent: 'center'
+  },
   pagination: {
     marginLeft: 'auto',
     '& p': {
@@ -610,7 +613,12 @@ function Search(props: SearchProps) {
     >
       <header className={classes.searchHeader}>
         <div className={classes.search}>
-          <SearchBar onChange={handleSearchKeyword} keyword={keyword} closeIcon={true}/>
+          <SearchBar
+            onChange={handleSearchKeyword}
+            keyword={keyword}
+            showActionButton={Boolean(keyword)}
+            showDecoratorIcon
+          />
         </div>
         <div className={classes.helperContainer}>
           {
@@ -679,7 +687,7 @@ function Search(props: SearchProps) {
             <ErrorState error={apiState.errorResponse}/>
             :
             (
-              <Grid container spacing={3} className={classes.container}>
+              <Grid container spacing={3} className={searchResults.items.length? classes.empty: ''}>
                 {
                   searchResults === null
                     ? <Spinner background="inherit"/>
