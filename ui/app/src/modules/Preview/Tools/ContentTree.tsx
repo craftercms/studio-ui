@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
@@ -276,6 +276,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   let timeout = React.useRef<any>();
   const nodesResource = !resource.read ? resource : resource.read();
   const nodes = !nodesResource.selected ? nodesResource : nodesResource.lookupTable[nodesResource.selected];
+  const isMounted = useRef(null);
 
   let Icon;
   if (nodes.type === 'page') {
@@ -295,12 +296,17 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
     clearTimeout(timeout.current);
     if (!isOver) {
       timeout.current = setTimeout(() => {
-        setOver(false);
+        isMounted.current && setOver(false);
       }, 10);
     } else {
-      setOver(isOver);
+      isMounted.current && setOver(isOver);
     }
   }
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => isMounted.current = false;
+  }, []);
 
   return (
     <TreeItem
