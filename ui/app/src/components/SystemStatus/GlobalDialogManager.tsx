@@ -38,10 +38,13 @@ function createCallback(
 
 export const useStyles = makeStyles((theme: Theme) => createStyles({
   wrapper: {
-    display: 'flex',
-    position: 'absolute',
     bottom: '20px',
-    right: '20px'
+    display: 'flex',
+    position: 'fixed',
+    flexDirection: 'row-reverse',
+    width: '100%',
+    overflow: 'auto',
+    padding: '2px 20px',
   },
 }));
 
