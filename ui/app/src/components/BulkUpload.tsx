@@ -170,9 +170,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   status: {
     marginLeft: 'auto'
   },
-  minimized: {
-    display: 'none'
-  }
 }));
 
 const UppyItemStyles = makeStyles((theme: Theme) => createStyles({
@@ -569,7 +566,10 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         multiple={true}
         onChange={handleInputChange}
       />
-      <section ref={generalProgress} className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}/>
+      <section
+        ref={generalProgress}
+        className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}
+      />
     </>
   )
 });
@@ -667,8 +667,7 @@ export default function BulkUpload(props: BulkUploadProps) {
   return (
     <Dialog
       open={open && !minimized}
-      keepMounted
-      //className={clsx(minimized && classes.minimized)}
+      keepMounted={minimized}
       onDrop={preventWrongDrop}
       onDragOver={preventWrongDrop}
       onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
@@ -677,8 +676,7 @@ export default function BulkUpload(props: BulkUploadProps) {
       <DialogHeader
         title={formatMessage(translations.title)}
         subtitle={formatMessage(translations.subtitle)}
-        //onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
-        onClose={onMinimized}
+        onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
         closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
       />
       <DialogBody className={classes.dialogContent}>
