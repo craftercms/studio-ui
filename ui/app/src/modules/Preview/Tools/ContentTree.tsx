@@ -42,6 +42,7 @@ import { CONTENT_TREE_FIELD_SELECTED } from '../../../state/actions/preview';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
 import ComponentMenu from '../../../components/ComponentMenu';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
+import { Resource } from '../../../models/Resource';
 
 const translations = defineMessages({
   contentTree: {
@@ -256,7 +257,7 @@ function getChildren(
 }
 
 interface TreeItemCustomInterface {
-  nodes: any;
+  nodes: Resource<Data> | RenderTree | any;
 
   handleScroll?(node: RenderTree): void;
 
