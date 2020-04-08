@@ -27,6 +27,7 @@ import { ContentTypeReceptacle } from './ContentTypeReceptacle';
 import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';
+import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
 
 export interface APIError {
   code?: number | string;
@@ -117,6 +118,7 @@ export interface GlobalState {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;
     newContent: NewContentDialogStateProps;
+    history: HistoryDialogStateProps;
   };
 }
 
