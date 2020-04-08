@@ -15,46 +15,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { ElementType, useEffect, useMemo, useRef, useState } from 'react';
-import { defineMessages, useIntl } from "react-intl";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Avatar, Theme } from "@material-ui/core";
+import { defineMessages, useIntl } from 'react-intl';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Avatar, Theme } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import AppsIcon from '@material-ui/icons/Apps';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
-import Grid from "@material-ui/core/Grid";
+import Grid from '@material-ui/core/Grid';
 import MediaCard from '../../components/MediaCard';
-import { search } from "../../services/search";
-import { setRequestForgeryToken } from "../../utils/auth";
-import { ElasticParams, Filter, MediaItem, Preview } from "../../models/Search";
-import Spinner from "../../components/SystemStatus/Spinner";
+import { search } from '../../services/search';
+import { setRequestForgeryToken } from '../../utils/auth';
+import { ElasticParams, Filter, MediaItem, Preview } from '../../models/Search';
+import Spinner from '../../components/SystemStatus/Spinner';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import EmptyState from "../../components/SystemStatus/EmptyState";
+import EmptyState from '../../components/SystemStatus/EmptyState';
 import ViewListIcon from '@material-ui/icons/ViewList';
-import FilterSearchDropdown from "./FilterSearchDropdown";
-import queryString from "query-string";
-import ErrorState from "../../components/SystemStatus/ErrorState";
-import TablePagination from "@material-ui/core/TablePagination";
-import Typography from "@material-ui/core/Typography";
+import FilterSearchDropdown from './FilterSearchDropdown';
+import queryString from 'query-string';
+import ErrorState from '../../components/SystemStatus/ErrorState';
+import TablePagination from '@material-ui/core/TablePagination';
+import Typography from '@material-ui/core/Typography';
 import AsyncVideoPlayer from '../../components/AsyncVideoPlayer';
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import clsx from "clsx";
-import Editor from "../../components/Editor";
+import clsx from 'clsx';
+import Editor from '../../components/Editor';
 import IFrame from '../../components/IFrame';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { History, Location } from 'history';
-import { getContent } from "../../services/content";
+import { getContent } from '../../services/content';
 import { palette } from '../../styles/theme';
-import SearchBar from "../../components/SearchBar";
+import SearchBar from '../../components/SearchBar';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import { isEditableAsset } from "../../utils/content";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import { isEditableAsset } from '../../utils/content';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   avatarContent: {
     margin: 5,
-    padding: 0,
+    padding: 0
   },
   avatar: {
     background: palette.gray.light3,
@@ -208,7 +208,7 @@ const messages = defineMessages({
   },
   resultsSelected: {
     id: 'search.resultsSelected',
-    defaultMessage: '{count, plural, one {{count} item selected} other {{count} items selected}}',
+    defaultMessage: '{count, plural, one {{count} item selected} other {{count} items selected}}'
   },
   itemsPerPage: {
     id: 'search.itemsPerPage',
@@ -221,7 +221,7 @@ const messages = defineMessages({
   loadingPermissions: {
     id: 'search.loadingPermissions',
     defaultMessage: 'Loading...'
-  },
+  }
 });
 
 interface CardMenuOption {
@@ -271,7 +271,7 @@ function Search(props: SearchProps) {
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
-    errorResponse: null,
+    errorResponse: null
   });
   const [anchorEl, setAnchorEl] = useState(null);
   const [optionsPermissions, setOptionsPermissions] = useState<any>(formatMessage(messages.loadingPermissions));
@@ -423,13 +423,13 @@ function Search(props: SearchProps) {
             date: true,
             id: id[1],
             min: (range[0] !== 'null') ? range[0] : null,
-            max: (range[1] !== 'null') ? range[1] : null,
+            max: (range[1] !== 'null') ? range[1] : null
           }
         } else if (formatParameters.filters[key].includes('TO')) {
           let range = formatParameters.filters[key].split('TO');
           formatParameters.filters[key] = {
             min: (range[0] !== '-Infinity' && range[0] !== '') ? range[0] : null,
-            max: (range[1] !== 'Infinity' && range[1] !== '') ? range[1] : null,
+            max: (range[1] !== 'Infinity' && range[1] !== '') ? range[1] : null
           }
         }
 
@@ -596,7 +596,7 @@ function Search(props: SearchProps) {
       },
       () => {
         setOptionsPermissions(formatMessage(messages.noPermissions));
-      },
+      }
     );
   }
 
@@ -654,7 +654,7 @@ function Search(props: SearchProps) {
           </FormGroup>
           {
             (selected.length > 0) &&
-            <Typography variant="body2" className={classes.resultsSelected} color={"textSecondary"}>
+            <Typography variant="body2" className={classes.resultsSelected} color={'textSecondary'}>
               {formatMessage(messages.resultsSelected, {
                 count: selected.length,
                 total: searchResults.total
@@ -671,10 +671,10 @@ function Search(props: SearchProps) {
             rowsPerPage={searchParameters.limit}
             page={Math.ceil(searchParameters.offset / searchParameters.limit)}
             backIconButtonProps={{
-              'aria-label': 'previous page',
+              'aria-label': 'previous page'
             }}
             nextIconButtonProps={{
-              'aria-label': 'next page',
+              'aria-label': 'next page'
             }}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
@@ -687,7 +687,7 @@ function Search(props: SearchProps) {
             <ErrorState error={apiState.errorResponse}/>
             :
             (
-              <Grid container spacing={3} className={searchResults?.items.length? classes.empty: ''}>
+              <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
                 {
                   searchResults === null
                     ? <Spinner background="inherit"/>
