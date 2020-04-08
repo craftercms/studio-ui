@@ -2315,7 +2315,16 @@ var nodeOpen = false,
        * opens a dialog if needed or goes directly to the form if no
        * template selection is require (only one option
        */
-      createNewContent: function(site, path, asPopup, formSaveCb, childForm, isFlattenedInclude, filterCB) {
+      createNewContent: function(
+        site,
+        path,
+        asPopup,
+        formSaveCb,
+        childForm,
+        isFlattenedInclude,
+        filterCB,
+        baseRepoPath
+      ) {
         var auxParams = [];
         if (childForm && childForm == true) {
           auxParams = [{ name: 'childForm', value: 'true' }];
@@ -2330,27 +2339,35 @@ var nodeOpen = false,
             if (contentTypes.length == 0) {
               var dialogEl = document.getElementById('errMissingRequirements');
               if (!dialogEl) {
-                var dialog = new YAHOO.widget.SimpleDialog('errMissingRequirements', {
-                  width: '400px',
-                  fixedcenter: true,
-                  visible: false,
-                  draggable: false,
-                  close: false,
-                  modal: true,
-                  text: CMgs.format(formsLangBundle, 'noContentTypes') + ' ' + path,
-                  icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  constraintoviewport: true,
-                  buttons: [
-                    {
-                      text: CMgs.format(formsLangBundle, 'ok'),
-                      handler: function() {
-                        this.hide();
-                      },
-                      isDefault: false
-                    }
-                  ]
-                });
-                dialog.setHeader(CMgs.format(formsLangBundle, 'cancelDialogHeader'));
+                var dialog = new YAHOO.widget.SimpleDialog(
+                  'errMissingRequirements',
+                  {
+                    width: '400px',
+                    fixedcenter: true,
+                    visible: false,
+                    draggable: false,
+                    close: false,
+                    modal: true,
+                    text:
+                      CMgs.format(formsLangBundle, 'noContentTypes') +
+                      ' ' +
+                      path,
+                    icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    constraintoviewport: true,
+                    buttons: [
+                      {
+                        text: CMgs.format(formsLangBundle, 'ok'),
+                        handler: function() {
+                          this.hide();
+                        },
+                        isDefault: false
+                      }
+                    ]
+                  }
+                );
+                dialog.setHeader(
+                  CMgs.format(formsLangBundle, 'cancelDialogHeader')
+                );
                 dialog.render(document.body);
                 dialogEl = document.getElementById('errMissingRequirements');
                 dialogEl.dialog = dialog;
@@ -2374,11 +2391,21 @@ var nodeOpen = false,
             } else {
               var selectTemplateCb = {
                 success: function(selectedTemplate) {
+                  if (
+                    path === CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES
+                  ) {
+                    path = '';
+                    if (baseRepoPath) {
+                      path = `${baseRepoPath}/${selectedTemplate
+                        .replace(/\//g, '_')
+                        .substr(1)}`;
+                    }
+                  }
                   CStudioAuthoring.Operations.openContentWebForm(
                     selectedTemplate,
                     null,
                     null,
-                    path == CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES ? '' : path,
+                    path,
                     false,
                     this.asPopup,
                     this.formSaveCb,
@@ -2398,7 +2425,13 @@ var nodeOpen = false,
 
               var selectTemplateDialogCb = {
                 moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
-                  dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, false);
+                  dialogClass.showDialog(
+                    moduleConfig.contentTypes,
+                    path,
+                    false,
+                    moduleConfig.selectTemplateCb,
+                    false
+                  );
                 }
               };
 
@@ -2419,9 +2452,12 @@ var nodeOpen = false,
           failure: function() {}
         };
 
-        CStudioAuthoring.Service.lookupAllowedContentTypesForPath(site, path, callback);
+        CStudioAuthoring.Service.lookupAllowedContentTypesForPath(
+          site,
+          path,
+          callback
+        );
       },
-
       /**
        * Gets the list of files on workflow that will be affected by editing a given item
        * @param params {object} The set of parameters to query the service with
