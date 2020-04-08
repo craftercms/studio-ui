@@ -39,6 +39,7 @@ function createCallback(
 
 export const useStyles = makeStyles((theme: Theme) => createStyles({
   wrapper: {
+    right: '0',
     bottom: '20px',
     display: 'flex',
     position: 'fixed',

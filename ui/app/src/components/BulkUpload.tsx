@@ -633,7 +633,7 @@ export default function BulkUpload(props: BulkUploadProps) {
   const onStatusChange = useCallback((status: DropZoneStatus) => {
     setDropZoneStatus(status);
     if (minimized) {
-      dispatch(updateDialog({ id, status: dropZoneStatus }));
+      dispatch(updateDialog({ id, status }));
     }
   }, [setDropZoneStatus, minimized]);
 
@@ -666,8 +666,9 @@ export default function BulkUpload(props: BulkUploadProps) {
 
   return (
     <Dialog
-      open={open}
-      className={clsx(minimized && classes.minimized)}
+      open={open && !minimized}
+      keepMounted
+      //className={clsx(minimized && classes.minimized)}
       onDrop={preventWrongDrop}
       onDragOver={preventWrongDrop}
       onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
@@ -676,7 +677,8 @@ export default function BulkUpload(props: BulkUploadProps) {
       <DialogHeader
         title={formatMessage(translations.title)}
         subtitle={formatMessage(translations.subtitle)}
-        onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+        //onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+        onClose={onMinimized}
         closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
       />
       <DialogBody className={classes.dialogContent}>
