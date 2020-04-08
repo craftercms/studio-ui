@@ -854,6 +854,61 @@ const embeddedLegacyFormMessages = defineMessages({
   }
 });
 
+const receptaclesMessages = defineMessages({
+  receptacles: {
+    id: 'receptaclesMessages.receptacles',
+    defaultMessage: 'Receptacles'
+  },
+  createNewEmbedded: {
+    id: 'receptaclesMessages.createNewEmbedded',
+    defaultMessage: 'Create new embedded'
+  },
+  createNewShared: {
+    id: 'receptaclesMessages.createNewShared',
+    defaultMessage: 'Create new shared'
+  },
+  allowShared: {
+    id: 'receptaclesMessages.allowShared',
+    defaultMessage: 'Allow Shared'
+  },
+  allowEmbedded: {
+    id: 'receptaclesMessages.allowEmbedded',
+    defaultMessage: 'Allow Embedded'
+  },
+  enableBrowse: {
+    id: 'receptaclesMessages.enableBrowse',
+    defaultMessage: 'Enable Browse'
+  },
+  enableSearch: {
+    id: 'receptaclesMessages.enableSearch',
+    defaultMessage: 'Enable Search'
+  },
+  baseRepositoryPath: {
+    id: 'receptaclesMessages.baseRepositoryPath',
+    defaultMessage: 'Base Repository Path'
+  },
+  baseBrowsePath: {
+    id: 'receptaclesMessages.baseBrowsePath',
+    defaultMessage: 'Base Browse Path'
+  },
+  contentTypes: {
+    id: 'receptaclesMessages.contentTypes',
+    defaultMessage: 'Content Types'
+  },
+  tags: {
+    id: 'receptaclesMessages.tags',
+    defaultMessage: 'Tags'
+  },
+  browseExisting: {
+    id: 'receptaclesMessages.browseExisting',
+    defaultMessage: 'Browse existing'
+  },
+  searchExisting: {
+    id: 'receptaclesMessages.searchExisting',
+    defaultMessage: 'Search existing components'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -888,5 +943,6 @@ export default {
   ossAttribution,
   dashboardWidgetsMessages,
   bulkUploadConfirmDialogMessages,
-  embeddedLegacyFormMessages
+  embeddedLegacyFormMessages,
+  receptaclesMessages
 };
