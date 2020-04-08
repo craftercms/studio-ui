@@ -14,13 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineReducers } from '@reduxjs/toolkit';
-import confirm from './confirm';
-import error from './error';
-import history from './history';
-
-export default combineReducers({
-  confirm,
-  error,
-  history
-});
+export interface LegacyVersion {
+  lastModifiedDate: string;
+  lastModifier: string;
+  versionNumber: string;
+  comment: string;
+  contentItem: any;
+}

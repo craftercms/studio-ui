@@ -1049,6 +1049,12 @@ export function getQuickCreateContentList(siteId: string) {
   )
 }
 
+export function getItemVersions(siteId: string, path: string) {
+  return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${siteId}&path=${path}`).pipe(
+    pluck('response')
+  )
+}
+
 export default {
   getComponentInstanceHTML,
   getContent,
