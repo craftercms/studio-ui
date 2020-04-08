@@ -171,7 +171,6 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
         title={formatMessage(translations.headerTitle)}
         subtitle={formatMessage(translations.headerSubTitle)}
         onClose={onClose}
-        icon={CloseRoundedIcon}
       />
       <DialogBody className={classes.dialogContent}>
         <SuspenseWithEmptyState
