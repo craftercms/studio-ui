@@ -32,7 +32,6 @@ import PublishForm from './PublishForm';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
-import { CloseRounded } from '@material-ui/icons';
 import DialogBody from '../../../components/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import DialogFooter from '../../../components/DialogFooter';
@@ -298,7 +297,6 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
         title={title}
         subtitle={subtitle}
         onClose={handleClose}
-        icon={CloseRounded}
       />
       <DialogBody>
         <SuspenseWithEmptyState resource={resource}>
