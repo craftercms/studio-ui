@@ -188,6 +188,14 @@ function PublishDialog(props: PublishDialogProps) {
     setSelectedItems(result);
   }, [checkedItems, checkedSoftDep, setSelectedItems]);
 
+  useEffect(() => {
+    setDialog({ scheduling });
+  }, [scheduling, setDialog]);
+
+  useEffect(() => {
+    setCheckedItems(checkState(items));
+  },[items, setCheckedItems, checkState])
+
   const handleClose = () => {
     // call externalClose fn
     onClose?.();
