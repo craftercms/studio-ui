@@ -22,6 +22,7 @@ import {
   ContentType,
   ContentTypeField,
   LegacyContentTypeDescriptorCamelized,
+  LegacyDataSource,
   LegacyFormDefinition,
   LegacyFormDefinitionField,
   LegacyFormDefinitionProperty,
@@ -340,7 +341,16 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
   const fields = {};
   const sections = [];
-  // const dataSources = {};
+  //const dataSources = {};
+  const receptaclesLookup = {};
+
+  //get receptacles dataSources
+  if (definition.datasources?.datasource) {
+    asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
+      if (datasource.type === 'receptacles')
+        receptaclesLookup[datasource.id] = datasource;
+    })
+  }
 
   // In some cases, the back end parser seems to return this as "   " 🤷
   // if (typeof definition.datasources !== 'string') {
@@ -437,8 +447,8 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
               }, {});
 
             field.fields[_fieldId].validations = {
-              // tags: (map.tags?.value || '').split(','),
-              contentTypes: nou(map.contentTypes) ? [] : map.contentTypes.value.split(',')
+              tags: [],
+              contentTypes: []
             };
           }
         });
@@ -451,18 +461,21 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           }, {});
 
         field.validations = {
-          // tags: (map.tags?.value || '').split(','),
-          contentTypes: nou(map.contentTypes) ? [] : map.contentTypes.value.split(',')
+          tags: [],
+          contentTypes: []
         };
 
-        // Different data sources come as CSV
-        // map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
-        //   if (dataSources[value] && dataSources[value].contentTypes) {
-        //     field.validations.contentTypes.push.apply(
-        //       field.validations.contentTypes,
-        //       dataSources[value].contentTypes);
-        //   }
-        // });
+        map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
+          if (receptaclesLookup[value]) {
+            receptaclesLookup[value].properties?.property.forEach((prop) => {
+              if (prop.name === 'contentTypes') {
+                field.validations.contentTypes = prop.value ? prop.value.split(',') : []
+              } else if (prop.name === 'tags') {
+                field.validations.tags = prop.value ? prop.value.split(',') : []
+              }
+            });
+          }
+        });
 
         // field.validations = {
         //   limit: { min: null, max: null, message: null },
@@ -617,7 +630,7 @@ export function insertComponent(
       createElements(doc, newItem, {
         '@attributes': {
           // TODO: Hardcoded value. Fix.
-          datasource: shared ? 'sharedFeatures' : 'features',
+          datasource: 'TODO',
           ...(shared ? {} : { inline: true })
         },
         key: shared ? path : id,
@@ -657,7 +670,7 @@ export function insertInstance(
       createElements(doc, newItem, {
         '@attributes': {
           // TODO: Hardcoded value. Fix.
-          datasource: 'sharedFeatures'
+          datasource: 'TODO'
         },
         key: path,
         value: instance.craftercms.label,

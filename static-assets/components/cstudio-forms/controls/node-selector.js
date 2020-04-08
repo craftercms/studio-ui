@@ -321,13 +321,18 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                 _self.addContainerEl = null;
                 _self.containerEl.removeChild(addContainerEl);
               } else {
-                for (var x = 0; x < datasources.length; x++) {
+                const $addContainerEl = $('<div class="cstudio-form-control-node-selector-add-container"></div>');
+
+                $(_self.containerEl).append($addContainerEl);
+                _self.addContainerEl = $addContainerEl[0];
+                $addContainerEl.css({
+                  left: _self.addButtonEl.offsetLeft + 'px',
+                  top: _self.addButtonEl.offsetTop + 22 + 'px'
+                });
+
+                for (let x = 0; x < datasources.length; x++) {
                   datasources[x].selectItemsCount = selectItemsCount;
-                  if (datasources.length > 1) {
-                    datasources[x].add(_self, true);
-                  } else {
-                    datasources[x].add(_self);
-                  }
+                  datasources[x].add(_self, true);
                 }
               }
             }
@@ -470,16 +475,19 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
   },
 
-  insertItem: function(key, value, fileType, fileSize, datasource, order) {
-    var successful = true;
-    var message = '';
+  checkValidations: function(key, value) {
+    let validation = {
+      successful: true,
+      message: ''
+    };
+
     if (!this.allowDuplicates) {
       var items = this.items;
       for (var i = 0; i < items.length; i++) {
         var item = items[i];
         if (item.key == key) {
-          successful = false;
-          message = `The item "${value}" already exists.`;
+          validation.successful = false;
+          validation.message = `The item "${value}" already exists.`;
           break;
         }
       }
@@ -487,12 +495,41 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     if (this.maxSize > 0) {
       if (this.items.length >= this.maxSize) {
-        successful = false;
-        message = "You can't add more items, Remove one and try again.";
+        validation.successful = false;
+        validation.message =
+          "You can't add more items, Remove one and try again.";
       }
     }
 
-    if (successful) {
+    return validation;
+  },
+
+  newInsertItem: function(key, value, type) {
+    const validation = this.checkValidations(key, value);
+
+    if (validation.successful) {
+      let item = {};
+      item = { key: key, value: value };
+
+      if (type === 'embedded') {
+        item.key = key;
+        item.inline = 'true';
+      } else {
+        item.include = key;
+        item.disableFlattening = this.disableFlattening;
+      }
+      this.items[this.items.length] = item;
+
+      this.count();
+      this._onChangeVal(this);
+    } else {
+      this.showValidationMessage(validation.message);
+    }
+  },
+
+  insertItem: function(key, value, fileType, fileSize, datasource, order) {
+    const validation = this.checkValidations(key, value);
+    if (validation.successful) {
       var item = {};
 
       if (this.useSingleValueFilename == true) {
@@ -503,7 +540,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
          * _s if the form definition specifies that we do so
          */
         if (fileType && fileSize) {
-          item = { key: key, value: value, fileType_s: fileType, fileSize_s: fileSize };
+          item = {
+            key: key,
+            value: value,
+            fileType_s: fileType,
+            fileSize_s: fileSize
+          };
         } else if (fileType && !fileSize) {
           item = { key: key, value: value, fileType_s: fileType };
         } else if (!fileType && fileSize) {
@@ -513,7 +555,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         }
       } else {
         if (fileType && fileSize) {
-          item = { key: key, value: value, fileType_mvs: fileType, fileSize_s: fileSize };
+          item = {
+            key: key,
+            value: value,
+            fileType_mvs: fileType,
+            fileSize_s: fileSize
+          };
         } else if (fileType && !fileSize) {
           item = { key: key, value: value, fileType_mvs: fileType };
         } else if (!fileType && fileSize) {
@@ -543,10 +590,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       this.count();
       this._onChangeVal(this);
     } else {
-      this.showValidationMessage(message);
+      this.showValidationMessage(validation.message);
     }
-    this.count();
-    this._onChangeVal(this);
   },
 
   // Insert item may be called multiple times per item inserted.
@@ -658,9 +703,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       { label: CMgs.format(langBundle, 'itemManager'), name: 'itemManager', type: 'datasource:item' },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
       { label: CMgs.format(langBundle, 'disableFlatteningSearch'), name: 'disableFlattening', type: 'boolean' },
-      { label: CMgs.format(langBundle, 'singleValueFilename'), name: 'useSingleValueFilename', type: 'boolean' },
-      { label: 'Content Types', name: 'contentTypes', type: 'contentTypes' },
-      { label: 'Tags', name: 'tags', type: 'string' }
+      { label: CMgs.format(langBundle, 'singleValueFilename'), name: 'useSingleValueFilename', type: 'boolean' }
     ];
   },
 
