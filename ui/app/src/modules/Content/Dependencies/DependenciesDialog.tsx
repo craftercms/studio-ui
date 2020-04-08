@@ -199,6 +199,9 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
       }
     }
   },
+  listEllipsis: {
+    padding: '8px'
+  },
   suspense: {
     height: '100%',
     flexDirection: 'unset'
@@ -253,6 +256,7 @@ function DependenciesList(props: DependenciesListProps) {
                 onClick={(e) => {
                   handleContextMenuClick(e, dependency);
                 }}
+                className={classes.listEllipsis}
               >
                 <MoreVertIcon/>
               </IconButton>
