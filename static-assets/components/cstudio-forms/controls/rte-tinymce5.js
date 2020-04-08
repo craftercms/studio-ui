@@ -555,6 +555,7 @@ CStudioAuthoring.Module.requireModule(
         addManagedFile(datasource, cb) {
           if (datasource && datasource.add) {
             datasource.add({
+              returnProp: 'browserUri',   // to return proper item link (browserUri)
               insertItem: function (fileData) {
                 var cleanUrl = fileData;
                 cb(cleanUrl);
