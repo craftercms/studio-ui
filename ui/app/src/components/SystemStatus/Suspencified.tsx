@@ -35,7 +35,6 @@ type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<
 >;
 
 type SuspencifiedProps = PropsWithChildren<{
-  resource: Resource;
   suspenseProps?: SuspenseProps;
   loadingStateProps?: LoadingStateProps;
   errorBoundaryProps?: ErrorBoundaryProps;
@@ -66,8 +65,9 @@ export function Suspencified(props: SuspencifiedProps) {
       <Suspense
         fallback={<LoadingState {...loadingStateProps} />}
         {...suspenseProps}
-        children={children}
-      />
+      >
+        {children}
+      </Suspense>
     </ErrorBoundary>
   );
 }

@@ -198,22 +198,16 @@ export default function AudiencesPanel() {
   };
 
   return (
-    <Suspencified
-      resource={resource}
-      loadingStateProps={{
-        title: formatMessage(translations.audiencesPanelLoading)
-      }}
-      children={
-        <AudiencesPanelUI
+    <Suspencified loadingStateProps={{ title: formatMessage(translations.audiencesPanelLoading) }}>
+      <AudiencesPanelUI
         audiencesResource={resource}
         model={panelState.model}
         modelApplying={panelState.isApplying}
         modelApplied={panelState.applied}
         onChange={onChange}
         onSaveModel={saveModel}
-        />
-      }
-    />
+      />
+    </Suspencified>
   );
 }
 

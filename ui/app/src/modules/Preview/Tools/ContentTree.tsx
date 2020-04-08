@@ -349,8 +349,8 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
     >
       {Array.isArray(nodes.children)
         ? nodes.children.map((node) => (
-            <TreeItemCustom key={node.id} nodes={node} {...reversePluckProps(props, 'nodes')} />
-          ))
+          <TreeItemCustom key={node.id} nodes={node} {...reversePluckProps(props, 'nodes')} />
+        ))
         : null}
     </TreeItem>
   );
@@ -490,21 +490,15 @@ export default function ContentTree() {
       >
         {data.selected && (
           <>
-            <Suspencified
-              resource={resource}
-              loadingStateProps={{
-                title: formatMessage(translations.loading)
-              }}
-              children={
-                <TreeItemCustom
-                  nodes={resource}
-                  handleScroll={handleScroll}
-                  handlePrevious={data.previous.length ? handlePrevious : null}
-                  handleClick={handleClick}
-                  handleOptions={handleOptions}
-                />
-              }
-            />
+            <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
+              <TreeItemCustom
+                nodes={resource}
+                handleScroll={handleScroll}
+                handlePrevious={data.previous.length ? handlePrevious : null}
+                handleClick={handleClick}
+                handleOptions={handleOptions}
+              />
+            </Suspencified>
             <ComponentMenu
               anchorEl={optionsMenu.anchorEl}
               handleClose={handleClose}
