@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, getText, post, postJSON } from '../utils/ajax';
+import { catchApi1Error, get, getText, post, postJSON } from '../utils/ajax';
 import { map, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
@@ -45,7 +45,7 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { Item } from '../models/Item';
+import { LegacyItem } from '../models/Item';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -59,9 +59,11 @@ export function getContent(site: string, path: string): Observable<string> {
   );
 }
 
-export function getItem(site: string, path: string): Observable<Item> {
+export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
+  // @ts-ignore
   return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
-    pluck('response', 'item')
+    pluck('response', 'item'),
+    catchApi1Error
   );
 }
 
@@ -1052,7 +1054,7 @@ export function getQuickCreateContentList(siteId: string) {
 export default {
   getComponentInstanceHTML,
   getContent,
-  getItem,
+  getLegacyItem,
   getDOM,
   getContentInstanceLookup,
   fetchContentTypes,

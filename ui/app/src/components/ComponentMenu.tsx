@@ -21,14 +21,13 @@ import { FormattedMessage } from 'react-intl';
 import EmbeddedLegacyEditors from '../modules/Preview/EmbeddedLegacyEditors';
 import { palette } from '../styles/theme';
 import { useSelection, useSpreadState } from '../utils/hooks';
-import { getItem } from '../services/content';
+import { getLegacyItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
-import { APIError } from '../models/GlobalState';
-import ErrorDialog from './SystemStatus/ErrorDialog';
 import { useDispatch } from 'react-redux';
 import { showPublishDialog } from '../state/reducers/dialogs/publish';
+import { showErrorDialog } from '../state/reducers/dialogs/error';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -67,29 +66,23 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     items: null
   });
 
-  const [error, setError] = useState<APIError>(null);
-
   // Effect used to open the publish Dialog
   useEffect(() => {
     if (models && modelId && publishDialog.items === null) {
       let path = models[modelId].craftercms.path;
       if (embeddedParentPath) path = models[parentId].craftercms.path;
-      getItem(site, path).subscribe(
+      getLegacyItem(site, path).subscribe(
         (item) => {
           setPublishDialog({ items: [item] });
         },
         ({ response }) => {
-          //TODO: I'm wrapping the API response as a API2 response
-          const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-          setError(error);
+          dispatch(showErrorDialog({
+            error: response
+          }))
         }
       );
     }
-  }, [models, modelId, setPublishDialog, site, embeddedParentPath, parentId, publishDialog.items]);
-
-  const onErrorClose = () => {
-    setError(null);
-  };
+  }, [models, modelId, setPublishDialog, site, embeddedParentPath, parentId, publishDialog.items, dispatch]);
 
   const handleEdit = (type: string) => {
     handleClose();
@@ -228,10 +221,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           getPath={getPath}
           showController={!embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page'}
         />
-      }
-      {
-        error &&
-        <ErrorDialog error={error} onClose={onErrorClose} />
       }
     </>
   );
