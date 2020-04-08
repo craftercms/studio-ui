@@ -88,7 +88,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     handleClose();
     switch (type) {
       case 'schedule': {
-        // setPublishDialog({ scheduling: 'custom' });-
         dispatch(showPublishDialog({
           items: publishDialog.items,
           scheduling: 'custom'
@@ -96,7 +95,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         break;
       }
       case 'publish': {
-        // setPublishDialog({ scheduling: 'now' });
         dispatch(showPublishDialog({
           items: publishDialog.items,
           scheduling: 'now'
