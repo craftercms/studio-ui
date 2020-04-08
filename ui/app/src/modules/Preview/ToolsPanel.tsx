@@ -45,12 +45,13 @@ import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
   usePreviewState,
-  useSelection
+  useSelection, useStateResource
 } from '../../utils/hooks';
-import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import ContentTree from './Tools/ContentTree';
+import { nnou } from '../../utils/object';
+import Suspencified from '../../components/SystemStatus/Suspencified';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -170,15 +171,14 @@ function UnknownPanel(props: any) {
   );
 }
 
-function ToolSelector() {
+function ToolSelector({ resource }) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { tools } = usePreviewState();
+  const tools = resource.read();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
-  return tools == null ? (
-    <LoadingState title={`${formatMessage(translations.loading)}...`} />
-  ) : (
+
+  return (
     <List>
       {
         tools
@@ -198,7 +198,7 @@ function ToolSelector() {
           ))
       }
     </List>
-  );
+  )
 }
 
 const componentIconMap: any = {
@@ -223,6 +223,7 @@ const componentMap: any = {
 
 export default function ToolsPanel() {
   const classes = useStyles({});
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { guest, tools, selectedTool, showToolsPanel } = usePreviewState();
@@ -235,6 +236,14 @@ export default function ToolsPanel() {
       : ToolSelector;
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
   let config = toolMeta?.config;
+
+  const resource = useStateResource(tools, {
+    shouldRenew: () => false,
+    shouldResolve: (source) => nnou(source),
+    shouldReject: (source) => false,
+    errorSelector: null,
+    resultSelector: (source) => source
+  });
 
   useEffect(() => {
     // TODO: Move fetch out of component
@@ -250,7 +259,9 @@ export default function ToolsPanel() {
       classes={{ paper: classes.drawerPaper }}
     >
       {site ? (
-        <Tool id={toolMeta?.id} config={config} />
+        <Suspencified loadingStateProps={{ title: `${formatMessage(translations.loading)}...` }}>
+          <Tool id={toolMeta?.id} config={config} resource={resource}/>
+        </Suspencified>
       ) : (
         <EmptyState
           title={
