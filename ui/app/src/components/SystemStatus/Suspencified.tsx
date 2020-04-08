@@ -25,14 +25,14 @@ export type PropsWithResource<ResourceType = unknown, Props = {}> = PropsWithChi
   {
     resource: Resource<ResourceType>;
   } & Props
-  >;
+>
 
 type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<
   PropsWithResource<ResourceType> & {
-  isEmpty?(value: ResourceType): boolean;
-  emptyStateProps?: EmptyStateProps;
-}
-  >;
+    isEmpty?(value: ResourceType): boolean;
+    emptyStateProps?: EmptyStateProps;
+  }
+>;
 
 type SuspencifiedProps = PropsWithChildren<{
   suspenseProps?: SuspenseProps;
