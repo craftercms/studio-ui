@@ -22,7 +22,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import { palette } from '../../../styles/theme';
 import { fetchLegacyContentTypes } from '../../../services/content';
@@ -332,7 +331,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
           onClose={onDismiss}
-          icon={CloseRoundedIcon}
         />
         <DialogBody dividers classes={{ root: classes.dialogContent }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
