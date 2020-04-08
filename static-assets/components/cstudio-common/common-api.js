@@ -470,13 +470,13 @@ var nodeOpen = false,
      * authoring module manager
      */
     'Module': {
-      loadedModules: [],
-      waitingForModule: [],
+      loadedModules: new Array(),
+      waitingForModule: new Array(),
 
       /**
        * either receive the Module Class or wait for it to be loaded
        */
-      requireModule: function (moduleName, script, moduleConfig, callback) {
+      requireModule: function(moduleName, script, moduleConfig, callback) {
         var moduleClass = this.loadedModules[moduleName];
 
         if (!moduleClass) {
@@ -2128,7 +2128,7 @@ var nodeOpen = false,
             //Remove current content type from list.
             var originalTypesCount = contentTypes.length;
             if (currentContentType && contentTypes.length > 1) {
-              var newContentTypes = [];
+              var newContentTypes = new Array();
               for (var typeIdx = 0; typeIdx < contentTypes.length; typeIdx++) {
                 var contType = contentTypes[typeIdx];
                 if (contType.form != currentContentType) {
@@ -2609,7 +2609,7 @@ var nodeOpen = false,
                                 filePath,
                                 false,
                                 editCb,
-                                []
+                                new Array()
                               );
                             } else {
                               refreshFn(parentItemTo.item, null);
@@ -4729,7 +4729,7 @@ var nodeOpen = false,
         return map;
       },
       getChildren: function(parentItem, flatMap) {
-        var children = [];
+        var children = new Array();
         for (var key in flatMap) {
           var aItem = flatMap[key];
           if (aItem.mandatoryParent == parentItem.uri) {
@@ -5224,21 +5224,21 @@ var nodeOpen = false,
           modules;
 
         if (!groups.length) {
-          groups = [];
+          groups = new Array();
           groups[0] = dropdownConfig.groups.group;
         }
 
         for (var i = 0, a = groups.length; i < a; i++) {
           menuItems = groups[i].menuItems;
           if (!menuItems.length) {
-            menuItems = [];
+            menuItems = new Array();
             menuItems[0] = groups[i].menuItems.menuItem;
           }
 
           for (j = 0, b = menuItems.length; j < b; j++) {
             modules = menuItems[j].modulehooks;
             if (!modules.length) {
-              modules = [];
+              modules = new Array();
               modules[0] = menuItems[j].modulehooks.moduleHook;
             }
 
@@ -6467,7 +6467,7 @@ var nodeOpen = false,
         while (el.hasChildNodes()) {
           el.removeChild(el.firstChild);
         }
-
+        return;
       },
 
       /**
@@ -6486,7 +6486,7 @@ var nodeOpen = false,
             }
           }
         }
-
+        return;
       },
 
       /**
@@ -7262,8 +7262,8 @@ var nodeOpen = false,
           // p.m.
           {
             re: /(\d{1,2}):(\d{1,2}):(\d{1,2})(?:p| p)/,
-            example: ['9:55:00 pm', '12:55:00 p.m.', '9:55:00 p', '11:5:10pm', '9:5:1p'],
-            handler: function (bits) {
+            example: new Array('9:55:00 pm', '12:55:00 p.m.', '9:55:00 p', '11:5:10pm', '9:5:1p'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               d.setHours(h);
@@ -7275,8 +7275,8 @@ var nodeOpen = false,
           // p.m., no seconds
           {
             re: /(\d{1,2}):(\d{1,2})(?:p| p)/,
-            example: ['9:55 pm', '12:55 p.m.', '9:55 p', '11:5pm', '9:5p'],
-            handler: function (bits) {
+            example: new Array('9:55 pm', '12:55 p.m.', '9:55 p', '11:5pm', '9:5p'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               d.setHours(h);
@@ -7288,8 +7288,8 @@ var nodeOpen = false,
           // p.m., hour only
           {
             re: /(\d{1,2})(?:p| p)/,
-            example: ['9 pm', '12 p.m.', '9 p', '11pm', '9p'],
-            handler: function (bits) {
+            example: new Array('9 pm', '12 p.m.', '9 p', '11pm', '9p'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               d.setHours(h);
@@ -7301,8 +7301,8 @@ var nodeOpen = false,
           // hh:mm:ss
           {
             re: /(\d{1,2}):(\d{1,2}):(\d{1,2})/,
-            example: ['9:55:00', '19:55:00', '19:5:10', '9:5:1', '9:55:00 a.m.', '11:55:00a'],
-            handler: function (bits) {
+            example: new Array('9:55:00', '19:55:00', '19:5:10', '9:5:1', '9:55:00 a.m.', '11:55:00a'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               if (h == 12) {
@@ -7317,8 +7317,8 @@ var nodeOpen = false,
           // hh:mm
           {
             re: /(\d{1,2}):(\d{1,2})/,
-            example: ['9:55', '19:55', '19:5', '9:55 a.m.', '11:55a'],
-            handler: function (bits) {
+            example: new Array('9:55', '19:55', '19:5', '9:55 a.m.', '11:55a'),
+            handler: function(bits) {
               var d = new Date();
               var h = parseInt(bits[1], 10);
               if (h == 12) {
@@ -7333,8 +7333,8 @@ var nodeOpen = false,
           // hhmmss
           {
             re: /(\d{1,6})/,
-            example: ['9', '9a', '9am', '19', '1950', '195510', '0955'],
-            handler: function (bits) {
+            example: new Array('9', '9a', '9am', '19', '1950', '195510', '0955'),
+            handler: function(bits) {
               var d = new Date();
               var h = bits[1].substring(0, 2);
               var m = parseInt(bits[1].substring(2, 4), 10);
@@ -7385,7 +7385,7 @@ var nodeOpen = false,
                         isShiftPlusTabPressed = false;
                       }
                     }
-
+                    return;
                   },
                   isDefault: false
                 }
@@ -7423,7 +7423,7 @@ var nodeOpen = false,
                             isShiftPlusTabPressed = false;
                           }
                         }
-
+                        return;
                       },
                       isDefault: false
                     }
@@ -7702,7 +7702,7 @@ var nodeOpen = false,
        * for a given tree node look up the last item
        */
       getContentItemStatus: function(contentTO, navbarStatus) {
-        var status = {};
+        var status = new Object();
         status.string = '';
         status.key = '';
 
@@ -9056,7 +9056,7 @@ var nodeOpen = false,
        */
       openChildSearch: function(childSearchConfig) {
         if (this.searches == null) {
-          this.searches = [];
+          this.searches = new Array();
         }
 
         this.searches[childSearchConfig.searchId] = childSearchConfig;
