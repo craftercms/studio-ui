@@ -90,6 +90,10 @@ interface QuickCreateMenuProps {
   onItemClicked?(): void;
 }
 
+interface QuickCreateMenuButtonProps {
+  onMenuBtnClick(e): void;
+}
+
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const { anchorEl, onClose, previewItem, onSaveLegacySuccess, onItemClicked } = props;
   const classes = useStyles({});
@@ -182,7 +186,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   );
 }
 
-export function QuickCreateMenuButton({ onMenuBtnClick }) {
+export function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
+  const { onMenuBtnClick } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
 
