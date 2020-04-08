@@ -432,6 +432,8 @@ export default function ContentTree() {
 
   const handlePrevious = (event: React.ChangeEvent<{}>) => {
     event.stopPropagation();
+    if(!data.previous.length) return null;
+
     let previousArray = [...data.previous];
     let previous = previousArray.pop();
     setData({ ...data, selected: previous, previous: previousArray });
@@ -484,31 +486,27 @@ export default function ContentTree() {
         expanded={expanded}
         onNodeToggle={handleChange}
       >
-        {data.selected && (
-          <>
-            <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
-              <TreeItemCustom
-                nodes={resource}
-                handleScroll={handleScroll}
-                handlePrevious={data.previous.length ? handlePrevious : null}
-                handleClick={handleClick}
-                handleOptions={handleOptions}
-              />
-            </Suspencified>
-            <ComponentMenu
-              anchorEl={optionsMenu.anchorEl}
-              handleClose={handleClose}
-              site={site}
-              modelId={optionsMenu.modelId}
-              parentId={optionsMenu.parentId}
-              embeddedParentPath={optionsMenu.embeddedParentPath}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: DRAWER_WIDTH - 60
-              }}
-            />
-          </>
-        )}
+        <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
+          <TreeItemCustom
+            nodes={resource}
+            handleScroll={handleScroll}
+            handlePrevious={handlePrevious}
+            handleClick={handleClick}
+            handleOptions={handleOptions}
+          />
+        </Suspencified>
+        <ComponentMenu
+          anchorEl={optionsMenu.anchorEl}
+          handleClose={handleClose}
+          site={site}
+          modelId={optionsMenu.modelId}
+          parentId={optionsMenu.parentId}
+          embeddedParentPath={optionsMenu.embeddedParentPath}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: DRAWER_WIDTH - 60
+          }}
+        />
       </TreeView>
     </ToolPanel>
   );
