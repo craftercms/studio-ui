@@ -23,7 +23,7 @@
   const STAR = '*';
 
   function createLookupTableFromCVS(cvs) {
-    return (cvs || '')
+    return !cvs ? [] : cvs
       .split(',')
       .reduce((lookupTable, id) => ({
         ...lookupTable,
