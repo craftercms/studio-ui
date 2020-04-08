@@ -37,7 +37,6 @@ import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
 import RepeatGroup from '../../../components/Icons/RepeatGroup';
 import { iconWithStrokeAndFill } from '../../../styles/icon';
-import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { createLookupTable, reversePluckProps } from '../../../utils/object';
 import { CONTENT_TREE_FIELD_SELECTED } from '../../../state/actions/preview';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
@@ -481,7 +480,6 @@ export default function ContentTree() {
 
   return (
     <ToolPanel title={translations.contentTree}>
-      {data.selected === null && <LoadingState title={formatMessage(translations.loading)} />}
       <TreeView
         className={classes.root}
         defaultCollapseIcon={<ExpandMoreIcon className="toggle" />}
@@ -495,7 +493,7 @@ export default function ContentTree() {
             <Suspencified
               resource={resource}
               loadingStateProps={{
-                title: 'Loading'
+                title: formatMessage(translations.loading)
               }}
               children={
                 <TreeItemCustom
