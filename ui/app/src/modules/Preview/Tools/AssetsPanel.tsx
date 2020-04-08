@@ -200,7 +200,7 @@ export default function AssetsPanel() {
       }
 
       const reader = new FileReader();
-      reader.onloadend = function() {
+      reader.onloadend = function () {
         uploadDataUrl(
           site,
           {
@@ -291,11 +291,11 @@ export default function AssetsPanel() {
       title={translations.assetsPanel}
       classes={dragInProgress ? { body: classes.noScroll } : null}
     >
-      <Suspencified loadingStateProps={{ title: formatMessage(translations.retrieveAssets) }}>
-        <div ref={elementRef}>
-          <div className={classes.search}>
-            <SearchBar onChange={handleSearchKeyword} keyword={keyword} />
-          </div>
+      <div ref={elementRef}>
+        <div className={classes.search}>
+          <SearchBar onChange={handleSearchKeyword} keyword={keyword} />
+        </div>
+        <Suspencified loadingStateProps={{ title: formatMessage(translations.retrieveAssets) }}>
           {dragInProgress && (
             <div className={classes.uploadOverlay}>
               <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
@@ -310,8 +310,8 @@ export default function AssetsPanel() {
             GUEST_BASE={GUEST_BASE}
             onDragDrop={onDragDrop}
           />
-        </div>
-      </Suspencified>
+        </Suspencified>
+      </div>
     </ToolPanel>
   );
 }
