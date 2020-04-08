@@ -17,10 +17,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import confirm from './confirm';
 import error from './error';
-import tabsManager from './tabsManager';
+import minimizedDialogs from './minimizedDialogs';
 
 export default combineReducers({
   confirm,
   error,
-  tabsManager
+  minimizedDialogs
 });

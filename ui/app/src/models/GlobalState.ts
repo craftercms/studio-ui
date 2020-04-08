@@ -26,7 +26,7 @@ import ContentInstance from './ContentInstance';
 import { ContentTypeReceptacle } from './ContentTypeReceptacle';
 import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
-import { DialogTabsManagerStateProps } from '../components/SystemStatus/DialogsTabsManager';
+import { MinimizedDialogsStateProps } from './MinimizedDialog';
 
 export interface APIError {
   code?: number | string;
@@ -116,7 +116,7 @@ export interface GlobalState {
   dialogs: {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;
-    tabsManager: DialogTabsManagerStateProps;
+    minimizedDialogs: MinimizedDialogsStateProps;
   };
 }
 

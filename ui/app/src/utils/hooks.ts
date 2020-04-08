@@ -15,13 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import GlobalState, { GuestData } from '../models/GlobalState';
-import { Dispatch, EffectCallback, SetStateAction, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import {
+  Dispatch,
+  EffectCallback,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { MinimizedDialog } from '../models/MinimizedDialog';
+import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -188,4 +199,18 @@ export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<
 
 export function useSubject<T = unknown>() {
   return useMemo(() => new Subject<T>(), [])
+}
+
+export function useMinimizeDialog(initialTab: MinimizedDialog) {
+  const dispatch = useDispatch();
+  const state = useSelection((state) => state.dialogs.minimizedDialogs[initialTab.id]);
+
+  useEffect(() => {
+    dispatch(pushDialog(initialTab));
+    return () => {
+      dispatch(popDialog({ id: initialTab.id }));
+    }
+  }, [dispatch]);
+
+  return state?.minimized ?? initialTab.minimized;
 }

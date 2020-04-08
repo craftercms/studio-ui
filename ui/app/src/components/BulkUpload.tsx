@@ -42,15 +42,20 @@ import { getBulkUploadUrl } from '../services/content';
 import { LookupTable } from '../models/LookupTable';
 import { palette } from '../styles/theme';
 import { bytesToSize } from '../utils/string';
-import { useSpreadState, useSubject } from '../utils/hooks';
+import { useActiveSiteId, useMinimizeDialog, useSpreadState, useSubject } from '../utils/hooks';
 import clsx from 'clsx';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import RemoveRoundedIcon from '@material-ui/icons/RemoveRounded';
-import AddRoundedIcon from '@material-ui/icons/AddRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
-import Paper from '@material-ui/core/Paper';
 import DialogFooter from './DialogFooter';
 import DialogBody from './DialogBody';
+import {
+  maximizeDialog,
+  minimizeDialog,
+  updateDialog
+} from '../state/reducers/dialogs/minimizedDialogs';
+import { useDispatch } from 'react-redux';
+import { ProgressBar } from './SystemStatus/ProgressBar.tsx';
 
 const translations = defineMessages({
   title: {
@@ -266,7 +271,8 @@ function UppyItem(props: UppyItemProps) {
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
           <div className={classes.cardContentText}>
-            <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
+            <Typography variant="body2"
+                        className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
               {file.name}
             </Typography>
             <Typography variant="caption" className={classes.caption}>
@@ -524,7 +530,11 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                   files &&
                   filesPerPath[fileId].map((id: string) =>
                     files[id] &&
-                    <UppyItem file={files[id]} key={id} retryFileUpload={retryFileUpload} onRemove={onRemove}/>
+                    <UppyItem
+                      file={files[id]} key={id}
+                      retryFileUpload={retryFileUpload}
+                      onRemove={onRemove}
+                    />
                   )
                 }
               </div>
@@ -536,7 +546,10 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                 {
                   formatMessage(
                     translations.dropHere,
-                    { span: browse => <span key="browse" className={classes.browseText}>{browse}</span> }
+                    {
+                      span: browse => <span key="browse"
+                                            className={classes.browseText}>{browse}</span>
+                    }
                   )
                 }
               </Typography>
@@ -553,97 +566,15 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         multiple={true}
         onChange={handleInputChange}
       />
-      <section ref={generalProgress} className={classes.generalProgress}/>
+      {
+        filesPerPath &&
+        <section ref={generalProgress} className={classes.generalProgress}/>
+      }
     </>
   )
 });
 
-const minimizedBarStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    display: 'flex',
-    padding: '10px 14px',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: '20px',
-    right: '20px'
-  },
-  title: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  subtitle: {
-    fontSize: '14px',
-    marginLeft: '15px'
-  }
-}));
-
-interface MinimizedBarProps {
-  title: string;
-  subtitle?: string;
-  status?: any;
-
-  onMaximized(): void;
-}
-
-function MinimizedBar(props: MinimizedBarProps) {
-  const { title, onMaximized, subtitle, status } = props;
-  const classes = minimizedBarStyles({});
-  return (
-    <Paper className={classes.root}>
-      <Typography variant="h6">{title}</Typography>
-      {
-        subtitle &&
-        <Typography variant="subtitle1" className={classes.subtitle}>{subtitle}</Typography>
-      }
-      {onMaximized ? (
-        <IconButton aria-label="close" onClick={onMaximized}>
-          <AddRoundedIcon/>
-        </IconButton>
-      ) : null}
-      <ProgressBar status={status.status} progress={status.progress}/>
-    </Paper>
-  )
-}
-
-const progressBarStyles = makeStyles((theme: Theme) => createStyles({
-  progressBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    height: '3px',
-    transition: 'height .2s'
-  },
-  progressBarInner: {
-    backgroundColor: palette.blue.tint,
-    height: '100%',
-    width: 0,
-    transition: 'width 0.4s ease',
-    '&.complete': {
-      transition: 'background-color 0.5s ease',
-      backgroundColor: palette.green.main
-    },
-    '&.failed': {
-      backgroundColor: palette.red.main
-    }
-  }
-}));
-
-export function ProgressBar(props: any) {
-  const { status, progress } = props;
-  const classes = progressBarStyles({});
-  return (
-    <div className={classes.progressBar}>
-      <div
-        className={clsx(classes.progressBarInner, status === 'failed' && 'failed', (progress === 100) && 'complete')}
-        style={{ width: `${progress}%` }}
-      />
-    </div>
-  )
-}
-
-interface DropZoneStatus {
+export interface DropZoneStatus {
   status?: string,
   files?: number,
   uploadedFiles?: number,
@@ -668,18 +599,42 @@ interface BulkUploadProps {
 
 export default function BulkUpload(props: BulkUploadProps) {
   const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
+  // NOTE: this id needs to changed if we added support to many dialogs at the same time;
+  const id = 'bulkUpload';
   const classes = useStyles({});
-  const { onClose, path, site, maxSimultaneousUploads = 1, open } = props;
+  const {
+    onClose = () => {
+      console.log('close')
+    }, path = '/static-assets/test', maxSimultaneousUploads = 1, open = true
+  } = props;
+  const site = useActiveSiteId();
   const [dropZoneStatus, setDropZoneStatus] = useSpreadState<DropZoneStatus>(initialDropZoneStatus);
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
-  const [minimized, setMinimized] = useState(!open);
+
+  const minimized = useMinimizeDialog({
+    id,
+    title: formatMessage(translations.title),
+    minimized: false
+  });
+
+  const onMinimized = () => {
+    dispatch(minimizeDialog({ id }));
+  };
+
+  const onMaximized = () => {
+    dispatch(maximizeDialog({ id }));
+  };
 
   const cancelRequestObservable$ = useSubject<void>();
 
   const onStatusChange = useCallback((status: DropZoneStatus) => {
-    setDropZoneStatus(status)
-  }, [setDropZoneStatus]);
+    setDropZoneStatus(status);
+    if (minimized) {
+      dispatch(updateDialog({ id, status: dropZoneStatus }));
+    }
+  }, [setDropZoneStatus, minimized]);
 
   const onBrowse = () => {
     inputRef.current.click();
@@ -687,14 +642,6 @@ export default function BulkUpload(props: BulkUploadProps) {
 
   const onCancel = () => {
     cancelRequestObservable$.next();
-  };
-
-  const onMinimized = () => {
-    setMinimized(true);
-  };
-
-  const onMaximized = () => {
-    setMinimized(false);
   };
 
   const preventWrongDrop = (e: React.DragEvent) => {
@@ -717,87 +664,68 @@ export default function BulkUpload(props: BulkUploadProps) {
   }, [dropZoneStatus.status, formatMessage]);
 
   return (
-    <div className={'bulkUpload'}>
+    <Dialog
+      open={open}
+      className={clsx(minimized && classes.minimized)}
+      onDrop={preventWrongDrop}
+      onDragOver={preventWrongDrop}
+      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+    >
+      <DialogHeader
+        title={formatMessage(translations.title)}
+        subtitle={formatMessage(translations.subtitle)}
+        onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+        icon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
+      />
+      <DialogBody className={classes.dialogContent}>
+        <DropZone
+          onStatusChange={onStatusChange}
+          path={path}
+          site={site}
+          maxSimultaneousUploads={maxSimultaneousUploads}
+          ref={inputRef}
+          cancelRequestObservable$={cancelRequestObservable$}
+        />
+      </DialogBody>
+
       {
-        minimized &&
-        <MinimizedBar
-          title={formatMessage(translations.title)}
-          onMaximized={onMaximized}
-          status={dropZoneStatus}
-          subtitle={
-            dropZoneStatus.files ?
-              formatMessage(translations.filesProgression,
+        dropZoneStatus.status !== 'idle' &&
+        <DialogFooter>
+          {
+            dropZoneStatus.status === 'uploading' &&
+            <Button
+              id="cancelBtn"
+              onClick={onCancel}
+              variant="contained"
+              color="default"
+              ref={cancelRef}
+              className={classes.cancelBtn}
+            >
+              {formatMessage(translations.cancelAll)}
+            </Button>
+
+          }
+          {
+            dropZoneStatus.files &&
+            <Typography variant="caption" className={classes.status}>
+              {formatMessage(translations.filesProgression,
                 {
                   start: dropZoneStatus.uploadedFiles,
                   end: dropZoneStatus.files
                 }
-              ) : null
+              )}
+            </Typography>
           }
-        />
+          <Button
+            onClick={onBrowse}
+            variant="contained"
+            color="primary"
+          >
+            {formatMessage(translations.browse)}
+          </Button>
+        </DialogFooter>
       }
-      <Dialog
-        open={open}
-        className={clsx(minimized && classes.minimized)}
-        onDrop={preventWrongDrop}
-        onDragOver={preventWrongDrop}
-        onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
-        onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
-      >
-        <DialogHeader
-          title={formatMessage(translations.title)}
-          subtitle={formatMessage(translations.subtitle)}
-          onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
-          icon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
-        />
-        <DialogBody className={classes.dialogContent}>
-          <DropZone
-            onStatusChange={onStatusChange}
-            path={path}
-            site={site}
-            maxSimultaneousUploads={maxSimultaneousUploads}
-            ref={inputRef}
-            cancelRequestObservable$={cancelRequestObservable$}
-          />
-        </DialogBody>
-
-        {
-          dropZoneStatus.status !== 'idle' &&
-          <DialogFooter>
-            {
-              dropZoneStatus.status === 'uploading' &&
-              <Button
-                id="cancelBtn"
-                onClick={onCancel}
-                variant="contained"
-                color="default"
-                ref={cancelRef}
-                className={classes.cancelBtn}
-              >
-                {formatMessage(translations.cancelAll)}
-              </Button>
-
-            }
-            {
-              dropZoneStatus.files &&
-              <Typography variant="caption" className={classes.status}>
-                {formatMessage(translations.filesProgression,
-                  {
-                    start: dropZoneStatus.uploadedFiles,
-                    end: dropZoneStatus.files
-                  }
-                )}
-              </Typography>
-            }
-            <Button
-              onClick={onBrowse}
-              variant="contained"
-              color="primary"
-            >
-              {formatMessage(translations.browse)}
-            </Button>
-          </DialogFooter>
-        }
-      </Dialog>
-    </div>
+    </Dialog>
   )
 }

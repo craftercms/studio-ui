@@ -19,9 +19,14 @@ import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
+import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
+import { Theme } from '@material-ui/core';
+import createStyles from '@material-ui/styles/createStyles/createStyles';
+import { MinimizedBar } from './MinimizedBar';
+import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
+
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
-const DialogsTabsManager = lazy(() => import('./DialogsTabsManager'));
 
 function createCallback(
   action: StandardAction,
@@ -31,9 +36,19 @@ function createCallback(
   return action ? () => dispatch(action) : fallbackAction ? () => dispatch(fallbackAction) : null;
 }
 
+export const useStyles = makeStyles((theme: Theme) => createStyles({
+  wrapper: {
+    display: 'flex',
+    position: 'absolute',
+    bottom: '20px',
+    right: '20px'
+  },
+}));
+
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const dispatch = useDispatch();
+  const classes = useStyles({});
   return (
     <Suspense fallback="">
       {/* region Confirm */}
@@ -76,7 +91,20 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region SnackBar(s) */}
-        <DialogsTabsManager tabs={state.tabsManager.tabs}/>
+      <div className={classes.wrapper}>
+        {
+          Object.values(state.minimizedDialogs).map((tab) =>
+            tab.minimized &&
+            <MinimizedBar
+              key={tab.id}
+              title={tab.title}
+              subtitle={tab.subtitle}
+              status={tab.status}
+              onMaximized={createCallback(maximizeDialog({ id: tab.id }), dispatch)}
+            />
+          )
+        }
+      </div>
       {/* endregion */}
     </Suspense>
   );
