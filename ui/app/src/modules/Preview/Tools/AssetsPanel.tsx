@@ -53,11 +53,11 @@ const translations = defineMessages({
     defaultMessage: ' No results found.'
   },
   previousPage: {
-    id: 'pagination.previousPage',
+    id: 'craftercms.ice.assets.previousPage',
     defaultMessage: 'Previous page'
   },
   nextPage: {
-    id: 'pagination.nextPage',
+    id: 'craftercms.ice.assets.nextPage',
     defaultMessage: 'Next page'
   },
   retrieveAssets: {
@@ -210,10 +210,8 @@ export default function AssetsPanel() {
           '/static-assets/images/',
           XSRF_CONFIG_ARGUMENT
         ).subscribe(
-          () => {
-          },
-          () => {
-          },
+          () => {},
+          () => {},
           () => {
             dispatch(fetchAssetsPanelItems({}));
           }
