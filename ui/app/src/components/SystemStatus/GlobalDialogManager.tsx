@@ -22,6 +22,7 @@ import { useDispatch } from 'react-redux';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
+const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 
 function createCallback(
@@ -78,7 +79,11 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region History */}
-
+      <HistoryDialog
+        open={state.history.open}
+        path={state.history.path}
+        onClose={createCallback(state.history.onClose, dispatch)}
+      />
       {/* endregion */}
 
       {/* region SnackBar(s) */}
