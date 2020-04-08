@@ -687,7 +687,7 @@ function Search(props: SearchProps) {
             <ErrorState error={apiState.errorResponse}/>
             :
             (
-              <Grid container spacing={3} className={searchResults.items.length? classes.empty: ''}>
+              <Grid container spacing={3} className={searchResults?.items.length? classes.empty: ''}>
                 {
                   searchResults === null
                     ? <Spinner background="inherit"/>
