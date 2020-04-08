@@ -7,7 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import AddRoundedIcon from '@material-ui/icons/AddRounded';
 import React from 'react';
 import { Status } from '../../models/MinimizedDialog';
-import { ProgressBar } from './ProgressBar.tsx';
+import { ProgressBar } from './ProgressBar';
 
 export const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {

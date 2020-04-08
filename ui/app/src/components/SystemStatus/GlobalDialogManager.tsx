@@ -20,7 +20,7 @@ import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
-import { Theme } from '@material-ui/core';
+import { Theme } from '@material-ui/core/styles';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';

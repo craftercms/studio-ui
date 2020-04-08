@@ -55,7 +55,7 @@ import {
   updateDialog
 } from '../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
-import { ProgressBar } from './SystemStatus/ProgressBar.tsx';
+import { ProgressBar } from './SystemStatus/ProgressBar';
 
 const translations = defineMessages({
   title: {
@@ -271,8 +271,10 @@ function UppyItem(props: UppyItemProps) {
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
           <div className={classes.cardContentText}>
-            <Typography variant="body2"
-                        className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
+            <Typography
+              variant="body2"
+              className={clsx(file.progress.status === 'failed' && classes.textFailed)}
+            >
               {file.name}
             </Typography>
             <Typography variant="caption" className={classes.caption}>
@@ -320,7 +322,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<any>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
-  const uppy = useMemo(() => Core({ debug: true, autoProceed: true }), []);
+  const uppy = useMemo(() => Core({ debug: false, autoProceed: true }), []);
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
   const retryFileUpload = (file: UppyFile) => {
@@ -547,8 +549,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                   formatMessage(
                     translations.dropHere,
                     {
-                      span: browse => <span key="browse"
-                                            className={classes.browseText}>{browse}</span>
+                      span: browse =>
+                        <span key="browse" className={classes.browseText}>{browse}</span>
                     }
                   )
                 }
