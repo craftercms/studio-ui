@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Item } from '../../../models/Item';
+import { LegacyItem } from '../../../models/Item';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
@@ -33,10 +33,10 @@ import { palette } from '../../../styles/theme';
 import clsx from 'clsx';
 
 interface DependencySelectionProps {
-  items: Item[];
+  items: LegacyItem[];
   siteId?: string;      // for dependencySelectionDelete
   onChange?: Function;  // for dependencySelectionDelete
-  checked: Item[];
+  checked: LegacyItem[];
   setChecked: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
@@ -52,7 +52,7 @@ interface DependencySelectionProps {
 interface SelectionListProps {
   title: any;
   subtitle?: any;
-  items?: Item[];
+  items?: LegacyItem[];
   uris?: [];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
@@ -264,7 +264,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 }
 
 interface DependencySelectionDeleteProps {
-  items: Item[],
+  items: LegacyItem[],
   resultItems: DeleteDependencies;
   onChange: Function;
 }
@@ -406,7 +406,7 @@ function SelectionList(props: SelectionListProps) {
         items &&
         <List className={classes.selectionList}>
           {
-            items.map((item: Item) => {
+            items.map((item: LegacyItem) => {
               const labelId = `checkbox-list-label-${item.uri}`;
 
               return (

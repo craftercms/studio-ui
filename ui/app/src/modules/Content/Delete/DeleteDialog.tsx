@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { Item } from '../../../models/Item';
+import { LegacyItem } from '../../../models/Item';
 import { deleteItems } from '../../../services/content';
 import { useActiveSiteId, useActiveUser, useSpreadState, useStateResource } from '../../../utils/hooks';
 import { fetchDeleteDependencies } from '../../../services/dependencies';
@@ -78,7 +78,7 @@ const deleteDialogStyles = makeStyles((theme) => createStyles({
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
-  items: Item[];
+  items: LegacyItem[];
   submissionComment: string;
   setSubmissionComment: Function;
 
@@ -128,8 +128,8 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
 
 interface DeleteDialogUIProps {
   resource: Resource<DeleteDependencies>;
-  items: Item[];
-  selectedItems: Item[];
+  items: LegacyItem[];
+  selectedItems: LegacyItem[];
   submissionComment: string;
   setSubmissionComment: Function;
   open: boolean;
@@ -222,7 +222,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
 
 interface DeleteDialogBaseProps {
   open: boolean;
-  items?: Item[];
+  items?: LegacyItem[];
 }
 
 export type DeleteDialogProps = PropsWithChildren<DeleteDialogBaseProps & {
@@ -307,7 +307,7 @@ function DeleteDialog(props: DeleteDialogProps) {
 
   };
 
-  const onSelectionChange = (selection: Item[]) => {
+  const onSelectionChange = (selection: LegacyItem[]) => {
     setSelectedItems(selection);
   };
 
