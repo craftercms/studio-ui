@@ -25,7 +25,7 @@ export type PropsWithResource<ResourceType = unknown, Props = {}> = PropsWithChi
   {
     resource: Resource<ResourceType>;
   } & Props
->
+>;
 
 type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<
   PropsWithResource<ResourceType> & {
