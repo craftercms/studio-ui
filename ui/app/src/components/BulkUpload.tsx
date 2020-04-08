@@ -141,6 +141,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     left: 0,
     '& .uppy-ProgressBar-inner': {
       backgroundColor: palette.blue.tint
+    },
+    '&.hidden': {
+      display: 'none'
     }
   },
   sectionTitle: {
@@ -320,7 +323,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<any>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
-  const uppy = useMemo(() => Core({ debug: false, autoProceed: true }), []);
+  const uppy = useMemo(() => Core({ debug: true, autoProceed: true }), []);
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
   const retryFileUpload = (file: UppyFile) => {
@@ -517,7 +520,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         onDrop={handleOnDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => !files && ref.current?.click()}
+        onClick={() => !filesPerPath && ref.current?.click()}
       >
         {
           (filesPerPath && files) ? (
@@ -566,10 +569,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         multiple={true}
         onChange={handleInputChange}
       />
-      {
-        filesPerPath &&
-        <section ref={generalProgress} className={classes.generalProgress}/>
-      }
+      <section ref={generalProgress} className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}/>
     </>
   )
 });
@@ -591,7 +591,7 @@ const initialDropZoneStatus: DropZoneStatus = {
 interface BulkUploadProps {
   open: boolean;
   path: string;
-  site: string;
+  site?: string;
   maxSimultaneousUploads?: number;
 
   onClose(dropZoneStatus: DropZoneStatus): void;
@@ -604,9 +604,10 @@ export default function BulkUpload(props: BulkUploadProps) {
   const id = 'bulkUpload';
   const classes = useStyles({});
   const {
-    onClose = () => {
-      console.log('close')
-    }, path = '/static-assets/test', maxSimultaneousUploads = 1, open = true
+    onClose,
+    path,
+    maxSimultaneousUploads = 1,
+    open
   } = props;
   const site = useActiveSiteId();
   const [dropZoneStatus, setDropZoneStatus] = useSpreadState<DropZoneStatus>(initialDropZoneStatus);
