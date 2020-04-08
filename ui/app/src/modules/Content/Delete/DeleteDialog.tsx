@@ -29,7 +29,6 @@ import { Resource } from '../../../models/Resource';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
-import CloseRoundedIcon from '@material-ui/icons/Close';
 import DialogBody from '../../../components/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import DialogFooter from '../../../components/DialogFooter';

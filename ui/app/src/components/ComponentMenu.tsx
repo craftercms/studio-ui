@@ -27,7 +27,7 @@ import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { useDispatch } from 'react-redux';
-import { showDeleteDialog } from '../state/reducers/dialogs/delete';
+import { closeDeleteDialog, showDeleteDialog } from '../state/reducers/dialogs/delete';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -105,7 +105,8 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       }
       case 'delete': {
         dispatch(showDeleteDialog({
-          items: deleteDialog.items
+          items: deleteDialog.items,
+          onSuccess: closeDeleteDialog
         }));
         break;
       }

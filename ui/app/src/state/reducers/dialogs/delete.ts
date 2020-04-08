@@ -28,7 +28,6 @@ export default createReducer<GlobalState['dialogs']['delete']>(
   {
     [showDeleteDialog.type]: (state, { payload }) => ({
       onClose: closeDeleteDialog(),
-      onSuccess: closeDeleteDialog(),
       ...payload,
       open: true
     }),
