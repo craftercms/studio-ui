@@ -240,7 +240,7 @@ export default function ToolsPanel() {
   const resource = useStateResource(tools, {
     shouldRenew: () => false,
     shouldResolve: (source) => nnou(source),
-    shouldReject: (source) => false,
+    shouldReject: (source, resource) => resource.complete,
     errorSelector: null,
     resultSelector: (source) => source
   });
