@@ -226,8 +226,7 @@ const useStyles = makeStyles((theme: Theme) =>
     'tabs': {
       display: 'flex',
       alignItems: 'center',
-      padding: '0 20px',
-      background: backgroundColor
+      marginTop: 13
     },
     'simpleTab': {
       'minWidth': '80px',
@@ -273,6 +272,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     'errorPaperRoot': {
       height: '100%'
+    },
+    'headerRoot': {
+      paddingBottom: 0
     }
   })
 );
@@ -633,8 +635,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function createNewSite(site: CreateSiteMeta | MarketplaceSite, fromMarketplace = false) {
     (fromMarketplace
-      ? createSiteFromMarketplace(site as MarketplaceSite)
-      : createSite(site as CreateSiteMeta)
+        ? createSiteFromMarketplace(site as MarketplaceSite)
+        : createSite(site as CreateSiteMeta)
     ).subscribe(
       () => {
         setApiState({ creatingSite: false });
@@ -773,6 +775,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             subtitle={views[site.selectedView].subtitle}
             id="create-site-dialog"
             onClose={handleClose}
+            classes={{ root: classes.headerRoot }}
           >
             {site.selectedView === 0 && (
               <div className={classes.tabs}>

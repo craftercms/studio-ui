@@ -24,6 +24,7 @@ import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import React, { PropsWithChildren } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
+import clsx from 'clsx';
 
 const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
   titleRoot: {
@@ -63,6 +64,9 @@ export type DialogTitleProps = PropsWithChildren<{
   subtitle?: string;
   closeIcon?: any;
   backIcon?: any;
+  classes?: {
+    root?: string;
+  }
 
   onClose?(): void;
   onBack?(): void;
@@ -91,7 +95,7 @@ export default function DialogHeader(props: DialogTitleProps) {
     }
   } = props;
   return (
-    <MuiDialogTitle id={id} disableTypography className={classes.titleRoot}>
+    <MuiDialogTitle id={id} disableTypography  classes={{ root: clsx(classes.titleRoot, props.classes?.root) }}>
       <div className={classes.title}>
         {onBack ? (
           <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
@@ -113,16 +117,18 @@ export default function DialogHeader(props: DialogTitleProps) {
         )}
       </div>
       {(subtitle || children) && (
-        <Typography
-          variant={subtitleTypographyProps.variant}
-          // @ts-ignore
-          component={subtitleTypographyProps.component}
-          classes={subtitleTypographyProps.classes}
-          className={classes.subtitle}
-        >
-          {subtitle}
+        <>
+          <Typography
+            variant={subtitleTypographyProps.variant}
+            // @ts-ignore
+            component={subtitleTypographyProps.component}
+            classes={subtitleTypographyProps.classes}
+            className={classes.subtitle}
+          >
+            {subtitle}
+          </Typography>
           {children}
-        </Typography>
+        </>
       )}
     </MuiDialogTitle>
   );
