@@ -99,16 +99,16 @@ export default function AuthMonitor() {
         context = window.CStudioAuthoringContext;
         user.username = context.user;
       } else {
-        context = JSON.parse(document.querySelector('#user').innerHTML);
-        user.username = context.username;
+        context = JSON.parse(document.querySelector('#user')?.innerHTML ?? null);
+        user.username = context?.username;
       }
-      user.authType = context.authenticationType;
+      user.authType = context?.authenticationType;
       return { ...state, ...user };
     }
   );
   const [password, setPassword] = useState<string>('');
   const [logoutUrl, setLogoutUrl] = useState(authoringUrl);
-  const isSSO = (authType.toLowerCase() !== 'db');
+  const isSSO = (authType?.toLowerCase() !== 'db');
   const [ssoButtonClicked, setSSOButtonClicked] = useState(false);
   const styles: CSSProperties = isFetching ? { visibility: 'hidden' } : {};
 
@@ -175,6 +175,19 @@ export default function AuthMonitor() {
       return () => sub.unsubscribe();
     }
   }, [active]);
+
+  useEffect(() => {
+    if (!username) {
+      setState({ isFetching: false });
+      me().subscribe((user) => {
+        setState({
+          isFetching: false,
+          username: user.username,
+          authType: user.authType
+        })
+      });
+    }
+  }, [username]);
 
   return (
     <Dialog
