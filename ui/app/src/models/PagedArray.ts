@@ -14,24 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LookupTable } from './LookupTable';
-
-export interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-  username: string;
-  authType: string;
-  rolesBySite: LookupTable<string[]>;
-  sites: string[];
-  preferences: LookupTable;
-}
-
-export interface Credentials {
-  username: string;
-  password: string;
-}
-
-export interface LegacyUser extends Omit<User, 'authType'> {
-  authenticationType: string;
+export interface PagedArray<T = unknown> extends Array<T> {
+  limit: number;
+  total: number;
+  offset: number;
 }

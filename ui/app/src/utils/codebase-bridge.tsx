@@ -34,6 +34,7 @@ import messages, { translateElements } from './i18n-legacy';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
+import { makeStyles, jssPreset } from '@material-ui/core/styles';
 
 /**
  *
@@ -68,6 +69,7 @@ interface CodebaseBridge {
     translateElements: Function;
   }
   services: object;
+  mui: object;
 }
 
 export function updateIntl(nextIntl: IntlShape) {
@@ -113,6 +115,11 @@ export function createCodebaseBridge() {
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
       ConfirmDialog: lazy(() => import('../components/ConfirmDialog'))
+    },
+
+    mui: {
+      makeStyles,
+      jssPreset
     },
 
     assets: {
