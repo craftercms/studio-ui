@@ -49,7 +49,7 @@ import {
   fetchBlueprints as fetchMarketplaceBlueprints
 } from '../../../../services/marketplace';
 import gitLogo from '../../../../assets/git-logo.svg';
-import { backgroundColor } from '../../../../styles/theme';
+import { backgroundColor, palette } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
@@ -202,11 +202,11 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%'
     },
     'dialogContent': {
-      padding: '0',
-      position: 'relative'
+      padding:  '30px 25px',
+      position: 'relative',
+      backgroundColor: palette.gray.light0
     },
     'slide': {
-      'padding': 20,
       'flexWrap': 'wrap',
       'height': '100%',
       'overflow': 'auto',
