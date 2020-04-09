@@ -226,7 +226,6 @@ const useStyles = makeStyles((theme: Theme) =>
     'tabs': {
       display: 'flex',
       alignItems: 'center',
-      marginTop: 13
     },
     'simpleTab': {
       'minWidth': '80px',
@@ -275,6 +274,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     'headerRoot': {
       paddingBottom: 0
+    },
+    'headerSubTitle': {
+      marginBottom: 13
     }
   })
 );
@@ -776,6 +778,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             id="create-site-dialog"
             onClose={handleClose}
             classes={{ root: classes.headerRoot }}
+            subtitleTypographyProps={{
+              classes: {
+                root: classes.headerSubTitle
+              }
+            }}
           >
             {site.selectedView === 0 && (
               <div className={classes.tabs}>
