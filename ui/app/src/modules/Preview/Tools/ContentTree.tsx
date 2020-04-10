@@ -257,7 +257,7 @@ function getChildren(
 }
 
 interface TreeItemCustomInterface {
-  nodes: Resource<Data> | RenderTree | any;
+  nodes: Resource<Data>;
 
   handleScroll?(node: RenderTree): void;
 
@@ -273,8 +273,8 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
-  const nodesResource = !resource.read ? resource : resource.read();
-  const nodes = !nodesResource.selected ? nodesResource : nodesResource.lookupTable[nodesResource.selected];
+  const dataResource = resource.read?.();
+  const nodes: any = !dataResource ? resource : dataResource.lookupTable[dataResource.selected];
   const isMounted = useRef(null);
 
   let Icon;
