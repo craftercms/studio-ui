@@ -18,12 +18,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import {
-  useActiveSiteId,
-  useDebouncedInput,
-  useSelection,
-  useStateResourceSelection
-} from '../../../utils/hooks';
+import { useActiveSiteId, useDebouncedInput, useSelection, useStateResourceSelection } from '../../../utils/hooks';
 import { MediaItem } from '../../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -35,11 +30,7 @@ import { fromEvent, interval } from 'rxjs';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
-import {
-  ASSET_DRAG_ENDED,
-  ASSET_DRAG_STARTED,
-  fetchAssetsPanelItems
-} from '../../../state/actions/preview';
+import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../../state/actions/preview';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
@@ -63,12 +54,12 @@ const translations = defineMessages({
     defaultMessage: ' No results found.'
   },
   previousPage: {
-    id: 'craftercms.ice.assets.previousPage',
-    defaultMessage: 'previous page'
+    id: 'pagination.previousPage',
+    defaultMessage: 'Previous page'
   },
   nextPage: {
-    id: 'craftercms.ice.assets.nextPage',
-    defaultMessage: 'next page'
+    id: 'pagination.nextPage',
+    defaultMessage: 'Next page'
   },
   retrieveAssets: {
     id: 'craftercms.ice.assets.retrieveAssets',
