@@ -14,15 +14,26 @@ import {
 } from '../../../utils/hooks';
 import SearchBar from '../../../components/SearchBar';
 import { APIError } from '../../../models/GlobalState';
-import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams } from '../../../models/Search';
+import {
+  ComponentsContentTypeParams,
+  ContentInstancePage,
+  ElasticParams, MediaItem,
+  SearchItem,
+  SearchResult
+} from '../../../models/Search';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { DraggablePanelListItem } from './DraggablePanelListItem';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
-import { COMPONENT_INSTANCE_DRAG_ENDED, COMPONENT_INSTANCE_DRAG_STARTED } from '../../../state/actions/preview';
+import {
+  ASSET_DRAG_ENDED, ASSET_DRAG_STARTED,
+  COMPONENT_INSTANCE_DRAG_ENDED,
+  COMPONENT_INSTANCE_DRAG_STARTED
+} from '../../../state/actions/preview';
 import { getContentByContentType } from '../../../services/content';
 import { createLookupTable } from '../../../utils/object';
 import ContentInstance from '../../../models/ContentInstance';
+import { search } from '../../../services/search';
 
 const translations = defineMessages({
   title: {
@@ -93,23 +104,26 @@ function SearchResults(props) {
   const classes = useStyles({});
   const hostToGuest$ = getHostToGuestBus();
 
-  const onDragStart = (item: ContentInstance) =>
+  const onDragStart = (item: ContentInstance | MediaItem) => {
     hostToGuest$.next({
-      type: COMPONENT_INSTANCE_DRAG_STARTED,
+      type: item['craftercms'] ? COMPONENT_INSTANCE_DRAG_STARTED : ASSET_DRAG_STARTED,
       payload: item
     });
+  };
 
-  const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
+  const onDragEnd = (item: ContentInstance | MediaItem) => {
+    hostToGuest$.next({ type: item['craftercms'] ? COMPONENT_INSTANCE_DRAG_ENDED : ASSET_DRAG_ENDED });
+  };
 
   return (
     <List className={classes.searchResultsList}>
-      {items.map((item: ContentInstance) => (
+      {items.map((item: ContentInstance | MediaItem) => (
         <DraggablePanelListItem
-          key={item.craftercms.id}
-          primaryText={item.craftercms.label}
-          //avatarSrc={}
+          key={item['craftercms']?.id || item.path}
+          primaryText={item['craftercms']?.label || item.name}
+          avatarSrc={item.path}
           onDragStart={() => onDragStart(item)}
-          onDragEnd={onDragEnd}
+          onDragEnd={() => onDragEnd(item)}
         />
       ))}
     </List>
@@ -134,16 +148,20 @@ export default function SearchPanel(props: any) {
   const [keyword, setKeyword] = useState(searchKeyword || '');
   const [error, setError] = useState<APIError>(null);
   const site = useActiveSiteId();
-  const [searchResults, setSearchResults] = useState<ContentInstancePage>(null);
+  const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
   const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
   const contentTypesIds = contentTypes?.map(item => item.id);
   const contentTypesLookup = createLookupTable(contentTypes, 'id');
   const [pageNumber, setPageNumber] = useState(0);
-  const resource = useStateResource<Array<ContentInstance>, ContentInstancePage>(searchResults, {
+
+  const resource = useStateResource<Array<ContentInstance | SearchItem>, ContentInstancePage | SearchResult>(searchResults, {
     shouldResolve: (data) => Boolean(data),
     shouldReject: () => Boolean(error),
     shouldRenew: (data, resourceArg) => resourceArg.complete,
-    resultSelector: (data) => Object.values(data.lookup).filter(item => contentTypesIds.includes(item.craftercms.contentType)),
+    // TODO: Components
+    //resultSelector: (data) => Object.values(data.lookup).filter(item => contentTypesIds.includes(item.craftercms.contentType)),
+    // @ts-ignore
+    resultSelector: (data) => data.items,
     errorSelector: () => error
   });
 
@@ -152,25 +170,12 @@ export default function SearchPanel(props: any) {
   });
 
   const onSearch = useCallback((keywords: string, options?: ComponentsContentTypeParams) => {
-    getContentByContentType(site, contentTypesIds, contentTypesLookup, {
-      ...initialSearchParameters,
-      keywords,
-      ...options,
-      type: 'Component'
-    }).subscribe(
-      (result) => {
-        setSearchResults(result);
-      },
-      ({ response }) => {
-        setError(response);
-      }
-    )
-    // search(site, {
+    // TODO: Components
+    // getContentByContentType(site, contentTypesIds, contentTypesLookup, {
     //   ...initialSearchParameters,
     //   keywords,
     //   ...options,
-    //   //filters: { 'content-type': contentTypes?.map(item => item.id), 'mime-type': mimeTypes }
-    //   filters: { 'content-type': contentTypes?.map(item => item.id) }
+    //   type: 'Component'
     // }).subscribe(
     //   (result) => {
     //     setSearchResults(result);
@@ -178,7 +183,22 @@ export default function SearchPanel(props: any) {
     //   ({ response }) => {
     //     setError(response);
     //   }
-    // );
+    // )
+    search(site, {
+      ...initialSearchParameters,
+      keywords,
+      ...options,
+      // TODO: Use this when api support OR operator
+      //filters: { 'content-type': contentTypes?.map(item => item.id), 'mime-type': mimeTypes }
+      filters: { 'mime-type': mimeTypes }
+    }).subscribe(
+      (result) => {
+        setSearchResults(result);
+      },
+      ({ response }) => {
+        setError(response);
+      }
+    );
   }, [contentTypes]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
@@ -202,6 +222,7 @@ export default function SearchPanel(props: any) {
           keyword={keyword}
           placeholder="Search everywhere..."
           onChange={(keyword) => handleSearchKeyword(keyword)}
+          showDecoratorIcon={true}
           showActionButton={Boolean(keyword)}
         />
       </div>
@@ -220,7 +241,7 @@ export default function SearchPanel(props: any) {
           classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
           component="div"
           labelRowsPerPage=""
-          count={searchResults.count}
+          count={searchResults['count'] || searchResults['total']}
           rowsPerPage={initialSearchParameters.limit}
           page={pageNumber}
           backIconButtonProps={{
