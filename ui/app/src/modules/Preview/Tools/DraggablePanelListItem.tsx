@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
+import React, { useState } from 'react';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
-import { getInitials } from "../../../utils/string";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import IconButton from "@material-ui/core/IconButton";
+import { getInitials } from '../../../utils/string';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import IconButton from '@material-ui/core/IconButton';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
-import { createStyles } from "@material-ui/core";
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import { createStyles } from '@material-ui/core';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const useStyles = makeStyles(() => createStyles({
   root: {},
@@ -48,6 +48,7 @@ const useStyles = makeStyles(() => createStyles({
 interface PanelListItemProps {
   primaryText: string;
   secondaryText?: string;
+  avatarSrc?: string;
   onDragStart?: (...args: any) => any;
   onDragEnd?: (...args: any) => any;
   onMenu?: (anchor: Element) => any;
@@ -58,9 +59,10 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
   const {
     onMenu,
     primaryText,
+    avatarSrc,
     secondaryText,
     onDragStart,
-    onDragEnd,
+    onDragEnd
   } = props;
   const [over, setOver] = useState(false);
   return (
@@ -75,7 +77,7 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
         onMouseLeave={() => setOver(false)}
       >
         <ListItemAvatar>
-          <Avatar classes={{ root: over ? classes.avatarRootOver : '' }}>
+          <Avatar classes={{ root: over ? classes.avatarRootOver : '' }} src={over ? null : avatarSrc}>
             {over ? <DragIndicatorRounded/> : getInitials(primaryText)}
           </Avatar>
         </ListItemAvatar>

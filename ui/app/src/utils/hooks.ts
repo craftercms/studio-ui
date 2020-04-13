@@ -17,19 +17,12 @@
 
 import { shallowEqual, useSelector } from 'react-redux';
 import GlobalState, { GuestData } from '../models/GlobalState';
-import {
-  Dispatch,
-  EffectCallback,
-  SetStateAction,
-  useEffect,
-  useReducer,
-  useRef,
-  useState
-} from 'react';
+import { Dispatch, EffectCallback, SetStateAction, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ContentType } from '../models/ContentType';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -57,6 +50,17 @@ export function usePreviewState(): GlobalState['preview'] {
 
 export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
+}
+
+export function useContentTypeList(): Array<ContentType> {
+  const state = useSelector<GlobalState, GlobalState['contentTypes']>((state) => state.contentTypes);
+  return useMemo(() => {
+    if (!state.byId) {
+      return null;
+    } else {
+      return Object.values(state.byId).filter((contentType) => contentType.type === 'component');
+    }
+  }, [state]);
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
@@ -123,11 +127,9 @@ export function useResolveWhenNotNullResource(source) {
 }
 
 // TODO: Rename to useStateResource
-export function useStateResourceSelection<
-  ReturnType = unknown,
+export function useStateResourceSelection<ReturnType = unknown,
   SourceType = GlobalState,
-  ErrorType = unknown
->(
+  ErrorType = unknown>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: {
     shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;

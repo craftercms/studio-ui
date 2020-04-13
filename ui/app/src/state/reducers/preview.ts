@@ -35,6 +35,7 @@ import {
   FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
+  fetchPreviewToolsConfigComplete,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -50,7 +51,7 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
-  fetchPreviewToolsConfigComplete,
+  SET_SEARCH_PANEL_KEYWORD,
   UPDATE_AUDIENCES_PANEL_MODEL
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
@@ -80,6 +81,7 @@ const reducer = createReducer<GlobalState['preview']>({
   computedUrl: null,
   currentUrl: '/studio/preview-landing',
   hostSize: { width: null, height: null },
+  searchKeyword: null,
   showToolsPanel: true,
   previousTool: null,
   // Don't change/commit the tool you're working with. Use your .env.development to set it
@@ -181,6 +183,12 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state.hostSize,
         height: minFrameSize(payload)
       }
+    }
+  },
+  [SET_SEARCH_PANEL_KEYWORD]: (state, { payload }) => {
+    return {
+      ...state,
+      searchKeyword: payload
     }
   },
   [FETCH_CONTENT_MODEL_COMPLETE]: (state, { payload }) => {

@@ -115,7 +115,7 @@ export default function SearchBar(props: SearchBarProps) {
       }
       <InputBase
         onChange={e => onChange(e.target.value)}
-        onKeyPress={(e) => onKeyPress(e.key)}
+        onKeyPress={(e) => onKeyPress && onKeyPress(e.key)}
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
         placeholder={placeholder || formatMessage(messages.placeholder)}

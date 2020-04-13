@@ -40,18 +40,15 @@ import SimulatorPanel from './Tools/SimulatorPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
-import { fetchPreviewToolsConfig, selectTool } from '../../state/actions/preview';
+import { fetchPreviewToolsConfig, selectTool, setSearchPanelKeyword } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import {
-  useActiveSiteId,
-  usePreviewState,
-  useSelection
-} from '../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import ContentTree from './Tools/ContentTree';
 import SearchBar from '../../components/SearchBar';
+import SearchPanel from './Tools/SearchPanel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -147,6 +144,10 @@ const translations = defineMessages({
   loading: {
     id: 'words.loading',
     defaultMessage: 'Loading'
+  },
+  searchEverywhere: {
+    id: 'craftercms.ice.search.searchEveryWhere',
+    defaultMessage: 'Search'
   }
 });
 
@@ -184,7 +185,8 @@ function ToolSelector() {
 
   const onKeyPress = (key: string) => {
     if(key === 'Enter') {
-      window.location.href = `//${window.location.host.replace('3000', '8080')}/studio/search#/?keywords=${keyword}`
+      select('craftercms.ice.search');
+      dispatch(setSearchPanelKeyword(keyword))
     }
   };
 
@@ -195,11 +197,13 @@ function ToolSelector() {
       <ListItem className={classes.itemSearch}>
         <SearchBar
           onChange={(keyword) => setKeyword(keyword)}
+          placeholder={formatMessage(translations.searchEverywhere)}
           keyword={keyword}
           showActionButton={Boolean(keyword)}
           showDecoratorIcon
           onKeyPress={onKeyPress}
         />
+        <ChevronRightIcon/>
       </ListItem>
       {
         tools
@@ -239,7 +243,8 @@ const componentMap: any = {
   'craftercms.ice.editForm': EditFormPanel,
   'craftercms.ice.browseComponents': BrowseComponentsPanel,
   'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,
-  'craftercms.ice.contentTree': ContentTree
+  'craftercms.ice.contentTree': ContentTree,
+  'craftercms.ice.search': SearchPanel
 };
 
 export default function ToolsPanel() {

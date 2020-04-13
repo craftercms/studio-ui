@@ -97,6 +97,7 @@ export interface GlobalState {
     previousTool: Tools;
     tools: Array<any>;
     hostSize: WidthAndHeight;
+    searchKeyword: string;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
     audiencesPanel: {
