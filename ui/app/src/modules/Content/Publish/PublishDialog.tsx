@@ -481,7 +481,7 @@ function PublishDialog(props: PublishDialogProps) {
 
   useEffect(() => {
     setCheckedItems(checkState(items));
-  },[items, setCheckedItems, checkState])
+  }, [items, setCheckedItems])
 
   const handleClose = () => {
     // call externalClose fn
