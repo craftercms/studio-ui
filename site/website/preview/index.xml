@@ -17,7 +17,7 @@
   -->
 
 <page>
-  <internal-name>Preview (Legacy)</internal-name>
+  <internal-name>Preview</internal-name>
   <content-type>/page/browse</content-type>
   <display-template>/templates/web/legacy/preview.ftl</display-template>
   <merge-strategy>inherit-levels</merge-strategy>
