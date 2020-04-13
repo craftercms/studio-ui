@@ -123,7 +123,7 @@ YAHOO.extend(
       cbEl.value = datasource.id;
       cbEl.id = datasource.id;
 
-        if (this.fieldValue.indexOf(datasource.id) > -1) {
+      if (this.fieldValue.indexOf(datasource.id) > -1) {
         cbEl.checked = true;
       }
 
