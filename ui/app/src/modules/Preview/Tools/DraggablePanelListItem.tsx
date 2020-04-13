@@ -72,7 +72,7 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
         className={classes.component}
         draggable
         onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
+        onDragEnd={(onDragEnd)}
         onMouseEnter={() => setOver(true)}
         onMouseLeave={() => setOver(false)}
       >

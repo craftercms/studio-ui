@@ -52,13 +52,13 @@ export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 }
 
-export function useContentTypeList(): Array<ContentType> {
+export function useContentTypeList(filter = (contentType => contentType)): Array<ContentType> {
   const state = useSelector<GlobalState, GlobalState['contentTypes']>((state) => state.contentTypes);
   return useMemo(() => {
     if (!state.byId) {
       return null;
     } else {
-      return Object.values(state.byId).filter((contentType) => contentType.type === 'component');
+      return Object.values(state.byId).filter(filter);
     }
   }, [state]);
 }
