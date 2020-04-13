@@ -35,6 +35,7 @@ import { nou } from './object';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
+import { makeStyles, jssPreset } from '@material-ui/core/styles';
 
 const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
@@ -71,6 +72,7 @@ interface CodebaseBridge {
     translateElements: Function;
   };
   services: object;
+  mui: object;
 }
 
 export function updateIntl(nextIntl: IntlShape) {
@@ -95,6 +97,8 @@ export function createCodebaseBridge() {
     },
 
     components: {
+      ErrorState: lazy(() => import('../components/ErrorState')),
+      CrafterCMSNextBridge,
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
@@ -117,6 +121,11 @@ export function createCodebaseBridge() {
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
       ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog'))
+    },
+
+    mui: {
+      makeStyles,
+      jssPreset
     },
 
     assets: {
