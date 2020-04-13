@@ -37,10 +37,11 @@ YAHOO.extend(
       var datasources = this.form.datasources;
 
       if (datasources.length) {
-        this.fieldValue = !value ? [] :
-          typeof value == 'string' ? value.split(',') : value;
-            this.fieldValue = (!value) ? [] :
-                (typeof value == "string") ? value.split(",").filter(name => datasources.some(ds=> ds.id === name)) : value;
+        this.fieldValue = (!value) 
+          ? [] 
+          : typeof value == 'string' 
+            ? value.split(',').filter(name => datasources.some(ds => ds.id === name)) 
+            : value;
 
         valuesEl = document.createElement('div');
 
