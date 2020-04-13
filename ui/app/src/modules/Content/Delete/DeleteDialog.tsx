@@ -254,7 +254,7 @@ function DeleteDialog(props: DeleteDialogProps) {
 
   const depsSource = useMemo(() => {
     return { deleteDependencies, apiState }
-  }, [deleteDependencies, apiState.error]);
+  }, [deleteDependencies, apiState]);
 
   const resource = useStateResource<any, any>(
     depsSource,
@@ -279,7 +279,7 @@ function DeleteDialog(props: DeleteDialogProps) {
         setApiState({ error });
       }
     );
-  },[selectedItems]);
+  }, [selectedItems, setApiState, siteId]);
 
   const handleClose = () => {
     // call externalClose fn
