@@ -1088,21 +1088,26 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                      * create simple name item
                      */
                     createNavItem: function(item, isBulk, isAdmin, isRelevant, disableItem) {
-                        var parentEl = this.containerEl;
-                        var content = CStudioAuthoring.SelectedContent.getSelectedContent();
-                        var showItem = (!item.isInFlight && ((isAdmin && item.allowAdmin) || (!isAdmin && item.allowAuthor)));
+                      var parentEl = this.containerEl;
+                      var content = CStudioAuthoring.SelectedContent.getSelectedContent();
+                      var showItem = (!item.isInFlight && ((isAdmin && item.allowAdmin) || (!isAdmin && item.allowAuthor)));
 
-                        if(content[0] && content[0].mimeType){
-                            showItem = (content[0].mimeType.match(/\bimage\b/)) && ("Edit" === item.renderId) ? false : showItem;
-                        }
+                      const mimeType = content[0].mimeType;
+                      if (content[0] && mimeType) {
+                        const nonEditable = mimeType.match(/\bimage\b/)
+                          || mimeType.match(/\bpdf\b/)
+                          || mimeType.match(/\bvideo\b/);
 
-                        if(showItem) {
-                            /* Do not attach items if links are not relevant */
-                            if(!isRelevant || (isBulk && !item.allowBulk))
-                                return;
+                        showItem = nonEditable && ('Edit' === item.renderId) ? false : showItem;
+                      }
 
-                            var linkContainerEl = document.createElement("li"),
-                                linkEl = document.createElement("a");
+                      if (showItem) {
+                        /* Do not attach items if links are not relevant */
+                        if (!isRelevant || (isBulk && !item.allowBulk))
+                          return;
+
+                        var linkContainerEl = document.createElement('li'),
+                          linkEl = document.createElement('a');
 
                             YDom.addClass(linkContainerEl, "acn-link");
 
