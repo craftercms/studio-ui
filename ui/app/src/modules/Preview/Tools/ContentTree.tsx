@@ -37,7 +37,7 @@ import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
 import RepeatGroup from '../../../components/Icons/RepeatGroup';
 import { iconWithStrokeAndFill } from '../../../styles/icon';
-import { createLookupTable, reversePluckProps } from '../../../utils/object';
+import {createLookupTable, createNodesLookup, reversePluckProps} from '../../../utils/object';
 import { CONTENT_TREE_FIELD_SELECTED } from '../../../state/actions/preview';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
 import ComponentMenu from '../../../components/ComponentMenu';
@@ -132,6 +132,7 @@ interface Data {
   selected: string;
   previous: Array<string>;
   lookupTable: LookupTable<RenderTree>;
+  nodeLookup: any;
 }
 
 function getNodeSelectorChildren(
@@ -257,7 +258,8 @@ function getChildren(
 }
 
 interface TreeItemCustomInterface {
-  nodes: Resource<Data>;
+  resource: Resource<Data>;
+  nodeId?: string;
 
   handleScroll?(node: RenderTree): void;
 
@@ -269,12 +271,11 @@ interface TreeItemCustomInterface {
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
-  const { nodes: resource, handleScroll, handlePrevious, handleClick, handleOptions } = props;
+  const { resource, nodeId, handleScroll, handlePrevious, handleClick, handleOptions } = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
-  const dataResource = resource.read?.();
-  const nodes: any = !dataResource ? resource : dataResource.lookupTable[dataResource.selected];
+  const nodes = resource.read().nodeLookup[nodeId];
   const isMounted = useRef(null);
 
   let Icon;
@@ -347,11 +348,11 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
         iconContainer: nodes.id === 'root' ? classes.displayNone : classes.treeItemIconContainer
       }}
     >
-      {Array.isArray(nodes.children)
-        ? nodes.children.map((node) => (
-          <TreeItemCustom key={node.id} nodes={node} {...reversePluckProps(props, 'nodes')} />
+      {
+        nodes.children.map((node) => (
+          <TreeItemCustom key={node.id} nodeId={node.id} {...props} />
         ))
-        : null}
+      }
     </TreeItem>
   );
 }
@@ -373,7 +374,8 @@ export default function ContentTree() {
   const [data, setData] = React.useState<Data>({
     previous: [],
     selected: null,
-    lookupTable: null
+    lookupTable: null,
+    nodeLookup: null
   });
 
   useEffect(() => {
@@ -381,7 +383,7 @@ export default function ContentTree() {
       let parent = guest.models[guest.modelId];
       let contentType = contentTypesBranch.byId[parent.craftercms.contentType];
       let data: RenderTree = {
-        id: 'root',
+        id: parent.craftercms.id,
         name: parent.craftercms.label,
         children: getChildren(parent, contentType, guest.models, contentTypesBranch.byId),
         type: contentType.type,
@@ -390,36 +392,38 @@ export default function ContentTree() {
       setData({
         previous: [],
         selected: parent.craftercms.id,
-        lookupTable: createLookupTable<RenderTree>([data], 'modelId')
+        lookupTable: createLookupTable<RenderTree>([data], 'modelId'),
+        nodeLookup: createNodesLookup([data], 'modelId')
       });
     }
   }, [contentTypesBranch, data.selected, guest]);
 
   const handleClick = (node: RenderTree) => {
-    if (node.type === 'component' && node.id !== 'root') {
-      let model = guest.models[node.modelId];
-      let contentType = contentTypesBranch.byId[model.craftercms.contentType];
-      const { type, modelId, name, index, fieldId, parentId, embeddedParentPath } = node;
-      setData({
-        previous: [...data.previous, data.selected],
-        selected: model.craftercms.id,
-        lookupTable: {
-          ...data.lookupTable,
-          [model.craftercms.id]: {
-            id: 'root',
-            name,
-            children: getChildren(model, contentType, guest.models, contentTypesBranch.byId),
-            type,
-            modelId,
-            index,
-            fieldId,
-            parentId,
-            embeddedParentPath
-          }
-        }
-      });
-      setExpanded(['root']);
-    }
+    // if (node.type === 'component' && node.id !== 'root') {
+    //   let model = guest.models[node.modelId];
+    //   let contentType = contentTypesBranch.byId[model.craftercms.contentType];
+    //   const { type, modelId, name, index, fieldId, parentId, embeddedParentPath } = node;
+    //   setData({
+    //     previous: [...data.previous, data.selected],
+    //     selected: model.craftercms.id,
+    //     lookupTable: {
+    //       ...data.lookupTable,
+    //       [model.craftercms.id]: {
+    //         id: 'root',
+    //         name,
+    //         children: getChildren(model, contentType, guest.models, contentTypesBranch.byId),
+    //         type,
+    //         modelId,
+    //         index,
+    //         fieldId,
+    //         parentId,
+    //         embeddedParentPath
+    //       }
+    //     },
+    //     nodeLookup: null
+    //   });
+    //   setExpanded(['root']);
+    // }
     return;
   };
 
@@ -489,7 +493,8 @@ export default function ContentTree() {
       >
         <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
           <TreeItemCustom
-            nodes={resource}
+            nodeId={data.selected}
+            resource={resource}
             handleScroll={handleScroll}
             handlePrevious={handlePrevious}
             handleClick={handleClick}

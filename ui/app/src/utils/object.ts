@@ -61,6 +61,17 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
   return table;
 }
 
+export function createNodesLookup(list: any[], idProp: string = 'id'): LookupTable {
+  const table = {};
+  list.forEach((item) => {
+    table[retrieveProperty(item as any, idProp)] = item;
+    item.children?.forEach(children => {
+      table[retrieveProperty(children as any, 'id')] = children;
+    })
+  });
+  return table;
+}
+
 export function retrieveProperty(object: object, prop: string): any {
   return object == null ? null : prop.split('.').reduce((value, prop) => value[prop], object);
 }
