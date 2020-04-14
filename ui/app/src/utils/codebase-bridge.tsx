@@ -28,12 +28,16 @@ import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
+import { nou } from './object';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
+import { jssPreset, makeStyles } from '@material-ui/core/styles';
+
+const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
 /**
  *
@@ -66,8 +70,9 @@ interface CodebaseBridge {
     intl: IntlShape;
     messages: object;
     translateElements: Function;
-  }
+  };
   services: object;
+  mui: object;
 }
 
 export function updateIntl(nextIntl: IntlShape) {
@@ -79,9 +84,7 @@ export function updateIntl(nextIntl: IntlShape) {
 }
 
 export function createCodebaseBridge() {
-
   const Bridge: CodebaseBridge = {
-
     // React
     React,
     ReactDOM,
@@ -90,25 +93,39 @@ export function createCodebaseBridge() {
       Subject,
       fromEvent,
       forkJoin,
-      operators: { filter, map, take }
+      operators: { filter, map, take, debounceTime }
     },
 
     components: {
+      ErrorState,
+      CrafterCMSNextBridge,
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
-      DependencySelection: lazy(() => import('../components/DependencySelection')),
-      DependencySelectionDelete: lazy(() => (
-        import('../components/DependencySelection')
-          .then(module => ({
-            default: module.DependencySelectionDelete
-          }))
-      )),
-      CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
-      PublishingQueue: lazy(() => import('../components/PublishingQueue')),
+      DependencySelection: lazy(() =>
+        import('../modules/Content/Dependencies/DependencySelection')
+      ),
+      DependencySelectionDelete: lazy(() =>
+        import('../modules/Content/Dependencies/DependencySelection').then((module) => ({
+          default: module.DependencySelectionDelete
+        }))
+      ),
+      CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
+      PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
+      Search: lazy(() => import('../pages/Search')),
+      Preview: lazy(() => import('../pages/Preview')),
+      PublishDialog: lazy(() => import('../modules/Content/Publish/PublishDialog')),
+      ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
-      Login: lazy(() => import('../pages/Login'))
+      Login: lazy(() => import('../pages/Login')),
+      BulkUpload: lazy(() => import('../components/BulkUpload')),
+      ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog'))
+    },
+
+    mui: {
+      makeStyles,
+      jssPreset
     },
 
     assets: {
@@ -141,68 +158,76 @@ export function createCodebaseBridge() {
 
     // Mechanics
     render(
-      container: (string | Element),
+      container: string | Element,
       component: string | JSXElementConstructor<any>,
-      props: object = {}): Promise<any> {
-
-      if (
-        typeof component !== 'string' &&
-        !Object.values(Bridge.components).includes(component)
-      ) {
-        throw new Error('The supplied module is not a know component of CrafterCMSNext.');
+      props: object = {}
+    ): Promise<any> {
+      if (typeof component !== 'string' && !Object.values(Bridge.components).includes(component)) {
+        console.warn('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        throw new Error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
+        console.warn(
+          `The supplied component name ('${component}') is not a know component of CrafterCMSNext.`
+        );
       }
 
-      if (typeof container === 'string') {
-        container = document.querySelector(container);
+      const element = typeof container === 'string' ? document.querySelector(container) : container;
+
+      let Component: JSXElementConstructor<any> =
+        typeof component === 'string' ? Bridge.components[component] : component;
+
+      if (nou(Component)) {
+        Component = function () {
+          return (
+            <ErrorState
+              graphicUrl="/studio/static-assets/images/warning_state.svg"
+              error={{
+                code: '',
+                message: `The supplied component name ('${component}') is not a know component of CrafterCMSNext`,
+                remedialAction: `Please re-check supplied name ('${component}'), make sure you've build the app and created the component.`
+              }}
+            />
+          );
+        };
       }
 
-      const element = container as Element;
-
-      const Component: JSXElementConstructor<any> = (typeof component === 'string')
-        ? Bridge.components[component]
-        : component;
-
-      return (
-        new Promise((resolve, reject) => {
-          try {
-            const unmount = (options: any) => {
-              ReactDOM.unmountComponentAtNode(element);
-              options.removeContainer && element.parentNode.removeChild(element);
-            };
+      return new Promise((resolve, reject) => {
+        try {
+          const unmount = (options) => {
+            ReactDOM.unmountComponentAtNode(element);
+            options.removeContainer && element.parentNode.removeChild(element);
+          };
+          // @ts-ignore
+          ReactDOM.render(
             // @ts-ignore
-            ReactDOM
-              .render(
-                // @ts-ignore
-                <CrafterCMSNextBridge>
-                  <Component {...props} />
-                </CrafterCMSNextBridge>,
-                container,
-                () => resolve({
-                  unmount: (options: any) => {
-                    options = Object.assign({
+            <CrafterCMSNextBridge isLegacy>
+              <Component {...props} />
+            </CrafterCMSNextBridge>,
+            element,
+            () =>
+              resolve({
+                unmount: (options) => {
+                  options = Object.assign(
+                    {
                       delay: false,
                       removeContainer: false
-                    }, options || {});
-                    if (options.delay) {
-                      setTimeout(() => unmount(options), options.delay);
-                    } else {
-                      unmount(options);
-                    }
+                    },
+                    options || {}
+                  );
+                  if (options.delay) {
+                    setTimeout(() => unmount(options), options.delay);
+                  } else {
+                    unmount(options);
                   }
-                })
-              );
-          } catch (e) {
-            reject(e);
-          }
-        })
-      );
+                }
+              })
+          );
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
-
   };
 
   // @ts-ignore
   window.CrafterCMSNext = Bridge;
-
 }

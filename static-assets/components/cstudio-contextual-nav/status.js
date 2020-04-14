@@ -18,39 +18,41 @@
  * Status
  */
 CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.StatusNavMod || {
-
   initialized: false,
 
   /**
    * initialize module
    */
-  initialize: function (config) {
+  initialize: function(config) {
     this.definePlugin();
     CStudioAuthoring.ContextualNav.StatusNav.init();
   },
 
-  definePlugin: function () {
-    var
-      YDom = YAHOO.util.Dom,
+  definePlugin: function() {
+    var YDom = YAHOO.util.Dom,
       YEvent = YAHOO.util.Event;
     /**
      * WCM preview tools Contextual Nav Widget
      */
     CStudioAuthoring.register({
       'ContextualNav.StatusNav': {
-        init: function () {
+        init: function() {
           var me = this;
           this.render();
 
-          window.onmessage = function (e) {
+          window.onmessage = function(e) {
             if (e.data == 'status-changed') {
               me.refreshStatus();
             }
           };
         },
 
-        refreshStatus: function () {
-          var el, iconColor, iconClass, dialogEl, dialogText,
+        refreshStatus: function() {
+          var el,
+            iconColor,
+            iconClass,
+            dialogEl,
+            dialogText,
             me = this,
             CMgs = CStudioAuthoring.Messages,
             contextNavLangBundle = CMgs.getBundle('contextnav', CStudioAuthoringContext.lang);
@@ -58,7 +60,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
           el = YDom.get('acn-status');
 
           CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
-            success: function (response) {
+            success: function(response) {
               dialogEl = YDom.getElementsByClassName('dialog-elt')[0];
               dialogText = YDom.getElementsByClassName('dialog-elt-text')[0];
 
@@ -87,15 +89,20 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 dialogText.innerHTML = me.getStatusMessage(contextNavLangBundle, response.status);
               }
             },
-            failure: function (response) {
+            failure: function(response) {
               el = YDom.get('acn-status');
               YDom.setStyle(el.children[0], 'color', '#777');
             }
           });
         },
 
-        render: function () {
-          var el, iconColor, iconClass, dialogEl, dialog, dialogText,
+        render: function() {
+          var el,
+            iconColor,
+            iconClass,
+            dialogEl,
+            dialog,
+            dialogText,
             me = this,
             CMgs = CStudioAuthoring.Messages,
             contextNavLangBundle = CMgs.getBundle('contextnav', CStudioAuthoringContext.lang);
@@ -106,7 +113,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
             var delay = extDelay ? extDelay : 60000;
 
             CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
-              success: function (response) {
+              success: function(response) {
                 dialogEl = YDom.getElementsByClassName('dialog-elt')[0];
                 dialogText = YDom.getElementsByClassName('dialog-elt-text')[0];
 
@@ -137,54 +144,59 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 
                 if (extDelay) {
                   if (me.dialogOpen) {
-                    setTimeout(function () {
+                    setTimeout(function() {
                       statusLoop(delay);
                     }, delay);
                   }
                 } else {
-                  setTimeout(function () {
+                  setTimeout(function() {
                     statusLoop();
                   }, delay);
                 }
               },
-              failure: function (response) {
+              failure: function(response) {
                 el = YDom.get('acn-status');
                 YDom.setStyle(el.children[0], 'color', '#777');
 
                 if (extDelay) {
                   if (me.dialogOpen) {
-                    setTimeout(function () {
+                    setTimeout(function() {
                       statusLoop(delay);
                     }, delay);
                   }
                 } else {
-                  setTimeout(function () {
+                  setTimeout(function() {
                     statusLoop();
                   }, delay);
                 }
               }
             });
-
           }
 
           statusLoop();
 
-          el.onclick = function () {
+          el.onclick = function() {
             var dialogOpenDelay = 3000;
 
             CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
-              success: function (response) {
+              success: function(response) {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'status-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
                   CMgs.format(contextNavLangBundle, 'publishStatus'),
-                  '<span class=\'dialog-elt-text\'>' + me.getStatusMessage(contextNavLangBundle, response.status) + '</span>',
-                  [{
-                    text: CMgs.format(contextNavLangBundle, 'close'), handler: function () {
-                      me.dialogOpen = false;
-                      this.hide();
-                    }, isDefault: false
-                  }], // use default button
+                  "<span class='dialog-elt-text'>" +
+                    me.getStatusMessage(contextNavLangBundle, response.status) +
+                    '</span>',
+                  [
+                    {
+                      text: CMgs.format(contextNavLangBundle, 'close'),
+                      handler: function() {
+                        me.dialogOpen = false;
+                        this.hide();
+                      },
+                      isDefault: false
+                    }
+                  ], // use default button
                   'dialog-elt fa fa-circle-o-notch fa-spin fa-spin-fix ' + iconClass,
                   'studioDialog'
                 );
@@ -215,31 +227,30 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 
                 me.dialogOpen = true;
                 statusLoop(dialogOpenDelay);
-
               },
-              failure: function (response) {
-
+              failure: function(response) {
                 let message;
                 try {
                   message = JSON.parse(response.responseText).message;
                 } catch (e) {
-                  message = CMgs.format(
-                    CMgs.getBundle('contextnav', CStudioAuthoringContext.lang),
-                    'networkError'
-                  );
+                  message = CMgs.format(CMgs.getBundle('contextnav', CStudioAuthoringContext.lang), 'networkError');
                 }
 
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'error-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
                   CMgs.format(contextNavLangBundle, 'publishStatus'),
-                  '<span class=\'dialog-elt-text\'>' + message + '</span>',
-                  [{
-                    text: CMgs.format(contextNavLangBundle, 'close'), handler: function () {
-                      me.dialogOpen = false;
-                      this.hide();
-                    }, isDefault: false
-                  }], // use default button
+                  "<span class='dialog-elt-text'>" + message + '</span>',
+                  [
+                    {
+                      text: CMgs.format(contextNavLangBundle, 'close'),
+                      handler: function() {
+                        me.dialogOpen = false;
+                        this.hide();
+                      },
+                      isDefault: false
+                    }
+                  ], // use default button
                   YAHOO.widget.SimpleDialog.ICON_BLOCK,
                   'studioDialog'
                 );
@@ -251,12 +262,11 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 statusLoop(dialogOpenDelay);
               }
             });
-          }
-
+          };
         },
 
-        getStatusMessage: function (contextNavLangBundle, status) {
-          return CMgs.format( contextNavLangBundle,status.toLowerCase() );
+        getStatusMessage: function(contextNavLangBundle, status) {
+          return CMgs.format(contextNavLangBundle, status.toLowerCase());
         }
       }
     });

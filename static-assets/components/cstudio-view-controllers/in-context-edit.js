@@ -20,29 +20,27 @@
  * @author: Russ Danner
  * @date: 4.27.2011
  **/
-(function () {
-
-  var
-    InContextEdit,
+(function() {
+  var InContextEdit,
     Dom = YAHOO.util.Dom;
 
-  CStudioAuthoring.register("ViewController.InContextEdit", function() {
+  CStudioAuthoring.register('ViewController.InContextEdit', function() {
     CStudioAuthoring.ViewController.InContextEdit.superclass.constructor.apply(this, arguments);
   });
 
   InContextEdit = CStudioAuthoring.ViewController.InContextEdit;
   YAHOO.extend(InContextEdit, CStudioAuthoring.ViewController.Base, {
-    events: ["updateContent"],
-    actions: [".update-content", ".cancel"],
+    events: ['updateContent'],
+    actions: ['.update-content', '.cancel'],
 
     initialise: function(usrCfg) {
-      Dom.setStyle(this.cfg.getProperty("context"), "overflow", "visible");
+      Dom.setStyle(this.cfg.getProperty('context'), 'overflow', 'visible');
     },
 
     close: function() {
       var editorId = this.editorId;
-      var iframeEl = window.top.document.getElementById("in-context-edit-editor-"+editorId);
-      iframeEl.parentNode.parentNode.style.display = "none";
+      var iframeEl = getTopLegacyWindow().document.getElementById('in-context-edit-editor-' + editorId);
+      iframeEl.parentNode.parentNode.style.display = 'none';
     },
 
     /**
@@ -52,10 +50,10 @@
      * on error, display the issue and then close the dialog
      */
     initializeContent: function(item, field, site, isEdit, callback, $modal, aux, editorId, isFlattenedInclude) {
-      var iframeEl = window.top.document.getElementById('in-context-edit-editor-' + editorId);
+      var iframeEl = getTopLegacyWindow().document.getElementById('in-context-edit-editor-' + editorId);
       var dialogEl = document.getElementById('viewcontroller-in-context-edit-' + editorId + '_0_c');
       var dialogBodyEl = document.getElementById('viewcontroller-in-context-edit-' + editorId + '_0');
-      aux = (aux) ? aux : {};
+      aux = aux ? aux : {};
 
       CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, item.contentType, {
         context: this,
@@ -79,15 +77,14 @@
           this.context.editorId = editorId;
           CStudioAuthoring.InContextEdit.registerDialog(editorId, this.context);
 
-          this.iframeEl.onload = function () {
-
-            var
-              body = this.contentDocument.body,
-              html = $(body).parents('html').get(0),
+          this.iframeEl.onload = function() {
+            var body = this.contentDocument.body,
+              html = $(body)
+                .parents('html')
+                .get(0),
               max;
 
             function resizeProcess() {
-
               max = Math.max(
                 body.scrollHeight,
                 html.offsetHeight,
@@ -96,25 +93,22 @@
                 html.offsetHeight
               );
 
-              if (max > $(window.top).height()) {
-                max = $(window.top).height() - 100;
+              if (max > $(getTopLegacyWindow()).height()) {
+                max = $(getTopLegacyWindow()).height() - 100;
               }
 
               if (max > 350) {
                 clearInterval(interval);
                 $modal.height(max);
               }
-
             }
 
             var interval = setInterval(resizeProcess, 250);
 
-            setTimeout(function () {
+            setTimeout(function() {
               clearInterval(interval);
             }, 2500);
-
           };
-
         }
       });
     },
@@ -146,46 +140,49 @@
       editorId,
       isFlattenedInclude
     ) {
-      var windowUrl = "";
+      var windowUrl = '';
       var formId = contentType.form;
       var readOnly = false;
 
-      for(var j=0; j<auxParams.length; j++) {
-        if(auxParams[j].name=="changeTemplate") {
+      for (var j = 0; j < auxParams.length; j++) {
+        if (auxParams[j].name == 'changeTemplate') {
           formId = auxParams[j].value;
         }
 
-        if(auxParams[j].name == "readonly") {
+        if (auxParams[j].name == 'readonly') {
           readOnly = true;
         }
       }
 
       // double / can cause issues in some stores
-      item.uri = item.uri.replace("//", "/");
+      item.uri = item.uri.replace('//', '/');
 
-      windowUrl = (
+      windowUrl =
         CStudioAuthoringContext.authoringAppBaseUri +
-        '/form?site=' + site +
-        '&form=' + formId +
-        '&path=' + item.uri +
-        '&isInclude=' + isFlattenedInclude
-      );
+        '/form?site=' +
+        site +
+        '&form=' +
+        formId +
+        '&path=' +
+        item.uri +
+        '&isInclude=' +
+        isFlattenedInclude;
 
-      if(field) {
-        windowUrl += "&iceId=" + field;
+      if (field) {
+        windowUrl += '&iceId=' + field;
       } else {
-        windowUrl += "&iceComponent=true";
+        windowUrl += '&iceComponent=true';
       }
 
-      if(isEdit == true || isEdit == "true"){
-        windowUrl += "&edit="+isEdit;
+      if (isEdit == true || isEdit == 'true') {
+        windowUrl += '&edit=' + isEdit;
       }
 
-      if(readOnly == true) {
-        windowUrl += "&readonly=true";
+      if (readOnly == true) {
+        windowUrl += '&readonly=true';
       }
 
-      windowUrl += "&editorId="+editorId;
+      windowUrl += '&editorId=' + editorId;
 
       return windowUrl;
     },
@@ -195,19 +192,18 @@
      */
     constructUrlWebFormLegacyFormServer: function(item, field, site) {
       var CMgs = CStudioAuthoring.Messages;
-      var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+      var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
       CStudioAuthoring.Operations.showSimpleDialog(
-        "legacyError-dialog",
+        'legacyError-dialog',
         CStudioAuthoring.Operations.simpleDialogTypeINFO,
-        CMgs.format(langBundle, "notification"),
-        CMgs.format(langBundle, "legacyError"),
+        CMgs.format(langBundle, 'notification'),
+        CMgs.format(langBundle, 'legacyError'),
         null,
         YAHOO.widget.SimpleDialog.ICON_BLOCK,
-        "studioDialog"
+        'studioDialog'
       );
     }
   });
 
-  CStudioAuthoring.Env.ModuleMap.map("viewcontroller-in-context-edit", InContextEdit);
-
+  CStudioAuthoring.Env.ModuleMap.map('viewcontroller-in-context-edit', InContextEdit);
 })();

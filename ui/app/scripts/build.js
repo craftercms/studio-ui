@@ -29,16 +29,22 @@ const
   indexContents = fs.readFileSync(`${PATH_BUILD}/index.html`).toString(),
   position = indexContents.indexOf(PLACEHOLDER),
 
-  templateScripts = indexContents
-    .substr(position + PLACEHOLDER.length)
-    .replace(/\<\/(body|html)>/gi, '')
-    .replace(/<\/script>/gi, '<\/script>\n')
+  templateScripts = (
+    indexContents
+      .substr(position + PLACEHOLDER.length)
+      .replace(/\<\/(body|html)>/gi, '')
+      .replace(/<\/script>/gi, '<\/script>\n')
+  ),
+  jsNextScriptsFileContent = (
+    '<#include "/templates/web/common/js-global-context.ftl" />\n' +
+    templateScripts
+  );
 ;
 
 console.log(`Updating script imports`);
 fs.writeFileSync(
   `${TEMPLATES}/web/common/js-next-scripts.ftl`,
-  `${templateScripts}`);
+  `${jsNextScriptsFileContent}`);
 
 console.log(`Deleting previous build (rm -rf ${DEST}/*)`);
 rimraf.sync(`${DEST}/*`);

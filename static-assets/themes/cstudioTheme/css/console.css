@@ -24,6 +24,28 @@ body, tbody {
   height: 100%;
 }
 
+.content-type-selector {
+
+}
+
+.content-type-selector--search-input {
+  width: 100%;
+  border: none;
+  display: block;
+  padding: 2px 5px;
+  border-bottom: 1px solid #f3f3f3;
+}
+
+.content-type-selector--label {
+  margin: 5px 0;
+  display: block;
+  font-weight: normal;
+}
+
+input[type="checkbox"].content-type-selector--checkbox {
+  margin: 0 5px;
+}
+
 .work-area-empty {
   height: 100vh;
   display: flex;
@@ -192,6 +214,14 @@ body, tbody {
 .content-type-tools-panel-icon {
   padding-right: 5px;
   cursor: pointer;
+}
+
+.content-types--controls--search-input {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  border: 1px solid #C5D6E2;
+  border-style: none none solid;
 }
 
 #widgets-container, #datasources-container {
@@ -541,6 +571,7 @@ body, tbody {
   display: block;
   text-align: left;
   margin-bottom: 1px;
+  font-weight: normal;
 }
 
 .checkboxes div > label > input {

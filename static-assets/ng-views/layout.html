@@ -33,40 +33,8 @@
                 </a>
             </div>
 
-            <div ng-if="authenticated" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li ui-sref-active="active">
-                        <a id="homeSites" class="nav-link" ng-click='loadHomeState()'
-                           ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
-                            <span class="nav-icon fa fa-bars" tooltip-placement="bottom"
-                                  uib-tooltip="{{ 'common.MAIN_MENU' | translate }}"
-                                  aria-label="{{ 'common.MAIN_MENU' | translate }}"></span>
-                        </a>
-                    </li>
-                    <li id="help-dropdown" class="dropdown" uib-dropdown is-open="isHelpDropdownOpen">
-                        <a class="nav-link dropdown-toggle" uib-dropdown-toggle >
-                            <span class="nav-icon fa fa-life-ring pointer" tooltip-placement="bottom"
-                                  uib-tooltip="{{ 'common.HELP' | translate }}" tooltip-is-open="helpTooltipIsOpen"
-                                  ng-click="helpTooltipIsOpen = !helpTooltipIsOpen" tooltip-enable="!isHelpDropdownOpen"
-                                  aria-label= "{{ 'common.HELP' | translate }}"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a class="documentation" href="{{helpUrl}}" target="_blank">{{ 'common.DOCUMENTATION' | translate }}</a></li>
-                            <li><a class="about" ui-sref-active="active" ui-sref="home.about-us" >{{ 'common.ABOUT' | translate }}</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown" uib-dropdown>
-                        <a id="account-dropdown" class="dropdown-toggle pointer" uib-dropdown-toggle>{{user.username}} <span class="caret"></span></a>
-                        <ul id="account-dropdown-container" class="dropdown-menu" role="menu">
-                            <li class="user-display">
-                                <div class="first-name" ng-if="user.firstName">{{user.firstName}} {{user.lastName}}</div>
-                                <div class="email">{{user.email}}</div>
-                            </li>
-                            <li><a class="settings" ui-sref-active="active" ui-sref="home.settings">{{ 'common.SETTINGS' | translate }}</a></li>
-                            <li><a ng-show="showLogoutLink" class="sign-out" ng-click="logout()">{{ 'common.SIGN_OUT' | translate }}</a></li>
-                        </ul>
-                    </li>
-                </ul>
+            <div ng-show="authenticated" class="collapse navbar-collapse">
+              <div id="toolbarGlobalNav"></div>
             </div>
         </div>
     </nav>

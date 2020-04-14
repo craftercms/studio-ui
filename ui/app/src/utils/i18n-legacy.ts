@@ -38,7 +38,7 @@ export function translateElements(
         Array.isArray(message) ? message.join('') : message
       );
     }
-  })
+  });
 }
 
 const approveDialogMessages = defineMessages({
@@ -207,28 +207,28 @@ const reposAdminMessages = defineMessages({
   unstagedFiles: {
     id: 'reposAdmin.unstagedFilesMessage',
     defaultMessage: 'There are unstaged files in your repository.'
-  },
+  }
 });
 
 const sharedContentDSMessages = defineMessages({
   sharedContent: {
     id: 'sharedContentDS.sharedContent',
     defaultMessage: 'Shared Content'
-  },
+  }
 });
 
 const embeddedContentDSMessages = defineMessages({
   embeddedContent: {
     id: 'embeddedContentDS.embeddedContent',
     defaultMessage: 'Embedded Content'
-  },
+  }
 });
 
 const childContentDSMessages = defineMessages({
   childContent: {
     id: 'childContentDS.childContent',
     defaultMessage: 'Child Content (Deprecated)'
-  },
+  }
 });
 
 const contentTypesMessages = defineMessages({
@@ -447,7 +447,7 @@ const siteComponentDSMessages = defineMessages({
   }
 });
 
-const codeEditorMessages = defineMessages( {
+const codeEditorMessages = defineMessages({
   confirm: {
     id: 'codeEditor.confirm',
     defaultMessage: 'Confirm Close'
@@ -458,7 +458,7 @@ const codeEditorMessages = defineMessages( {
   }
 });
 
-const globalConfigMessages = defineMessages( {
+const globalConfigMessages = defineMessages({
   title: {
     id: 'globalConfig.title',
     defaultMessage: 'Global Config'
@@ -547,11 +547,22 @@ const browseCMISMessages = defineMessages({
   }
 });
 
+const browseSearchMessages = defineMessages({
+  lookUpParentError: {
+    id: 'browseSearchMessages.lookUpChildError',
+    defaultMessage: 'Unable to lookup child form callback for search: {searchId}'
+  },
+  lookUpChildError: {
+    id: 'browseSearchMessages.lookUpParentError',
+    defaultMessage: 'Unable to lookup parent context for search: {searchId}'
+  }
+});
+
 const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
     defaultMessage: 'Draft Save Completed'
-  },
+  }
 });
 
 const dragAndDropMessages = defineMessages({
@@ -572,7 +583,7 @@ const dragAndDropMessages = defineMessages({
     defaultMessage: 'Moving components out of an embedded drop zone component is not supported yet. Please use the forms to edit content.'
   },
   embeddedComponentsDeleteChildNotSupported: {
-    id:'dragAndDropMessages.embeddedComponentsDeleteChildNotSupported',
+    id: 'dragAndDropMessages.embeddedComponentsDeleteChildNotSupported',
     defaultMessage: 'Deleting components from an embedded drop zone component is not supported yet. Please use the forms to edit content.'
   },
   contentTypeNotFound: {
@@ -584,7 +595,7 @@ const dragAndDropMessages = defineMessages({
     defaultMessage: 'Path is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   },
   objectIdNotFound: {
-    id:'dragAndDropMessages.objectIdNotFound',
+    id: 'dragAndDropMessages.objectIdNotFound',
     defaultMessage: 'Object id is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   }
 });
@@ -634,7 +645,7 @@ const checkboxGroupControlMessages = defineMessages({
 const transcodedVideoPickerControlMessages = defineMessages({
   label: {
     id: 'transcodedVideoPickerControl.label',
-    defaultMessage: 'Transcoded Video Picker'
+    defaultMessage: 'Transcoded Video'
   }
 });
 
@@ -723,14 +734,42 @@ const adminConfigurationMessages = defineMessages({
     defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t}' +
       'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
   },
-  encryptHint: {
-    id: 'adminConfigurations.encryptHint',
-    defaultMessage: 'By adding the `encrypted=””` attribute to a tag on the config document you mark it for encryption.' +
-      ' By pressing the “Encrypt Marked” button, the system will encrypt the inner text of each of the marked tags. ' +
-      'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text). ' +
-      'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypted a chunk of XML. ' +
-      'The encrypted text result will be in the form of `${enc:..}`. This wrapping is a hint to the system that this is ' +
-      'an encrypted value. Please do not manipulate encryption results manually.'
+  encryptHintPt1: {
+    id: 'adminConfigurations.encryptHinPt1',
+    defaultMessage: 'To encrypt the content of a tag, (1) mark the desired tags for encryption, then (2) click on the "Encrypt Marked" button.'
+  },
+  encryptHintPt2: {
+    id: 'adminConfigurations.encryptHinPt2',
+    defaultMessage: '(1) Mark your tags for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
+  },
+  encryptHintPt3: {
+    id: 'adminConfigurations.encryptHinPt3',
+    defaultMessage: 'Example: {lt}accessKey encrypted=""{gt}AKIAIOSFODNN7EXAMPLE{lt}/accessKey{gt}'
+  },
+  encryptHintPt4: {
+    id: 'adminConfigurations.encryptHinPt4',
+    defaultMessage: '(2) Click on the <bold>`Encrypt Marked`</bold> button. Once the process completes, your tag should now look like:'
+  },
+  encryptHintPt5: {
+    id: 'adminConfigurations.encryptHinPt5',
+    // eslint-disable-next-line no-template-curly-in-string
+    defaultMessage: '{lt}accessKey encrypted="true"{gt}${lc}enc:xeJW23SomeEncryptedValuesListedHere{rc}{lt}/accessKey{gt}'
+  },
+  encryptHintPt6: {
+    id: 'adminConfigurations.encryptHinPt6',
+    defaultMessage: 'Remember:'
+  },
+  encryptHintPt7: {
+    id: 'adminConfigurations.encryptHinPt7',
+    defaultMessage: 'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).'
+  },
+  encryptHintPt8: {
+    id: 'adminConfigurations.encryptHinPt8',
+    defaultMessage: 'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML.'
+  },
+  encryptHintPt9: {
+    id: 'adminConfigurations.encryptHinPt9',
+    defaultMessage: 'Do not manipulate encryption results manually.'
   }
 });
 
@@ -797,6 +836,79 @@ const dashboardWidgetsMessages = defineMessages({
   }
 });
 
+const bulkUploadConfirmDialogMessages = defineMessages({
+  title: {
+    id: 'bulkUploadConfirmDialogMessages.title',
+    defaultMessage: 'Upload in progress'
+  },
+  description: {
+    id: 'bulkUploadConfirmDialogMessages.description',
+    defaultMessage: 'There is still a bulk upload in progress. Only one bulk upload can be executed at the same time.'
+  }
+});
+
+const embeddedLegacyFormMessages = defineMessages({
+  contentFormFailedToLoadErrorMessage: {
+    id: 'embeddedLegacyFormMessages.openContentFormFailedError',
+    defaultMessage: 'An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.'
+  }
+});
+
+const receptaclesMessages = defineMessages({
+  receptacles: {
+    id: 'receptaclesMessages.receptacles',
+    defaultMessage: 'Receptacles'
+  },
+  createNewEmbedded: {
+    id: 'receptaclesMessages.createNewEmbedded',
+    defaultMessage: 'Create new embedded'
+  },
+  createNewShared: {
+    id: 'receptaclesMessages.createNewShared',
+    defaultMessage: 'Create new shared'
+  },
+  allowShared: {
+    id: 'receptaclesMessages.allowShared',
+    defaultMessage: 'Allow Shared'
+  },
+  allowEmbedded: {
+    id: 'receptaclesMessages.allowEmbedded',
+    defaultMessage: 'Allow Embedded'
+  },
+  enableBrowse: {
+    id: 'receptaclesMessages.enableBrowse',
+    defaultMessage: 'Enable Browse'
+  },
+  enableSearch: {
+    id: 'receptaclesMessages.enableSearch',
+    defaultMessage: 'Enable Search'
+  },
+  baseRepositoryPath: {
+    id: 'receptaclesMessages.baseRepositoryPath',
+    defaultMessage: 'Base Repository Path'
+  },
+  baseBrowsePath: {
+    id: 'receptaclesMessages.baseBrowsePath',
+    defaultMessage: 'Base Browse Path'
+  },
+  contentTypes: {
+    id: 'receptaclesMessages.contentTypes',
+    defaultMessage: 'Content Types'
+  },
+  tags: {
+    id: 'receptaclesMessages.tags',
+    defaultMessage: 'Tags'
+  },
+  browseExisting: {
+    id: 'receptaclesMessages.browseExisting',
+    defaultMessage: 'Browse existing'
+  },
+  searchExisting: {
+    id: 'receptaclesMessages.searchExisting',
+    defaultMessage: 'Search existing components'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -818,6 +930,7 @@ export default {
   siteComponentDSMessages,
   formEngineMessages,
   browseCMISMessages,
+  browseSearchMessages,
   dragAndDropMessages,
   internalNameControlMessages,
   checkboxGroupControlMessages,
@@ -828,5 +941,8 @@ export default {
   fileNameControlMessages,
   rteControlMessages,
   ossAttribution,
-  dashboardWidgetsMessages
+  dashboardWidgetsMessages,
+  bulkUploadConfirmDialogMessages,
+  embeddedLegacyFormMessages,
+  receptaclesMessages
 };

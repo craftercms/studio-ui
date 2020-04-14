@@ -14,15 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function ($, window, amplify, CStudioAuthoring) {
+(function($, window, amplify, CStudioAuthoring) {
   'use strict';
 
   if (!window.location.origin) {
-    window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+    window.location.origin =
+      window.location.protocol +
+      '//' +
+      window.location.hostname +
+      (window.location.port ? ':' + window.location.port : '');
   }
 
-  var
-    cstopic = crafter.studio.preview.cstopic,
+  var cstopic = crafter.studio.preview.cstopic,
     Topics = crafter.studio.preview.Topics,
     previewAppBaseUri = CStudioAuthoringContext.previewAppBaseUri || '',
     origin = previewAppBaseUri,
@@ -30,19 +33,19 @@
     previewWidth,
     hasCheckIn = false;
 
-  communicator.subscribe(Topics.RESET_ICE_TOOLS_CONTENT, function (message) {
+  communicator.subscribe(Topics.RESET_ICE_TOOLS_CONTENT, function(message) {
     sessionStorage.setItem('ice-tools-content', message);
     try {
       // For ICE tools panel syncing.
       window.initRegCookie();
-    } catch(e) {}
+    } catch (e) {}
   });
 
-  communicator.subscribe(Topics.SET_SESSION_STORAGE_ITEM, function (message) {
+  communicator.subscribe(Topics.SET_SESSION_STORAGE_ITEM, function(message) {
     sessionStorage.setItem(message.key, message.value);
   });
 
-  communicator.subscribe(Topics.REQUEST_SESSION_STORAGE_ITEM, function (key) {
+  communicator.subscribe(Topics.REQUEST_SESSION_STORAGE_ITEM, function(key) {
     if (typeof key === 'string') {
       communicator.publish(Topics.REQUEST_SESSION_STORAGE_ITEM_REPLY, {
         key: key,
@@ -58,53 +61,51 @@
     }
   });
 
-  communicator.subscribe(Topics.GUEST_CHECKIN, function (url) {
+  communicator.subscribe(Topics.GUEST_CHECKIN, function(url) {
     var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite');
     var params = { page: url, site };
     setHash(params);
     amplify.publish(cstopic('GUEST_CHECKIN'), params);
   });
 
-  communicator.subscribe(Topics.GUEST_CHECKOUT, function () {
-    // console.log('Guest checked out');
-  });
-
   // Opens studio form on pencil click
-  communicator.subscribe(Topics.ICE_ZONE_ON, function (message, scope) {
-    var subscribeCallback = function (_message) {
+  communicator.subscribe(Topics.ICE_ZONE_ON, function(message, scope) {
+    var subscribeCallback = function(_message) {
       switch (_message.type) {
         case 'FORM_ENGINE_RENDER_COMPLETE': {
           amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
           CStudioAuthoring.InContextEdit.messageDialogs({
             type: 'OPEN_CHILD_COMPONENT',
             key: message.embeddedItemId,
-            iceId: message.iceId? message.iceId: null,
+            iceId: message.iceId ? message.iceId : null,
             edit: true
           });
           break;
         }
       }
-    }
+    };
 
-    if(message.embeddedItemId) {
+    if (message.embeddedItemId) {
       amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
     }
     var isWrite = false;
     var par = [];
-    var currentPath = (message.itemId) ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
-    var cachePermissionsKey = CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_permissions',
+    var currentPath = message.itemId ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
+    var cachePermissionsKey =
+        CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_permissions',
       isPermissionCached = cache.get(cachePermissionsKey),
-      cacheContentKey = CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_content',
+      cacheContentKey =
+        CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_content',
       isContentCached = cache.get(cacheContentKey);
-    var isLockOwner = function (lockOwner) {
+    var isLockOwner = function(lockOwner) {
       if (lockOwner != '' && lockOwner != null && CStudioAuthoringContext.user != lockOwner) {
         par = [];
         isWrite = false;
         par.push({ name: 'readonly' });
       }
-    }
+    };
     var editCb = {
-      success: function (contentTO, editorId, name, value, draft) {
+      success: function(contentTO, editorId, name, value, draft) {
         if (CStudioAuthoringContext.isPreview) {
           try {
             CStudioAuthoring.Operations.refreshPreview();
@@ -120,11 +121,10 @@
           document.dispatchEvent(eventNS);
         }
       },
-      failure: function () {
-      }
+      failure: function() {}
     };
     var editPermsCallback = {
-      success: function (response) {
+      success: function(response) {
         if (!isPermissionCached) {
           cache.set(cachePermissionsKey, response.permissions, CStudioAuthoring.Constants.CACHE_TIME_PERMISSION);
         }
@@ -140,25 +140,26 @@
             message.iceId, //field
             isWrite,
             editCb,
-            par);
-
+            par
+          );
         } else {
           var getContentItemsCb = {
-            success: function (contentTO) {
+            success: function(contentTO) {
               if (!isContentCached) {
                 cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
               }
               isLockOwner(contentTO.item.lockOwner);
               CStudioAuthoring.Operations.performSimpleIceEdit(
                 contentTO.item,
-                message.embeddedItemId? null : this.iceId, //field
+                message.embeddedItemId ? null : this.iceId, //field
                 isWrite,
                 this.editCb,
                 par,
                 null,
-                message.embeddedItemId? true: false);
+                message.embeddedItemId ? true : false
+              );
             },
-            failure: function () {
+            failure: function() {
               callback.failure();
             },
             iceId: message.iceId,
@@ -174,36 +175,32 @@
               CStudioAuthoringContext.site,
               message.itemId,
               getContentItemsCb,
-              false, false);
+              false,
+              false
+            );
           }
-
         }
-      }, failure: function () {
-      }
-    }
+      },
+      failure: function() {}
+    };
 
     if (isPermissionCached) {
       var response = {};
       response.permissions = isPermissionCached;
       editPermsCallback.success(response);
     } else {
-      CStudioAuthoring.Service.getUserPermissions(
-        CStudioAuthoringContext.site,
-        currentPath,
-        editPermsCallback);
+      CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, currentPath, editPermsCallback);
     }
-
   });
 
   // Listen to the guest site load
-  communicator.subscribe(Topics.GUEST_SITE_LOAD, function (message, scope) {
-
+  communicator.subscribe(Topics.GUEST_SITE_LOAD, function(message, scope) {
     hasCheckIn = true;
 
     if (message.url) {
       var params = {
-            page: message.url,
-            site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
+        page: message.url,
+        site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
       };
 
       var studioPath = CrafterCMSNext.util.path.getPathFromPreviewURL(message.url);
@@ -220,22 +217,20 @@
       origin: origin,
       window: getEngineWindow().contentWindow
     });
-
   });
 
-  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function(message, scope){
+  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function(message, scope) {
     if (message.url) {
       var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
-          studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
+        studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
       selectStudioContent(site, studioPath);
     }
   });
 
-  communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function () {
+  communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function() {
     expandContractChannel();
     CStudioAuthoring.PreviewTools.panel.element.style.visibility = 'visible';
-    $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function () {
-
+    $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function() {
       if (!previewWidth || previewWidth == 0 || previewWidth == '0px') {
         previewWidth = 265;
       }
@@ -244,7 +239,7 @@
     });
   });
 
-  amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_OFF'), function (config) {
+  amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_OFF'), function(config) {
     sessionStorage.setItem('pto-on', '');
     /*var PreviewToolsOffEvent = new YAHOO.util.CustomEvent("cstudio-preview-tools-off", CStudioAuthoring);
     PreviewToolsOffEvent.fire();*/
@@ -254,7 +249,7 @@
     communicator.publish(Topics.DND_COMPONENTS_PANEL_OFF, {});
   });
 
-  amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_ON'), function (config) {
+  amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_ON'), function(config) {
     sessionStorage.setItem('pto-on', 'on');
     var el = YDom.get('acn-preview-tools-container');
     YDom.removeClass(el.children[0], 'icon-default');
@@ -264,9 +259,10 @@
     });
   });
 
-  communicator.subscribe(Topics.COMPONENT_DROPPED, function (message) {
+  communicator.subscribe(Topics.COMPONENT_DROPPED, function(message) {
     message.model = initialContentModel;
-    amplify.publish(cstopic('COMPONENT_DROPPED'),
+    amplify.publish(
+      cstopic('COMPONENT_DROPPED'),
       message.type,
       message.path,
       message.isNew,
@@ -275,40 +271,45 @@
       message.compPath,
       message.conComp,
       message.model,
-      message.datasource,
+      message.datasource
     );
   });
 
-  communicator.subscribe(Topics.START_DIALOG, function (message) {
+  communicator.subscribe(Topics.START_DIALOG, function(message) {
     var newdiv = document.createElement('div');
     var text;
-    var link = "";
+    var link = '';
 
-    if(message.messageKey) {
-      text = CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dragAndDropMessages[message.messageKey])
-    }else {
+    if (message.messageKey) {
+      text = CrafterCMSNext.i18n.intl.formatMessage(
+        CrafterCMSNext.i18n.messages.dragAndDropMessages[message.messageKey]
+      );
+    } else {
       text = message.message;
     }
-    if(message.link) {
+    if (message.link) {
       link = message.link;
     }
 
     newdiv.setAttribute('id', 'cstudio-wcm-popup-div');
     newdiv.className = 'yui-pe-content';
-    newdiv.innerHTML = (
+    newdiv.innerHTML =
       '<div class="contentTypePopupInner" id="warning">' +
-      /**/'<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-      /****/'<div class="contentTypePopupHeader">Notification</div> ' +
-      /****/'<div class="contentTypeOuter">' +
-      /****/'<div>' + text +'</div> ' +
-      /****/'<div>' + link +'</div> ' +
-      /****/'<div></div>' +
-      /**/'</div>' +
-      /**/'<div class="contentTypePopupBtn"> ' +
-      /****/'<input type="button" class="btn btn-primary cstudio-xform-button ok" id="cancelButton" value="OK" />' +
-      /**/'</div>' +
-      '</div>'
-    );
+      /**/ '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
+      /****/ '<div class="contentTypePopupHeader">Notification</div> ' +
+      /****/ '<div class="contentTypeOuter">' +
+      /****/ '<div>' +
+      text +
+      '</div> ' +
+      /****/ '<div>' +
+      link +
+      '</div> ' +
+      /****/ '<div></div>' +
+      /**/ '</div>' +
+      /**/ '<div class="contentTypePopupBtn"> ' +
+      /****/ '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="cancelButton" value="OK" />' +
+      /**/ '</div>' +
+      '</div>';
 
     document.body.appendChild(newdiv);
 
@@ -322,83 +323,82 @@
       constraintoviewport: true,
       underlay: 'none',
       autofillheight: null,
-      buttons: [{
-        text: 'Cancel', handler: function () {
-          $(this).destroy();
-        }, isDefault: true
-      }]
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: function() {
+            $(this).destroy();
+          },
+          isDefault: true
+        }
+      ]
     });
 
     dialog.render();
     dialog.show();
     dialog.cfg.setProperty('zIndex', 1040); // Update the z-index value to make it go over the site content nav
 
-    YAHOO.util.Event.addListener('cancelButton', 'click', function () {
+    YAHOO.util.Event.addListener('cancelButton', 'click', function() {
       dialog.destroy();
       var masks = YAHOO.util.Dom.getElementsByClassName('mask');
       for (var i = 0; i < masks.length; i++) {
-        YAHOO.util.Dom.getElementsByClassName('mask')[0].parentElement.removeChild(YAHOO.util.Dom.getElementsByClassName('mask')[0]);
+        YAHOO.util.Dom.getElementsByClassName('mask')[0].parentElement.removeChild(
+          YAHOO.util.Dom.getElementsByClassName('mask')[0]
+        );
       }
     });
 
     return dialog;
   });
 
-  communicator.subscribe(Topics.OPEN_BROWSE, function (message) {
-    CStudioAuthoring.Operations.openBrowse('', CStudioAuthoring.Operations.processPathsForMacros(message.path, initialContentModel), 1, 'select', true, {
-      success: function (searchId, selectedTOs) {
-
-        for (var i = 0; i < selectedTOs.length; i++) {
-          var item = selectedTOs[i];
-          communicator.publish(Topics.DND_CREATE_BROWSE_COMP, {
-            component: selectedTOs[i],
-            initialContentModel: initialContentModel
-          });
-        }
-      },
-      failure: function () {
+  communicator.subscribe(Topics.OPEN_BROWSE, function(message) {
+    CStudioAuthoring.Operations.openBrowse(
+      '',
+      CStudioAuthoring.Operations.processPathsForMacros(message.path, initialContentModel),
+      1,
+      'select',
+      true,
+      {
+        success: function(searchId, selectedTOs) {
+          for (var i = 0; i < selectedTOs.length; i++) {
+            var item = selectedTOs[i];
+            communicator.publish(Topics.DND_CREATE_BROWSE_COMP, {
+              component: selectedTOs[i],
+              initialContentModel: initialContentModel
+            });
+          }
+        },
+        failure: function() {}
       }
-    });
-  });
-
-  communicator.subscribe(Topics.SAVE_DRAG_AND_DROP, function (message) {
-    amplify.publish(cstopic('SAVE_DRAG_AND_DROP'),
-      message.isNew,
-      message.zones,
-      message.compPath,
-      message.conComp
     );
   });
 
-  communicator.subscribe(Topics.INIT_DRAG_AND_DROP, function (message) {
-    amplify.publish(cstopic('INIT_DRAG_AND_DROP'),
-      message.zones);
+  communicator.subscribe(Topics.SAVE_DRAG_AND_DROP, function(message) {
+    amplify.publish(cstopic('SAVE_DRAG_AND_DROP'), message.isNew, message.zones, message.compPath, message.conComp);
   });
 
-  communicator.subscribe(Topics.DND_ZONES_MODEL_REQUEST, function (message) {
-    amplify.publish(cstopic('DND_ZONES_MODEL_REQUEST'),
-      message.aNotFound
-    );
-
+  communicator.subscribe(Topics.INIT_DRAG_AND_DROP, function(message) {
+    amplify.publish(cstopic('INIT_DRAG_AND_DROP'), message.zones);
   });
 
-  communicator.subscribe(Topics.LOAD_MODEL_REQUEST, function (message) {
-    amplify.publish(cstopic('LOAD_MODEL_REQUEST'),
-      message.aNotFound
-    );
-
+  communicator.subscribe(Topics.DND_ZONES_MODEL_REQUEST, function(message) {
+    amplify.publish(cstopic('DND_ZONES_MODEL_REQUEST'), message.aNotFound);
   });
 
-  amplify.subscribe(cstopic('REFRESH_PREVIEW'), function () {
+  communicator.subscribe(Topics.LOAD_MODEL_REQUEST, function(message) {
+    amplify.publish(cstopic('LOAD_MODEL_REQUEST'), message.aNotFound);
+  });
+
+  amplify.subscribe(cstopic('REFRESH_PREVIEW'), function() {
     communicator.publish(Topics.REFRESH_PREVIEW);
   });
 
   var initialContentModel;
-  amplify.subscribe(cstopic('START_DRAG_AND_DROP'), function (config) {
+  amplify.subscribe(cstopic('START_DRAG_AND_DROP'), function(config) {
     expandContractChannel('expand');
     previewWidth = $('.studio-preview').css('right');
     $('.studio-preview').css('right', 0);
-    $(CStudioAuthoring.PreviewTools.panel.element).hide('fast', function () {
+    $(CStudioAuthoring.PreviewTools.panel.element).hide('fast', function() {
       var data, dataBrowse;
       if (config.components.category) {
         data = config.components.category;
@@ -410,17 +410,17 @@
         dataBrowse = config.components.browse;
       }
 
-      var categories = [], browse = [];
+      var categories = [],
+        browse = [];
 
       if (data) {
         if ($.isArray(data)) {
-          $.each(data, function (i, c) {
+          $.each(data, function(i, c) {
             if (c.component) {
               categories.push({ label: c.label, components: c.component });
             } else {
               categories.push({ label: c.label, components: c.components });
             }
-
           });
         } else {
           if (data.component) {
@@ -433,7 +433,7 @@
 
       if (dataBrowse) {
         if ($.isArray(dataBrowse)) {
-          $.each(dataBrowse, function (i, c) {
+          $.each(dataBrowse, function(i, c) {
             browse.push({ label: c.label, path: c.path });
           });
         } else {
@@ -455,55 +455,60 @@
     });
   });
 
-  amplify.subscribe(cstopic('DND_COMPONENT_MODEL_LOAD'), function (data) {
+  amplify.subscribe(cstopic('DND_COMPONENT_MODEL_LOAD'), function(data) {
     communicator.publish(Topics.DND_COMPONENT_MODEL_LOAD, data);
   });
 
-  amplify.subscribe(cstopic('DND_COMPONENTS_MODEL_LOAD'), function (data) {
+  amplify.subscribe(cstopic('DND_COMPONENTS_MODEL_LOAD'), function(data) {
     initialContentModel = data;
     communicator.publish(Topics.DND_COMPONENTS_MODEL_LOAD, data);
   });
 
-  amplify.subscribe(cstopic('ICE_TOOLS_OFF'), function () {
+  amplify.subscribe(cstopic('ICE_TOOLS_OFF'), function() {
     communicator.publish(Topics.ICE_TOOLS_OFF);
   });
 
-  communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function (message) {
-    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png')
+  communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function(message) {
+    $('#acn-ice-tools-container img').attr(
+      'src',
+      CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png'
+    );
   });
 
-  communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function (message) {
-    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png')
+  communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function(message) {
+    $('#acn-ice-tools-container img').attr(
+      'src',
+      CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png'
+    );
   });
 
-  amplify.subscribe(cstopic('ICE_TOOLS_ON'), function () {
+  amplify.subscribe(cstopic('ICE_TOOLS_ON'), function() {
     communicator.publish(Topics.ICE_TOOLS_ON);
   });
 
-  amplify.subscribe(cstopic('ICE_TOOLS_REGIONS'), function (data) {
+  amplify.subscribe(cstopic('ICE_TOOLS_REGIONS'), function(data) {
     communicator.publish(Topics.ICE_TOOLS_REGIONS, data);
   });
 
-  communicator.subscribe(Topics.IS_REVIEWER, function (resize) {
-
-    var callback = function (isRev) {
+  communicator.subscribe(Topics.IS_REVIEWER, function(resize) {
+    var callback = function(isRev) {
       if (!isRev) {
-        communicator.publish(
-          resize ? Topics.RESIZE_ICE_REGIONS : Topics.INIT_ICE_REGIONS,
-          {
-            iceOn: sessionStorage.getItem('ice-on'),
-            componentsOn: sessionStorage.getItem('components-on')
-          });
+        communicator.publish(resize ? Topics.RESIZE_ICE_REGIONS : Topics.INIT_ICE_REGIONS, {
+          iceOn: sessionStorage.getItem('ice-on'),
+          componentsOn: sessionStorage.getItem('components-on')
+        });
       }
-    }
+    };
 
     CStudioAuthoring.Utils.isReviewer(callback);
   });
 
-  communicator.subscribe(Topics.REQUEST_FORM_DEFINITION, function (message) {
-    CStudioForms.Util.loadFormDefinition(message.contentType, { success: function(response){
+  communicator.subscribe(Topics.REQUEST_FORM_DEFINITION, function(message) {
+    CStudioForms.Util.loadFormDefinition(message.contentType, {
+      success: function(response) {
         communicator.publish(Topics.REQUEST_FORM_DEFINITION_RESPONSE, response);
-    }});
+      }
+    });
   });
 
   function setHash(params) {
@@ -520,15 +525,14 @@
   }
 
   function goToHashPage() {
-
     var win = getEngineWindow();
     var hash = parseHash(window.location.hash);
     var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite');
     var siteChanged = false;
 
     if (hash.site) {
-      CStudioAuthoring.Utils.Cookies.createCookie('crafterSite', hash.site);
-      siteChanged = (site !== hash.site);
+      CrafterCMSNext.util.auth.setSiteCookie('crafterSite', hash.site);
+      siteChanged = site !== hash.site;
     }
 
     if (siteChanged || !hasCheckIn) {
@@ -550,7 +554,7 @@
     if (path && path.indexOf('.') != -1) {
       if (path.indexOf('.html') != -1 || path.indexOf('.xml') != -1) {
         path = ('/site/website/' + hashPage).replace('//', '/');
-        path = path.replace('.html', '.xml')
+        path = path.replace('.html', '.xml');
       }
     } else {
       if (hash.page && hash.page.indexOf('?') != -1) {
@@ -569,17 +573,15 @@
     path = path.replace('//', '/');
 
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
-      success: function (content) {
+      success: function(content) {
         CStudioAuthoring.SelectedContent.setContent(content.item);
         selectContentSet(content.item, false);
       }
     });
-
   }
 
   // TODO better URL support. Find existing lib, use angular or use backbone router?
   function parseHash(hash) {
-
     var str = hash.replace('#/', ''),
       params = {},
       param;
@@ -590,7 +592,7 @@
       var strPageParam = strPage[1].split('&');
       str = strPage[0] + '?';
       for (var i = 0; i < strPageParam.length; i++) {
-        if ((strPageParam[i].indexOf('site') != -1) && (i == strPageParam.length - 1)) {
+        if (strPageParam[i].indexOf('site') != -1 && i == strPageParam.length - 1) {
           str = str + '&' + strPageParam[i];
         } else {
           str = str + strPageParam[i];
@@ -610,7 +612,6 @@
     }
 
     return params;
-
   }
 
   function splitOnce(input, splitBy) {
@@ -621,10 +622,10 @@
     return retVal;
   }
 
-  function selectStudioContent(site, url){
+  function selectStudioContent(site, url) {
     CStudioAuthoring.Service.lookupContentItem(site, url, {
-      success: function (content) {
-        if(content.item.isPage) {
+      success: function(content) {
+        if (content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, true);
         }
@@ -644,39 +645,40 @@
     }, 0);
   }
 
-  window.addEventListener('hashchange', function (e) {
-    e.preventDefault();
-    goToHashPage();
-  }, false);
-
-  window.addEventListener('load', function () {
-
-    if (window.location.hash.indexOf('page') === -1) {
-      setHash({
-        page: '/',
-        site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
-      });
-    } else {
+  window.addEventListener(
+    'hashchange',
+    function(e) {
+      e.preventDefault();
       goToHashPage();
-    }
+    },
+    false
+  );
 
-  }, false);
+  window.addEventListener(
+    'load',
+    function() {
+      if (window.location.hash.indexOf('page') === -1) {
+        setHash({
+          page: '/',
+          site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
+        });
+      } else {
+        goToHashPage();
+      }
+    },
+    false
+  );
 
   function expandContractChannel(opt) {
-    var
-      $studioChannelPortrait = $('.studio-device-preview-portrait')[0],
+    var $studioChannelPortrait = $('.studio-device-preview-portrait')[0],
       $studioChannelLandscape = $('.studio-device-preview-landscape')[0];
     if ($studioChannelPortrait || $studioChannelLandscape) {
-      var
-        inputChannelWidth = $('[data-axis="x"]', parent.document),
+      var inputChannelWidth = $('[data-axis="x"]', parent.document),
         width = inputChannelWidth.val() || 'auto',
         $engine = $('#engineWindow', parent.document);
 
       width = opt === 'expand' ? parseInt(width) + 265 : parseInt(width);
-      $engine.width(
-        (width === 'auto' || width === '')
-          ? '' : parseInt(width));
+      $engine.width(width === 'auto' || width === '' ? '' : parseInt(width));
     }
   }
-
 })(jQuery, window, amplify, CStudioAuthoring);
