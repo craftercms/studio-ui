@@ -61,9 +61,10 @@ export default function CheckboxGroup(props: Control) {
                 disabled={disabled}
               />
             }
-            label={possibleValue.label}/>
+            label={possibleValue.label}
+          />
         ))
       }
     </FormControl>
-  )
+  );
 }

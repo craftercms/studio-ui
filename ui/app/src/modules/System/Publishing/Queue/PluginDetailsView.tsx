@@ -14,23 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
-import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Typography from "@material-ui/core/Typography";
+import React, { useState } from 'react';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import MobileStepper from "../../../../components/MobileStepper";
-import { defineMessages, useIntl } from "react-intl";
-import { Blueprint } from "../../../../models/Blueprint";
-import Button from "@material-ui/core/Button";
-import Fab from "@material-ui/core/Fab";
+import MobileStepper from '../../../../components/MobileStepper';
+import { defineMessages, useIntl } from 'react-intl';
+import { Blueprint } from '../../../../models/Blueprint';
+import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import Grid from "@material-ui/core/Grid";
+import Grid from '@material-ui/core/Grid';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { backgroundColor } from "../../../../styles/theme";
-import clsx from "clsx";
+import { backgroundColor } from '../../../../styles/theme';
+import clsx from 'clsx';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   '@keyframes fadeIn': fadeIn,
   fadeIn: {
     animationName: '$fadeIn',
-    animationDuration: '1s',
+    animationDuration: '1s'
   },
   detailsView: {
     height: '100%',
@@ -82,8 +82,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: '#FFFFFF',
     marginRight: '30px',
     '&:hover': {
-      backgroundColor: '#FFFFFF',
-    },
+      backgroundColor: '#FFFFFF'
+    }
   },
   section: {
     marginBottom: '5px'
@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& label': {
       display: 'block',
       marginBottom: 0,
-      fontWeight: 400,
+      fontWeight: 400
     },
     '& span': {
       color: '#2F2707'
@@ -128,7 +128,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   background: {
     background: backgroundColor,
-    height: '340px',
+    height: '340px'
   }
 }));
 
@@ -164,11 +164,13 @@ const messages = defineMessages({
 });
 
 interface PluginDetailsViewProps {
-  onCloseDetails(event: any): any,
-  onBlueprintSelected(blueprint: Blueprint, view: number): any,
   selectedIndex?: number,
   blueprint: Blueprint,
   interval: number
+
+  onCloseDetails(event: any): any,
+
+  onBlueprintSelected(blueprint: Blueprint, view: number): any,
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
@@ -176,13 +178,13 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const classes = useStyles({});
   const [play, setPlay] = useState(false);
-  const {blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex} = props;
+  const { blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex } = props;
   const [index, setIndex] = useState(selectedIndex || 0);
-  const {media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine} = blueprint;
+  const { media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine } = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
   const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
 
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
 
   function handleChangeIndex(value: number) {
     setIndex(value);
@@ -201,44 +203,49 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
     setPlay(false);
   }
 
-  function renderMedias(){
-    let videos:any = (media && media.videos)? {...media.videos, type: 'video'} : [];
-    videos = videos.length? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
-    let screenshots:any = (media && media.screenshots)? media.screenshots : [];
+  function renderMedias() {
+    let videos: any = (media && media.videos) ? { ...media.videos, type: 'video' } : [];
+    videos = videos.length ? videos.map((obj: any) => ({ ...obj, type: 'video' })) : [];
+    let screenshots: any = (media && media.screenshots) ? media.screenshots : [];
     const merged = [...videos, ...screenshots];
 
     return merged.map((item, index) => {
-      if(item.type !== 'video') {
+      if (item.type !== 'video') {
         return (
           <div key={index} className={classes.background}>
-            <img className={classes.carouselImg} src={item.url} alt={item.description}/>
+            <img className={classes.carouselImg} src={item.url} alt={item.description} />
           </div>
-        )
-      }else {
+        );
+      } else {
         return (
-          <video key={index} controls className={classes.video} autoPlay={play} onPlaying={handlePlay} onEnded={handleEnded}>
-            <source src={item.url} type="video/mp4"/>
+          <video
+            key={index} controls className={classes.video} autoPlay={play} onPlaying={handlePlay} onEnded={handleEnded}
+          >
+            <source src={item.url} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-        )
+        );
       }
-    })
+    });
   }
 
   let steps = 0;
-  (blueprint.media && blueprint.media.screenshots)? steps = blueprint.media.screenshots.length : steps = 0;
-  (blueprint.media && blueprint.media.videos)? steps += blueprint.media.videos.length : steps += 0;
+  (blueprint.media && blueprint.media.screenshots) ? steps = blueprint.media.screenshots.length : steps = 0;
+  (blueprint.media && blueprint.media.videos) ? steps += blueprint.media.videos.length : steps += 0;
 
   return (
     <div className={clsx(classes.detailsView, classes.fadeIn)}>
       <div className={classes.topBar}>
         <Fab aria-label="back" className={classes.circleBtn} onClick={onCloseDetails}>
-          <ArrowBackIcon/>
+          <ArrowBackIcon />
         </Fab>
         <Typography variant="h5" component="h1">
           {name}
         </Typography>
-        <Button variant="contained" color="primary" className={classes.useBtn} onClick={() => onBlueprintSelected(blueprint, 1)}>
+        <Button
+          variant="contained" color="primary" className={classes.useBtn}
+          onClick={() => onBlueprintSelected(blueprint, 1)}
+        >
           {formatMessage(messages.use)}
         </Button>
       </div>
@@ -248,13 +255,15 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
         interval={interval}
         onChangeIndex={handleChangeIndex}
         enableMouseEvents
-        slideStyle={{ height: '340px'}}
+        slideStyle={{ height: '340px' }}
       >
         {renderMedias()}
       </AutoPlaySwipeableViews>
       {steps > 1 &&
-      <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'}
-                     activeStep={index}/>}
+      <MobileStepper
+        variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'}
+        activeStep={index}
+      />}
       <div className={classes.detailsContainer}>
         <Grid container spacing={3}>
           <Grid item xs={8}>
@@ -293,19 +302,19 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
               {
                 (website && website.name) &&
                 <Typography variant="subtitle2" component="p">
-                    <a className={classes.link} href={website.url} target={'blank'}>{website.name} <OpenInNewIcon/></a>
+                  <a className={classes.link} href={website.url} target={'blank'}>{website.name} <OpenInNewIcon /></a>
                 </Typography>
               }
             </div>
             {
               searchEngine &&
               <div className={classes.section}>
-                  <Typography variant="subtitle2">
-                    {formatMessage(messages.searchEngine)}
-                  </Typography>
-                  <Typography variant="subtitle2" color={'textSecondary'}>
-                    {searchEngine}
-                  </Typography>
+                <Typography variant="subtitle2">
+                  {formatMessage(messages.searchEngine)}
+                </Typography>
+                <Typography variant="subtitle2" color={'textSecondary'}>
+                  {searchEngine}
+                </Typography>
               </div>
             }
             <div className={classes.sectionChips}>
@@ -326,5 +335,5 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
         </Grid>
       </div>
     </div>
-  )
+  );
 }

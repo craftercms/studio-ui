@@ -18,8 +18,8 @@ import { Epic, ofType } from 'redux-observable';
 import { map, switchMap } from 'rxjs/operators';
 import {
   fetchPreviewToolsConfig,
-  fetchPreviewToolsConfigFailed,
-  fetchPreviewToolsConfigComplete
+  fetchPreviewToolsConfigComplete,
+  fetchPreviewToolsConfigFailed
 } from '../actions/preview';
 import { getPreviewToolsConfig } from '../../services/configuration';
 import { catchAjaxError } from '../../utils/ajax';

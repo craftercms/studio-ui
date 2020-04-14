@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import VideoPlayer, { VideoPlayerProps } from './VideoPlayer';
 import '../styles/async-video-player.scss';
 
@@ -41,31 +41,31 @@ function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
       // async request to check for 404
       // if response is 200 setPlayable(true)
       fetch(playerOptions.src)
-        .then(function(response) {
-          if ( response.status === 200 ) {
+        .then(function (response) {
+          if (response.status === 200) {
             setPlayable(true);
           } else {
             setPlayable(false);
           }
-        }).catch(function(){
-          setPlayable(false);
-        });
+        }).catch(function () {
+        setPlayable(false);
+      });
     },
     [playerOptions.src]
   );
 
-  if ( playable ) {
+  if (playable) {
     return (
-      <section className="async-video-player"><VideoPlayer {...playerOptions}/></section>
+      <section className="async-video-player"><VideoPlayer {...playerOptions} /></section>
     );
   } else {
-    if ( playable === null ) {
+    if (playable === null) {
       return (
-        <div className="async-video-player--loading" style={ errMessageStyle }>Loading...</div>
+        <div className="async-video-player--loading" style={errMessageStyle}>Loading...</div>
       );
     } else {
       return (
-        <div className="async-video-player--unavailable-message" style={ errMessageStyle }>{ nonPlayableMessage }</div>
+        <div className="async-video-player--unavailable-message" style={errMessageStyle}>{nonPlayableMessage}</div>
       );
     }
   }

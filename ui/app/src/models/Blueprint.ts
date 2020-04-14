@@ -59,7 +59,7 @@ export interface Blueprint {
   crafterCmsVersions?: [Version];
   description: string;
   media: Media;
-  developer?:  any;
+  developer?: any;
   website?: any;
   searchEngine?: string;
   source?: string;

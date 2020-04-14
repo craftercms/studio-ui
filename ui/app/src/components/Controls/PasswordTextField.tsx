@@ -55,14 +55,14 @@ export default function PasswordTextField(props: PasswordTextFieldProps) {
                 aria-label={formatMessage(translations.toggleVisibilityButtonText)}
                 onClick={handleClickShowPassword}
               >
-                {showPassword ? <VisibilityOff/> : <Visibility/>}
+                {showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
             </InputAdornment>
           )
         } : props.InputProps
       }
     />
-  )
+  );
 }
 
 PasswordTextField.defaultProps = {

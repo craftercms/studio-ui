@@ -22,7 +22,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import React, { CSSProperties, PropsWithChildren, useEffect, useState, useRef } from 'react';
+import React, { CSSProperties, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import { login, validateSession } from '../../state/actions/auth';
@@ -50,7 +50,7 @@ const translations = defineMessages({
   postSSOLoginMismatch: {
     id: 'authMonitor.postSSOLoginMismatchMessage',
     defaultMessage:
-      "Looks like you've logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed."
+      'Looks like you\'ve logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed.'
   }
 });
 
