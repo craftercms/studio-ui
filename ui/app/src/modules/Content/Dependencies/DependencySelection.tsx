@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { LegacyItem } from '../../../models/Item';
+import { Item, LegacyItem } from '../../../models/Item';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
