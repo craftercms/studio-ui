@@ -68,14 +68,13 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 interface ErrorStateProps {
   graphicUrl?: string;
-
-  onBack?(event: any): any;
-
   classes?: {
     root?: string;
     graphic?: string;
   };
   error: APIError;
+
+  onBack?(event: any): any;
 }
 
 const messages = defineMessages({
@@ -101,7 +100,7 @@ export default function ErrorState(props: ErrorStateProps) {
 
   return (
     <div className={clsx(classes.errorView, propClasses.root)}>
-      <img className={clsx(classes.graphic, propClasses?.graphic)} src={graphicUrl} alt=""/>
+      <img className={clsx(classes.graphic, propClasses?.graphic)} src={graphicUrl} alt="" />
       {
         (nnou(code) || nnou(title)) &&
         <Typography variant="h5" component="h2" className={classes.title} color={'textSecondary'}>
@@ -124,16 +123,17 @@ export default function ErrorState(props: ErrorStateProps) {
           <a
             className={classes.link}
             href={documentationUrl}
-            target={'blank'}>
+            target={'blank'}
+          >
             {formatMessage(messages.moreInfo)}
-            <OpenInNewIcon/>
+            <OpenInNewIcon />
           </a>
         </Typography>
       }
       {
         onBack &&
         <Fab aria-label="back" className={classes.circleBtn} onClick={onBack}>
-          <ArrowBackIcon/>
+          <ArrowBackIcon />
         </Fab>
       }
     </div>

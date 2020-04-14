@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -96,7 +95,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
           url: response.logoutUrl ?? false,
           show: !!response.logoutUrl
         });
-      })
+      });
     } else {
       setLogoutInfo({ url: false, show: true });
     }
@@ -120,7 +119,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
         aria-label={formatMessage(messages.openDrawer)}
         onClick={onMenuClick}
       >
-        <AppsRounded/>
+        <AppsRounded />
       </IconButton>
       <Avatar onClick={onAvatarClick} className={classes.avatarClickable}>
         {user.firstName[0]}{user.lastName[0]}
@@ -152,7 +151,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
           <MenuItem onClick={onLogout}>{formatMessage(messages.signOut)}</MenuItem>
         }
       </Menu>
-      <GlobalNav anchor={anchor} onMenuClose={onMenuClose} rolesBySite={user.rolesBySite}/>
+      <GlobalNav anchor={anchor} onMenuClose={onMenuClose} rolesBySite={user.rolesBySite} />
     </>
-  )
+  );
 }

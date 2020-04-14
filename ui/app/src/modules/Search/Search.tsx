@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -234,6 +233,9 @@ interface CardMenuOption {
 interface SearchProps {
   history: History;
   location: Location;
+  mode: string;
+  siteId: string;
+  previewAppBaseUri: string;
 
   onEdit(path: string, refreshSearch: any, readonly: boolean): any;
 
@@ -244,10 +246,6 @@ interface SearchProps {
   onSelect(path: string, selected: boolean): any;
 
   onGetUserPermissions(path: string): any;
-
-  mode: string;
-  siteId: string;
-  previewAppBaseUri: string;
 }
 
 function Search(props: SearchProps) {
@@ -304,7 +302,7 @@ function Search(props: SearchProps) {
       history.push({
         pathname: '/',
         search: `?${qs}`
-      })
+      });
     });
     return () => subscription.unsubscribe();
   }, [history, onSearch$, refs]);
@@ -348,11 +346,11 @@ function Search(props: SearchProps) {
               />
             </Grid>
           )
-        )
+        );
       });
 
     } else {
-      return <EmptyState title={formatMessage(messages.noResults)} subtitle={formatMessage(messages.changeQuery)}/>
+      return <EmptyState title={formatMessage(messages.noResults)} subtitle={formatMessage(messages.changeQuery)} />;
     }
   }
 
@@ -363,9 +361,9 @@ function Search(props: SearchProps) {
 
   function handleChangeView() {
     if (currentView === 'grid') {
-      setCurrentView('list')
+      setCurrentView('list');
     } else {
-      setCurrentView('grid')
+      setCurrentView('grid');
     }
   }
 
@@ -375,7 +373,7 @@ function Search(props: SearchProps) {
       history.push({
         pathname: '/',
         search: `?${qs}`
-      })
+      });
     } else {
       return false;
     }
@@ -424,16 +422,16 @@ function Search(props: SearchProps) {
             id: id[1],
             min: (range[0] !== 'null') ? range[0] : null,
             max: (range[1] !== 'null') ? range[1] : null
-          }
+          };
         } else if (formatParameters.filters[key].includes('TO')) {
           let range = formatParameters.filters[key].split('TO');
           formatParameters.filters[key] = {
             min: (range[0] !== '-Infinity' && range[0] !== '') ? range[0] : null,
             max: (range[1] !== 'Infinity' && range[1] !== '') ? range[1] : null
-          }
+          };
         }
 
-      })
+      });
     }
     return { ...initialSearchParameters, ...formatParameters };
   }
@@ -444,7 +442,7 @@ function Search(props: SearchProps) {
     history.push({
       pathname: '/',
       search: `?${qs}`
-    })
+    });
   }
 
   function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -452,7 +450,7 @@ function Search(props: SearchProps) {
     history.push({
       pathname: '/',
       search: `?${qs}`
-    })
+    });
   }
 
   function refreshSearch() {
@@ -462,7 +460,7 @@ function Search(props: SearchProps) {
       },
       ({ response }) => {
         if (response) {
-          setApiState({ error: true, errorResponse: response })
+          setApiState({ error: true, errorResponse: response });
         }
       }
     );
@@ -494,7 +492,7 @@ function Search(props: SearchProps) {
 
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
-      setSelected([...selected, path])
+      setSelected([...selected, path]);
     } else {
       let selectedItems = [...selected];
       let index = selectedItems.indexOf(path);
@@ -542,7 +540,7 @@ function Search(props: SearchProps) {
   function renderPreview(preview: Preview) {
     switch (preview.type) {
       case 'Image':
-        return <img src={preview.url} alt=''/>;
+        return <img src={preview.url} alt='' />;
       case 'Video':
         return (
           <AsyncVideoPlayer
@@ -558,9 +556,9 @@ function Search(props: SearchProps) {
             height={600}
           />);
       case 'Template':
-        return <Editor mode={'ace/mode/html'} data={preview.data}/>;
+        return <Editor mode={'ace/mode/html'} data={preview.data} />;
       case 'Groovy':
-        return <Editor mode={'ace/mode/java'} data={preview.data}/>;
+        return <Editor mode={'ace/mode/java'} data={preview.data} />;
       default:
         break;
     }
@@ -581,7 +579,7 @@ function Search(props: SearchProps) {
               onClick: () => onEdit(item.path, refreshSearch, false),
               icon: EditIcon
             }
-          )
+          );
         }
         if (isDeleteAllowed && mode === 'default') {
           options.push(
@@ -590,7 +588,7 @@ function Search(props: SearchProps) {
               onClick: () => onDelete(item.path, refreshSearch),
               icon: DeleteIcon
             }
-          )
+          );
         }
         setOptionsPermissions(options.length ? options : formatMessage(messages.noPermissions));
       },
@@ -605,11 +603,12 @@ function Search(props: SearchProps) {
   }
 
   return (
-    <section className={
-      clsx(classes.wrapper, {
-        'hasContent': (searchResults && searchResults.total),
-        'select': mode === 'select'
-      })}
+    <section
+      className={
+        clsx(classes.wrapper, {
+          'hasContent': (searchResults && searchResults.total),
+          'select': mode === 'select'
+        })}
     >
       <header className={classes.searchHeader}>
         <div className={classes.search}>
@@ -635,8 +634,8 @@ function Search(props: SearchProps) {
             <Avatar className={classes.avatar}>
               {
                 currentView === 'grid'
-                  ? <ViewListIcon/>
-                  : <AppsIcon/>
+                  ? <ViewListIcon />
+                  : <AppsIcon />
               }
             </Avatar>
           </IconButton>
@@ -647,8 +646,10 @@ function Search(props: SearchProps) {
         <div className={classes.searchHelperBar}>
           <FormGroup>
             <FormControlLabel
-              control={<Checkbox color="primary" checked={areAllSelected()}
-                                 onClick={(e: any) => handleSelectAll(e.target.checked)}/>}
+              control={<Checkbox
+                color="primary" checked={areAllSelected()}
+                onClick={(e: any) => handleSelectAll(e.target.checked)}
+              />}
               label={formatMessage(messages.selectAll)}
             />
           </FormGroup>
@@ -659,7 +660,7 @@ function Search(props: SearchProps) {
                 count: selected.length,
                 total: searchResults.total
               })}
-              <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected}/>
+              <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected} />
             </Typography>
           }
           <TablePagination
@@ -684,13 +685,13 @@ function Search(props: SearchProps) {
       <section className={classes.content}>
         {
           apiState.error ?
-            <ErrorState error={apiState.errorResponse}/>
+            <ErrorState error={apiState.errorResponse} />
             :
             (
               <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
                 {
                   searchResults === null
-                    ? <Spinner background="inherit"/>
+                    ? <Spinner background="inherit" />
                     : renderMediaCards(searchResults.items, currentView)
                 }
               </Grid>
@@ -701,7 +702,7 @@ function Search(props: SearchProps) {
         <div className={classes.dialogTitle}>
           <Typography variant="h6">{preview.name}</Typography>
           <IconButton aria-label="close" className={classes.dialogCloseButton} onClick={handleClosePreview}>
-            <CloseIcon/>
+            <CloseIcon />
           </IconButton>
         </div>
         <div className={classes.mediaPreview}>
@@ -723,15 +724,15 @@ function Search(props: SearchProps) {
                   key={i}
                   onClick={() => {
                     handleMenuClose();
-                    option.onClick()
+                    option.onClick();
                   }}
                 >
                   {
-                    Icon && <Icon className={classes.optionIcon}/>
+                    Icon && <Icon className={classes.optionIcon} />
                   }
                   {option.name}
                 </MenuItem>
-              )
+              );
             })
           ) : (
             <MenuItem>{optionsPermissions}</MenuItem>
@@ -739,7 +740,7 @@ function Search(props: SearchProps) {
         }
       </Menu>
     </section>
-  )
+  );
 }
 
 export default Search;

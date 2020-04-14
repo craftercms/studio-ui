@@ -25,11 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
-import {
-  useActiveSiteId,
-  useSpreadState,
-  useSelection
-} from '../../utils/hooks';
+import { useActiveSiteId, useSelection, useSpreadState } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import { APIError } from '../../models/GlobalState';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';

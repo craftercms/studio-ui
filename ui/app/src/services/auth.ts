@@ -15,11 +15,16 @@
  */
 
 import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
-import { catchError, mapTo, pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { Credentials, User } from '../models/User';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
+import { Observable, OperatorFunction } from 'rxjs';
+import { Credentials, LegacyUser, User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 import { APIError } from '../models/GlobalState';
+
+const mapToUser: OperatorFunction<LegacyUser, User> = map<LegacyUser, User>((user) => ({
+  ...user,
+  authType: user.authenticationType
+}));
 
 export function getLogoutInfoURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
@@ -36,7 +41,10 @@ export function login(credentials: Credentials): Observable<User> {
     '/studio/api/1/services/api/1/security/login.json',
     credentials,
     CONTENT_TYPE_JSON
-  ).pipe(pluck('response'));
+  ).pipe(
+    pluck('response'),
+    mapToUser
+  );
 }
 
 export function validateSession(): Observable<boolean> {
@@ -47,7 +55,8 @@ export function validateSession(): Observable<boolean> {
 
 export function me(): Observable<User> {
   return get('/studio/api/2/users/me.json').pipe(
-    pluck('response', 'authenticatedUser')
+    pluck('response', 'authenticatedUser'),
+    mapToUser
   );
 }
 
@@ -68,4 +77,4 @@ export default {
   validateSession,
   sendPasswordRecovery,
   me
-}
+};
