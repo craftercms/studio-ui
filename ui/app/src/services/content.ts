@@ -16,8 +16,14 @@
 
 import { catchApi1Error, CONTENT_TYPE_JSON, get, getText, post, postJSON } from '../utils/ajax';
 import { map, pluck, switchMap } from 'rxjs/operators';
-import { forkJoin, Observable, of, zip, Observer } from 'rxjs';
-import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
+import { forkJoin, Observable, Observer, of, zip } from 'rxjs';
+import {
+  createElements,
+  fromString,
+  getInnerHtml,
+  serialize,
+  wrapElementInAuxDocument
+} from '../utils/xml';
 import {
   ContentType,
   ContentTypeField,
@@ -1153,7 +1159,6 @@ export default {
   cutItem,
   pasteItem,
   getPages,
-  getItem,
   getContentInstanceLookup,
   fetchContentTypes,
   fetchById,

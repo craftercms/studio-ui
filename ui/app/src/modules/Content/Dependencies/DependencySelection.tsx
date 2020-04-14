@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Item, LegacyItem } from '../../../models/Item';
+import { LegacyItem } from '../../../models/Item';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
@@ -25,7 +25,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-import { checkState, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
+import {
+  checkState,
+  onClickSetChecked,
+  selectAllDeps,
+  updateCheckedList
+} from '../Publish/PublishDialog';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import { palette } from '../../../styles/theme';
