@@ -21,6 +21,6 @@
   <css-group xsi:nil="true">
     <css>/static-assets/css/style.css</css>
   </css-group>
-  <content-type>/acme-com/component/level-descriptor</content-type>
+  <content-type>/craftercms/component/level-descriptor</content-type>
   <common-title>Crafter CMS</common-title>
 </levelDescriptor>

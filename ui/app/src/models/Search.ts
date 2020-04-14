@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LookupTable } from "./LookupTable";
-import ContentInstance from "./ContentInstance";
+import { LookupTable } from './LookupTable';
+import ContentInstance from './ContentInstance';
 
 export interface ElasticParams extends PaginationOptions {
   query?: string;
   keywords: string;
   sortBy?: string;
   sortOrder?: string;
-  filters:  any;
+  filters: any;
 }
 
 export interface Preview {

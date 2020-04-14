@@ -354,7 +354,6 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       {
         nodes.children?.map(_nodeId => <TreeItemCustom {...props} key={String(_nodeId)} nodeId={String(_nodeId)}/>)
       }
-
     </TreeItem>
   );
 }

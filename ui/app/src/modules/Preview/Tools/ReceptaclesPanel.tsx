@@ -46,7 +46,7 @@ const translations = defineMessages({
   selectContentType: {
     id: 'craftercms.ice.contentTypeReceptacles.selectContentType',
     defaultMessage: 'Select content type'
-  },
+  }
 });
 
 const useStyles = makeStyles((theme) => createStyles({
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => createStyles({
     '& > div': {
       width: '100%'
     }
-  },
+  }
 }));
 
 export default function ReceptaclesPanel() {
@@ -76,7 +76,7 @@ export default function ReceptaclesPanel() {
       hostToGuest$.next({
         type: CLEAR_HIGHLIGHTED_RECEPTACLES
       });
-    }
+    };
   });
 
   const onSelectedDropZone = (receptacle: ContentTypeReceptacle) => {
@@ -104,7 +104,7 @@ export default function ReceptaclesPanel() {
           <MenuItem value="" disabled>{formatMessage(translations.selectContentType)}</MenuItem>
           {
             contentTypes.map((contentType: ContentType, i: number) => {
-              return <MenuItem value={contentType.id} key={i}>{contentType.name}</MenuItem>
+              return <MenuItem value={contentType.id} key={i}>{contentType.name}</MenuItem>;
             })
           }
         </Select>
@@ -115,7 +115,7 @@ export default function ReceptaclesPanel() {
             <ListItem key={receptacle.id} button onClick={() => onSelectedDropZone(receptacle)}>
               <ListItemAvatar>
                 <Avatar>
-                  <MoveToInboxRounded/>
+                  <MoveToInboxRounded />
                 </Avatar>
               </ListItemAvatar>
               <ListItemText

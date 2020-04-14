@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,25 +60,36 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
   return table;
 }
 
-export function createNodesLookup<T>(list: T[], idProp: string = 'id'): LookupTable<T> {
-  let table = {};
-  const createChildrenTable = (item, _idProp: string = 'id') => {
-    table[retrieveProperty(item as any, _idProp)] = {...item, children: []};
-    item.children.forEach(children => {
-      table[retrieveProperty(children as any, 'id')] = {
-        ...children,
-        children: []
-      };
+export function flattenHierarchical<T>(root: T | T[], childrenProp = 'children'): T[] {
+  return (Array.isArray(root) ? root : [root])
+    .flatMap((node) =>
+      Boolean(node)
+        ? [node, ...flattenHierarchical(node[childrenProp] ?? [], childrenProp)]
+        : null
+    );
+}
 
-      table[retrieveProperty(item as any, _idProp)].children.push(children.id)
+export function hierarchicalToLookupTable<T>(
+  root: T | T[],
+  childrenProp = 'children',
+  idProp = 'id'
+): LookupTable<T> {
+  return createLookupTable(
+    normalizeProp(flattenHierarchical(root, childrenProp), idProp, childrenProp),
+    idProp
+  );
+}
 
-      children.children && createChildrenTable(children)
-    })
-  }
-
-  list.forEach((item: any) => item.children && createChildrenTable(item, idProp));
-
-  return table;
+// TODO: Types here could be better.
+export function normalizeProp<T>(
+  list: T[],
+  idProp = 'id',
+  normalizeTargetProp = 'children'
+): T[] {
+  return list.map((item) => ({
+    ...item,
+    [normalizeTargetProp]: item[normalizeTargetProp]?.map((child) => child[idProp])
+  }));
 }
 
 export function retrieveProperty(object: object, prop: string): any {
@@ -147,11 +157,11 @@ export function findParentModelId(
   return nnou(parentId)
     ? // If it has a path, it is not embedded and hence the parent
       // Otherwise, need to keep looking.
-      nnou(models[parentId].craftercms.path)
+    nnou(models[parentId].craftercms.path)
       ? parentId
       : findParentModelId(parentId, childrenMap, models)
     : // No parent found for this model
-      null;
+    null;
 }
 
 export function isPlainObject(obj) {

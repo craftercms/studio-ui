@@ -44,12 +44,11 @@ const useStyles = makeStyles((theme) => ({
 
 interface BlueprintFormProps {
   inputs: SiteState;
+  blueprint: Blueprint;
 
   setInputs(state: any): any;
 
   onSubmit(event: any): any;
-
-  blueprint: Blueprint;
 
   onCheckNameExist(siteId: string): any;
 }
@@ -148,12 +147,12 @@ function BlueprintForm(props: BlueprintFormProps) {
 
   function renderHelperText(name: string, value: string = '', helperText: string, required: boolean, submitted: boolean, siteIdExist: boolean) {
     if (value.startsWith('0') || value.startsWith('-') || value.startsWith('_')) {
-      return formatMessage(messages.cantStart)
+      return formatMessage(messages.cantStart);
     }
     if (siteIdExist) {
-      return formatMessage(messages.nameExist)
+      return formatMessage(messages.nameExist);
     } else if (required && !value && submitted) {
-      return formatMessage(messages.required, { name: name })
+      return formatMessage(messages.required, { name: name });
     } else {
       return helperText;
     }
@@ -286,7 +285,7 @@ function BlueprintForm(props: BlueprintFormProps) {
         }
       </Grid>
     </form>
-  )
+  );
 }
 
 export default BlueprintForm;

@@ -155,7 +155,7 @@ export default function LoginView() {
       document.addEventListener(EVENT, handler, false);
       return () => {
         document.removeEventListener(EVENT, handler, false);
-      }
+      };
     }
   }, [mode]);
 
