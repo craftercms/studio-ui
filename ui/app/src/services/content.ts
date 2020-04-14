@@ -440,11 +440,11 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           };
           if (field.fields[_fieldId].type === 'node-selector') {
 
-            const map = asArray<LegacyFormDefinitionProperty>(_legacyField.properties.property)
-              .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
-                table[prop.name] = prop;
-                return table;
-              }, {});
+            // const map = asArray<LegacyFormDefinitionProperty>(_legacyField.properties.property)
+            //   .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
+            //     table[prop.name] = prop;
+            //     return table;
+            //   }, {});
 
             field.fields[_fieldId].validations = {
               tags: [],

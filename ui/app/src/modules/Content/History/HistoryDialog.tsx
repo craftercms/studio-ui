@@ -29,7 +29,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import { LegacyVersion } from '../../../../../guest/src/models/version';
 import makeStyles from '@material-ui/styles/makeStyles';
-import { Theme } from '@material-ui/core';
 import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../../styles/theme';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
@@ -79,7 +78,7 @@ const translations = defineMessages({
   }
 });
 
-const versionListStyles = makeStyles((theme: Theme) =>
+const versionListStyles = makeStyles(() =>
   createStyles({
     list: {
       backgroundColor: palette.white,
@@ -141,7 +140,7 @@ const versionListStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const historyStyles = makeStyles((theme: Theme) =>
+const historyStyles = makeStyles(() =>
   createStyles({
     dialogFooter: {
       padding: 0
@@ -178,7 +177,7 @@ const historyStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const CompareRevisionStyles = makeStyles((theme: Theme) =>
+const CompareRevisionStyles = makeStyles(() =>
   createStyles({
     compareBoxHeader: {
       display: 'flex',
@@ -274,7 +273,6 @@ interface HistoryListProps {
 }
 
 function HistoryList(props: HistoryListProps) {
-  const { formatMessage } = useIntl();
   const classes = versionListStyles({});
   const { resource, handleOpenMenu, rowsPerPage, page, compareTo, handleHistoryItemClick } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
