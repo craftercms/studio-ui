@@ -292,7 +292,11 @@ export default function AssetsPanel() {
     >
       <div ref={elementRef}>
         <div className={classes.search}>
-          <SearchBar onChange={handleSearchKeyword} keyword={keyword} />
+          <SearchBar
+              onActionButtonClick={() => handleSearchKeyword('')}
+              onChange={handleSearchKeyword}
+              keyword={keyword}
+            />
         </div>
         <Suspencified loadingStateProps={{ title: formatMessage(translations.retrieveAssets) }}>
           {dragInProgress && (

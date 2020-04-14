@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Item } from '../../../models/Item';
+import { Item, LegacyItem } from '../../../models/Item';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { get } from '../../../utils/ajax';
@@ -32,10 +32,10 @@ import Button from '@material-ui/core/Button';
 import { palette } from '../../../styles/theme';
 
 interface DependencySelectionProps {
-  items: Item[];
+  items: LegacyItem[];
   siteId?: string;      // for dependencySelectionDelete
   onChange?: Function;  // for dependencySelectionDelete
-  checked: Item[];
+  checked: LegacyItem[];
   setChecked: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
@@ -51,7 +51,7 @@ interface DependencySelectionProps {
 interface SelectionListProps {
   title: any;
   subtitle?: any;
-  items?: Item[];
+  items?: LegacyItem[];
   uris?: [];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
@@ -431,7 +431,7 @@ function SelectionList(props: SelectionListProps) {
         items &&
         <List className={classes.selectionList}>
           {
-            items.map((item: Item) => {
+            items.map((item: LegacyItem) => {
               const labelId = `checkbox-list-label-${item.uri}`;
 
               return (

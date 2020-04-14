@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import ExtensionRounded from '@material-ui/icons/ExtensionRounded';
 import ImageRounded from '@material-ui/icons/ImageRounded';
@@ -39,7 +39,7 @@ import SimulatorPanel from './Tools/SimulatorPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
-import { fetchPreviewToolsConfig, selectTool } from '../../state/actions/preview';
+import { fetchPreviewToolsConfig, selectTool, setSearchPanelKeyword } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
@@ -51,6 +51,8 @@ import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import ContentTree from './Tools/ContentTree';
 import { nnou } from '../../utils/object';
 import Suspencified from '../../components/SystemStatus/Suspencified';
+import SearchBar from '../../components/SearchBar';
+import SearchPanel from './Tools/SearchPanel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -67,6 +69,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     itemIconRoot: {
       minWidth: 35
+    },
+    itemSearch: {
+      padding: '0 16px'
     },
     secondaryActionRoot: {
       display: 'flex'
@@ -143,6 +148,10 @@ const translations = defineMessages({
   loading: {
     id: 'words.loading',
     defaultMessage: 'Loading'
+  },
+  searchEverywhere: {
+    id: 'craftercms.ice.search.searchEveryWhere',
+    defaultMessage: 'Search'
   }
 });
 
@@ -156,7 +165,7 @@ function UnknownPanel(props: any) {
         className={`${classes.panelBodyInner} ${classes.center}`}
       >
         <div>
-          <WarningRounded />
+          <WarningRounded/>
         </div>
         <pre className={classes.ellipsis} title={props.id}>
           {props.id}
@@ -176,9 +185,28 @@ function ToolSelector({ resource }) {
   const tools = resource.read();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
+  const [keyword, setKeyword] = useState('');
+
+  const onKeyPress = (key: string) => {
+    if(key === 'Enter') {
+      select('craftercms.ice.search');
+      dispatch(setSearchPanelKeyword(keyword))
+    }
+  };
 
   return (
     <List>
+      <ListItem className={classes.itemSearch}>
+        <SearchBar
+          onChange={(keyword) => setKeyword(keyword)}
+          placeholder={formatMessage(translations.searchEverywhere)}
+          keyword={keyword}
+          showActionButton={Boolean(keyword)}
+          showDecoratorIcon
+          onKeyPress={onKeyPress}
+        />
+        <ChevronRightIcon/>
+      </ListItem>
       {
         tools
           .map((tool) => ({
@@ -189,10 +217,10 @@ function ToolSelector({ resource }) {
           .map(({ id, title, Icon }) => (
             <ListItem key={id} button onClick={() => select(id)}>
               <ListItemIcon className={classes.itemIconRoot}>
-                <Icon />
+                <Icon/>
               </ListItemIcon>
-              <ListItemText primary={title} />
-              <ChevronRightIcon />
+              <ListItemText primary={title}/>
+              <ChevronRightIcon/>
             </ListItem>
           ))
       }
@@ -217,7 +245,8 @@ const componentMap: any = {
   'craftercms.ice.editForm': EditFormPanel,
   'craftercms.ice.browseComponents': BrowseComponentsPanel,
   'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,
-  'craftercms.ice.contentTree': ContentTree
+  'craftercms.ice.contentTree': ContentTree,
+  'craftercms.ice.search': SearchPanel
 };
 
 export default function ToolsPanel() {
@@ -259,7 +288,7 @@ export default function ToolsPanel() {
     >
       {site ? (
         <Suspencified loadingStateProps={{ title: `${formatMessage(translations.loading)}...` }}>
-          <Tool id={toolMeta?.id} config={config} resource={resource}/>
+          <Tool id={toolMeta?.id} config={config}resource={resource}/>
         </Suspencified>
       ) : (
         <EmptyState

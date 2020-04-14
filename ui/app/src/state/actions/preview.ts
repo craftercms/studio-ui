@@ -81,6 +81,7 @@ export const CLOSE_TOOLS = 'CLOSE_TOOLS';
 export const SET_HOST_SIZE = 'SET_HOST_SIZE';
 export const SET_HOST_WIDTH = 'SET_HOST_WIDTH';
 export const SET_HOST_HEIGHT = 'SET_HOST_HEIGHT';
+export const SET_SEARCH_PANEL_KEYWORD = 'SET_SEARCH_PANEL_KEYWORD';
 export const FETCH_CONTENT_TYPES = 'FETCH_CONTENT_TYPES';
 export const FETCH_CONTENT_TYPES_COMPLETE = 'FETCH_CONTENT_TYPES_COMPLETE';
 export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
@@ -144,6 +145,13 @@ export function setHostSize(dimensions: WidthAndHeight): StandardAction {
   return {
     type: SET_HOST_SIZE,
     payload: dimensions
+  };
+}
+
+export function setSearchPanelKeyword(keyword: string): StandardAction {
+  return {
+    type: SET_SEARCH_PANEL_KEYWORD,
+    payload: keyword
   };
 }
 
