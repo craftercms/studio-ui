@@ -25,6 +25,7 @@ import ContentInstance from './ContentInstance';
 import { ContentTypeReceptacle } from './ContentTypeReceptacle';
 import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
+import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
 
@@ -116,6 +117,7 @@ export interface GlobalState {
   dialogs: {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;
+    minimizedDialogs: MinimizedDialogsStateProps;
     history: HistoryDialogStateProps;
     dependencies: DependenciesDialogStateProps;
   };

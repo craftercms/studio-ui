@@ -15,21 +15,19 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Observable } from 'rxjs';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import IconButton from '@material-ui/core/IconButton';
-import ReplayIcon from '@material-ui/icons/Replay';
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Theme,
-  Typography
-} from '@material-ui/core';
+import ReplayIcon from '@material-ui/icons/ReplayRounded';
+import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import { Theme } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Dialog from '@material-ui/core/Dialog';
+import Typography from '@material-ui/core/Typography';
 import { Core, ProgressBar as UppyProgressBar, XHRUpload } from 'uppy';
 
 import getDroppedFiles from '@uppy/utils/lib/getDroppedFiles';
@@ -44,13 +42,20 @@ import { getBulkUploadUrl } from '../services/content';
 import { LookupTable } from '../models/LookupTable';
 import { palette } from '../styles/theme';
 import { bytesToSize } from '../utils/string';
-import { useSpreadState } from '../utils/hooks';
+import { useActiveSiteId, useMinimizeDialog, useSpreadState, useSubject } from '../utils/hooks';
 import clsx from 'clsx';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import RemoveRoundedIcon from '@material-ui/icons/RemoveRounded';
-import AddRoundedIcon from '@material-ui/icons/AddRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
-import Paper from '@material-ui/core/Paper';
+import DialogFooter from './DialogFooter';
+import DialogBody from './DialogBody';
+import {
+  maximizeDialog,
+  minimizeDialog,
+  updateDialog
+} from '../state/reducers/dialogs/minimizedDialogs';
+import { useDispatch } from 'react-redux';
+import { ProgressBar } from './SystemStatus/ProgressBar';
 
 const translations = defineMessages({
   title: {
@@ -77,6 +82,10 @@ const translations = defineMessages({
     id: 'words.browse',
     defaultMessage: 'Browse'
   },
+  cancelAll: {
+    id: 'bulkUpload.cancelAll',
+    defaultMessage: 'Cancel all'
+  },
   filesProgression: {
     id: 'bulkUpload.filesProgression',
     defaultMessage: '{start}/{end}'
@@ -89,10 +98,12 @@ const translations = defineMessages({
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   dialogContent: {
-    backgroundColor: palette.gray.light0
+    backgroundColor: palette.gray.light0,
+    flexDirection: 'row'
   },
   dragZone: {
     height: '200px',
+    width: '100%',
     border: `2px dashed ${palette.gray.medium2}`,
     backgroundColor: palette.white,
     borderRadius: '7px',
@@ -130,6 +141,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     left: 0,
     '& .uppy-ProgressBar-inner': {
       backgroundColor: palette.blue.tint
+    },
+    '&.hidden': {
+      display: 'none'
     }
   },
   sectionTitle: {
@@ -150,12 +164,12 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   browseText: {
     color: palette.blue.main
   },
-  status: {
+  cancelBtn: {
     marginRight: 'auto'
   },
-  minimized: {
-    display: 'none'
-  }
+  status: {
+    marginLeft: 'auto'
+  },
 }));
 
 const UppyItemStyles = makeStyles((theme: Theme) => createStyles({
@@ -228,11 +242,13 @@ interface UppyItemProps {
   file: any,
 
   retryFileUpload(file: UppyFile): void
+
+  onRemove(file: UppyFile): void
 }
 
 function UppyItem(props: UppyItemProps) {
   const classes = UppyItemStyles({});
-  const { file, retryFileUpload } = props;
+  const { file, retryFileUpload, onRemove } = props;
 
   const handleRetry = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, file: UppyFile) => {
     event.preventDefault();
@@ -240,16 +256,25 @@ function UppyItem(props: UppyItemProps) {
     retryFileUpload(file);
   };
 
+  const handleRemove = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, file: UppyFile) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onRemove(file);
+  };
+
   return (
     <Card className={classes.cardRoot}>
       {
         file.preview &&
-        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />
+        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia}/>
       }
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
           <div className={classes.cardContentText}>
-            <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
+            <Typography
+              variant="body2"
+              className={clsx(file.progress.status === 'failed' && classes.textFailed)}
+            >
               {file.name}
             </Typography>
             <Typography variant="caption" className={classes.caption}>
@@ -257,36 +282,42 @@ function UppyItem(props: UppyItemProps) {
             </Typography>
           </div>
           {
-            file.progress.status === 'failed' &&
-            <IconButton
-              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                handleRetry(event, file);
-              }}
-              className={classes.iconRetry}
-            >
-              <ReplayIcon />
+            file.progress.percentage !== 100 &&
+            <IconButton onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+              handleRemove(event, file)
+            }} className={classes.iconRetry}>
+              <DeleteRoundedIcon/>
+            </IconButton>
+          }
+          {
+            file.progress.percentage === 'failed' &&
+            <IconButton onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+              handleRetry(event, file)
+            }} className={classes.iconRetry}>
+              <ReplayIcon/>
             </IconButton>
           }
         </div>
-        <ProgressBar status={file.progress.status} progress={file.progress.percentage} />
+        <ProgressBar status={file.progress.status} progress={file.progress.percentage}/>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 interface DropZoneProps {
   path: string;
   site: string;
   maxSimultaneousUploads: number;
+  cancelRequestObservable$: Observable<any>
 
-  onStatusChange(status: any): void;
+  onStatusChange(status: DropZoneStatus): void;
 }
 
 const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
   const generalProgress = useRef(null);
-  const { onStatusChange, path, site, maxSimultaneousUploads } = props;
+  const { onStatusChange, path, site, maxSimultaneousUploads, cancelRequestObservable$ } = props;
   const { formatMessage } = useIntl();
   const [filesPerPath, setFilesPerPath] = useState<LookupTable<any>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
@@ -295,7 +326,12 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
   const retryFileUpload = (file: UppyFile) => {
-    uppy.retryUpload(file.id);
+    uppy.retryUpload(file.id)
+  };
+
+  const onRemove = (file: UppyFile) => {
+    uppy.removeFile(file.id);
+    setFiles({ [file.id]: null });
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
@@ -336,11 +372,11 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
           relativePath: file.relativePath || null
         }
       })
-    );
+    )
   }
 
   function checkFileExist(newFile: File) {
-    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type);
+    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type)
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
@@ -352,7 +388,24 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   }
 
   useEffect(() => {
-    if (dndRef.current && generalProgress.current) {
+    if (cancelRequestObservable$) {
+      const subs = cancelRequestObservable$.subscribe(() => {
+        uppy.cancelAll();
+        let successFiles = { ...files };
+        Object.values(files).forEach((file: UppyFile) => {
+          if (file.progress.percentage < 100) {
+            successFiles[file.id] = null;
+          }
+        });
+        setFiles(successFiles);
+        onStatusChange({ status: 'complete' });
+      });
+      return () => subs.unsubscribe();
+    }
+  }, [cancelRequestObservable$, files]);
+
+  useEffect(() => {
+    if (generalProgress.current) {
       uppy.use(XHRUpload, {
         endpoint: getBulkUploadUrl(site, path),
         formData: true,
@@ -368,7 +421,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       uppy.reset();
       uppy.close();
     };
-  }, [formatMessage, maxSimultaneousUploads, path, site, uppy]);
+  }, [maxSimultaneousUploads, path, site, uppy]);
 
   useEffect(() => {
     const handleUploadProgress = (file: UppyFile, progress: any) => {
@@ -397,7 +450,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
           uppy.setFileState(file.id, { preview: e.target.result });
           setFiles({ [file.id]: file });
         };
-        reader.readAsDataURL(file.data);
+        reader.readAsDataURL(file.data)
       } else {
         setFiles({ [file.id]: file });
       }
@@ -411,14 +464,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       uppy.off('file-added', handleFileAdded);
       uppy.off('upload-error', handleUploadError);
       uppy.off('upload-progress', handleUploadProgress);
-    };
+    }
 
-  }, [filesPerPath, onStatusChange, path, setFiles, setFilesPerPath, uppy]);
+  }, [filesPerPath, onStatusChange, path, setFiles, uppy]);
 
   useEffect(() => {
     const handleUploadSuccess = () => {
       setUploadedFiles(uploadedFiles + 1);
-      onStatusChange({ uploadedFiles: uploadedFiles + 1 });
+      onStatusChange({ uploadedFiles: uploadedFiles + 1 })
     };
 
     const handleComplete = () => {
@@ -434,32 +487,39 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     return () => {
       uppy.off('upload-success', handleUploadSuccess);
       uppy.off('complete', handleComplete);
-    };
+    }
   }, [onStatusChange, uploadedFiles, uppy]);
 
   useEffect(() => {
-    if (files) {
+    if (files !== null) {
       let filesPerPath: any = {};
+      let count = 0;
       Object.values(files).forEach((file: UppyFile) => {
+        if (!file) return;
         if (!filesPerPath[file.meta.path]) {
           filesPerPath[file.meta.path] = [];
         }
         filesPerPath[file.meta.path].push(file.id);
+        count++;
       });
-      setFilesPerPath(filesPerPath);
-      onStatusChange({ files: Object.keys(files).length });
+      setFilesPerPath(Object.keys(filesPerPath).length ? filesPerPath : null);
+      if (count) {
+        onStatusChange({ files: count });
+      } else {
+        onStatusChange(initialDropZoneStatus);
+      }
     }
-  }, [onStatusChange, files]);
+  }, [files]);
 
   return (
     <>
       <section
         ref={dndRef}
-        className={clsx(classes.dragZone, dragOver && 'over', files && 'hasFiles')}
+        className={clsx(classes.dragZone, dragOver && 'over', filesPerPath && 'hasFiles')}
         onDrop={handleOnDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => !files && ref.current?.click()}
+        onClick={() => !filesPerPath && ref.current?.click()}
       >
         {
           (filesPerPath && files) ? (
@@ -471,19 +531,27 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                 {
                   files &&
                   filesPerPath[fileId].map((id: string) =>
-                    files[id] && <UppyItem file={files[id]} key={id} retryFileUpload={retryFileUpload} />
+                    files[id] &&
+                    <UppyItem
+                      file={files[id]} key={id}
+                      retryFileUpload={retryFileUpload}
+                      onRemove={onRemove}
+                    />
                   )
                 }
               </div>
             )
           ) : (
             <>
-              <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')} />
+              <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')}/>
               <Typography variant="subtitle1">
                 {
                   formatMessage(
                     translations.dropHere,
-                    { span: browse => <span key="browse" className={classes.browseText}>{browse}</span> }
+                    {
+                      span: browse =>
+                        <span key="browse" className={classes.browseText}>{browse}</span>
+                    }
                   )
                 }
               </Typography>
@@ -500,125 +568,83 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         multiple={true}
         onChange={handleInputChange}
       />
-      <section ref={generalProgress} className={classes.generalProgress} />
+      <section
+        ref={generalProgress}
+        className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}
+      />
     </>
-  );
+  )
 });
 
-const minimizedBarStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    display: 'flex',
-    padding: '10px 14px',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: '20px',
-    right: '20px'
-
-  },
-  title: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  subtitle: {
-    fontSize: '14px',
-    marginLeft: '15px'
-  }
-}));
-
-interface MinimizedBarProps {
-  title: string;
-  subtitle?: string;
-  status?: object;
-
-  onMaximized(): void;
+export interface DropZoneStatus {
+  status?: string,
+  files?: number,
+  uploadedFiles?: number,
+  progress?: number
 }
 
-function MinimizedBar(props: any) {
-  const { title, onMaximized, subtitle, status } = props;
-  const classes = minimizedBarStyles({});
-  return (
-    <Paper className={classes.root}>
-      <Typography variant="h6">{title}</Typography>
-      {
-        subtitle &&
-        <Typography variant="subtitle1" className={classes.subtitle}>{subtitle}</Typography>
-      }
-      {onMaximized ? (
-        <IconButton aria-label="close" onClick={onMaximized}>
-          <AddRoundedIcon />
-        </IconButton>
-      ) : null}
-      <ProgressBar status={status.status} progress={status.progress} />
-    </Paper>
-  );
+const initialDropZoneStatus: DropZoneStatus = {
+  status: 'idle',
+  files: null,
+  uploadedFiles: 0,
+  progress: 0
+};
+
+interface BulkUploadProps {
+  open: boolean;
+  path: string;
+  site?: string;
+  maxSimultaneousUploads?: number;
+
+  onClose(dropZoneStatus: DropZoneStatus): void;
 }
 
-
-const progressBarStyles = makeStyles((theme: Theme) => createStyles({
-  progressBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    height: '3px',
-    transition: 'height .2s'
-  },
-  progressBarInner: {
-    backgroundColor: palette.blue.tint,
-    height: '100%',
-    width: 0,
-    transition: 'width 0.4s ease',
-    '&.complete': {
-      transition: 'background-color 0.5s ease',
-      backgroundColor: palette.green.main
-    },
-    '&.failed': {
-      backgroundColor: palette.red.main
-    }
-  }
-}));
-
-function ProgressBar(props: any) {
-  const { status, progress } = props;
-  const classes = progressBarStyles({});
-  return (
-    <div className={classes.progressBar}>
-      <div
-        className={clsx(classes.progressBarInner, status === 'failed' && 'failed', (progress === 100) && 'complete')}
-        style={{ width: `${progress}%` }}
-      />
-    </div>
-  );
-}
-
-export default function BulkUpload(props: any) {
+export default function BulkUpload(props: BulkUploadProps) {
   const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
+  // NOTE: this id needs to changed if we added support to many dialogs at the same time;
+  const id = 'bulkUpload';
   const classes = useStyles({});
-  const { onClose, path, site, maxSimultaneousUploads = 1, open } = props;
-  const [dropZoneStatus, setDropZoneStatus] = useSpreadState({
-    status: 'idle',
-    files: null,
-    uploadedFiles: 0,
-    progress: 0
-  });
+  const {
+    onClose,
+    path,
+    maxSimultaneousUploads = 1,
+    open
+  } = props;
+  const site = useActiveSiteId();
+  const [dropZoneStatus, setDropZoneStatus] = useSpreadState<DropZoneStatus>(initialDropZoneStatus);
   const inputRef = useRef(null);
-  const [minimized, setMinimized] = useState(!open);
+  const cancelRef = useRef(null);
 
-  const onStatusChange = useCallback((status: any) => {
+  const minimized = useMinimizeDialog({
+    id,
+    title: formatMessage(translations.title),
+    minimized: false
+  });
+
+  const onMinimized = () => {
+    dispatch(minimizeDialog({ id }));
+  };
+
+  const onMaximized = () => {
+    dispatch(maximizeDialog({ id }));
+  };
+
+  const cancelRequestObservable$ = useSubject<void>();
+
+  const onStatusChange = useCallback((status: DropZoneStatus) => {
     setDropZoneStatus(status);
-  }, [setDropZoneStatus]);
+    if (minimized) {
+      dispatch(updateDialog({ id, status }));
+    }
+  }, [setDropZoneStatus, minimized]);
 
   const onBrowse = () => {
     inputRef.current.click();
   };
 
-  const onMinimized = () => {
-    setMinimized(true);
-  };
-
-  const onMaximized = () => {
-    setMinimized(false);
+  const onCancel = () => {
+    cancelRequestObservable$.next();
   };
 
   const preventWrongDrop = (e: React.DragEvent) => {
@@ -628,7 +654,7 @@ export default function BulkUpload(props: any) {
 
   useEffect(() => {
     const handleBeforeUpload = () => {
-      return formatMessage(translations.uploadInProgress);
+      return formatMessage(translations.uploadInProgress)
     };
     if (dropZoneStatus.status === 'uploading') {
       window.onbeforeunload = handleBeforeUpload;
@@ -637,50 +663,52 @@ export default function BulkUpload(props: any) {
     }
     return () => {
       window.onbeforeunload = null;
-    };
+    }
   }, [dropZoneStatus.status, formatMessage]);
 
   return (
-    <div className={'bulkUpload'}>
+    <Dialog
+      open={open && !minimized}
+      keepMounted={minimized}
+      onDrop={preventWrongDrop}
+      onDragOver={preventWrongDrop}
+      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+    >
+      <DialogHeader
+        title={formatMessage(translations.title)}
+        subtitle={formatMessage(translations.subtitle)}
+        onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+        closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
+      />
+      <DialogBody className={classes.dialogContent}>
+        <DropZone
+          onStatusChange={onStatusChange}
+          path={path}
+          site={site}
+          maxSimultaneousUploads={maxSimultaneousUploads}
+          ref={inputRef}
+          cancelRequestObservable$={cancelRequestObservable$}
+        />
+      </DialogBody>
+
       {
-        minimized &&
-        <MinimizedBar
-          title={formatMessage(translations.title)}
-          onMaximized={onMaximized}
-          status={dropZoneStatus}
-          subtitle={
-            dropZoneStatus.files ?
-              formatMessage(translations.filesProgression,
-                {
-                  start: dropZoneStatus.uploadedFiles,
-                  end: dropZoneStatus.files
-                }
-              ) : null
+        dropZoneStatus.status !== 'idle' &&
+        <DialogFooter>
+          {
+            dropZoneStatus.status === 'uploading' &&
+            <Button
+              id="cancelBtn"
+              onClick={onCancel}
+              variant="contained"
+              color="default"
+              ref={cancelRef}
+              className={classes.cancelBtn}
+            >
+              {formatMessage(translations.cancelAll)}
+            </Button>
+
           }
-        />
-      }
-      <Dialog
-        open={open}
-        className={clsx(minimized && classes.minimized)}
-        onDrop={preventWrongDrop}
-        onDragOver={preventWrongDrop}
-      >
-        <DialogHeader
-          title={formatMessage(translations.title)}
-          subtitle={formatMessage(translations.subtitle)}
-          onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
-          closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
-        />
-        <DialogContent dividers className={classes.dialogContent}>
-          <DropZone
-            onStatusChange={onStatusChange}
-            path={path}
-            site={site}
-            maxSimultaneousUploads={maxSimultaneousUploads}
-            ref={inputRef}
-          />
-        </DialogContent>
-        <DialogActions>
           {
             dropZoneStatus.files &&
             <Typography variant="caption" className={classes.status}>
@@ -692,37 +720,15 @@ export default function BulkUpload(props: any) {
               )}
             </Typography>
           }
-          {
-            dropZoneStatus.status === 'idle' ? (
-              <Button
-                onClick={() => onClose(dropZoneStatus)}
-                variant="contained"
-                color='default'
-              >
-                {formatMessage(translations.close)}
-              </Button>
-            ) : (
-              <>
-                <Button
-                  onClick={onBrowse}
-                  variant="contained"
-                  color='default'
-                >
-                  {formatMessage(translations.browse)}
-                </Button>
-                <Button
-                  onClick={() => onClose(dropZoneStatus)}
-                  disabled={dropZoneStatus.status === 'uploading'}
-                  variant="contained"
-                  color='primary'
-                >
-                  {formatMessage(translations.done)}
-                </Button>
-              </>
-            )
-          }
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+          <Button
+            onClick={onBrowse}
+            variant="contained"
+            color="primary"
+          >
+            {formatMessage(translations.browse)}
+          </Button>
+        </DialogFooter>
+      }
+    </Dialog>
+  )
 }
