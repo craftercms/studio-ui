@@ -312,12 +312,13 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       Icon = ContentTypeFieldIcon;
     }
   }
+
   return (
     <TreeItem
       key={nodes.id}
       nodeId={nodes.id}
-      onMouseOver={(e) => setOverState(e, true)}
-      onMouseOut={(e) => setOverState(e, false)}
+      // onMouseOver={(e) => setOverState(e, true)}
+      // onMouseOut={(e) => setOverState(e, false)}
       icon={nodes.type === 'component' && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
@@ -444,6 +445,7 @@ export default function ContentTree() {
     let previousArray = [...data.previous];
     let previous = previousArray.pop();
     setData({...data, selected: previous, previous: previousArray});
+    setExpanded([`${rootPrefix}${previous}`])
   };
 
   const handleChange = (event: any, nodes: string[]) => {
