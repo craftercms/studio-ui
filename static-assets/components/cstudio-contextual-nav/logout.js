@@ -18,27 +18,25 @@
  * Logout Plugin
  */
 CStudioAuthoring.ContextualNav.WcmLogoutMod = {
-
   initialized: false,
 
   /**
    * initialize module
    */
-  initialize: function (config) {
-
+  initialize: function(config) {
     var el = YDom.get('acn-logout-link');
     var showLogoutLink = false;
     var url = null;
 
     CStudioAuthoring.Service.getUserInfo({
-      success: function (response) {
+      success: function(response) {
         showLogoutLink = !(
           response.authenticationType === CStudioAuthoring.Constants.AUTH_HEADERS ||
           response.authenticationType === CStudioAuthoring.Constants.SAML
         );
         if (!showLogoutLink) {
           CStudioAuthoring.Service.getSSOLogoutInfo({
-            success: function (data) {
+            success: function(data) {
               if (data) {
                 showLogoutLink = true;
                 url = data;
@@ -48,7 +46,7 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
               }
               onClickFunction(el, url);
             },
-            failure: function (response) {
+            failure: function(response) {
               console.log(response);
             }
           });
@@ -57,23 +55,20 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
           onClickFunction(el);
         }
       },
-      failure: function (data) {
-
-      }
+      failure: function(data) {}
     });
 
     CStudioAuthoring.Operations.createNavBarDropDown('account');
 
-    function onClickFunction (el, url) {
-      el.onclick = function () {
-
+    function onClickFunction(el, url) {
+      el.onclick = function() {
         var serviceUri = CStudioAuthoring.Service.logoutUrl;
 
         YConnect.setDefaultPostHeader(false);
         YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
         YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), {
-          success: function () {
+          success: function() {
             CStudioAuthoring.Storage.eliminate('userSession');
             if (url) {
               window.location.href = url;
@@ -81,14 +76,12 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
               window.location.href = CStudioAuthoringContext.authoringAppBaseUri;
             }
           },
-          failure: function () {
+          failure: function() {
             window.location.href = CStudioAuthoringContext.authoringAppBaseUri;
           }
         });
-
       };
     }
-
   }
 };
 

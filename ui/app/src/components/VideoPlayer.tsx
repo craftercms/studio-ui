@@ -29,20 +29,21 @@ export interface VideoPlayerProps {
   poster?: string
 }
 
-enum SourceTypes {
-  'mp4' = 'video/mp4',
-  'm3u8' = 'application/x-mpegURL',
-  'mpd' = 'application/dash+xml'
+const SourceTypes = {
+  'mp4': 'video/mp4',
+  'm3u8': 'application/x-mpegURL',
+  'mpd': 'application/dash+xml'
 };
 
+const extensionRegex = /(?:\.([^.]+))?$/;
+
 function VideoPlayer(props: VideoPlayerProps) {
-  const
-    videoNode = useRef(null),
-    player = useRef(null),
-    extensionRegex = /(?:\.([^.]+))?$/,
-    extension = (extensionRegex.exec(props.src))[1],
-    type = Object(SourceTypes)[extension],
-    videoJsOptions: videojs.PlayerOptions = {
+  const videoNode = useRef(null);
+  const player = useRef(null);
+
+  useEffect(() => {
+    const extension = extensionRegex.exec(props.src)[1];
+    player.current = videojs(videoNode.current, {
       autoplay: props.autoplay,
       controls: props.controls,
       height: props.height,
@@ -52,28 +53,27 @@ function VideoPlayer(props: VideoPlayerProps) {
       sources: [
         {
           src: props.src,
-          type: type
+          type: SourceTypes[extension]
         }
       ]
+    });
+    return () => {
+      player.current.dispose();
     };
-
-  useEffect(
-    () => {
-      player.current = videojs(videoNode.current, videoJsOptions);
-
-      return () => {
-        player.current.dispose();
-      }
-    },
-    // eslint-disable-next-line
-    []
-  );
+  }, [
+    props.autoplay,
+    props.controls,
+    props.height,
+    props.width,
+    props.muted,
+    props.poster,
+    props.src
+  ]);
 
   return (
-    <div data-vjs-player>
-      <video ref={ videoNode } className="video-js"></video>
-    </div>
-  )
+    <video ref={videoNode} className="video-js" />
+  );
+
 }
 
 export default VideoPlayer;

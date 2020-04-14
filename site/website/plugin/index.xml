@@ -16,7 +16,7 @@
   -->
 
 <page>
-  <internal-name>Plugin Host</internal-name>
+  <internal-name>Plugin</internal-name>
   <content-type>/page/browse</content-type>
   <display-template>/templates/web/plugin.ftl</display-template>
   <merge-strategy>inherit-levels</merge-strategy>

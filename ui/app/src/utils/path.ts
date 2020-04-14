@@ -42,11 +42,27 @@ export function getPathFromPreviewURL(previewURL: string) {
   return `/site/website${pagePath}`;
 }
 
+export function getPreviewURLFromPath(baseUrl: string, path: string) {
+  let url = '';
+  if (path.endsWith('.xml')) {
+    url.replace('.xml', '.html');
+  }
+  url.replace('/site/website', '');
+  return `${baseUrl}${url}`;
+}
+
+export function getQueryVariable(query: string, variable: string) {
+  let qs = parse(query);
+  return qs[variable] ?? null;
+}
+
 export function parseQueryString() {
   return parse(window.location.search);
 }
 
 export default {
   getPathFromPreviewURL,
+  getPreviewURLFromPath,
+  getQueryVariable,
   parseQueryString
 };

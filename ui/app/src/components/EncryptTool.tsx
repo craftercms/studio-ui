@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useReducer, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { encrypt as encryptService } from '../services/security';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -26,6 +26,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import { green, red } from '@material-ui/core/colors';
 import { setRequestForgeryToken } from '../utils/auth';
+import { useSpreadState } from '../utils/hooks';
 
 const messages = defineMessages({
   pageTitle: {
@@ -105,20 +106,20 @@ function SnackbarContentWrapper(props: any) {
   return (
     <SnackbarContent
       className={`${className} ${classes.iconVariant}`}
-      aria-describedby="client-snackbar"
+      aria-describedby="encryptToolSnackbar"
       message={
-        <span id="client-snackbar" className={classes.message}>
+        <span id="encryptToolSnackbar" className={classes.message}>
           {
             variant === 'success'
-              ? <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`}/>
-              : <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`}/>
+              ? <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`} />
+              : <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`} />
           }
           {message}
         </span>
       }
       action={[
         <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
-          <CloseIcon className={classes.icon}/>
+          <CloseIcon className={classes.icon} />
         </IconButton>
       ]}
       {...other}
@@ -132,11 +133,7 @@ const EncryptTool = () => {
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
   const [fetching, setFetching] = useState(null);
-  // TODO: useSpreadState hook once merged to 2019
-  const [notificationSettings, setNotificationSettings] = useReducer(
-    (state, nextState) => ({ ...state, ...nextState }),
-    notificationInitialState
-  );
+  const [notificationSettings, setNotificationSettings] = useSpreadState(notificationInitialState);
 
   const { formatMessage } = useIntl();
 

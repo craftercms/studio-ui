@@ -18,76 +18,76 @@
 
 <html class="no-js" ng-app="studio">
 <head>
-    <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
-    <title>Crafter CMS</title>
-    <#-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+  <title>${contentModel['common-title']!'Crafter CMS'}</title>
+  <#-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <#if userEmail??>
-      <script type="application/json" id="user">
-      {"firstName":"${userFirstName!""}","lastName":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }
-      </script>
-    </#if>
-
-    <script>var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };</script>
-
-    <script>
-        window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
-        const passwordRequirementsRegex = "${passwordRequirementsRegex?js_string}";
-        document.documentElement.setAttribute('lang', (
-            localStorage.getItem('${username!""}_crafterStudioLanguage') ||
-            localStorage.getItem('crafterStudioLanguage') ||
-            'en'
-        ));
+  <#if userEmail??>
+    <script type="application/json" id="user">
+    {"firstName":"${userFirstName!""}","lastName":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }
     </script>
+  </#if>
 
-    <#include "/templates/web/common/js-next-scripts.ftl" />
+  <script>var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };</script>
 
-    <link rel="stylesheet" href="/studio/static-assets/styles/main.css?version=${UIBuildId!.now?string('Mddyyyy')}">
-    <link rel="stylesheet" href="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.css?version=${UIBuildId!.now?string('Mddyyyy')}">
-    <link rel="stylesheet" href="/studio/static-assets/libs/flexslider/flexslider.css?version=${UIBuildId!.now?string('Mddyyyy')}">
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
-    <link rel="stylesheet" type="text/css" href=/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+  <script>
+    window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
+    const passwordRequirementsRegex = "${passwordRequirementsRegex?js_string}";
+    document.documentElement.setAttribute('lang', (
+      localStorage.getItem('${username!""}_crafterStudioLanguage') ||
+      localStorage.getItem('crafterStudioLanguage') ||
+      'en'
+    ));
+  </script>
 
-    <script src="/studio/static-assets/js/modernizr.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/jquery/dist/jquery.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-    <script src="/studio/static-assets/libs/flexslider/jquery.flexslider.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/angular/angular-1.5.0.min.js"></script>
-    <script src="/studio/static-assets/libs/angular/angular-sanitize-1.5.0.min.js"></script>
-    <script src="/studio/static-assets/libs/angular-translate/angular-translate.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/angular-translate-handler-log/angular-translate-handler-log.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/angular-ui-router/release/angular-ui-router.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/angular-cookies/angular-cookies.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/angular-ui-utils/ui-utils.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/Smart-Table/dist/smart-table.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.js"></script>
-    <script src="/studio/static-assets/libs/angular-animate/angular-animate.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/ng-pattern-restrict/ng-pattern-restrict.min.js"></script>
-    <script src="/studio/static-assets/scripts/dirPagination.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/angular-moment/angular-moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/components/cstudio-common/ace/ace.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico?version=${UIBuildId!.now?string('Mddyyyy')}">
+  <#include "/templates/web/common/js-next-scripts.ftl" />
+
+  <link rel="stylesheet" href="/studio/static-assets/styles/main.css?version=${UIBuildId!.now?string('Mddyyyy')}">
+  <link rel="stylesheet" href="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.css?version=${UIBuildId!.now?string('Mddyyyy')}">
+  <link rel="stylesheet" href="/studio/static-assets/libs/flexslider/flexslider.css?version=${UIBuildId!.now?string('Mddyyyy')}">
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+  <link rel="stylesheet" type="text/css" href=/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+
+  <script src="/studio/static-assets/js/modernizr.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/jquery/dist/jquery.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
+  <script src="/studio/static-assets/libs/flexslider/jquery.flexslider.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/angular/angular-1.5.0.min.js"></script>
+  <script src="/studio/static-assets/libs/angular/angular-sanitize-1.5.0.min.js"></script>
+  <script src="/studio/static-assets/libs/angular-translate/angular-translate.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/angular-translate-handler-log/angular-translate-handler-log.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/angular-ui-router/release/angular-ui-router.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/angular-cookies/angular-cookies.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/angular-ui-utils/ui-utils.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/Smart-Table/dist/smart-table.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.js"></script>
+  <script src="/studio/static-assets/libs/angular-animate/angular-animate.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/ng-pattern-restrict/ng-pattern-restrict.min.js"></script>
+  <script src="/studio/static-assets/scripts/dirPagination.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/angular-moment/angular-moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/components/cstudio-common/ace/ace.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico?version=${UIBuildId!.now?string('Mddyyyy')}">
 </head>
 <body class="{{$state.current.cssClass}}">
 
 <ui-view class="general-view"></ui-view>
 
 <div class="footer-general" ng-show="isFooter">
-    <section class="footer-body">
-        <p class="entitlementValidator">${applicationContext.get("crafter.entitlementValidator").getDescription()}</p>
-        <img class="crafter-studio-logo" alt="Crafter CMS" ng-src="/studio/static-assets/images/logo.svg" src="/studio/static-assets/images/logo.svg">
-    </section>
+  <section class="footer-body">
+    <p class="entitlementValidator">${applicationContext.get("crafter.entitlementValidator").getDescription()}</p>
+    <img class="crafter-studio-logo" alt="Crafter CMS" ng-src="/studio/static-assets/images/logo.svg" src="/studio/static-assets/images/logo.svg">
+  </section>
 </div>
 </body>
 </html>
