@@ -16,9 +16,9 @@
 
 import React, { useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { InputBase, Theme } from '@material-ui/core';
+import { IconButton, InputBase, Theme } from '@material-ui/core';
 import { palette } from '../styles/theme';
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@material-ui/icons/SearchRounded';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
@@ -40,8 +40,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   searchIcon: {
     color: theme.palette.text.secondary
   },
+  icon: {
+    padding: '6px'
+  },
   closeIcon: {
-    marginLeft: '10px',
     fontSize: '25px',
     color: theme.palette.text.secondary,
     cursor: 'pointer'
@@ -68,7 +70,10 @@ const messages = defineMessages({
 
 interface SearchBarProps {
   keyword: string[] | string;
-  closeIcon?: boolean;
+  showActionButton?: boolean;
+  actionButtonIcon?: any;
+  showDecoratorIcon?: boolean;
+  decoratorIcon?: any;
   autofocus?: boolean;
   backgroundColor?: string;
   placeholder?: string;
@@ -77,19 +82,39 @@ interface SearchBarProps {
     root?: any;
   };
 
-  onChange(value: string): any;
+  onChange(value: string): void;
+
+  onKeyPress?(key: string): void;
+
+  onActionButtonClick?(): void;
 }
 
 export default function SearchBar(props: SearchBarProps) {
   const classes = useStyles({ background: props.backgroundColor || palette.gray.light5 });
-  const { onChange, keyword, closeIcon = false, autofocus = false, placeholder, disabled = false } = props;
+  const {
+    onChange,
+    onKeyPress,
+    keyword,
+    showActionButton = false,
+    actionButtonIcon: ActionButtonIcon = CloseIcon,
+    autofocus = false,
+    placeholder,
+    disabled = false,
+    showDecoratorIcon = false,
+    decoratorIcon: DecoratorIcon = SearchIcon,
+    onActionButtonClick
+  } = props;
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
   return (
     <div className={clsx(classes.search, focus && 'focus', props.classes?.root)}>
-      <SearchIcon className={classes.searchIcon} />
+      {
+        showDecoratorIcon &&
+        <DecoratorIcon className={classes.searchIcon}/>
+      }
       <InputBase
         onChange={e => onChange(e.target.value)}
+        onKeyPress={(e) => onKeyPress && onKeyPress(e.key)}
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
         placeholder={placeholder || formatMessage(messages.placeholder)}
@@ -103,7 +128,10 @@ export default function SearchBar(props: SearchBarProps) {
         inputProps={{ 'aria-label': 'search' }}
       />
       {
-        (keyword && closeIcon) && <CloseIcon className={classes.closeIcon} onClick={() => onChange('')} />
+        showActionButton &&
+        <IconButton onClick={onActionButtonClick? onActionButtonClick: () => onChange('') } className={classes.icon}>
+          <ActionButtonIcon className={classes.closeIcon}/>
+        </IconButton>
       }
     </div>
   );
