@@ -17,7 +17,7 @@
 import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
 import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { Observable, OperatorFunction } from 'rxjs';
-import { Credentials, User, LegacyUser } from '../models/User';
+import { Credentials, LegacyUser, User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 import { APIError } from '../models/GlobalState';
 

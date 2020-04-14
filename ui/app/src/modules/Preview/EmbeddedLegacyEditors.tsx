@@ -30,10 +30,10 @@ import {
   changeCurrentUrl,
   EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
+  EMBEDDED_LEGACY_FORM_FAILURE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
-  EMBEDDED_LEGACY_FORM_FAILURE,
   RELOAD_REQUEST
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
@@ -134,17 +134,17 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   };
 
   const handleTabChange = useCallback((event: React.ChangeEvent<{}>, type: string) => {
-      let inProgress = !tabsState[type].loaded;
-      setDialogConfig({ type, inProgress });
-      iframeRef.current.contentWindow.postMessage(
-        {
-          type: EDIT_FORM_CHANGE_TAB,
-          tab: type,
-          path: getPath(type)
-        },
-        '*'
-      );
-    }, [getPath, setDialogConfig, tabsState]);
+    let inProgress = !tabsState[type].loaded;
+    setDialogConfig({ type, inProgress });
+    iframeRef.current.contentWindow.postMessage(
+      {
+        type: EDIT_FORM_CHANGE_TAB,
+        tab: type,
+        path: getPath(type)
+      },
+      '*'
+    );
+  }, [getPath, setDialogConfig, tabsState]);
 
   const closeEmbeddedLegacyForm = useCallback((refresh: boolean, tab?: string) => {
     let hasSomeLoaded = filterBy('loaded', tabsState, tab);

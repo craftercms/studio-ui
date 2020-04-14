@@ -349,7 +349,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
       if (datasource.type === 'receptacles')
         receptaclesLookup[datasource.id] = datasource;
-    })
+    });
   }
 
   // In some cases, the back end parser seems to return this as "   " 🤷
@@ -469,9 +469,9 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           if (receptaclesLookup[value]) {
             receptaclesLookup[value].properties?.property.forEach((prop) => {
               if (prop.name === 'contentTypes') {
-                field.validations.contentTypes = prop.value ? prop.value.split(',') : []
+                field.validations.contentTypes = prop.value ? prop.value.split(',') : [];
               } else if (prop.name === 'tags') {
-                field.validations.tags = prop.value ? prop.value.split(',') : []
+                field.validations.tags = prop.value ? prop.value.split(',') : [];
               }
             });
           }
@@ -1053,19 +1053,19 @@ export function uploadDataUrl(
 }
 
 export function getBulkUploadUrl(site: string, path: string): string {
-  return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`
+  return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`;
 }
 
 export function getQuickCreateContentList(siteId: string) {
   return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
     pluck('response')
-  )
+  );
 }
 
 export function getItemVersions(siteId: string, path: string) {
   return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${siteId}&path=${path}`).pipe(
     pluck('response')
-  )
+  );
 }
 
 export default {

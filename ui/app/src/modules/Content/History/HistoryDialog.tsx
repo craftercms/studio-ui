@@ -385,11 +385,9 @@ interface HistoryDialogBaseProps {
   path: string;
 }
 
-export type HistoryDialogProps = PropsWithChildren<
-  HistoryDialogBaseProps & {
-    onClose?(): any;
-  }
->;
+export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
+  onClose?(): any;
+}>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;

@@ -33,6 +33,6 @@ const styles = makeStyles((theme: Theme) => createStyles({
 export default function DialogFooter(props) {
   const classes = styles({});
   return (
-    <MuiDialogActions classes={{ root: clsx(classes.dialogActions, props.classes?.root) }} {...props}/>
-  )
+    <MuiDialogActions classes={{ root: clsx(classes.dialogActions, props.classes?.root) }} {...props} />
+  );
 }

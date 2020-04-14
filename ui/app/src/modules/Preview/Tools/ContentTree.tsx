@@ -340,8 +340,8 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
     >
       {Array.isArray(nodes.children)
         ? nodes.children.map((node) => (
-            <TreeItemCustom key={node.id} nodes={node} {...reversePluckProps(props, 'nodes')} />
-          ))
+          <TreeItemCustom key={node.id} nodes={node} {...reversePluckProps(props, 'nodes')} />
+        ))
         : null}
     </TreeItem>
   );

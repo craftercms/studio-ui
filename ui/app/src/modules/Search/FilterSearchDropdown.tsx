@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -207,19 +206,17 @@ interface FilterSearchDropdownProps {
   text: string;
   className: any;
   facets: [Facet];
+  queryParams: Partial<ElasticParams>;
 
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
-
-  queryParams: Partial<ElasticParams>;
 }
 
 interface FilterProps {
   facet: string;
-
-  handleFilterChange(filter: FilterType, isFilter: boolean): any,
-
   facetsLookupTable: LookupTable,
   checkedFilters: LookupTable,
+
+  handleFilterChange(filter: FilterType, isFilter: boolean): any,
 
   setCheckedFilters(checkedFilters: object): any;
 }
@@ -239,7 +236,7 @@ function Filter(props: FilterProps) {
     if (value === '') {
       value = undefined;
     }
-    handleFilterChange({ name: facet, value: value }, true)
+    handleFilterChange({ name: facet, value: value }, true);
   };
 
   const handleApplyClick = (facet: string) => {
@@ -248,7 +245,7 @@ function Filter(props: FilterProps) {
       if (values.length === 0) {
         values = undefined;
       }
-      handleFilterChange({ name: facet, value: values }, true)
+      handleFilterChange({ name: facet, value: values }, true);
     }
   };
 
@@ -264,15 +261,16 @@ function Filter(props: FilterProps) {
         setCheckedFilters({ ...checkedFilters, [facet]: emptyFilter });
       }
     }
-    handleFilterChange({ name: facet, value: undefined }, true)
+    handleFilterChange({ name: facet, value: undefined }, true);
   };
 
   return (
     <div className={classes.singleFilter}>
       <div className={'filterActions'}>
-        <Button variant="outlined"
-                className={classes.button}
-                onClick={() => handleClearClick(facet)}
+        <Button
+          variant="outlined"
+          className={classes.button}
+          onClick={() => handleClearClick(facet)}
         >
           {formatMessage(messages.clean)}
         </Button>
@@ -318,16 +316,15 @@ function Filter(props: FilterProps) {
         }
       </div>
     </div>
-  )
+  );
 }
 
 interface FilterRadiosProps {
   facetData: Facet;
   facet: string;
+  checkedFilters: LookupTable;
 
   handleRadioClick(value: string, facet: string): any;
-
-  checkedFilters: LookupTable;
 }
 
 function FilterRadios(props: FilterRadiosProps) {
@@ -349,19 +346,19 @@ function FilterRadios(props: FilterRadiosProps) {
   const formatLabel = (facet: string, key: string, value: any) => {
     if (facet === 'size') {
       if (value.from === '-Infinity') {
-        return `${formatMessage(messages.under, { value: formatBytes(value.to), unit: '' })}`
+        return `${formatMessage(messages.under, { value: formatBytes(value.to), unit: '' })}`;
       } else if (value.to === 'Infinity') {
-        return `${formatMessage(messages.above, { value: formatBytes(value.from), unit: '' })}`
+        return `${formatMessage(messages.above, { value: formatBytes(value.from), unit: '' })}`;
       } else {
-        return `${formatBytes(value.from)} - ${formatBytes(value.to)}`
+        return `${formatBytes(value.from)} - ${formatBytes(value.to)}`;
       }
     } else if (facet === 'width' || facet === 'height') {
       if (value.from === '-Infinity') {
-        return `${formatMessage(messages.under, { value: value.to, unit: 'px' })}`
+        return `${formatMessage(messages.under, { value: value.to, unit: 'px' })}`;
       } else if (value.to === 'Infinity') {
-        return `${formatMessage(messages.above, { value: value.from, unit: 'px' })}`
+        return `${formatMessage(messages.above, { value: value.from, unit: 'px' })}`;
       } else {
-        return `${value.from}px - ${value.to}px`
+        return `${value.from}px - ${value.to}px`;
       }
     }
     return key;
@@ -390,20 +387,19 @@ function FilterRadios(props: FilterRadiosProps) {
               labelPlacement="start"
               classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
             />
-          )
+          );
         })
       }
     </RadioGroup>
-  )
+  );
 }
 
 interface FilterCheckboxesProps {
   facetData: Facet;
   facet: string;
+  checkedFilters: LookupTable;
 
   handleCheckboxClick(key: string, checked: boolean, facet: string): any;
-
-  checkedFilters: LookupTable;
 }
 
 function FilterCheckboxes(props: FilterCheckboxesProps) {
@@ -433,19 +429,18 @@ function FilterCheckboxes(props: FilterCheckboxesProps) {
               labelPlacement="start"
               classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
             />
-          )
+          );
         })
       }
     </FormGroup>
-  )
+  );
 }
 
 interface RangeSelectorProps {
   facet: string;
+  checkedFilters: LookupTable;
 
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
-
-  checkedFilters: LookupTable;
 }
 
 function RangeSelector(props: RangeSelectorProps) {
@@ -471,7 +466,7 @@ function RangeSelector(props: RangeSelectorProps) {
     if (range.min === '' && range.max === '') {
       value = undefined;
     }
-    handleFilterChange({ name: facet, value: value }, true)
+    handleFilterChange({ name: facet, value: value }, true);
   };
 
   const handleOnChange = (value: string, type: string) => {
@@ -506,15 +501,14 @@ function RangeSelector(props: RangeSelectorProps) {
         {formatMessage(messages.go)}
       </Button>
     </div>
-  )
+  );
 }
 
 interface SortByProps {
   queryParams: Partial<ElasticParams>;
+  filterKeys: string[];
 
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
-
-  filterKeys: string[];
 }
 
 function SortBy(props: SortByProps) {
@@ -531,11 +525,11 @@ function SortBy(props: SortByProps) {
       <MenuItem value='internalName'>{formatMessage(messages.internalName)}</MenuItem>
       {
         filterKeys.map((name: string, i: number) => {
-          return <MenuItem value={name} key={i}>{formatMessage(messages[camelize(name)])}</MenuItem>
+          return <MenuItem value={name} key={i}>{formatMessage(messages[camelize(name)])}</MenuItem>;
         })
       }
     </Select>
-  )
+  );
 }
 
 interface SortOrderProps {
@@ -558,7 +552,7 @@ function SortOrder(props: SortOrderProps) {
     {
       name: formatMessage(messages.lessRelevantFirst),
       value: 'asc'
-    },
+    }
   ] : [
     {
       name: formatMessage(messages.asc),
@@ -567,7 +561,7 @@ function SortOrder(props: SortOrderProps) {
     {
       name: formatMessage(messages.desc),
       value: 'desc'
-    },
+    }
   ];
   return (
     <Select
@@ -578,7 +572,7 @@ function SortOrder(props: SortOrderProps) {
       <MenuItem value={options[0].value}>{options[0].name}</MenuItem>
       <MenuItem value={options[1].value}>{options[1].name}</MenuItem>
     </Select>
-  )
+  );
 }
 
 export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
@@ -635,7 +629,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   };
 
   const handleExpandClick = (item: string) => {
-    setExpanded({ ...expanded, [item]: !expanded[item] })
+    setExpanded({ ...expanded, [item]: !expanded[item] });
   };
 
   const renderFilters = () => {
@@ -651,10 +645,11 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                 </Typography>
                 {
                   checkedFilters[key] &&
-                  <CheckIcon className={classes.filterChecked}/>
+                  <CheckIcon className={classes.filterChecked} />
                 }
                 <ExpandMoreIcon
-                  className={clsx(classes.expand, !!(expanded && expanded[name]) && classes.expandOpen)}/>
+                  className={clsx(classes.expand, !!(expanded && expanded[name]) && classes.expandOpen)}
+                />
               </header>
             </ListItem>
             <Collapse in={!!(expanded && expanded[name])} timeout={300} onEntered={refreshPopover}>
@@ -669,9 +664,9 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
               </div>
             </Collapse>
           </div>
-        )
+        );
       })
-    )
+    );
   };
 
   const refreshPopover = () => {
@@ -683,7 +678,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   return (
     <div>
       <Button variant="outlined" onClick={handleClick} className={className}>
-        {text} <ArrowDropDownIcon/>
+        {text} <ArrowDropDownIcon />
       </Button>
       <Popover
         action={popoverAction}
@@ -711,13 +706,14 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                   <strong>{formatMessage(messages.sortBy)}</strong>
                 </Typography>
                 <ExpandMoreIcon
-                  className={clsx(classes.expand, (expanded && expanded['sortBy']) && classes.expandOpen)}/>
+                  className={clsx(classes.expand, (expanded && expanded['sortBy']) && classes.expandOpen)}
+                />
               </header>
             </ListItem>
             <Collapse in={(expanded && expanded['sortBy'])} timeout={300} onEntered={refreshPopover}>
               <div className={classes.body}>
-                <SortBy queryParams={queryParams} filterKeys={filterKeys} handleFilterChange={handleFilterChange}/>
-                <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange}/>
+                <SortBy queryParams={queryParams} filterKeys={filterKeys} handleFilterChange={handleFilterChange} />
+                <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
               </div>
             </Collapse>
           </div>
@@ -725,5 +721,5 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
         </List>
       </Popover>
     </div>
-  )
+  );
 }
