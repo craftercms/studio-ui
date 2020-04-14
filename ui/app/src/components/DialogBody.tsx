@@ -35,6 +35,6 @@ const styles = makeStyles((theme: Theme) => createStyles({
 export default function DialogBody(props) {
   const classes = styles({});
   return (
-    <MuiDialogContent classes={{ root: clsx(classes.dialogContent, props.classes?.root) }} {...props}/>
-  )
+    <MuiDialogContent classes={{ root: clsx(classes.dialogContent, props.classes?.root) }} {...props} />
+  );
 }

@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +19,12 @@ import ContentType, { ContentTypeField } from '../models/ContentType';
 import { removeLastPiece } from './string';
 
 export class ContentTypeHelper {
+
+  descriptor: ContentType = null;
+
+  constructor(descriptor) {
+    this.descriptor = descriptor;
+  }
 
   static getRelatedContentTypeIds(contentType: ContentType) {
     return Object.values(contentType.fields)
@@ -74,12 +79,6 @@ export class ContentTypeHelper {
     return Object.values(contentType.fields).filter((field) => field.type === fieldType);
   }
 
-  descriptor: ContentType = null;
-
-  constructor(descriptor) {
-    this.descriptor = descriptor;
-  }
-
   getField(fieldId: string) {
     return ContentTypeHelper.getField(
       this.descriptor,
@@ -102,6 +101,12 @@ export class ContentTypeHelper {
 const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
 
 export class ModelHelper {
+  descriptor: any = null;
+
+  constructor(descriptor) {
+    this.descriptor = descriptor;
+  }
+
   static prop(model, propName) {
     if (model == null) {
       return null;
@@ -165,18 +170,12 @@ export class ModelHelper {
     return nou(ModelHelper.prop(model, 'path'));
   }
 
-  descriptor: any = null;
-
-  constructor(descriptor) {
-    this.descriptor = descriptor;
-  }
-
   extractCollection(fieldId: string, index: string) {
     return ModelHelper.extractCollection(
       this.descriptor,
       fieldId,
       index
-    )
+    );
   }
 
   extractCollectionItem(fieldId: string, index: string) {
@@ -184,22 +183,22 @@ export class ModelHelper {
       this.descriptor,
       fieldId,
       index
-    )
+    );
   }
 
   isEmbedded() {
-    return ModelHelper.isEmbedded(this.descriptor)
+    return ModelHelper.isEmbedded(this.descriptor);
   }
 
   prop(propName: string) {
     return ModelHelper.prop(
       this.descriptor,
       propName
-    )
+    );
   }
 
   getContentTypeId() {
-    return ModelHelper.getContentTypeId(this.descriptor)
+    return ModelHelper.getContentTypeId(this.descriptor);
   }
 
   setModel(descriptor: any) {

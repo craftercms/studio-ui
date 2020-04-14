@@ -53,13 +53,13 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface ConfirmDropdownProps {
-  onConfirm(): any
-
   text: string
   cancelText: string
   confirmText: string
   confirmHelperText?: string
   disabled?: boolean
+
+  onConfirm(): any
 }
 
 
@@ -117,5 +117,5 @@ export default function SelectButton(props: ConfirmDropdownProps) {
         <MenuItem onClick={handleClose}>{cancelText}</MenuItem>
       </Menu>
     </div>
-  )
+  );
 }

@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -98,8 +97,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     alignItems: 'center',
 
     '& > *': {
-      marginRight: theme.spacing(1),
-    },
+      marginRight: theme.spacing(1)
+    }
   },
   globalNavSection: {
     display: 'flex',
@@ -167,13 +166,13 @@ export function AddressBar(props: AddressBarProps) {
   return (
     <>
       <IconButton className={classes.iconButton} aria-label="search">
-        <KeyboardArrowLeftRounded/>
+        <KeyboardArrowLeftRounded />
       </IconButton>
       <IconButton className={classes.iconButton} aria-label="search">
-        <KeyboardArrowRightRounded/>
+        <KeyboardArrowRightRounded />
       </IconButton>
       <IconButton className={classes.iconButton} aria-label="search" onClick={onRefresh}>
-        <RefreshRounded/>
+        <RefreshRounded />
       </IconButton>
       <Paper className={classes.addressBarInput}>
         <Select
@@ -208,11 +207,11 @@ export function AddressBar(props: AddressBarProps) {
           inputProps={{ 'aria-label': '' }}
         />
         <IconButton aria-label="search" disabled={noSiteSet}>
-          <KeyboardArrowDownRounded/>
+          <KeyboardArrowDownRounded />
         </IconButton>
       </Paper>
       <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
-        <MoreVertRounded/>
+        <MoreVertRounded />
       </IconButton>
       <ComponentMenu
         anchorEl={anchorEl}
@@ -235,7 +234,7 @@ export default function ToolBar() {
   const {
     guest,
     currentUrl,
-    showToolsPanel,
+    showToolsPanel
   } = usePreviewState();
   let addressBarUrl = guest?.url ?? currentUrl;
 
@@ -251,9 +250,9 @@ export default function ToolBar() {
             aria-label={formatMessage(translations.openToolsPanel)}
             onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
           >
-            <CustomMenu/>
+            <CustomMenu />
           </IconButton>
-          <QuickCreate/>
+          <QuickCreate />
         </section>
         <section className={classes.addressBarContainer}>
           <AddressBar
@@ -266,7 +265,7 @@ export default function ToolBar() {
           />
         </section>
         <div className={classes.globalNavSection}>
-          <ToolbarGlobalNav/>
+          <ToolbarGlobalNav />
         </div>
       </Toolbar>
     </AppBar>

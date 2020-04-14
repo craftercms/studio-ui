@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer'
   },
   inputRoot: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   inputInput: {
     background: 'none',
@@ -64,12 +63,10 @@ const messages = defineMessages({
   placeholder: {
     id: 'searchBar.placeholder',
     defaultMessage: 'Search...'
-  },
+  }
 });
 
 interface SearchBarProps {
-  onChange(value: string): any;
-
   keyword: string[] | string;
   closeIcon?: boolean;
   autofocus?: boolean;
@@ -79,16 +76,18 @@ interface SearchBarProps {
   classes?: {
     root?: any;
   };
+
+  onChange(value: string): any;
 }
 
 export default function SearchBar(props: SearchBarProps) {
   const classes = useStyles({ background: props.backgroundColor || palette.gray.light5 });
   const { onChange, keyword, closeIcon = false, autofocus = false, placeholder, disabled = false } = props;
   const [focus, setFocus] = useState(false);
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
   return (
     <div className={clsx(classes.search, focus && 'focus', props.classes?.root)}>
-      <SearchIcon className={classes.searchIcon}/>
+      <SearchIcon className={classes.searchIcon} />
       <InputBase
         onChange={e => onChange(e.target.value)}
         onFocus={() => setFocus(true)}
@@ -99,13 +98,13 @@ export default function SearchBar(props: SearchBarProps) {
         value={keyword}
         classes={{
           root: classes.inputRoot,
-          input: classes.inputInput,
+          input: classes.inputInput
         }}
-        inputProps={{'aria-label': 'search'}}
+        inputProps={{ 'aria-label': 'search' }}
       />
       {
-        (keyword && closeIcon) && <CloseIcon className={classes.closeIcon} onClick={() => onChange('')}/>
+        (keyword && closeIcon) && <CloseIcon className={classes.closeIcon} onClick={() => onChange('')} />
       }
     </div>
-  )
+  );
 }

@@ -55,5 +55,5 @@ export default function Input(props: Control) {
         disabled={disabled}
       />
     </FormControl>
-  )
+  );
 }

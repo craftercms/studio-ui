@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Core, FileInput, XHRUpload, ProgressBar, Form } from 'uppy';
+import { Core, FileInput, Form, ProgressBar, XHRUpload } from 'uppy';
 import { defineMessages, useIntl } from 'react-intl';
 
 import 'uppy/src/style.scss';
@@ -42,14 +42,13 @@ const messages = defineMessages({
 interface UppyProps {
   formTarget: string;
   url: string;
+  fileTypes?: [string];
 
   onUploadStart?(): void;
 
   onComplete?(result: any): void;
 
   onError?(file: any, error: any, response: any): void;
-
-  fileTypes?: [string];
 }
 
 function SingleFileUpload(props: UppyProps) {
@@ -148,12 +147,12 @@ function SingleFileUpload(props: UppyProps) {
 
   return (
     <>
-      <div className="uppy-progress-bar"/>
+      <div className="uppy-progress-bar" />
       <div className="uploaded-files">
         <h5 className="single-file-upload--description">
           {description}
         </h5>
-        <div className="uppy-file-input-container"/>
+        <div className="uppy-file-input-container" />
         {
           fileName &&
           <em className={'single-file-upload--file-name ' + fileNameErrorClass}>{fileName}</em>

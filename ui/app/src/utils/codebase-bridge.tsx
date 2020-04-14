@@ -28,14 +28,14 @@ import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
-import { filter, map, take, debounceTime } from 'rxjs/operators';
+import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import { nou } from './object';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
-import { makeStyles, jssPreset } from '@material-ui/core/styles';
+import { jssPreset, makeStyles } from '@material-ui/core/styles';
 
 const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
@@ -176,7 +176,7 @@ export function createCodebaseBridge() {
         typeof component === 'string' ? Bridge.components[component] : component;
 
       if (nou(Component)) {
-        Component = function() {
+        Component = function () {
           return (
             <ErrorState
               graphicUrl="/studio/static-assets/images/warning_state.svg"

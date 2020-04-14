@@ -38,7 +38,7 @@ export function translateElements(
         Array.isArray(message) ? message.join('') : message
       );
     }
-  })
+  });
 }
 
 const approveDialogMessages = defineMessages({
@@ -207,28 +207,28 @@ const reposAdminMessages = defineMessages({
   unstagedFiles: {
     id: 'reposAdmin.unstagedFilesMessage',
     defaultMessage: 'There are unstaged files in your repository.'
-  },
+  }
 });
 
 const sharedContentDSMessages = defineMessages({
   sharedContent: {
     id: 'sharedContentDS.sharedContent',
     defaultMessage: 'Shared Content'
-  },
+  }
 });
 
 const embeddedContentDSMessages = defineMessages({
   embeddedContent: {
     id: 'embeddedContentDS.embeddedContent',
     defaultMessage: 'Embedded Content'
-  },
+  }
 });
 
 const childContentDSMessages = defineMessages({
   childContent: {
     id: 'childContentDS.childContent',
     defaultMessage: 'Child Content (Deprecated)'
-  },
+  }
 });
 
 const contentTypesMessages = defineMessages({
@@ -447,7 +447,7 @@ const siteComponentDSMessages = defineMessages({
   }
 });
 
-const codeEditorMessages = defineMessages( {
+const codeEditorMessages = defineMessages({
   confirm: {
     id: 'codeEditor.confirm',
     defaultMessage: 'Confirm Close'
@@ -458,7 +458,7 @@ const codeEditorMessages = defineMessages( {
   }
 });
 
-const globalConfigMessages = defineMessages( {
+const globalConfigMessages = defineMessages({
   title: {
     id: 'globalConfig.title',
     defaultMessage: 'Global Config'
@@ -562,7 +562,7 @@ const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
     defaultMessage: 'Draft Save Completed'
-  },
+  }
 });
 
 const dragAndDropMessages = defineMessages({
@@ -583,7 +583,7 @@ const dragAndDropMessages = defineMessages({
     defaultMessage: 'Moving components out of an embedded drop zone component is not supported yet. Please use the forms to edit content.'
   },
   embeddedComponentsDeleteChildNotSupported: {
-    id:'dragAndDropMessages.embeddedComponentsDeleteChildNotSupported',
+    id: 'dragAndDropMessages.embeddedComponentsDeleteChildNotSupported',
     defaultMessage: 'Deleting components from an embedded drop zone component is not supported yet. Please use the forms to edit content.'
   },
   contentTypeNotFound: {
@@ -595,7 +595,7 @@ const dragAndDropMessages = defineMessages({
     defaultMessage: 'Path is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   },
   objectIdNotFound: {
-    id:'dragAndDropMessages.objectIdNotFound',
+    id: 'dragAndDropMessages.objectIdNotFound',
     defaultMessage: 'Object id is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   }
 });

@@ -244,7 +244,7 @@ function UppyItem(props: UppyItemProps) {
     <Card className={classes.cardRoot}>
       {
         file.preview &&
-        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia}/>
+        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />
       }
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
@@ -258,17 +258,20 @@ function UppyItem(props: UppyItemProps) {
           </div>
           {
             file.progress.status === 'failed' &&
-            <IconButton onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              handleRetry(event, file)
-            }} className={classes.iconRetry}>
-              <ReplayIcon/>
+            <IconButton
+              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                handleRetry(event, file);
+              }}
+              className={classes.iconRetry}
+            >
+              <ReplayIcon />
             </IconButton>
           }
         </div>
-        <ProgressBar status={file.progress.status} progress={file.progress.percentage}/>
+        <ProgressBar status={file.progress.status} progress={file.progress.percentage} />
       </CardContent>
     </Card>
-  )
+  );
 }
 
 interface DropZoneProps {
@@ -292,7 +295,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
   const retryFileUpload = (file: UppyFile) => {
-    uppy.retryUpload(file.id)
+    uppy.retryUpload(file.id);
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
@@ -333,11 +336,11 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
           relativePath: file.relativePath || null
         }
       })
-    )
+    );
   }
 
   function checkFileExist(newFile: File) {
-    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type)
+    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type);
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
@@ -394,7 +397,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
           uppy.setFileState(file.id, { preview: e.target.result });
           setFiles({ [file.id]: file });
         };
-        reader.readAsDataURL(file.data)
+        reader.readAsDataURL(file.data);
       } else {
         setFiles({ [file.id]: file });
       }
@@ -408,14 +411,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       uppy.off('file-added', handleFileAdded);
       uppy.off('upload-error', handleUploadError);
       uppy.off('upload-progress', handleUploadProgress);
-    }
+    };
 
   }, [filesPerPath, onStatusChange, path, setFiles, setFilesPerPath, uppy]);
 
   useEffect(() => {
     const handleUploadSuccess = () => {
       setUploadedFiles(uploadedFiles + 1);
-      onStatusChange({ uploadedFiles: uploadedFiles + 1 })
+      onStatusChange({ uploadedFiles: uploadedFiles + 1 });
     };
 
     const handleComplete = () => {
@@ -431,7 +434,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     return () => {
       uppy.off('upload-success', handleUploadSuccess);
       uppy.off('complete', handleComplete);
-    }
+    };
   }, [onStatusChange, uploadedFiles, uppy]);
 
   useEffect(() => {
@@ -441,10 +444,10 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         if (!filesPerPath[file.meta.path]) {
           filesPerPath[file.meta.path] = [];
         }
-        filesPerPath[file.meta.path].push(file.id)
+        filesPerPath[file.meta.path].push(file.id);
       });
       setFilesPerPath(filesPerPath);
-      onStatusChange({ files: Object.keys(files).length })
+      onStatusChange({ files: Object.keys(files).length });
     }
   }, [onStatusChange, files]);
 
@@ -468,14 +471,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                 {
                   files &&
                   filesPerPath[fileId].map((id: string) =>
-                    files[id] && <UppyItem file={files[id]} key={id} retryFileUpload={retryFileUpload}/>
+                    files[id] && <UppyItem file={files[id]} key={id} retryFileUpload={retryFileUpload} />
                   )
                 }
               </div>
             )
           ) : (
             <>
-              <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')}/>
+              <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')} />
               <Typography variant="subtitle1">
                 {
                   formatMessage(
@@ -497,9 +500,9 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         multiple={true}
         onChange={handleInputChange}
       />
-      <section ref={generalProgress} className={classes.generalProgress}/>
+      <section ref={generalProgress} className={classes.generalProgress} />
     </>
-  )
+  );
 });
 
 const minimizedBarStyles = makeStyles((theme: Theme) => createStyles({
@@ -543,12 +546,12 @@ function MinimizedBar(props: any) {
       }
       {onMaximized ? (
         <IconButton aria-label="close" onClick={onMaximized}>
-          <AddRoundedIcon/>
+          <AddRoundedIcon />
         </IconButton>
       ) : null}
-      <ProgressBar status={status.status} progress={status.progress}/>
+      <ProgressBar status={status.status} progress={status.progress} />
     </Paper>
-  )
+  );
 }
 
 
@@ -586,7 +589,7 @@ function ProgressBar(props: any) {
         style={{ width: `${progress}%` }}
       />
     </div>
-  )
+  );
 }
 
 export default function BulkUpload(props: any) {
@@ -603,7 +606,7 @@ export default function BulkUpload(props: any) {
   const [minimized, setMinimized] = useState(!open);
 
   const onStatusChange = useCallback((status: any) => {
-    setDropZoneStatus(status)
+    setDropZoneStatus(status);
   }, [setDropZoneStatus]);
 
   const onBrowse = () => {
@@ -625,7 +628,7 @@ export default function BulkUpload(props: any) {
 
   useEffect(() => {
     const handleBeforeUpload = () => {
-      return formatMessage(translations.uploadInProgress)
+      return formatMessage(translations.uploadInProgress);
     };
     if (dropZoneStatus.status === 'uploading') {
       window.onbeforeunload = handleBeforeUpload;
@@ -634,7 +637,7 @@ export default function BulkUpload(props: any) {
     }
     return () => {
       window.onbeforeunload = null;
-    }
+    };
   }, [dropZoneStatus.status, formatMessage]);
 
   return (
@@ -721,5 +724,5 @@ export default function BulkUpload(props: any) {
         </DialogActions>
       </Dialog>
     </div>
-  )
+  );
 }

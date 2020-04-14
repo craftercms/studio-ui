@@ -21,18 +21,14 @@ import { Resource } from '../../models/Resource';
 import EmptyState, { EmptyStateProps } from './EmptyState';
 import { FormattedMessage } from 'react-intl';
 
-export type PropsWithResource<ResourceType = unknown, Props = {}> = PropsWithChildren<
-  {
-    resource: Resource<ResourceType>;
-  } & Props
->;
+export type PropsWithResource<ResourceType = unknown, Props = {}> = PropsWithChildren<{
+  resource: Resource<ResourceType>;
+} & Props>;
 
-type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<
-  PropsWithResource<ResourceType> & {
-    isEmpty?(value: ResourceType): boolean;
-    emptyStateProps?: EmptyStateProps;
-  }
->;
+type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<PropsWithResource<ResourceType> & {
+  isEmpty?(value: ResourceType): boolean;
+  emptyStateProps?: EmptyStateProps;
+}>;
 
 type SuspencifiedProps = PropsWithChildren<{
   suspenseProps?: SuspenseProps;

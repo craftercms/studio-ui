@@ -31,7 +31,7 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import ErrorState from '../../../components/SystemStatus/ErrorState';
 import { palette } from '../../../styles/theme';
-import CircularProgress from '@material-ui/core/CircularProgress'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const dialogStyles = () => ({
   titleRoot: {
@@ -62,7 +62,7 @@ const dialogStyles = () => ({
     padding: 0
   },
   loadingStateRoot: {
-    height: '100%',
+    height: '100%'
   },
   loadingStateGraphic: {
     flexGrow: 1,
@@ -99,13 +99,13 @@ const DialogContent = withStyles((theme: Theme) => ({
   root: {
     padding: theme.spacing(2),
     backgroundColor: palette.gray.light0
-  },
+  }
 }))(MuiDialogContent);
 
 const DialogActions = withStyles((theme: Theme) => ({
   root: {
     margin: 0,
-    padding: theme.spacing(1),
+    padding: theme.spacing(1)
   }
 }))(MuiDialogActions);
 
@@ -183,84 +183,87 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
     >
       {
         (!apiState.error) ?
-        (
-          <>
-            <DialogTitle
-              id="requestPublishDialogTitle"
-              onClose={handleClose}
-              title={title}
-              subtitle={subtitle}
-            />
-            <DialogContent dividers>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
-                  <DependencySelection
-                    items={items}
-                    checked={checkedItems}
-                    setChecked={setCheckedItems}
-                    checkedSoftDep={checkedSoftDep}
-                    setCheckedSoftDep={setCheckedSoftDep}
-                    onClickSetChecked={onClickSetChecked}
-                    deps={deps}
-                    showDepsButton={showDepsButton}
-                    onSelectAllClicked={selectAllDeps}
-                    onSelectAllSoftClicked={selectAllSoft}
-                    disabled={apiState.submitting}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
-                  <PublishForm
-                    inputs={dialog}
-                    setInputs={setDialog}
-                    setSubmitDisabled={setSubmitDisabled}
-                    showEmailCheckbox={showEmailCheckbox}
-                    publishingChannels={publishingChannels}
-                    publishingChannelsStatus={publishingChannelsStatus}
-                    onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
-                    disabled={apiState.submitting}
-                  />
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions className={ classes.dialogActions }>
-              <Button
-                color="primary"
-                onClick={ onClickShowAllDeps }
-                className={classes.leftAlignedAction}
-                disabled={showDepsDisabled || apiState.submitting}
-              >
-                <FormattedMessage
-                  id="publishDialog.showAllDependencies"
-                  defaultMessage={`Show All Dependencies`}
-                />
-              </Button>
-
-              <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
-                <FormattedMessage
-                  id="requestPublishDialog.cancel"
-                  defaultMessage={`Cancel`}
-                />
-              </Button>
-              <Button variant="contained" autoFocus onClick={handleSubmit} color="primary" disabled={submitDisabled || apiState.submitting}>
-                {
-                  apiState.submitting ?
-                  (
-                    <CircularProgress
-                      className={classes.btnSpinner}
-                      size={20}
+          (
+            <>
+              <DialogTitle
+                id="requestPublishDialogTitle"
+                onClose={handleClose}
+                title={title}
+                subtitle={subtitle}
+              />
+              <DialogContent dividers>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
+                    <DependencySelection
+                      items={items}
+                      checked={checkedItems}
+                      setChecked={setCheckedItems}
+                      checkedSoftDep={checkedSoftDep}
+                      setCheckedSoftDep={setCheckedSoftDep}
+                      onClickSetChecked={onClickSetChecked}
+                      deps={deps}
+                      showDepsButton={showDepsButton}
+                      onSelectAllClicked={selectAllDeps}
+                      onSelectAllSoftClicked={selectAllSoft}
+                      disabled={apiState.submitting}
                     />
-                  ) : (
-                    <FormattedMessage
-                      id="requestPublishDialog.submit"
-                      defaultMessage={`Submit`}
+                  </Grid>
+
+                  <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
+                    <PublishForm
+                      inputs={dialog}
+                      setInputs={setDialog}
+                      setSubmitDisabled={setSubmitDisabled}
+                      showEmailCheckbox={showEmailCheckbox}
+                      publishingChannels={publishingChannels}
+                      publishingChannelsStatus={publishingChannelsStatus}
+                      onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
+                      disabled={apiState.submitting}
                     />
-                  )
-                }
-              </Button>
-            </DialogActions>
-          </>
-        ) : (
+                  </Grid>
+                </Grid>
+              </DialogContent>
+              <DialogActions className={classes.dialogActions}>
+                <Button
+                  color="primary"
+                  onClick={onClickShowAllDeps}
+                  className={classes.leftAlignedAction}
+                  disabled={showDepsDisabled || apiState.submitting}
+                >
+                  <FormattedMessage
+                    id="publishDialog.showAllDependencies"
+                    defaultMessage={`Show All Dependencies`}
+                  />
+                </Button>
+
+                <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
+                  <FormattedMessage
+                    id="requestPublishDialog.cancel"
+                    defaultMessage={`Cancel`}
+                  />
+                </Button>
+                <Button
+                  variant="contained" autoFocus onClick={handleSubmit} color="primary"
+                  disabled={submitDisabled || apiState.submitting}
+                >
+                  {
+                    apiState.submitting ?
+                      (
+                        <CircularProgress
+                          className={classes.btnSpinner}
+                          size={20}
+                        />
+                      ) : (
+                        <FormattedMessage
+                          id="requestPublishDialog.submit"
+                          defaultMessage={`Submit`}
+                        />
+                      )
+                  }
+                </Button>
+              </DialogActions>
+            </>
+          ) : (
             <ErrorState
               classes={{ root: classes.errorPaperRoot }}
               error={apiState.errorResponse}
@@ -269,7 +272,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
           )
       }
     </Dialog>
-  )
+  );
 });
 
 export default PublishDialogUI;
