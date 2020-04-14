@@ -15,134 +15,146 @@
  */
 
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource =
-    CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource
-    ||  function(fieldName, containerEl, form, type)  {
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource ||
+  function(fieldName, containerEl, form, type) {
+    this.fieldName = fieldName;
+    this.containerEl = containerEl;
+    this.form = form;
+    this['interface'] = type.indexOf('datasource:') !== -1 ? type.split('datasource:')[1] : '' + type;
+    this.fieldValue = [];
+    return this;
+  };
 
-        this.fieldName = fieldName;
-        this.containerEl = containerEl;
-        this.form = form;
-        this["interface"] = (type.indexOf("datasource:") !== -1) ? type.split("datasource:")[1] : "" + type;
-        this.fieldValue = [];
-        return this;
-    };
-
-YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStudioAdminConsole.Tool.ContentTypes.PropertyType, {
-
+YAHOO.extend(
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource,
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType,
+  {
     render: function(value, updateFn, fName, itemId) {
-        var type = this["interface"];
-        var containerEl = this.containerEl;
-        var valuesEl, controlEl;
+      var type = this['interface'];
+      var containerEl = this.containerEl;
+      var valuesEl, controlEl;
 
-        var datasources = this.form.datasources;
+      var datasources = this.form.datasources;
 
-        if (datasources.length) {
-            this.fieldValue = (!value) ? [] :
-                (typeof value == "string") ? value.split(",").filter(name => datasources.some(ds=> ds.id === name)) : value;
+      if (datasources.length) {
+        this.fieldValue = (!value) 
+          ? [] 
+          : typeof value == 'string' 
+            ? value.split(',').filter(name => datasources.some(ds => ds.id === name)) 
+            : value;
 
-            valuesEl = document.createElement("div");
+        valuesEl = document.createElement('div');
 
-            for(var i=0; i < datasources.length; i++) {
-                var datasource = datasources[i];
-                if (datasource["interface"] === type) {
-
-                    controlEl = this.createControl(datasource, updateFn, type, itemId);
-                    valuesEl.appendChild(controlEl);
-                }
-            }
-
-            if( valuesEl.children.length <= 0 ){
-                this.createLabel(valuesEl);
-            }
-            containerEl.appendChild(valuesEl);
-            YAHOO.util.Dom.addClass(containerEl, "checkboxes");
-        } else {
-            valuesEl = document.createElement("div");
-            containerEl.appendChild(valuesEl);
-            this.createLabel(valuesEl);
+        for (var i = 0; i < datasources.length; i++) {
+          var datasource = datasources[i];
+          if (datasource['interface'] === type) {
+            controlEl = this.createControl(datasource, updateFn, type, itemId);
+            valuesEl.appendChild(controlEl);
+          }
         }
+
+        if (valuesEl.children.length <= 0) {
+          this.createLabel(valuesEl);
+        }
+        containerEl.appendChild(valuesEl);
+        YAHOO.util.Dom.addClass(containerEl, 'checkboxes');
+      } else {
+        valuesEl = document.createElement('div');
+        containerEl.appendChild(valuesEl);
+        this.createLabel(valuesEl);
+      }
     },
 
-    createLabel: function(containerEl){
-        var labelEl = document.createElement("span");
-        labelEl.innerHTML = CMgs.format(langBundle, "noDatasources");
-        YDom.setStyle(labelEl,"font-style","italic");
-        containerEl.appendChild(labelEl);
+    createLabel: function(containerEl) {
+      var labelEl = document.createElement('span');
+      labelEl.innerHTML = CMgs.format(langBundle, 'noDatasources');
+      YDom.setStyle(labelEl, 'font-style', 'italic');
+      containerEl.appendChild(labelEl);
     },
 
-    createControl : function (datasource, updateFn, type, itemId) {
-        var labelEl, cbEl, labelText, _self = this;
+    createControl: function(datasource, updateFn, type, itemId) {
+      var labelEl,
+        cbEl,
+        labelText,
+        _self = this;
 
-        labelEl = document.createElement("label");
-        labelEl.setAttribute("for", datasource.id);
+      labelEl = document.createElement('label');
+      labelEl.setAttribute('for', datasource.id);
 
-        labelText = document.createTextNode(datasource.title);
+      labelText = document.createTextNode(datasource.title);
 
-        cbEl = document.createElement("input");
+      cbEl = document.createElement('input');
 
-        var clickFn = function(){};
+      var clickFn = function() {};
 
-        if(itemId === "checkboxgroup"){
-            cbEl.type = "radio";
-            if(!this.radioGroupName){
-                this.radioGroupName = CStudioAuthoring.Utils.generateUUID();
-            }
-            cbEl.name = this.radioGroupName;
-            clickFn = function() {
-                _self.removeAll();
-                _self.addValue(this.id);
-                updateFn(null, {fieldName: _self.fieldName, value: _self.fieldValue.toString() });
-            }
-        }else{
-            cbEl.type = "checkbox";
-
-            clickFn =  function() {
-                if (this.checked) {
-                    if($(this).parent().parent().find('input[type="checkbox"]:checked').length === 1){
-                        _self.removeAll();
-                    }
-                    _self.addValue(this.id);
-                    updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
-                } else {
-                    _self.removeValue(this.id);
-                    updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
-                }
-            }
+      if (itemId === 'checkboxgroup') {
+        cbEl.type = 'radio';
+        if (!this.radioGroupName) {
+          this.radioGroupName = CStudioAuthoring.Utils.generateUUID();
         }
+        cbEl.name = this.radioGroupName;
+        clickFn = function() {
+          _self.removeAll();
+          _self.addValue(this.id);
+          updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
+        };
+      } else {
+        cbEl.type = 'checkbox';
 
+        clickFn = function() {
+          if (this.checked) {
+            if (
+              $(this)
+                .parent()
+                .parent()
+                .find('input[type="checkbox"]:checked').length === 1
+            ) {
+              _self.removeAll();
+            }
+            _self.addValue(this.id);
+            updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
+          } else {
+            _self.removeValue(this.id);
+            updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
+          }
+        };
+      }
 
-        cbEl.value = datasource.id;
-        cbEl.id = datasource.id;
+      cbEl.value = datasource.id;
+      cbEl.id = datasource.id;
 
-        if (this.fieldValue.indexOf(datasource.id) > -1) {
-            cbEl.checked = true;
-        }
+      if (this.fieldValue.indexOf(datasource.id) > -1) {
+        cbEl.checked = true;
+      }
 
-        YAHOO.util.Event.on(cbEl, "click", clickFn);
+      YAHOO.util.Event.on(cbEl, 'click', clickFn);
 
-        labelEl.appendChild(cbEl);
-        labelEl.appendChild(labelText);
-        return labelEl;
+      labelEl.appendChild(cbEl);
+      labelEl.appendChild(labelText);
+      return labelEl;
     },
 
     addValue: function(elKey) {
-
-        var idx = this.fieldValue.indexOf(elKey);
-        if( 0 > idx )
-            this.fieldValue.push(elKey);
+      var idx = this.fieldValue.indexOf(elKey);
+      if (0 > idx) this.fieldValue.push(elKey);
     },
 
     removeAll: function() {
-        this.fieldValue.splice(0, this.fieldValue.length);
+      this.fieldValue.splice(0, this.fieldValue.length);
     },
 
-    removeValue: function (elKey) {
-        var idx = this.fieldValue.indexOf(elKey);
-        this.fieldValue.splice(idx, 1);
+    removeValue: function(elKey) {
+      var idx = this.fieldValue.indexOf(elKey);
+      this.fieldValue.splice(idx, 1);
     },
 
     getValue: function() {
-        return this.fieldValue;
+      return this.fieldValue;
     }
-});
+  }
+);
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-content-types-proptype-datasource", CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-console-tools-content-types-proptype-datasource',
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource
+);

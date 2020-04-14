@@ -19,6 +19,7 @@ import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { Observable, OperatorFunction } from 'rxjs';
 import { Credentials, LegacyUser, User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
+import { APIError } from '../models/GlobalState';
 
 const mapToUser: OperatorFunction<LegacyUser, User> = map<LegacyUser, User>((user) => ({
   ...user,
@@ -48,7 +49,7 @@ export function login(credentials: Credentials): Observable<User> {
 
 export function validateSession(): Observable<boolean> {
   return get('/studio/api/1/services/api/1/security/validate-session.json').pipe(
-    map(({ response }) => response.active)
+    pluck('response', 'active')
   );
 }
 
@@ -59,14 +60,7 @@ export function me(): Observable<User> {
   );
 }
 
-interface ApiResponse {
-  code: number
-  message: string
-  remedialAction: string
-  documentationUrl: string
-}
-
-export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
+export function sendPasswordRecovery(username: string): Observable<APIError> {
   return get(`/studio/api/2/users/forgot_password?username=${username}`).pipe(
     pluck('response', 'response'),
     catchError((error: AjaxError) => {

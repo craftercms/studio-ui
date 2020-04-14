@@ -20,6 +20,7 @@ import crafterIconUrl from '../assets/crafter-icon.svg';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { palette } from '../styles/theme';
 
+// eslint-disable-next-line
 const DevServerRoot = process.env.REACT_APP_COMPONENT ? lazy(() => import(process.env.REACT_APP_COMPONENT)) : Intro;
 
 export default function App() {
@@ -76,8 +77,7 @@ function Intro() {
       <img className={classes.logo} src={crafterIconUrl} alt="" />
       <h1>Crafter CMS Codebase Next</h1>
       <p className={classes.hint}>
-        Create a <em>.env.local</em> file and add the content below. Point the <em>REACT_APP_COMPONENT</em> variable to
-        the component you'd like to see in your local dev server.
+        Create a <em>.env.local</em> file and add the content below. Point the <em>REACT_APP_COMPONENT</em> variable to the component you'd like to see in your local dev server.
       </p>
       <code className={classes.code}>
         HOST=authoring.sample.com<br />

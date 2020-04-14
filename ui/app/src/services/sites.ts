@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
-import { Site } from "../models/Site";
+import { get, postJSON } from '../utils/ajax';
+import { CreateSiteMeta, Site } from '../models/Site';
+import { PaginationOptions } from '../models/Search';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { PaginationOptions } from '../models/Search';
 import { PagedArray } from '../models/PagedArray';
 
 export function fetchBlueprints() {
@@ -32,7 +32,7 @@ export function fetchSites(paginationOptions?: PaginationOptions): Observable<Pa
   }, paginationOptions || {});
   return get(`/studio/api/2/users/me/sites?limit=${options.limit}&offset=${options.offset}`).pipe(
     map(({ response }) => Object.assign(
-      response.sites.map((site: any) => ({
+      response.sites.map(site => ({
         id: site.siteId,
         name: site.siteId,
         description: site.desc
@@ -46,14 +46,16 @@ export function fetchSites(paginationOptions?: PaginationOptions): Observable<Pa
   );
 }
 
-export function createSite(site: Site) {
-  return post('/studio/api/1/services/api/1/site/create.json', site, {
-    'Content-Type': 'application/json'
-  })
+export function createSite(site: CreateSiteMeta) {
+  return postJSON('/studio/api/1/services/api/1/site/create.json', site);
+}
+
+export function deleteSite(id: string) {
+  return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id });
 }
 
 export function checkHandleAvailability(name: string) {
-  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
+  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`);
 }
 
 export default {
@@ -61,4 +63,4 @@ export default {
   fetchSites,
   createSite,
   checkHandleAvailability
-}
+};
