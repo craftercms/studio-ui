@@ -68,14 +68,13 @@ interface Expanded {
 
 interface GitFormProps {
   inputs: SiteState;
+  type?: string;
 
   handleInputChange(event: React.ChangeEvent): any;
 
   onKeyPress(event: any): any;
 
   setInputs(state: any): any;
-
-  type?: string;
 }
 
 const pushMessages = defineMessages({
@@ -178,7 +177,7 @@ function GitForm(props: GitFormProps) {
 
   function renderHelperText(name: string, value: string = '', helperText: string, required: boolean, submitted: boolean, pushSite: boolean) {
     if (required && !value && submitted && pushSite) {
-      return formatMessage(messages.required, { name: name })
+      return formatMessage(messages.required, { name: name });
     } else {
       return helperText;
     }
@@ -224,7 +223,7 @@ function GitForm(props: GitFormProps) {
                     aria-label="toggle password visibility"
                     onClick={handleClickShowPassword}
                   >
-                    {showPassword ? <VisibilityOff/> : <Visibility/>}
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               )
@@ -253,7 +252,7 @@ function GitForm(props: GitFormProps) {
                     aria-label="toggle password visibility"
                     onClick={handleClickShowPassword}
                   >
-                    {showPassword ? <VisibilityOff/> : <Visibility/>}
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               )
@@ -278,7 +277,7 @@ function GitForm(props: GitFormProps) {
           />
         }
       </div>
-    )
+    );
   }
 
   return (
@@ -319,14 +318,14 @@ function GitForm(props: GitFormProps) {
             <FormControlLabel
               value="none"
               control={
-                <Radio color="primary" onChange={() => viewAuth('none')}/>
+                <Radio color="primary" onChange={() => viewAuth('none')} />
               }
               label={formatMessage(messages.authenticationNoRequired)}
             />
             <FormControlLabel
               value="basic"
               control={
-                <Radio color="primary" onChange={() => viewAuth('basic')}/>
+                <Radio color="primary" onChange={() => viewAuth('basic')} />
               }
               label={formatMessage(messages.usernameAndPassword)}
             />
@@ -335,7 +334,7 @@ function GitForm(props: GitFormProps) {
             </Collapse>
             <FormControlLabel
               value="token"
-              control={<Radio color="primary" onChange={() => viewAuth('token')}/>}
+              control={<Radio color="primary" onChange={() => viewAuth('token')} />}
               label={formatMessage(messages.token)}
             />
             <Collapse in={inputs.expanded.token} timeout={300} unmountOnExit>
@@ -343,7 +342,7 @@ function GitForm(props: GitFormProps) {
             </Collapse>
             <FormControlLabel
               value="key"
-              control={<Radio color="primary" onChange={() => viewAuth('key')}/>}
+              control={<Radio color="primary" onChange={() => viewAuth('key')} />}
               label={formatMessage(messages.privateKey)}
             />
             <Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
@@ -381,7 +380,7 @@ function GitForm(props: GitFormProps) {
         />
       </Grid>
     </Grid>
-  )
+  );
 }
 
 export default GitForm;

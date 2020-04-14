@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 //@ts-ignore
 import GraphiQL from 'graphiql';
 //@ts-ignore
@@ -143,7 +143,7 @@ function Graphi(props: GraphiQLProps) {
         </GraphiQL.Toolbar>
       </GraphiQL>
     </div>
-  )
+  );
 }
 
 export default Graphi;

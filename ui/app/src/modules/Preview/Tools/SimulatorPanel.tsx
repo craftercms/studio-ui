@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -235,11 +234,11 @@ export default function SimulatorPanel(props: any) {
           </Grid>
           <Grid item xs={4} className={classes.simulatorFlipColumn}>
             <IconButton onClick={onFlipDimensions} className={classes.simulatorFlipButton}>
-              <ScreenRotationRounded/>
+              <ScreenRotationRounded />
             </IconButton>
           </Grid>
         </Grid>
-        <Divider/>
+        <Divider />
         <FormControl component="fieldset" className={classes.presetFieldset}>
           <FormLabel component="legend">{PRESETS}</FormLabel>
           <RadioGroup
@@ -250,20 +249,20 @@ export default function SimulatorPanel(props: any) {
           >
             <FormControlLabel
               value={SIMULATOR_PANEL_CUSTOM_MODE}
-              control={<Radio/>}
+              control={<Radio />}
               label={formatMessage(translations.custom)}
               disabled={true}
             />
             <FormControlLabel
               value={SIMULATOR_PANEL_RESPONSIVE_MODE}
-              control={<Radio/>}
+              control={<Radio />}
               label={formatMessage(translations.previewWindowSize)}
             />
             {channels.map((channel) =>
               <FormControlLabel
                 key={channel.value}
                 value={channel.value}
-                control={<Radio/>}
+                control={<Radio />}
                 label={formatMessage(getTranslation(channel.title, translations))}
               />
             )}

@@ -45,13 +45,11 @@ interface ConfirmDialogBaseProps {
   disableBackdropClick?: boolean;
 }
 
-export type ConfirmDialogProps = PropsWithChildren<
-  ConfirmDialogBaseProps & {
-    onOk?(): any;
-    onCancel?(): any;
-    onClose?(): any;
-  }
->;
+export type ConfirmDialogProps = PropsWithChildren<ConfirmDialogBaseProps & {
+  onOk?(): any;
+  onCancel?(): any;
+  onClose?(): any;
+}>;
 
 export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
   onOk?: StandardAction;
