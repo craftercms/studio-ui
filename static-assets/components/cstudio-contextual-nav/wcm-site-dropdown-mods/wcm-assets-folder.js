@@ -1985,7 +1985,7 @@ var storage = CStudioAuthoring.Storage;
         };
         CrafterCMSNext.render(confirm, 'ConfirmDialog', {
           title: CrafterCMSNext.i18n.intl.formatMessage(messages.title),
-          description: CrafterCMSNext.i18n.intl.formatMessage(messages.description),
+          body: CrafterCMSNext.i18n.intl.formatMessage(messages.description),
           onClose: onClose,
           onOk: onClose,
           open: true
