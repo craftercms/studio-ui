@@ -36,11 +36,9 @@ interface ErrorDialogBaseProps {
   error: APIError;
 }
 
-export type  ErrorDialogProps =  PropsWithChildren<
-  ErrorDialogBaseProps & {
-    onClose(): any;
-  }
->;
+export type  ErrorDialogProps = PropsWithChildren<ErrorDialogBaseProps & {
+  onClose(): any;
+}>;
 
 export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
   onClose?: StandardAction;

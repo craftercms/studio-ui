@@ -37,7 +37,7 @@ export function dasherize(str: string) {
 }
 
 export function removeLastPiece(str: string, splitChar = '.') {
-  return str.substr(0, str.lastIndexOf(splitChar))
+  return str.substr(0, str.lastIndexOf(splitChar));
 }
 
 export function popPiece(str: string, splitChar = '.') {
@@ -108,7 +108,7 @@ export function bytesToSize(bytes: number, separator: string = '') {
   if (bytes === 0) return 'n/a';
   const i = parseInt(`${Math.floor(Math.log(bytes) / Math.log(1024))}`, 10);
   if (i === 0) return `${bytes}${separator}${sizes[i]}`;
-  return `${(bytes / (1024 ** i)).toFixed(1)}${separator}${sizes[i]}`
+  return `${(bytes / (1024 ** i)).toFixed(1)}${separator}${sizes[i]}`;
 }
 
 export default {

@@ -65,7 +65,7 @@ export default function ContextMenu(props: CustomMenuProps) {
                 <Typography variant="body1" className={classes.helperText}>
                   {formatMessage(sectionItem.label, sectionItem.values)}
                 </Typography>
-                <Divider/>
+                <Divider />
               </div>
             ) : (
               <MenuItem
@@ -80,5 +80,5 @@ export default function ContextMenu(props: CustomMenuProps) {
         )
       }
     </Menu>
-  )
+  );
 }

@@ -60,6 +60,38 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
   return table;
 }
 
+export function flattenHierarchical<T>(root: T | T[], childrenProp = 'children'): T[] {
+  return (Array.isArray(root) ? root : [root])
+    .flatMap((node) =>
+      Boolean(node)
+        ? [node, ...flattenHierarchical(node[childrenProp] ?? [], childrenProp)]
+        : null
+    );
+}
+
+export function hierarchicalToLookupTable<T>(
+  root: T | T[],
+  childrenProp = 'children',
+  idProp = 'id'
+): LookupTable<T> {
+  return createLookupTable(
+    normalizeProp(flattenHierarchical(root, childrenProp), idProp, childrenProp),
+    idProp
+  );
+}
+
+// TODO: Types here could be better.
+export function normalizeProp<T>(
+  list: T[],
+  idProp = 'id',
+  normalizeTargetProp = 'children'
+): T[] {
+  return list.map((item) => ({
+    ...item,
+    [normalizeTargetProp]: item[normalizeTargetProp]?.map((child) => child[idProp])
+  }));
+}
+
 export function retrieveProperty(object: object, prop: string): any {
   return object == null ? null : prop.split('.').reduce((value, prop) => value[prop], object);
 }
@@ -125,11 +157,11 @@ export function findParentModelId(
   return nnou(parentId)
     ? // If it has a path, it is not embedded and hence the parent
       // Otherwise, need to keep looking.
-      nnou(models[parentId].craftercms.path)
+    nnou(models[parentId].craftercms.path)
       ? parentId
       : findParentModelId(parentId, childrenMap, models)
     : // No parent found for this model
-      null;
+    null;
 }
 
 export function isPlainObject(obj) {

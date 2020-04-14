@@ -37,12 +37,12 @@ import cardTitleStyles from '../../../../styles/card';
 
 
 interface BlueprintCardProps {
+  blueprint: Blueprint,
+  interval: number;
+
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
 
   onDetails(blueprint: Blueprint, index?: number): any,
-
-  blueprint: Blueprint,
-  interval: number;
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);

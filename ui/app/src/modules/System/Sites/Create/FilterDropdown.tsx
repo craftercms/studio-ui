@@ -112,13 +112,12 @@ const messages: any = defineMessages({
 interface FilterDropdownProps {
   text: string;
   className: any;
+  currentFilters: CurrentFilters;
+  filters: any;
 
   handleFilterChange(event: any): any;
 
   handleEnterKey(path: string): any;
-
-  currentFilters: CurrentFilters;
-  filters: any;
 }
 
 export default function FilterDropdown(props: FilterDropdownProps) {
@@ -261,5 +260,5 @@ export default function FilterDropdown(props: FilterDropdownProps) {
         </section>
       </Popover>
     </div>
-  )
+  );
 }

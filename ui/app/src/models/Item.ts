@@ -17,6 +17,7 @@ export interface LegacyItem {
   name: string;
   internalName: string;
   uri: string;
+
   [prop: string]: any;
 
   children: LegacyItem[];
