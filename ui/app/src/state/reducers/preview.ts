@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,6 +34,7 @@ import {
   FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE,
   FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
+  fetchPreviewToolsConfigComplete,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -50,7 +50,6 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
-  fetchPreviewToolsConfigComplete,
   UPDATE_AUDIENCES_PANEL_MODEL
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
@@ -129,19 +128,19 @@ const reducer = createReducer<GlobalState['preview']>({
     return {
       ...state,
       showToolsPanel: true
-    }
+    };
   },
   [CLOSE_TOOLS]: (state) => {
     return {
       ...state,
       showToolsPanel: false
-    }
+    };
   },
   [fetchPreviewToolsConfigComplete.type]: (state, { payload }) => {
     return {
       ...state,
       tools: payload.modules
-    }
+    };
   },
   [SET_HOST_SIZE]: (state, { payload }) => {
     if (isNaN(payload.width)) {
@@ -157,7 +156,7 @@ const reducer = createReducer<GlobalState['preview']>({
         width: minFrameSize(payload.width),
         height: minFrameSize(payload.height)
       }
-    }
+    };
   },
   [SET_HOST_WIDTH]: (state, { payload }) => {
     if (isNaN(payload)) {
@@ -169,7 +168,7 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state.hostSize,
         width: minFrameSize(payload)
       }
-    }
+    };
   },
   [SET_HOST_HEIGHT]: (state, { payload }) => {
     if (isNaN(payload)) {
@@ -181,13 +180,13 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state.hostSize,
         height: minFrameSize(payload)
       }
-    }
+    };
   },
   [FETCH_CONTENT_MODEL_COMPLETE]: (state, { payload }) => {
     return {
       ...state,
       currentModels: payload
-    }
+    };
   },
   [GUEST_CHECK_IN]: (state, { payload }) => {
     return {
@@ -200,7 +199,7 @@ const reducer = createReducer<GlobalState['preview']>({
         ...payload
       },
       computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : payload.url
-    }
+    };
   },
   [GUEST_CHECK_OUT]: (state) => {
     let nextState = state;
@@ -246,7 +245,7 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state.guest,
         selected: [payload]
       }
-    }
+    };
   },
   [CLEAR_SELECT_FOR_EDIT]: (state, { payload }) => {
     if (state.guest === null) {
@@ -270,7 +269,7 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state.guest,
         itemBeingDragged: payload
       }
-    }
+    };
   },
   [CHANGE_CURRENT_URL]: (state, { payload }) => (
     (state.currentUrl === payload)
@@ -321,7 +320,7 @@ const reducer = createReducer<GlobalState['preview']>({
         contentType: payload.contentType,
         model: payload.model
       }
-    }
+    };
   },
   [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED]: (state, { payload }) => ({
     ...state,
@@ -372,7 +371,7 @@ const reducer = createReducer<GlobalState['preview']>({
         query: newQuery,
         pageNumber: Math.ceil(newQuery.offset / newQuery.limit)
       }
-    }
+    };
   },
   [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
     let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
@@ -388,7 +387,7 @@ const reducer = createReducer<GlobalState['preview']>({
         isFetching: false,
         error: null
       }
-    }
+    };
   },
   [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
     ...state,
@@ -405,7 +404,7 @@ const reducer = createReducer<GlobalState['preview']>({
         pageNumber: Math.ceil(newQuery.offset / newQuery.limit),
         contentTypeFilter: contentTypeFilter ? contentTypeFilter : state.components.contentTypeFilter
       }
-    }
+    };
   },
   [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (state, { payload }: { payload: ContentInstancePage }) => {
     let page = [...state.components.page];
@@ -420,7 +419,7 @@ const reducer = createReducer<GlobalState['preview']>({
         isFetching: false,
         error: null
       }
-    }
+    };
   },
   [FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED]: (state, { payload }) => ({
     ...state,

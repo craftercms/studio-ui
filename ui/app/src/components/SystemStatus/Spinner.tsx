@@ -20,14 +20,14 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   progress: {
-    margin: theme.spacing(2),
+    margin: theme.spacing(2)
   },
   center: {
     position: 'absolute',
     top: '50%',
     left: '50%',
     background: (props: any) => props.background,
-    transform: 'translate(-50%, -50%)',
+    transform: 'translate(-50%, -50%)'
   }
 }));
 

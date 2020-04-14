@@ -124,32 +124,29 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
 
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setDialogConfig({ open: false, src: null, type: null, inProgress: true });
-  };
+  }, [setDialogConfig]);
 
   const onErrorClose = () => {
     setError(null);
     closeEmbeddedLegacyForm(false);
   };
 
-  const handleTabChange = useCallback(
-    (event: React.ChangeEvent<{}>, type: string) => {
-      let inProgress = !tabsState[type].loaded;
-      setDialogConfig({ type, inProgress });
-      iframeRef.current.contentWindow.postMessage(
-        {
-          type: EDIT_FORM_CHANGE_TAB,
-          tab: type,
-          path: getPath(type)
-        },
-        '*'
-      );
-    },
-    [getPath, setDialogConfig, tabsState]
-  );
+  const handleTabChange = useCallback((event: React.ChangeEvent<{}>, type: string) => {
+    let inProgress = !tabsState[type].loaded;
+    setDialogConfig({ type, inProgress });
+    iframeRef.current.contentWindow.postMessage(
+      {
+        type: EDIT_FORM_CHANGE_TAB,
+        tab: type,
+        path: getPath(type)
+      },
+      '*'
+    );
+  }, [getPath, setDialogConfig, tabsState]);
 
-  const closeEmbeddedLegacyForm = (refresh: boolean, tab?: string) => {
+  const closeEmbeddedLegacyForm = useCallback((refresh: boolean, tab?: string) => {
     let hasSomeLoaded = filterBy('loaded', tabsState, tab);
 
     if (hasSomeLoaded.length && tab) {
@@ -163,7 +160,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         getHostToGuestBus().next({ type: RELOAD_REQUEST });
       }
     }
-  };
+  }, [handleClose, handleTabChange, setTabsState, tabsState]);
 
   useEffect(() => {
     if (dialogConfig.open) {
@@ -209,7 +206,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         messagesSubscription.unsubscribe();
       };
     }
-  }, [handleTabChange, setDialogConfig, setTabsState, tabsState, dialogConfig, messages]);
+  }, [setDialogConfig, setTabsState, tabsState, dialogConfig, messages, closeEmbeddedLegacyForm, dispatch]);
 
   return (
     <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>

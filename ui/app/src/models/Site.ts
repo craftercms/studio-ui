@@ -27,7 +27,6 @@ export interface Views {
 }
 
 export interface SiteState {
-  [key: string]: string | boolean | Blueprint | number | object;
   blueprint: Blueprint;
   siteId: string;
   siteIdExist: boolean;
@@ -47,7 +46,7 @@ export interface SiteState {
   repoKey: string;
   submitted: boolean;
   selectedView: number;
-  details: { blueprint: Blueprint, index: number};
+  details: { blueprint: Blueprint, index: number };
   blueprintFields?: {
     [key: string]: string;
   };
@@ -56,10 +55,11 @@ export interface SiteState {
     token: boolean,
     key: boolean
   }
+
+  [key: string]: string | boolean | Blueprint | number | object;
 }
 
 export interface CreateSiteMeta {
-  [key:string]: any;
   siteId: string;
   description?: string;
   singleBranch?: boolean;
@@ -69,8 +69,8 @@ export interface CreateSiteMeta {
   repoRemoteName?: string;
   remoteUrl?: string;
   remoteName?: string;
-  remoteBranch? : string;
-  sandboxBranch? : string;
+  remoteBranch?: string;
+  sandboxBranch?: string;
   remoteUsername?: string;
   remotePassword?: string;
   remoteToken?: string;
@@ -79,10 +79,11 @@ export interface CreateSiteMeta {
   siteParams?: {
     [key: string]: string;
   }
+
+  [key: string]: any;
 }
 
 export interface MarketplaceSite {
-  [key:string]: any;
   siteId: string;
   blueprintId: string;
   blueprintVersion: {
@@ -93,6 +94,8 @@ export interface MarketplaceSite {
   siteParams?: {
     [key: string]: string;
   }
+
+  [key: string]: any;
 }
 
 export interface Site {

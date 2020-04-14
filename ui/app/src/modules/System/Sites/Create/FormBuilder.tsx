@@ -25,12 +25,11 @@ import PasswordTextField from '../../../../components/Controls/PasswordTextField
 
 interface FormBuilderProps {
   parameters: [Parameter];
+  inputs: SiteState;
 
   handleInputChange(event: React.ChangeEvent, type?: string): any;
 
   onKeyPress(event: React.KeyboardEvent): any;
-
-  inputs: SiteState;
 }
 
 const useStyles = makeStyles(() => ({
@@ -56,7 +55,7 @@ export default function FormBuilder(props: FormBuilderProps) {
 
   function renderHelperText(name: string, value: string = '', helperText: string, required: boolean, submitted: boolean) {
     if (required && !value && submitted) {
-      return formatMessage(messages.required, { name: name })
+      return formatMessage(messages.required, { name: name });
     } else {
       return helperText;
     }
@@ -98,13 +97,13 @@ export default function FormBuilder(props: FormBuilderProps) {
             )
           }
         </Grid>
-      )
-    })
+      );
+    });
   }
 
   return (
     <Grid container spacing={0} className={classes.container}>
       {renderParameters(parameters)}
     </Grid>
-  )
+  );
 }

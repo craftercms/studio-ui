@@ -71,7 +71,7 @@ function VideoPlayer(props: VideoPlayerProps) {
   ]);
 
   return (
-    <video ref={videoNode} className="video-js"/>
+    <video ref={videoNode} className="video-js" />
   );
 
 }

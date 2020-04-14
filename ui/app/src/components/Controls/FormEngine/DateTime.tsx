@@ -53,5 +53,5 @@ export default function DateTime(props: DateTimeControl) {
         }}
       />
     </FormControl>
-  )
+  );
 }

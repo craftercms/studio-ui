@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,15 +16,7 @@
 
 import { shallowEqual, useSelector } from 'react-redux';
 import GlobalState, { GuestData } from '../models/GlobalState';
-import {
-  Dispatch,
-  EffectCallback,
-  SetStateAction,
-  useEffect,
-  useReducer,
-  useRef,
-  useState
-} from 'react';
+import { Dispatch, EffectCallback, SetStateAction, useEffect, useReducer, useRef, useState } from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
@@ -123,11 +114,9 @@ export function useResolveWhenNotNullResource(source) {
 }
 
 // TODO: Rename to useStateResource
-export function useStateResourceSelection<
-  ReturnType = unknown,
+export function useStateResourceSelection<ReturnType = unknown,
   SourceType = GlobalState,
-  ErrorType = unknown
->(
+  ErrorType = unknown>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: {
     shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
