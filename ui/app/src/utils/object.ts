@@ -61,14 +61,24 @@ export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTa
   return table;
 }
 
-export function createNodesLookup(list: any[], idProp: string = 'id'): LookupTable {
-  const table = {};
-  list.forEach((item) => {
-    table[retrieveProperty(item as any, idProp)] = item;
-    item.children?.forEach(children => {
-      table[retrieveProperty(children as any, 'id')] = children;
+export function createNodesLookup<T>(list: T[], idProp: string = 'id'): LookupTable<T> {
+  let table = {};
+  const createChildrenTable = (item, _idProp: string = 'id') => {
+    table[retrieveProperty(item as any, _idProp)] = {...item, children: []};
+    item.children.forEach(children => {
+      table[retrieveProperty(children as any, 'id')] = {
+        ...children,
+        children: []
+      };
+
+      table[retrieveProperty(item as any, _idProp)].children.push(children.id)
+
+      children.children && createChildrenTable(children)
     })
-  });
+  }
+
+  list.forEach((item: any) => item.children && createChildrenTable(item, idProp));
+
   return table;
 }
 

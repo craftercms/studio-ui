@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import clsx from 'clsx';
-import { defineMessages, useIntl } from 'react-intl';
+import {defineMessages, useIntl} from 'react-intl';
 import ToolPanel from './ToolPanel';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
@@ -27,22 +27,22 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeftRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
-import { useActiveSiteId, usePreviewGuest, useSelection, useStateResource } from '../../../utils/hooks';
-import { ContentType, ContentTypeField } from '../../../models/ContentType';
+import {useActiveSiteId, usePreviewGuest, useSelection, useStateResource} from '../../../utils/hooks';
+import {ContentType, ContentTypeField} from '../../../models/ContentType';
 import Page from '../../../components/Icons/Page';
 import ContentTypeFieldIcon from '../../../components/Icons/ContentTypeField';
 import Component from '../../../components/Icons/Component';
 import NodeSelector from '../../../components/Icons/NodeSelector';
-import { LookupTable } from '../../../models/LookupTable';
+import {LookupTable} from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
 import RepeatGroup from '../../../components/Icons/RepeatGroup';
-import { iconWithStrokeAndFill } from '../../../styles/icon';
-import {createLookupTable, createNodesLookup, reversePluckProps} from '../../../utils/object';
-import { CONTENT_TREE_FIELD_SELECTED } from '../../../state/actions/preview';
-import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
+import {iconWithStrokeAndFill} from '../../../styles/icon';
+import {createNodesLookup} from '../../../utils/object';
+import {CONTENT_TREE_FIELD_SELECTED} from '../../../state/actions/preview';
+import {DRAWER_WIDTH, getHostToGuestBus} from '../previewContext';
 import ComponentMenu from '../../../components/ComponentMenu';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
-import { Resource } from '../../../models/Resource';
+import {Resource} from '../../../models/Resource';
 
 const translations = defineMessages({
   contentTree: {
@@ -131,8 +131,7 @@ interface RenderTree {
 interface Data {
   selected: string;
   previous: Array<string>;
-  lookupTable: LookupTable<RenderTree>;
-  nodeLookup: any;
+  nodeLookup: LookupTable<RenderTree>;
 }
 
 function getNodeSelectorChildren(
@@ -168,7 +167,7 @@ function getRepeatGroupChildren(
   Object.keys(item).forEach((fieldName) => {
     let subChildren = [];
     let fieldId = fieldName;
-    const { type, name } = contentTypeField.fields[fieldName];
+    const {type, name} = contentTypeField.fields[fieldName];
     if (type === 'node-selector') {
       fieldId = `${contentTypeField.id}.${fieldName}`;
       item[fieldName].forEach((id: string, i: number) => {
@@ -207,7 +206,7 @@ function getChildren(
   let children = [];
   Object.keys(model).forEach((fieldName) => {
     if (fieldName === 'craftercms') return;
-    const { type, name } = contentType.fields[fieldName];
+    const {type, name} = contentType.fields[fieldName];
     let subChildren = [];
     if (type === 'node-selector') {
       model[fieldName].forEach((id: string, i: number) => {
@@ -271,25 +270,13 @@ interface TreeItemCustomInterface {
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
-  const { resource, nodeId, handleScroll, handlePrevious, handleClick, handleOptions } = props;
+  const {resource, nodeId, handleScroll, handlePrevious, handleClick, handleOptions} = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
   const nodes = resource.read().nodeLookup[nodeId];
   const isMounted = useRef(null);
-
   let Icon;
-  if (nodes.type === 'page') {
-    Icon = Page;
-  } else if (nodes.type === 'node-selector') {
-    Icon = NodeSelector;
-  } else if (nodes.type === 'component') {
-    Icon = Component;
-  } else if (nodes.type === 'repeat') {
-    Icon = RepeatGroup;
-  } else {
-    Icon = ContentTypeFieldIcon;
-  }
 
   function setOverState(e: React.MouseEvent, isOver: boolean) {
     e.stopPropagation();
@@ -308,19 +295,35 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
     return () => isMounted.current = false;
   }, []);
 
+  if (!nodes) {
+    return null;
+  } else {
+    if (nodes.type === 'page') {
+      Icon = Page;
+    } else if (nodes.type === 'node-selector') {
+      Icon = NodeSelector;
+    } else if (nodes.type === 'component') {
+      Icon = Component;
+    } else if (nodes.type === 'repeat') {
+      Icon = RepeatGroup;
+    } else {
+      Icon = ContentTypeFieldIcon;
+    }
+  }
+
   return (
     <TreeItem
       key={nodes.id}
       nodeId={nodes.id}
       onMouseOver={(e) => setOverState(e, true)}
       onMouseOut={(e) => setOverState(e, false)}
-      icon={nodes.type === 'component' && <ChevronRightIcon onClick={() => handleClick(nodes)} />}
+      icon={nodes.type === 'component' && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
           {nodes.id === 'root' && handlePrevious ? (
-            <ChevronLeftIcon onClick={(e) => handlePrevious(e)} />
+            <ChevronLeftIcon onClick={(e) => handlePrevious(e)}/>
           ) : (
-            <Icon className={classes.icon} />
+            <Icon className={classes.icon}/>
           )}
           <p>{nodes.name}</p>
           {over && (nodes.type === 'component' || nodes.id === 'root') && (
@@ -331,7 +334,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
                 handleOptions(e, nodes.modelId, nodes.parentId, nodes.embeddedParentPath)
               }
             >
-              <MoreVertIcon />
+              <MoreVertIcon/>
             </IconButton>
           )}
         </div>
@@ -349,10 +352,9 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       }}
     >
       {
-        nodes.children.map((node) => (
-          <TreeItemCustom key={node.id} nodeId={node.id} {...props} />
-        ))
+        nodes.children?.map(_nodeId => <TreeItemCustom {...props} key={String(_nodeId)} nodeId={String(_nodeId)}/>)
       }
+
     </TreeItem>
   );
 }
@@ -360,7 +362,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
 export default function ContentTree() {
   const classes = useStyles({});
   const guest = usePreviewGuest();
-  const { formatMessage } = useIntl();
+  const {formatMessage} = useIntl();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const hostToGuest$ = getHostToGuestBus();
   const [expanded, setExpanded] = React.useState<string[]>(['root']);
@@ -374,7 +376,6 @@ export default function ContentTree() {
   const [data, setData] = React.useState<Data>({
     previous: [],
     selected: null,
-    lookupTable: null,
     nodeLookup: null
   });
 
@@ -383,7 +384,7 @@ export default function ContentTree() {
       let parent = guest.models[guest.modelId];
       let contentType = contentTypesBranch.byId[parent.craftercms.contentType];
       let data: RenderTree = {
-        id: parent.craftercms.id,
+        id: 'root',
         name: parent.craftercms.label,
         children: getChildren(parent, contentType, guest.models, contentTypesBranch.byId),
         type: contentType.type,
@@ -392,38 +393,38 @@ export default function ContentTree() {
       setData({
         previous: [],
         selected: parent.craftercms.id,
-        lookupTable: createLookupTable<RenderTree>([data], 'modelId'),
-        nodeLookup: createNodesLookup([data], 'modelId')
+        nodeLookup: createNodesLookup<RenderTree>([data], 'modelId')
       });
     }
   }, [contentTypesBranch, data.selected, guest]);
 
   const handleClick = (node: RenderTree) => {
-    // if (node.type === 'component' && node.id !== 'root') {
-    //   let model = guest.models[node.modelId];
-    //   let contentType = contentTypesBranch.byId[model.craftercms.contentType];
-    //   const { type, modelId, name, index, fieldId, parentId, embeddedParentPath } = node;
-    //   setData({
-    //     previous: [...data.previous, data.selected],
-    //     selected: model.craftercms.id,
-    //     lookupTable: {
-    //       ...data.lookupTable,
-    //       [model.craftercms.id]: {
-    //         id: 'root',
-    //         name,
-    //         children: getChildren(model, contentType, guest.models, contentTypesBranch.byId),
-    //         type,
-    //         modelId,
-    //         index,
-    //         fieldId,
-    //         parentId,
-    //         embeddedParentPath
-    //       }
-    //     },
-    //     nodeLookup: null
-    //   });
-    //   setExpanded(['root']);
-    // }
+    if (node.type === 'component' && node.id !== 'root') {
+      let model = guest.models[node.modelId];
+      let contentType = contentTypesBranch.byId[model.craftercms.contentType];
+      const {type, modelId, name, index, fieldId, parentId, embeddedParentPath} = node;
+      const nodeData = {
+        id: 'root',
+        name,
+        children: getChildren(model, contentType, guest.models, contentTypesBranch.byId),
+        type,
+        modelId,
+        index,
+        fieldId,
+        parentId,
+        embeddedParentPath
+      }
+
+      setData({
+        previous: [...data.previous, data.selected],
+        selected: model.craftercms.id,
+        nodeLookup: {
+          ...data.nodeLookup,
+          ...createNodesLookup([nodeData], 'modelId')
+        }
+      });
+      setExpanded(['root']);
+    }
     return;
   };
 
@@ -437,11 +438,11 @@ export default function ContentTree() {
 
   const handlePrevious = (event: React.ChangeEvent<{}>) => {
     event.stopPropagation();
-    if(!data.previous.length) return null;
+    if (!data.previous.length) return null;
 
     let previousArray = [...data.previous];
     let previous = previousArray.pop();
-    setData({ ...data, selected: previous, previous: previousArray });
+    setData({...data, selected: previous, previous: previousArray});
   };
 
   const handleChange = (event: any, nodes: string[]) => {
@@ -469,13 +470,11 @@ export default function ContentTree() {
     });
   };
 
-  const handleClose = () => {
-    setOptionsMenu({ ...optionsMenu, anchorEl: null });
-  };
+  const handleClose = () => setOptionsMenu({...optionsMenu, anchorEl: null});
 
   const resource = useStateResource<Data, Data>(data, {
     shouldResolve: (source) => Boolean(source.selected),
-    shouldReject: (source) => false,
+    shouldReject: () => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => source,
     errorSelector: null
@@ -485,13 +484,13 @@ export default function ContentTree() {
     <ToolPanel title={translations.contentTree}>
       <TreeView
         className={classes.root}
-        defaultCollapseIcon={<ExpandMoreIcon className="toggle" />}
-        defaultExpandIcon={<ChevronRightIcon className="toggle" />}
+        defaultCollapseIcon={<ExpandMoreIcon className="toggle"/>}
+        defaultExpandIcon={<ChevronRightIcon className="toggle"/>}
         disableSelection
         expanded={expanded}
         onNodeToggle={handleChange}
       >
-        <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
+        <Suspencified loadingStateProps={{title: formatMessage(translations.loading)}}>
           <TreeItemCustom
             nodeId={data.selected}
             resource={resource}
