@@ -20,7 +20,7 @@ import { fetchPublishingChannels } from '../../../services/content';
 import { goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
 import PublishDialogUI from './PublishDialogUI';
-import { Item } from '../../../models/Item';
+import { Item, LegacyItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
@@ -60,7 +60,7 @@ export interface DependenciesResultObject {
   items2: []
 }
 
-export const checkState = (items: Item[]) => {
+export const checkState = (items: LegacyItem[]) => {
   return (items || []).reduce(
     (table: any, item) => {
       table[item.uri] = true;
@@ -84,7 +84,7 @@ export const updateCheckedList = (uri: string[], isChecked: boolean, checked: an
   return nextChecked;
 };
 
-export const selectAllDeps = (setChecked: Function, items: Item[]) => {
+export const selectAllDeps = (setChecked: Function, items: LegacyItem[]) => {
   setChecked(items.map(i => i.uri), true);
 };
 
@@ -95,7 +95,7 @@ export const paths = (checked: any) => (
 );
 
 interface PublishDialogProps {
-  items: Item[];
+  items: LegacyItem[];
   scheduling?: string;
 
   onClose?(response?: any): any;
