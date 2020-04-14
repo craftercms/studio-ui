@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.VideoS3Transcoding = CStudioForms.Datasources.VideoS3Transcoding ||
-  function (id, form, properties, constraints) {
+CStudioForms.Datasources.VideoS3Transcoding =
+  CStudioForms.Datasources.VideoS3Transcoding ||
+  function(id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -39,9 +40,8 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
   /**
    * action called when user clicks insert file
    */
-  insertVideoAction: function (insertCb) {
-    this._self = this,
-      me = this;
+  insertVideoAction: function(insertCb) {
+    (this._self = this), (me = this);
 
     var path = this._self.repoPath;
     var site = CStudioAuthoringContext.site;
@@ -54,13 +54,13 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
     }
 
     var callback = {
-      success: function (fileData) {
+      success: function(fileData) {
         var videoData = {};
         videoData.remote = true;
         videoData.multiple = true;
         videoData.videos = [];
 
-        fileData.urls.forEach(function (url) {
+        fileData.urls.forEach(function(url) {
           var video = {
             url: url
           };
@@ -71,8 +71,8 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
         insertCb.success(videoData);
       },
 
-      failure: function () {
-        insertCb.failure("An error occurred while uploading the video.");
+      failure: function() {
+        insertCb.failure('An error occurred while uploading the video.');
       },
 
       context: this
@@ -87,32 +87,34 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
       inputProfileId: me.inputProfileId
     };
 
-    CStudioAuthoring.Operations.uploadS3Asset(site, path, profiles, callback, params, ["video/*"]);
+    CStudioAuthoring.Operations.uploadS3Asset(site, path, profiles, callback, params, ['video/*']);
   },
 
-  getLabel: function () {
-    return CMgs.format(langBundle, "videos3Transcoding");
+  getLabel: function() {
+    return CMgs.format(langBundle, 'videos3Transcoding');
   },
 
-  getInterface: function () {
+  getInterface: function() {
     return 'transcoded-video';
   },
 
-  getName: function () {
-    return "video-S3-transcoding";
+  getName: function() {
+    return 'video-S3-transcoding';
   },
 
-  getSupportedProperties: function () {
+  getSupportedProperties: function() {
     return [
-      { label: CMgs.format(langBundle, "inputProfileId"), name: "inputProfileId", type: "string" },
-      { label: CMgs.format(langBundle, "outputProfileId"), name: "outputProfileId", type: "string" }
+      { label: CMgs.format(langBundle, 'inputProfileId'), name: 'inputProfileId', type: 'string' },
+      { label: CMgs.format(langBundle, 'outputProfileId'), name: 'outputProfileId', type: 'string' }
     ];
   },
 
-  getSupportedConstraints: function () {
-    return [
-    ];
+  getSupportedConstraints: function() {
+    return [];
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-video-S3-transcoding", CStudioForms.Datasources.VideoS3Transcoding);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-forms-controls-video-S3-transcoding',
+  CStudioForms.Datasources.VideoS3Transcoding
+);

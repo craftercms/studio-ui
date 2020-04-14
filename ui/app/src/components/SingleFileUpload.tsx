@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Core, FileInput, XHRUpload, ProgressBar, Form } from 'uppy';
+import { Core, FileInput, Form, ProgressBar, XHRUpload } from 'uppy';
 import { defineMessages, useIntl } from 'react-intl';
 
 import 'uppy/src/style.scss';
@@ -42,14 +42,13 @@ const messages = defineMessages({
 interface UppyProps {
   formTarget: string;
   url: string;
+  fileTypes?: [string];
 
   onUploadStart?(): void;
 
   onComplete?(result: any): void;
 
   onError?(file: any, error: any, response: any): void;
-
-  fileTypes?: [string];
 }
 
 function SingleFileUpload(props: UppyProps) {
@@ -65,11 +64,11 @@ function SingleFileUpload(props: UppyProps) {
     } = props;
 
   const { formatMessage } = useIntl();
-  const [description, setDescription] = useState(
+  const [description, setDescription] = useState<string>(
     formatMessage(messages.selectFileMessage)
   );
-  const [fileName, setFileName] = useState();
-  const [fileNameErrorClass, setFileNameErrorClass] = useState();
+  const [fileName, setFileName] = useState<string>();
+  const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
 
   useEffect(
     () => {
@@ -121,11 +120,14 @@ function SingleFileUpload(props: UppyProps) {
         uploadBtn.disabled = true;
         onUploadStart();
       });
+
       uppy.on('upload-success', (file) => {
         setDescription(`${formatMessage(messages.uploadedFile)}:`);
         uploadBtn.disabled = false;
       });
+
       uppy.on('complete', onComplete);
+
       uppy.on('upload-error', (file, error, response) => {
         uppy.cancelAll();
         uploadBtn.disabled = false;
@@ -145,12 +147,12 @@ function SingleFileUpload(props: UppyProps) {
 
   return (
     <>
-      <div className="uppy-progress-bar"/>
+      <div className="uppy-progress-bar" />
       <div className="uploaded-files">
         <h5 className="single-file-upload--description">
           {description}
         </h5>
-        <div className="uppy-file-input-container"/>
+        <div className="uppy-file-input-container" />
         {
           fileName &&
           <em className={'single-file-upload--file-name ' + fileNameErrorClass}>{fileName}</em>

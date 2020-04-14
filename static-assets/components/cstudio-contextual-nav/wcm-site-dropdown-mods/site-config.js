@@ -17,53 +17,51 @@
 var YDom = YAHOO.util.Dom;
 var YEvent = YAHOO.util.Event;
 
-
 /**
  * PreviewSync
  */
 CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteConfig || {
+  /**
+   * initialize module
+   */
+  initialize: function(config) {
+    if (config.name == 'site-config') {
+      var moduleConfig = {
+        label: 'siteConfig',
+        path: '/site-config'
+      };
 
-	/**
-	 * initialize module
-	 */
-	initialize: function(config) {
+      $.extend(moduleConfig, config.params);
 
-		if(config.name == "site-config") {
+      this.initialized = true;
+      var dropdownInnerEl = config.containerEl;
 
-            var moduleConfig = {
-                label: 'siteConfig',
-                path: '/site-config'
-            };
+      var parentFolderEl = document.createElement('div');
+      var parentFolderLinkEl = document.createElement('a');
+      parentFolderEl.appendChild(parentFolderLinkEl);
+      YDom.addClass(parentFolderLinkEl, 'acn-admin-console');
 
-            $.extend( moduleConfig, config.params );
+      parentFolderLinkEl.id = 'admin-console';
 
-            this.initialized = true;
-            var dropdownInnerEl = config.containerEl;
+      var confLabel = moduleConfig.label.toLowerCase().replace(/\s/g, '');
+      var label =
+        CMgs.format(siteDropdownLangBundle, confLabel) == confLabel
+          ? moduleConfig.label
+          : CMgs.format(siteDropdownLangBundle, confLabel);
 
-            var parentFolderEl = document.createElement("div");
-            var parentFolderLinkEl = document.createElement("a");
-            parentFolderEl.appendChild(parentFolderLinkEl);
-            YDom.addClass(parentFolderLinkEl, "acn-admin-console");
+      var icon = CStudioAuthoring.Utils.createIcon(moduleConfig, 'fa-sliders');
+      parentFolderLinkEl.appendChild(icon);
 
-            parentFolderLinkEl.id = "admin-console";
+      parentFolderLinkEl.innerHTML += label;
 
-            var confLabel = moduleConfig.label.toLowerCase().replace(/\s/g,'');
-            var label = CMgs.format(siteDropdownLangBundle, confLabel) == confLabel ? moduleConfig.label : CMgs.format(siteDropdownLangBundle, confLabel);
+      parentFolderLinkEl.onclick = function() {
+        document.location =
+          CStudioAuthoringContext.authoringAppBaseUri + moduleConfig.path + '?site=' + CStudioAuthoringContext.site;
+      };
 
-            var icon = CStudioAuthoring.Utils.createIcon(moduleConfig, "fa-sliders");
-            parentFolderLinkEl.appendChild(icon);
+      dropdownInnerEl.appendChild(parentFolderEl);
+    }
+  }
+};
 
-            parentFolderLinkEl.innerHTML += label;
-
-            parentFolderLinkEl.onclick = function() {
-            document.location = CStudioAuthoringContext.authoringAppBaseUri +
-                moduleConfig.path  + "?site=" + CStudioAuthoringContext.site;
-            };
-
-            dropdownInnerEl.appendChild(parentFolderEl);
-
-		}
-	}
-}
-
-CStudioAuthoring.Module.moduleLoaded("site-config", CStudioAuthoring.ContextualNav.SiteConfig);
+CStudioAuthoring.Module.moduleLoaded('site-config', CStudioAuthoring.ContextualNav.SiteConfig);

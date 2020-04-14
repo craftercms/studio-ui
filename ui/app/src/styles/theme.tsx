@@ -20,7 +20,7 @@ import { darken, fade } from '@material-ui/core/styles';
 export const palette = {
   white: '#fff',
   black: '#000',
-  blue: { tint: '#409CFF', main: '#007AFF', shade: '#0040DD' },
+  blue: { tint: '#409CFF', main: '#007AFF', shade: '#0040DD', highlight: '#E6F2FF' },
   green: { tint: '#30DB5B', main: '#34C759', shade: '#248A3D' },
   indigo: { tint: '#7D7AFF', main: '#5856D6', shade: '#3634A3' },
   orange: { tint: '#FFB340', main: '#FF9500', shade: '#C93400' },
@@ -70,7 +70,7 @@ export const themeOptions: ThemeOptions = {
   },
   palette: {
     primary: {
-      main: '#7E9DBB',
+      main: palette.blue.main,
       contrastText: '#FFFFFF'
     },
     text: {
@@ -120,17 +120,17 @@ export const themeOptions: ThemeOptions = {
         padding: '10px 12px',
         transition: defaultTheme.transitions.create(['border-color', 'box-shadow']),
         '&:focus:invalid': {
-          boxShadow: `${fade('#7E9DBB', 0.25)} 0 0 0 0.2rem`
+          boxShadow: `${fade(palette.blue.main, 0.25)} 0 0 0 0.2rem`
         },
         '&:focus': {
-          boxShadow: `${fade('#7E9DBB', 0.25)} 0 0 0 0.2rem`,
-          borderColor: '#7E9DBB'
+          boxShadow: `${fade(palette.blue.main, 0.25)} 0 0 0 0.2rem`,
+          borderColor: palette.blue.main
         }
       }
     },
     MuiTabs: {
       indicator: {
-        backgroundColor: '#7E9DBB'
+        backgroundColor: palette.blue.main
       }
     },
     MuiButton: {
@@ -143,8 +143,8 @@ export const themeOptions: ThemeOptions = {
         }
       },
       outlinedPrimary: {
-        color: darken('#7E9DBB', 0.10),
-        border: `1px solid ${darken('#7E9DBB', 0.10)}`
+        color: darken(palette.blue.main, 0.10),
+        border: `1px solid ${darken(palette.blue.main, 0.10)}`
       }
     }
   }

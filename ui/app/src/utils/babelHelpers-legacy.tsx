@@ -14,8 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// @ts-nocheck
-
 /*
  * README
  * If needed, to recreate this file...
@@ -73,7 +71,7 @@ import _createClass from '@babel/runtime/helpers/createClass';
 // import _decorate from '@babel/runtime/helpers/decorate';
 // import _defaults from '@babel/runtime/helpers/defaults';
 // import _defineEnumerableProperties from '@babel/runtime/helpers/defineEnumerableProperties';
-// import _defineProperty from '@babel/runtime/helpers/defineProperty';
+import _defineProperty from '@babel/runtime/helpers/defineProperty';
 // import _extends from '@babel/runtime/helpers/extends';
 // import _get from '@babel/runtime/helpers/get';
 // import _getPrototypeOf from '@babel/runtime/helpers/getPrototypeOf';
@@ -93,7 +91,7 @@ import _createClass from '@babel/runtime/helpers/createClass';
 // import _nonIterableRest from '@babel/runtime/helpers/nonIterableRest';
 // import _nonIterableSpread from '@babel/runtime/helpers/nonIterableSpread';
 // import _objectDestructuringEmpty from '@babel/runtime/helpers/objectDestructuringEmpty';
-// import _objectSpread from '@babel/runtime/helpers/objectSpread';
+import _objectSpread from '@babel/runtime/helpers/objectSpread';
 // import _objectSpread2 from '@babel/runtime/helpers/objectSpread2';
 // import _objectWithoutProperties from '@babel/runtime/helpers/objectWithoutProperties';
 // import _objectWithoutPropertiesLoose from '@babel/runtime/helpers/objectWithoutPropertiesLoose';
@@ -102,7 +100,7 @@ import _createClass from '@babel/runtime/helpers/createClass';
 // import _set from '@babel/runtime/helpers/set';
 // import _setPrototypeOf from '@babel/runtime/helpers/setPrototypeOf';
 // import _skipFirstGeneratorNext from '@babel/runtime/helpers/skipFirstGeneratorNext';
-// import _slicedToArray from '@babel/runtime/helpers/slicedToArray';
+import _slicedToArray from '@babel/runtime/helpers/slicedToArray';
 // import _slicedToArrayLoose from '@babel/runtime/helpers/slicedToArrayLoose';
 // import _superPropBase from '@babel/runtime/helpers/superPropBase';
 // import _taggedTemplateLiteral from '@babel/runtime/helpers/taggedTemplateLiteral';
@@ -111,7 +109,7 @@ import _createClass from '@babel/runtime/helpers/createClass';
 // import _temporalRef from '@babel/runtime/helpers/temporalRef';
 // import _temporalUndefined from '@babel/runtime/helpers/temporalUndefined';
 // import _toArray from '@babel/runtime/helpers/toArray';
-// import _toConsumableArray from '@babel/runtime/helpers/toConsumableArray';
+import _toConsumableArray from '@babel/runtime/helpers/toConsumableArray';
 // import _toPrimitive from '@babel/runtime/helpers/toPrimitive';
 // import _toPropertyKey from '@babel/runtime/helpers/toPropertyKey';
 // import _typeof from '@babel/runtime/helpers/typeof';
@@ -144,11 +142,11 @@ export default {
   // classStaticPrivateMethodGet: _classStaticPrivateMethodGet,
   // classStaticPrivateMethodSet: _classStaticPrivateMethodSet,
   // construct: _construct,
-  createClass: _createClass
+  createClass: _createClass,
   // decorate: _decorate,
   // defaults: _defaults,
   // defineEnumerableProperties: _defineEnumerableProperties,
-  // defineProperty: _defineProperty,
+  defineProperty: _defineProperty,
   // extends: _extends,
   // get: _get,
   // getPrototypeOf: _getPrototypeOf,
@@ -168,7 +166,7 @@ export default {
   // nonIterableRest: _nonIterableRest,
   // nonIterableSpread: _nonIterableSpread,
   // objectDestructuringEmpty: _objectDestructuringEmpty,
-  // objectSpread: _objectSpread,
+  objectSpread: _objectSpread,
   // objectSpread2: _objectSpread2,
   // objectWithoutProperties: _objectWithoutProperties,
   // objectWithoutPropertiesLoose: _objectWithoutPropertiesLoose,
@@ -177,7 +175,7 @@ export default {
   // set: _set,
   // setPrototypeOf: _setPrototypeOf,
   // skipFirstGeneratorNext: _skipFirstGeneratorNext,
-  // slicedToArray: _slicedToArray,
+  slicedToArray: _slicedToArray,
   // slicedToArrayLoose: _slicedToArrayLoose,
   // superPropBase: _superPropBase,
   // taggedTemplateLiteral: _taggedTemplateLiteral,
@@ -186,7 +184,7 @@ export default {
   // temporalRef: _temporalRef,
   // temporalUndefined: _temporalUndefined,
   // toArray: _toArray,
-  // toConsumableArray: _toConsumableArray,
+  toConsumableArray: _toConsumableArray,
   // toPrimitive: _toPrimitive,
   // toPropertyKey: _toPropertyKey,
   // typeof: _typeof,
