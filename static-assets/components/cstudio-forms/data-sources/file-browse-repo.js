@@ -86,7 +86,8 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
               var item = selectedTOs[i];
               var fileName = item.name;
 							var fileExtension = fileName.split('.').pop();
-							control.insertItem(item.uri, item.uri, fileExtension, null, _self.id);
+              const returnProp = control.returnProp ? control.returnProp : 'uri';
+              control.insertItem(item[returnProp], item.uri, fileExtension, null, _self.id);
 							if(control._renderItems){
 								control._renderItems();
 							}
