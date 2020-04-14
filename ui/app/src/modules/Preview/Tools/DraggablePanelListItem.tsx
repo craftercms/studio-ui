@@ -47,6 +47,7 @@ const useStyles = makeStyles(() => createStyles({
 interface PanelListItemProps {
   primaryText: string;
   secondaryText?: string;
+  avatarSrc?: string;
   onDragStart?: (...args: any) => any;
   onDragEnd?: (...args: any) => any;
   onMenu?: (anchor: Element) => any;
@@ -57,6 +58,7 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
   const {
     onMenu,
     primaryText,
+    avatarSrc,
     secondaryText,
     onDragStart,
     onDragEnd
@@ -69,13 +71,13 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
         className={classes.component}
         draggable
         onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
+        onDragEnd={(onDragEnd)}
         onMouseEnter={() => setOver(true)}
         onMouseLeave={() => setOver(false)}
       >
         <ListItemAvatar>
-          <Avatar classes={{ root: over ? classes.avatarRootOver : '' }}>
-            {over ? <DragIndicatorRounded /> : getInitials(primaryText)}
+          <Avatar classes={{ root: over ? classes.avatarRootOver : '' }} src={over ? null : avatarSrc}>
+            {over ? <DragIndicatorRounded/> : getInitials(primaryText)}
           </Avatar>
         </ListItemAvatar>
         <ListItemText

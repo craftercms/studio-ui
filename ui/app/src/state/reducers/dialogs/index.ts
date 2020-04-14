@@ -17,10 +17,12 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import confirm from './confirm';
 import error from './error';
+import minimizedDialogs from './minimizedDialogs';
 import history from './history';
 
 export default combineReducers({
   confirm,
   error,
+  minimizedDialogs,
   history
 });

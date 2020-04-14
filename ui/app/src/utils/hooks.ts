@@ -14,13 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import GlobalState, { GuestData } from '../models/GlobalState';
-import { Dispatch, EffectCallback, SetStateAction, useEffect, useReducer, useRef, useState } from 'react';
+import {
+  Dispatch,
+  EffectCallback,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ContentType } from '../models/ContentType';
+import { MinimizedDialog } from '../models/MinimizedDialog';
+import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -48,6 +60,17 @@ export function usePreviewState(): GlobalState['preview'] {
 
 export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
+}
+
+export function useContentTypeList(filter = (contentType => contentType)): Array<ContentType> {
+  const state = useSelector<GlobalState, GlobalState['contentTypes']>((state) => state.contentTypes);
+  return useMemo(() => {
+    if (!state.byId) {
+      return null;
+    } else {
+      return Object.values(state.byId).filter(filter);
+    }
+  }, [state]);
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
@@ -183,4 +206,22 @@ export function useDebouncedInput(
 
 export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<Partial<S>>>] {
   return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);
+}
+
+export function useSubject<T = unknown>() {
+  return useMemo(() => new Subject<T>(), [])
+}
+
+export function useMinimizeDialog(initialTab: MinimizedDialog) {
+  const dispatch = useDispatch();
+  const state = useSelection((state) => state.dialogs.minimizedDialogs[initialTab.id]);
+
+  useEffect(() => {
+    dispatch(pushDialog(initialTab));
+    return () => {
+      dispatch(popDialog({ id: initialTab.id }));
+    }
+  }, [dispatch]);
+
+  return state?.minimized ?? initialTab.minimized;
 }
