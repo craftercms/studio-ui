@@ -29,6 +29,7 @@ import {
   DELETE_ITEM_OPERATION,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
+  DESKTOP_ASSET_UPLOAD_PROGRESS,
   fetchAssetsPanelItems,
   fetchAudiencesPanelFormDefinition,
   fetchComponentsByContentType,
@@ -292,14 +293,22 @@ export function PreviewConcierge(props: any) {
             `/static-assets/images/${payload.modelId}`,
             XSRF_CONFIG_ARGUMENT
           ).subscribe(
-            () => {
+            ({ payload: { progress } }) => {
+              const percentage = Math.floor(parseInt((progress.bytesUploaded / progress.bytesTotal * 100).toFixed(2)));
+              hostToGuest$.next({
+                type: DESKTOP_ASSET_UPLOAD_PROGRESS,
+                payload: {
+                  id: payload.name,
+                  percentage
+                }
+              });
             },
             (error) => {
               console.log(error);
-              enqueueSnackbar('Upload operation failed.');
+              enqueueSnackbar('Asset Upload failed.');
             },
             () => {
-              enqueueSnackbar('Upload operation completed.');
+              console.log('finished');
               hostToGuest$.next({
                 type: DESKTOP_ASSET_UPLOAD_COMPLETE,
                 payload: {
@@ -406,7 +415,9 @@ function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
       id="guestDetectionMessage"
       defaultMessage="Communication with guest site was not detected."
     />, {
-      action: (key) => <Button key="learnMore" color="secondary" size="small" onClick={() => closeSnackbar(key)}>
+      action: (key) => <Button
+        key="learnMore" color="secondary" size="small" onClick={() => closeSnackbar(key)}
+      >
         Learn More
       </Button>
     });

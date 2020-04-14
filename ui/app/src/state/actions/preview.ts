@@ -21,7 +21,12 @@ import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
-import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, SearchResult } from '../../models/Search';
+import {
+  ComponentsContentTypeParams,
+  ContentInstancePage,
+  ElasticParams,
+  SearchResult
+} from '../../models/Search';
 import { ContentTypeReceptacle } from '../../models/ContentTypeReceptacle';
 import { AjaxError } from 'rxjs/ajax';
 import { PreviewToolsConfig } from '../../services/configuration';
@@ -56,6 +61,7 @@ export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
 export const RELOAD_REQUEST = 'RELOAD_REQUEST';
 export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
 export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
+export const DESKTOP_ASSET_UPLOAD_PROGRESS = 'DESKTOP_ASSET_UPLOAD_PROGRESS';
 export const COMPONENT_INSTANCE_DRAG_STARTED = 'COMPONENT_INSTANCE_DRAG_STARTED';
 export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
 export const BROWSE_COMPONENT_INSTANCES = 'BROWSE_COMPONENT_INSTANCES';

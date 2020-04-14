@@ -75,6 +75,19 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
       '[draggable="true"]': {
         'cursor': 'move !important'
       },
+      'craftercms-asset-uploader-mask-container': {
+        position: 'absolute',
+        zIndex: '1001',
+        pointerEvents: 'none',
+        '& craftercms-asset-uploader-mask': {
+          background: 'black',
+          opacity: '0.5',
+          height: '100%',
+          width: '100%',
+          display: 'block',
+          transition: 'height 0.3s ease-out'
+        }
+      },
       'craftercms-zone-marker, craftercms-zone-marker-label': {
         boxSizing: 'border-box'
       },

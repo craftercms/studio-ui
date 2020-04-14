@@ -27,8 +27,10 @@ import {
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
+  deleteProperty,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
+  DESKTOP_ASSET_UPLOAD_PROGRESS,
   EDIT_MODE_CHANGED,
   EditingStatus,
   GUEST_CHECK_IN,
@@ -49,7 +51,19 @@ import {
   TRASHED
 } from '../util';
 import { fromEvent, interval, Subject, zip } from 'rxjs';
-import { debounceTime, delay, filter, map, share, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import {
+  debounceTime,
+  delay,
+  filter,
+  map,
+  share,
+  switchMap,
+  take,
+  takeUntil,
+  takeWhile,
+  tap,
+  throttleTime
+} from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
 import { ElementRegistry } from '../classes/ElementRegistry';
@@ -66,6 +80,7 @@ import { ContentInstance } from '../models/ContentInstance';
 import { DropZone, HoverData, Record } from '../models/InContextEditing';
 import { LookupTable } from '../models/LookupTable';
 import { Editor } from 'tinymce';
+import { AssetUploaderMask } from './AssetUploaderMask';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -137,6 +152,7 @@ export function Guest(props: GuestProps) {
       editable: {},
       draggable: {},
       highlighted: highlightedInitialData,
+      uploading: highlightedInitialData,
 
       register,
       deregister,
@@ -204,7 +220,6 @@ export function Guest(props: GuestProps) {
         );
 
       $(document).bind('scroll', persistence.onScroll);
-
 
     },
 
@@ -546,7 +561,7 @@ export function Guest(props: GuestProps) {
           instance,
           inZone: false,
           dragged: null,
-          targetIndex: null,
+          targetIndex: null
         },
         common: {
           ...stateRef.current.common,
@@ -610,7 +625,7 @@ export function Guest(props: GuestProps) {
           contentType,
           inZone: false,
           dragged: null,
-          targetIndex: null,
+          targetIndex: null
         },
         common: {
           ...stateRef.current.common,
@@ -738,18 +753,42 @@ export function Guest(props: GuestProps) {
             reader.onload = (function (aImg: HTMLImageElement) {
               message$.pipe(
                 filter((e) =>
-                  (e.data?.type === DESKTOP_ASSET_UPLOAD_COMPLETE) &&
+                  (e.data?.type === DESKTOP_ASSET_UPLOAD_COMPLETE || e.data?.type === DESKTOP_ASSET_UPLOAD_PROGRESS) &&
                   (e.data.payload.id === file.name)
                 ),
                 map(e => e.data),
-                take(1)
-              ).subscribe(function ({ payload }) {
-                contentController.updateField(
-                  record.modelId,
-                  record.fieldId[0],
-                  record.index,
-                  payload.path
-                );
+                takeWhile((data) => data.type !== DESKTOP_ASSET_UPLOAD_COMPLETE, true)
+              ).subscribe(function (data) {
+                const payload = data.payload;
+                if (data.type === DESKTOP_ASSET_UPLOAD_COMPLETE) {
+                  setState({
+                    ...stateRef.current,
+                    common: {
+                      ...stateRef.current.common,
+                      uploading: deleteProperty({ ...stateRef.current.common.uploading }, record.id.toString())
+                    }
+                  });
+                  contentController.updateField(
+                    record.modelId,
+                    record.fieldId[0],
+                    record.index,
+                    payload.path
+                  );
+                } else {
+                  setState({
+                    ...stateRef.current,
+                    common: {
+                      ...stateRef.current.common,
+                      uploading: {
+                        ...stateRef.current.common.uploading,
+                        [record.id]: {
+                          ...ElementRegistry.getHoverData(record.id),
+                          progress: payload.percentage
+                        }
+                      }
+                    }
+                  });
+                }
               });
 
               return function (event) {
@@ -758,6 +797,17 @@ export function Guest(props: GuestProps) {
                   name: file.name,
                   type: file.type,
                   modelId: record.modelId
+                });
+                //adding asset mask
+                setState({
+                  ...stateRef.current,
+                  common: {
+                    ...stateRef.current.common,
+                    uploading: {
+                      ...stateRef.current.common.uploading,
+                      [record.id]: ElementRegistry.getHoverData(record.id)
+                    }
+                  }
                 });
                 aImg.src = event.target.result;
               };
@@ -962,7 +1012,7 @@ export function Guest(props: GuestProps) {
         dragContext: {
           ...stateRef.current.dragContext,
           scrolling: false,
-          dropZones: dragContext.dropZones.map((dropZone) => ({
+          dropZones: dragContext?.dropZones?.map((dropZone) => ({
             ...dropZone,
             rect: dropZone.element.getBoundingClientRect(),
             childrenRects: dropZone.children.map((child) => child.getBoundingClientRect())
@@ -1241,7 +1291,7 @@ export function Guest(props: GuestProps) {
           setState({
             dragContext: {
               ...stateRef.current.dragContext,
-              inZone: false,
+              inZone: false
             },
             common: {
               ...stateRef.current.common,
@@ -1250,7 +1300,10 @@ export function Guest(props: GuestProps) {
             }
           });
 
-          post({ type: CONTENT_TYPE_RECEPTACLES_RESPONSE, payload: { contentType: payload, receptacles } });
+          post({
+            type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
+            payload: { contentType: payload, receptacles }
+          });
           break;
         }
         case SCROLL_TO_RECEPTACLE:
@@ -1365,6 +1418,11 @@ export function Guest(props: GuestProps) {
         {
           (stateRef.current.common.status !== EditingStatus.OFF) &&
           <CrafterCMSPortal>
+            {
+              Object.values(stateRef.current.common.uploading).map((highlight: HoverData) =>
+                <AssetUploaderMask key={highlight.id} {...highlight} />
+              )
+            }
             {
               Object.values(stateRef.current.common.highlighted).map((highlight: HoverData) =>
                 <ZoneMarker key={highlight.id} {...highlight} />

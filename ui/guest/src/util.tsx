@@ -18,7 +18,12 @@ import $ from 'jquery';
 import { Markers } from './classes/Markers';
 import { fromEvent, interval, Subscription } from 'rxjs';
 import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
-import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs, InRectStats } from './models/Positioning';
+import {
+  Coordinates,
+  DropMarkerPosition,
+  DropMarkerPositionArgs,
+  InRectStats
+} from './models/Positioning';
 import { LookupTable } from './models/LookupTable';
 import { ContentTypeField, ContentTypeReceptacle } from './models/ContentType';
 import { RenderTree } from './models/ContentTree';
@@ -63,6 +68,7 @@ export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
 export const RELOAD_REQUEST = 'RELOAD_REQUEST';
 export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
 export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
+export const DESKTOP_ASSET_UPLOAD_PROGRESS = 'DESKTOP_ASSET_UPLOAD_PROGRESS';
 export const COMPONENT_INSTANCE_DRAG_STARTED = 'COMPONENT_INSTANCE_DRAG_STARTED';
 export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
 export const COMPONENT_INSTANCE_HTML_REQUEST = 'COMPONENT_INSTANCE_HTML_REQUEST';
@@ -458,6 +464,15 @@ export function retrieveProperty(object: object, prop: string): any {
     : (!prop)
       ? object
       : prop.split('.').reduce((value, prop) => value[prop], object);
+}
+
+export function deleteProperty(object: object, prop: string): object {
+  return Object.keys(object).reduce((next, key) => {
+    if (key !== prop) {
+      next[key] = object[key];
+    }
+    return next;
+  }, {});
 }
 
 export function setProperty(object: object, prop: string, value: any): boolean {
