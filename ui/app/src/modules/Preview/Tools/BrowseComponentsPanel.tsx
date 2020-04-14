@@ -222,7 +222,12 @@ export default function BrowseComponentsPanel() {
     <ToolPanel title={translations.browse}>
       <ErrorBoundary>
         <div className={classes.search}>
-          <SearchBar onChange={handleSearchKeyword} keyword={keyword} disabled={isFetching} />
+          <SearchBar
+            onActionButtonClick={() => handleSearchKeyword('')}
+            onChange={handleSearchKeyword}
+            keyword={keyword}
+            disabled={isFetching}
+          />
           {contentTypes && (
             <Select
               value={contentTypeFilter}

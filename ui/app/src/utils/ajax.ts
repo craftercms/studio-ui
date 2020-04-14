@@ -108,7 +108,7 @@ export const catchApi1Error = catchError((error: any) => {
         throw {
           code: 1001,
           message: 'Invalid parameter(s)',
-          remedialAction: 'Check API and make sure you\'re sending the correct parameters'
+          remedialAction: "Check API and make sure you're sending the correct parameters"
         };
       case 401:
         // eslint-disable-next-line no-throw-literal
@@ -122,7 +122,8 @@ export const catchApi1Error = catchError((error: any) => {
         throw {
           code: 2001,
           message: 'Unauthorized',
-          remedialAction: 'You don\'t have permission to perform this task, please contact your'
+          remedialAction:
+            "You don't have permission to perform this task, please contact your administrator"
         };
       case 500:
       default:
