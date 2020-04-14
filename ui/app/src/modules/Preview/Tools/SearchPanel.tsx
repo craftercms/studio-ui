@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import React, { useCallback, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
@@ -17,7 +33,8 @@ import { APIError } from '../../../models/GlobalState';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
-  ElasticParams, MediaItem,
+  ElasticParams,
+  MediaItem,
   SearchItem,
   SearchResult
 } from '../../../models/Search';
@@ -26,11 +43,11 @@ import { DraggablePanelListItem } from './DraggablePanelListItem';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
 import {
-  ASSET_DRAG_ENDED, ASSET_DRAG_STARTED,
+  ASSET_DRAG_ENDED,
+  ASSET_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED
 } from '../../../state/actions/preview';
-import { getContentByContentType } from '../../../services/content';
 import { createLookupTable } from '../../../utils/object';
 import ContentInstance from '../../../models/ContentInstance';
 import { search } from '../../../services/search';
@@ -97,7 +114,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   }
 }));
-
 
 function SearchResults(props) {
   const items = props.resource.read();
