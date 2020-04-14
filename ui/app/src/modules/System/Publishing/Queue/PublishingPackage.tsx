@@ -141,20 +141,18 @@ interface PublishingPackageProps {
   environment: string;
   comment: string
   selected: any;
+  pending: any;
+  filesPerPackage: {
+    [key: string]: any;
+  };
 
   setSelected(selected: any): any
-
-  pending: any;
 
   setApiState(state: any): any;
 
   setPending(pending: any): any;
 
   getPackages(siteId: string, filters?: string): any;
-
-  filesPerPackage: {
-    [key: string]: any;
-  };
 
   setFilesPerPackage(filesPerPackage: any): any;
 }
@@ -224,8 +222,8 @@ export default function PublishingPackage(props: PublishingPackageProps) {
             {file.contentTypeClass}
           </Typography>
         </ListItem>
-      )
-    })
+      );
+    });
   }
 
   const checked = selected[id] ? selected[id] : false;
@@ -248,7 +246,8 @@ export default function PublishingPackage(props: PublishingPackageProps) {
                     <Checkbox
                       color="primary"
                       checked={checked}
-                      onChange={(event) => onSelect(event, id, checked)} />
+                      onChange={(event) => onSelect(event, id, checked)}
+                    />
                   }
                   label={<strong>{id}</strong>}
                 />
@@ -323,5 +322,5 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         }
       </div>
     </div>
-  )
+  );
 }

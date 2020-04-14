@@ -317,4 +317,4 @@ export default {
   getRawContent,
   getDOM,
   getGlobalMenuItems
-}
+};

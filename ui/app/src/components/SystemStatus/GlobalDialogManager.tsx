@@ -68,7 +68,7 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Error */}
-      <ErrorDialog error={state.error.error} onClose={createCallback(state.error.onClose, dispatch)}/>
+      <ErrorDialog error={state.error.error} onClose={createCallback(state.error.onClose, dispatch)} />
       {/* endregion */}
 
       {/* region Edit (Embedded Legacy Editor) */}

@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,8 +15,8 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { palette } from "../styles/theme";
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { palette } from '../styles/theme';
 
 const useStyles = makeStyles(() => ({
   previewEditor: {
@@ -35,7 +34,7 @@ interface EditorProps {
 }
 
 export default function Editor(props: EditorProps) {
-  const {data, mode} = props;
+  const { data, mode } = props;
   const classes = useStyles({});
   const editor = useRef(null);
   useEffect(() => {
@@ -43,8 +42,8 @@ export default function Editor(props: EditorProps) {
     var aceEditor = ace.edit(editor.current, {
       mode: mode,
       showPrintMargin: false,
-      fontSize: "12px",
-      readOnly: true,
+      fontSize: '12px',
+      readOnly: true
     });
     aceEditor.setValue(data, -1);
     aceEditor.focus();
@@ -52,6 +51,6 @@ export default function Editor(props: EditorProps) {
 
   return (
     <pre ref={editor} className={classes.previewEditor}></pre>
-  )
+  );
 }
 

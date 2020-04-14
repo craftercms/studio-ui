@@ -17,5 +17,6 @@ export interface Item {
   name: string;
   internalName: string;
   uri: string;
+
   [prop: string]: any;
 }
