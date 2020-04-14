@@ -82,15 +82,18 @@ interface SearchBarProps {
     root?: any;
   };
 
-  onChange(value: string): any;
+  onChange(value: string): void;
 
-  onActionButtonClick(): any;
+  onKeyPress?(key: string): void;
+
+  onActionButtonClick?(): void;
 }
 
 export default function SearchBar(props: SearchBarProps) {
   const classes = useStyles({ background: props.backgroundColor || palette.gray.light5 });
   const {
     onChange,
+    onKeyPress,
     keyword,
     showActionButton = false,
     actionButtonIcon: ActionButtonIcon = CloseIcon,
@@ -111,6 +114,7 @@ export default function SearchBar(props: SearchBarProps) {
       }
       <InputBase
         onChange={e => onChange(e.target.value)}
+        onKeyPress={(e) => onKeyPress && onKeyPress(e.key)}
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
         placeholder={placeholder || formatMessage(messages.placeholder)}
@@ -125,7 +129,7 @@ export default function SearchBar(props: SearchBarProps) {
       />
       {
         showActionButton &&
-        <IconButton onClick={onActionButtonClick} className={classes.icon}>
+        <IconButton onClick={onActionButtonClick? onActionButtonClick: () => onChange('') } className={classes.icon}>
           <ActionButtonIcon className={classes.closeIcon}/>
         </IconButton>
       }

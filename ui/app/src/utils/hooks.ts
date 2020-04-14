@@ -30,6 +30,7 @@ import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ContentType } from '../models/ContentType';
 import { MinimizedDialog } from '../models/MinimizedDialog';
 import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
 
@@ -59,6 +60,17 @@ export function usePreviewState(): GlobalState['preview'] {
 
 export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
+}
+
+export function useContentTypeList(filter = (contentType => contentType)): Array<ContentType> {
+  const state = useSelector<GlobalState, GlobalState['contentTypes']>((state) => state.contentTypes);
+  return useMemo(() => {
+    if (!state.byId) {
+      return null;
+    } else {
+      return Object.values(state.byId).filter(filter);
+    }
+  }, [state]);
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
