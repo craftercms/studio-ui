@@ -713,7 +713,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
     return list.map((item: Blueprint) => {
       return (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
+        <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={item.id}>
           <BlueprintCard
             blueprint={item}
             onBlueprintSelected={handleBlueprintSelected}
