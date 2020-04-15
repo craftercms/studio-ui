@@ -17,15 +17,12 @@
 import React, { useCallback, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
-import { Theme } from '@material-ui/core';
 import List from '@material-ui/core/List';
 import ToolPanel from './ToolPanel';
 import {
   useActiveSiteId,
-  useContentTypeList,
   useDebouncedInput,
   useOnMount,
-  usePreviewState,
   useStateResource
 } from '../../../utils/hooks';
 import SearchBar from '../../../components/SearchBar';
@@ -55,7 +52,7 @@ import { search } from '../../../services/search';
 const translations = defineMessages({
   title: {
     id: 'craftercms.ice.search.title',
-    defaultMessage: 'Search Panel'
+    defaultMessage: 'Search Everywhere'
   },
   titleKeyword: {
     id: 'craftercms.ice.search.titleKeyword',
@@ -160,12 +157,12 @@ const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/s
 export default function SearchPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { searchKeyword } = usePreviewState();
-  const [keyword, setKeyword] = useState(searchKeyword || '');
+  const [keyword, setKeyword] = useState('');
   const [error, setError] = useState<APIError>(null);
   const site = useActiveSiteId();
   const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
-  const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
+  // TODO: Components
+  //const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
   // const contentTypesIds = contentTypes?.map(item => item.id);
   // const contentTypesLookup = createLookupTable(contentTypes, 'id');
   const [pageNumber, setPageNumber] = useState(0);
@@ -182,10 +179,10 @@ export default function SearchPanel() {
   });
 
   useOnMount(() => {
-    onSearch(searchKeyword);
+    onSearch();
   });
 
-  const onSearch = useCallback((keywords: string, options?: ComponentsContentTypeParams) => {
+  const onSearch = useCallback((keywords: string = '', options?: ComponentsContentTypeParams) => {
     // TODO: Components
     // getContentByContentType(site, contentTypesIds, contentTypesLookup, {
     //   ...initialSearchParameters,
@@ -215,7 +212,7 @@ export default function SearchPanel() {
         setError(response);
       }
     );
-  }, [contentTypes]);
+  }, [site]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
