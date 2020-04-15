@@ -16,6 +16,12 @@
 
 <#assign loggedIn = ((userEmail?? && userEmail != "") || (envConfig??))/>
 <#assign env_config = envConfig???then(envConfig + _csrf, {})/>
+<#if !(userService??)>
+  <div style="padding: 1em; text-align: center">
+    <h1>The freemarker context is not undefined.</h1>
+    <p>The system won't work as expected.</p>
+  </div>
+<#else>
 <script type="application/json" id="initialState">
 {
   "auth": {
@@ -76,3 +82,4 @@
   }
 }
 </script>
+</#if>

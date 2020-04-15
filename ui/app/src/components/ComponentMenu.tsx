@@ -29,6 +29,7 @@ import { useDispatch } from 'react-redux';
 import { showPublishDialog } from '../state/reducers/dialogs/publish';
 import { closeDeleteDialog, showDeleteDialog } from '../state/reducers/dialogs/delete';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
+import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -67,6 +68,11 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     items: null
   });
 
+  const [dependenciesDialog, setDependenciesDialog] = useSpreadState({
+    item: null,
+    dependenciesShown: 'depends-on'
+  });
+
   const [deleteDialog, setDeleteDialog] = useState({
     items: []
   });
@@ -79,16 +85,17 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       getLegacyItem(site, path).subscribe(
         (item) => {
           setPublishDialog({ items: [item] });
+          setDependenciesDialog({ item })
           setDeleteDialog({ items: [item] });
         },
-        ({ response }) => {
+        (response) => {
           dispatch(showErrorDialog({
             error: response
           }))
         }
       );
     }
-  }, [models, modelId, setPublishDialog, setDeleteDialog, site, embeddedParentPath, parentId, publishDialog.items, dispatch]);
+  }, [models, modelId, setPublishDialog, setDependenciesDialog, setDeleteDialog, site, embeddedParentPath, parentId, publishDialog.items, dispatch]);
 
   const handleEdit = (type: string) => {
     handleClose();
@@ -105,6 +112,14 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           items: publishDialog.items,
           scheduling: 'now'
         }));
+        break;
+      }
+      case 'dependencies' : {
+        dispatch(showDependenciesDialog({
+          item: dependenciesDialog.item,
+          dependenciesShown: dependenciesDialog.dependenciesShown
+        }));
+
         break;
       }
       case 'delete': {
@@ -190,7 +205,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             defaultMessage="History"
           />
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleEdit('dependencies')}>
           <FormattedMessage
             id="previewToolBar.menu.dependencies"
             defaultMessage="Dependencies"

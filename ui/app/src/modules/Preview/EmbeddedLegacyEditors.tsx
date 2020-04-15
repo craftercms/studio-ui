@@ -153,6 +153,8 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
       handleTabChange(null, hasSomeLoaded[0]);
     } else {
+      !showTabs && setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
+
       handleClose();
       if (refresh) {
         getHostToGuestBus().next({ type: RELOAD_REQUEST });
