@@ -56,8 +56,13 @@ export function getQueryVariable(query: string, variable: string) {
   return qs[variable] ?? null;
 }
 
+export function parseQueryString() {
+  return parse(window.location.search);
+}
+
 export default {
   getPathFromPreviewURL,
   getPreviewURLFromPath,
-  getQueryVariable
+  getQueryVariable,
+  parseQueryString
 };

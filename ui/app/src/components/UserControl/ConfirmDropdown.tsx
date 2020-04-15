@@ -21,7 +21,7 @@ import Button from '@material-ui/core/Button';
 import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
+import makeStyles from '@material-ui/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 
 const ColorButton = withStyles(() => ({
@@ -53,13 +53,13 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface ConfirmDropdownProps {
-  onConfirm(): any
-
   text: string
   cancelText: string
   confirmText: string
   confirmHelperText?: string
   disabled?: boolean
+
+  onConfirm(): any
 }
 
 
@@ -117,5 +117,5 @@ export default function SelectButton(props: ConfirmDropdownProps) {
         <MenuItem onClick={handleClose}>{cancelText}</MenuItem>
       </Menu>
     </div>
-  )
+  );
 }

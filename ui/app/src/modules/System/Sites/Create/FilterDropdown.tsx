@@ -18,7 +18,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
 import Popover from '@material-ui/core/Popover';
-import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
+import makeStyles from '@material-ui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -112,13 +112,12 @@ const messages: any = defineMessages({
 interface FilterDropdownProps {
   text: string;
   className: any;
+  currentFilters: CurrentFilters;
+  filters: any;
 
   handleFilterChange(event: any): any;
 
   handleEnterKey(path: string): any;
-
-  currentFilters: CurrentFilters;
-  filters: any;
 }
 
 export default function FilterDropdown(props: FilterDropdownProps) {
@@ -261,5 +260,5 @@ export default function FilterDropdown(props: FilterDropdownProps) {
         </section>
       </Popover>
     </div>
-  )
+  );
 }

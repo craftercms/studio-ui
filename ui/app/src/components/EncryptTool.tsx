@@ -111,15 +111,15 @@ function SnackbarContentWrapper(props: any) {
         <span id="encryptToolSnackbar" className={classes.message}>
           {
             variant === 'success'
-              ? <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`}/>
-              : <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`}/>
+              ? <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`} />
+              : <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`} />
           }
           {message}
         </span>
       }
       action={[
         <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
-          <CloseIcon className={classes.icon}/>
+          <CloseIcon className={classes.icon} />
         </IconButton>
       ]}
       {...other}

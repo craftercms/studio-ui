@@ -160,9 +160,6 @@ let schedulingTimeout;
 
 interface PublishFormProps {
   inputs: any;
-
-  setInputs(state: any): any;
-
   showEmailCheckbox: boolean;
   publishingChannels: any[];
   publishingChannelsStatus: string;
@@ -170,6 +167,8 @@ interface PublishFormProps {
   disabled: boolean;
   setSubmitDisabled: Function;
   classes?: any;
+
+  setInputs(state: any): any;
 }
 
 function PublishForm(props: PublishFormProps) {
@@ -260,7 +259,8 @@ function PublishForm(props: PublishFormProps) {
       <div className={classes.formSection}>
         <InputLabel
           htmlFor="environmentSelect"
-          className={classes.sectionLabel}>
+          className={classes.sectionLabel}
+        >
           {formatMessage(messages.scheduling)}
         </InputLabel>
         <RadioGroup
@@ -270,7 +270,7 @@ function PublishForm(props: PublishFormProps) {
         >
           <FormControlLabel
             value="now"
-            control={<Radio color="primary" className={classes.radioInput}/>}
+            control={<Radio color="primary" className={classes.radioInput} />}
             label={formatMessage(messages.schedulingNow)}
             classes={{
               label: classes.formInputs
@@ -279,7 +279,7 @@ function PublishForm(props: PublishFormProps) {
           />
           <FormControlLabel
             value="custom"
-            control={<Radio color="primary" className={classes.radioInput}/>}
+            control={<Radio color="primary" className={classes.radioInput} />}
             label={formatMessage(messages.schedulingLater)}
             classes={{
               label: classes.formInputs
@@ -343,7 +343,7 @@ function PublishForm(props: PublishFormProps) {
                 icon: classes.selectIcon
               }}
               onChange={handleSelectChange('environment')}
-              input={<SelectInput/>}
+              input={<SelectInput />}
               disabled={disabled}
             >
               {

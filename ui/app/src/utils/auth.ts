@@ -31,7 +31,7 @@ export function getCookieDomain(): string {
   let domain = '';
   if (hostname.includes('.')) {
     domain = hostname.replace(/^(.*?)\./, '');
-    domain = `.${domain.includes('.') ? domain : hostname}`
+    domain = `.${domain.includes('.') ? domain : hostname}`;
   }
   return domain;
 }

@@ -23,5 +23,5 @@ if (process.env.NODE_ENV === 'production') {
   const ReactDOM = require('react-dom');
   const App = require('./components/App').default;
   const elem = document.getElementById('studioSPARoot');
-  ReactDOM.render(<App/>, elem);
+  ReactDOM.render(<App />, elem);
 }

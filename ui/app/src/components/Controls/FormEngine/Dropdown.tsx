@@ -66,5 +66,5 @@ export default function Dropdown(props: Control) {
         }
       </Select>
     </FormControl>
-  )
+  );
 }

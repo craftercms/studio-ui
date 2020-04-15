@@ -309,7 +309,7 @@
     _createOption(message, callback) {
       let $option = $(`
             <div class="cstudio-form-control-node-selector-add-container-item">
-              ${message} 
+              ${message}
             </div>
           `);
       $option.on('click', function () {

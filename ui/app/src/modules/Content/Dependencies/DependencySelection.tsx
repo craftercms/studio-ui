@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Item } from '../../../models/Item';
+import { Item, LegacyItem } from '../../../models/Item';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { get } from '../../../utils/ajax';
@@ -33,10 +32,10 @@ import Button from '@material-ui/core/Button';
 import { palette } from '../../../styles/theme';
 
 interface DependencySelectionProps {
-  items: Item[];
+  items: LegacyItem[];
   siteId?: string;      // for dependencySelectionDelete
   onChange?: Function;  // for dependencySelectionDelete
-  checked: Item[];
+  checked: LegacyItem[];
   setChecked: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
@@ -52,7 +51,7 @@ interface DependencySelectionProps {
 interface SelectionListProps {
   title: any;
   subtitle?: any;
-  items?: Item[];
+  items?: LegacyItem[];
   uris?: [];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
@@ -220,7 +219,7 @@ export function DependencySelection(props: DependencySelectionProps) {
         {
           (deps == null && !showDepsButton) ? (
             <div className="centerCircularProgress">
-              <CenterCircularProgress/>
+              <CenterCircularProgress />
               <span className={classes.circularProgressText}>
                 <FormattedMessage
                   id="publishDialog.loadingDependencies"
@@ -337,7 +336,7 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
         {
           (resultItems == null) && (
             <div className="centerCircularProgress">
-              <CenterCircularProgress/>
+              <CenterCircularProgress />
               <span className={classes.circularProgressText}>
                 <FormattedMessage
                   id="deleteDialog.uploadingDepenedents"
@@ -432,7 +431,7 @@ function SelectionList(props: SelectionListProps) {
         items &&
         <List className={classes.selectionList}>
           {
-            items.map((item: Item) => {
+            items.map((item: LegacyItem) => {
               const labelId = `checkbox-list-label-${item.uri}`;
 
               return (

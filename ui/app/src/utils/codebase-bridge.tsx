@@ -28,13 +28,14 @@ import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
-import { filter, map, take, debounceTime } from 'rxjs/operators';
+import { debounceTime, filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import { nou } from './object';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
+import { jssPreset, makeStyles } from '@material-ui/core/styles';
 
 const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
@@ -71,6 +72,7 @@ interface CodebaseBridge {
     translateElements: Function;
   };
   services: object;
+  mui: object;
 }
 
 export function updateIntl(nextIntl: IntlShape) {
@@ -95,6 +97,8 @@ export function createCodebaseBridge() {
     },
 
     components: {
+      ErrorState,
+      CrafterCMSNextBridge,
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
@@ -119,6 +123,11 @@ export function createCodebaseBridge() {
       ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog'))
+    },
+
+    mui: {
+      makeStyles,
+      jssPreset
     },
 
     assets: {
@@ -169,7 +178,7 @@ export function createCodebaseBridge() {
         typeof component === 'string' ? Bridge.components[component] : component;
 
       if (nou(Component)) {
-        Component = function() {
+        Component = function () {
           return (
             <ErrorState
               graphicUrl="/studio/static-assets/images/warning_state.svg"

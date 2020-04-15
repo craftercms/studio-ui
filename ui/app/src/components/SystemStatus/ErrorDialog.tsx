@@ -18,7 +18,7 @@ import Dialog from '@material-ui/core/Dialog';
 import React, { PropsWithChildren } from 'react';
 import { APIError } from '../../models/GlobalState';
 import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import CloseIcon from '@material-ui/icons/CloseRounded';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import ErrorState from './ErrorState';
 import StandardAction from '../../models/StandardAction';
@@ -36,11 +36,9 @@ interface ErrorDialogBaseProps {
   error: APIError;
 }
 
-export type  ErrorDialogProps =  PropsWithChildren<
-  ErrorDialogBaseProps & {
-    onClose(): any;
-  }
->;
+export type  ErrorDialogProps = PropsWithChildren<ErrorDialogBaseProps & {
+  onClose(): any;
+}>;
 
 export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
   onClose?: StandardAction;
