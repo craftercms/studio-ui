@@ -23,7 +23,12 @@ import { LegacyItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState, { APIError } from '../../../models/GlobalState';
-import { useActiveSiteId, useOnMount, useSpreadState, useStateResource } from '../../../utils/hooks';
+import {
+  useActiveSiteId,
+  useOnMount,
+  useSpreadState,
+  useStateResource
+} from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 import { Resource } from '../../../models/Resource';
 import Grid from '@material-ui/core/Grid';
@@ -405,11 +410,17 @@ function PublishDialog(props: PublishDialogProps) {
     submitting: false
   });
 
-  const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
   const siteId = useActiveSiteId();
+
+  const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
   const userSitesRoles: String[] = user.rolesBySite[siteId];
-  const userRole = userSitesRoles.includes('admin') ? 'admin' : 'author';
-  const submit = submitMap[userRole];
+  let userRole = null;
+  let submit = null;
+
+  if (open) {
+    userRole = (userSitesRoles && userSitesRoles.includes('admin')) ? 'admin' : 'author';
+    submit = submitMap[userRole];
+  }
 
   const { formatMessage } = useIntl();
 
