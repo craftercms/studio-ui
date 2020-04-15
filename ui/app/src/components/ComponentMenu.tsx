@@ -14,12 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import EmbeddedLegacyEditors from '../modules/Preview/EmbeddedLegacyEditors';
-import PublishDialog from '../modules/Content/Publish/PublishDialog';
 import { palette } from '../styles/theme';
 import { useSelection, useSpreadState } from '../utils/hooks';
 import { getLegacyItem } from '../services/content';
@@ -27,8 +26,9 @@ import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { useDispatch } from 'react-redux';
-import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
+import { showPublishDialog } from '../state/reducers/dialogs/publish';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
+import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -63,10 +63,8 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     inProgress: true
   });
 
-  const [publishDialog, setPublishDialog] = useSpreadState({
-    open: false,
-    item: null,
-    scheduling: null
+  const [publishDialog, setPublishDialog] = useState({
+    items: null
   });
 
   const [dependenciesDialog, setDependenciesDialog] = useSpreadState({
@@ -76,12 +74,12 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   // Effect used to open the publish Dialog
   useEffect(() => {
-    if (models && modelId && publishDialog.item === null) {
+    if (models && modelId && publishDialog.items === null) {
       let path = models[modelId].craftercms.path;
       if (embeddedParentPath) path = models[parentId].craftercms.path;
       getLegacyItem(site, path).subscribe(
         (item) => {
-          setPublishDialog({ item });
+          setPublishDialog({ items: [item] });
           setDependenciesDialog({ item })
         },
         (response) => {
@@ -91,17 +89,23 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, setPublishDialog, setDependenciesDialog, site, embeddedParentPath, parentId, publishDialog.item, dispatch]);
+  }, [models, modelId, setPublishDialog, setDependenciesDialog, site, embeddedParentPath, parentId, publishDialog.items, dispatch]);
 
   const handleEdit = (type: string) => {
     handleClose();
     switch (type) {
       case 'schedule': {
-        setPublishDialog({ open: true, scheduling: 'custom' });
+        dispatch(showPublishDialog({
+          items: publishDialog.items,
+          scheduling: 'custom'
+        }));
         break;
       }
       case 'publish': {
-        setPublishDialog({ open: true, scheduling: 'now' });
+        dispatch(showPublishDialog({
+          items: publishDialog.items,
+          scheduling: 'now'
+        }));
         break;
       }
       case 'dependencies' : {
@@ -150,14 +154,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     }
   };
 
-  const onSuccessPublish = () => {
-    setPublishDialog({ open: false, scheduling: null, item: { ...publishDialog.item, isLive: true } });
-  };
-
-  const onClosePublish = () => {
-    setPublishDialog({ open: false, scheduling: null });
-  };
-
   return (
     <>
       <Menu
@@ -173,7 +169,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          (publishDialog.item && !publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
+          (publishDialog.items && !publishDialog.items?.lockOwner && !publishDialog.items?.isLive) &&
           <MenuItem onClick={() => handleEdit('schedule')}>
             <FormattedMessage
               id="previewToolBar.menu.schedule"
@@ -182,7 +178,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           </MenuItem>
         }
         {
-          (publishDialog.item && !publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
+          (publishDialog.items && !publishDialog.items?.lockOwner && !publishDialog.items?.isLive) &&
           <MenuItem onClick={() => handleEdit('publish')}>
             <FormattedMessage
               id="previewToolBar.menu.publish"
@@ -221,7 +217,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          publishDialog.item && !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.item.contentType]?.type === 'page' &&
+          publishDialog.items && !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page' &&
           <MenuItem onClick={() => handleEdit('controller')}>
             <FormattedMessage
               id="previewToolBar.menu.editController"
@@ -236,19 +232,9 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           dialogConfig={dialogConfig}
           setDialogConfig={setDialogConfig}
           getPath={getPath}
-          showController={!embeddedParentPath && contentTypesBranch.byId?.[publishDialog.item.contentType]?.type === 'page'}
-        />
-      }
-      {
-        publishDialog.open &&
-        <PublishDialog
-          scheduling={publishDialog.scheduling}
-          items={[publishDialog.item]}
-          onSuccess={onSuccessPublish}
-          onClose={onClosePublish}
+          showController={!embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page'}
         />
       }
     </>
   );
 }
-

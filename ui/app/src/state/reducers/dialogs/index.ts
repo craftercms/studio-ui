@@ -19,6 +19,7 @@ import confirm from './confirm';
 import error from './error';
 import minimizedDialogs from './minimizedDialogs';
 import history from './history';
+import publish from './publish';
 import dependencies from './dependencies';
 
 export default combineReducers({
@@ -26,5 +27,6 @@ export default combineReducers({
   error,
   minimizedDialogs,
   history,
+  publish,
   dependencies
 });
