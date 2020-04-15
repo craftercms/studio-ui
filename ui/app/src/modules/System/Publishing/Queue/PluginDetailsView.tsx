@@ -22,13 +22,14 @@ import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
 import MobileStepper from '../../../../components/MobileStepper';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { Blueprint } from '../../../../models/Blueprint';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Grid from '@material-ui/core/Grid';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import Alert from '@material-ui/lab/Alert';
 import { backgroundColor } from '../../../../styles/theme';
 import clsx from 'clsx';
 // @ts-ignore
@@ -129,6 +130,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   background: {
     background: backgroundColor,
     height: '340px'
+  },
+  detailsNotCompatible: {
+    marginBottom: '15px'
   }
 }));
 
@@ -166,7 +170,8 @@ const messages = defineMessages({
 interface PluginDetailsViewProps {
   selectedIndex?: number,
   blueprint: Blueprint,
-  interval: number
+  interval: number,
+  marketplace: boolean,
 
   onCloseDetails(event: any): any,
 
@@ -178,7 +183,7 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const classes = useStyles({});
   const [play, setPlay] = useState(false);
-  const { blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex } = props;
+  const { blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex, marketplace } = props;
   const [index, setIndex] = useState(selectedIndex || 0);
   const { media, name, description, version, license, developer, website, searchEngine, compatible } = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
@@ -242,7 +247,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
           {name}
         </Typography>
         {
-          compatible &&
+          ((marketplace && compatible) || !marketplace) &&      // if it's from marketplace and compatible, or not from marketplace (private bps)
           <Button
             variant="contained"
             color="primary"
@@ -275,6 +280,16 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
       <div className={classes.detailsContainer}>
         <Grid container spacing={3}>
           <Grid item xs={8}>
+            {
+              marketplace && !compatible &&
+              <Alert severity="error" className={classes.detailsNotCompatible}>
+                <FormattedMessage
+                  id="pluginDetails.notCompatible"
+                  defaultMessage="This blueprint is not compatible with your current version of Crafter CMS."
+                />
+              </Alert>
+            }
+
             <Typography variant="body1">
               {description}
             </Typography>

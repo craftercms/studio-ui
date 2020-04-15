@@ -750,6 +750,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             blueprint={item}
             onBlueprintSelected={handleBlueprintSelected}
             interval={5000}
+            marketplace={tab === 1}
             onDetails={onDetails}
           />
         </Grid>
@@ -804,6 +805,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             onBlueprintSelected={handleBlueprintSelected}
             onCloseDetails={handleCloseDetails}
             interval={5000}
+            marketplace={tab === 1}
           />
         ))
       ) : (
@@ -837,7 +839,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   onClick={handleSearchClick}
                 />
                 {
-                  (tab === 1 && marketplace) &&
+                  (tab === 1) &&
                   <FormControlLabel
                     className={classes.showIncompatible}
                     control={
