@@ -311,7 +311,7 @@ export default function ToolsPanel() {
     >
       {site ? (
         <Suspencified loadingStateProps={{ title: `${formatMessage(translations.loading)}...` }}>
-          <Tool id={toolMeta?.id} config={config}resource={resource}/>
+          <Tool id={toolMeta?.id} config={config} resource={resource}/>
         </Suspencified>
       ) : (
         <EmptyState
