@@ -236,7 +236,6 @@ export function useMinimizeDialog(initialTab: MinimizedDialog) {
       return () => {
         dispatch(popDialog({ id: initialTab.id }));
       };
-
     },
     // `initialTab` omitted purposely to facilitate use without memo from consumer side
     // eslint-disable-next-line
