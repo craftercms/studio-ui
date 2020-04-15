@@ -68,6 +68,8 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           path: uri
         }
       } else {
+        // TODO: "Home" should probably be translated
+        // TODO: Should the "default" path come from some sort of config?
         previewItem = {
           label: 'Home',
           path: '/site/website/index.xml'
