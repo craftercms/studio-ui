@@ -48,7 +48,7 @@ import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED
 } from '../../../state/actions/preview';
-import { createLookupTable } from '../../../utils/object';
+// import { createLookupTable } from '../../../utils/object';
 import ContentInstance from '../../../models/ContentInstance';
 import { search } from '../../../services/search';
 
@@ -71,7 +71,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   searchContainer: {
     padding: '16px'
   },
@@ -157,7 +157,7 @@ const initialSearchParameters: Partial<ElasticParams> = {
 
 const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml'];
 
-export default function SearchPanel(props: any) {
+export default function SearchPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { searchKeyword } = usePreviewState();
@@ -166,8 +166,8 @@ export default function SearchPanel(props: any) {
   const site = useActiveSiteId();
   const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
   const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
-  const contentTypesIds = contentTypes?.map(item => item.id);
-  const contentTypesLookup = createLookupTable(contentTypes, 'id');
+  // const contentTypesIds = contentTypes?.map(item => item.id);
+  // const contentTypesLookup = createLookupTable(contentTypes, 'id');
   const [pageNumber, setPageNumber] = useState(0);
 
   const resource = useStateResource<Array<ContentInstance | SearchItem>, ContentInstancePage | SearchResult>(searchResults, {
@@ -175,8 +175,8 @@ export default function SearchPanel(props: any) {
     shouldReject: () => Boolean(error),
     shouldRenew: (data, resourceArg) => resourceArg.complete,
     // TODO: Components
-    //resultSelector: (data) => Object.values(data.lookup).filter(item => contentTypesIds.includes(item.craftercms.contentType)),
-    // @ts-ignore
+    // resultSelector: (data) => Object.values(data.lookup).filter(item => contentTypesIds.includes(item.craftercms.contentType)),
+    // @ts-ignore TODO: Remove ts-ignore
     resultSelector: (data) => data.items,
     errorSelector: () => error
   });
