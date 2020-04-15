@@ -190,7 +190,7 @@ const useStyles = makeStyles((theme: Theme) =>
     'searchContainer': {
       position: 'absolute',
       background: 'white',
-      padding: '20px',
+      padding: '0 20px',
       width: '100%',
       left: '50%',
       transform: 'translate(-50%)',
@@ -213,7 +213,7 @@ const useStyles = makeStyles((theme: Theme) =>
       'display': 'flex',
       '&.selected': {
         height: '100%',
-        paddingTop: '77px'
+        paddingTop: '70px'
       }
     },
     'dialogActions': {
