@@ -602,11 +602,10 @@ export default function BulkUpload(props: BulkUploadProps) {
   const id = 'bulkUpload';
   const classes = useStyles({});
   const {
-    onClose = () => {
-    },
-    path = '/static-assets/test',
+    onClose,
+    path,
     maxSimultaneousUploads = 1,
-    open = true
+    open
   } = props;
   const site = useActiveSiteId();
   const [dropZoneStatus, setDropZoneStatus] = useSpreadState<DropZoneStatus>(initialDropZoneStatus);
@@ -671,8 +670,7 @@ export default function BulkUpload(props: BulkUploadProps) {
       <DialogHeader
         title={formatMessage(translations.title)}
         subtitle={formatMessage(translations.subtitle)}
-        //onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
-        onClose={onMinimized}
+        onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
         closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
       />
       <DialogBody className={classes.dialogContent}>

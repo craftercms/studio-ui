@@ -309,7 +309,6 @@ export function PreviewConcierge(props: any) {
               enqueueSnackbar('Asset Upload failed.');
             },
             () => {
-              console.log('finished');
               hostToGuest$.next({
                 type: DESKTOP_ASSET_UPLOAD_COMPLETE,
                 payload: {
