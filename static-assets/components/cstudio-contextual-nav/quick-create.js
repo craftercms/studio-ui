@@ -59,16 +59,24 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
 
     function renderQuickCreate(anchorEl) {
       let unmount;
+      let previewItem;
+
+      if(CStudioAuthoring && CStudioAuthoring.SelectedContent.selectedContent.length) {
+        const { internalName, uri } = CStudioAuthoring.SelectedContent.selectedContent[0]
+        previewItem = {
+          label: internalName,
+          path: uri
+        }
+      } else {
+        previewItem = {
+          label: 'Home',
+          path: '/site/website/index.xml'
+        }
+      }
+
       CrafterCMSNext.render(container, 'QuickCreateMenu', {
         onSaveLegacySuccess: success,
-        previewItem:
-          CStudioAuthoring && CStudioAuthoring.SelectedContent.selectedContent.length
-            ? CStudioAuthoring.SelectedContent.selectedContent[0]
-            : {
-              name: 'Home',
-              internalName: 'Home',
-              uri: '/site/website/index.xml'
-            },
+        previewItem,
         anchorEl,
         onClose: () => unmount()
       }).then((done) => (unmount = done.unmount));

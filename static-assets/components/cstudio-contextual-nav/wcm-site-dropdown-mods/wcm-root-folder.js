@@ -3309,14 +3309,13 @@
         };
 
         function renderNewContentDialog(open) {
-          const { site, internalName, fileName, uri } = oCurrentTextNode.data;
+          const { site, internalName, uri } = oCurrentTextNode.data;
           let unmount;
           CrafterCMSNext.render(container, 'NewContentDialog', {
             onSaveLegacySuccess: createSuccess(oCurrentTextNode),
             previewItem: {
-              name: fileName,
-              internalName,
-              uri
+              label: internalName,
+              path: uri
             },
             open,
             onClose: () => renderNewContentDialog(false),

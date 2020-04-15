@@ -217,9 +217,8 @@ export default function QuickCreate() {
       } = models[modelId];
 
       const item = {
-        name: label,
-        internalName: label,
-        uri: path
+        label,
+        path
       };
 
       setCurrentPreview(item);

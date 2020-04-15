@@ -32,24 +32,20 @@ import { Item } from '../../../models/Item';
 // TODO remove mockup data as component menu is implemented
 const MENU_ITEMS = [
   {
-    name: 'Style',
-    internalName: 'Style',
-    uri: '/site/website/style/index.xml'
+    label: 'Style',
+    path: '/site/website/style/index.xml'
   },
   {
-    name: 'Health',
-    internalName: 'Health',
-    uri: '/site/website/health/index.xml'
+    label: 'Health',
+    path: '/site/website/health/index.xml'
   },
   {
-    name: 'Technology',
-    internalName: 'Technology',
-    uri: '/site/website/technology/index.xml'
+    label: 'Technology',
+    path: '/site/website/technology/index.xml'
   },
   {
-    name: 'Root path',
-    internalName: 'Root',
-    uri: '/'
+    label: 'Root path',
+    path: '/'
   }
 ];
 
@@ -87,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface NewContentSelectProps {
+interface SingleItemSelectorProps {
   LabelIcon: OverridableComponent<SvgIconTypeMap>;
   classes?: {
     root?: string;
@@ -105,7 +101,7 @@ interface NewContentSelectProps {
   onEditClick(): void;
 }
 
-export default function SingleItemSelector(props: NewContentSelectProps) {
+export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const {
     LabelIcon,
     classes: propClasses,
@@ -136,7 +132,7 @@ export default function SingleItemSelector(props: NewContentSelectProps) {
           {label}
         </Typography>
         <LabelIcon className={clsx(classes.labelIcon, propClasses?.labelIcon)} />
-        <Typography variant={labelVariant || 'body1'}>{selectItem.internalName}</Typography>
+        <Typography variant={labelVariant || 'body1'}>{selectItem.label}</Typography>
       </div>
       <IconButton
         className={classes.changeBtn}
@@ -149,8 +145,8 @@ export default function SingleItemSelector(props: NewContentSelectProps) {
       </IconButton>
       <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={onMenuClose}>
         {MENU_ITEMS.map((item) => (
-          <MenuItem key={item.name} onClick={onMenuItemClick(item)}>
-            {item.name}
+          <MenuItem key={item.label} onClick={onMenuItemClick(item)}>
+            {item.label}
           </MenuItem>
         ))}
       </Menu>

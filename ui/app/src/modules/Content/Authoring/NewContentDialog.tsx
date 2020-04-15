@@ -140,10 +140,15 @@ interface ContentTypesGridProps {
   getPrevImg(data: LegacyFormConfig): string;
 }
 
+interface PreviewItem {
+  label: string;
+  path: string;
+}
+
 interface NewContentDialogBaseProps {
   open: boolean;
   site: string;
-  previewItem: Item;
+  previewItem: PreviewItem;
   compact: boolean;
 
   onSaveLegacySuccess?(response): any;
@@ -214,7 +219,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl =
     '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  const path = previewItem?.uri.replace(/[^/]*$/, '');
+  const path = previewItem?.path.replace(/[^/]*$/, '');
   const contentTypesFilters = [
     {
       label: formatMessage(translations.contentTypeAllLabel),
