@@ -367,7 +367,6 @@ export default function ContentTree() {
   const {formatMessage} = useIntl();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const hostToGuest$ = getHostToGuestBus();
-  const [expanded, setExpanded] = React.useState<string[]>(['']);
   const site = useActiveSiteId();
   const [optionsMenu, setOptionsMenu] = React.useState({
     modelId: null,
