@@ -281,6 +281,12 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     'blueprintFormRoot': {
       marginTop: 10
+    },
+    'emptyStateRoot': {
+      position: 'absolute',
+      top: '40%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)'
     }
   })
 );
@@ -708,6 +714,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         <EmptyState
           title={formatMessage(messages.noBlueprints)}
           subtitle={formatMessage(messages.changeQuery)}
+          classes={{root: classes.emptyStateRoot}}
         />
       );
     }
