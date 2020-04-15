@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import ExtensionRounded from '@material-ui/icons/ExtensionRounded';
 import ImageRounded from '@material-ui/icons/ImageRounded';
@@ -23,6 +23,7 @@ import DevicesRounded from '@material-ui/icons/DevicesRounded';
 import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
 import WarningRounded from '@material-ui/icons/WarningRounded';
 import AccountTreeRoundedIcon from '@material-ui/icons/AccountTreeRounded';
+import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -39,7 +40,7 @@ import SimulatorPanel from './Tools/SimulatorPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
-import { fetchPreviewToolsConfig, selectTool, setSearchPanelKeyword } from '../../state/actions/preview';
+import { fetchPreviewToolsConfig, selectTool } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
@@ -51,7 +52,6 @@ import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import ContentTree from './Tools/ContentTree';
 import { nnou } from '../../utils/object';
 import Suspencified from '../../components/SystemStatus/Suspencified';
-import SearchBar from '../../components/SearchBar';
 import SearchPanel from './Tools/SearchPanel';
 import Tools from '../../models/PreviewToolIDs';
 import { Resource } from '../../models/Resource';
@@ -147,13 +147,13 @@ const translations = defineMessages({
     id: 'craftercms.ice.contentTreePanel.title',
     defaultMessage: 'Content Tree'
   },
+  searchPanel: {
+    id: 'craftercms.ice.contentTreePanel.title',
+    defaultMessage: 'Search Everywhere'
+  },
   loading: {
     id: 'words.loading',
     defaultMessage: 'Loading'
-  },
-  searchEverywhere: {
-    id: 'craftercms.ice.search.searchEveryWhere',
-    defaultMessage: 'Search'
   }
 });
 
@@ -208,28 +208,9 @@ function ToolSelector(props: ToolSelectorProps) {
   const tools = resource.read();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
-  const [keyword, setKeyword] = useState('');
-
-  const onKeyPress = (key: string) => {
-    if(key === 'Enter') {
-      select('craftercms.ice.search');
-      dispatch(setSearchPanelKeyword(keyword))
-    }
-  };
 
   return (
     <List>
-      <ListItem className={classes.itemSearch}>
-        <SearchBar
-          onChange={(keyword) => setKeyword(keyword)}
-          placeholder={formatMessage(translations.searchEverywhere)}
-          keyword={keyword}
-          showActionButton={Boolean(keyword)}
-          showDecoratorIcon
-          onKeyPress={onKeyPress}
-        />
-        <ChevronRightIcon/>
-      </ListItem>
       {
         tools
           .map((tool) => ({
@@ -257,7 +238,8 @@ const componentIconMap: any = {
   'craftercms.ice.audiences': EmojiPeopleRounded,
   'craftercms.ice.simulator': DevicesRounded,
   'craftercms.ice.browseComponents': ExtensionRounded,
-  'craftercms.ice.contentTree': AccountTreeRoundedIcon
+  'craftercms.ice.contentTree': AccountTreeRoundedIcon,
+  'craftercms.ice.search': SearchRoundedIcon
 };
 
 const componentMap: any = {

@@ -1057,6 +1057,10 @@ export function uploadDataUrl(
       type: file.type,
       data: blob
     });
+
+    return () => {
+      uppy.cancelAll();
+    };
   });
 }
 
@@ -1145,6 +1149,16 @@ export function pasteItem(site: string, item: Item): Observable<any> {
 export function getPages(site: string, item: any): Observable<any> {
   return get(`/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`).pipe(
     pluck('response', 'item'),
+    catchApi1Error
+  );
+}
+
+export function deleteItems(siteId: string, user: string, submissionComment: string, data: AnyObject): Observable<any> {
+  return postJSON(
+    `/studio/api/1/services/api/1/workflow/go-delete.json?site=${siteId}&user=${user}&submissionComment=${submissionComment}`,
+    data
+  ).pipe(
+    pluck('response'),
     catchApi1Error
   );
 }

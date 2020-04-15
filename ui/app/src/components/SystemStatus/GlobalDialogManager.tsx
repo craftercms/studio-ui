@@ -30,6 +30,7 @@ const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
+const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 
 function createCallback(
   action: StandardAction,
@@ -101,7 +102,12 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Delete */}
-
+      <DeleteDialog
+        open={state.delete.open}
+        items={state.delete.items}
+        onClose={createCallback(state.delete.onClose, dispatch)}
+        onSuccess={createCallback(state.delete.onSuccess, dispatch)}
+      />
       {/* endregion */}
 
       {/* region History */}

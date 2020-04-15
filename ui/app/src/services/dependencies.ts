@@ -45,8 +45,15 @@ export function getDependant(siteId: string, path: string): Observable<LegacyIte
   );
 }
 
+export function fetchDeleteDependencies(siteId: string, paths: string[]) {
+  return get(`/studio/api/2/content/get_delete_package?siteId=${siteId}&paths=${paths}`).pipe(
+    pluck('response')
+  );
+}
+
 export default {
   fetchDependencies,
   getSimpleDependencies,
-  getDependant
+  getDependant,
+  fetchDeleteDependencies
 };
