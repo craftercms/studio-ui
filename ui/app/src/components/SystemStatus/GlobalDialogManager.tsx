@@ -28,6 +28,8 @@ import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
+const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
+const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
 
 function createCallback(
   action: StandardAction,
@@ -76,7 +78,13 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Publish */}
-
+      <PublishDialog
+        open={state.publish.open}
+        items={state.publish.items}
+        scheduling={state.publish.scheduling}
+        onClose={createCallback(state.publish.onClose, dispatch)}
+        onSuccess={createCallback(state.publish.onSuccess, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Create Content */}
@@ -84,7 +92,12 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Dependencies */}
-
+      <DependenciesDialog
+        open={state.dependencies.open}
+        item={state.dependencies.item}
+        dependenciesShown={state.dependencies.dependenciesShown}
+        onClose={createCallback(state.dependencies.onClose, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Delete */}

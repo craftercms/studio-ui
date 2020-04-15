@@ -115,6 +115,7 @@ export function createCodebaseBridge() {
       Search: lazy(() => import('../pages/Search')),
       Preview: lazy(() => import('../pages/Preview')),
       PublishDialog: lazy(() => import('../modules/Content/Publish/PublishDialog')),
+      DependenciesDialog: lazy(() => import('../modules/Content/Dependencies/DependenciesDialog')),
       ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),

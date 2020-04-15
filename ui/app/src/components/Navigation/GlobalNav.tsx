@@ -90,7 +90,7 @@ const messages = defineMessages({
   },
   preview: {
     id: 'globalMenu.preview',
-    defaultMessage: 'Preview 2.0'
+    defaultMessage: 'Preview 2.0 (beta)'
   },
   legacyPreview: {
     id: 'globalMenu.legacyPreview',
