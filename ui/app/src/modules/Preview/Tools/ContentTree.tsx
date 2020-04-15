@@ -44,7 +44,7 @@ import ComponentMenu from '../../../components/ComponentMenu';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
 import {Resource} from '../../../models/Resource';
 
-const rootPrefix = 'root_';
+const rootPrefix = '{root}_';
 
 const translations = defineMessages({
   contentTree: {
