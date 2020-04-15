@@ -83,8 +83,9 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) 
       <RawIntlProvider value={intl}>
         <ThemeProvider theme={theme}>
           <SnackbarProvider
-            maxSnack={5} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            autoHideDuration={3000}
+            maxSnack={5}
+            autoHideDuration={5000}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <>
               <Suspense fallback="" children={props.children} />
