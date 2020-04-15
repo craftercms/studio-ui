@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     background: 'none',
     border: 'none',
     width: '100%',
+    padding: '10px 5px',
     '&:focus': {
       boxShadow: 'none'
     }
