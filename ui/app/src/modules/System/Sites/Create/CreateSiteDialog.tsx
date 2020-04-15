@@ -202,7 +202,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%'
     },
     'dialogContent': {
-      padding:  '30px 25px',
+      padding: '30px 0',
       position: 'relative',
       backgroundColor: palette.gray.light0
     },
@@ -211,6 +211,7 @@ const useStyles = makeStyles((theme: Theme) =>
       'height': '100%',
       'overflow': 'auto',
       'display': 'flex',
+      'padding': '0 25px',
       '&.selected': {
         height: '100%',
         paddingTop: '70px'
