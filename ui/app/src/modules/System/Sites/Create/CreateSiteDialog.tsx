@@ -278,6 +278,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     'headerSubTitle': {
       marginBottom: 13
+    },
+    'blueprintFormRoot': {
+      marginTop: 10
     }
   })
 );
@@ -846,6 +849,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                       onCheckNameExist={checkNameExist}
                       onSubmit={handleFinish}
                       blueprint={site.blueprint}
+                      classes={{root: classes.blueprintFormRoot}}
                     />
                   )}
                 </div>
