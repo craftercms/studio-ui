@@ -575,11 +575,12 @@ CStudioAuthoring.Module.requireModule(
           if (datasource && datasource.add) {
             datasource.add(
               {
-                insertItem: function(fileData) {
+                returnProp: 'browserUri',   // to return proper item link (browserUri)
+                insertItem: function (fileData) {
                   var cleanUrl = fileData;
                   cb(cleanUrl);
                 },
-                failure: function(message) {
+                failure: function (message) {
                   CStudioAuthoring.Operations.showSimpleDialog(
                     'message-dialog',
                     CStudioAuthoring.Operations.simpleDialogTypeINFO,

@@ -17,11 +17,6 @@
 import React, { MouseEvent, useEffect, useRef, useState } from 'react';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import DialogContent from '@material-ui/core/DialogContent';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import SearchIcon from '@material-ui/icons/Search';
 import Grid from '@material-ui/core/Grid';
 import Tab from '@material-ui/core/Tab';
@@ -31,7 +26,6 @@ import Spinner from '../../../../components/SystemStatus/Spinner';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
-import DialogActions from '@material-ui/core/DialogActions';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from './BlueprintReview';
 import LoadingState from '../../../../components/SystemStatus/LoadingState';
@@ -55,12 +49,15 @@ import {
   fetchBlueprints as fetchMarketplaceBlueprints
 } from '../../../../services/marketplace';
 import gitLogo from '../../../../assets/git-logo.svg';
-import { backgroundColor } from '../../../../styles/theme';
+import { backgroundColor, palette } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/SearchBar';
 import { useEnv, useSpreadState } from '../../../../utils/hooks';
+import DialogHeader from '../../../../components/DialogHeader';
+import DialogBody from '../../../../components/DialogBody';
+import DialogFooter from '../../../../components/DialogFooter';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -179,20 +176,6 @@ const CustomTabs = withStyles({
   }
 })(Tabs);
 
-const dialogTitleStyles = () => ({
-  root: {
-    margin: 0,
-    padding: '20px',
-    paddingBottom: '20px',
-    background: backgroundColor
-  },
-  title: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  }
-});
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     '@keyframes fadeIn': fadeIn,
@@ -207,7 +190,7 @@ const useStyles = makeStyles((theme: Theme) =>
     'searchContainer': {
       position: 'absolute',
       background: 'white',
-      padding: '20px',
+      padding: '0 20px',
       width: '100%',
       left: '50%',
       transform: 'translate(-50%)',
@@ -219,18 +202,19 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%'
     },
     'dialogContent': {
-      padding: '0',
-      position: 'relative'
+      padding: '30px 0',
+      position: 'relative',
+      backgroundColor: palette.gray.light0
     },
     'slide': {
-      'padding': 20,
       'flexWrap': 'wrap',
       'height': '100%',
       'overflow': 'auto',
       'display': 'flex',
+      'padding': '0 25px',
       '&.selected': {
         height: '100%',
-        paddingTop: '77px'
+        paddingTop: '70px'
       }
     },
     'dialogActions': {
@@ -243,8 +227,6 @@ const useStyles = makeStyles((theme: Theme) =>
     'tabs': {
       display: 'flex',
       alignItems: 'center',
-      padding: '0 20px',
-      background: backgroundColor
     },
     'simpleTab': {
       'minWidth': '80px',
@@ -290,27 +272,24 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     'errorPaperRoot': {
       height: '100%'
+    },
+    'headerRoot': {
+      paddingBottom: 0
+    },
+    'headerSubTitle': {
+      marginBottom: 13
+    },
+    'blueprintFormRoot': {
+      marginTop: 10
+    },
+    'emptyStateRoot': {
+      position: 'absolute',
+      top: '40%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)'
     }
   })
 );
-
-const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
-  const { classes, onClose, selectedView, views } = props;
-  const { title, subtitle } = views[selectedView];
-  return (
-    <MuiDialogTitle disableTypography className={classes.root}>
-      <div className={classes.title}>
-        <Typography variant="h6">{title}</Typography>
-        {onClose ? (
-          <IconButton aria-label="close" onClick={(event) => onClose(event, 'closeButton')}>
-            <CloseIcon />
-          </IconButton>
-        ) : null}
-      </div>
-      <Typography variant="subtitle1">{subtitle}</Typography>
-    </MuiDialogTitle>
-  );
-});
 
 interface CreateSiteDialogProps {
   onClose(): any;
@@ -735,6 +714,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         <EmptyState
           title={formatMessage(messages.noBlueprints)}
           subtitle={formatMessage(messages.changeQuery)}
+          classes={{root: classes.emptyStateRoot}}
         />
       );
     }
@@ -803,32 +783,40 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         ))
       ) : (
         <div className={classes.dialogContainer}>
-          <DialogTitle
+          <DialogHeader
+            title={views[site.selectedView].title}
+            subtitle={views[site.selectedView].subtitle}
             id="create-site-dialog"
             onClose={handleClose}
-            views={views}
-            selectedView={site.selectedView}
-          />
-          {site.selectedView === 0 && (
-            <div className={classes.tabs}>
-              <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-                <Tab
-                  label={formatMessage(messages.privateBlueprints)}
-                  className={classes.simpleTab}
+            classes={{ root: classes.headerRoot }}
+            subtitleTypographyProps={{
+              classes: {
+                root: classes.headerSubTitle
+              }
+            }}
+          >
+            {site.selectedView === 0 && (
+              <div className={classes.tabs}>
+                <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
+                  <Tab
+                    label={formatMessage(messages.privateBlueprints)}
+                    className={classes.simpleTab}
+                  />
+                  <Tab
+                    label={formatMessage(messages.publicMarketplace)}
+                    className={classes.simpleTab}
+                  />
+                </CustomTabs>
+                <SearchIcon
+                  className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
+                  onClick={handleSearchClick}
                 />
-                <Tab
-                  label={formatMessage(messages.publicMarketplace)}
-                  className={classes.simpleTab}
-                />
-              </CustomTabs>
-              <SearchIcon
-                className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
-                onClick={handleSearchClick}
-              />
-            </div>
-          )}
+              </div>
+            )}
+          </DialogHeader>
+
           {(tab === 0 && blueprints) || (tab === 1 && marketplace) ? (
-            <DialogContent className={classes.dialogContent}>
+            <DialogBody dividers classes={{ root: classes.dialogContent }}>
               {search.searchSelected && site.selectedView === 0 && (
                 <div className={classes.searchContainer}>
                   <SearchBar
@@ -868,6 +856,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                       onCheckNameExist={checkNameExist}
                       onSubmit={handleFinish}
                       blueprint={site.blueprint}
+                      classes={{root: classes.blueprintFormRoot}}
                     />
                   )}
                 </div>
@@ -879,7 +868,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   )}
                 </div>
               )}
-            </DialogContent>
+            </DialogBody>
           ) : apiState.error ? (
             <ErrorState classes={{ root: classes.errorPaperRoot }} error={apiState.errorResponse} />
           ) : (
@@ -888,14 +877,14 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             </div>
           )}
           {site.selectedView !== 0 && (
-            <DialogActions className={clsx(classes.dialogActions, classes.fadeIn)}>
+            <DialogFooter classes={{ root: clsx(classes.dialogActions, classes.fadeIn) }}>
               <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
                 {formatMessage(messages.back)}
               </Button>
               <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
                 {views[site.selectedView].btnText}
               </Button>
-            </DialogActions>
+            </DialogFooter>
           )}
         </div>
       )}
