@@ -134,6 +134,7 @@ interface Data {
   selected: string;
   previous: Array<string>;
   nodeLookup: LookupTable<RenderTree>;
+  expanded: Array<string>;
 }
 
 function getNodeSelectorChildren(
@@ -377,7 +378,8 @@ export default function ContentTree() {
   const [data, setData] = React.useState<Data>({
     previous: [],
     selected: null,
-    nodeLookup: null
+    nodeLookup: null,
+    expanded: []
   });
 
   useEffect(() => {
@@ -394,9 +396,9 @@ export default function ContentTree() {
       setData({
         previous: [],
         selected: parent.craftercms.id,
-        nodeLookup: hierarchicalToLookupTable(data)
+        nodeLookup: hierarchicalToLookupTable(data),
+        expanded: [`${rootPrefix}${parent.craftercms.id}`]
       });
-      setExpanded([`${rootPrefix}${parent.craftercms.id}`]);
     }
   }, [contentTypesBranch, data.selected, guest]);
 
@@ -423,9 +425,9 @@ export default function ContentTree() {
         nodeLookup: {
           ...data.nodeLookup,
           ...hierarchicalToLookupTable(nodeData)
-        }
+        },
+        expanded: [`${rootPrefix}${model.craftercms.id}`]
       });
-      setExpanded([`${rootPrefix}${model.craftercms.id}`]);
     }
   };
 
@@ -443,8 +445,7 @@ export default function ContentTree() {
 
     let previousArray = [...data.previous];
     let previous = previousArray.pop();
-    setData({...data, selected: previous, previous: previousArray});
-    setExpanded([`${rootPrefix}${previous}`])
+    setData({...data, selected: previous, previous: previousArray, expanded: [`${rootPrefix}${previous}`]});
   };
 
   const handleChange = (event: any, nodes: string[]) => {
@@ -452,7 +453,7 @@ export default function ContentTree() {
       event.target.classList.contains('toggle') ||
       event.target.parentElement.classList.contains('toggle')
     ) {
-      setExpanded([...nodes]);
+      setData({...data, expanded: [...nodes]})
     }
   };
 
@@ -489,7 +490,7 @@ export default function ContentTree() {
         defaultCollapseIcon={<ExpandMoreIcon className="toggle"/>}
         defaultExpandIcon={<ChevronRightIcon className="toggle"/>}
         disableSelection
-        expanded={expanded}
+        expanded={data.expanded}
         onNodeToggle={handleChange}
       >
         <Suspencified loadingStateProps={{title: formatMessage(translations.loading)}}>
