@@ -63,27 +63,27 @@
             success: function (history) {
 
               var versions = history.versions,
-                isAsset = history.item.isAsset;
+                isXML = history.item.mimeType === 'application/xml';    // Diff tool support only xml files
 
               var itemStateEl = _this.getComponent('span.show-for-item');
               Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
               itemStateEl.innerHTML = history.item.internalName;
 
               if (versions.length == 0) {
-                tbody.innerHTML = '<tr><td colspan="5"><i>'+CMgs.format(formsLangBundle, "historyDialogNoVersionsFound")+'</i></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5"><i>' + CMgs.format(formsLangBundle, 'historyDialogNoVersionsFound') + '</i></td></tr>';
               } else {
 
                 tbody.innerHTML = '';
 
-                if(!isAsset){
-                  var actionWrapper = _this.getComponent(".history-view .action-wrapper"),
+                if (isXML) {
+                  var actionWrapper = _this.getComponent('.history-view .action-wrapper'),
                     compareButton = document.createElement('input');
                   $('#historyCompareBtn').remove();
-                  compareButton.type = "button";
-                  Dom.addClass(compareButton, "compare-button btn btn-default");
-                  compareButton.value=CMgs.format(formsLangBundle, "historyDialogCompare");
-                  compareButton.setAttribute("disabled", "");
-                  compareButton.setAttribute("id", "historyCompareBtn");
+                  compareButton.type = 'button';
+                  Dom.addClass(compareButton, 'compare-button btn btn-default');
+                  compareButton.value = CMgs.format(formsLangBundle, 'historyDialogCompare');
+                  compareButton.setAttribute('disabled', '');
+                  compareButton.setAttribute('id', 'historyCompareBtn');
                   actionWrapper.appendChild(compareButton);
 
                   (function () {
@@ -117,11 +117,11 @@
                   var versionNumber = new Date(version.lastModifiedDate);
                   versionNumber = versionNumber.toLocaleDateString() + 'T' + versionNumber.toLocaleTimeString().replace(' ', '');
 
-                  if(!isAsset){
+                  if (isXML) {
                     checkboxEl = document.createElement('input');
                     checkboxEl.maxLength = 300;
-                    checkboxEl.type = "checkbox";
-                    checkboxEl.name = "version";
+                    checkboxEl.type = 'checkbox';
+                    checkboxEl.name = 'version';
                     checkboxEl.value = version.versionNumber;
                     checkboxEl.style.marginRight = '5px';
                     col2El.insertBefore(checkboxEl, col2El.firstChild);
@@ -152,16 +152,16 @@
                   tdEl.appendChild(col5El);
                   rowEl.appendChild(tdEl);
 
-                  if(!isAsset){
-                    var viewActionEl = document.createElement("a");
-                    viewActionEl.innerHTML = '<span id="actionView'+ version.versionNumber +'" class="action fa fa-eye"></span>';
+                  if (isXML) {
+                    var viewActionEl = document.createElement('a');
+                    viewActionEl.innerHTML = '<span id="actionView' + version.versionNumber + '" class="action fa fa-eye"></span>';
                     viewActionEl.version = version.versionNumber;
                     viewActionEl.path = selection.uri;
                     col5El.appendChild(viewActionEl);
-                    new YAHOO.widget.Tooltip("tooltipView" + viewActionEl.version, {
-                      context: "actionView" + viewActionEl.version,
+                    new YAHOO.widget.Tooltip('tooltipView' + viewActionEl.version, {
+                      context: 'actionView' + viewActionEl.version,
                       container: _this.tooltipsContainer,
-                      text: CMgs.format(formsLangBundle, "historyDialogViewFileMessage"),
+                      text: CMgs.format(formsLangBundle, 'historyDialogViewFileMessage'),
                       zIndex: 104103
                     });
 
@@ -200,7 +200,7 @@
                     });
 
 
-                  };
+                  }
 
                   (function (item) {
                     if(_this.isWrite) {
