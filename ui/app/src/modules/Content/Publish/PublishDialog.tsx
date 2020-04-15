@@ -20,7 +20,7 @@ import { fetchPublishingChannels } from '../../../services/content';
 import { goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
 import PublishDialogUI from './PublishDialogUI';
-import { Item, LegacyItem } from '../../../models/Item';
+import { LegacyItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
