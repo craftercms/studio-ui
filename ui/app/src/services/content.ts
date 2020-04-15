@@ -1057,6 +1057,10 @@ export function uploadDataUrl(
       type: file.type,
       data: blob
     });
+
+    return () => {
+      uppy.cancelAll();
+    };
   });
 }
 

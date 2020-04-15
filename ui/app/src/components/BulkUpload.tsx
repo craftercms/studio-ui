@@ -49,11 +49,7 @@ import RemoveRoundedIcon from '@material-ui/icons/RemoveRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import DialogFooter from './DialogFooter';
 import DialogBody from './DialogBody';
-import {
-  maximizeDialog,
-  minimizeDialog,
-  updateDialog
-} from '../state/reducers/dialogs/minimizedDialogs';
+import { minimizeDialog, updateDialog } from '../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
 import { ProgressBar } from './SystemStatus/ProgressBar';
 
@@ -402,7 +398,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       });
       return () => subs.unsubscribe();
     }
-  }, [cancelRequestObservable$, files]);
+  }, [cancelRequestObservable$, files, onStatusChange, setFiles, uppy]);
 
   useEffect(() => {
     if (generalProgress.current) {
@@ -509,7 +505,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         onStatusChange(initialDropZoneStatus);
       }
     }
-  }, [files]);
+  }, [files, onStatusChange]);
 
   return (
     <>
@@ -626,10 +622,6 @@ export default function BulkUpload(props: BulkUploadProps) {
     dispatch(minimizeDialog({ id }));
   };
 
-  const onMaximized = () => {
-    dispatch(maximizeDialog({ id }));
-  };
-
   const cancelRequestObservable$ = useSubject<void>();
 
   const onStatusChange = useCallback((status: DropZoneStatus) => {
@@ -637,7 +629,7 @@ export default function BulkUpload(props: BulkUploadProps) {
     if (minimized) {
       dispatch(updateDialog({ id, status }));
     }
-  }, [setDropZoneStatus, minimized]);
+  }, [setDropZoneStatus, minimized, dispatch]);
 
   const onBrowse = () => {
     inputRef.current.click();

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   changeCurrentUrl,
   checkInGuest,
@@ -29,6 +29,8 @@ import {
   DELETE_ITEM_OPERATION,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
+  DESKTOP_ASSET_UPLOAD_PROGRESS,
+  DESKTOP_ASSET_UPLOAD_STARTED,
   fetchAssetsPanelItems,
   fetchAudiencesPanelFormDefinition,
   fetchComponentsByContentType,
@@ -66,14 +68,14 @@ import {
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
-import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
-import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
+import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou, nou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
+import { useSnackbar } from 'notistack';
 
 // WARNING: This assumes there will only ever be 1 PreviewConcierge. This wouldn't be viable
 // with multiple instances or multiple unrelated content type collections to hold per instance.
@@ -92,7 +94,6 @@ const contentTypes$: {
 
 export function PreviewConcierge(props: any) {
 
-  const [snack, setSnack] = useState<any>(null);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { guest, selectedTool } = usePreviewState();
@@ -102,9 +103,10 @@ export function PreviewConcierge(props: any) {
   const assets = useSelection(state => state.preview.assets);
   const contentTypeComponents = useSelection(state => state.preview.components);
   const audiencesPanel = useSelection(state => state.preview.audiencesPanel);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   useOnMount(() => {
-    const sub = beginGuestDetection(setSnack);
+    const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
     return () => {
       sub.unsubscribe();
       contentTypes$().complete();
@@ -117,6 +119,7 @@ export function PreviewConcierge(props: any) {
 
     const hostToGuest$ = getHostToGuestBus();
     const guestToHost$ = getGuestToHostBus();
+    const hostToHost$ = getHostToHostBus();
 
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
@@ -148,11 +151,11 @@ export function PreviewConcierge(props: any) {
           const { modelId, fieldId, currentIndex, targetIndex } = payload;
           sortItem(site, guest.models[modelId].craftercms.path, fieldId, currentIndex, targetIndex).subscribe(
             () => {
-              setSnack({ message: 'Sort operation completed.' });
+              enqueueSnackbar('Sort operation completed.');
             },
             (error) => {
               console.error(`${type} failed`, error);
-              setSnack({ message: error.message });
+              enqueueSnackbar('Sort operation failed.');
             }
           );
           break;
@@ -170,11 +173,11 @@ export function PreviewConcierge(props: any) {
             shared
           ).subscribe(
             () => {
-              setSnack({ message: 'Insert component operation completed.' });
+              enqueueSnackbar('Insert component operation completed.');
             },
             (error) => {
               console.error(`${type} failed`, error);
-              setSnack({ message: 'Sort operation failed.' });
+              enqueueSnackbar('Sort operation failed.');
             }
           );
           break;
@@ -190,16 +193,16 @@ export function PreviewConcierge(props: any) {
             parentModelId ? guest.models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
-              setSnack({ message: 'Insert component operation completed.' });
+              enqueueSnackbar('Insert component operation completed.');
             },
             (error) => {
               console.error(`${type} failed`, error);
-              setSnack({ message: 'Sort operation failed.' });
+              enqueueSnackbar('Sort operation failed.');
             }
           );
           break;
         case INSERT_ITEM_OPERATION: {
-          setSnack({ message: 'Insert item operation not implemented.' });
+          enqueueSnackbar('Insert item operation not implemented.');
           break;
         }
         case MOVE_ITEM_OPERATION: {
@@ -225,11 +228,11 @@ export function PreviewConcierge(props: any) {
             targetParentModelId ? guest.models[targetParentModelId].craftercms.path : null
           ).subscribe(
             () => {
-              setSnack({ message: 'Move operation completed.' });
+              enqueueSnackbar('Move operation completed.');
             },
             (error) => {
               console.error(`${type} failed`, error);
-              setSnack({ message: 'Move operation failed.' });
+              enqueueSnackbar('Move operation failed.');
             }
           );
           break;
@@ -244,11 +247,11 @@ export function PreviewConcierge(props: any) {
             parentModelId ? guest.models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
-              setSnack({ message: 'Delete operation completed.' });
+              enqueueSnackbar('Delete operation completed.');
             },
             (error) => {
               console.error(`${type} failed`, error);
-              setSnack({ message: 'Delete operation failed.' });
+              enqueueSnackbar('Delete operation failed.');
             }
           );
           break;
@@ -262,9 +265,9 @@ export function PreviewConcierge(props: any) {
             parentModelId ? guest.models[parentModelId].craftercms.path : null,
             value
           ).subscribe(() => {
-            console.log('Finished');
+            enqueueSnackbar('Update operation completed.');
           }, (e) => {
-            setSnack({ message: 'Updated operation failed.' });
+            enqueueSnackbar('Update operation failed.');
           });
           break;
         }
@@ -286,16 +289,27 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DESKTOP_ASSET_DROP: {
-          uploadDataUrl(
+          enqueueSnackbar('Asset upload started.');
+          hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
+          const uppySubscription = uploadDataUrl(
             site,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
             `/static-assets/images/${payload.modelId}`,
             XSRF_CONFIG_ARGUMENT
           ).subscribe(
-            () => {
+            ({ payload: { progress } }) => {
+              const percentage = Math.floor(parseInt((progress.bytesUploaded / progress.bytesTotal * 100).toFixed(2)));
+              hostToGuest$.next({
+                type: DESKTOP_ASSET_UPLOAD_PROGRESS,
+                payload: {
+                  id: payload.name,
+                  percentage
+                }
+              });
             },
             (error) => {
-              setSnack({ message: error });
+              console.log(error);
+              enqueueSnackbar('Asset Upload failed.');
             },
             () => {
               hostToGuest$.next({
@@ -307,6 +321,13 @@ export function PreviewConcierge(props: any) {
               });
             }
           );
+          const sub = hostToHost$.subscribe((action) => {
+            const { type, payload: uploadFile } = action;
+            if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.elementZoneId === payload.elementZoneId) {
+              sub.unsubscribe();
+              uppySubscription.unsubscribe();
+            }
+          });
           break;
         }
         case CONTENT_TYPE_RECEPTACLES_RESPONSE: {
@@ -364,12 +385,12 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     };
 
-  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT, contentTypeComponents, audiencesPanel]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT, contentTypeComponents, audiencesPanel, enqueueSnackbar]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {
       priorState.current.site = site;
-      beginGuestDetection(setSnack);
+      beginGuestDetection(enqueueSnackbar, closeSnackbar);
       if (guest) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
@@ -377,21 +398,11 @@ export function PreviewConcierge(props: any) {
         dispatch(checkOutGuest());
       }
     }
-  }, [site, guest, GUEST_BASE, dispatch]);
+  }, [site, guest, GUEST_BASE, dispatch, enqueueSnackbar, closeSnackbar]);
 
   return (
     <>
       {props.children}
-      {
-        (snack) && <Snackbar
-          anchorOrigin={snack.position ?? { vertical: 'top', horizontal: 'right' }}
-          open={true}
-          autoHideDuration={snack.duration ?? 5000}
-          onClose={() => setSnack(null)}
-          message={snack.message}
-          action={snack.action}
-        />
-      }
       <RubbishBin
         open={guest?.itemBeingDragged}
         onTrash={() => getHostToGuestBus().next({ type: TRASHED })}
@@ -401,7 +412,7 @@ export function PreviewConcierge(props: any) {
 
 }
 
-function beginGuestDetection(setSnack): Subscription {
+function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
   const guestToHost$ = getGuestToHostBus();
   return of('').pipe(
     delay(1500),
@@ -410,21 +421,18 @@ function beginGuestDetection(setSnack): Subscription {
       filter(({ type }) => type === GUEST_CHECK_IN)
     ))
   ).subscribe(() => {
-    setSnack({
-      duration: 10000,
-      message: (
-        <FormattedMessage
-          id="guestDetectionMessage"
-          defaultMessage="Communication with guest site was not detected."
-        />
-      ),
-      action: [
-        <Button key="learnMore" color="secondary" size="small" onClick={() => setSnack(null)}>
-          Learn More
-        </Button>
-      ],
-      position: { vertical: 'top', horizontal: 'right' }
-    });
+    enqueueSnackbar(
+      <FormattedMessage
+        id="guestDetectionMessage"
+        defaultMessage="Communication with guest site was not detected."
+      />
+      ,
+      {
+        action: (key) =>
+          <Button key="learnMore" color="secondary" size="small" onClick={() => closeSnackbar(key)}>
+            Learn More
+          </Button>
+      });
   });
 }
 

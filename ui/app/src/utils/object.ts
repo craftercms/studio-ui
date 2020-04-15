@@ -96,6 +96,11 @@ export function retrieveProperty(object: object, prop: string): any {
   return object == null ? null : prop.split('.').reduce((value, prop) => value[prop], object);
 }
 
+export function deleteProperty<T, P extends keyof T>(object: T, prop: P): Omit<T, P> {
+  delete object[prop];
+  return object;
+}
+
 export function setProperty(object: object, prop: string, value: any) {
   if (object) {
     const props = prop.split('.');
