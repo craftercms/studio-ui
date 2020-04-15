@@ -350,7 +350,6 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
         ),
         expanded: classes.treeItemExpanded,
         group: classes.treeItemGroup,
-        // iconContainer: nodes.id === 'root' ? classes.displayNone : classes.treeItemIconContainer
         iconContainer: nodes.id.includes(rootPrefix) ? classes.displayNone  : classes.treeItemIconContainer
       }}
     >

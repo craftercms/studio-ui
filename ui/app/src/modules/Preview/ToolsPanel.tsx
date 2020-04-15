@@ -53,6 +53,8 @@ import { nnou } from '../../utils/object';
 import Suspencified from '../../components/SystemStatus/Suspencified';
 import SearchBar from '../../components/SearchBar';
 import SearchPanel from './Tools/SearchPanel';
+import Tools from '../../models/PreviewToolIDs';
+import { Resource } from '../../models/Resource';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -155,7 +157,27 @@ const translations = defineMessages({
   }
 });
 
-function UnknownPanel(props: any) {
+interface UnknownPanelProps {
+  id: string;
+}
+
+interface Config {
+  width: number;
+  height: number;
+  title: string;
+}
+
+interface Tool {
+  config: Config;
+  id: Tools;
+  title: string;
+}
+
+interface ToolSelectorProps {
+  resource: Resource<Tool[]>
+}
+
+function UnknownPanel(props: UnknownPanelProps) {
   const classes = useStyles({});
   return (
     <ToolPanel title={translations.unknownPanel}>
@@ -179,7 +201,8 @@ function UnknownPanel(props: any) {
   );
 }
 
-function ToolSelector({ resource }) {
+function ToolSelector(props: ToolSelectorProps) {
+  const { resource } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const tools = resource.read();
