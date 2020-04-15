@@ -33,6 +33,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ContentType } from '../models/ContentType';
 import { MinimizedDialog } from '../models/MinimizedDialog';
 import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
+import { LookupTable } from '../models/LookupTable';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -62,15 +63,26 @@ export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 }
 
-export function useContentTypeList(filter = (contentType => contentType)): Array<ContentType> {
-  const state = useSelector<GlobalState, GlobalState['contentTypes']>((state) => state.contentTypes);
-  return useMemo(() => {
-    if (!state.byId) {
-      return null;
-    } else {
-      return Object.values(state.byId).filter(filter);
-    }
-  }, [state]);
+export function useContentTypeList(): Array<ContentType>;
+export function useContentTypeList(filterFn: (type: ContentType) => boolean): Array<ContentType>;
+export function useContentTypeList(
+  filterFn: (type: ContentType) => boolean = null
+): Array<ContentType> {
+  const byId = useSelection<LookupTable<ContentType>>((state) => state.contentTypes.byId);
+  return useMemo(
+    () => {
+      if (!byId) {
+        return null;
+      } else {
+        const list = Object.values(byId);
+        return Boolean(filterFn) ? list.filter(filterFn) : list;
+      }
+    },
+    // Filter omitted purposely to facilitate use without need
+    // to memoize filterFn on the consumer side
+    // eslint-disable-next-line
+    [byId]
+  );
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
@@ -137,9 +149,11 @@ export function useResolveWhenNotNullResource(source) {
 }
 
 // TODO: Rename to useStateResource
-export function useStateResourceSelection<ReturnType = unknown,
+export function useStateResourceSelection<
+  ReturnType = unknown,
   SourceType = GlobalState,
-  ErrorType = unknown>(
+  ErrorType = unknown
+>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: {
     shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
@@ -209,19 +223,24 @@ export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<
 }
 
 export function useSubject<T = unknown>() {
-  return useMemo(() => new Subject<T>(), [])
+  return useMemo(() => new Subject<T>(), []);
 }
 
 export function useMinimizeDialog(initialTab: MinimizedDialog) {
   const dispatch = useDispatch();
   const state = useSelection((state) => state.dialogs.minimizedDialogs[initialTab.id]);
 
-  useEffect(() => {
-    dispatch(pushDialog(initialTab));
-    return () => {
-      dispatch(popDialog({ id: initialTab.id }));
-    }
-  }, [dispatch]);
+  useEffect(
+    () => {
+      dispatch(pushDialog(initialTab));
+      return () => {
+        dispatch(popDialog({ id: initialTab.id }));
+      };
+    },
+    // `initialTab` omitted purposely to facilitate use without memo from consumer side
+    // eslint-disable-next-line
+    [dispatch]
+  );
 
   return state?.minimized ?? initialTab.minimized;
 }
