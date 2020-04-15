@@ -259,7 +259,7 @@ function getChildren(
 }
 
 interface TreeItemCustomInterface {
-  node: Resource<Data>;
+  resource: Resource<Data>;
   nodeId?: string;
 
   handleScroll?(node: RenderTree): void;
@@ -272,11 +272,11 @@ interface TreeItemCustomInterface {
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
-  const {node, nodeId, handleScroll, handlePrevious, handleClick, handleOptions} = props;
+  const {resource, nodeId, handleScroll, handlePrevious, handleClick, handleOptions} = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
-  const nodes = node.read().nodeLookup[nodeId];
+  const node = resource.read().nodeLookup[nodeId];
   const isMounted = useRef(null);
   let Icon;
 
@@ -285,16 +285,16 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
     return () => isMounted.current = false;
   }, []);
 
-  if (!nodes) {
+  if (!node) {
     return null;
   } else {
-    if (nodes.type === 'page') {
+    if (node.type === 'page') {
       Icon = Page;
-    } else if (nodes.type === 'node-selector') {
+    } else if (node.type === 'node-selector') {
       Icon = NodeSelector;
-    } else if (nodes.type === 'component') {
+    } else if (node.type === 'component') {
       Icon = Component;
-    } else if (nodes.type === 'repeat') {
+    } else if (node.type === 'repeat') {
       Icon = RepeatGroup;
     } else {
       Icon = ContentTypeFieldIcon;
@@ -315,25 +315,25 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
 
   return (
     <TreeItem
-      key={nodes.id}
-      nodeId={nodes.id}
+      key={node.id}
+      nodeId={node.id}
       onMouseOver={(e) => setOverState(e, true)}
       onMouseOut={(e) => setOverState(e, false)}
-      icon={nodes.type === 'component' && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
+      icon={node.type === 'component' && <ChevronRightIcon onClick={() => handleClick(node)}/>}
       label={
-        <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
-          {nodes.id.includes(rootPrefix) && handlePrevious ? (
+        <div className={classes.treeItemLabel} onClick={() => handleScroll(node)}>
+          {node.id.includes(rootPrefix) && handlePrevious ? (
             <ChevronLeftIcon onClick={(e) => handlePrevious(e)}/>
           ) : (
             <Icon className={classes.icon}/>
           )}
-          <p>{nodes.name}</p>
-          {over && (nodes.type === 'component' || nodes.id.includes(rootPrefix)) && (
+          <p>{node.name}</p>
+          {over && (node.type === 'component' || node.id.includes(rootPrefix)) && (
             <IconButton
               className={classes.options}
               onMouseOver={(e) => setOverState(e, true)}
               onClick={(e) =>
-                handleOptions(e, nodes.modelId, nodes.parentId, nodes.embeddedParentPath)
+                handleOptions(e, node.modelId, node.parentId, node.embeddedParentPath)
               }
             >
               <MoreVertIcon/>
@@ -346,15 +346,15 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
         label: classes.treeItemLabelRoot,
         content: clsx(
           classes.treeItemContent,
-          !nodes.children?.length && nodes.type === 'component' && 'padded'
+          !node.children?.length && node.type === 'component' && 'padded'
         ),
         expanded: classes.treeItemExpanded,
         group: classes.treeItemGroup,
-        iconContainer: nodes.id.includes(rootPrefix) ? classes.displayNone  : classes.treeItemIconContainer
+        iconContainer: node.id.includes(rootPrefix) ? classes.displayNone  : classes.treeItemIconContainer
       }}
     >
       {
-        nodes.children?.map(childNodeId => <TreeItemCustom {...props} key={String(childNodeId)} nodeId={String(childNodeId)}/>)
+        node.children?.map(childNodeId => <TreeItemCustom {...props} key={String(childNodeId)} nodeId={String(childNodeId)}/>)
       }
     </TreeItem>
   );
@@ -495,7 +495,7 @@ export default function ContentTree() {
         <Suspencified loadingStateProps={{title: formatMessage(translations.loading)}}>
           <TreeItemCustom
             nodeId={`${rootPrefix}${data.selected}`}
-            node={resource}
+            resource={resource}
             handleScroll={handleScroll}
             handlePrevious={handlePrevious}
             handleClick={handleClick}
