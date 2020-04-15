@@ -35,7 +35,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import clsx from 'clsx';
 import cardTitleStyles from '../../../../styles/card';
 
-
 interface BlueprintCardProps {
   blueprint: Blueprint,
   interval: number;
@@ -350,14 +349,17 @@ function BlueprintCard(props: BlueprintCardProps) {
       {
         (id !== 'GIT') &&
         <CardActions className={'cardActions'}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => onBlueprintSelected(blueprint, 1)}
-            className={classes.use}
-          >
-            {formatMessage(messages.use)}
-          </Button>
+          {
+            blueprint.compatible &&
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => onBlueprintSelected(blueprint, 1)}
+              className={classes.use}
+            >
+              {formatMessage(messages.use)}
+            </Button>
+          }
           <Button className={classes.more} onClick={() => onDetails(blueprint)}>
             {formatMessage(messages.more)}
           </Button>

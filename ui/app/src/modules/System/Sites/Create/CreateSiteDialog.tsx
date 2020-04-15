@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import SearchIcon from '@material-ui/icons/Search';
@@ -58,6 +58,9 @@ import { useEnv, useSpreadState } from '../../../../utils/hooks';
 import DialogHeader from '../../../../components/DialogHeader';
 import DialogBody from '../../../../components/DialogBody';
 import DialogFooter from '../../../../components/DialogFooter';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Typography from '@material-ui/core/Typography';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -137,6 +140,10 @@ const messages = defineMessages({
     id: 'createSiteDialog.chooseCreationStrategy',
     defaultMessage:
       'Choose creation strategy: start from an existing Git repo or create based on a blueprint that suits you best.'
+  },
+  showIncompatible: {
+    id: 'createSiteDialog.showIncompatible',
+    defaultMessage: 'Show Incompatible Plugins'
   }
 });
 
@@ -166,7 +173,8 @@ const siteInitialState: SiteState = {
     basic: false,
     token: false,
     key: false
-  }
+  },
+  showIncompatible: true
 };
 
 const CustomTabs = withStyles({
@@ -287,6 +295,16 @@ const useStyles = makeStyles((theme: Theme) =>
       top: '40%',
       left: '50%',
       transform: 'translate(-50%, -50%)'
+    },
+    showIncompatible: {
+      marginLeft: 'auto'
+    },
+    showIncompatibleInput: {
+      fontSize: '0.8125rem'
+    },
+    showIncompatibleCheckbox: {
+      paddingTop: 0,
+      paddingBottom: 0
     }
   })
 );
@@ -403,7 +421,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
     if (tab === 1 && marketplace === null && !apiState.error) {
       subscriptions.push(
-        fetchMarketplaceBlueprints().subscribe(
+        fetchMarketplaceBlueprints({
+          showIncompatible: site.showIncompatible
+        }).subscribe(
           ({ response }) => {
             setMarketplace(response.plugins);
           },
@@ -421,7 +441,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     return () => {
       subscriptions.forEach((sub) => sub.unsubscribe());
     };
-  }, [apiState.error, blueprints, formatMessage, marketplace, setApiState, site.selectedView, tab]);
+  }, [apiState.error, blueprints, formatMessage, marketplace, setApiState, site.selectedView, tab, site.showIncompatible]);
 
   function handleClose(event?: any, reason?: string) {
     if (reason === 'escapeKeyDown' && site.details.blueprint) {
@@ -553,6 +573,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         createNewSite(blueprintParams);
       }
     }
+  }
+
+  function handleShowIncompatibleChange(e: ChangeEvent<HTMLInputElement>) {
+    setMarketplace(null);
+    setSite({ showIncompatible: e.target.checked });
   }
 
   function checkAdditionalFields() {
@@ -811,6 +836,26 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
                   onClick={handleSearchClick}
                 />
+                {
+                  (tab === 1 && marketplace) &&
+                  <FormControlLabel
+                    className={classes.showIncompatible}
+                    control={
+                      <Checkbox
+                        checked={site.showIncompatible}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
+                        color="primary"
+                        className={classes.showIncompatibleCheckbox}
+                      />
+                    }
+                    label={
+                      <Typography className={classes.showIncompatibleInput}>
+                        {formatMessage(messages.showIncompatible)}
+                      </Typography>
+                    }
+                    labelPlacement="start"
+                  />
+                }
               </div>
             )}
           </DialogHeader>

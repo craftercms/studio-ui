@@ -180,9 +180,8 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const [play, setPlay] = useState(false);
   const { blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex } = props;
   const [index, setIndex] = useState(selectedIndex || 0);
-  const { media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine } = blueprint;
+  const { media, name, description, version, license, developer, website, searchEngine, compatible } = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
-  const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
 
   const { formatMessage } = useIntl();
 
@@ -242,12 +241,21 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
         <Typography variant="h5" component="h1">
           {name}
         </Typography>
-        <Button
-          variant="contained" color="primary" className={classes.useBtn}
-          onClick={() => onBlueprintSelected(blueprint, 1)}
-        >
-          {formatMessage(messages.use)}
-        </Button>
+        {
+          compatible &&
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.useBtn}
+            onClick={
+              () => onBlueprintSelected(blueprint, 1)
+            }
+          >
+            {
+              formatMessage(messages.use)
+            }
+          </Button>
+        }
       </div>
       <AutoPlaySwipeableViews
         index={index}
@@ -325,10 +333,6 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
               <div className={classes.chip}>
                 <label>{formatMessage(messages.license)}</label>
                 <span>{license.name}</span>
-              </div>
-              <div className={classes.chip}>
-                <label>{formatMessage(messages.craftercms)}</label>
-                <span>{crafterCMS}</span>
               </div>
             </div>
           </Grid>
