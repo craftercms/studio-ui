@@ -412,16 +412,18 @@ function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
       filter(({ type }) => type === GUEST_CHECK_IN)
     ))
   ).subscribe(() => {
-    enqueueSnackbar(<FormattedMessage
-      id="guestDetectionMessage"
-      defaultMessage="Communication with guest site was not detected."
-    />, {
-      action: (key) => <Button
-        key="learnMore" color="secondary" size="small" onClick={() => closeSnackbar(key)}
-      >
-        Learn More
-      </Button>
-    });
+    enqueueSnackbar(
+      <FormattedMessage
+        id="guestDetectionMessage"
+        defaultMessage="Communication with guest site was not detected."
+      />
+      ,
+      {
+        action: (key) =>
+          <Button key="learnMore" color="secondary" size="small" onClick={() => closeSnackbar(key)}>
+            Learn More
+          </Button>
+      });
   });
 }
 
