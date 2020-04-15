@@ -45,7 +45,6 @@ export function getDependant(siteId: string, path: string): Observable<LegacyIte
   );
 }
 
-
 export default {
   fetchDependencies,
   getSimpleDependencies,
