@@ -289,9 +289,9 @@ export default function ToolsPanel() {
   let config = toolMeta?.config;
 
   const resource = useStateResource(tools, {
-    shouldRenew: () => false,
+    shouldRenew: (source, resource) => resource.complete,
     shouldResolve: (source) => nnou(source),
-    shouldReject: (source, resource) => resource.complete,
+    shouldReject: () => false,
     errorSelector: null,
     resultSelector: (source) => source
   });
