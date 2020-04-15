@@ -287,6 +287,7 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DESKTOP_ASSET_DROP: {
+          enqueueSnackbar('Asset upload started.');
           uploadDataUrl(
             site,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
@@ -375,7 +376,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     };
 
-  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT, contentTypeComponents, audiencesPanel]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT, contentTypeComponents, audiencesPanel, enqueueSnackbar]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {
@@ -388,7 +389,7 @@ export function PreviewConcierge(props: any) {
         dispatch(checkOutGuest());
       }
     }
-  }, [site, guest, GUEST_BASE, dispatch]);
+  }, [site, guest, GUEST_BASE, dispatch, enqueueSnackbar, closeSnackbar]);
 
   return (
     <>
