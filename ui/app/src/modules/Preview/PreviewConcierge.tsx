@@ -30,6 +30,7 @@ import {
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
+  DESKTOP_ASSET_UPLOAD_STARTED,
   fetchAssetsPanelItems,
   fetchAudiencesPanelFormDefinition,
   fetchComponentsByContentType,
@@ -69,7 +70,7 @@ import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
-import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
+import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou, nou, pluckProps } from '../../utils/object';
@@ -118,6 +119,7 @@ export function PreviewConcierge(props: any) {
 
     const hostToGuest$ = getHostToGuestBus();
     const guestToHost$ = getGuestToHostBus();
+    const hostToHost$ = getHostToHostBus();
 
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
@@ -288,7 +290,8 @@ export function PreviewConcierge(props: any) {
         }
         case DESKTOP_ASSET_DROP: {
           enqueueSnackbar('Asset upload started.');
-          uploadDataUrl(
+          hostToHost$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload });
+          const uppySubscription = uploadDataUrl(
             site,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
             `/static-assets/images/${payload.modelId}`,
@@ -318,6 +321,13 @@ export function PreviewConcierge(props: any) {
               });
             }
           );
+          const sub = hostToHost$.subscribe((action) => {
+            const { type, payload: uploadFile } = action;
+            if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.elementZoneId === payload.elementZoneId) {
+              sub.unsubscribe();
+              uppySubscription.unsubscribe();
+            }
+          });
           break;
         }
         case CONTENT_TYPE_RECEPTACLES_RESPONSE: {

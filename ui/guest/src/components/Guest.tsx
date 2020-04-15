@@ -796,7 +796,8 @@ export function Guest(props: GuestProps) {
                   dataUrl: event.target.result,
                   name: file.name,
                   type: file.type,
-                  modelId: record.modelId
+                  modelId: record.modelId,
+                  elementZoneId: record.id
                 });
                 //adding asset mask
                 setState({
