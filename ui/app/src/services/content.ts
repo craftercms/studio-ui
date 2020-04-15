@@ -16,8 +16,14 @@
 
 import { catchApi1Error, CONTENT_TYPE_JSON, get, getText, post, postJSON } from '../utils/ajax';
 import { map, pluck, switchMap } from 'rxjs/operators';
-import { forkJoin, Observable, of, zip, Observer } from 'rxjs';
-import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
+import { forkJoin, Observable, Observer, of, zip } from 'rxjs';
+import {
+  createElements,
+  fromString,
+  getInnerHtml,
+  serialize,
+  wrapElementInAuxDocument
+} from '../utils/xml';
 import {
   ContentType,
   ContentTypeField,
@@ -60,9 +66,11 @@ export function getContent(site: string, path: string): Observable<string> {
   );
 }
 
-export function getItem(site: string, path: string): Observable<Item> {
+export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
+  // @ts-ignore
   return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
-    pluck('response', 'item')
+    pluck('response', 'item'),
+    catchApi1Error
   );
 }
 
@@ -1150,13 +1158,13 @@ export function getPages(site: string, item: any): Observable<any> {
 export default {
   getComponentInstanceHTML,
   getContent,
+  getLegacyItem,
   getDOM,
   getChildrenByPath,
   copyItem,
   cutItem,
   pasteItem,
   getPages,
-  getItem,
   getContentInstanceLookup,
   fetchContentTypes,
   fetchById,

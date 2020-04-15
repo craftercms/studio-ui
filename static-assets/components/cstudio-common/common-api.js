@@ -858,6 +858,7 @@ var nodeOpen = false,
 
         let unmount;
         CrafterCMSNext.render(container, 'PublishDialog', {
+          open: true,
           onClose: (response) => {
             if (response) {
               _self.reloadItems(items, response);
@@ -870,23 +871,23 @@ var nodeOpen = false,
       },
 
       viewDependencies: function(site, items, approveType, defaultSelection) {
+        const container = ($('<div class="delete-dialog-container"/>').appendTo('body'))[0];
         //defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
+        const dependenciesShown = defaultSelection ? defaultSelection : 'depends-on';
 
-        var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on';
-
-        CSA.Operations._showDialogueView(
+        CrafterCMSNext.render(
+          container,
+          'DependenciesDialog',
           {
-            fn: CSA.Service.getDependenciesView,
-            controller: 'viewcontroller-dependencies',
-            callback: function(dialogue) {
-              CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
-              this.loadItems(items, dependenciesSelection);
+            open: true,
+            item: items[0],
+            dependenciesShown,
+            onClose: () => {
+              unmount({ delay: 300, removeContainer: true });
             }
-          },
-          true,
-          '800px',
-          approveType
-        );
+          }
+        ).then(done => unmount = done.unmount);
+
       },
 
       submitContent: function(site, items) {

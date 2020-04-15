@@ -20,11 +20,15 @@ import error from './error';
 import newContent from './newContent';
 import minimizedDialogs from './minimizedDialogs';
 import history from './history';
+import publish from './publish';
+import dependencies from './dependencies';
 
 export default combineReducers({
   confirm,
   error,
   newContent,
   minimizedDialogs,
-  history
+  history,
+  publish,
+  dependencies
 });
