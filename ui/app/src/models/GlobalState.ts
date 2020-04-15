@@ -27,6 +27,7 @@ import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
+import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialog';
 import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
 
 export interface APIError {
@@ -120,6 +121,7 @@ export interface GlobalState {
     error: ErrorDialogStateProps;
     minimizedDialogs: MinimizedDialogsStateProps;
     history: HistoryDialogStateProps;
+    publish: PublishDialogStateProps;
     delete: DeleteDialogStateProps;
   };
 }

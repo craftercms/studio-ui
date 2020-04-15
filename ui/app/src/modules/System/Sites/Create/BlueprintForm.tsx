@@ -28,11 +28,12 @@ import FormBuilder from './FormBuilder';
 import { fetchSites } from '../../../../services/sites';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
   form: {
     maxWidth: '600px',
-    margin: 'auto'
+    margin: '0 auto'
   },
   helpText: {
     transition: `color .5s`
@@ -45,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
 interface BlueprintFormProps {
   inputs: SiteState;
   blueprint: Blueprint;
+  classes?: {
+    root?: string
+  }
 
   setInputs(state: any): any;
 
@@ -102,7 +106,7 @@ const messages = defineMessages({
 
 function BlueprintForm(props: BlueprintFormProps) {
   const classes = useStyles({});
-  const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist } = props;
+  const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist, classes: classesProp } = props;
   const [sites, setSites] = useState(null);
   const { formatMessage } = useIntl();
   const maxLength = 4000;
@@ -159,7 +163,7 @@ function BlueprintForm(props: BlueprintFormProps) {
   }
 
   return (
-    <form className={classes.form}>
+    <form className={clsx(classes.form, classesProp?.root)}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField

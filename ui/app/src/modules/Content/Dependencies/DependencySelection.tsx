@@ -25,7 +25,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-import { checkState, onClickSetChecked, selectAllDeps, updateCheckedList } from '../Publish/PublishDialog';
+import {
+  checkState,
+  onClickSetChecked,
+  selectAllDeps,
+  updateCheckedList
+} from '../Publish/PublishDialog';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import { palette } from '../../../styles/theme';
@@ -290,70 +295,70 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
 
   return (
     <div className={clsx(classes.dependencySelection, classes.dependencySelectionDelete)}>
+      <SelectionList
+        title={
+          <FormattedMessage
+            id="deleteDialog.deleteItems"
+            defaultMessage="Delete Items"
+          />
+        }
+        items={items}
+        onItemClicked={onClickSetChecked}
+        onSelectAllClicked={selectAllDeps}
+        displayItemTitle={true}
+        checked={checked}
+        setChecked={setChecked}
+      />
+      <>
         <SelectionList
           title={
             <FormattedMessage
-              id="deleteDialog.deleteItems"
-              defaultMessage="Delete Items"
+              id="deleteDialog.childItemsText"
+              defaultMessage="Child Items"
             />
           }
-          items={items}
-          onItemClicked={onClickSetChecked}
-          onSelectAllClicked={selectAllDeps}
-          displayItemTitle={true}
-          checked={checked}
-          setChecked={setChecked}
-        />
-        <>
-          <SelectionList
-            title={
-              <FormattedMessage
-                id="deleteDialog.childItemsText"
-                defaultMessage="Child Items"
-              />
-            }
-            subtitle={
-              <FormattedMessage
-                id="deleteDialog.willGetDeleted"
-                defaultMessage="Will get deleted"
-              />
-            }
-            uris={resultItems.childItems}
-            displayItemTitle={false}
-          />
-          <SelectionList
-            title={
-              <FormattedMessage
-                id="deleteDialog.dependentItems"
-                defaultMessage="Dependent Items"
-              />
-            }
-            subtitle={
-              <FormattedMessage
-                id="deleteDialog.brokenItems"
-                defaultMessage="Will have broken references"
-              />
-            }
-            uris={resultItems.dependentItems}
-            displayItemTitle={false}
-          />
-        </>
-        <div className={classes.bottomSection}>
-          {
-            (resultItems === null) && (
-              <div className="centerCircularProgress">
-                <CenterCircularProgress/>
-                <span className={classes.circularProgressText}>
-                  <FormattedMessage
-                    id="deleteDialog.updatingDependents"
-                    defaultMessage="Updating dependents, please wait..."
-                  />
-                </span>
-              </div>
-            )
+          subtitle={
+            <FormattedMessage
+              id="deleteDialog.willGetDeleted"
+              defaultMessage="Will get deleted"
+            />
           }
-        </div>
+          uris={resultItems.childItems}
+          displayItemTitle={false}
+        />
+        <SelectionList
+          title={
+            <FormattedMessage
+              id="deleteDialog.dependentItems"
+              defaultMessage="Dependent Items"
+            />
+          }
+          subtitle={
+            <FormattedMessage
+              id="deleteDialog.brokenItems"
+              defaultMessage="Will have broken references"
+            />
+          }
+          uris={resultItems.dependentItems}
+          displayItemTitle={false}
+        />
+      </>
+      <div className={classes.bottomSection}>
+        {
+          (resultItems === null) && (
+            <div className="centerCircularProgress">
+              <CenterCircularProgress />
+              <span className={classes.circularProgressText}>
+                <FormattedMessage
+                  id="deleteDialog.updatingDependents"
+                  defaultMessage="Updating dependents, please wait..."
+                />
+              </span>
+            </div>
+          )
+        }
       </div>
+    </div>
   );
 }
 
