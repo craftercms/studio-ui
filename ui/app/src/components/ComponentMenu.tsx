@@ -27,6 +27,7 @@ import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { useDispatch } from 'react-redux';
 import { showPublishDialog } from '../state/reducers/dialogs/publish';
+import { closeDeleteDialog, showDeleteDialog } from '../state/reducers/dialogs/delete';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
 
@@ -72,6 +73,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     dependenciesShown: 'depends-on'
   });
 
+  const [deleteDialog, setDeleteDialog] = useState({
+    items: []
+  });
+
   // Effect used to open the publish Dialog
   useEffect(() => {
     if (models && modelId && publishDialog.items === null) {
@@ -81,6 +86,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         (item) => {
           setPublishDialog({ items: [item] });
           setDependenciesDialog({ item })
+          setDeleteDialog({ items: [item] });
         },
         (response) => {
           dispatch(showErrorDialog({
@@ -89,7 +95,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, setPublishDialog, setDependenciesDialog, site, embeddedParentPath, parentId, publishDialog.items, dispatch]);
+  }, [models, modelId, setPublishDialog, setDependenciesDialog, setDeleteDialog, site, embeddedParentPath, parentId, publishDialog.items, dispatch]);
 
   const handleEdit = (type: string) => {
     handleClose();
@@ -114,6 +120,13 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           dependenciesShown: dependenciesDialog.dependenciesShown
         }));
 
+        break;
+      }
+      case 'delete': {
+        dispatch(showDeleteDialog({
+          items: deleteDialog.items,
+          onSuccess: closeDeleteDialog
+        }));
         break;
       }
       case 'form':
@@ -198,7 +211,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             defaultMessage="Dependencies"
           />
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleEdit('delete')}>
           <FormattedMessage
             id="previewToolBar.menu.delete"
             defaultMessage="Delete"

@@ -85,6 +85,10 @@ export function useContentTypeList(
   );
 }
 
+export function useActiveUser(): GlobalState['user'] {
+  return useSelector<GlobalState, GlobalState['user']>(state => state.user);
+}
+
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
   let result,
     promise,
