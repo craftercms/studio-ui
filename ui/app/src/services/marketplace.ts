@@ -27,4 +27,4 @@ export function createSite(site: MarketplaceSite) {
 
 export default {
   fetchBlueprints
-}
+};

@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,13 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import GlobalState, { GuestData } from '../models/GlobalState';
 import {
   Dispatch,
   EffectCallback,
   SetStateAction,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState
@@ -30,6 +30,9 @@ import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ContentType } from '../models/ContentType';
+import { MinimizedDialog } from '../models/MinimizedDialog';
+import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -57,6 +60,17 @@ export function usePreviewState(): GlobalState['preview'] {
 
 export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
+}
+
+export function useContentTypeList(filter = (contentType => contentType)): Array<ContentType> {
+  const state = useSelector<GlobalState, GlobalState['contentTypes']>((state) => state.contentTypes);
+  return useMemo(() => {
+    if (!state.byId) {
+      return null;
+    } else {
+      return Object.values(state.byId).filter(filter);
+    }
+  }, [state]);
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
@@ -123,11 +137,9 @@ export function useResolveWhenNotNullResource(source) {
 }
 
 // TODO: Rename to useStateResource
-export function useStateResourceSelection<
-  ReturnType = unknown,
+export function useStateResourceSelection<ReturnType = unknown,
   SourceType = GlobalState,
-  ErrorType = unknown
->(
+  ErrorType = unknown>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: {
     shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
@@ -194,4 +206,22 @@ export function useDebouncedInput(
 
 export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<Partial<S>>>] {
   return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);
+}
+
+export function useSubject<T = unknown>() {
+  return useMemo(() => new Subject<T>(), [])
+}
+
+export function useMinimizeDialog(initialTab: MinimizedDialog) {
+  const dispatch = useDispatch();
+  const state = useSelection((state) => state.dialogs.minimizedDialogs[initialTab.id]);
+
+  useEffect(() => {
+    dispatch(pushDialog(initialTab));
+    return () => {
+      dispatch(popDialog({ id: initialTab.id }));
+    }
+  }, [dispatch]);
+
+  return state?.minimized ?? initialTab.minimized;
 }

@@ -19,7 +19,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import React, { ChangeEvent, useRef, useState } from 'react';
-import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
+import makeStyles from '@material-ui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import SelectButton from '../../../../components/UserControl/ConfirmDropdown';
 import Typography from '@material-ui/core/Typography';
@@ -141,20 +141,18 @@ interface PublishingPackageProps {
   environment: string;
   comment: string
   selected: any;
+  pending: any;
+  filesPerPackage: {
+    [key: string]: any;
+  };
 
   setSelected(selected: any): any
-
-  pending: any;
 
   setApiState(state: any): any;
 
   setPending(pending: any): any;
 
   getPackages(siteId: string, filters?: string): any;
-
-  filesPerPackage: {
-    [key: string]: any;
-  };
 
   setFilesPerPackage(filesPerPackage: any): any;
 }
@@ -224,8 +222,8 @@ export default function PublishingPackage(props: PublishingPackageProps) {
             {file.contentTypeClass}
           </Typography>
         </ListItem>
-      )
-    })
+      );
+    });
   }
 
   const checked = selected[id] ? selected[id] : false;
@@ -248,7 +246,8 @@ export default function PublishingPackage(props: PublishingPackageProps) {
                     <Checkbox
                       color="primary"
                       checked={checked}
-                      onChange={(event) => onSelect(event, id, checked)} />
+                      onChange={(event) => onSelect(event, id, checked)}
+                    />
                   }
                   label={<strong>{id}</strong>}
                 />
@@ -323,5 +322,5 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         }
       </div>
     </div>
-  )
+  );
 }

@@ -99,7 +99,7 @@ export default function DialogHeader(props: DialogTitleProps) {
       <div className={classes.title}>
         {onBack ? (
           <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
-            <BackIcon/>
+            <BackIcon />
           </IconButton>
         ) : null}
         <Typography
@@ -112,7 +112,7 @@ export default function DialogHeader(props: DialogTitleProps) {
         </Typography>
         {onClose && (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
-            <CloseIcon/>
+            <CloseIcon />
           </IconButton>
         )}
       </div>

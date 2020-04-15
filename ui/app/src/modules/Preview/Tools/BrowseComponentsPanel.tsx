@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -157,8 +156,8 @@ export default function BrowseComponentsPanel() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const contentTypes = contentTypesBranch.byId
     ? Object.values(contentTypesBranch.byId).filter(
-        (contentType) => contentType.type === 'component'
-      )
+      (contentType) => contentType.type === 'component'
+    )
     : null;
   const isFetching = useSelection((state) => state.preview.components.isFetching);
   const resource = useStateResourceSelection<ComponentResource, PagedEntityState<ContentInstance>>(
@@ -223,7 +222,12 @@ export default function BrowseComponentsPanel() {
     <ToolPanel title={translations.browse}>
       <ErrorBoundary>
         <div className={classes.search}>
-          <SearchBar onChange={handleSearchKeyword} keyword={keyword} disabled={isFetching} />
+          <SearchBar
+            onActionButtonClick={() => handleSearchKeyword('')}
+            onChange={handleSearchKeyword}
+            keyword={keyword}
+            disabled={isFetching}
+          />
           {contentTypes && (
             <Select
               value={contentTypeFilter}

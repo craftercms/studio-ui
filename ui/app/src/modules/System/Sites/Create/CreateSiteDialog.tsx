@@ -32,7 +32,7 @@ import LoadingState from '../../../../components/SystemStatus/LoadingState';
 import ErrorState from '../../../../components/SystemStatus/ErrorState';
 import ConfirmDialog from '../../../../components/UserControl/ConfirmDialog';
 import { Blueprint } from '../../../../models/Blueprint';
-import { MarketplaceSite, CreateSiteMeta, SiteState, Views } from '../../../../models/Site';
+import { CreateSiteMeta, MarketplaceSite, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import PluginDetailsView from '../../Publishing/Queue/PluginDetailsView';
@@ -809,6 +809,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               {search.searchSelected && site.selectedView === 0 && (
                 <div className={classes.searchContainer}>
                   <SearchBar
+                    onActionButtonClick={() => handleOnSearchChange('')}
                     onChange={handleOnSearchChange}
                     keyword={search.searchKey}
                     autofocus={true}

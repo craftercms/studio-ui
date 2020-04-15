@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import ExtensionRounded from '@material-ui/icons/ExtensionRounded';
 import ImageRounded from '@material-ui/icons/ImageRounded';
@@ -40,17 +39,15 @@ import SimulatorPanel from './Tools/SimulatorPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
-import { fetchPreviewToolsConfig, selectTool } from '../../state/actions/preview';
+import { fetchPreviewToolsConfig, selectTool, setSearchPanelKeyword } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import {
-  useActiveSiteId,
-  usePreviewState,
-  useSelection
-} from '../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import ContentTree from './Tools/ContentTree';
+import SearchBar from '../../components/SearchBar';
+import SearchPanel from './Tools/SearchPanel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -67,6 +64,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     itemIconRoot: {
       minWidth: 35
+    },
+    itemSearch: {
+      padding: '0 16px'
     },
     secondaryActionRoot: {
       display: 'flex'
@@ -143,6 +143,10 @@ const translations = defineMessages({
   loading: {
     id: 'words.loading',
     defaultMessage: 'Loading'
+  },
+  searchEverywhere: {
+    id: 'craftercms.ice.search.searchEveryWhere',
+    defaultMessage: 'Search'
   }
 });
 
@@ -156,7 +160,7 @@ function UnknownPanel(props: any) {
         className={`${classes.panelBodyInner} ${classes.center}`}
       >
         <div>
-          <WarningRounded />
+          <WarningRounded/>
         </div>
         <pre className={classes.ellipsis} title={props.id}>
           {props.id}
@@ -176,10 +180,30 @@ function ToolSelector() {
   const { tools } = usePreviewState();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
+  const [keyword, setKeyword] = useState('');
+
+  const onKeyPress = (key: string) => {
+    if(key === 'Enter') {
+      select('craftercms.ice.search');
+      dispatch(setSearchPanelKeyword(keyword))
+    }
+  };
+
   return tools == null ? (
-    <LoadingState title={`${formatMessage(translations.loading)}...`} />
+    <LoadingState title={`${formatMessage(translations.loading)}...`}/>
   ) : (
     <List>
+      <ListItem className={classes.itemSearch}>
+        <SearchBar
+          onChange={(keyword) => setKeyword(keyword)}
+          placeholder={formatMessage(translations.searchEverywhere)}
+          keyword={keyword}
+          showActionButton={Boolean(keyword)}
+          showDecoratorIcon
+          onKeyPress={onKeyPress}
+        />
+        <ChevronRightIcon/>
+      </ListItem>
       {
         tools
           .map((tool) => ({
@@ -190,10 +214,10 @@ function ToolSelector() {
           .map(({ id, title, Icon }) => (
             <ListItem key={id} button onClick={() => select(id)}>
               <ListItemIcon className={classes.itemIconRoot}>
-                <Icon />
+                <Icon/>
               </ListItemIcon>
-              <ListItemText primary={title} />
-              <ChevronRightIcon />
+              <ListItemText primary={title}/>
+              <ChevronRightIcon/>
             </ListItem>
           ))
       }
@@ -218,7 +242,8 @@ const componentMap: any = {
   'craftercms.ice.editForm': EditFormPanel,
   'craftercms.ice.browseComponents': BrowseComponentsPanel,
   'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,
-  'craftercms.ice.contentTree': ContentTree
+  'craftercms.ice.contentTree': ContentTree,
+  'craftercms.ice.search': SearchPanel
 };
 
 export default function ToolsPanel() {
@@ -250,7 +275,7 @@ export default function ToolsPanel() {
       classes={{ paper: classes.drawerPaper }}
     >
       {site ? (
-        <Tool id={toolMeta?.id} config={config} />
+        <Tool id={toolMeta?.id} config={config}/>
       ) : (
         <EmptyState
           title={

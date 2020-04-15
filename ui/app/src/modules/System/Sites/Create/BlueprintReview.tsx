@@ -63,8 +63,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface BlueprintReviewProps {
   inputs: SiteState;
-  onGoTo(step: number): any;
   blueprint: Blueprint;
+
+  onGoTo(step: number): any;
 }
 
 const messages = defineMessages({
@@ -183,7 +184,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
   }
 
   function showPassword(parameter: Parameter) {
-    setPasswordFields({ ...passwordFields, [parameter.name]: !passwordFields[parameter.name] })
+    setPasswordFields({ ...passwordFields, [parameter.name]: !passwordFields[parameter.name] });
   }
 
   function renderSingleParameter(parameter: Parameter) {
@@ -200,12 +201,12 @@ function BlueprintReview(props: BlueprintReviewProps) {
             className={classes.showPassword}
             aria-label="toggle password visibility"
             onClick={() => {
-              showPassword(parameter)
+              showPassword(parameter);
             }}
           >
-            {(passwordFields && passwordFields[parameter.name]) ? <VisibilityOff/> : <Visibility/>}
+            {(passwordFields && passwordFields[parameter.name]) ? <VisibilityOff /> : <Visibility />}
           </IconButton>
-        </span>)
+        </span>);
     } else {
       return '********';
     }
@@ -219,9 +220,9 @@ function BlueprintReview(props: BlueprintReviewProps) {
             <span className={classes.bold}>{parameter.label}: </span>
             {renderSingleParameter(parameter)}
           </Typography>
-        )
+        );
       })
-    )
+    );
   }
 
   function renderGitOptions() {
@@ -239,7 +240,8 @@ function BlueprintReview(props: BlueprintReviewProps) {
         </Typography>
         <Typography variant="body2" gutterBottom>
           <span
-            className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch ? inputs.repoRemoteBranch : 'master'}
+            className={classes.bold}
+          >{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch ? inputs.repoRemoteBranch : 'master'}
         </Typography>
         {
           inputs.repoAuthentication !== 'none' &&
@@ -250,7 +252,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
           </Typography>
         }
       </div>
-    )
+    );
   }
 
   return (
@@ -260,7 +262,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
           <Typography variant="h6" gutterBottom className={classes.section}>
             {formatMessage(messages.creationStrategy)}
             <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(0)}>
-              <EditIcon/>
+              <EditIcon />
             </IconButton>
           </Typography>
           {
@@ -271,7 +273,8 @@ function BlueprintReview(props: BlueprintReviewProps) {
                 </Typography>
                 <Typography variant="body2" gutterBottom>
                   <span
-                    className={classes.bold}>{formatMessage(messages.blueprint)}: </span> {blueprint && blueprint.name}
+                    className={classes.bold}
+                  >{formatMessage(messages.blueprint)}: </span> {blueprint && blueprint.name}
                 </Typography>
               </div>
               :
@@ -286,7 +289,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
           <Typography variant="h6" gutterBottom className={classes.section}>
             {formatMessage(messages.siteInfo)}
             <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
-              <EditIcon/>
+              <EditIcon />
             </IconButton>
           </Typography>
           <Typography variant="body2" gutterBottom>
@@ -329,7 +332,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
             <Typography variant="h6" gutterBottom className={classes.section}>
               {formatMessage(messages.blueprintParameters)}
               <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
-                <EditIcon/>
+                <EditIcon />
               </IconButton>
             </Typography>
             {renderBlueprintParameters()}
@@ -337,7 +340,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
         }
       </Grid>
     </div>
-  )
+  );
 }
 
 export default BlueprintReview;

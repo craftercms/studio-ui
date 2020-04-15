@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -82,6 +81,7 @@ export const CLOSE_TOOLS = 'CLOSE_TOOLS';
 export const SET_HOST_SIZE = 'SET_HOST_SIZE';
 export const SET_HOST_WIDTH = 'SET_HOST_WIDTH';
 export const SET_HOST_HEIGHT = 'SET_HOST_HEIGHT';
+export const SET_SEARCH_PANEL_KEYWORD = 'SET_SEARCH_PANEL_KEYWORD';
 export const FETCH_CONTENT_TYPES = 'FETCH_CONTENT_TYPES';
 export const FETCH_CONTENT_TYPES_COMPLETE = 'FETCH_CONTENT_TYPES_COMPLETE';
 export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
@@ -145,6 +145,13 @@ export function setHostSize(dimensions: WidthAndHeight): StandardAction {
   return {
     type: SET_HOST_SIZE,
     payload: dimensions
+  };
+}
+
+export function setSearchPanelKeyword(keyword: string): StandardAction {
+  return {
+    type: SET_SEARCH_PANEL_KEYWORD,
+    payload: keyword
   };
 }
 

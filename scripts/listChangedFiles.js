@@ -26,7 +26,7 @@ async function execGitCmd(args) {
 }
 
 async function listChangedFiles() {
-  const comparedBranch = process.env.CIRCLECI ? 'origin/master' : 'crafter/2019-11-ui-restructure';
+  const comparedBranch = process.env.CIRCLECI ? 'origin/develop' : 'crafter/develop';
   const mergeBase = await execGitCmd(['rev-parse', comparedBranch]);
   const gitDiff = await execGitCmd(['diff', '--name-only', mergeBase]);
   const gitLs = await execGitCmd(['ls-files', '--others', '--exclude-standard']);

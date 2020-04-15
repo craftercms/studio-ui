@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, getText, post, postJSON } from '../utils/ajax';
+import { catchApi1Error, CONTENT_TYPE_JSON, get, getText, post, postJSON } from '../utils/ajax';
 import { map, pluck, switchMap } from 'rxjs/operators';
-import { forkJoin, Observable, of, zip } from 'rxjs';
+import { forkJoin, Observable, of, zip, Observer } from 'rxjs';
 import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
 import {
   ContentType,
@@ -46,7 +46,7 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { Item } from '../models/Item';
+import { Item, LegacyItem } from '../models/Item';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -349,7 +349,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
       if (datasource.type === 'receptacles')
         receptaclesLookup[datasource.id] = datasource;
-    })
+    });
   }
 
   // In some cases, the back end parser seems to return this as "   " 🤷
@@ -440,11 +440,11 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           };
           if (field.fields[_fieldId].type === 'node-selector') {
 
-            const map = asArray<LegacyFormDefinitionProperty>(_legacyField.properties.property)
-              .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
-                table[prop.name] = prop;
-                return table;
-              }, {});
+            // const map = asArray<LegacyFormDefinitionProperty>(_legacyField.properties.property)
+            //   .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
+            //     table[prop.name] = prop;
+            //     return table;
+            //   }, {});
 
             field.fields[_fieldId].validations = {
               tags: [],
@@ -469,9 +469,9 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           if (receptaclesLookup[value]) {
             receptaclesLookup[value].properties?.property.forEach((prop) => {
               if (prop.name === 'contentTypes') {
-                field.validations.contentTypes = prop.value ? prop.value.split(',') : []
+                field.validations.contentTypes = prop.value ? prop.value.split(',') : [];
               } else if (prop.name === 'tags') {
-                field.validations.tags = prop.value ? prop.value.split(',') : []
+                field.validations.tags = prop.value ? prop.value.split(',') : [];
               }
             });
           }
@@ -1053,26 +1053,104 @@ export function uploadDataUrl(
 }
 
 export function getBulkUploadUrl(site: string, path: string): string {
-  return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`
+  return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`;
 }
 
 export function getQuickCreateContentList(siteId: string) {
   return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
     pluck('response')
-  )
+  );
 }
 
 export function getItemVersions(siteId: string, path: string) {
   return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${siteId}&path=${path}`).pipe(
     pluck('response')
-  )
+  );
+}
+
+export function getChildrenByPath(site: string, path: string): Observable<any> {
+  ///studio/api/2/content/children_by_path
+  const response = {
+    response: {},
+    parent: {
+      id: 'home',
+      label: 'Home',
+      path: 'Path'
+    },
+    items: [
+      {
+        id: 'Style',
+        label: 'Style',
+        path: '/site/website/style/index.xml',
+        localeCode: 'en'
+      },
+      {
+        id: 'Salud',
+        label: 'Salud',
+        path: '/site/website/health/index.xml',
+        localeCode: 'es'
+      },
+      {
+        id: 'Entertainment',
+        label: 'Entertainment',
+        path: '/site/website/entertainment/index.xml',
+        localeCode: 'en'
+      },
+      {
+        id: 'Tecnologia',
+        label: 'Tecnologia',
+        path: '/site/website/technology/index.xml',
+        localeCode: 'es'
+      }
+    ]
+  };
+
+  return new Observable((observer: Observer<any>) => {
+    observer.next(response);
+    observer.complete();
+  });
+}
+
+
+export function copyItem(site: string, item: Partial<LegacyItem>): Observable<any> {
+  let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
+  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
+}
+
+export function cutItem(site: string, item: Item): Observable<any> {
+  return post(`/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`, { item: [{ uri: item.path }] }, CONTENT_TYPE_JSON).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
+}
+
+export function pasteItem(site: string, item: Item): Observable<any> {
+  return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
+}
+
+export function getPages(site: string, item: any): Observable<any> {
+  return get(`/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`).pipe(
+    pluck('response', 'item'),
+    catchApi1Error
+  );
 }
 
 export default {
   getComponentInstanceHTML,
   getContent,
-  getItem,
   getDOM,
+  getChildrenByPath,
+  copyItem,
+  cutItem,
+  pasteItem,
+  getPages,
+  getItem,
   getContentInstanceLookup,
   fetchContentTypes,
   fetchById,
