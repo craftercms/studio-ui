@@ -259,7 +259,7 @@ function getChildren(
 }
 
 interface TreeItemCustomInterface {
-  resource: Resource<Data>;
+  node: Resource<Data>;
   nodeId?: string;
 
   handleScroll?(node: RenderTree): void;
@@ -272,25 +272,13 @@ interface TreeItemCustomInterface {
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
-  const {resource, nodeId, handleScroll, handlePrevious, handleClick, handleOptions} = props;
+  const {node, nodeId, handleScroll, handlePrevious, handleClick, handleOptions} = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
-  const nodes = resource.read().nodeLookup[nodeId];
+  const nodes = node.read().nodeLookup[nodeId];
   const isMounted = useRef(null);
   let Icon;
-
-  function setOverState(e: React.MouseEvent, isOver: boolean) {
-    e.stopPropagation();
-    clearTimeout(timeout.current);
-    if (!isOver) {
-      timeout.current = setTimeout(() => {
-        isMounted.current && setOver(false);
-      }, 10);
-    } else {
-      isMounted.current && setOver(isOver);
-    }
-  }
 
   useEffect(() => {
     isMounted.current = true;
@@ -313,12 +301,24 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
     }
   }
 
+  function setOverState(e: React.MouseEvent, isOver: boolean) {
+    e.stopPropagation();
+    clearTimeout(timeout.current);
+    if (!isOver) {
+      timeout.current = setTimeout(() => {
+        isMounted.current && setOver(false);
+      }, 10);
+    } else {
+      isMounted.current && setOver(isOver);
+    }
+  }
+
   return (
     <TreeItem
       key={nodes.id}
       nodeId={nodes.id}
-      // onMouseOver={(e) => setOverState(e, true)}
-      // onMouseOut={(e) => setOverState(e, false)}
+      onMouseOver={(e) => setOverState(e, true)}
+      onMouseOut={(e) => setOverState(e, false)}
       icon={nodes.type === 'component' && <ChevronRightIcon onClick={() => handleClick(nodes)}/>}
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(nodes)}>
@@ -355,7 +355,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       }}
     >
       {
-        nodes.children?.map(_nodeId => <TreeItemCustom {...props} key={String(_nodeId)} nodeId={String(_nodeId)}/>)
+        nodes.children?.map(childNodeId => <TreeItemCustom {...props} key={String(childNodeId)} nodeId={String(childNodeId)}/>)
       }
     </TreeItem>
   );
@@ -496,7 +496,7 @@ export default function ContentTree() {
         <Suspencified loadingStateProps={{title: formatMessage(translations.loading)}}>
           <TreeItemCustom
             nodeId={`${rootPrefix}${data.selected}`}
-            resource={resource}
+            node={resource}
             handleScroll={handleScroll}
             handlePrevious={handlePrevious}
             handleClick={handleClick}
