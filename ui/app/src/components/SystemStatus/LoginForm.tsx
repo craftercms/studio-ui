@@ -17,7 +17,7 @@
 import React, { PropsWithChildren } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { FormattedMessage } from 'react-intl';
-import PasswordTextField from '../PasswordTextField';
+import PasswordTextField from '../Controls/PasswordTextField';
 import Button from '@material-ui/core/Button';
 
 type LogInFormProps = PropsWithChildren<{
@@ -50,23 +50,20 @@ export function LogInForm(props: LogInFormProps) {
       <TextField
         id="loginFormUsernameField"
         fullWidth
-        autoFocus={enableUsernameInput}
+        autoFocus={enableUsernameInput && !Boolean(username)}
         disabled={!enableUsernameInput}
         type="text"
         value={username}
         onChange={(e: any) => onSetUsername?.(e.target.value)}
         className={classes?.username}
         label={
-          <FormattedMessage
-            id="loginView.usernameTextFieldLabel"
-            defaultMessage="Email/Username"
-          />
+          <FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Email/Username" />
         }
       />
       <PasswordTextField
         id="loginFormPasswordField"
         fullWidth
-        autoFocus={!enableUsernameInput}
+        autoFocus={!enableUsernameInput || Boolean(username)}
         value={password}
         onChange={(e: any) => onSetPassword?.(e.target.value)}
         className={classes?.password}

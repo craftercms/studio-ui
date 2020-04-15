@@ -250,7 +250,7 @@
         "BULKPUBLISH": "Publicación Masiva",
         "PATHPUBLISH": "Camino a publicar",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
-        "PUBLISHINGENVIRONMENT": "Ambiente",
+        "PUBLISHINGENVIRONMENT": "Objetivo de publicación",
         "PUBLISHINGSUBMISSIONCOMMENT": "Comentario",
         "PUBLISH": "Publicar",
         "PATH":"Ruta",

@@ -86,6 +86,10 @@
   overflow: initial;
 }
 
+#encryptionInfoDialog {
+  width: 600px !important;
+}
+
 .hint-btn {
   padding: 6px;
   vertical-align: middle;

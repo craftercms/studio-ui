@@ -16,7 +16,7 @@
 
 import '../styles/index.scss';
 
-import React, { PropsWithChildren, Suspense, useEffect, useState } from 'react';
+import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { createIntl, createIntlCache, IntlShape, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from '../styles/theme';
@@ -25,6 +25,11 @@ import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
 import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
+import { setRequestForgeryToken } from '../utils/auth';
+import { Provider } from 'react-redux';
+import store from '../state/store';
+import DialogManager from './SystemStatus/GlobalDialogManager';
+import { SnackbarProvider } from 'notistack';
 
 const Locales: any = {
   en,
@@ -37,22 +42,29 @@ const Locales: any = {
 export let intl = getIntl(getCurrentLocale());
 
 // @ts-ignore
-document.addEventListener('setlocale', (e: CustomEvent<string>) => {
-  if (e.detail && e.detail !== intl.locale) {
-    intl = getIntl(e.detail);
-    updateIntl(intl);
-    document.documentElement.setAttribute('lang', e.detail);
-  }
-}, false);
+document.addEventListener(
+  'setlocale',
+  (e: CustomEvent<string>) => {
+    if (e.detail && e.detail !== intl.locale) {
+      intl = getIntl(e.detail);
+      updateIntl(intl);
+      document.documentElement.setAttribute('lang', e.detail);
+    }
+  },
+  false
+);
 
 function getIntl(locale: string): IntlShape {
-  return createIntl({
-    locale: locale,
-    messages: Locales[locale] || en
-  }, createIntlCache());
+  return createIntl(
+    {
+      locale: locale,
+      messages: Locales[locale] || en
+    },
+    createIntlCache()
+  );
 }
 
-export function getCurrentLocale() {
+export function getCurrentLocale(): string {
   const username = localStorage.getItem('userName');
   const locale = username
     ? localStorage.getItem(`${username}_crafterStudioLanguage`)
@@ -60,22 +72,30 @@ export function getCurrentLocale() {
   return locale ? locale : 'en';
 }
 
-function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
-
+function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) {
   const [, update] = useState();
 
+  useLayoutEffect(setRequestForgeryToken, []);
   useEffect(() => setUpLocaleChangeListener(update, intl), [update]);
 
   return (
-    <RawIntlProvider value={intl}>
-      <ThemeProvider theme={theme}>
-        <Suspense fallback="">
-          {props.children}
-        </Suspense>
-      </ThemeProvider>
-    </RawIntlProvider>
+    <Provider store={store}>
+      <RawIntlProvider value={intl}>
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider
+            maxSnack={5}
+            autoHideDuration={5000}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            <>
+              <Suspense fallback="" children={props.children} />
+              <DialogManager />
+            </>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </RawIntlProvider>
+    </Provider>
   );
-
 }
 
 function setUpLocaleChangeListener(update: Function, currentIntl: IntlShape) {
