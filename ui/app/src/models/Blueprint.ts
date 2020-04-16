@@ -66,4 +66,5 @@ export interface Blueprint {
   url?: string;
   ref?: string;
   parameters?: [Parameter];
+  compatible?: boolean;
 }
