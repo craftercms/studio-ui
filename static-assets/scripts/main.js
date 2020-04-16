@@ -31,7 +31,8 @@
     'ngSanitize'
   ]);
 
-  let i18n = CrafterCMSNext.i18n,
+  let //
+    i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
     globalConfigMessages = i18n.messages.globalConfigMessages,
@@ -49,7 +50,7 @@
     '$http',
     '$cookies',
     '$location',
-    function($rootScope, $state, $stateParams, authService, sitesService, Constants, $http, $cookies, $location) {
+    function($rootScope, $state, $stateParams, authService, sitesService, Constants) {
       $rootScope.$state = $state;
       $rootScope.$stateParams = $stateParams;
 
@@ -129,6 +130,9 @@
       });
 
       sitesService.getLanguages($rootScope, true);
+
+      CrafterCMSNext.renderBackgroundUI();
+
     }
   ]);
 

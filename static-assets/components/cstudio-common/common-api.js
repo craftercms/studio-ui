@@ -9986,3 +9986,5 @@ function getTopLegacyWindow(nextWindow) {
     return window.top;
   }
 }
+
+CrafterCMSNext.renderBackgroundUI();
