@@ -43,7 +43,6 @@ import {
   ICE_ZONE_SELECTED,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
-  INSERT_ITEM_OPERATION,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
@@ -148,8 +147,15 @@ export function PreviewConcierge(props: any) {
           dispatch(checkOutGuest());
           break;
         case SORT_ITEM_OPERATION: {
-          const { modelId, fieldId, currentIndex, targetIndex } = payload;
-          sortItem(site, guest.models[modelId].craftercms.path, fieldId, currentIndex, targetIndex).subscribe(
+          const { modelId, fieldId, currentIndex, targetIndex, parentModelId } = payload;
+          sortItem(
+            site,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            fieldId,
+            currentIndex,
+            targetIndex,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null
+          ).subscribe(
             () => {
               enqueueSnackbar('Sort operation completed.');
             },
@@ -201,10 +207,6 @@ export function PreviewConcierge(props: any) {
             }
           );
           break;
-        case INSERT_ITEM_OPERATION: {
-          enqueueSnackbar('Insert item operation not implemented.');
-          break;
-        }
         case MOVE_ITEM_OPERATION: {
           const {
             originalModelId,

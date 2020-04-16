@@ -688,47 +688,22 @@ export function insertInstance(
   );
 }
 
-export function insertItem() {
-
-}
-
 export function sortItem(
   site: string,
   modelId: string,
   fieldId: string,
   currentIndex: number,
-  targetIndex: number
+  targetIndex: number,
+  parentModelId: string = null
 ): Observable<any> {
-  return getDOM(site, modelId).pipe(
-    switchMap((doc) => {
-
-      const qs = {
-        site,
-        path: modelId,
-        unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector('file-name'))
-      };
-
-      updateModifiedDateElement(doc);
-
-      // It's important to add the `:scope >` in to the selector since
-      // there may be nested fields with the same field ID.
-      const items = doc.querySelectorAll(`:scope > ${fieldId} > *`);
-      const $el = $(items).eq(currentIndex);
-      const $targetSibling = $(items).eq(targetIndex);
-
-      if (currentIndex < targetIndex) {
-        $el.insertAfter($targetSibling);
-      } else {
-        $el.insertBefore($targetSibling);
-      }
-
-      return post(
-        writeContentUrl(qs),
-        serialize(doc)
-      );
-
-    })
+  return performMutation(
+    site,
+    modelId,
+    parentModelId,
+    doc => {
+      const item = extractNode(doc, fieldId, currentIndex);
+      insertCollectionItem(doc, fieldId, targetIndex, item);
+    }
   );
 }
 
@@ -1174,7 +1149,6 @@ export default {
   updateField,
   insertComponent,
   insertInstance,
-  insertItem,
   sortItem,
   moveItem,
   deleteItem,

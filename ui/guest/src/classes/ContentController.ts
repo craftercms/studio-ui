@@ -28,7 +28,6 @@ import {
   GUEST_MODELS_RECEIVED,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
-  INSERT_ITEM_OPERATION,
   isNullOrUndefined,
   MOVE_ITEM_OPERATION,
   notNullOrUndefined,
@@ -188,38 +187,6 @@ export class ContentController {
 
   }
 
-  insertItem(
-    modelId: string,
-    fieldId: string,
-    index: number | string,
-    item: ContentInstance
-  ): void {
-
-    const models = this.getCachedModels();
-    const model = models[modelId];
-    const collection = ModelHelper.value(model, fieldId);
-    const result = collection.slice(0);
-
-    // Insert in desired position
-    result.splice(index, 0, item);
-
-    ContentController.models$.next({
-      ...models,
-      [modelId]: {
-        ...model,
-        [fieldId]: result
-      }
-    });
-
-    post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
-
-    ContentController.operations$.next({
-      type: 'insert',
-      args: arguments
-    });
-
-  }
-
   insertComponent(
     modelId: string,
     fieldId: string,
@@ -233,8 +200,7 @@ export class ContentController {
 
     const models = this.getCachedModels();
     const model = models[modelId];
-
-    const result = getResult(model, fieldId, targetIndex);
+    const result = getResult(getCollection(model, fieldId, targetIndex), targetIndex);
 
     // Create Item
     // const now = new Date().toISOString();
@@ -304,7 +270,8 @@ export class ContentController {
   insertInstance(modelId: string, fieldId: string, targetIndex: number | string, instance: ContentInstance): void {
     const models = this.getCachedModels();
     const model = models[modelId];
-    const result = getResult(model, fieldId, targetIndex);
+
+    const result = getResult(getCollection(model, fieldId, targetIndex), targetIndex);
 
     // Insert in desired position
     result.splice(targetIndex as number, 0, instance.craftercms.id);
@@ -333,9 +300,6 @@ export class ContentController {
 
   }
 
-  insertGroup(modelId, fieldId, data): void {
-  }
-
   sortItem(
     modelId: string,
     fieldId: string,
@@ -345,13 +309,13 @@ export class ContentController {
 
     const models = this.getCachedModels();
     const model = models[modelId];
-    const collection = ModelHelper.value(model, fieldId);
-    const result = collection
-      .slice(0, currentIndex)
-      .concat(collection.slice((currentIndex as number) + 1));
+    const currentIndexParsed = (typeof currentIndex === 'number') ? currentIndex : parseInt(popPiece(currentIndex));
+    const targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
+    const collection = getCollection(model, fieldId, currentIndex);
+    const result = getResult(collection, currentIndexParsed);
 
     // Insert in desired position
-    result.splice(targetIndex, 0, collection[currentIndex]);
+    result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
     ContentController.models$.next({
       ...models,
@@ -361,10 +325,16 @@ export class ContentController {
       }
     });
 
-    post(SORT_ITEM_OPERATION, { modelId, fieldId, currentIndex, targetIndex });
+    post(SORT_ITEM_OPERATION, {
+      modelId,
+      fieldId,
+      currentIndex,
+      targetIndex,
+      parentModelId: getParentModelId(modelId, models, this.children)
+    });
 
     ContentController.operations$.next({
-      type: 'sort',
+      type: SORT_ITEM_OPERATION,
       args: arguments
     });
 
@@ -476,7 +446,7 @@ export class ContentController {
     });
 
     ContentController.operations$.next({
-      type: 'move',
+      type: MOVE_ITEM_OPERATION,
       args: arguments
     });
 
@@ -958,17 +928,19 @@ function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstan
 
 }
 
-function getResult(model: ContentInstance, fieldId: string, index: string | number): number[] | string[] {
-  const isStringIndex = typeof index === 'string';
+//function getResult(model: ContentInstance, fieldId: string, index: string | number): number[] | string[] {
+function getResult(collection: string[], index): string[] {
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
-
-  const collection = isStringIndex
-    ? ModelHelper.extractCollection(model, fieldId, index)
-    : ModelHelper.value(model, fieldId);
-
   return collection
     .slice(0, parsedIndex)
     .concat(collection.slice(parsedIndex + 1));
+}
+
+function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
+  const isStringIndex = typeof index === 'string';
+  return isStringIndex
+    ? ModelHelper.extractCollection(model, fieldId, index)
+    : ModelHelper.value(model, fieldId);
 }
 
 export const contentController = new ContentController();
