@@ -18,14 +18,12 @@
  * Logout Plugin
  */
 CStudioAuthoring.ContextualNav.WcmLogoutMod = {
-
   initialized: false,
 
   /**
    * initialize module
    */
   initialize: function (config) {
-
     var el = YDom.get('acn-logout-link');
     var showLogoutLink = false;
     var url = null;
@@ -57,21 +55,21 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
           onClickFunction(el);
         }
       },
-      failure: function (data) {
-
-      }
+      failure: function (data) {}
     });
 
     CStudioAuthoring.Operations.createNavBarDropDown('account');
 
-    function onClickFunction (el, url) {
+    function onClickFunction(el, url) {
       el.onclick = function () {
-
         var serviceUri = CStudioAuthoring.Service.logoutUrl;
 
         YConnect.setDefaultPostHeader(false);
         YConnect.initHeader('Content-Type', 'application/json; charset=utf-8');
-        YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
+        YConnect.initHeader(
+          CStudioAuthoringContext.xsrfHeaderName,
+          CrafterCMSNext.util.auth.getRequestForgeryToken()
+        );
         YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), {
           success: function () {
             CStudioAuthoring.Storage.eliminate('userSession');
@@ -85,10 +83,8 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = {
             window.location.href = CStudioAuthoringContext.authoringAppBaseUri;
           }
         });
-
       };
     }
-
   }
 };
 

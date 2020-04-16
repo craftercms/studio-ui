@@ -18,11 +18,14 @@
   'use strict';
 
   if (!window.location.origin) {
-    window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+    window.location.origin =
+      window.location.protocol +
+      '//' +
+      window.location.hostname +
+      (window.location.port ? ':' + window.location.port : '');
   }
 
-  var
-    cstopic = crafter.studio.preview.cstopic,
+  var cstopic = crafter.studio.preview.cstopic,
     Topics = crafter.studio.preview.Topics,
     previewAppBaseUri = CStudioAuthoringContext.previewAppBaseUri || '',
     origin = previewAppBaseUri,
@@ -35,7 +38,7 @@
     try {
       // For ICE tools panel syncing.
       window.initRegCookie();
-    } catch(e) {}
+    } catch (e) {}
   });
 
   communicator.subscribe(Topics.SET_SESSION_STORAGE_ITEM, function (message) {
@@ -78,23 +81,37 @@
           CStudioAuthoring.InContextEdit.messageDialogs({
             type: 'OPEN_CHILD_COMPONENT',
             key: message.embeddedItemId,
-            iceId: message.iceId? message.iceId: null,
+            iceId: message.iceId ? message.iceId : null,
             edit: true
           });
           break;
         }
       }
-    }
+    };
 
-    if(message.embeddedItemId) {
+    if (message.embeddedItemId) {
       amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
     }
     var isWrite = false;
     var par = [];
-    var currentPath = (message.itemId) ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
-    var cachePermissionsKey = CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_permissions',
+    var currentPath = message.itemId
+      ? message.itemId
+      : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
+    var cachePermissionsKey =
+        CStudioAuthoringContext.site +
+        '_' +
+        currentPath +
+        '_' +
+        CStudioAuthoringContext.user +
+        '_permissions',
       isPermissionCached = cache.get(cachePermissionsKey),
-      cacheContentKey = CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_content',
+      cacheContentKey =
+        CStudioAuthoringContext.site +
+        '_' +
+        currentPath +
+        '_' +
+        CStudioAuthoringContext.user +
+        '_content',
       isContentCached = cache.get(cacheContentKey);
     var isLockOwner = function (lockOwner) {
       if (lockOwner != '' && lockOwner != null && CStudioAuthoringContext.user != lockOwner) {
@@ -102,7 +119,7 @@
         isWrite = false;
         par.push({ name: 'readonly' });
       }
-    }
+    };
     var editCb = {
       success: function (contentTO, editorId, name, value, draft) {
         if (CStudioAuthoringContext.isPreview) {
@@ -120,13 +137,16 @@
           document.dispatchEvent(eventNS);
         }
       },
-      failure: function () {
-      }
+      failure: function () {}
     };
     var editPermsCallback = {
       success: function (response) {
         if (!isPermissionCached) {
-          cache.set(cachePermissionsKey, response.permissions, CStudioAuthoring.Constants.CACHE_TIME_PERMISSION);
+          cache.set(
+            cachePermissionsKey,
+            response.permissions,
+            CStudioAuthoring.Constants.CACHE_TIME_PERMISSION
+          );
         }
         isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
         if (!isWrite) {
@@ -140,23 +160,28 @@
             message.iceId, //field
             isWrite,
             editCb,
-            par);
-
+            par
+          );
         } else {
           var getContentItemsCb = {
             success: function (contentTO) {
               if (!isContentCached) {
-                cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
+                cache.set(
+                  cacheContentKey,
+                  contentTO.item,
+                  CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM
+                );
               }
               isLockOwner(contentTO.item.lockOwner);
               CStudioAuthoring.Operations.performSimpleIceEdit(
                 contentTO.item,
-                message.embeddedItemId? null : this.iceId, //field
+                message.embeddedItemId ? null : this.iceId, //field
                 isWrite,
                 this.editCb,
                 par,
                 null,
-                message.embeddedItemId? true: false);
+                message.embeddedItemId ? true : false
+              );
             },
             failure: function () {
               callback.failure();
@@ -174,13 +199,14 @@
               CStudioAuthoringContext.site,
               message.itemId,
               getContentItemsCb,
-              false, false);
+              false,
+              false
+            );
           }
-
         }
-      }, failure: function () {
-      }
-    }
+      },
+      failure: function () {}
+    };
 
     if (isPermissionCached) {
       var response = {};
@@ -190,20 +216,19 @@
       CStudioAuthoring.Service.getUserPermissions(
         CStudioAuthoringContext.site,
         currentPath,
-        editPermsCallback);
+        editPermsCallback
+      );
     }
-
   });
 
   // Listen to the guest site load
   communicator.subscribe(Topics.GUEST_SITE_LOAD, function (message, scope) {
-
     hasCheckIn = true;
 
     if (message.url) {
       var params = {
-            page: message.url,
-            site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
+        page: message.url,
+        site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
       };
 
       var studioPath = CrafterCMSNext.util.path.getPathFromPreviewURL(message.url);
@@ -220,13 +245,12 @@
       origin: origin,
       window: getEngineWindow().contentWindow
     });
-
   });
 
-  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function(message, scope){
+  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function (message, scope) {
     if (message.url) {
       var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
-          studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
+        studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
       selectStudioContent(site, studioPath);
     }
   });
@@ -235,7 +259,6 @@
     expandContractChannel();
     CStudioAuthoring.PreviewTools.panel.element.style.visibility = 'visible';
     $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function () {
-
       if (!previewWidth || previewWidth == 0 || previewWidth == '0px') {
         previewWidth = 265;
       }
@@ -266,7 +289,8 @@
 
   communicator.subscribe(Topics.COMPONENT_DROPPED, function (message) {
     message.model = initialContentModel;
-    amplify.publish(cstopic('COMPONENT_DROPPED'),
+    amplify.publish(
+      cstopic('COMPONENT_DROPPED'),
       message.type,
       message.path,
       message.isNew,
@@ -275,40 +299,45 @@
       message.compPath,
       message.conComp,
       message.model,
-      message.datasource,
+      message.datasource
     );
   });
 
   communicator.subscribe(Topics.START_DIALOG, function (message) {
     var newdiv = document.createElement('div');
     var text;
-    var link = "";
+    var link = '';
 
-    if(message.messageKey) {
-      text = CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dragAndDropMessages[message.messageKey])
-    }else {
+    if (message.messageKey) {
+      text = CrafterCMSNext.i18n.intl.formatMessage(
+        CrafterCMSNext.i18n.messages.dragAndDropMessages[message.messageKey]
+      );
+    } else {
       text = message.message;
     }
-    if(message.link) {
+    if (message.link) {
       link = message.link;
     }
 
     newdiv.setAttribute('id', 'cstudio-wcm-popup-div');
     newdiv.className = 'yui-pe-content';
-    newdiv.innerHTML = (
+    newdiv.innerHTML =
       '<div class="contentTypePopupInner" id="warning">' +
-      /**/'<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-      /****/'<div class="contentTypePopupHeader">Notification</div> ' +
-      /****/'<div class="contentTypeOuter">' +
-      /****/'<div>' + text +'</div> ' +
-      /****/'<div>' + link +'</div> ' +
-      /****/'<div></div>' +
-      /**/'</div>' +
-      /**/'<div class="contentTypePopupBtn"> ' +
-      /****/'<input type="button" class="btn btn-primary cstudio-xform-button ok" id="cancelButton" value="OK" />' +
-      /**/'</div>' +
-      '</div>'
-    );
+      /**/ '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
+      /****/ '<div class="contentTypePopupHeader">Notification</div> ' +
+      /****/ '<div class="contentTypeOuter">' +
+      /****/ '<div>' +
+      text +
+      '</div> ' +
+      /****/ '<div>' +
+      link +
+      '</div> ' +
+      /****/ '<div></div>' +
+      /**/ '</div>' +
+      /**/ '<div class="contentTypePopupBtn"> ' +
+      /****/ '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="cancelButton" value="OK" />' +
+      /**/ '</div>' +
+      '</div>';
 
     document.body.appendChild(newdiv);
 
@@ -322,11 +351,15 @@
       constraintoviewport: true,
       underlay: 'none',
       autofillheight: null,
-      buttons: [{
-        text: 'Cancel', handler: function () {
-          $(this).destroy();
-        }, isDefault: true
-      }]
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: function () {
+            $(this).destroy();
+          },
+          isDefault: true
+        }
+      ]
     });
 
     dialog.render();
@@ -337,7 +370,9 @@
       dialog.destroy();
       var masks = YAHOO.util.Dom.getElementsByClassName('mask');
       for (var i = 0; i < masks.length; i++) {
-        YAHOO.util.Dom.getElementsByClassName('mask')[0].parentElement.removeChild(YAHOO.util.Dom.getElementsByClassName('mask')[0]);
+        YAHOO.util.Dom.getElementsByClassName('mask')[0].parentElement.removeChild(
+          YAHOO.util.Dom.getElementsByClassName('mask')[0]
+        );
       }
     });
 
@@ -345,24 +380,30 @@
   });
 
   communicator.subscribe(Topics.OPEN_BROWSE, function (message) {
-    CStudioAuthoring.Operations.openBrowse('', CStudioAuthoring.Operations.processPathsForMacros(message.path, initialContentModel), 1, 'select', true, {
-      success: function (searchId, selectedTOs) {
-
-        for (var i = 0; i < selectedTOs.length; i++) {
-          var item = selectedTOs[i];
-          communicator.publish(Topics.DND_CREATE_BROWSE_COMP, {
-            component: selectedTOs[i],
-            initialContentModel: initialContentModel
-          });
-        }
-      },
-      failure: function () {
+    CStudioAuthoring.Operations.openBrowse(
+      '',
+      CStudioAuthoring.Operations.processPathsForMacros(message.path, initialContentModel),
+      1,
+      'select',
+      true,
+      {
+        success: function (searchId, selectedTOs) {
+          for (var i = 0; i < selectedTOs.length; i++) {
+            var item = selectedTOs[i];
+            communicator.publish(Topics.DND_CREATE_BROWSE_COMP, {
+              component: selectedTOs[i],
+              initialContentModel: initialContentModel
+            });
+          }
+        },
+        failure: function () {}
       }
-    });
+    );
   });
 
   communicator.subscribe(Topics.SAVE_DRAG_AND_DROP, function (message) {
-    amplify.publish(cstopic('SAVE_DRAG_AND_DROP'),
+    amplify.publish(
+      cstopic('SAVE_DRAG_AND_DROP'),
       message.isNew,
       message.zones,
       message.compPath,
@@ -371,22 +412,15 @@
   });
 
   communicator.subscribe(Topics.INIT_DRAG_AND_DROP, function (message) {
-    amplify.publish(cstopic('INIT_DRAG_AND_DROP'),
-      message.zones);
+    amplify.publish(cstopic('INIT_DRAG_AND_DROP'), message.zones);
   });
 
   communicator.subscribe(Topics.DND_ZONES_MODEL_REQUEST, function (message) {
-    amplify.publish(cstopic('DND_ZONES_MODEL_REQUEST'),
-      message.aNotFound
-    );
-
+    amplify.publish(cstopic('DND_ZONES_MODEL_REQUEST'), message.aNotFound);
   });
 
   communicator.subscribe(Topics.LOAD_MODEL_REQUEST, function (message) {
-    amplify.publish(cstopic('LOAD_MODEL_REQUEST'),
-      message.aNotFound
-    );
-
+    amplify.publish(cstopic('LOAD_MODEL_REQUEST'), message.aNotFound);
   });
 
   amplify.subscribe(cstopic('REFRESH_PREVIEW'), function () {
@@ -410,7 +444,8 @@
         dataBrowse = config.components.browse;
       }
 
-      var categories = [], browse = [];
+      var categories = [],
+        browse = [];
 
       if (data) {
         if ($.isArray(data)) {
@@ -420,7 +455,6 @@
             } else {
               categories.push({ label: c.label, components: c.components });
             }
-
           });
         } else {
           if (data.component) {
@@ -469,11 +503,19 @@
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function (message) {
-    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png')
+    $('#acn-ice-tools-container img').attr(
+      'src',
+      CStudioAuthoringContext.authoringAppBaseUri +
+        '/static-assets/themes/cstudioTheme/images/edit_off.png'
+    );
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function (message) {
-    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png')
+    $('#acn-ice-tools-container img').attr(
+      'src',
+      CStudioAuthoringContext.authoringAppBaseUri +
+        '/static-assets/themes/cstudioTheme/images/edit.png'
+    );
   });
 
   amplify.subscribe(cstopic('ICE_TOOLS_ON'), function () {
@@ -485,25 +527,24 @@
   });
 
   communicator.subscribe(Topics.IS_REVIEWER, function (resize) {
-
     var callback = function (isRev) {
       if (!isRev) {
-        communicator.publish(
-          resize ? Topics.RESIZE_ICE_REGIONS : Topics.INIT_ICE_REGIONS,
-          {
-            iceOn: sessionStorage.getItem('ice-on'),
-            componentsOn: sessionStorage.getItem('components-on')
-          });
+        communicator.publish(resize ? Topics.RESIZE_ICE_REGIONS : Topics.INIT_ICE_REGIONS, {
+          iceOn: sessionStorage.getItem('ice-on'),
+          componentsOn: sessionStorage.getItem('components-on')
+        });
       }
-    }
+    };
 
     CStudioAuthoring.Utils.isReviewer(callback);
   });
 
   communicator.subscribe(Topics.REQUEST_FORM_DEFINITION, function (message) {
-    CStudioForms.Util.loadFormDefinition(message.contentType, { success: function(response){
+    CStudioForms.Util.loadFormDefinition(message.contentType, {
+      success: function (response) {
         communicator.publish(Topics.REQUEST_FORM_DEFINITION_RESPONSE, response);
-    }});
+      }
+    });
   });
 
   function setHash(params) {
@@ -520,7 +561,6 @@
   }
 
   function goToHashPage() {
-
     var win = getEngineWindow();
     var hash = parseHash(window.location.hash);
     var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite');
@@ -528,7 +568,7 @@
 
     if (hash.site) {
       CStudioAuthoring.Utils.Cookies.createCookie('crafterSite', hash.site);
-      siteChanged = (site !== hash.site);
+      siteChanged = site !== hash.site;
     }
 
     if (siteChanged || !hasCheckIn) {
@@ -550,7 +590,7 @@
     if (path && path.indexOf('.') != -1) {
       if (path.indexOf('.html') != -1 || path.indexOf('.xml') != -1) {
         path = ('/site/website/' + hashPage).replace('//', '/');
-        path = path.replace('.html', '.xml')
+        path = path.replace('.html', '.xml');
       }
     } else {
       if (hash.page && hash.page.indexOf('?') != -1) {
@@ -574,12 +614,10 @@
         selectContentSet(content.item, false);
       }
     });
-
   }
 
   // TODO better URL support. Find existing lib, use angular or use backbone router?
   function parseHash(hash) {
-
     var str = hash.replace('#/', ''),
       params = {},
       param;
@@ -590,7 +628,7 @@
       var strPageParam = strPage[1].split('&');
       str = strPage[0] + '?';
       for (var i = 0; i < strPageParam.length; i++) {
-        if ((strPageParam[i].indexOf('site') != -1) && (i == strPageParam.length - 1)) {
+        if (strPageParam[i].indexOf('site') != -1 && i == strPageParam.length - 1) {
           str = str + '&' + strPageParam[i];
         } else {
           str = str + strPageParam[i];
@@ -610,7 +648,6 @@
     }
 
     return params;
-
   }
 
   function splitOnce(input, splitBy) {
@@ -621,10 +658,10 @@
     return retVal;
   }
 
-  function selectStudioContent(site, url){
+  function selectStudioContent(site, url) {
     CStudioAuthoring.Service.lookupContentItem(site, url, {
       success: function (content) {
-        if(content.item.isPage) {
+        if (content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, true);
         }
@@ -636,7 +673,7 @@
   // item: selected item
   // reloadTree: if needed, allows tree to be reloaded. For assets it will be false since reload is not needed.
   function selectContentSet(item, reloadTree) {
-    window.setTimeout(function() {
+    window.setTimeout(function () {
       amplify.publish('SELECTED_CONTENT_SET', {
         contentTO: item,
         reload: reloadTree
@@ -644,39 +681,40 @@
     }, 0);
   }
 
-  window.addEventListener('hashchange', function (e) {
-    e.preventDefault();
-    goToHashPage();
-  }, false);
-
-  window.addEventListener('load', function () {
-
-    if (window.location.hash.indexOf('page') === -1) {
-      setHash({
-        page: '/',
-        site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
-      });
-    } else {
+  window.addEventListener(
+    'hashchange',
+    function (e) {
+      e.preventDefault();
       goToHashPage();
-    }
+    },
+    false
+  );
 
-  }, false);
+  window.addEventListener(
+    'load',
+    function () {
+      if (window.location.hash.indexOf('page') === -1) {
+        setHash({
+          page: '/',
+          site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
+        });
+      } else {
+        goToHashPage();
+      }
+    },
+    false
+  );
 
   function expandContractChannel(opt) {
-    var
-      $studioChannelPortrait = $('.studio-device-preview-portrait')[0],
+    var $studioChannelPortrait = $('.studio-device-preview-portrait')[0],
       $studioChannelLandscape = $('.studio-device-preview-landscape')[0];
     if ($studioChannelPortrait || $studioChannelLandscape) {
-      var
-        inputChannelWidth = $('[data-axis="x"]', parent.document),
+      var inputChannelWidth = $('[data-axis="x"]', parent.document),
         width = inputChannelWidth.val() || 'auto',
         $engine = $('#engineWindow', parent.document);
 
       width = opt === 'expand' ? parseInt(width) + 265 : parseInt(width);
-      $engine.width(
-        (width === 'auto' || width === '')
-          ? '' : parseInt(width));
+      $engine.width(width === 'auto' || width === '' ? '' : parseInt(width));
     }
   }
-
 })(jQuery, window, amplify, CStudioAuthoring);
