@@ -14,8 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createMuiTheme, { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
-import { darken, fade } from '@material-ui/core/styles';
+import {
+  createGenerateClassName,
+  createMuiTheme,
+  darken,
+  fade,
+  ThemeOptions
+} from '@material-ui/core/styles';
 
 export const palette = {
   white: '#fff',
@@ -151,3 +156,7 @@ export const themeOptions: ThemeOptions = {
 };
 
 export const theme = createMuiTheme(themeOptions);
+
+export const generateClassName = createGenerateClassName({
+  productionPrefix: 'craftercms-'
+});

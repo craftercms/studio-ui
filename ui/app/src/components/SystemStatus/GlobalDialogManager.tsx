@@ -14,16 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, Suspense } from 'react';
+import React, {
+  lazy,
+  Suspense,
+  useLayoutEffect,
+  useMemo,
+  useState
+} from 'react';
+import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
-import { Theme } from '@material-ui/core/styles';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
+import GlobalState from '../../models/GlobalState';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -40,23 +47,24 @@ function createCallback(
   return action ? () => dispatch(action) : fallbackAction ? () => dispatch(fallbackAction) : null;
 }
 
-export const useStyles = makeStyles((theme: Theme) => createStyles({
-  wrapper: {
-    right: '0',
-    bottom: '20px',
-    display: 'flex',
-    position: 'fixed',
-    flexDirection: 'row-reverse',
-    width: '100%',
-    overflow: 'auto',
-    padding: '2px 20px',
-  },
-}));
+export const useStyles = makeStyles(() =>
+  createStyles({
+    wrapper: {
+      right: '0',
+      bottom: '20px',
+      display: 'flex',
+      position: 'fixed',
+      flexDirection: 'row-reverse',
+      width: '100%',
+      overflow: 'auto',
+      padding: '2px 20px'
+    }
+  })
+);
 
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const dispatch = useDispatch();
-  const classes = useStyles({});
   return (
     <Suspense fallback="">
       {/* region Confirm */}
@@ -71,7 +79,10 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Error */}
-      <ErrorDialog error={state.error.error} onClose={createCallback(state.error.onClose, dispatch)} />
+      <ErrorDialog
+        error={state.error.error}
+        onClose={createCallback(state.error.onClose, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Edit (Embedded Legacy Editor) */}
@@ -118,24 +129,55 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region SnackBar(s) */}
-      <div className={classes.wrapper}>
-        {
-          Object.values(state.minimizedDialogs).map((tab) =>
-            tab.minimized &&
-            <MinimizedBar
-              key={tab.id}
-              title={tab.title}
-              subtitle={tab.subtitle}
-              status={tab.status}
-              onMaximized={createCallback(maximizeDialog({ id: tab.id }), dispatch)}
-            />
-          )
-        }
-      </div>
+      {/* region Minimized Dialogs */}
+      <MinimizedDialogManager state={state} dispatch={dispatch} />
+      {/* endregion */}
+      {/* region Auth Monitor */}
+      {/* TODO: Move auth monitor here */}
       {/* endregion */}
     </Suspense>
   );
+}
+
+function MinimizedDialogManager({
+  state,
+  dispatch
+}: {
+  state: GlobalState['dialogs'];
+  dispatch: Dispatch;
+}) {
+  const classes = useStyles({});
+  const [el] = useState<HTMLElement>(() => {
+    const elem = document.createElement('div');
+    elem.className = classes.wrapper;
+    return elem;
+  });
+  const inventory = useMemo(
+    () => Object.values(state.minimizedDialogs).filter((tab) => tab.minimized),
+    [state.minimizedDialogs]
+  );
+  useLayoutEffect(() => {
+    if (inventory.length) {
+      document.body.appendChild(el);
+      return () => {
+        document.body.removeChild(el);
+      };
+    }
+  }, [el, inventory]);
+  return inventory.length
+    ? ReactDOM.createPortal(
+        inventory.map(({ id, title, subtitle, status }) => (
+          <MinimizedBar
+            key={id}
+            title={title}
+            subtitle={subtitle}
+            status={status}
+            onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
+          />
+        )),
+        el
+      )
+    : null;
 }
 
 export default React.memo(GlobalDialogManager);

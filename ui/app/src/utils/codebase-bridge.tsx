@@ -28,14 +28,22 @@ import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
-import { debounceTime, filter, map, take } from 'rxjs/operators';
+import { debounceTime, filter, map, switchMap, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import { nou } from './object';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
-import { jssPreset, makeStyles } from '@material-ui/core/styles';
+import {
+  createGenerateClassName,
+  jssPreset,
+  makeStyles,
+  StylesProvider
+} from '@material-ui/core/styles';
+import { generateClassName, palette, theme } from '../styles/theme';
+import store from '../state/store';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 
 const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
@@ -65,6 +73,7 @@ interface CodebaseBridge {
   assets: { [key: string]: () => Promise<any> };
   util: object;
   render: Function;
+  renderBackgroundUI: Function;
   rxjs: object;
   i18n: {
     intl: IntlShape;
@@ -73,6 +82,7 @@ interface CodebaseBridge {
   };
   services: object;
   mui: object;
+  system: object;
 }
 
 export function updateIntl(nextIntl: IntlShape) {
@@ -93,7 +103,7 @@ export function createCodebaseBridge() {
       Subject,
       fromEvent,
       forkJoin,
-      operators: { filter, map, take, debounceTime }
+      operators: { debounceTime, filter, map, switchMap, take }
     },
 
     components: {
@@ -122,12 +132,21 @@ export function createCodebaseBridge() {
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
-      ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog'))
+      ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
+      GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager'))
     },
 
+    system: { generateClassName, theme, palette, store },
+
     mui: {
-      makeStyles,
-      jssPreset
+      core: {
+        styles: {
+          createGenerateClassName,
+          StylesProvider,
+          makeStyles,
+          jssPreset
+        }
+      }
     },
 
     assets: {
@@ -139,7 +158,8 @@ export function createCodebaseBridge() {
       path,
       string,
       auth,
-      babel
+      babel,
+      redux: { useDispatch, useSelector, useStore }
     },
 
     i18n: {
@@ -227,7 +247,40 @@ export function createCodebaseBridge() {
           reject(e);
         }
       });
+    },
+
+    renderBackgroundUI() {
+      const element = document.createElement('div');
+      // document.body.appendChild(element);
+      return new Promise((resolve, reject) => {
+        try {
+          const unmount = () => {
+            ReactDOM.unmountComponentAtNode(element);
+            // document.body.removeChild(element);
+          };
+          ReactDOM.render(
+            <CrafterCMSNextBridge />,
+            element,
+            () => resolve({
+              unmount: (options) => {
+                options = Object.assign(
+                  { delay: false },
+                  options || {}
+                );
+                if (options.delay) {
+                  setTimeout(unmount, options.delay);
+                } else {
+                  unmount();
+                }
+              }
+            })
+          );
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
+
   };
 
   // @ts-ignore

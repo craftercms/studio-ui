@@ -47,11 +47,11 @@ export default createReducer<GlobalState['dialogs']['minimizedDialogs']>(
     }),
     [minimizeDialog.type]: (state, { payload }) => ({
       ...state,
-      [payload.id]: { ...state[payload.id], minimized: true }
+      [payload.id]: { ...state[payload.id], ...payload, minimized: true }
     }),
     [maximizeDialog.type]: (state, { payload }) => ({
       ...state,
-      [payload.id]: { ...state[payload.id], minimized: false }
+      [payload.id]: { ...state[payload.id], ...payload, minimized: false }
     })
   }
 );
