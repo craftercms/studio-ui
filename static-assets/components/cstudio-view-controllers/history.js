@@ -154,7 +154,6 @@
                 tdEl = document.createElement('td');
                 tdEl.appendChild(col5El);
                 rowEl.appendChild(tdEl);
-
                 if (isXML) {
                   var viewActionEl = document.createElement('a');
                   viewActionEl.innerHTML =
