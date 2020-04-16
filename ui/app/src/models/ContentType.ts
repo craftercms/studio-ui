@@ -23,15 +23,17 @@ export interface ContentTypeSection {
   expandByDefault: string;
 }
 
+export interface ContentTypeFieldValidations {
+  tags: string[];
+  contentTypes: string[];
+}
+
 export interface ContentTypeField {
   id: string;
   name: string;
   type: string;
   sortable: boolean;
-  validations: {
-    tags: string[];
-    contentTypes: string[];
-  };
+  validations: ContentTypeFieldValidations;
   defaultValue: any;
   required: boolean;
   fields?: LookupTable<ContentTypeField>;
