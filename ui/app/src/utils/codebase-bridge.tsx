@@ -141,8 +141,6 @@ export function createCodebaseBridge() {
     mui: {
       core: {
         styles: {
-          createGenerateClassName,
-          StylesProvider,
           makeStyles,
           jssPreset
         }
