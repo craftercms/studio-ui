@@ -160,7 +160,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         getHostToGuestBus().next({ type: RELOAD_REQUEST });
       }
     }
-  }, [handleClose, handleTabChange, setTabsState, tabsState]);
+  }, [handleClose, handleTabChange, setTabsState, tabsState, showTabs]);
 
   useEffect(() => {
     if (dialogConfig.open) {

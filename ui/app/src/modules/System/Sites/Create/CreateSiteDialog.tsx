@@ -202,7 +202,7 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%'
     },
     'dialogContent': {
-      padding: '30px 0',
+      padding: '30px 0 0',
       position: 'relative',
       backgroundColor: palette.gray.light0
     },
@@ -816,7 +816,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           </DialogHeader>
 
           {(tab === 0 && blueprints) || (tab === 1 && marketplace) ? (
-            <DialogBody dividers classes={{ root: classes.dialogContent }}>
+            <DialogBody classes={{ root: classes.dialogContent }}>
               {search.searchSelected && site.selectedView === 0 && (
                 <div className={classes.searchContainer}>
                   <SearchBar
