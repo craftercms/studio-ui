@@ -128,8 +128,6 @@
     </style>
   </head>
   <body>
-  <script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
-  <#include "/templates/web/common/page-fragments/studio-context.ftl" />
   <#include "/templates/web/common/js-next-scripts.ftl" />
   <#nested />
   </body>
