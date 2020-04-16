@@ -132,7 +132,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '340px'
   },
   detailsNotCompatible: {
-    marginBottom: '15px'
+    marginBottom: '15px',
+    backgroundColor: theme.palette.error.light,
+    '& .MuiAlert-icon': {
+      color: theme.palette.error.main
+    },
+    '& .MuiAlert-message': {
+      color: theme.palette.error.contrastText
+    }
   }
 }));
 
