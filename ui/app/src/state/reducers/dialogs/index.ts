@@ -19,10 +19,16 @@ import confirm from './confirm';
 import error from './error';
 import minimizedDialogs from './minimizedDialogs';
 import history from './history';
+import publish from './publish';
+import dependencies from './dependencies';
+import deleteDialog from './delete';
 
 export default combineReducers({
   confirm,
   error,
   minimizedDialogs,
-  history
+  history,
+  publish,
+  dependencies,
+  delete: deleteDialog
 });

@@ -18,8 +18,8 @@ import '../styles/index.scss';
 
 import React, { PropsWithChildren, Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { createIntl, createIntlCache, IntlShape, RawIntlProvider } from 'react-intl';
-import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import { theme } from '../styles/theme';
+import { StylesProvider, ThemeProvider } from '@material-ui/styles';
+import { generateClassName, theme } from '../styles/theme';
 import { updateIntl } from '../utils/codebase-bridge';
 import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
@@ -28,7 +28,7 @@ import ko from '../translations/locales/ko.json';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
 import store from '../state/store';
-import DialogManager from './SystemStatus/GlobalDialogManager';
+import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
 import { SnackbarProvider } from 'notistack';
 
 const Locales: any = {
@@ -82,10 +82,21 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) 
     <Provider store={store}>
       <RawIntlProvider value={intl}>
         <ThemeProvider theme={theme}>
-          <SnackbarProvider maxSnack={5}>
-            <Suspense fallback="" children={props.children} />
-            <DialogManager />
-          </SnackbarProvider>
+          <StylesProvider generateClassName={generateClassName}>
+            <SnackbarProvider
+              maxSnack={5}
+              autoHideDuration={5000}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              <>
+                <Suspense fallback="" children={props.children} />
+                {
+                  !props.isLegacy &&
+                  <GlobalDialogManager />
+                }
+              </>
+            </SnackbarProvider>
+          </StylesProvider>
         </ThemeProvider>
       </RawIntlProvider>
     </Provider>

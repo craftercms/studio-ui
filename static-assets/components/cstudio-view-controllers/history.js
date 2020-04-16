@@ -60,7 +60,7 @@
         CStudioAuthoring.Service.getVersionHistory(CStudioAuthoringContext.site, selection, {
           success: function(history) {
             var versions = history.versions,
-              isAsset = history.item.isAsset;
+              isXML = history.item.mimeType === 'application/xml';    // Diff tool support only xml files
 
             var itemStateEl = _this.getComponent('span.show-for-item');
             Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
@@ -74,7 +74,7 @@
             } else {
               tbody.innerHTML = '';
 
-              if (!isAsset) {
+              if (isXML) {
                 var actionWrapper = _this.getComponent('.history-view .action-wrapper'),
                   compareButton = document.createElement('input');
                 $('#historyCompareBtn').remove();
@@ -120,7 +120,7 @@
                 versionNumber =
                   versionNumber.toLocaleDateString() + 'T' + versionNumber.toLocaleTimeString().replace(' ', '');
 
-                if (!isAsset) {
+                if (isXML) {
                   checkboxEl = document.createElement('input');
                   checkboxEl.maxLength = 300;
                   checkboxEl.type = 'checkbox';
@@ -154,8 +154,7 @@
                 tdEl = document.createElement('td');
                 tdEl.appendChild(col5El);
                 rowEl.appendChild(tdEl);
-
-                if (!isAsset) {
+                if (isXML) {
                   var viewActionEl = document.createElement('a');
                   viewActionEl.innerHTML =
                     '<span id="actionView' + version.versionNumber + '" class="action fa fa-eye"></span>';

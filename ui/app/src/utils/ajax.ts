@@ -59,11 +59,11 @@ export function getText(url: string, headers?: object): Observable<AjaxResponse>
   });
 }
 
-export function post(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
+export function post(url: string, body?: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders(headers));
 }
 
-export function postJSON(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
+export function postJSON(url: string, body?: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
 }
 

@@ -14,8 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createMuiTheme, { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
-import { darken, fade } from '@material-ui/core/styles';
+import {
+  createGenerateClassName,
+  createMuiTheme,
+  darken,
+  fade,
+  ThemeOptions
+} from '@material-ui/core/styles';
 
 export const palette = {
   white: '#fff',
@@ -26,7 +31,7 @@ export const palette = {
   orange: { tint: '#FFB340', main: '#FF9500', shade: '#C93400' },
   pink: { tint: '#FF6482', main: '#FF2D55', shade: '#D30F45' },
   purple: { tint: '#DA8FFF', main: '#AF52DE', shade: '#8944AB' },
-  red: { tint: '#FF6961', main: '#FF3B30', shade: '#D70015' },
+  red: { tint: '#FF6961', main: '#FF3B30', shade: '#D70015', highlight: '#FFEBEA' },
   teal: { tint: '#70D7FF', main: '#5AC8FA', shade: '#0071A4' },
   yellow: { tint: '#FFD426', main: '#FFCC00', shade: '#A05A00' },
   gray: {
@@ -75,6 +80,11 @@ export const themeOptions: ThemeOptions = {
     },
     text: {
       secondary: palette.gray.medium3
+    },
+    error: {
+      main: palette.red.main,
+      light: palette.red.highlight,
+      contrastText: palette.black
     }
     // type: 'dark'
   },
@@ -151,3 +161,7 @@ export const themeOptions: ThemeOptions = {
 };
 
 export const theme = createMuiTheme(themeOptions);
+
+export const generateClassName = createGenerateClassName({
+  productionPrefix: 'craftercms-'
+});
