@@ -17,8 +17,19 @@
 import { get, postJSON } from '../utils/ajax';
 import { MarketplaceSite } from '../models/Site';
 
-export function fetchBlueprints() {
-  return get('/studio/api/2/marketplace/search?type=blueprint&limit=1000');
+export function fetchBlueprints(options?: {
+  type?: string,
+  limit?: number,
+  showIncompatible?: boolean
+}) {
+  const params = {
+    type: 'blueprint',
+    limit: 1000,
+    showIncompatible: true,
+    ...options
+  };
+
+  return get(`/studio/api/2/marketplace/search?type=${params.type}&limit=${params.limit}&showIncompatible=${params.showIncompatible}`);
 }
 
 export function createSite(site: MarketplaceSite) {
