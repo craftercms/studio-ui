@@ -17,7 +17,12 @@
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { LegacyItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
-import { useActiveSiteId, useSelection, useSpreadState, useStateResource } from '../../../utils/hooks';
+import {
+  useActiveSiteId,
+  useSelection,
+  useSpreadState,
+  useStateResource
+} from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { isAsset, isCode, isEditableAsset, isImage } from '../../../utils/content';
 import { APIError } from '../../../models/GlobalState';
@@ -203,11 +208,11 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
     padding: '8px'
   },
   suspense: {
-    height: '100%',
-    flexDirection: 'unset'
+    height: '100%'
   },
-  suspenseImage: {
-    marginRight: '10px'
+  suspenseTitle: {
+    fontSize: '18px',
+    fontWeight: 600
   }
 }));
 
@@ -387,22 +392,24 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           withEmptyStateProps={{
             emptyStateProps: {
               title: (
-                dependenciesShown === 'depends-on' ?
-                  <FormattedMessage
-                    id="dependenciesDialog.emptyDependantsMessage"
-                    defaultMessage={'"{itemName}" has no dependencies'}
-                    values={{ itemName: item?.['internalName'] }}
-                  />
-                  :
-                  <FormattedMessage
-                    id="dependenciesDialog.emptyDependenciesMessage"
-                    defaultMessage={'Nothing depends on "{itemName}"'}
-                    values={{ itemName: item?.['internalName'] }}
-                  />
+                dependenciesShown === 'depends-on' 
+                  ? (
+                    <FormattedMessage
+                      id="dependenciesDialog.emptyDependantsMessage"
+                      defaultMessage={'{itemName} has no dependencies'}
+                      values={{ itemName: item?.['internalName'] }}
+                    />
+                  ) : (
+                    <FormattedMessage
+                      id="dependenciesDialog.emptyDependenciesMessage"
+                      defaultMessage={'Nothing depends on {itemName}'}
+                      values={{ itemName: item?.['internalName'] }}
+                    />
+                  )
               ),
               classes: {
                 root: classes.suspense,
-                image: classes.suspenseImage
+                title: classes.suspenseTitle
               }
             }
           }}
