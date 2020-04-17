@@ -30,6 +30,7 @@ import { showPublishDialog } from '../state/reducers/dialogs/publish';
 import { closeDeleteDialog, showDeleteDialog } from '../state/reducers/dialogs/delete';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
+import { showHistoryDialog } from '../state/reducers/dialogs/history';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -85,13 +86,13 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       getLegacyItem(site, path).subscribe(
         (item) => {
           setPublishDialog({ items: [item] });
-          setDependenciesDialog({ item })
+          setDependenciesDialog({ item });
           setDeleteDialog({ items: [item] });
         },
         (response) => {
           dispatch(showErrorDialog({
             error: response
-          }))
+          }));
         }
       );
     }
@@ -99,6 +100,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   const handleEdit = (type: string) => {
     handleClose();
+    console.log(type);
     switch (type) {
       case 'schedule': {
         dispatch(showPublishDialog({
@@ -112,6 +114,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           items: publishDialog.items,
           scheduling: 'now'
         }));
+        break;
+      }
+      case 'history': {
+        dispatch(showHistoryDialog({ path: models[modelId].craftercms.path || models[parentId].craftercms.path }));
         break;
       }
       case 'dependencies' : {
@@ -199,7 +205,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             />
           </MenuItem>
         }
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleEdit('history')}>
           <FormattedMessage
             id="previewToolBar.menu.history"
             defaultMessage="History"
