@@ -218,6 +218,7 @@ export function GuestProxy(props) {
             targetIndex
           ] = op.args;
 
+          const targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
           const currentDropZoneICEId = iceRegistry.exists({ modelId, fieldId, index: null });
           const currentDropZonePhyRecord = ElementRegistry.fromICEId(currentDropZoneICEId);
 
@@ -233,9 +234,9 @@ export function GuestProxy(props) {
 
           const $targetDropZone = $(targetDropZonePhyRecord.element);
 
-          if (targetIndex === 0) {
+          if (targetIndexParsed === 0) {
             $targetDropZone.prepend(moveTargetPhyRecord.element);
-          } else if ($targetDropZone.children().length === targetIndex) {
+          } else if ($targetDropZone.children().length === targetIndexParsed) {
             $targetDropZone.append(moveTargetPhyRecord.element);
           } else {
 
