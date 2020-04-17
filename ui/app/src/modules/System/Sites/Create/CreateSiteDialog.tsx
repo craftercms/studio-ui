@@ -217,10 +217,6 @@ const useStyles = makeStyles((theme: Theme) =>
         paddingTop: '70px'
       }
     },
-    'dialogActions': {
-      background: backgroundColor,
-      padding: '8px 20px'
-    },
     'backBtn': {
       marginRight: 'auto'
     },
@@ -877,7 +873,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             </div>
           )}
           {site.selectedView !== 0 && (
-            <DialogFooter classes={{ root: clsx(classes.dialogActions, classes.fadeIn) }}>
+            <DialogFooter classes={{ root: classes.fadeIn }}>
               <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
                 {formatMessage(messages.back)}
               </Button>

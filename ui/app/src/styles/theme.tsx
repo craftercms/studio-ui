@@ -76,7 +76,7 @@ export const themeOptions: ThemeOptions = {
   palette: {
     primary: {
       main: palette.blue.main,
-      contrastText: '#FFFFFF'
+      contrastText: palette.white
     },
     text: {
       secondary: palette.gray.medium3
@@ -110,7 +110,6 @@ export const themeOptions: ThemeOptions = {
           '&:focus': {
             boxShadow: 'rgba(244, 67, 54, 0.25) 0 0 0 0.2rem'
           }
-
         },
         '&$multiline textarea': {
           padding: '10px 12px'
@@ -120,6 +119,7 @@ export const themeOptions: ThemeOptions = {
         borderRadius: 4,
         position: 'relative',
         border: '1px solid #ced4da',
+        background: palette.white,
         fontSize: 16,
         width: '100%',
         padding: '10px 12px',
@@ -140,11 +140,11 @@ export const themeOptions: ThemeOptions = {
     },
     MuiButton: {
       contained: {
-        color: '#4F4F4F',
-        backgroundColor: '#FFFFFF',
+        color: palette.gray.dark4,
+        backgroundColor: palette.white,
         textTransform: 'inherit',
         '&:hover': {
-          backgroundColor: '#FFFFFF'
+          backgroundColor: palette.white
         }
       },
       outlinedPrimary: {
