@@ -899,7 +899,6 @@ export function Guest(props: GuestProps) {
     },
 
     insertComponent(): void {
-
       const { targetIndex, contentType, dropZone } = stateRef.current.dragContext;
       const record = iceRegistry.recordOf(dropZone.iceId);
 

@@ -200,7 +200,7 @@ export class ContentController {
 
     const models = this.getCachedModels();
     const model = models[modelId];
-    const result = getResult(getCollection(model, fieldId, targetIndex), targetIndex);
+    const result = getCollection(model, fieldId, targetIndex);
 
     // Create Item
     // const now = new Date().toISOString();
@@ -271,7 +271,7 @@ export class ContentController {
     const models = this.getCachedModels();
     const model = models[modelId];
 
-    const result = getResult(getCollection(model, fieldId, targetIndex), targetIndex);
+    const result = getCollection(model, fieldId, targetIndex);
 
     // Insert in desired position
     result.splice(targetIndex as number, 0, instance.craftercms.id);
