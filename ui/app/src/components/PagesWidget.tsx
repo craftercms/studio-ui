@@ -47,13 +47,13 @@ import ContentLocalizationDialog from './ContentLocalizationDialog';
 import { palette } from '../styles/theme';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
+import { showHistoryDialog } from '../state/reducers/dialogs/history';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    wrapper: {
-    },
+    wrapper: {},
     primaryColor: {
       color: theme.palette.primary.main
     },
@@ -783,12 +783,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
         break;
       }
       case 'translation': {
-        const path = menu.activeItem.path;
-        setMenu({
-          activeItem: null,
-          anchorEl: null
-        });
-        getTargetLocales(site, path).subscribe(
+        getTargetLocales(site, menu.activeItem.path).subscribe(
           (response) => {
             setTranslationDialog(response.items);
           },
@@ -800,6 +795,18 @@ export default function PagesWidget(props: PagesWidgetProps) {
             );
           }
         );
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
+        break;
+      }
+      case 'history': {
+        dispatch(showHistoryDialog({ path: menu.activeItem.path }));
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
         break;
       }
       default: {
