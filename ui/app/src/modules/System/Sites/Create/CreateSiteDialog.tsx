@@ -651,10 +651,13 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         : createSite(site as CreateSiteMeta)
     ).subscribe(
       () => {
+        // TODO: remove when createSite updates to API2
+        // prop differs between regular site and marketplace site due to API 1 and 2 differences
+        let siteId: string = site.siteId ? site.siteId : site.site_id;
+
         setApiState({ creatingSite: false });
         handleClose();
-        // TODO: API2 change point
-        setSiteCookie(SITE_COOKIE, site.site_id);
+        setSiteCookie(SITE_COOKIE, siteId);
         window.location.href = `${AUTHORING_BASE}/preview`;
       },
       ({ response }) => {
