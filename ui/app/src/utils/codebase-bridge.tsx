@@ -35,12 +35,7 @@ import { nou } from './object';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
-import {
-  createGenerateClassName,
-  jssPreset,
-  makeStyles,
-  StylesProvider
-} from '@material-ui/core/styles';
+import { jssPreset, makeStyles } from '@material-ui/core/styles';
 import { generateClassName, palette, theme } from '../styles/theme';
 import store from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
@@ -133,7 +128,8 @@ export function createCodebaseBridge() {
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
       ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
-      GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager'))
+      GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
+      PagesWidget: lazy(() => import('../components/PagesWidget'))
     },
 
     system: { generateClassName, theme, palette, store },
