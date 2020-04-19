@@ -678,8 +678,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       () => {
         setApiState({ creatingSite: false });
         handleClose();
-        // TODO: API2 change point
-        setSiteCookie(SITE_COOKIE, site.site_id);
+        // TODO: Remove when createSite updates to API2
+        // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
+        setSiteCookie(SITE_COOKIE, site.siteId ?? site.site_id);
         window.location.href = `${AUTHORING_BASE}/preview`;
       },
       ({ response }) => {
@@ -692,7 +693,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               global: true
             });
           } else {
-            //TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
+            // TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
             const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
             setApiState({
               creatingSite: false,
