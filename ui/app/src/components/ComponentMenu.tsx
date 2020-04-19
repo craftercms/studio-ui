@@ -100,7 +100,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   const handleEdit = (type: string) => {
     handleClose();
-    console.log(type);
     switch (type) {
       case 'schedule': {
         dispatch(showPublishDialog({
