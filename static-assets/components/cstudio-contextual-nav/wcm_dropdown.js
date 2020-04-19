@@ -477,10 +477,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
               // render CrafterCMSNext Components
               if (module.render) {
-                CrafterCMSNext.render(moduleContainerEl, module.render, {
-                  path: module.props.path,
-                  locale: module.props.locale
-                });
+                CrafterCMSNext.render(moduleContainerEl, module.render, module.props);
               } else {
                 CStudioAuthoring.Module.requireModule(
                   module.plugin ? module.plugin.name : module.name,
