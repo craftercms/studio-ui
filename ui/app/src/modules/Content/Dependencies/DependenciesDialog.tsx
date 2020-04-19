@@ -120,7 +120,8 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
   },
   select: {
     fontSize: '16px',
-    border: 'none'
+    border: 'none',
+    background: 'none'
   },
   selectedItem: {
     backgroundColor: palette.white,

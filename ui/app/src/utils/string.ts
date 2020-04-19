@@ -49,7 +49,7 @@ export function isJSON(str: string): boolean {
 }
 
 export function getInitials(str: string) {
-  const pieces = str.split(' ');
+  const pieces = (str ?? '').split(' ');
   return `${pieces[0].substr(0, 1)}${pieces[1] ? pieces[1].substr(0, 1) : ''}`.toUpperCase();
 }
 

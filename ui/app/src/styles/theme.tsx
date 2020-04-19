@@ -79,14 +79,14 @@ export const themeOptions: ThemeOptions = {
       contrastText: palette.white
     },
     text: {
-      secondary: palette.gray.medium3
+      secondary: palette.gray.medium4
     },
     error: {
       main: palette.red.main,
       light: palette.red.highlight,
       contrastText: palette.black
-    }
-    // type: 'dark'
+    },
+    type: 'light'
   },
   overrides: {
     MuiFormLabel: {

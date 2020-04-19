@@ -175,7 +175,8 @@ export function createCodebaseBridge() {
     render(
       container: string | Element,
       component: string | JSXElementConstructor<any>,
-      props: object = {}
+      props: object = {},
+      isLegacy = true
     ): Promise<any> {
       if (typeof component !== 'string' && !Object.values(Bridge.components).includes(component)) {
         console.warn('The supplied module is not a know component of CrafterCMSNext.');
@@ -214,7 +215,7 @@ export function createCodebaseBridge() {
           // @ts-ignore
           ReactDOM.render(
             // @ts-ignore
-            <CrafterCMSNextBridge isLegacy>
+            <CrafterCMSNextBridge isLegacy={isLegacy}>
               <Component {...props} />
             </CrafterCMSNextBridge>,
             element,

@@ -50,7 +50,6 @@ import {
 } from '../../../../services/marketplace';
 import gitLogo from '../../../../assets/git-logo.svg';
 import { backgroundColor, palette } from '../../../../styles/theme';
-// @ts-ignore
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/SearchBar';
@@ -306,7 +305,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface CreateSiteDialogProps {
-  onClose(): any;
+  // open: boolean;
+  onClose?(): any;
 }
 
 function CreateSiteDialog(props: CreateSiteDialogProps) {
@@ -445,9 +445,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
       setDialog({ inProgress: true });
     } else {
-      //call externalClose fn
-      props.onClose();
+      // call externalClose fn
       setDialog({ open: false, inProgress: false });
+      props.onClose?.();
     }
   }
 
@@ -759,8 +759,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       open={dialog.open}
       onClose={handleClose}
       aria-labelledby="create-site-dialog"
-      disableBackdropClick={true}
-      fullWidth={true}
+      disableBackdropClick
+      fullWidth
       maxWidth="lg"
       classes={{ paperScrollPaper: classes.paperScrollPaper }}
       disableEnforceFocus={disableEnforceFocus}

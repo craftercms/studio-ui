@@ -15,7 +15,7 @@
  */
 
 import makeStyles from '@material-ui/styles/makeStyles';
-import { Theme } from '@material-ui/core';
+import { Theme, TypographyProps } from '@material-ui/core';
 import { palette } from '../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import Typography from '@material-ui/core/Typography';
@@ -26,48 +26,50 @@ import React, { PropsWithChildren } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 import clsx from 'clsx';
 
-const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
-  titleRoot: {
-    margin: 0,
-    padding: '13px 20px 11px',
-    background: palette.white,
-    borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
-  },
-  title: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  subtitle: {
-    fontSize: '14px',
-    lineHeight: '18px',
-    paddingRight: '35px'
-  },
-  closeIcon: {
-    marginLeft: 'auto'
-  },
-  backIcon: {}
-}));
+const dialogTitleStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    titleRoot: {
+      margin: 0,
+      padding: '13px 20px 11px',
+      background: palette.white,
+      borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+    },
+    title: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    subtitle: {
+      fontSize: '14px',
+      lineHeight: '18px',
+      paddingRight: '35px'
+    },
+    closeIcon: {
+      marginLeft: 'auto'
+    },
+    backIcon: {}
+  })
+);
 
-export type DialogTitleProps = PropsWithChildren<{
+export type DialogTitleProps<
+  PrimaryTypographyComponent extends React.ElementType = 'h2',
+  SecondaryTypographyComponent extends React.ElementType = 'p'
+> = PropsWithChildren<{
   id?: string;
   title: string | JSX.Element;
-  titleTypographyProps?: {
-    variant?: any;
-    component?: string;
-    classes?: any;
-  };
-  subtitleTypographyProps?: {
-    variant?: any;
-    component?: string;
-    classes?: any;
-  };
+  titleTypographyProps?: TypographyProps<
+    PrimaryTypographyComponent,
+    { component?: PrimaryTypographyComponent }
+  >;
+  subtitleTypographyProps?: TypographyProps<
+    SecondaryTypographyComponent,
+    { component?: SecondaryTypographyComponent }
+  >;
   subtitle?: string;
   closeIcon?: any;
   backIcon?: any;
   classes?: {
     root?: string;
-  }
-
+  };
   onClose?(): void;
   onBack?(): void;
 }>;
@@ -85,31 +87,27 @@ export default function DialogHeader(props: DialogTitleProps) {
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
-      component: 'span',
-      classes: {}
+      component: 'h2',
+      color: 'textSecondary'
     },
     subtitleTypographyProps = {
       variant: 'subtitle1',
-      component: 'span',
-      classes: {}
+      component: 'p'
     }
   } = props;
   return (
-    <MuiDialogTitle id={id} disableTypography  classes={{ root: clsx(classes.titleRoot, props.classes?.root) }}>
+    <MuiDialogTitle
+      id={id}
+      disableTypography
+      classes={{ root: clsx(classes.titleRoot, props.classes?.root) }}
+    >
       <div className={classes.title}>
         {onBack ? (
           <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
             <BackIcon />
           </IconButton>
         ) : null}
-        <Typography
-          variant={titleTypographyProps.variant}
-          // @ts-ignore
-          component={titleTypographyProps.component}
-          classes={titleTypographyProps.classes}
-        >
-          {title}
-        </Typography>
+        <Typography {...titleTypographyProps}>{title}</Typography>
         {onClose && (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
             <CloseIcon />
@@ -118,13 +116,7 @@ export default function DialogHeader(props: DialogTitleProps) {
       </div>
       {(subtitle || children) && (
         <>
-          <Typography
-            variant={subtitleTypographyProps.variant}
-            // @ts-ignore
-            component={subtitleTypographyProps.component}
-            classes={subtitleTypographyProps.classes}
-            className={classes.subtitle}
-          >
+          <Typography className={classes.subtitle} {...subtitleTypographyProps}>
             {subtitle}
           </Typography>
           {children}

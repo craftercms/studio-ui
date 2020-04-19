@@ -321,20 +321,23 @@ export default function GlobalNav(props: GlobalNavProps) {
   }
 
   function onPreviewClick(id: string = crafterSite) {
-    onLinkClick('/next/preview', id);
+    onLinkClick('/next/preview');
   }
 
   function onDashboardClick(id: string = crafterSite) {
-    onLinkClick('/site-dashboard', id);
+    onLinkClick('/site-dashboard');
   }
 
-  function onLinkClick(url: string, id: string) {
+  function onLinkClick(url: string) {
     window.location.href = `${AUTHORING_BASE}${url}`;
   }
 
   function onSiteCardClick(id: string) {
     dispatch(changeSite(id));
-    onPreviewClick(id);
+    // Go to new preview
+    // onPreviewClick(id);
+    // Go to legacy preview
+    onLinkClick('/preview');
   }
 
   useEffect(() => {
