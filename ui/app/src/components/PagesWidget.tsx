@@ -608,8 +608,8 @@ function PagesNav(props: PagesNavProps) {
 }
 
 interface PagesWidgetProps {
-  path?: string;
-  locale?: string;
+  path: string;
+  locale: string;
 }
 
 interface MenuState {
