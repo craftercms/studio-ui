@@ -117,7 +117,9 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         break;
       }
       case 'history': {
-        dispatch(showHistoryDialog({ path: models[modelId].craftercms.path || models[parentId].craftercms.path }));
+        dispatch(showHistoryDialog({ 
+          path: models[modelId].craftercms.path || models[parentId].craftercms.path 
+        }));
         break;
       }
       case 'dependencies' : {
