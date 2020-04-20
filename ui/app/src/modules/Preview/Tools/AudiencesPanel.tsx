@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(1)
     },
     formControl: {
-      'width': '100%',
+      width: '100%',
       '& .MuiFormGroup-root': {
         marginLeft: '10px'
       },
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%'
     },
     actionButton: {
-      'margin': '18px 0 80px 15px',
+      margin: '18px 0 80px 15px',
       '& .MuiButton-contained': {
         marginRight: '8px'
       }
@@ -79,10 +79,10 @@ const translations = defineMessages({
 });
 
 const controlsMap = {
-  'dropdown': Dropdown,
+  dropdown: Dropdown,
   'checkbox-group': CheckboxGroup,
   'date-time': DateTime,
-  'input': Input
+  input: Input
 };
 
 interface AudiencesPanelUIProps {

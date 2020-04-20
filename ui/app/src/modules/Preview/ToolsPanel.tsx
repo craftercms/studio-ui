@@ -45,7 +45,8 @@ import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
   usePreviewState,
-  useSelection, useStateResource
+  useSelection,
+  useStateResource
 } from '../../utils/hooks';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
@@ -174,7 +175,7 @@ interface Tool {
 }
 
 interface ToolSelectorProps {
-  resource: Resource<Tool[]>
+  resource: Resource<Tool[]>;
 }
 
 function UnknownPanel(props: UnknownPanelProps) {
@@ -187,7 +188,7 @@ function UnknownPanel(props: UnknownPanelProps) {
         className={`${classes.panelBodyInner} ${classes.center}`}
       >
         <div>
-          <WarningRounded/>
+          <WarningRounded />
         </div>
         <pre className={classes.ellipsis} title={props.id}>
           {props.id}
@@ -211,25 +212,23 @@ function ToolSelector(props: ToolSelectorProps) {
 
   return (
     <List>
-      {
-        tools
-          .map((tool) => ({
-            ...tool,
-            Icon: componentIconMap[tool.id] || WarningRounded,
-            title: getTranslation(tool.title, translations, formatMessage)
-          }))
-          .map(({ id, title, Icon }) => (
-            <ListItem key={id} button onClick={() => select(id)}>
-              <ListItemIcon className={classes.itemIconRoot}>
-                <Icon/>
-              </ListItemIcon>
-              <ListItemText primary={title}/>
-              <ChevronRightIcon/>
-            </ListItem>
-          ))
-      }
+      {tools
+        .map((tool) => ({
+          ...tool,
+          Icon: componentIconMap[tool.id] || WarningRounded,
+          title: getTranslation(tool.title, translations, formatMessage)
+        }))
+        .map(({ id, title, Icon }) => (
+          <ListItem key={id} button onClick={() => select(id)}>
+            <ListItemIcon className={classes.itemIconRoot}>
+              <Icon />
+            </ListItemIcon>
+            <ListItemText primary={title} />
+            <ChevronRightIcon />
+          </ListItem>
+        ))}
     </List>
-  )
+  );
 }
 
 const componentIconMap: any = {
@@ -293,7 +292,7 @@ export default function ToolsPanel() {
     >
       {site ? (
         <Suspencified loadingStateProps={{ title: `${formatMessage(translations.loading)}...` }}>
-          <Tool id={toolMeta?.id} config={config} resource={resource}/>
+          <Tool id={toolMeta?.id} config={config} resource={resource} />
         </Suspencified>
       ) : (
         <EmptyState
