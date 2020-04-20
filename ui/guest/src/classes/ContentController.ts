@@ -348,7 +348,7 @@ export class ContentController {
     const currentIndexParsed = (typeof currentIndex === 'number') ? currentIndex : parseInt(popPiece(currentIndex));
     const targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
     const collection = getCollection(model, fieldId, currentIndex);
-    const result = getResult(collection, currentIndexParsed);
+    const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
 
     // Insert in desired position
     result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
@@ -964,7 +964,7 @@ function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstan
 
 }
 
-function getResult(collection: string[], index): string[] {
+function getCollectionWithoutItemAtIndex(collection: string[], index): string[] {
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
   return collection
     .slice(0, parsedIndex)
