@@ -26,9 +26,10 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
 import { useActiveSiteId, useSelection, useSpreadState } from '../../utils/hooks';
-import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import { APIError } from '../../models/GlobalState';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
+import { useDispatch } from 'react-redux';
+import { showEmbeddedLegacyEditors } from '../../state/reducers/dialogs/embeddedLegacyEditors';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -80,21 +81,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function QuickCreate() {
   const classes = useStyles({});
+  const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>(
-    state => state.env.AUTHORING_BASE
+    (state) => state.env.AUTHORING_BASE
   );
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [anchorEl, setAnchorEl] = useState(null);
   const [error, setError] = useState<APIError>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: defaultFormSrc,
-    type: 'form',
-    inProgress: false
-  });
 
   const handleClick = e => setAnchorEl(e.currentTarget);
 
@@ -102,29 +98,35 @@ export default function QuickCreate() {
 
   useEffect(() => {
     if (siteId) {
-      getQuickCreateContentList(siteId).subscribe(
-        data => setQuickCreateContentList(data.items),
-        error => setError(error.response.response)
-      );
+      getQuickCreateContentList(siteId).subscribe((data) => setQuickCreateContentList(data.items));
     }
+
+  //  TODO: check
+  //   if (siteId) {
+  //     getQuickCreateContentList(siteId).subscribe(
+  //       data => setQuickCreateContentList(data.items),
+  //       error => setError(error.response.response)
+  //     );
+  //   }
   }, [siteId]);
 
   const handleFormDisplay = srcData => {
     const { contentTypeId, path } = srcData;
     const today = new Date();
-    const formatPath = path.replace(
-      '{year}',
-      today.getFullYear()
-    ).replace(
-      '{month}',
-      ('0' + (today.getMonth() + 1)).slice(-2)
-    );
+    const formatPath = path
+      .replace('{year}', today.getFullYear())
+      .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
     const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
 
-    setDialogConfig({
-      open: true,
-      src
-    });
+    dispatch(
+      showEmbeddedLegacyEditors({
+        dialogConfig: {
+          type: 'form',
+          inProgress: false,
+          src
+        }
+      })
+    );
   };
 
   return (
@@ -174,13 +176,6 @@ export default function QuickCreate() {
           </MenuItem>
         )}
       </Menu>
-      <EmbeddedLegacyEditors
-        showTabs={false}
-        showController={false}
-        dialogConfig={dialogConfig}
-        setDialogConfig={setDialogConfig}
-      />
-      <ErrorDialog error={error} onClose={() => setError(null)} />
     </>
   );
 }

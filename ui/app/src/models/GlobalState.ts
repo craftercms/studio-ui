@@ -30,6 +30,7 @@ import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialo
 import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
 import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
+import { EmbeddedLegacyEditorsStateProps } from '../modules/Preview/EmbeddedLegacyEditors';
 
 export interface APIError {
   code?: number | string;
@@ -124,6 +125,7 @@ export interface GlobalState {
     publish: PublishDialogStateProps;
     dependencies: DependenciesDialogStateProps;
     delete: DeleteDialogStateProps;
+    embeddedLegacyEditors: EmbeddedLegacyEditorsStateProps;
   };
 }
 
