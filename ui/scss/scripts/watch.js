@@ -68,5 +68,5 @@ fileIgnored$.pipe(debounceTime(100)).subscribe((fileName) => {
 });
 
 function clean(fileName) {
-  return fileName.substr(0, fileName.lastIndexOf('.scss'));
+  return fileName.substr(0, fileName.lastIndexOf('.scss')).replace('src/', '');
 }

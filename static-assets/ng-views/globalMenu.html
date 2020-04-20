@@ -15,20 +15,21 @@
   -->
 
 <div class="admin-console-view mainContainer">
-    <div class="row mt30">
-        <div class="col-sm-3">
-            <ul class="nav nav-tabs nav-stacked nav-pills" role="tablist">
-              <li ng-repeat="entity in entities" ui-sref-active="active">
-                <a class="btn-lg" ui-sref={{entity.id}} href=""><span class="nav-icon fa {{entity.icon}}"></span> {{entity.label}}</a>
-              </li>
-            </ul>
-        </div>
-        <div class="col-sm-9">
-            <div class="tab-content">
-                <div ui-view="contentTab" class="contentTab"></div>
-            </div>
-        </div>
+  <div class="row mt30">
+    <div class="col-sm-3">
+      <ul class="nav nav-tabs nav-stacked nav-pills" role="tablist">
+        <li ng-repeat="entity in entities" ui-sref-active="active">
+          <a class="" ui-sref={{entity.id}} href="">
+            <span class="nav-icon fa {{entity.icon}}"></span> {{entity.label}}
+          </a>
+        </li>
+      </ul>
     </div>
-
+    <div class="col-sm-9">
+      <div class="tab-content">
+        <div ui-view="contentTab" class="contentTab"></div>
+      </div>
+    </div>
+  </div>
 </div>
 

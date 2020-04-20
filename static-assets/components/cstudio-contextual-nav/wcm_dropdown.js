@@ -448,7 +448,8 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
               module.containerEl = moduleContainerEl;
 
-              var self = this,
+              var
+                self = this,
                 cb = {
                   moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
                     try {
@@ -461,29 +462,29 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                   }
                 };
 
-              module.name === 'wcm-root-folder' &&
-                (cb.once = function() {
-                  try {
-                    CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(function (evtType, aArgs) {
-                      if (aArgs[0] == aArgs[1]) {
-                        // number of instaces == number of times event has fired
-                        self.handleScroll = true;
-                        self.oPreferences.visible && self.updateScrollPosition(true);
-                      }
-                    });
-                  } catch (ex) {
-                  }
-                });
+              module.name === 'wcm-root-folder' && (cb.once = function() {
+                try {
+                  CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(function (evtType, aArgs) {
+                    if (aArgs[0] == aArgs[1]) {
+                      // number of instaces == number of times event has fired
+                      self.handleScroll = true;
+                      self.oPreferences.visible && self.updateScrollPosition(true);
+                    }
+                  });
+                } catch (ex) {
+                }
+              });
 
               // render CrafterCMSNext Components
               if (module.render) {
+                $(moduleContainerEl).addClass('sidebar-module-next');
                 CrafterCMSNext.render(moduleContainerEl, module.render, module.props);
               } else {
+                $(moduleContainerEl).addClass(`sidebar-module-${module.plugin ? 'plugin' : 'legacy'}`);
                 CStudioAuthoring.Module.requireModule(
                   module.plugin ? module.plugin.name : module.name,
                   module.plugin
-                    ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${module
-                      .plugin.name || module.name}&filename=${module.plugin.file}`
+                    ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${module.plugin.name || module.name}&filename=${module.plugin.file}`
                     : `/static-assets/components/cstudio-contextual-nav/wcm-site-dropdown-mods/${module.name}.js`,
                   module,
                   cb

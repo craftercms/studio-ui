@@ -265,7 +265,6 @@ div#acn-active-content {
   color: #777;
   display: inline-block;
   font-weight: bold;
-  font-size: 21px;
 }
 
 #acn-persona-image {
@@ -360,7 +359,7 @@ div#acn-active-content {
     z-index: 100;
   }
   .acn-dropdown-menu {
-    padding: 26px 0px 15px 20px;
+    padding: 25px 0;
     overflow-y: auto;
     overflow-x: auto;
     text-align: left;
@@ -393,6 +392,10 @@ div#acn-active-content {
   .acn-dropdown-toggler {
     text-decoration: none;
   }
+}
+
+.sidebar-module-legacy {
+  margin: 0 15px;
 }
 
 .acn-dropdown-wrapper .acn-dropdown-menu a {
@@ -985,7 +988,7 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
   width: 290px;
   height: auto !important;
   border-radius: 6px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Source Sans Pro', '', sans-serif;
 }
 
 .acn-tooltip {
@@ -3108,7 +3111,7 @@ span.acn-canned-search {
 .full-screen-overlay .message .pad {
   padding: 25px;
   padding-bottom: 0;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Source Sans Pro', '', sans-serif;
   font-weight: 500;
   color: #555555;
 }
