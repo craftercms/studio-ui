@@ -28,6 +28,7 @@ import {
   GUEST_MODELS_RECEIVED,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
+  INSERT_ITEM_OPERATION,
   isNullOrUndefined,
   MOVE_ITEM_OPERATION,
   notNullOrUndefined,
@@ -183,6 +184,38 @@ export class ContentController {
     ContentController.operations$.next({
       type: UPDATE_FIELD_VALUE_OPERATION,
       args: { modelId, fieldId, index, value }
+    });
+
+  }
+
+  insertItem(
+    modelId: string,
+    fieldId: string,
+    index: number | string,
+    item: ContentInstance
+  ): void {
+
+    const models = this.getCachedModels();
+    const model = models[modelId];
+    const collection = ModelHelper.value(model, fieldId);
+    const result = collection.slice(0);
+
+    // Insert in desired position
+    result.splice(index, 0, item);
+
+    ContentController.models$.next({
+      ...models,
+      [modelId]: {
+        ...model,
+        [fieldId]: result
+      }
+    });
+
+    post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
+
+    ContentController.operations$.next({
+      type: 'insert',
+      args: arguments
     });
 
   }
