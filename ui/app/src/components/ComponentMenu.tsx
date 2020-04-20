@@ -19,15 +19,18 @@ import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import EmbeddedLegacyEditors from '../modules/Preview/EmbeddedLegacyEditors';
-import PublishDialog from '../modules/Content/Publish/PublishDialog';
 import { palette } from '../styles/theme';
 import { useSelection, useSpreadState } from '../utils/hooks';
-import { getItem } from '../services/content';
+import { getLegacyItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
-import { APIError } from '../models/GlobalState';
-import ErrorDialog from './SystemStatus/ErrorDialog';
+import { useDispatch } from 'react-redux';
+import { showPublishDialog } from '../state/reducers/dialogs/publish';
+import { closeDeleteDialog, showDeleteDialog } from '../state/reducers/dialogs/delete';
+import { showErrorDialog } from '../state/reducers/dialogs/error';
+import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
+import { showHistoryDialog } from '../state/reducers/dialogs/history';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -54,6 +57,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const dispatch = useDispatch();
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
     src: null,
@@ -61,45 +65,75 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     inProgress: true
   });
 
-  const [publishDialog, setPublishDialog] = useSpreadState({
-    open: false,
-    item: null,
-    scheduling: null
+  const [publishDialog, setPublishDialog] = useState({
+    items: null
   });
 
-  const [error, setError] = useState<APIError>(null);
+  const [dependenciesDialog, setDependenciesDialog] = useSpreadState({
+    item: null,
+    dependenciesShown: 'depends-on'
+  });
+
+  const [deleteDialog, setDeleteDialog] = useState({
+    items: []
+  });
 
   // Effect used to open the publish Dialog
   useEffect(() => {
-    if (models && modelId && publishDialog.item === null) {
+    if (models && modelId && publishDialog.items === null) {
       let path = models[modelId].craftercms.path;
       if (embeddedParentPath) path = models[parentId].craftercms.path;
-      getItem(site, path).subscribe(
+      getLegacyItem(site, path).subscribe(
         (item) => {
-          setPublishDialog({ item });
+          setPublishDialog({ items: [item] });
+          setDependenciesDialog({ item });
+          setDeleteDialog({ items: [item] });
         },
-        ({ response }) => {
-          //TODO: I'm wrapping the API response as a API2 response
-          const error = { ...response, code: '', documentationUrl: '', remedialAction: '' };
-          setError(error);
+        (response) => {
+          dispatch(showErrorDialog({
+            error: response
+          }));
         }
       );
     }
-  }, [models, modelId, setPublishDialog, site, embeddedParentPath, parentId, publishDialog.item]);
-
-  const onErrorClose = () => {
-    setError(null);
-  };
+  }, [models, modelId, setPublishDialog, setDependenciesDialog, setDeleteDialog, site, embeddedParentPath, parentId, publishDialog.items, dispatch]);
 
   const handleEdit = (type: string) => {
     handleClose();
     switch (type) {
       case 'schedule': {
-        setPublishDialog({ open: true, scheduling: 'custom' });
+        dispatch(showPublishDialog({
+          items: publishDialog.items,
+          scheduling: 'custom'
+        }));
         break;
       }
       case 'publish': {
-        setPublishDialog({ open: true, scheduling: 'now' });
+        dispatch(showPublishDialog({
+          items: publishDialog.items,
+          scheduling: 'now'
+        }));
+        break;
+      }
+      case 'history': {
+        dispatch(showHistoryDialog({ 
+          path: models[modelId].craftercms.path || models[parentId].craftercms.path 
+        }));
+        break;
+      }
+      case 'dependencies' : {
+        dispatch(showDependenciesDialog({
+          item: dependenciesDialog.item,
+          dependenciesShown: dependenciesDialog.dependenciesShown
+        }));
+
+        break;
+      }
+      case 'delete': {
+        dispatch(showDeleteDialog({
+          items: deleteDialog.items,
+          onSuccess: closeDeleteDialog
+        }));
         break;
       }
       case 'form':
@@ -140,14 +174,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     }
   };
 
-  const onSuccessPublish = () => {
-    setPublishDialog({ open: false, scheduling: null, item: { ...publishDialog.item, isLive: true } });
-  };
-
-  const onClosePublish = () => {
-    setPublishDialog({ open: false, scheduling: null });
-  };
-
   return (
     <>
       <Menu
@@ -163,7 +189,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          (publishDialog.item && !publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
+          (publishDialog.items && !publishDialog.items?.lockOwner && !publishDialog.items?.isLive) &&
           <MenuItem onClick={() => handleEdit('schedule')}>
             <FormattedMessage
               id="previewToolBar.menu.schedule"
@@ -172,7 +198,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           </MenuItem>
         }
         {
-          (publishDialog.item && !publishDialog.item?.lockOwner && !publishDialog.item?.isLive) &&
+          (publishDialog.items && !publishDialog.items?.lockOwner && !publishDialog.items?.isLive) &&
           <MenuItem onClick={() => handleEdit('publish')}>
             <FormattedMessage
               id="previewToolBar.menu.publish"
@@ -180,19 +206,19 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             />
           </MenuItem>
         }
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleEdit('history')}>
           <FormattedMessage
             id="previewToolBar.menu.history"
             defaultMessage="History"
           />
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleEdit('dependencies')}>
           <FormattedMessage
             id="previewToolBar.menu.dependencies"
             defaultMessage="Dependencies"
           />
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={() => handleEdit('delete')}>
           <FormattedMessage
             id="previewToolBar.menu.delete"
             defaultMessage="Delete"
@@ -211,7 +237,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          publishDialog.item && !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.item.contentType]?.type === 'page' &&
+          publishDialog.items && !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page' &&
           <MenuItem onClick={() => handleEdit('controller')}>
             <FormattedMessage
               id="previewToolBar.menu.editController"
@@ -226,23 +252,9 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           dialogConfig={dialogConfig}
           setDialogConfig={setDialogConfig}
           getPath={getPath}
-          showController={!embeddedParentPath && contentTypesBranch.byId?.[publishDialog.item.contentType]?.type === 'page'}
+          showController={!embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page'}
         />
-      }
-      {
-        publishDialog.open &&
-        <PublishDialog
-          scheduling={publishDialog.scheduling}
-          items={[publishDialog.item]}
-          onSuccess={onSuccessPublish}
-          onClose={onClosePublish}
-        />
-      }
-      {
-        error &&
-        <ErrorDialog error={error} onClose={onErrorClose} />
       }
     </>
   );
 }
-

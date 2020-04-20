@@ -294,7 +294,11 @@ export default function AssetsPanel() {
       <ErrorBoundary>
         <div ref={elementRef}>
           <div className={classes.search}>
-            <SearchBar onChange={handleSearchKeyword} keyword={keyword} />
+            <SearchBar
+              onActionButtonClick={() => handleSearchKeyword('')}
+              onChange={handleSearchKeyword}
+              keyword={keyword}
+            />
           </div>
           <React.Suspense
             fallback={<LoadingState title={formatMessage(translations.retrieveAssets)} />}

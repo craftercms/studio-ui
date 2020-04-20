@@ -58,7 +58,7 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
     /* - - - - - - - - - - */
     yellow: '#FFCC00',
     yellowTint: '#FFD426',
-    yellowShade: '#A05A00',
+    yellowShade: '#A05A00'
   };
 
   jss.setup(preset());
@@ -74,6 +74,31 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
       },
       '[draggable="true"]': {
         'cursor': 'move !important'
+      },
+      'craftercms-asset-uploader-mask-container': {
+        position: 'absolute',
+        zIndex: '1001',
+        pointerEvents: 'none',
+        '& craftercms-asset-uploader-mask': {
+          background: 'white',
+          opacity: 0.5,
+          height: '100%',
+          width: '100%',
+          display: 'block',
+          transition: 'height 0.3s ease-out',
+          animation: 'craftercms-uploader-mask-pulse-animation 1.5s infinite ease-in-out'
+        }
+      },
+      '@keyframes craftercms-uploader-mask-pulse-animation': {
+        '0%': {
+          opacity: 0.4
+        },
+        '50%': {
+          opacity: 0.5
+        },
+        '100%': {
+          opacity: 0.4
+        }
       },
       'craftercms-zone-marker, craftercms-zone-marker-label': {
         boxSizing: 'border-box'
@@ -176,7 +201,7 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
           transform: 'scaleX(1)'
         }
       }
-    },
+    }
   });
 
   stylesheet.attach();

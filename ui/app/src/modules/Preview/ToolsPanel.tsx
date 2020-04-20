@@ -23,6 +23,7 @@ import DevicesRounded from '@material-ui/icons/DevicesRounded';
 import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
 import WarningRounded from '@material-ui/icons/WarningRounded';
 import AccountTreeRoundedIcon from '@material-ui/icons/AccountTreeRounded';
+import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -46,6 +47,7 @@ import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import ContentTree from './Tools/ContentTree';
+import SearchPanel from './Tools/SearchPanel';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,6 +64,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     itemIconRoot: {
       minWidth: 35
+    },
+    itemSearch: {
+      padding: '0 16px'
     },
     secondaryActionRoot: {
       display: 'flex'
@@ -135,6 +140,10 @@ const translations = defineMessages({
     id: 'craftercms.ice.contentTreePanel.title',
     defaultMessage: 'Content Tree'
   },
+  searchPanel: {
+    id: 'craftercms.ice.contentTreePanel.title',
+    defaultMessage: 'Search Everywhere'
+  },
   loading: {
     id: 'words.loading',
     defaultMessage: 'Loading'
@@ -151,7 +160,7 @@ function UnknownPanel(props: any) {
         className={`${classes.panelBodyInner} ${classes.center}`}
       >
         <div>
-          <WarningRounded />
+          <WarningRounded/>
         </div>
         <pre className={classes.ellipsis} title={props.id}>
           {props.id}
@@ -171,8 +180,9 @@ function ToolSelector() {
   const { tools } = usePreviewState();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
+
   return tools == null ? (
-    <LoadingState title={`${formatMessage(translations.loading)}...`} />
+    <LoadingState title={`${formatMessage(translations.loading)}...`}/>
   ) : (
     <List>
       {
@@ -185,10 +195,10 @@ function ToolSelector() {
           .map(({ id, title, Icon }) => (
             <ListItem key={id} button onClick={() => select(id)}>
               <ListItemIcon className={classes.itemIconRoot}>
-                <Icon />
+                <Icon/>
               </ListItemIcon>
-              <ListItemText primary={title} />
-              <ChevronRightIcon />
+              <ListItemText primary={title}/>
+              <ChevronRightIcon/>
             </ListItem>
           ))
       }
@@ -202,7 +212,8 @@ const componentIconMap: any = {
   'craftercms.ice.audiences': EmojiPeopleRounded,
   'craftercms.ice.simulator': DevicesRounded,
   'craftercms.ice.browseComponents': ExtensionRounded,
-  'craftercms.ice.contentTree': AccountTreeRoundedIcon
+  'craftercms.ice.contentTree': AccountTreeRoundedIcon,
+  'craftercms.ice.search': SearchRoundedIcon
 };
 
 const componentMap: any = {
@@ -213,7 +224,8 @@ const componentMap: any = {
   'craftercms.ice.editForm': EditFormPanel,
   'craftercms.ice.browseComponents': BrowseComponentsPanel,
   'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,
-  'craftercms.ice.contentTree': ContentTree
+  'craftercms.ice.contentTree': ContentTree,
+  'craftercms.ice.search': SearchPanel
 };
 
 export default function ToolsPanel() {
@@ -245,7 +257,7 @@ export default function ToolsPanel() {
       classes={{ paper: classes.drawerPaper }}
     >
       {site ? (
-        <Tool id={toolMeta?.id} config={config} />
+        <Tool id={toolMeta?.id} config={config}/>
       ) : (
         <EmptyState
           title={

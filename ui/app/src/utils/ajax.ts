@@ -59,11 +59,11 @@ export function getText(url: string, headers?: object): Observable<AjaxResponse>
   });
 }
 
-export function post(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
+export function post(url: string, body?: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders(headers));
 }
 
-export function postJSON(url: string, body: any, headers: object = {}): Observable<AjaxResponse> {
+export function postJSON(url: string, body?: any, headers: object = {}): Observable<AjaxResponse> {
   return ajax.post(url, body, mergeHeaders({ ...CONTENT_TYPE_JSON, ...headers }));
 }
 
@@ -99,6 +99,50 @@ export const catchAjaxError = (fetchFailedCreator) =>
       throw error;
     }
   });
+
+export const catchApi1Error = catchError((error: any) => {
+  if (error.name === 'AjaxError') {
+    switch (error.status) {
+      case 400:
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          code: 1001,
+          message: 'Invalid parameter(s)',
+          remedialAction: "Check API and make sure you're sending the correct parameters"
+        };
+      case 401:
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          code: 2000,
+          message: 'Unauthenticated',
+          remedialAction: 'Please login first'
+        };
+      case 403:
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          code: 2001,
+          message: 'Unauthorized',
+          remedialAction:
+            "You don't have permission to perform this task, please contact your administrator"
+        };
+      case 500:
+      default:
+        // eslint-disable-next-line no-throw-literal
+        throw {
+          code: 1000,
+          message: 'Internal system failure',
+          remedialAction: 'Contact support'
+        };
+    }
+  } else {
+    // eslint-disable-next-line no-throw-literal
+    throw {
+      code: 1000,
+      message: 'Internal system failure',
+      remedialAction: 'Contact support'
+    };
+  }
+});
 
 export default {
   OMIT_GLOBAL_HEADERS,

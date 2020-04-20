@@ -54,7 +54,8 @@ export interface SiteState {
     basic: boolean,
     token: boolean,
     key: boolean
-  }
+  },
+  showIncompatible: boolean,
 
   [key: string]: string | boolean | Blueprint | number | object;
 }

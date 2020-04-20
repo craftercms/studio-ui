@@ -714,54 +714,29 @@ var nodeOpen = false,
       },
 
       deleteContent: function(items, requestDelete, callback) {
-        var controller, view;
-        if (requestDelete == true) {
-          controller = 'viewcontroller-submitfordelete';
-          view = CSA.Service.getSubmitForDeleteView;
-        } else {
-          controller = 'viewcontroller-delete';
-          view = CSA.Service.getDeleteView;
-        }
+        const container = ($('<div class="delete-dialog-container"/>').appendTo('body'))[0];
 
-        CSA.Operations._showDialogueView(
+        CrafterCMSNext.render(
+          container,
+          'DeleteDialog',
           {
-            fn: view,
-            controller: controller,
-            callback: function(dialogue) {
-              var _self = this;
-              CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
-              if (YDom.get('cancelBtn')) {
-                YDom.get('cancelBtn').value = CMgs.format(formsLangBundle, 'cancel');
+            onClose: () => {
+              unmount({ delay: 300, removeContainer: true });
+            },
+            onSuccess: (response) => {
+              if (response) {
+                eventNS.data = items;
+                eventNS.typeAction = '';
+                eventNS.oldPath = null;
+                document.dispatchEvent(eventNS);
+                callback && callback();
               }
-              if (YDom.get('deleteBtn')) {
-                YDom.get('deleteBtn').value = CMgs.format(formsLangBundle, 'deleteDialogDelete');
-              }
-              this.loadDependencies(items);
-              (function(items) {
-                _self.on('submitComplete', function(evt, args) {
-                  var reloadFn = function() {
-                    eventNS.data = items;
-                    eventNS.typeAction = '';
-                    eventNS.oldPath = null;
-                    document.dispatchEvent(eventNS);
-                    callback && callback();
-                  };
-                  dialogue.hideEvent.subscribe(reloadFn);
-                  dialogue.destroyEvent.subscribe(reloadFn);
-                });
-              })(items);
-              // Admin version of the view does not have this events
-              // but then the call is ignored
-              this.on('hideRequest', function(evt, args) {
-                dialogue.destroy();
-              });
-              this.on('showRequest', function(evt, args) {
-                dialogue.show();
-              });
-            }
-          },
-          true
-        );
+              unmount({ delay: 300, removeContainer: true });
+            },
+            open: true,
+            items
+          }
+        ).then(done => unmount = done.unmount);
       },
       viewSchedulingPolicy: function(callback) {
         CSA.Operations._showDialogueView({
@@ -858,6 +833,7 @@ var nodeOpen = false,
 
         let unmount;
         CrafterCMSNext.render(container, 'PublishDialog', {
+          open: true,
           onClose: (response) => {
             if (response) {
               _self.reloadItems(items, response);
@@ -870,23 +846,23 @@ var nodeOpen = false,
       },
 
       viewDependencies: function(site, items, approveType, defaultSelection) {
+        const container = ($('<div class="delete-dialog-container"/>').appendTo('body'))[0];
         //defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
+        const dependenciesShown = defaultSelection ? defaultSelection : 'depends-on';
 
-        var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on';
-
-        CSA.Operations._showDialogueView(
+        CrafterCMSNext.render(
+          container,
+          'DependenciesDialog',
           {
-            fn: CSA.Service.getDependenciesView,
-            controller: 'viewcontroller-dependencies',
-            callback: function(dialogue) {
-              CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
-              this.loadItems(items, dependenciesSelection);
+            open: true,
+            item: items[0],
+            dependenciesShown,
+            onClose: () => {
+              unmount({ delay: 300, removeContainer: true });
             }
-          },
-          true,
-          '800px',
-          approveType
-        );
+          }
+        ).then(done => unmount = done.unmount);
+
       },
 
       submitContent: function(site, items) {
@@ -10010,3 +9986,5 @@ function getTopLegacyWindow(nextWindow) {
     return window.top;
   }
 }
+
+CrafterCMSNext.renderBackgroundUI();

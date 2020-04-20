@@ -35,10 +35,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 import clsx from 'clsx';
 import cardTitleStyles from '../../../../styles/card';
 
-
 interface BlueprintCardProps {
   blueprint: Blueprint,
-  interval: number;
+  interval: number,
+  marketplace: boolean,
 
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
 
@@ -188,7 +188,7 @@ function BlueprintCard(props: BlueprintCardProps) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);
-  const { onBlueprintSelected, blueprint, interval, onDetails } = props;
+  const { onBlueprintSelected, blueprint, interval, marketplace, onDetails } = props;
   const { media, name, license, id, developer } = blueprint;
   const { formatMessage } = useIntl();
 
@@ -350,14 +350,17 @@ function BlueprintCard(props: BlueprintCardProps) {
       {
         (id !== 'GIT') &&
         <CardActions className={'cardActions'}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => onBlueprintSelected(blueprint, 1)}
-            className={classes.use}
-          >
-            {formatMessage(messages.use)}
-          </Button>
+          {
+            ((marketplace && blueprint.compatible) || !marketplace) &&    // if it's from marketplace and compatible, or not from marketplace (private bps)
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => onBlueprintSelected(blueprint, 1)}
+              className={classes.use}
+            >
+              {formatMessage(messages.use)}
+            </Button>
+          }
           <Button className={classes.more} onClick={() => onDetails(blueprint)}>
             {formatMessage(messages.more)}
           </Button>

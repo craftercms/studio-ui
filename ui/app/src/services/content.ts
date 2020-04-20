@@ -14,13 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, getText, post, postJSON } from '../utils/ajax';
+import { catchApi1Error, CONTENT_TYPE_JSON, get, getText, post, postJSON } from '../utils/ajax';
 import { map, pluck, switchMap } from 'rxjs/operators';
-import { forkJoin, Observable, of, zip } from 'rxjs';
-import { createElements, fromString, getInnerHtml, serialize, wrapElementInAuxDocument } from '../utils/xml';
+import { forkJoin, Observable, Observer, of, zip } from 'rxjs';
+import {
+  createElements,
+  fromString,
+  getInnerHtml,
+  serialize,
+  wrapElementInAuxDocument
+} from '../utils/xml';
 import {
   ContentType,
   ContentTypeField,
+  ContentTypeFieldValidations,
   LegacyContentTypeDescriptorCamelized,
   LegacyDataSource,
   LegacyFormDefinition,
@@ -46,7 +53,7 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { Item } from '../models/Item';
+import { Item, LegacyItem } from '../models/Item';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -60,9 +67,11 @@ export function getContent(site: string, path: string): Observable<string> {
   );
 }
 
-export function getItem(site: string, path: string): Observable<Item> {
+export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
+  // @ts-ignore
   return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
-    pluck('response', 'item')
+    pluck('response', 'item'),
+    catchApi1Error
   );
 }
 
@@ -342,7 +351,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   const fields = {};
   const sections = [];
   //const dataSources = {};
-  const receptaclesLookup = {};
+  const receptaclesLookup: LookupTable<LegacyDataSource> = {};
 
   //get receptacles dataSources
   if (definition.datasources?.datasource) {
@@ -439,43 +448,11 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
             required: false
           };
           if (field.fields[_fieldId].type === 'node-selector') {
-
-            // const map = asArray<LegacyFormDefinitionProperty>(_legacyField.properties.property)
-            //   .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
-            //     table[prop.name] = prop;
-            //     return table;
-            //   }, {});
-
-            field.fields[_fieldId].validations = {
-              tags: [],
-              contentTypes: []
-            };
+            field.fields[_fieldId].validations = getFieldValidations(_legacyField.properties.property, receptaclesLookup);
           }
         });
       } else if (legacyField.type === 'node-selector') {
-
-        const map = asArray<LegacyFormDefinitionProperty>(legacyField.properties.property)
-          .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
-            table[prop.name] = prop;
-            return table;
-          }, {});
-
-        field.validations = {
-          tags: [],
-          contentTypes: []
-        };
-
-        map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
-          if (receptaclesLookup[value]) {
-            receptaclesLookup[value].properties?.property.forEach((prop) => {
-              if (prop.name === 'contentTypes') {
-                field.validations.contentTypes = prop.value ? prop.value.split(',') : [];
-              } else if (prop.name === 'tags') {
-                field.validations.tags = prop.value ? prop.value.split(',') : [];
-              }
-            });
-          }
-        });
+        field.validations = getFieldValidations(legacyField.properties.property, receptaclesLookup);
 
         // field.validations = {
         //   limit: { min: null, max: null, message: null },
@@ -509,6 +486,33 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
     fields
   };
 
+}
+
+function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup: LookupTable<LegacyDataSource>): ContentTypeFieldValidations {
+  const map = asArray<LegacyFormDefinitionProperty>(fieldProperty)
+    .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
+      table[prop.name] = prop;
+      return table;
+    }, {});
+
+  let validations = {
+    tags: [],
+    contentTypes: []
+  };
+
+  map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
+    if (receptaclesLookup[value]) {
+      asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
+        if (prop.name === 'contentTypes') {
+          validations.contentTypes = prop.value ? prop.value.split(',') : [];
+        } else if (prop.name === 'tags') {
+          validations.tags = prop.value ? prop.value.split(',') : [];
+        }
+      });
+    }
+  });
+
+  return validations;
 }
 
 function writeContentUrl(qs: object) {
@@ -1049,6 +1053,10 @@ export function uploadDataUrl(
       type: file.type,
       data: blob
     });
+
+    return () => {
+      uppy.cancelAll();
+    };
   });
 }
 
@@ -1068,11 +1076,98 @@ export function getItemVersions(siteId: string, path: string) {
   );
 }
 
+export function getChildrenByPath(site: string, path: string): Observable<any> {
+  ///studio/api/2/content/children_by_path
+  const response = {
+    response: {},
+    parent: {
+      id: 'home',
+      label: 'Home',
+      path: 'Path'
+    },
+    items: [
+      {
+        id: 'Style',
+        label: 'Style',
+        path: '/site/website/style/index.xml',
+        localeCode: 'en'
+      },
+      {
+        id: 'Salud',
+        label: 'Salud',
+        path: '/site/website/health/index.xml',
+        localeCode: 'es'
+      },
+      {
+        id: 'Entertainment',
+        label: 'Entertainment',
+        path: '/site/website/entertainment/index.xml',
+        localeCode: 'en'
+      },
+      {
+        id: 'Tecnologia',
+        label: 'Tecnologia',
+        path: '/site/website/technology/index.xml',
+        localeCode: 'es'
+      }
+    ]
+  };
+
+  return new Observable((observer: Observer<any>) => {
+    observer.next(response);
+    observer.complete();
+  });
+}
+
+export function copyItem(site: string, item: Partial<LegacyItem>): Observable<any> {
+  let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
+  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
+}
+
+export function cutItem(site: string, item: Item): Observable<any> {
+  return post(`/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`, { item: [{ uri: item.path }] }, CONTENT_TYPE_JSON).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
+}
+
+export function pasteItem(site: string, item: Item): Observable<any> {
+  return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
+}
+
+export function getPages(site: string, item: any): Observable<any> {
+  return get(`/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`).pipe(
+    pluck('response', 'item'),
+    catchApi1Error
+  );
+}
+
+export function deleteItems(siteId: string, user: string, submissionComment: string, data: AnyObject): Observable<any> {
+  return postJSON(
+    `/studio/api/1/services/api/1/workflow/go-delete.json?site=${siteId}&user=${user}&submissionComment=${submissionComment}`,
+    data
+  ).pipe(
+    pluck('response'),
+    catchApi1Error
+  );
+}
+
 export default {
   getComponentInstanceHTML,
   getContent,
-  getItem,
+  getLegacyItem,
   getDOM,
+  getChildrenByPath,
+  copyItem,
+  cutItem,
+  pasteItem,
+  getPages,
   getContentInstanceLookup,
   fetchContentTypes,
   fetchById,
