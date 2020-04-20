@@ -25,10 +25,14 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
-import { useActiveSiteId, useSelection, useSpreadState } from '../../utils/hooks';
+import { useActiveSiteId, useSpreadState, useSelection, usePreviewState } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
+import { useDispatch } from 'react-redux';
+import { changeCurrentUrl } from '../../state/actions/preview';
+import { Item } from '../../models/Item';
 import { APIError } from '../../models/GlobalState';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
+import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -50,11 +54,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     menu: {
-      transform: 'translate(20px, 15px)',
-      '& ul': {
-        paddingTop: 0,
-        minWidth: '140px'
-      }
+      paddingTop: 0,
+      minWidth: '140px'
     },
 
     menuItem: {
@@ -66,10 +67,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     menuSectionTitle: {
-      fontSize: 12,
-      backgroundColor: palette.gray.light0,
-      color: palette.gray.medium3,
-      padding: '5px 16px',
+      'fontSize': 12,
+      'backgroundColor': palette.gray.light0,
+      'color': palette.gray.medium3,
+      'padding': '5px 16px',
       '&:hover': {
         backgroundColor: palette.gray.light0,
         cursor: 'text'
@@ -78,15 +79,28 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function QuickCreate() {
+interface QuickCreateMenuProps {
+  anchorEl: HTMLElement;
+  previewItem: Item;
+
+  onSaveLegacySuccess?(response): void;
+
+  onClose(): void;
+
+  onItemClicked?(): void;
+}
+
+interface QuickCreateMenuButtonProps {
+  onMenuBtnClick(e): void;
+}
+
+export function QuickCreateMenu(props: QuickCreateMenuProps) {
+  const { anchorEl, onClose, previewItem, onSaveLegacySuccess, onItemClicked } = props;
   const classes = useStyles({});
-  const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
   const siteId = useActiveSiteId();
-  const AUTHORING_BASE = useSelection<string>(
-    state => state.env.AUTHORING_BASE
-  );
+  const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [anchorEl, setAnchorEl] = useState(null);
   const [error, setError] = useState<APIError>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [dialogConfig, setDialogConfig] = useSpreadState({
@@ -96,91 +110,127 @@ export default function QuickCreate() {
     inProgress: false
   });
 
-  const handleClick = e => setAnchorEl(e.currentTarget);
+  const onEmbeddedFormSaveSuccess = ({ data }) =>
+    data.item.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
 
-  const handleMenuClose = () => setAnchorEl(null);
+  const onNewContentClick = () => {
+    onItemClicked?.();
+    dispatch(
+      showNewContentDialog({
+        site: siteId,
+        previewItem,
+        compact: false
+      })
+    );
+  };
+
+  const onFormDisplay = (srcData) => () => {
+    const { contentTypeId, path: _path } = srcData;
+    const today = new Date();
+    const formatPath = _path
+      .replace('{year}', today.getFullYear())
+      .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
+
+    onItemClicked?.();
+
+    setDialogConfig({
+      open: true,
+      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`
+    });
+  };
 
   useEffect(() => {
     if (siteId) {
       getQuickCreateContentList(siteId).subscribe(
-        data => setQuickCreateContentList(data.items),
+        (data) => setQuickCreateContentList(data.items),
         error => setError(error.response.response)
       );
     }
   }, [siteId]);
 
-  const handleFormDisplay = srcData => {
-    const { contentTypeId, path } = srcData;
-    const today = new Date();
-    const formatPath = path.replace(
-      '{year}',
-      today.getFullYear()
-    ).replace(
-      '{month}',
-      ('0' + (today.getMonth() + 1)).slice(-2)
-    );
-    const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
-
-    setDialogConfig({
-      open: true,
-      src
-    });
-  };
-
   return (
     <>
-      <IconButton
-        onClick={handleClick}
-        aria-label={formatMessage(translations.quickCreateBtnLabel)}
-        className={classes.addBtn}
-        size="small"
-      >
-        <AddCircleIcon fontSize="large" className={classes.addIcon} />
-      </IconButton>
       <Menu
-        className={classes.menu}
+        classes={{ paper: classes.menu }}
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
+        onClose={onClose}
       >
-        <MenuItem className={classes.menuTitle}>
-          <FormattedMessage
-            id="quickCreateMenu.title"
-            defaultMessage="New Content"
-          />
+        <MenuItem className={classes.menuTitle} onClick={onNewContentClick}>
+          <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
         </MenuItem>
         <Divider />
-        <Typography
-          component="h4"
-          className={classes.menuSectionTitle}
-        >
-          <FormattedMessage
-            id="quickCreateMenu.sectionTitle"
-            defaultMessage="Quick Create"
-          />
+        <Typography component="h4" className={classes.menuSectionTitle}>
+          <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
 
-        {quickCreateContentList?.map(item =>
-          <MenuItem
-            key={item.path}
-            onClick={() => {
-              handleMenuClose();
-              handleFormDisplay(item);
-            }}
-            className={classes.menuItem}
-          >
+        {quickCreateContentList?.map((item) => (
+          <MenuItem key={item.path} onClick={onFormDisplay(item)} className={classes.menuItem}>
             {item.label}
           </MenuItem>
-        )}
+        ))}
       </Menu>
-      <EmbeddedLegacyEditors
-        showTabs={false}
-        showController={false}
-        dialogConfig={dialogConfig}
-        setDialogConfig={setDialogConfig}
-      />
+      {dialogConfig.open && (
+        <EmbeddedLegacyEditors
+          showTabs={false}
+          showController={false}
+          dialogConfig={dialogConfig}
+          setDialogConfig={setDialogConfig}
+          onSaveLegacySuccess={onSaveLegacySuccess}
+          onSaveSuccess={onEmbeddedFormSaveSuccess}
+        />
+      )}
       <ErrorDialog error={error} onClose={() => setError(null)} />
+    </>
+  );
+}
+
+export function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
+  const { onMenuBtnClick } = props;
+  const classes = useStyles({});
+  const { formatMessage } = useIntl();
+
+  return (
+    <IconButton
+      onClick={onMenuBtnClick}
+      aria-label={formatMessage(translations.quickCreateBtnLabel)}
+      className={classes.addBtn}
+      size="small"
+    >
+      <AddCircleIcon fontSize="large" className={classes.addIcon} />
+    </IconButton>
+  );
+}
+
+export default function QuickCreate() {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [currentPreview, setCurrentPreview] = useState(null);
+  const { guest } = usePreviewState();
+
+  const onMenuBtnClick = (e) => {
+    setAnchorEl(e.currentTarget);
+    if (guest) {
+      const { modelId, models } = guest;
+      const {
+        craftercms: { label, path }
+      } = models[modelId];
+
+      const item = {
+        label,
+        path
+      };
+
+      setCurrentPreview(item);
+    }
+  };
+
+  const onMenuClose = () => setAnchorEl(null);
+
+  return (
+    <>
+      <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
+      <QuickCreateMenu anchorEl={anchorEl} onClose={onMenuClose} previewItem={currentPreview} onItemClicked={onMenuClose}/>
     </>
   );
 }

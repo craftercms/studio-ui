@@ -161,6 +161,12 @@ const systemPropsList = [
   'lastModifiedDate_dt'
 ];
 
+export function fetchLegacyContentTypes(site, path) {
+  return get(
+    `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}&path=${path}'`
+  ).pipe(pluck('response'));
+}
+
 export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
   return get(`/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`).pipe(
     map<AjaxResponse, ContentType[]>(({ response }) => (
@@ -1182,5 +1188,6 @@ export default {
   fetchPublishingChannels,
   uploadDataUrl,
   getBulkUploadUrl,
-  getQuickCreateContentList
+  getQuickCreateContentList,
+  fetchLegacyContentTypes
 };

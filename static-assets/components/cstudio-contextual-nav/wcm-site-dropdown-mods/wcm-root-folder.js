@@ -1244,9 +1244,9 @@
       },
 
       getStoredPathKey: function(instance) {
-        return (
-          `${CStudioAuthoringContext.site}-${instance.label.replace(' ', '').toLowerCase()}-opened`
-        );
+        return `${CStudioAuthoringContext.site}-${instance.label
+          .replace(' ', '')
+          .toLowerCase()}-opened`;
       },
 
       getNumKey: function(nodes, key, callback) {
@@ -3282,42 +3282,48 @@
        * Creates new content. Opens the form to create content
        */
       createContent: function() {
-        var createCb = {
-          success: function(contentTO, editorId, name, value, draft) {
-            var page = CStudioAuthoring.Utils.getQueryParameterURL('page');
-            var currentPage = page.split('/')[page.split('/').length - 1];
-            var acnDraftContent = YDom.getElementsByClassName(
-              'acnDraftContent',
-              null,
-              parent.document
-            )[0];
-            eventYS.data = oCurrentTextNode;
-            eventYS.typeAction = 'createContent';
-            eventYS.oldPath = null;
-            eventYS.parent = oCurrentTextNode.data.path == '/site/website' ? null : false;
-            document.dispatchEvent(eventYS);
+        const container = document.createElement('div');
+        const createSuccess = (currentTextNode) => ({ data }) => {
+          const acnDraftContent = YDom.getElementsByClassName(
+            'acnDraftContent',
+            null,
+            parent.document
+          )[0];
+          eventYS.data = currentTextNode;
+          eventYS.typeAction = 'createContent';
+          eventYS.oldPath = null;
+          eventYS.parent = currentTextNode.data.path == '/site/website' ? null : false;
+          document.dispatchEvent(eventYS);
 
-            if (contentTO.item.isPage) {
-              CStudioAuthoring.Operations.refreshPreview(contentTO.item);
-              if (
-                CStudioAuthoring.Utils.getQueryParameterURL('page') == contentTO.item.browserUri &&
-                acnDraftContent
-              ) {
-                CStudioAuthoring.SelectedContent.setContent(contentTO.item);
-              }
-            } else {
-              CStudioAuthoring.Operations.refreshPreview();
+          if (data.item.isPage) {
+            CStudioAuthoring.Operations.refreshPreview(data.item);
+            if (
+              CStudioAuthoring.Utils.getQueryParameterURL('page') == data.redirectUrl &&
+              acnDraftContent
+            ) {
+              CStudioAuthoring.SelectedContent.setContent(data.item);
             }
-          },
-          failure: function() {},
-          callingWindow: window
+          } else {
+            CStudioAuthoring.Operations.refreshPreview();
+          }
         };
-        CStudioAuthoring.Operations.createNewContent(
-          CStudioAuthoringContext.site,
-          oCurrentTextNode.data.path,
-          false,
-          createCb
-        );
+
+        function renderNewContentDialog(open) {
+          const { site, internalName, uri } = oCurrentTextNode.data;
+          let unmount;
+          CrafterCMSNext.render(container, 'NewContentDialog', {
+            onSaveLegacySuccess: createSuccess(oCurrentTextNode),
+            previewItem: {
+              label: internalName,
+              path: uri
+            },
+            open,
+            onClose: () => renderNewContentDialog(false),
+            onDismiss: () => unmount(),
+            site
+          }).then((done) => (unmount = done.unmount));
+        }
+        renderNewContentDialog(true);
       },
       /**
        * Edits the label of the TextNode that was the target of the

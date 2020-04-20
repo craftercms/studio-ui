@@ -130,6 +130,9 @@ export function createCodebaseBridge() {
       ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
       GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
       PagesWidget: lazy(() => import('../components/PagesWidget'))
+      ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
+      QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
+      NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog'))
     },
 
     system: { generateClassName, theme, palette, store },

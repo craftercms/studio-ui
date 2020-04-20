@@ -19,12 +19,13 @@ import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { closeConfirmDialog } from '../reducers/dialogs/confirm';
 import { NEVER } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
+import { closeNewContentDialog } from '../reducers/dialogs/newContent';
 
 export default [
   // region Confirm Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(closeConfirmDialog.type),
+      ofType(closeConfirmDialog.type, closeNewContentDialog.type),
       withLatestFrom(state$),
       map(([{ payload }, state]) =>
         [payload, state.dialogs.confirm.onClose].filter((callback) => Boolean(callback))

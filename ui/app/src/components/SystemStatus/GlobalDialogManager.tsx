@@ -34,6 +34,7 @@ import GlobalState from '../../models/GlobalState';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
+const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
@@ -100,7 +101,14 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Create Content */}
-
+      <NewContentDialog
+        open={state.newContent.open}
+        site={state.newContent.site}
+        previewItem={state.newContent.previewItem}
+        compact={state.newContent.compact}
+        onClose={createCallback(state.newContent.onClose, dispatch)}
+        onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Dependencies */}
