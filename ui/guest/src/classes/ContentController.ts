@@ -964,7 +964,7 @@ function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstan
 
 }
 
-function getCollectionWithoutItemAtIndex(collection: string[], index): string[] {
+function getCollectionWithoutItemAtIndex(collection: string[], index: string | number): string[] {
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
   return collection
     .slice(0, parsedIndex)
