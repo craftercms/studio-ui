@@ -43,6 +43,7 @@ import {
   ICE_ZONE_SELECTED,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
+  INSERT_ITEM_OPERATION,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
@@ -207,6 +208,10 @@ export function PreviewConcierge(props: any) {
             }
           );
           break;
+        case INSERT_ITEM_OPERATION: {
+          enqueueSnackbar('Insert item operation not implemented.');
+          break;
+        }
         case MOVE_ITEM_OPERATION: {
           const {
             originalModelId,
