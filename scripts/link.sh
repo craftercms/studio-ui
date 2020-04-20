@@ -63,7 +63,7 @@ for ARG in "$@"; do
   --link)
     LINK_ONLY=true
     ;;
-  --rm)
+  --remove)
     REMOVE_ONLY=true
     ;;
   *)

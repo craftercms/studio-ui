@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import makeStyles from '@material-ui/styles/makeStyles';
-import { IconButtonProps, Theme } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/styles';
+import TypographyProps from '@material-ui/core/TypographyProps';
+import IconButtonProps from '@material-ui/core/IconButtonProps';
 import { palette } from '../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import Typography from '@material-ui/core/Typography';
@@ -26,45 +27,48 @@ import React, { PropsWithChildren } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 import clsx from 'clsx';
 
-const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
-  titleRoot: {
-    margin: 0,
-    padding: '13px 20px 11px',
-    background: palette.white,
-    borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
-  },
-  title: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  subtitle: {
-    fontSize: '14px',
-    lineHeight: '18px',
-    paddingRight: '35px'
-  },
-  closeIcon: {
-    marginLeft: 'auto'
-  },
-  backIcon: {}
-}));
+const dialogTitleStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    titleRoot: {
+      margin: 0,
+      padding: '13px 20px 11px',
+      background: palette.white,
+      borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+    },
+    title: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    subtitle: {
+      fontSize: '14px',
+      lineHeight: '18px',
+      paddingRight: '35px'
+    },
+    closeIcon: {
+      marginLeft: 'auto'
+    },
+    backIcon: {}
+  })
+);
 
 export interface DialogHeaderAction extends IconButtonProps {
   icon: React.ElementType;
 }
 
-export type DialogTitleProps = PropsWithChildren<{
+export type DialogTitleProps<
+  PrimaryTypographyComponent extends React.ElementType = 'h2',
+  SecondaryTypographyComponent extends React.ElementType = 'p'
+> = PropsWithChildren<{
   id?: string;
   title: string | JSX.Element;
-  titleTypographyProps?: {
-    variant?: any;
-    component?: string;
-    classes?: any;
-  };
-  subtitleTypographyProps?: {
-    variant?: any;
-    component?: string;
-    classes?: any;
-  };
+  titleTypographyProps?: TypographyProps<
+    PrimaryTypographyComponent,
+    { component?: PrimaryTypographyComponent }
+  >;
+  subtitleTypographyProps?: TypographyProps<
+    SecondaryTypographyComponent,
+    { component?: SecondaryTypographyComponent }
+  >;
   subtitle?: string;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
@@ -72,8 +76,7 @@ export type DialogTitleProps = PropsWithChildren<{
   backIcon?: React.ElementType;
   classes?: {
     root?: string;
-  }
-
+  };
   onClose?(): void;
   onBack?(): void;
 }>;
@@ -93,13 +96,12 @@ export default function DialogHeader(props: DialogTitleProps) {
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
-      component: 'span',
-      classes: {}
+      component: 'h2',
+      color: 'textSecondary'
     },
     subtitleTypographyProps = {
       variant: 'subtitle1',
-      component: 'span',
-      classes: {}
+      component: 'p'
     }
   } = props;
   return (
@@ -121,14 +123,7 @@ export default function DialogHeader(props: DialogTitleProps) {
             </IconButton>
           )
         }
-        <Typography
-          variant={titleTypographyProps.variant}
-          // @ts-ignore
-          component={titleTypographyProps.component}
-          classes={titleTypographyProps.classes}
-        >
-          {title}
-        </Typography>
+        <Typography {...titleTypographyProps}>{title}</Typography>
         {
           rightActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) =>
             <IconButton {...rest}>
@@ -144,13 +139,7 @@ export default function DialogHeader(props: DialogTitleProps) {
       </div>
       {(subtitle || children) && (
         <>
-          <Typography
-            variant={subtitleTypographyProps.variant}
-            // @ts-ignore
-            component={subtitleTypographyProps.component}
-            classes={subtitleTypographyProps.classes}
-            className={classes.subtitle}
-          >
+          <Typography className={classes.subtitle} {...subtitleTypographyProps}>
             {subtitle}
           </Typography>
           {children}
