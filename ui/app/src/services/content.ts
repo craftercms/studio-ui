@@ -1153,6 +1153,7 @@ export default {
   updateField,
   insertComponent,
   insertInstance,
+  insertItem,
   sortItem,
   moveItem,
   deleteItem,

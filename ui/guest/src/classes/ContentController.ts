@@ -333,6 +333,9 @@ export class ContentController {
 
   }
 
+  insertGroup(modelId, fieldId, data): void {
+  }
+
   sortItem(
     modelId: string,
     fieldId: string,
@@ -961,7 +964,6 @@ function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstan
 
 }
 
-//function getResult(model: ContentInstance, fieldId: string, index: string | number): number[] | string[] {
 function getResult(collection: string[], index): string[] {
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
   return collection
