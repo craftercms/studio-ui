@@ -464,25 +464,31 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
               module.name === 'wcm-root-folder' &&
                 (cb.once = function() {
                   try {
-                    CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(function(evtType, aArgs) {
+                    CStudioAuthoring.ContextualNav.WcmRootFolder.treePathOpenedEvt.subscribe(function (evtType, aArgs) {
                       if (aArgs[0] == aArgs[1]) {
                         // number of instaces == number of times event has fired
                         self.handleScroll = true;
                         self.oPreferences.visible && self.updateScrollPosition(true);
                       }
                     });
-                  } catch (ex) {}
+                  } catch (ex) {
+                  }
                 });
 
-              CStudioAuthoring.Module.requireModule(
-                module.plugin ? module.plugin.name : module.name,
-                module.plugin
-                  ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${module
+              // render CrafterCMSNext Components
+              if (module.render) {
+                CrafterCMSNext.render(moduleContainerEl, module.render, module.props);
+              } else {
+                CStudioAuthoring.Module.requireModule(
+                  module.plugin ? module.plugin.name : module.name,
+                  module.plugin
+                    ? `/api/2/plugin/file?siteId=${CStudioAuthoringContext.site}&type=${module.plugin.type}&name=${module
                       .plugin.name || module.name}&filename=${module.plugin.file}`
-                  : `/static-assets/components/cstudio-contextual-nav/wcm-site-dropdown-mods/${module.name}.js`,
-                module,
-                cb
-              );
+                    : `/static-assets/components/cstudio-contextual-nav/wcm-site-dropdown-mods/${module.name}.js`,
+                  module,
+                  cb
+                );
+              }
             }
           },
 

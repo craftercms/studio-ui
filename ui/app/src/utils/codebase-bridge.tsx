@@ -128,7 +128,8 @@ export function createCodebaseBridge() {
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
       ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
-      GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager'))
+      GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
+      PagesWidget: lazy(() => import('../components/PagesWidget'))
     },
 
     system: { generateClassName, theme, palette, store },

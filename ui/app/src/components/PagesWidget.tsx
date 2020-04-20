@@ -41,23 +41,19 @@ import { LookupTable } from '../models/LookupTable';
 import ContextMenu, { SectionItem } from './ContextMenu';
 import SearchBar from './SearchBar';
 import { setRequestForgeryToken } from '../utils/auth';
-import { useSpreadState } from '../utils/hooks';
+import { useActiveSiteId, useSpreadState } from '../utils/hooks';
 import CopyItemsDialog from './CopyItemsDialog';
 import ContentLocalizationDialog from './ContentLocalizationDialog';
 import { palette } from '../styles/theme';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
+import { showHistoryDialog } from '../state/reducers/dialogs/history';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    wrapper: {
-      padding: '10px',
-      border: '1px solid gray',
-      width: '260px',
-      margin: '0 auto'
-    },
+    wrapper: {},
     primaryColor: {
       color: theme.palette.primary.main
     },
@@ -121,6 +117,7 @@ const useStyles = makeStyles((theme) =>
     },
     pagesNavItemText: {
       color: theme.palette.primary.main,
+      padding: 0,
       marginRight: 'auto',
       '&.opacity': {
         opacity: '0.7'
@@ -343,12 +340,12 @@ function generateMenuSections(item: Item, menuState: MenuState, count?: number) 
     sections.push(
       menuState.hasClipboard
         ? [
-            menuOptions.cut,
-            menuOptions.copy,
-            menuOptions.paste,
-            menuOptions.duplicate,
-            menuOptions.delete
-          ]
+          menuOptions.cut,
+          menuOptions.copy,
+          menuOptions.paste,
+          menuOptions.duplicate,
+          menuOptions.delete
+        ]
         : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate, menuOptions.delete]
     );
     sections.push([menuOptions.translation]);
@@ -611,9 +608,8 @@ function PagesNav(props: PagesNavProps) {
 }
 
 interface PagesWidgetProps {
-  site?: string;
-  path?: string;
-  locale?: string;
+  path: string;
+  locale: string;
 }
 
 interface MenuState {
@@ -625,8 +621,9 @@ export default function PagesWidget(props: PagesWidgetProps) {
   const classes = useStyles({});
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { site = 'editorial', path = 'site/website', locale = 'en' } = props;
+  const { path, locale } = props;
   const [currentLocale, setCurrentLocale] = React.useState(locale);
+  const site = useActiveSiteId();
   const [menuState, setMenuState] = useSpreadState<MenuState>({
     selectMode: false,
     hasClipboard: false
@@ -676,7 +673,8 @@ export default function PagesWidget(props: PagesWidgetProps) {
     setActivePath(item.path);
   };
 
-  const onPageChanged = (page: number) => {};
+  const onPageChanged = (page: number) => {
+  };
 
   const onSelectItem = (item: Item, select: boolean) => {
     setSelectedItems({ ...selectedItems, [item.id]: select ? item : false });
@@ -785,12 +783,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
         break;
       }
       case 'translation': {
-        const path = menu.activeItem.path;
-        setMenu({
-          activeItem: null,
-          anchorEl: null
-        });
-        getTargetLocales(site, path).subscribe(
+        getTargetLocales(site, menu.activeItem.path).subscribe(
           (response) => {
             setTranslationDialog(response.items);
           },
@@ -802,6 +795,18 @@ export default function PagesWidget(props: PagesWidgetProps) {
             );
           }
         );
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
+        break;
+      }
+      case 'history': {
+        dispatch(showHistoryDialog({ path: menu.activeItem.path }));
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
         break;
       }
       default: {
