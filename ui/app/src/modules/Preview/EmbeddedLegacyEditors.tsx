@@ -30,10 +30,10 @@ import {
   changeCurrentUrl,
   EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
+  EMBEDDED_LEGACY_FORM_FAILURE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
-  EMBEDDED_LEGACY_FORM_FAILURE,
   RELOAD_REQUEST
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
@@ -134,7 +134,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
 
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
-  const handleClose = useCallback() => {
+  const handleClose = useCallback(() => {
     dispatch(
       closeEmbeddedLegacyEditors({
         type: '',
@@ -143,11 +143,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         }
       })
     );
-  };
-  // TODO: check useCallback
-  // const handleClose = useCallback(() => {
-  //   setDialogConfig({ open: false, src: null, type: null, inProgress: true });
-  // }, [setDialogConfig]);
+  }, [setDialogConfig]);
 
   const onErrorClose = () => {
     setError(null);

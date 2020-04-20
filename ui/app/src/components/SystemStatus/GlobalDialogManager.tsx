@@ -14,13 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  lazy,
-  Suspense,
-  useLayoutEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { lazy, Suspense, useLayoutEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
@@ -31,6 +25,7 @@ import createStyles from '@material-ui/styles/createStyles/createStyles';
 import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
+import EmbeddedLegacyEditors from '../../modules/Preview/EmbeddedLegacyEditors';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -38,7 +33,6 @@ const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDi
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
-import EmbeddedLegacyEditors from '../../modules/Preview/EmbeddedLegacyEditors';
 
 function createCallback(
   action: StandardAction,
