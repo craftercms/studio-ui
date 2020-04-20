@@ -15,7 +15,7 @@
  */
 
 import makeStyles from '@material-ui/styles/makeStyles';
-import { Theme } from '@material-ui/core';
+import { IconButtonProps, Theme } from '@material-ui/core';
 import { palette } from '../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import Typography from '@material-ui/core/Typography';
@@ -48,11 +48,8 @@ const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
   backIcon: {}
 }));
 
-export interface DialogHeaderAction {
-  icon: any;
-  ariaLabel?: string;
-  classes?: any;
-  onClick?(): void;
+export interface DialogHeaderAction extends IconButtonProps {
+  icon: React.ElementType;
 }
 
 export type DialogTitleProps = PropsWithChildren<{
@@ -71,8 +68,8 @@ export type DialogTitleProps = PropsWithChildren<{
   subtitle?: string;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
-  closeIcon?: any;
-  backIcon?: any;
+  closeIcon?: React.ElementType;
+  backIcon?: React.ElementType;
   classes?: {
     root?: string;
   }
@@ -107,27 +104,22 @@ export default function DialogHeader(props: DialogTitleProps) {
   } = props;
   return (
     <MuiDialogTitle
-      id={id} disableTypography classes={{ root: clsx(classes.titleRoot, props.classes?.root) }}
+      id={id}
+      disableTypography
+      classes={{ root: clsx(classes.titleRoot, props.classes?.root) }}
     >
       <div className={classes.title}>
-        {onBack ? (
+        {onBack && (
           <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
             <BackIcon />
           </IconButton>
-        ) : null}
+        )}
         {
-          leftActions?.map((action: DialogHeaderAction) => {
-            let ActionIcon = action.icon;
-            return (
-              <IconButton
-                aria-label={action.ariaLabel}
-                onClick={action.onClick}
-                classes={action.classes}
-              >
-                <ActionIcon />
-              </IconButton>
-            );
-          })
+          leftActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) =>
+            <IconButton {...rest}>
+              <Icon />
+            </IconButton>
+          )
         }
         <Typography
           variant={titleTypographyProps.variant}
@@ -138,18 +130,11 @@ export default function DialogHeader(props: DialogTitleProps) {
           {title}
         </Typography>
         {
-          rightActions?.map((action: DialogHeaderAction) => {
-            let ActionIcon = action.icon;
-            return (
-              <IconButton
-                aria-label={action.ariaLabel}
-                onClick={action.onClick}
-                classes={action.classes}
-              >
-                <ActionIcon />
-              </IconButton>
-            );
-          })
+          rightActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) =>
+            <IconButton {...rest}>
+              <Icon />
+            </IconButton>
+          )
         }
         {onClose && (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
