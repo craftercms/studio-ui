@@ -48,6 +48,11 @@ const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
   backIcon: {}
 }));
 
+export interface DialogHeaderAction {
+  icon: any;
+  callback?(): void;
+}
+
 export type DialogTitleProps = PropsWithChildren<{
   id?: string;
   title: string | JSX.Element;
@@ -62,6 +67,8 @@ export type DialogTitleProps = PropsWithChildren<{
     classes?: any;
   };
   subtitle?: string;
+  leftActions?: DialogHeaderAction[];
+  rightActions?: DialogHeaderAction[];
   closeIcon?: any;
   backIcon?: any;
   classes?: {
@@ -81,6 +88,8 @@ export default function DialogHeader(props: DialogTitleProps) {
     title,
     children,
     subtitle,
+    leftActions,
+    rightActions,
     closeIcon: CloseIcon = CloseIconRounded,
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
@@ -95,7 +104,9 @@ export default function DialogHeader(props: DialogTitleProps) {
     }
   } = props;
   return (
-    <MuiDialogTitle id={id} disableTypography  classes={{ root: clsx(classes.titleRoot, props.classes?.root) }}>
+    <MuiDialogTitle
+      id={id} disableTypography classes={{ root: clsx(classes.titleRoot, props.classes?.root) }}
+    >
       <div className={classes.title}>
         {onBack ? (
           <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
