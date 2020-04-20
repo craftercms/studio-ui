@@ -50,7 +50,9 @@ const dialogTitleStyles = makeStyles((theme: Theme) => createStyles({
 
 export interface DialogHeaderAction {
   icon: any;
-  callback?(): void;
+  ariaLabel?: string;
+  classes?: any;
+  onClick?(): void;
 }
 
 export type DialogTitleProps = PropsWithChildren<{
@@ -113,6 +115,20 @@ export default function DialogHeader(props: DialogTitleProps) {
             <BackIcon />
           </IconButton>
         ) : null}
+        {
+          leftActions?.map((action: DialogHeaderAction) => {
+            let ActionIcon = action.icon;
+            return (
+              <IconButton
+                aria-label={action.ariaLabel}
+                onClick={action.onClick}
+                classes={action.classes}
+              >
+                <ActionIcon />
+              </IconButton>
+            );
+          })
+        }
         <Typography
           variant={titleTypographyProps.variant}
           // @ts-ignore
@@ -121,6 +137,20 @@ export default function DialogHeader(props: DialogTitleProps) {
         >
           {title}
         </Typography>
+        {
+          rightActions?.map((action: DialogHeaderAction) => {
+            let ActionIcon = action.icon;
+            return (
+              <IconButton
+                aria-label={action.ariaLabel}
+                onClick={action.onClick}
+                classes={action.classes}
+              >
+                <ActionIcon />
+              </IconButton>
+            );
+          })
+        }
         {onClose && (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
             <CloseIcon />
