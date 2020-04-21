@@ -14,20 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeStyles, Theme } from '@material-ui/styles';
-import TypographyProps from '@material-ui/core/TypographyProps';
-import IconButtonProps from '@material-ui/core/IconButtonProps';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
 import { palette } from '../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import React, { PropsWithChildren } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 import clsx from 'clsx';
 
-const dialogTitleStyles = makeStyles((theme: Theme) =>
+const dialogTitleStyles = makeStyles(() =>
   createStyles({
     titleRoot: {
       margin: 0,
@@ -116,35 +114,29 @@ export default function DialogHeader(props: DialogTitleProps) {
             <BackIcon />
           </IconButton>
         )}
-        {
-          leftActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) =>
-            <IconButton {...rest}>
-              <Icon />
-            </IconButton>
-          )
-        }
+        {leftActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) => (
+          <IconButton {...rest}>
+            <Icon />
+          </IconButton>
+        ))}
         <Typography {...titleTypographyProps}>{title}</Typography>
-        {
-          rightActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) =>
-            <IconButton {...rest}>
-              <Icon />
-            </IconButton>
-          )
-        }
+        {rightActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) => (
+          <IconButton {...rest}>
+            <Icon />
+          </IconButton>
+        ))}
         {onClose && (
           <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
             <CloseIcon />
           </IconButton>
         )}
       </div>
-      {(subtitle || children) && (
-        <>
-          <Typography className={classes.subtitle} {...subtitleTypographyProps}>
-            {subtitle}
-          </Typography>
-          {children}
-        </>
+      {subtitle && (
+        <Typography className={classes.subtitle} {...subtitleTypographyProps}>
+          {subtitle}
+        </Typography>
       )}
+      {children}
     </MuiDialogTitle>
   );
 }
