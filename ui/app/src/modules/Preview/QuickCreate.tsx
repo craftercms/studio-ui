@@ -25,11 +25,10 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
-import { useActiveSiteId, useSelection, useSpreadState } from '../../utils/hooks';
+import { useActiveSiteId, useSelection } from '../../utils/hooks';
 import { APIError } from '../../models/GlobalState';
-import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { useDispatch } from 'react-redux';
-import { showEmbeddedLegacyEditors } from '../../state/reducers/dialogs/embeddedLegacyEditors';
+import { showEdit } from '../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -119,7 +118,7 @@ export default function QuickCreate() {
     const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
 
     dispatch(
-      showEmbeddedLegacyEditors({
+      showEdit({
         dialogConfig: {
           type: 'form',
           inProgress: false,

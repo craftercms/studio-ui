@@ -82,10 +82,10 @@ function GlobalDialogManager() {
 
       {/* region Edit (Embedded Legacy Editor) */}
       <EmbeddedLegacyEditors
-        showTabs={state.embeddedLegacyEditors.showTabs}
-        showController={state.embeddedLegacyEditors.showController}
-        dialogConfig={state.embeddedLegacyEditors.dialogConfig}
-        setDialogConfig={state.embeddedLegacyEditors.setDialogConfig}
+        showTabs={state.edit.showTabs}
+        showController={state.edit.showController}
+        dialogConfig={state.edit.dialogConfig}
+        setDialogConfig={state.edit.setDialogConfig}
       />
 
       {/* endregion */}

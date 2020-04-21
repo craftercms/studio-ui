@@ -22,7 +22,7 @@ import history from './history';
 import publish from './publish';
 import dependencies from './dependencies';
 import deleteDialog from './delete';
-import embeddedLegacyEditors from './embeddedLegacyEditors';
+import edit from './edit';
 
 export default combineReducers({
   confirm,
@@ -32,5 +32,5 @@ export default combineReducers({
   publish,
   dependencies,
   delete: deleteDialog,
-  embeddedLegacyEditors
+  edit
 });

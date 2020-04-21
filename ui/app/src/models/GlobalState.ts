@@ -125,7 +125,7 @@ export interface GlobalState {
     publish: PublishDialogStateProps;
     dependencies: DependenciesDialogStateProps;
     delete: DeleteDialogStateProps;
-    embeddedLegacyEditors: EmbeddedLegacyEditorsStateProps;
+    edit: EmbeddedLegacyEditorsStateProps;
   };
 }
 

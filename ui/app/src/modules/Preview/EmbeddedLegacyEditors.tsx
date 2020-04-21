@@ -42,7 +42,7 @@ import { getHostToGuestBus } from './previewContext';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { APIError } from '../../models/GlobalState';
 import StandardAction from '../../models/StandardAction';
-import { closeEmbeddedLegacyEditors } from '../../state/reducers/dialogs/embeddedLegacyEditors';
+import { closeEdit } from '../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   contentForm: {
@@ -136,14 +136,14 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
 
   const handleClose = useCallback(() => {
     dispatch(
-      closeEmbeddedLegacyEditors({
+      closeEdit({
         type: '',
         payload: {
           dialogConfig: { src: null, type: null, inProgress: true }
         }
       })
     );
-  }, [setDialogConfig]);
+  }, [dispatch]);
 
   const onErrorClose = () => {
     setError(null);
