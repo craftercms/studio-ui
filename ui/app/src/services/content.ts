@@ -54,6 +54,7 @@ import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
 import { Item, LegacyItem } from '../models/Item';
+import { VersionsResponse } from '../models/version';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -1070,9 +1071,17 @@ export function getQuickCreateContentList(siteId: string) {
   );
 }
 
-export function getItemVersions(siteId: string, path: string) {
+export function getItemVersions(siteId: string, path: string): Observable<VersionsResponse> {
+  // @ts-ignore
   return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${siteId}&path=${path}`).pipe(
-    pluck('response')
+    pluck('response'),
+    catchApi1Error
+  );
+}
+
+export function getConfigurationVersions(siteId: string, path: string, environment: string, module: string): Observable<VersionsResponse> {
+  return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${siteId}&path=${path}&environment=${environment}&module=${module}`).pipe(
+    pluck('response', 'history')
   );
 }
 

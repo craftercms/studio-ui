@@ -180,7 +180,7 @@ export default function QuickCreate() {
         dialogConfig={dialogConfig}
         setDialogConfig={setDialogConfig}
       />
-      <ErrorDialog error={error} onClose={() => setError(null)} />
+      <ErrorDialog error={error} onDismiss={() => setError(null)} />
     </>
   );
 }

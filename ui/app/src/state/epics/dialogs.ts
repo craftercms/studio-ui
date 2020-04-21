@@ -19,6 +19,8 @@ import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { closeConfirmDialog } from '../reducers/dialogs/confirm';
 import { NEVER } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
+import { showHistoryDialog } from '../reducers/dialogs/history';
+import { getItemVersions } from '../../services/content';
 
 export default [
   // region Confirm Dialog
@@ -30,6 +32,19 @@ export default [
         [payload, state.dialogs.confirm.onClose].filter((callback) => Boolean(callback))
       ),
       switchMap((actions) => (actions.length ? actions : NEVER))
-    )
+    ),
+  // (action$, state$: StateObservable<GlobalState>) =>
+  //   action$.pipe(
+  //     ofType(showHistoryDialog.type, 'FETCH_ITEM_VERSIONS'),
+  //     switchMap(({ payload }) => ( getItemVersions(payload.path).pipe(
+  //       //map(fechComplete)
+  //       //catchError(FetchFailed)
+  //     ))
+  //   )
+
+  // endregion
+  // region History Dialog
+  // offType showHistorDialog mapTo FetchHistoryVersions
+  // offType FetchHistoryVersions
   // endregion
 ] as Epic[];

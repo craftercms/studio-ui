@@ -139,6 +139,7 @@ interface DeleteDialogUIProps {
   onSelectionChange?(selection?: any): any;
 
   onClose?(response?: any): any;
+  onDismiss?(response?: any): any;
 }
 
 function DeleteDialogUI(props: DeleteDialogUIProps) {
@@ -153,6 +154,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
     handleClose,
     handleSubmit,
     onSelectionChange,
+    onDismiss,
     onClose
   } = props;
   const classes = deleteDialogStyles({});
@@ -169,7 +171,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
       <DialogHeader
         title={formatMessage(translations.headerTitle)}
         subtitle={formatMessage(translations.headerSubTitle)}
-        onClose={onClose}
+        onDismiss={onDismiss}
       />
       <DialogBody className={classes.dialogContent}>
         <SuspenseWithEmptyState
@@ -225,12 +227,14 @@ interface DeleteDialogBaseProps {
 
 export type DeleteDialogProps = PropsWithChildren<DeleteDialogBaseProps & {
   onClose(): any;
+  onDismiss(): any;
   onSuccess?(response?: any): any;
   }
 >;
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
   onClose?: StandardAction;
+  onDismiss?: StandardAction;
   onSuccess?: StandardAction;
 }
 
@@ -239,6 +243,7 @@ function DeleteDialog(props: DeleteDialogProps) {
     open,
     items,
     onClose,
+    onDismiss,
     onSuccess
   } = props;
   const [submissionComment, setSubmissionComment] = useState('');
@@ -321,6 +326,7 @@ function DeleteDialog(props: DeleteDialogProps) {
       handleClose={handleClose}
       handleSubmit={handleSubmit}
       onSelectionChange={onSelectionChange}
+      onDismiss={onDismiss}
       onClose={onClose}
     />
   )

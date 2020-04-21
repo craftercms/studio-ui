@@ -720,7 +720,7 @@ var nodeOpen = false,
           container,
           'DeleteDialog',
           {
-            onClose: () => {
+            onDismiss: () => {
               unmount({ delay: 300, removeContainer: true });
             },
             onSuccess: (response) => {
@@ -834,7 +834,7 @@ var nodeOpen = false,
         let unmount;
         CrafterCMSNext.render(container, 'PublishDialog', {
           open: true,
-          onClose: (response) => {
+          onDismiss: (response) => {
             if (response) {
               _self.reloadItems(items, response);
             }
@@ -857,7 +857,7 @@ var nodeOpen = false,
             open: true,
             item: items[0],
             dependenciesShown,
-            onClose: () => {
+            onDismiss: () => {
               unmount({ delay: 300, removeContainer: true });
             }
           }
@@ -872,7 +872,7 @@ var nodeOpen = false,
 
         let unmount;
         CrafterCMSNext.render(container, 'PublishDialog', {
-          onClose: (response) => {
+          onDismiss: (response) => {
             if (response) {
               _self.reloadItems(items, response);
             }

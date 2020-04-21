@@ -234,6 +234,7 @@ interface PublishDialogUIProps {
   resource: Resource<any>;
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
+  onClose: any;
   handleClose: any;
   handleSubmit: any;
   submitDisabled: boolean;
@@ -264,6 +265,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
     resource,
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
+    onClose,
     handleClose,
     handleSubmit,
     submitDisabled,
@@ -291,7 +293,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
 
   return (
     <Dialog
-      onClose={handleClose}
+      onClose={onClose}
       aria-labelledby="requestPublishDialogTitle"
       open={open}
       disableBackdropClick={true}
@@ -301,7 +303,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
       <DialogHeader
         title={title}
         subtitle={subtitle}
-        onClose={handleClose}
+        onDismiss={handleClose}
       />
       <DialogBody>
         <SuspenseWithEmptyState resource={resource}>
@@ -374,11 +376,13 @@ interface PublishDialogBaseProps {
 
 export type PublishDialogProps = PropsWithChildren<PublishDialogBaseProps & {
   onClose?(response?: any): any;
+  onDismiss?(response?: any): any;
   onSuccess?(response?: any): any;
 }>;
 
 export interface PublishDialogStateProps extends PublishDialogBaseProps {
   onClose?: StandardAction;
+  onDismiss?: StandardAction;
   onSuccess?: StandardAction;
 }
 
@@ -393,6 +397,7 @@ function PublishDialog(props: PublishDialogProps) {
     items,
     scheduling = 'now',
     onClose,
+    onDismiss,
     onSuccess
   } = props;
 
@@ -496,7 +501,7 @@ function PublishDialog(props: PublishDialogProps) {
 
   const handleClose = () => {
     // call externalClose fn
-    onClose?.();
+    onDismiss?.();
   };
 
   const handleSubmit = () => {
@@ -575,6 +580,7 @@ function PublishDialog(props: PublishDialogProps) {
       resource={resource}
       publishingChannelsStatus={publishingChannelsStatus}
       onPublishingChannelsFailRetry={getPublishingChannels}
+      onClose={onClose}
       handleClose={handleClose}
       handleSubmit={handleSubmit}
       submitDisabled={submitDisabled}

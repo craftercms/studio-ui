@@ -37,15 +37,17 @@ interface ErrorDialogBaseProps {
 }
 
 export type  ErrorDialogProps = PropsWithChildren<ErrorDialogBaseProps & {
-  onClose(): any;
+  onClose?(): any;
+  onDismiss?(): any;
 }>;
 
 export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
   onClose?: StandardAction;
+  onDismiss?: StandardAction;
 }
 
 export default function ErrorDialog(props: ErrorDialogProps) {
-  const { onClose, error } = props;
+  const { onClose, onDismiss, error } = props;
   const classes = useStyles({});
 
   return (
@@ -56,7 +58,7 @@ export default function ErrorDialog(props: ErrorDialogProps) {
       <IconButton
         aria-label="close"
         className={classes.closeButton}
-        onClick={() => onClose()}
+        onClick={() => onDismiss()}
       >
         <CloseIcon />
       </IconButton>

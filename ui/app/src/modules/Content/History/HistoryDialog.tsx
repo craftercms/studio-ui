@@ -17,9 +17,15 @@
 import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
-import { defineMessages, FormattedDateParts, FormattedMessage, FormattedTime, useIntl } from 'react-intl';
+import {
+  defineMessages,
+  FormattedDateParts,
+  FormattedMessage,
+  FormattedTime,
+  useIntl
+} from 'react-intl';
 import DialogBody from '../../../components/DialogBody';
-import { getItemVersions } from '../../../services/content';
+import { getConfigurationVersions, getItemVersions } from '../../../services/content';
 import { LegacyItem } from '../../../../../guest/src/models/Item';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -27,7 +33,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
-import { LegacyVersion } from '../../../../../guest/src/models/version';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../../styles/theme';
@@ -42,6 +47,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { LookupTable } from '../../../models/LookupTable';
 import clsx from 'clsx';
 import StandardAction from '../../../models/StandardAction';
+import { LegacyVersion } from '../../../models/version';
 
 const translations = defineMessages({
   previousPage: {
@@ -232,7 +238,7 @@ function CompareRevision(props: CompareRevisionProps) {
               id="historyDialog.versionNumber"
               defaultMessage="Version: <span>{versionNumber}</span>"
               values={{
-                versionNumber: compareTo.nextVersion.versionNumber,
+                versionNumber: compareTo.version.versionNumber,
                 span: (msg) => <span className="blackText">{msg}</span>
               }}
             />
@@ -266,27 +272,30 @@ interface HistoryListProps {
     version?: LegacyVersion;
     nextVersion?: LegacyVersion;
   };
+  current: LegacyVersion;
 
   handleHistoryItemClick(version: LegacyVersion): void;
+
+  handleViewItem(version: LegacyVersion): void;
 
   handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
 }
 
 function HistoryList(props: HistoryListProps) {
   const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, compareTo, handleHistoryItemClick } = props;
+  const { resource, handleOpenMenu, rowsPerPage, page, compareTo, current, handleHistoryItemClick, handleViewItem } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   return (
     <List component="div" className={classes.list} disablePadding>
       {versions.map((version: LegacyVersion, i: number) => {
         let isSelected = version.versionNumber === compareTo.version?.versionNumber;
-        let isButton = compareTo.version && !isSelected;
+        let compareMode = compareTo.version;
         return (
           <ListItem
             key={version.versionNumber}
             divider={versions.length - 1 !== i}
-            button={isButton as true}
-            onClick={isButton ? () => handleHistoryItemClick(version) : null}
+            button
+            onClick={compareMode ? () => handleHistoryItemClick(version) : () => handleViewItem(version)}
             className={clsx(classes.listItem, isSelected && 'selected')}
           >
             <ListItemText
@@ -297,7 +306,7 @@ function HistoryList(props: HistoryListProps) {
               primary={
                 <>
                   <FancyFormattedDate date={version.lastModifiedDate} />
-                  {i === 0 && page === 0 && (
+                  {current.versionNumber === version.versionNumber && (
                     <Chip
                       label={
                         <FormattedMessage id="historyDialog.current" defaultMessage="current" />
@@ -309,14 +318,17 @@ function HistoryList(props: HistoryListProps) {
               }
               secondary={version.comment}
             />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                onClick={(e) => handleOpenMenu(e.currentTarget, version, i === 0 && page === 0)}
-              >
-                <MoreVertIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
+            {
+              !compareMode &&
+              <ListItemSecondaryAction>
+                <IconButton
+                  edge="end"
+                  onClick={(e) => handleOpenMenu(e.currentTarget, version, current.versionNumber === version.versionNumber)}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            }
           </ListItem>
         );
       })}
@@ -378,23 +390,28 @@ interface Menu {
 interface Data {
   contentItem: LegacyItem;
   versions: LegacyVersion[];
+  current: LegacyVersion;
 }
 
 interface HistoryDialogBaseProps {
   open: boolean;
   path: string;
+  environment?: string;
+  module?: string;
 }
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   onClose?(): any;
+  onDismiss?(): any;
 }>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
+  onDismiss?: StandardAction;
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, path } = props;
+  const { open, onClose, onDismiss, path, environment, module } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const site = useActiveSiteId();
@@ -403,12 +420,13 @@ export default function HistoryDialog(props: HistoryDialogProps) {
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
-  const rowsPerPage = 20;
+  const rowsPerPage = 10;
   const [page, setPage] = useState(0);
 
   const [data, setData] = useState<Data>({
     contentItem: null,
-    versions: null
+    versions: null,
+    current: null
   });
 
   const [error, setError] = useState<APIError>(null);
@@ -422,17 +440,37 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   });
 
   useEffect(() => {
+    console.log('holita');
     if (open) {
-      getItemVersions(site, path).subscribe(
-        (response) => {
-          setData({ contentItem: response.item, versions: response.versions });
-        },
-        (response) => {
-          setError(response);
-        }
-      );
+      if (environment) {
+        getConfigurationVersions(site, path, environment, module).subscribe(
+          (response) => {
+            setData({
+              contentItem: response.item,
+              versions: response.versions,
+              current: response.versions[0] || null
+            });
+          },
+          (response) => {
+            setError(response);
+          }
+        );
+      } else {
+        getItemVersions(site, path).subscribe(
+          (response) => {
+            setData({
+              contentItem: response.item,
+              versions: response.versions,
+              current: response.versions[0] || null
+            });
+          },
+          (response) => {
+            setError(response);
+          }
+        );
+      }
     }
-  }, [site, path, open]);
+  }, [site, path, open, environment, module]);
 
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false) => {
@@ -461,8 +499,12 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     [setMenu]
   );
 
-  const handleItemClick = (version: LegacyVersion) => {
+  const handleHistoryItemClick = (version: LegacyVersion) => {
     setCompareTo({ nextVersion: version });
+  };
+
+  const handleViewItem = (version: LegacyVersion) => {
+
   };
 
   const handleContextMenuClose = () => {
@@ -480,6 +522,14 @@ export default function HistoryDialog(props: HistoryDialogProps) {
       case 'compareTo': {
         setCompareTo({ version: menu.activeItem });
         setMenu(menuInitialState);
+        break;
+      }
+      case 'compareToCurrent': {
+        setCompareTo({ version: menu.activeItem, nextVersion: data.current });
+        setMenu(menuInitialState);
+        break;
+      }
+      case 'compareToPrevious': {
         break;
       }
       default:
@@ -526,7 +576,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
             />
           )
         }
-        onClose={onClose}
+        onDismiss={onDismiss}
         onBack={compareTo.version ? handleDialogHeaderBack : null}
       />
       <DialogBody>
@@ -537,10 +587,12 @@ export default function HistoryDialog(props: HistoryDialogProps) {
             <HistoryList
               resource={resource}
               handleOpenMenu={handleOpenMenu}
-              handleHistoryItemClick={handleItemClick}
+              handleHistoryItemClick={handleHistoryItemClick}
+              handleViewItem={handleViewItem}
               rowsPerPage={rowsPerPage}
               page={page}
               compareTo={compareTo}
+              current={data.current}
             />
           </SuspenseWithEmptyState>
         )}

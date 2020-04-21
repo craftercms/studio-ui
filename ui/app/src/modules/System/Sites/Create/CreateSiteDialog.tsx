@@ -811,7 +811,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             title={views[site.selectedView].title}
             subtitle={views[site.selectedView].subtitle}
             id="create-site-dialog"
-            onClose={handleClose}
+            onDismiss={handleClose}
             classes={{ root: classes.headerRoot }}
             subtitleTypographyProps={{
               classes: {

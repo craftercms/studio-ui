@@ -1976,21 +1976,21 @@ var storage = CStudioAuthoring.Storage;
         const messages = CrafterCMSNext.i18n.messages.bulkUploadConfirmDialogMessages;
 
         const confirm = document.createElement('div');
-        const onClose = () => {
+        const onCancel = () => {
           CrafterCMSNext.ReactDOM.unmountComponentAtNode(confirm);
         };
         CrafterCMSNext.render(confirm, 'ConfirmDialog', {
           title: CrafterCMSNext.i18n.intl.formatMessage(messages.title),
           body: CrafterCMSNext.i18n.intl.formatMessage(messages.description),
-          onClose: onClose,
-          onOk: onClose,
+          onCancel: onCancel,
+          onOk: onCancel,
           open: true
         });
       } else {
         const bulkUpload = document.createElement('div');
         bulkUpload.setAttribute('id', 'bulkUpload');
         document.documentElement.append(bulkUpload);
-        const onClose = (dropZoneStatus) => {
+        const onDismiss = (dropZoneStatus) => {
           CrafterCMSNext.ReactDOM.unmountComponentAtNode(bulkUpload);
           bulkUpload.remove();
           if (dropZoneStatus.uploadedFiles > 0) {
@@ -2001,7 +2001,7 @@ var storage = CStudioAuthoring.Storage;
           path: oCurrentTextNode.data.path,
           site: oCurrentTextNode.data.site,
           maxSimultaneousUploads: 2,
-          onClose: onClose,
+          onDismiss: onDismiss,
           open: true
         });
       }
