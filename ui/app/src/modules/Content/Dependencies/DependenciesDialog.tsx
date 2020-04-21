@@ -284,8 +284,8 @@ interface DependenciesDialogUIProps {
   setShowTypes: Function;
   dependenciesShown: string;
   setDependenciesShown: Function;
-  onClose: any;
-  handleClose: any;
+  onClose(): any;
+  onDismiss(): any;
   isEditableItem: Function;
   editDialogConfig: any;
   setEditDialogConfig: Function;
@@ -310,7 +310,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     dependenciesShown,
     setDependenciesShown,
     onClose,
-    handleClose,
+    onDismiss,
     isEditableItem,
     editDialogConfig,
     setEditDialogConfig,
@@ -335,7 +335,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     >
       <DialogHeader
         title={formatMessage(translations.headerTitle)}
-        onDismiss={handleClose}
+        onDismiss={onDismiss}
       />
       <DialogBody>
         <div className={classes.selectionContent}>
@@ -609,10 +609,6 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     }
   );
 
-  const handleClose = () => {
-    onDismiss?.();
-  };
-
   const getDepsItems = useCallback((siteId: string, path: string, newItem?: boolean) => {
     if (dialog.dependenciesShown === 'depends-on') {
       if (dialog.dependantItems === null || newItem) {
@@ -713,7 +709,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       dependenciesShown={dialog.dependenciesShown}
       setDependenciesShown={setDependenciesShow}
       onClose={onClose}
-      handleClose={handleClose}
+      onDismiss={onDismiss}
       isEditableItem={isEditableAsset}
       editDialogConfig={editDialogConfig}
       setEditDialogConfig={setEditDialogConfig}

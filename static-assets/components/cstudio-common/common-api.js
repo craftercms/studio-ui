@@ -714,29 +714,31 @@ var nodeOpen = false,
       },
 
       deleteContent: function(items, requestDelete, callback) {
-        const container = ($('<div class="delete-dialog-container"/>').appendTo('body'))[0];
+        const eventIdSuccess = 'deleteDialogSuccess';
 
-        CrafterCMSNext.render(
-          container,
-          'DeleteDialog',
-          {
-            onDismiss: () => {
-              unmount({ delay: 300, removeContainer: true });
-            },
-            onSuccess: (response) => {
-              if (response) {
-                eventNS.data = items;
-                eventNS.typeAction = '';
-                eventNS.oldPath = null;
-                document.dispatchEvent(eventNS);
-                callback && callback();
-              }
-              unmount({ delay: 300, removeContainer: true });
-            },
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_DELETE_DIALOG',
+          payload: {
             open: true,
-            items
+            items,
+            onSuccess: {
+              type: 'LEGACY_DIALOG_CALLBACK',
+              payload: { id: eventIdSuccess }
+            }
           }
-        ).then(done => unmount = done.unmount);
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+          if (response) {
+            eventNS.data = items;
+            eventNS.typeAction = '';
+            eventNS.oldPath = null;
+            document.dispatchEvent(eventNS);
+            callback && callback();
+          }
+          CrafterCMSNext.system.store.dispatch({type: 'CLOSE_DELETE_DIALOG'})
+        });
+
       },
       viewSchedulingPolicy: function(callback) {
         CSA.Operations._showDialogueView({
@@ -827,59 +829,60 @@ var nodeOpen = false,
 
       approveCommon: function(site, items, approveType) {
         const _self = this;
-        const container = $('<div class="approve-dialog-container"/>').appendTo('body')[0];
-        const user = CStudioAuthoringContext.user;
         const scheduling = approveType ? 'custom' : 'now';
 
-        let unmount;
-        CrafterCMSNext.render(container, 'PublishDialog', {
-          open: true,
-          onDismiss: (response) => {
-            if (response) {
-              _self.reloadItems(items, response);
+        const eventIdSuccess = 'publishDialogSuccess';
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_PUBLISH_DIALOG',
+          payload: {
+            open: true,
+            items,
+            scheduling,
+            onSuccess: {
+              type: 'LEGACY_DIALOG_CALLBACK',
+              payload: { id: eventIdSuccess }
             }
-            unmount({ delay: 300, removeContainer: true });
-          },
-          items,
-          scheduling
-        }).then((done) => (unmount = done.unmount));
+          }
+        });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+          _self.reloadItems(items, response);
+          CrafterCMSNext.system.store.dispatch({type: 'CLOSE_PUBLISH_DIALOG'})
+        });
       },
 
       viewDependencies: function(site, items, approveType, defaultSelection) {
-        const container = ($('<div class="delete-dialog-container"/>').appendTo('body'))[0];
         //defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
         const dependenciesShown = defaultSelection ? defaultSelection : 'depends-on';
 
-        CrafterCMSNext.render(
-          container,
-          'DependenciesDialog',
-          {
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_DEPENDENCIES_DIALOG',
+          payload: {
             open: true,
             item: items[0],
-            dependenciesShown,
-            onDismiss: () => {
-              unmount({ delay: 300, removeContainer: true });
-            }
+            dependenciesShown
           }
-        ).then(done => unmount = done.unmount);
-
+        })
       },
 
       submitContent: function(site, items) {
         const _self = this;
-        const container = $('<div class="request-publish-container"/>').appendTo('body')[0];
-        const user = CStudioAuthoringContext.user;
 
-        let unmount;
-        CrafterCMSNext.render(container, 'PublishDialog', {
-          onDismiss: (response) => {
-            if (response) {
-              _self.reloadItems(items, response);
+        const eventIdSuccess = 'publishDialogSuccess';
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_PUBLISH_DIALOG',
+          payload: {
+            open: true,
+            items,
+            onSuccess: {
+              type: 'LEGACY_DIALOG_CALLBACK',
+              payload: { id: eventIdSuccess }
             }
-            unmount({ delay: 300, removeContainer: true });
-          },
-          items: items
-        }).then((done) => (unmount = done.unmount));
+          }
+        });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+          _self.reloadItems(items, response);
+          CrafterCMSNext.system.store.dispatch({type: 'CLOSE_PUBLISH_DIALOG'})
+        });
       },
 
       reloadItems: function(items, args) {

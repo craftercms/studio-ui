@@ -31,6 +31,7 @@ import createStyles from '@material-ui/styles/createStyles/createStyles';
 import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
+import { isPlainObject } from '../../utils/object';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -42,9 +43,18 @@ const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialo
 function createCallback(
   action: StandardAction,
   dispatch: Dispatch,
-  fallbackAction?: StandardAction
-): () => void {
-  return action ? () => dispatch(action) : fallbackAction ? () => dispatch(fallbackAction) : null;
+): (output?: unknown) => void {
+  return action
+    ? (output) => dispatch({
+      type: action.type,
+      ...(isPlainObject(output) || Boolean(action.payload) ? {
+        payload: {
+          ...action.payload,
+          ...(isPlainObject(output) ? { output } : {})
+        }
+      } : {})
+    })
+    : null;
 }
 
 export const useStyles = makeStyles(() =>
@@ -146,9 +156,9 @@ function GlobalDialogManager() {
 }
 
 function MinimizedDialogManager({
-  state,
-  dispatch
-}: {
+                                  state,
+                                  dispatch
+                                }: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {
@@ -172,17 +182,17 @@ function MinimizedDialogManager({
   }, [el, inventory]);
   return inventory.length
     ? ReactDOM.createPortal(
-        inventory.map(({ id, title, subtitle, status }) => (
-          <MinimizedBar
-            key={id}
-            title={title}
-            subtitle={subtitle}
-            status={status}
-            onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
-          />
-        )),
-        el
-      )
+      inventory.map(({ id, title, subtitle, status }) => (
+        <MinimizedBar
+          key={id}
+          title={title}
+          subtitle={subtitle}
+          status={status}
+          onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
+        />
+      )),
+      el
+    )
     : null;
 }
 

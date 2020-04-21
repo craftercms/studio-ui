@@ -577,10 +577,10 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
 });
 
 export interface DropZoneStatus {
-  status?: string,
-  files?: number,
-  uploadedFiles?: number,
-  progress?: number
+  status?: string;
+  files?: number;
+  uploadedFiles?: number;
+  progress?: number;
 }
 
 const initialDropZoneStatus: DropZoneStatus = {
@@ -670,8 +670,8 @@ export default function BulkUpload(props: BulkUploadProps) {
       keepMounted={minimized}
       onDrop={preventWrongDrop}
       onDragOver={preventWrongDrop}
-      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
-      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
+      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
       onClose={() => onClose(dropZoneStatus)}
     >
       <DialogHeader

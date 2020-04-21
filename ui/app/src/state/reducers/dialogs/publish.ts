@@ -28,7 +28,6 @@ export default createReducer<GlobalState['dialogs']['publish']>(
   {
     [showPublishDialog.type]: (state, { payload }) => ({
       onDismiss: closePublishDialog(),
-      onSuccess: closePublishDialog(),
       ...payload,
       open: true
     }),

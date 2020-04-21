@@ -84,7 +84,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       disableBackdropClick={disableBackdropClick}
       disableEnforceFocus={disableEnforceFocus}
     >
-      {title && <DialogHeader id="confirmDialogTitle" title={title} />}
+      {title && <DialogHeader id="confirmDialogTitle" title={title} onDismiss={onDismiss} />}
       <DialogBody id="confirmDialogBody">
         {body && <DialogContentText color="textPrimary">{body}</DialogContentText>}
         {children}

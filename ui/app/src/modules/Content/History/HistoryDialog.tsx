@@ -440,7 +440,6 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   });
 
   useEffect(() => {
-    console.log('holita');
     if (open) {
       if (environment) {
         getConfigurationVersions(site, path, environment, module).subscribe(

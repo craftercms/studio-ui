@@ -291,7 +291,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
       .filter(([key, value]) => value === true)
       .map(([key]) => key);
     onChange(result);
-  }, [checked, onChange]);
+  }, [checked]);
 
   return (
     <div className={clsx(classes.dependencySelection, classes.dependencySelectionDelete)}>
