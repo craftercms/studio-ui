@@ -132,7 +132,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   more: {
     width: '50%',
     textAlign: 'center',
-    color: theme.palette.text.secondary
+    color: theme.palette.text.secondary,
+    flex: 1
   },
   background: {
     background: backgroundColor,
@@ -209,7 +210,7 @@ function BlueprintCard(props: BlueprintCardProps) {
     setPlay(false);
   }
 
-  function onImageClick(e: any, index: number) {
+  function onImageClick(e: any, index: number = 0) {
     if (blueprint.id === 'GIT') return false;
     e.stopPropagation();
     e.preventDefault();
@@ -295,7 +296,13 @@ function BlueprintCard(props: BlueprintCardProps) {
     <Card className={classes.card}>
       {
         (id !== 'GIT') &&
-        <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
+        <CardActionArea onClick={(e) => {
+          if ((marketplace && !blueprint.compatible)) {
+            onImageClick(e);
+          } else {
+            onBlueprintSelected(blueprint, 1);
+          }
+        }}>
           {/*
           // @ts-ignore */}
           <CardHeader
