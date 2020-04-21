@@ -1244,9 +1244,7 @@
       },
 
       getStoredPathKey: function(instance) {
-        return `${CStudioAuthoringContext.site}-${instance.label
-          .replace(' ', '')
-          .toLowerCase()}-opened`;
+        return `${CStudioAuthoringContext.site}-${instance.label.replace(' ', '').toLowerCase()}-opened`;
       },
 
       getNumKey: function(nodes, key, callback) {
