@@ -35,12 +35,7 @@ import { nou } from './object';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
-import {
-  createGenerateClassName,
-  jssPreset,
-  makeStyles,
-  StylesProvider
-} from '@material-ui/core/styles';
+import { jssPreset, makeStyles } from '@material-ui/core/styles';
 import { generateClassName, palette, theme } from '../styles/theme';
 import store from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
@@ -133,7 +128,8 @@ export function createCodebaseBridge() {
       Login: lazy(() => import('../pages/Login')),
       BulkUpload: lazy(() => import('../components/BulkUpload')),
       ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
-      GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager'))
+      GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
+      PagesWidget: lazy(() => import('../components/PagesWidget'))
     },
 
     system: { generateClassName, theme, palette, store },
@@ -180,7 +176,8 @@ export function createCodebaseBridge() {
     render(
       container: string | Element,
       component: string | JSXElementConstructor<any>,
-      props: object = {}
+      props: object = {},
+      isLegacy = true
     ): Promise<any> {
       if (typeof component !== 'string' && !Object.values(Bridge.components).includes(component)) {
         console.warn('The supplied module is not a know component of CrafterCMSNext.');
@@ -219,7 +216,7 @@ export function createCodebaseBridge() {
           // @ts-ignore
           ReactDOM.render(
             // @ts-ignore
-            <CrafterCMSNextBridge isLegacy>
+            <CrafterCMSNextBridge isLegacy={isLegacy}>
               <Component {...props} />
             </CrafterCMSNextBridge>,
             element,

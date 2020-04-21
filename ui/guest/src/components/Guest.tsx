@@ -287,9 +287,11 @@ export function Guest(props: GuestProps) {
                   // In some cases the 'blur' event is getting caught somewhere along
                   // the way. Focusout seems to be more reliable.
                   editor.on('focusout', (e) => {
-                    e.stopImmediatePropagation();
-                    save();
-                    cancel();
+                    if (!e.relatedTarget) {
+                      e.stopImmediatePropagation();
+                      save();
+                      cancel();
+                    }
                   });
 
                   editor.once('change', () => {

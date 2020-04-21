@@ -42,7 +42,7 @@
 <div id="root"></div>
 <#include "/templates/web/common/js-next-scripts.ftl" />
 <script>
-  CrafterCMSNext.render('#root', 'Preview');
+  CrafterCMSNext.render('#root', 'Preview', {}, false);
 </script>
 </body>
 </html>

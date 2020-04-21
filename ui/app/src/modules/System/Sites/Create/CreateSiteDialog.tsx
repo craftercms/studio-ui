@@ -50,7 +50,6 @@ import {
 } from '../../../../services/marketplace';
 import gitLogo from '../../../../assets/git-logo.svg';
 import { backgroundColor, palette } from '../../../../styles/theme';
-// @ts-ignore
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/SearchBar';
@@ -225,10 +224,6 @@ const useStyles = makeStyles((theme: Theme) =>
         paddingTop: '70px'
       }
     },
-    'dialogActions': {
-      background: backgroundColor,
-      padding: '8px 20px'
-    },
     'backBtn': {
       marginRight: 'auto'
     },
@@ -310,7 +305,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface CreateSiteDialogProps {
-  onClose(): any;
+  // open: boolean;
+  onClose?(): any;
 }
 
 function CreateSiteDialog(props: CreateSiteDialogProps) {
@@ -449,9 +445,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
       setDialog({ inProgress: true });
     } else {
-      //call externalClose fn
-      props.onClose();
+      // call externalClose fn
       setDialog({ open: false, inProgress: false });
+      props.onClose?.();
     }
   }
 
@@ -678,8 +674,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       () => {
         setApiState({ creatingSite: false });
         handleClose();
-        // TODO: API2 change point
-        setSiteCookie(SITE_COOKIE, site.site_id);
+        // TODO: Remove when createSite updates to API2
+        // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
+        setSiteCookie(SITE_COOKIE, site.siteId ?? site.site_id);
         window.location.href = `${AUTHORING_BASE}/preview`;
       },
       ({ response }) => {
@@ -692,7 +689,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               global: true
             });
           } else {
-            //TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
+            // TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
             const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
             setApiState({
               creatingSite: false,
@@ -763,8 +760,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       open={dialog.open}
       onClose={handleClose}
       aria-labelledby="create-site-dialog"
-      disableBackdropClick={true}
-      fullWidth={true}
+      disableBackdropClick
+      fullWidth
       maxWidth="lg"
       classes={{ paperScrollPaper: classes.paperScrollPaper }}
       disableEnforceFocus={disableEnforceFocus}
@@ -924,7 +921,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             </div>
           )}
           {site.selectedView !== 0 && (
-            <DialogFooter classes={{ root: clsx(classes.dialogActions, classes.fadeIn) }}>
+            <DialogFooter classes={{ root: classes.fadeIn }}>
               <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
                 {formatMessage(messages.back)}
               </Button>

@@ -83,7 +83,8 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
     >
       {title && <DialogHeader id="confirmDialogTitle" title={title} />}
       <DialogBody id="confirmDialogBody">
-        {body ? <DialogContentText>{body}</DialogContentText> : children}
+        {body && <DialogContentText color="textPrimary">{body}</DialogContentText>}
+        {children}
       </DialogBody>
       <DialogFooter>
         <DialogActions>
