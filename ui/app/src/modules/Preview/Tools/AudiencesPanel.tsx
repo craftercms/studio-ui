@@ -23,8 +23,6 @@ import Grid from '@material-ui/core/Grid';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import { useSelection, useStateResource } from '../../../utils/hooks';
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
-import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { useDispatch } from 'react-redux';
 import { setActiveTargetingModel, updateAudiencesPanelModel } from '../../../state/actions/preview';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
@@ -35,6 +33,7 @@ import Input from '../../../components/Controls/FormEngine/Input';
 import Dropdown from '../../../components/Controls/FormEngine/Dropdown';
 import CheckboxGroup from '../../../components/Controls/FormEngine/CheckboxGroup';
 import DateTime from '../../../components/Controls/FormEngine/DateTime';
+import Suspencified from '../../../components/SystemStatus/Suspencified';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(1)
     },
     formControl: {
-      'width': '100%',
+      width: '100%',
       '& .MuiFormGroup-root': {
         marginLeft: '10px'
       },
@@ -57,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%'
     },
     actionButton: {
-      'margin': '18px 0 80px 15px',
+      margin: '18px 0 80px 15px',
       '& .MuiButton-contained': {
         marginRight: '8px'
       }
@@ -80,10 +79,10 @@ const translations = defineMessages({
 });
 
 const controlsMap = {
-  'dropdown': Dropdown,
+  dropdown: Dropdown,
   'checkbox-group': CheckboxGroup,
   'date-time': DateTime,
-  'input': Input
+  input: Input
 };
 
 interface AudiencesPanelUIProps {
@@ -198,20 +197,16 @@ export default function AudiencesPanel() {
   };
 
   return (
-    <ErrorBoundary>
-      <React.Suspense
-        fallback={<LoadingState title={formatMessage(translations.audiencesPanelLoading)} />}
-      >
-        <AudiencesPanelUI
-          audiencesResource={resource}
-          model={panelState.model}
-          modelApplying={panelState.isApplying}
-          modelApplied={panelState.applied}
-          onChange={onChange}
-          onSaveModel={saveModel}
-        />
-      </React.Suspense>
-    </ErrorBoundary>
+    <Suspencified loadingStateProps={{ title: formatMessage(translations.audiencesPanelLoading) }}>
+      <AudiencesPanelUI
+        audiencesResource={resource}
+        model={panelState.model}
+        modelApplying={panelState.isApplying}
+        modelApplied={panelState.applied}
+        onChange={onChange}
+        onSaveModel={saveModel}
+      />
+    </Suspencified>
   );
 }
 

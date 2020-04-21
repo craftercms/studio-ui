@@ -17,7 +17,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { useActiveSiteId, useDebouncedInput, useSelection, useStateResourceSelection } from '../../../utils/hooks';
+import {
+  useActiveSiteId,
+  useDebouncedInput,
+  useSelection,
+  useStateResourceSelection
+} from '../../../utils/hooks';
 import { MediaItem } from '../../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -26,11 +31,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../../models/GlobalState';
 import TablePagination from '@material-ui/core/TablePagination';
 import { fromEvent, interval } from 'rxjs';
-import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
-import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from '../../../state/actions/preview';
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import {
+  ASSET_DRAG_ENDED,
+  ASSET_DRAG_STARTED,
+  fetchAssetsPanelItems
+} from '../../../state/actions/preview';
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
@@ -38,6 +45,7 @@ import UploadIcon from '@material-ui/icons/Publish';
 import { nnou, pluckProps } from '../../../utils/object';
 import { palette } from '../../../styles/theme';
 import { uploadDataUrl } from '../../../services/content';
+import Suspencified from '../../../components/SystemStatus/Suspencified';
 
 const translations = defineMessages({
   assetsPanel: {
@@ -69,7 +77,7 @@ const translations = defineMessages({
 const assetsPanelStyles = makeStyles(() =>
   createStyles({
     assetsPanelWrapper: {
-      'padding': '15px 15px 55px 15px',
+      padding: '15px 15px 55px 15px',
       '&.dragInProgress': {
         background: 'red'
       }
@@ -82,15 +90,15 @@ const assetsPanelStyles = makeStyles(() =>
       marginBottom: '16px'
     },
     pagination: {
-      'marginLeft': 'auto',
-      'position': 'fixed',
-      'zIndex': 1,
-      'bottom': 0,
-      'background': 'white',
-      'color': 'black',
-      'width': `calc(${DRAWER_WIDTH}px - 1px)`,
-      'left': 0,
-      'borderTop': '1px solid rgba(0, 0, 0, 0.12)',
+      marginLeft: 'auto',
+      position: 'fixed',
+      zIndex: 1,
+      bottom: 0,
+      background: 'white',
+      color: 'black',
+      width: `calc(${DRAWER_WIDTH}px - 1px)`,
+      left: 0,
+      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
       '& p': {
         padding: 0
       },
@@ -102,10 +110,10 @@ const assetsPanelStyles = makeStyles(() =>
       }
     },
     toolbar: {
-      'padding': 0,
-      'display': 'flex',
-      'justifyContent': 'space-between',
-      'paddingLeft': '20px',
+      padding: 0,
+      display: 'flex',
+      justifyContent: 'space-between',
+      paddingLeft: '20px',
       '& .MuiTablePagination-spacer': {
         display: 'none'
       },
@@ -291,35 +299,31 @@ export default function AssetsPanel() {
       title={translations.assetsPanel}
       classes={dragInProgress ? { body: classes.noScroll } : null}
     >
-      <ErrorBoundary>
-        <div ref={elementRef}>
-          <div className={classes.search}>
-            <SearchBar
-              onActionButtonClick={() => handleSearchKeyword('')}
-              onChange={handleSearchKeyword}
-              keyword={keyword}
-            />
-          </div>
-          <React.Suspense
-            fallback={<LoadingState title={formatMessage(translations.retrieveAssets)} />}
-          >
-            {dragInProgress && (
-              <div className={classes.uploadOverlay}>
-                <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
-              </div>
-            )}
-            <AssetsPanelUI
-              classes={classes}
-              assetsResource={resource}
-              onPageChanged={onPageChanged}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
-              GUEST_BASE={GUEST_BASE}
-              onDragDrop={onDragDrop}
-            />
-          </React.Suspense>
+      <div ref={elementRef}>
+        <div className={classes.search}>
+          <SearchBar
+            onActionButtonClick={() => handleSearchKeyword('')}
+            onChange={handleSearchKeyword}
+            keyword={keyword}
+          />
         </div>
-      </ErrorBoundary>
+        <Suspencified loadingStateProps={{ title: formatMessage(translations.retrieveAssets) }}>
+          {dragInProgress && (
+            <div className={classes.uploadOverlay}>
+              <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
+            </div>
+          )}
+          <AssetsPanelUI
+            classes={classes}
+            assetsResource={resource}
+            onPageChanged={onPageChanged}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+            GUEST_BASE={GUEST_BASE}
+            onDragDrop={onDragDrop}
+          />
+        </Suspencified>
+      </div>
     </ToolPanel>
   );
 }
