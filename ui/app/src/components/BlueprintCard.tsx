@@ -137,6 +137,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '50%',
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    flex: 1
   },
   background: {
     background: backgroundColor,
@@ -213,8 +214,8 @@ function BlueprintCard(props: BlueprintCardProps) {
     setPlay(false);
   }
 
-  function onImageClick(e: any, index: number) {
-    if(blueprint.id === 'GIT') return false;
+  function onImageClick(e: any, index: number = 0) {
+    if (blueprint.id === 'GIT') return false;
     e.stopPropagation();
     e.preventDefault();
     onDetails(blueprint, index);
@@ -288,12 +289,28 @@ function BlueprintCard(props: BlueprintCardProps) {
     <Card className={classes.card}>
         {
           (id !== 'GIT') &&
-          <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
+          <CardActionArea
+            onClick={(e) => {
+              if ((marketplace && !blueprint.compatible)) {
+                onImageClick(e);
+              } else {
+                onBlueprintSelected(blueprint, 1);
+              }
+            }}
+          >
             <CardHeader
-                title={name}
-                subheader={id !== 'GIT'? renderSubtitle() :''}
-                titleTypographyProps={{variant: "subtitle2", component: "h2", className: "cardTitle"}}
-                subheaderTypographyProps={{variant: "subtitle2", component: "h2", color: "textSecondary"}}
+              title={name}
+              subheader={id !== 'GIT' ? renderSubtitle() : ''}
+              titleTypographyProps={{
+                variant: 'subtitle2',
+                component: 'h2',
+                className: 'cardTitle'
+              }}
+              subheaderTypographyProps={{
+                variant: 'subtitle2',
+                component: 'h2',
+                color: 'textSecondary'
+              }}
             />
           </CardActionArea>
         }
