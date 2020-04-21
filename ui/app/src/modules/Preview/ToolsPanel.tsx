@@ -42,12 +42,20 @@ import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
 import { fetchPreviewToolsConfig, selectTool } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
-import LoadingState from '../../components/SystemStatus/LoadingState';
+import {
+  useActiveSiteId,
+  usePreviewState,
+  useSelection,
+  useStateResource
+} from '../../utils/hooks';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 import ContentTree from './Tools/ContentTree';
+import { nnou } from '../../utils/object';
+import Suspencified from '../../components/SystemStatus/Suspencified';
 import SearchPanel from './Tools/SearchPanel';
+import Tools from '../../models/PreviewToolIDs';
+import { Resource } from '../../models/Resource';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -150,7 +158,27 @@ const translations = defineMessages({
   }
 });
 
-function UnknownPanel(props: any) {
+interface UnknownPanelProps {
+  id: string;
+}
+
+interface Config {
+  width: number;
+  height: number;
+  title: string;
+}
+
+interface Tool {
+  config: Config;
+  id: Tools;
+  title: string;
+}
+
+interface ToolSelectorProps {
+  resource: Resource<Tool[]>;
+}
+
+function UnknownPanel(props: UnknownPanelProps) {
   const classes = useStyles({});
   return (
     <ToolPanel title={translations.unknownPanel}>
@@ -160,7 +188,7 @@ function UnknownPanel(props: any) {
         className={`${classes.panelBodyInner} ${classes.center}`}
       >
         <div>
-          <WarningRounded/>
+          <WarningRounded />
         </div>
         <pre className={classes.ellipsis} title={props.id}>
           {props.id}
@@ -174,34 +202,31 @@ function UnknownPanel(props: any) {
   );
 }
 
-function ToolSelector() {
+function ToolSelector(props: ToolSelectorProps) {
+  const { resource } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { tools } = usePreviewState();
+  const tools = resource.read();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
 
-  return tools == null ? (
-    <LoadingState title={`${formatMessage(translations.loading)}...`}/>
-  ) : (
+  return (
     <List>
-      {
-        tools
-          .map((tool) => ({
-            ...tool,
-            Icon: componentIconMap[tool.id] || WarningRounded,
-            title: getTranslation(tool.title, translations, formatMessage)
-          }))
-          .map(({ id, title, Icon }) => (
-            <ListItem key={id} button onClick={() => select(id)}>
-              <ListItemIcon className={classes.itemIconRoot}>
-                <Icon/>
-              </ListItemIcon>
-              <ListItemText primary={title}/>
-              <ChevronRightIcon/>
-            </ListItem>
-          ))
-      }
+      {tools
+        .map((tool) => ({
+          ...tool,
+          Icon: componentIconMap[tool.id] || WarningRounded,
+          title: getTranslation(tool.title, translations, formatMessage)
+        }))
+        .map(({ id, title, Icon }) => (
+          <ListItem key={id} button onClick={() => select(id)}>
+            <ListItemIcon className={classes.itemIconRoot}>
+              <Icon />
+            </ListItemIcon>
+            <ListItemText primary={title} />
+            <ChevronRightIcon />
+          </ListItem>
+        ))}
     </List>
   );
 }
@@ -230,6 +255,7 @@ const componentMap: any = {
 
 export default function ToolsPanel() {
   const classes = useStyles({});
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { guest, tools, selectedTool, showToolsPanel } = usePreviewState();
@@ -242,6 +268,14 @@ export default function ToolsPanel() {
       : ToolSelector;
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
   let config = toolMeta?.config;
+
+  const resource = useStateResource(tools, {
+    shouldRenew: (source, resource) => resource.complete,
+    shouldResolve: (source) => nnou(source),
+    shouldReject: () => false,
+    errorSelector: null,
+    resultSelector: (source) => source
+  });
 
   useEffect(() => {
     // TODO: Move fetch out of component
@@ -257,7 +291,9 @@ export default function ToolsPanel() {
       classes={{ paper: classes.drawerPaper }}
     >
       {site ? (
-        <Tool id={toolMeta?.id} config={config}/>
+        <Suspencified loadingStateProps={{ title: `${formatMessage(translations.loading)}...` }}>
+          <Tool id={toolMeta?.id} config={config} resource={resource} />
+        </Suspencified>
       ) : (
         <EmptyState
           title={
