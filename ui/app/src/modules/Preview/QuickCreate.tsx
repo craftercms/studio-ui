@@ -25,7 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
-import { useActiveSiteId, useSpreadState, useSelection, usePreviewState } from '../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection, useSpreadState } from '../../utils/hooks';
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
@@ -110,8 +110,9 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     inProgress: false
   });
 
-  const onEmbeddedFormSaveSuccess = ({ data }) =>
-    data.item.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
+  const onEmbeddedFormSaveSuccess = ({ data }) => {
+    data.item?.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
+  };
 
   const onNewContentClick = () => {
     onItemClicked?.();
