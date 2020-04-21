@@ -16,6 +16,8 @@
 
 <#assign loggedIn = ((userEmail?? && userEmail != "") || (envConfig??))/>
 <#assign env_config = envConfig???then(envConfig + _csrf, {})/>
+<#assign locationOrigin = '${request.scheme}://${request.serverName}:${request.serverPort?c}' />
+
 <#if !(userService??)>
   <div style="padding: 1em; text-align: center">
     <h1>The freemarker context is not undefined.</h1>
@@ -73,6 +75,8 @@
   },
   </#if>
   "env": {
+    "AUTHORING_BASE": "${locationOrigin + '/studio'!"/studio"}",
+    "GUEST_BASE": "${locationOrigin!"http://localhost:8080"}",
     "XSRF_CONFIG_HEADER": "${env_config.headerName!"X-XSRF-TOKEN"}",
     "XSRF_CONFIG_ARGUMENT": "${env_config.parameterName!"_csrf"}",
     "SITE_COOKIE": "crafterSite",
