@@ -27,7 +27,6 @@ import { createStyles } from '@material-ui/core';
 import { useSpreadState } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
-  changeCurrentUrl,
   EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
@@ -105,11 +104,23 @@ interface EmbeddedLegacyEditorsProps {
   showController?: boolean;
   showTabs?: boolean;
 
+  onSaveLegacySuccess?(response): any;
+
+  onSaveSuccess?(response): any;
+
   getPath?(type: string): void;
 }
 
 export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
-  const { dialogConfig, setDialogConfig, getPath, showController = false, showTabs = true } = props;
+  const {
+    dialogConfig,
+    setDialogConfig,
+    getPath,
+    showController = false,
+    showTabs = true,
+    onSaveLegacySuccess,
+    onSaveSuccess
+  } = props;
   const { formatMessage } = useIntl();
   const classes = styles({});
   const iframeRef = useRef(null);
@@ -188,10 +199,8 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
           }
           case EMBEDDED_LEGACY_FORM_SAVE: {
             closeEmbeddedLegacyForm(e.data.refresh, tab);
-
-            if (e.data.redirectUrl) {
-              dispatch(changeCurrentUrl(e.data.redirectUrl));
-            }
+            onSaveLegacySuccess?.(e);
+            onSaveSuccess?.(e);
             break;
           }
           case EMBEDDED_LEGACY_FORM_FAILURE: {
@@ -206,7 +215,18 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         messagesSubscription.unsubscribe();
       };
     }
-  }, [setDialogConfig, setTabsState, tabsState, dialogConfig, messages, closeEmbeddedLegacyForm, dispatch]);
+  }, [
+    onSaveSuccess,
+    onSaveLegacySuccess,
+    handleTabChange,
+    setDialogConfig,
+    setTabsState,
+    tabsState,
+    dialogConfig,
+    messages,
+    closeEmbeddedLegacyForm,
+    dispatch
+  ]);
 
   return (
     <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
