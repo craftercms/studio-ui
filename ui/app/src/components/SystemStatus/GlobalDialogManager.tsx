@@ -14,13 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  lazy,
-  Suspense,
-  useLayoutEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { lazy, Suspense, useLayoutEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
@@ -148,6 +142,8 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         path={state.history.path}
+        item={state.history.item}
+        byId={state.history.byId}
         onClose={createCallback(state.history.onClose, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />

@@ -41,7 +41,7 @@ import { useActiveSiteId, useSpreadState, useStateResource } from '../../../util
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import DialogFooter from '../../../components/DialogFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import { APIError } from '../../../models/GlobalState';
+import { APIError, EntityState } from '../../../models/GlobalState';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
@@ -396,6 +396,8 @@ interface Data {
 interface HistoryDialogBaseProps {
   open: boolean;
   path: string;
+  item: LegacyItem;
+  byId: LookupTable<LegacyVersion>;
   environment?: string;
   module?: string;
 }
@@ -405,7 +407,7 @@ export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   onDismiss?(): any;
 }>;
 
-export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
+export interface HistoryDialogStateProps extends EntityState<LegacyVersion>, HistoryDialogBaseProps {
   onClose?: StandardAction;
   onDismiss?: StandardAction;
 }

@@ -23,10 +23,18 @@ import { closeNewContentDialog } from '../reducers/dialogs/newContent';
 import { closePublishDialog } from '../reducers/dialogs/publish';
 import { camelize } from '../../utils/string';
 import { closeDeleteDialog } from '../reducers/dialogs/delete';
+import {
+  fetchItemVersions,
+  fetchItemVersionsComplete,
+  fetchItemVersionsFailed,
+  showHistoryDialog
+} from '../reducers/dialogs/history';
+import { getItemVersions } from '../../services/content';
+import { catchAjaxError } from '../../utils/ajax';
 
 function getDialogNameFromType(type: string): string {
-  let name = type.substring(type.indexOf("_") + 1);
-  name = name.substring(0, name.indexOf("_"));
+  let name = type.substring(type.indexOf('_') + 1);
+  name = name.substring(0, name.indexOf('_'));
   return camelize(name.toLowerCase());
 }
 
@@ -45,6 +53,15 @@ export default [
         [payload, state.dialogs[getDialogNameFromType(type)].onClose].filter((callback) => Boolean(callback))
       ),
       switchMap((actions) => (actions.length ? actions : NEVER))
-    )
+    ),
   // endregion
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(showHistoryDialog.type, fetchItemVersions.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => getItemVersions(state.sites.active, payload.path).pipe(
+        map(fetchItemVersionsComplete),
+        catchAjaxError(fetchItemVersionsFailed)
+      ))
+    )
 ] as Epic[];
