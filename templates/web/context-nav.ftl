@@ -34,10 +34,7 @@
             >
               <span class="nav-icon fa fa-plus-circle pointer" data-title="quickCreate"></span>
             </a>
-            <ul id="quick-create" class="dropdown-menu" role="menu">
-              <li class="title" style=""><span data-translation="quickCreate">Quick Create</span>
-              </li>
-            </ul>
+            <div id="quick-create-menu"></div>
           </li>
         </ul>
 

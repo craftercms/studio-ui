@@ -148,8 +148,15 @@ export function PreviewConcierge(props: any) {
           dispatch(checkOutGuest());
           break;
         case SORT_ITEM_OPERATION: {
-          const { modelId, fieldId, currentIndex, targetIndex } = payload;
-          sortItem(site, guest.models[modelId].craftercms.path, fieldId, currentIndex, targetIndex).subscribe(
+          const { modelId, fieldId, currentIndex, targetIndex, parentModelId } = payload;
+          sortItem(
+            site,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            fieldId,
+            currentIndex,
+            targetIndex,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null
+          ).subscribe(
             () => {
               enqueueSnackbar('Sort operation completed.');
             },

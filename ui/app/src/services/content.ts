@@ -161,6 +161,12 @@ const systemPropsList = [
   'lastModifiedDate_dt'
 ];
 
+export function fetchLegacyContentTypes(site, path) {
+  return get(
+    `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}&path=${path}'`
+  ).pipe(pluck('response'));
+}
+
 export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
   return get(`/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`).pipe(
     map<AjaxResponse, ContentType[]>(({ response }) => (
@@ -697,38 +703,17 @@ export function sortItem(
   modelId: string,
   fieldId: string,
   currentIndex: number,
-  targetIndex: number
+  targetIndex: number,
+  parentModelId: string = null
 ): Observable<any> {
-  return getDOM(site, modelId).pipe(
-    switchMap((doc) => {
-
-      const qs = {
-        site,
-        path: modelId,
-        unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector('file-name'))
-      };
-
-      updateModifiedDateElement(doc);
-
-      // It's important to add the `:scope >` in to the selector since
-      // there may be nested fields with the same field ID.
-      const items = doc.querySelectorAll(`:scope > ${fieldId} > *`);
-      const $el = $(items).eq(currentIndex);
-      const $targetSibling = $(items).eq(targetIndex);
-
-      if (currentIndex < targetIndex) {
-        $el.insertAfter($targetSibling);
-      } else {
-        $el.insertBefore($targetSibling);
-      }
-
-      return post(
-        writeContentUrl(qs),
-        serialize(doc)
-      );
-
-    })
+  return performMutation(
+    site,
+    modelId,
+    parentModelId,
+    doc => {
+      const item = extractNode(doc, fieldId, currentIndex);
+      insertCollectionItem(doc, fieldId, targetIndex, item);
+    }
   );
 }
 
@@ -1182,5 +1167,6 @@ export default {
   fetchPublishingChannels,
   uploadDataUrl,
   getBulkUploadUrl,
-  getQuickCreateContentList
+  getQuickCreateContentList,
+  fetchLegacyContentTypes
 };
