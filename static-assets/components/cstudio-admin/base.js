@@ -109,10 +109,22 @@
         }
       }
 
+
+      var validatorContainer = document.createElement('div');
+      YDom.addClass(validatorContainer, 'craftercms-entitlement');
+
+      var logo = document.createElement('img');
+      logo.className = 'craftercms-entitlement-logo';
+      logo.src = '/studio/static-assets/images/logo.svg';
+
       var entitlementValidatorP = document.createElement('p');
-      YDom.addClass(entitlementValidatorP, 'entitlementValidator');
+      YDom.addClass(entitlementValidatorP, 'craftercms-entitlement-copy');
       entitlementValidatorP.innerHTML = entitlementValidator;
-      document.getElementById('categories-panel').appendChild(entitlementValidatorP);
+
+      validatorContainer.appendChild(logo);
+      validatorContainer.appendChild(entitlementValidatorP);
+      document.getElementById('categories-panel').appendChild(validatorContainer);
+
     }
   };
 
@@ -203,14 +215,7 @@
           params.toolbar.selectedEl = self;
           YDom.addClass(self, 'cstudio-admin-console-item-selected');
           params.tool.renderWorkarea();
-          var arrowEl = document.getElementById('cstudio-admin-console-item-selected-arrow');
 
-          if (!arrowEl) {
-            arrowEl = document.createElement('div');
-            arrowEl.id = 'cstudio-admin-console-item-selected-arrow';
-          }
-
-          params.toolbar.selectedEl.appendChild(arrowEl);
         }
       };
 

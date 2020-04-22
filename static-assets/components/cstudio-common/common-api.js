@@ -1501,7 +1501,7 @@ var nodeOpen = false,
         } else {
           url = baseUri + encodeURI(contentTO.uri);
         }
-        return url;
+        return url || '/';
       },
 
       /**
@@ -9388,7 +9388,7 @@ var nodeOpen = false,
       //buttonControl.innerHTML = label;
       buttonControl.value = label;
       YDom.addClass(buttonControl, 'cstudio-form-control-button ');
-      YDom.addClass(buttonControl, 'cstudio-button');
+      YDom.addClass(buttonControl, 'btn btn-default');
       this.controlBox.appendChild(buttonControl);
 
       buttonControl.onclick = function () {

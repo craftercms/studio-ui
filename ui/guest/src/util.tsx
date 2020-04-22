@@ -556,7 +556,7 @@ export function isBlank(str: string): boolean {
   return str === '';
 }
 
-export function addAnimation($element: JQuery, animationClass: string): void {
+export function addAnimation($element: JQuery<Element> | JQuery<HTMLElement>, animationClass: string): void {
   const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
   $element.addClass(animationClass);
   $element.one(END_EVENT, function () {

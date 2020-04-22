@@ -229,11 +229,13 @@ interface DeleteDialogBaseProps {
   items?: LegacyItem[];
 }
 
-export type DeleteDialogProps = PropsWithChildren<DeleteDialogBaseProps & {
-  onClose(): any;
-  onDismiss(): any;
-  onSuccess?(response?: any): any;
-}>;
+export type DeleteDialogProps = PropsWithChildren<
+  DeleteDialogBaseProps & {
+    onClose(): any;
+    onDismiss(): any;
+    onSuccess?(response?: any): any;
+  }
+>;
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
   onClose?: StandardAction;
@@ -256,13 +258,14 @@ function DeleteDialog(props: DeleteDialogProps) {
   });
   const user = useActiveUser();
   const siteId = useActiveSiteId();
-  //Dependency selection
+  // Dependency selection
   const [deleteDependencies, setDeleteDependencies] = useState<DeleteDependencies>();
   const [selectedItems, setSelectedItems] = useState([]);
 
-  const depsSource = useMemo(() => {
-    return { deleteDependencies, apiState };
-  }, [deleteDependencies, apiState]);
+  const depsSource = useMemo(
+    () => ({ deleteDependencies, apiState }),
+    [deleteDependencies, apiState]
+  );
 
   const resource = useStateResource<any, any>(
     depsSource,

@@ -19,6 +19,7 @@ import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { closeConfirmDialog } from '../reducers/dialogs/confirm';
 import { NEVER } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
+import { closeNewContentDialog } from '../reducers/dialogs/newContent';
 import { closePublishDialog } from '../reducers/dialogs/publish';
 import { camelize } from '../../utils/string';
 import { closeDeleteDialog } from '../reducers/dialogs/delete';
@@ -33,7 +34,12 @@ export default [
   // region Confirm Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(closeConfirmDialog.type, closePublishDialog.type, closeDeleteDialog.type),
+      ofType(
+        closeConfirmDialog.type,
+        closePublishDialog.type,
+        closeDeleteDialog.type,
+        closeNewContentDialog.type
+      ),
       withLatestFrom(state$),
       map(([{ type, payload }, state]) =>
         [payload, state.dialogs[getDialogNameFromType(type)].onClose].filter((callback) => Boolean(callback))

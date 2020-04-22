@@ -26,6 +26,7 @@ import { ContentTypeReceptacle } from './ContentTypeReceptacle';
 import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
+import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';
 import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialog';
 import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
@@ -120,6 +121,7 @@ export interface GlobalState {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;
     minimizedDialogs: MinimizedDialogsStateProps;
+    newContent: NewContentDialogStateProps;
     history: HistoryDialogStateProps;
     publish: PublishDialogStateProps;
     dependencies: DependenciesDialogStateProps;

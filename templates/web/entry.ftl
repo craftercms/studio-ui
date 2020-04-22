@@ -83,11 +83,10 @@
 
 <ui-view class="general-view"></ui-view>
 
-<div class="footer-general" ng-show="isFooter">
-  <section class="footer-body">
-    <p class="entitlementValidator">${applicationContext.get("crafter.entitlementValidator").getDescription()}</p>
-    <img class="crafter-studio-logo" alt="Crafter CMS" ng-src="/studio/static-assets/images/logo.svg" src="/studio/static-assets/images/logo.svg">
-  </section>
-</div>
+<section class="craftercms-entitlement" ng-show="isFooter">
+  <img class="craftercms-entitlement-logo" alt="Crafter CMS" ng-src="/studio/static-assets/images/logo.svg" src="/studio/static-assets/images/logo.svg">
+  <p class="craftercms-entitlement-copy">${applicationContext.get("crafter.entitlementValidator").getDescription()}</p>
+</section>
+
 </body>
 </html>

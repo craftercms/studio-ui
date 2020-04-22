@@ -23,7 +23,7 @@
   <meta name="theme-color" content="#000000"/>
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
   <script src="${contentModel.script_s}"></script>
-  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i&display=swap"
+  <link href="/studio/static-assets/styles/typography.css"
         rel="stylesheet">
   <style>
     html, body {
@@ -32,6 +32,7 @@
       height: 100%;
       background: #fafafa;
     }
+
     .preview-landing {
       width: 100%;
       height: 100%;
@@ -40,6 +41,7 @@
       align-items: center;
       text-align: center;
     }
+
     .preview-landing img {
       max-width: 80%;
     }

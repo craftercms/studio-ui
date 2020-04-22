@@ -29,28 +29,28 @@ body.#{$class-prefix}-dnd-enabled {
     position: relative !important;
     border-color: $crimson !important;
     border-radius: $border-radius-base !important;
-    background-color: rgba(255,255,255,.7) !important;
+    background-color: rgba(255, 255, 255, .7) !important;
     box-shadow: 0 0 10px 0 rgba($crimson, .4) !important;
 
-    .ui-sortable-handle{
+    .ui-sortable-handle {
       position: relative;
 
-      .removeComp{
+      .removeComp {
         position: absolute;
         top: -5px;
         right: 0px;
-        color: #000!important;
+        color: #000 !important;
       }
-      
+
     }
 
-    .ui-sortable-helper{
-      *{
-        cursor: move!important;
+    .ui-sortable-helper {
+      * {
+        cursor: move !important;
       }
     }
 
-    *{
+    * {
       cursor: pointer;
     }
 
@@ -83,15 +83,15 @@ body.#{$class-prefix}-dnd-enabled {
   }
 
   .#{$class-prefix}-draggable-over {
-    background-color: rgba(255,255,255,.9) !important;
+    background-color: rgba(255, 255, 255, .9) !important;
     box-shadow: 0 0 5px 5px rgba(lighten($crimson, 10%), .4) !important;
     //width: 130%;
     //height: 200%!important;
   }
 
-  &.#{$class-prefix}-pointer-enabled{
+  &.#{$class-prefix}-pointer-enabled {
     .#{$class-prefix}-pointer-over {
-      background-color: rgba(255,255,255,.9) !important;
+      background-color: rgba(255, 255, 255, .9) !important;
       box-shadow: 0 0 5px 5px rgba(lighten($crimson, 10%), .4) !important;
       //width: 130%;
       //height: 200%!important;
@@ -111,7 +111,7 @@ body.#{$class-prefix}-dnd-enabled {
   width: 265px;
   display: block;
   position: fixed;
-  background: #f8f8f8;
+  background: var(--craftercms-light0);
   box-shadow: 0 0 10px 0 rgba(#fff, .5);
   border-top: 1px solid #ccc;
   height: auto;
@@ -143,6 +143,7 @@ body.#{$class-prefix}-dnd-enabled {
 
   .#{$class-prefix}-component-search {
     padding: 0 10px;
+
     input[type="search"] {
       width: 100%;
       border: 1px solid #ccc;
@@ -166,7 +167,7 @@ body.#{$class-prefix}-dnd-enabled {
     .#{$class-prefix}-category {
 
       margin-bottom: 12px;
-      box-shadow: 1px 0 2px rgba(0,0,0,.1);
+      box-shadow: 1px 0 2px rgba(0, 0, 0, .1);
       border-radius: $border-radius-base;
 
       .#{$class-prefix}-category-name {
@@ -177,7 +178,8 @@ body.#{$class-prefix}-dnd-enabled {
         border-top-right-radius: $border-radius-base;
         background: #F0F0F0;
         font-weight: bold;
-        &.add-existing-component{
+
+        &.add-existing-component {
           background: rgba(221, 221, 221, 0.8);
         }
       }
@@ -191,18 +193,20 @@ body.#{$class-prefix}-dnd-enabled {
         margin: 0;
         border-bottom-left-radius: $border-radius-base;
         border-bottom-right-radius: $border-radius-base;
+
         > sli {
 
           border-bottom: 1px solid #F0F0F0;
           display: block;
-          
+
           > sa {
             display: inline-block;
             padding: 5px 10px;
             width: 87%;
 
           }
-          > .deleteComponent{
+
+          > .deleteComponent {
             cursor: pointer;
             width: 20px;
             display: inline-block;
@@ -222,6 +226,7 @@ body.#{$class-prefix}-dnd-enabled {
           border-bottom-left-radius: $border-radius-base;
           border-bottom-right-radius: $border-radius-base;
         }
+
         sul {
           display: none;
         }
@@ -231,7 +236,7 @@ body.#{$class-prefix}-dnd-enabled {
 
   }
 
-  .add-component{
+  .add-component {
     color: #fff !important;
     width: 100%;
   }
@@ -246,40 +251,40 @@ body.#{$class-prefix}-dnd-enabled {
     height: 17px;
   }
 
-  .ui-draggable-dragging{
-    cursor: move!important;
+  .ui-draggable-dragging {
+    cursor: move !important;
   }
 
 }
 
-.studio-category .fa:before, .studio-component-drag-target .fa:before{
+.studio-category .fa:before, .studio-component-drag-target .fa:before {
   color: #7e9dbb;
 }
 
-.status-icon{
+.status-icon {
   margin-right: 3px;
 }
 
-.ui-sortable{
+.ui-sortable {
   min-height: 40px;
   min-width: 50px;
 }
 
-.ui-sortable-handle.ui-sortable-helper{
-  z-index:99999!important;
+.ui-sortable-handle.ui-sortable-helper {
+  z-index: 99999 !important;
   position: relative;
 
 }
 
-.studio-component-drag-target.studio-component-over{
+.studio-component-drag-target.studio-component-over {
   box-shadow: 0 0 3px 3px rgba(lighten($crimson, 10%), .2) !important;
 }
 
-.studio-component-drag-target.ui-draggable.ui-draggable-handle.ui-draggable-dragging{
+.studio-component-drag-target.ui-draggable.ui-draggable-handle.ui-draggable-dragging {
   background-color: #fff;
-  color:#000;
+  color: #000;
 }
 
-.studio-draggable-over{
+.studio-draggable-over {
   //width: 100%;
 }

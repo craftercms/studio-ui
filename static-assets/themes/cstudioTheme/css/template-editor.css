@@ -43,7 +43,7 @@
 
 .template-editor-toolbar{
   height: 61px;
-  background: #f8f8f8;
+  background: var(--craftercms-light0);
   border-bottom: 1px solid #e7e7e7;
 }
 
@@ -98,7 +98,7 @@
 	position: fixed;
     width: 100%;
     height: 58px;
-    background: #f8f8f8;
+    background: var(--craftercms-light0);
     border-top: 1px solid #e7e7e7;
     bottom: 0;
     z-index: 17;

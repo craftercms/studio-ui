@@ -16,15 +16,18 @@
 
 import React, { useEffect, useRef } from 'react';
 import {
+  addAnimation,
   COMPONENT_INSTANCE_HTML_REQUEST,
   COMPONENT_INSTANCE_HTML_RESPONSE,
   DELETE_ITEM_OPERATION,
   forEach,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
+  MOVE_ITEM_OPERATION,
   notNullOrUndefined,
   popPiece,
   removeLastPiece,
+  SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../util';
 import { useGuestContext } from './GuestContext';
@@ -85,7 +88,11 @@ export function GuestProxy(props) {
       oldIndex = (typeof oldIndex === 'string') ? parseInt(popPiece(oldIndex)) : oldIndex;
       if (type === 'insert' || type === 'delete') {
         collection.slice(newIndex).forEach((el, i) => {
-          $(el).attr('data-craftercms-index', appendIndex(originalNewIndex, i));
+          const elementNewIndex = appendIndex(originalNewIndex, i);
+          if (originalNewIndex === elementNewIndex && type === 'insert') {
+            addAnimation($(el), 'craftercms-contentTree-pulse');
+          }
+          $(el).attr('data-craftercms-index', elementNewIndex);
           const pr = ElementRegistry.fromElement(el);
           pr && context.deregister(pr.id);
           registerElement(el);
@@ -104,7 +111,11 @@ export function GuestProxy(props) {
           index = originalNewIndex;
         }
         collection.slice(from, to).forEach((el, i) => {
-          $(el).attr('data-craftercms-index', appendIndex(index, i));
+          const elementNewIndex = appendIndex(index, i);
+          $(el).attr('data-craftercms-index', elementNewIndex);
+          if (index === elementNewIndex) {
+            addAnimation($(el), 'craftercms-contentTree-pulse');
+          }
           const pr = ElementRegistry.fromElement(el);
           pr && context.deregister(pr.id);
           registerElement(el);
@@ -166,9 +177,10 @@ export function GuestProxy(props) {
 
     const sub = ContentController.operations.subscribe((op: Operation) => {
       switch (op.type) {
-        case 'sort': {
-
+        case SORT_ITEM_OPERATION: {
           let [modelId, fieldId, index, newIndex] = op.args;
+          const currentIndexParsed = (typeof index === 'number') ? index : parseInt(popPiece(index));
+          const targetIndexParsed = (typeof newIndex === 'number') ? newIndex : parseInt(popPiece(newIndex));
           // This works only for repeat groups
           let iceId = iceRegistry.exists({ modelId, fieldId, index });
           // This would work for both repeat groups and node-selectors. Just use this?
@@ -182,20 +194,20 @@ export function GuestProxy(props) {
 
           const phyRecord = ElementRegistry.fromICEId(iceId);
           const $el = $(phyRecord.element);
-          const $targetSibling = $el.parent().children().eq(newIndex);
+          const $targetSibling = $el.parent().children().eq(targetIndexParsed);
 
           // Move...
-          if (index < newIndex) {
+          if (currentIndexParsed < targetIndexParsed) {
             $el.insertAfter($targetSibling);
           } else {
             $el.insertBefore($targetSibling);
           }
 
-          updateElementRegistrations(Array.from($el.parent().children()), 'sort', newIndex, index);
+          updateElementRegistrations(Array.from($el.parent().children()), 'sort', index, newIndex);
           break;
 
         }
-        case 'move': {
+        case MOVE_ITEM_OPERATION: {
 
           const [
             modelId/*: string*/,
@@ -206,6 +218,7 @@ export function GuestProxy(props) {
             targetIndex
           ] = op.args;
 
+          const targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
           const currentDropZoneICEId = iceRegistry.exists({ modelId, fieldId, index: null });
           const currentDropZonePhyRecord = ElementRegistry.fromICEId(currentDropZoneICEId);
 
@@ -221,9 +234,9 @@ export function GuestProxy(props) {
 
           const $targetDropZone = $(targetDropZonePhyRecord.element);
 
-          if (targetIndex === 0) {
+          if (targetIndexParsed === 0) {
             $targetDropZone.prepend(moveTargetPhyRecord.element);
-          } else if ($targetDropZone.children().length === targetIndex) {
+          } else if ($targetDropZone.children().length === targetIndexParsed) {
             $targetDropZone.append(moveTargetPhyRecord.element);
           } else {
 
@@ -252,6 +265,8 @@ export function GuestProxy(props) {
               registerElement(elem);
             });
           });
+
+          addAnimation($(moveTargetPhyRecord.element), 'craftercms-contentTree-pulse');
 
           break;
 
@@ -372,7 +387,7 @@ export function GuestProxy(props) {
     if (context.editable !== persistence.editable) {
 
       persistence.editable && Object.values(persistence.editable).forEach(({ element }: any) => {
-          $(element).attr('contenteditable', 'false').removeAttr('contenteditable')
+        $(element).attr('contenteditable', 'false').removeAttr('contenteditable');
         }
       );
 

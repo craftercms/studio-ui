@@ -42,7 +42,7 @@
 
 .cstudio-wcm-searchfilter-col {
 	float: left;
-	padding: 0 10px;	
+	padding: 0 10px;
 }
 
 .cstudio-wcm-searchfilter-col:first-child {
@@ -61,9 +61,9 @@
 	height: 1.25em;
 }
 
-.search .resultbar.gobottom {	
+.search .resultbar.gobottom {
 	width: 99%;
-	position: absolute;	
+	position: absolute;
 	bottom: 2.4em;
 }
 
@@ -100,7 +100,7 @@
 }
 
 #cstudio-wcm-search-main{
-	margin: 0 30px 0 30px; 
+	margin: 0 30px 0 30px;
 }
 
 h1.cstudio-wcm-search{
@@ -115,10 +115,10 @@ h1.cstudio-wcm-search{
 	float: left;
 	margin-right: 10px;
 }
- 
+
 .cstudio-wcm-search-select{
 	width: 200px;
-	margin-bottom: 2px;	
+	margin-bottom: 2px;
 }
 
 select#cstudio-wcm-search-sort-dropdown{
@@ -126,7 +126,7 @@ select#cstudio-wcm-search-sort-dropdown{
 }
 
 select.fixed-width-search-filter {
-	width: 160px;	
+	width: 160px;
 }
 
 #cstudio-wcm-search-result-header .filters {
@@ -135,9 +135,9 @@ select.fixed-width-search-filter {
     top: -4px;
 }
 
-#cstudio-wcm-search-result-header .filters > div { 
+#cstudio-wcm-search-result-header .filters > div {
 	display: inline;
-	margin-right: 8px; 
+	margin-right: 8px;
 }
 
 #cstudio-wcm-search-result-header .filters > div > input,
@@ -158,7 +158,7 @@ input[type="text"].cstudio-wcm-search-result-header-pagination-textbox {
     margin-right: 11px;
 }
 
-.cstudio-wcm-search-result-header{	
+.cstudio-wcm-search-result-header{
 	font-size: 1.35em;
 	font-weight: bold;
 	margin:0 0 0 10px;
@@ -198,11 +198,11 @@ input[type="text"].cstudio-wcm-search-result-header-pagination-textbox {
 }
 
 a.cstudio-search-download-link{
-	font-size: 1.38em;		
+	font-size: 1.38em;
 }
 
 a.cstudio-search-live-link{
-	font-size: 1em;		
+	font-size: 1em;
 }
 
 a.cstudio-search-no-preview,
@@ -247,21 +247,21 @@ div.cstudio-wcm-search-pagination .cstudio-wcm-search-pagination-number{
 }
 
 div.cstudio-wcm-search-pagination{
-    background-color: #F8F8F8;
+    background-color: var(--craftercms-light0);
     margin: 0;
     padding: 6px 0 10px;
     border-top: 1px solid #e7e7e7;
 }
 
-.cstudio-wcm-search-pagination-content {	
-	padding: 15px 0 15px 0;	
+.cstudio-wcm-search-pagination-content {
+	padding: 15px 0 15px 0;
 }
 
 div#cstudio-wcm-search-pagination-controls {
 	margin:8px 0 0 0;
 	text-align: center;
 	width: 100%;
-	
+
 }
 
 .cstudio-wcm-search-vertical-spacer {
@@ -323,7 +323,7 @@ div#cstudio-wcm-search-pagination-controls {
 }
 
 .skin-browse #xformfooterWrapper #xformfooterheader{
-    background: #f8f8f8;
+    background: var(--craftercms-light0);
     height: 58px;
     border-top: 1px solid #e7e7e7;
 }

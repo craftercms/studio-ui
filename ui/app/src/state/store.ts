@@ -24,11 +24,10 @@ import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 
 const epicMiddleware = createEpicMiddleware();
-const middleware = [...getDefaultMiddleware({ thunk: false }), epicMiddleware];
+const middleware = [...getDefaultMiddleware<GlobalState>({ thunk: false }), epicMiddleware];
 
 const store = configureStore<GlobalState, StandardAction>({
   reducer,
-  // @ts-ignore
   middleware,
   preloadedState: createInitialState()
 });

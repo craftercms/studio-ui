@@ -29,7 +29,9 @@ const
     'uppy',
     'tinymce-ace',
     'browse',
-    { input: 'guest/guest', output: 'guest' }
+    { input: 'guest/guest', output: 'guest' },
+    { input: 'base', output: '../themes/cstudioTheme/base' },
+    'typography'
   ];
 
 function processFile(data) {

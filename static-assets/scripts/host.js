@@ -27,7 +27,7 @@
 
   var cstopic = crafter.studio.preview.cstopic,
     Topics = crafter.studio.preview.Topics,
-    previewAppBaseUri = CStudioAuthoringContext.previewAppBaseUri || '',
+    previewAppBaseUri = CStudioAuthoringContext.previewAppBaseUri || window.location.origin,
     origin = previewAppBaseUri,
     communicator = new crafter.studio.Communicator(origin),
     previewWidth,

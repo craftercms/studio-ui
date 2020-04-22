@@ -22,83 +22,69 @@ var YEvent = YAHOO.util.Event;
  */
 CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.WcmQuickCreate || {
   CMgs: CStudioAuthoring.Messages,
-  contextNavLangBundle: CStudioAuthoring.Messages.getBundle('contextnav', CStudioAuthoringContext.lang),
+  contextNavLangBundle: CStudioAuthoring.Messages.getBundle(
+    'contextnav',
+    CStudioAuthoringContext.lang
+  ),
 
   /**
    * initialize module
    */
   initialize: function() {
-    var dropdown = $('#quick-create'),
-      quickCreateWrapper = $('.dropdown.quick-create'),
-      self = this;
-    CStudioAuthoring.Service.getQuickCreate({
-      success: function(response) {
-        var createCb = {
-          success: function(contentTO, editorId, name, value, draft) {
-            var page = CStudioAuthoring.Utils.getQueryParameterURL('page');
-            var acnDraftContent = $('.acnDraftContent').get(0);
-            eventYS.data = contentTO.item;
-            eventYS.typeAction = 'createContent';
-            eventYS.oldPath = null;
-            eventYS.parent = contentTO.item.path === '/site/website' ? null : false;
-            document.dispatchEvent(eventYS);
+    const quickCreateWrapper = $('.dropdown.quick-create');
+    const container = $('#quick-create-menu')[0];
 
-            if (contentTO.item.isPage) {
-              CStudioAuthoring.Operations.refreshPreview(contentTO.item);
-              if (page == contentTO.item.browserUri && acnDraftContent) {
-                CStudioAuthoring.SelectedContent.setContent(contentTO.item);
-              }
-            } else {
-              CStudioAuthoring.Operations.refreshPreview();
-            }
-          },
-          failure: function() {},
-          callingWindow: window
-        };
-        if (CStudioAuthoringContext.isPreview || CStudioAuthoringContext.isDashboard) {
-          $(quickCreateWrapper).removeClass('hide');
-          if (response && response.length > 0) {
-            var item = null,
-              html = '';
-            for (var i = 0; i < response.length; i++) {
-              (function(item) {
-                html = $(self.rowTemplate(item.label, i));
-                html.click(function() {
-                  CStudioAuthoring.Operations.openContentWebForm(
-                    item.contentTypeId,
-                    null,
-                    null,
-                    CStudioAuthoring.Operations.processPathsForMacros(item.path, null, true),
-                    false,
-                    false,
-                    createCb,
-                    null
-                  );
-                });
-                dropdown.append(html);
-              })(response[i]);
-            }
-          } else {
-            dropdown.html(self.createEmptyTemplate());
-          }
+    if (CStudioAuthoringContext.isPreview || CStudioAuthoringContext.isDashboard) {
+      $(quickCreateWrapper).removeClass('hide');
+    }
+
+    const success = ({ data }) => {
+      const page = CStudioAuthoring.Utils.getQueryParameterURL('page');
+      const acnDraftContent = $('.acnDraftContent').get(0);
+      eventYS.data = data.item;
+      eventYS.typeAction = 'createContent';
+      eventYS.oldPath = null;
+      eventYS.parent = data.item.path === '/site/website' ? null : false;
+      document.dispatchEvent(eventYS);
+
+      if (data.item.isPage) {
+        CStudioAuthoring.Operations.refreshPreview(data.item);
+        if (page === data.item.browserUri && acnDraftContent) {
+          CStudioAuthoring.SelectedContent.setContent(data.item);
         }
-      },
-      failure: function() {
-        dropdown.html(self.createEmptyTemplate());
+      } else {
+        CStudioAuthoring.Operations.refreshPreview();
       }
-    });
-  },
+    };
 
-  rowTemplate: function(label, i) {
-    return '<li class="item' + i + '"><a class="pointer">' + label + '</a></li>';
-  },
+    function renderQuickCreate(anchorEl) {
+      let unmount;
+      let previewItem;
 
-  createEmptyTemplate: function() {
-    return (
-      '<li class="quickCreateEmpty"><i class="fa fa-exclamation-circle"></i>' +
-      this.CMgs.format(this.contextNavLangBundle, 'quickCreateEmpty') +
-      '</li>'
-    );
+      if(CStudioAuthoring && CStudioAuthoring.SelectedContent.selectedContent.length) {
+        const { internalName, uri } = CStudioAuthoring.SelectedContent.selectedContent[0]
+        previewItem = {
+          label: internalName,
+          path: uri
+        }
+      } else {
+        // TODO: "Home" should probably be translated
+        // TODO: Should the "default" path come from some sort of config?
+        previewItem = {
+          label: 'Home',
+          path: '/site/website/index.xml'
+        }
+      }
+
+      CrafterCMSNext.render(container, 'QuickCreateMenu', {
+        onSaveLegacySuccess: success,
+        previewItem,
+        anchorEl,
+        onClose: () => unmount()
+      }).then((done) => (unmount = done.unmount));
+    }
+
+    quickCreateWrapper.click((e) => renderQuickCreate(e.currentTarget));
   }
 };
 
