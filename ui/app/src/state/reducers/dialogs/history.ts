@@ -45,12 +45,19 @@ export const compareHistories = createAction<CompareAB>('COMPARE_HISTORIES');
 
 export const historyDialogChangePage = createAction<number>('HISTORY_DIALOG_CHANGE_PAGE');
 
+export const revertContent = createAction<string>('REVERT_CONTENT');
+
+export const revertContentComplete = createAction<StandardAction>('REVERT_CONTENT_COMPLETE');
+
+export const revertContentFailed = createAction<AjaxError>('REVERT_CONTENT_FAILED');
+
 const initialState = {
   open: false,
   item: null,
   current: null,
   rowsPerPage: 10,
   page: 0,
+  path: null,
   compareAB: {
     a: null,
     b: null
@@ -65,7 +72,9 @@ export default createReducer<GlobalState['dialogs']['history']>(
       ...state,
       onDismiss: closeHistoryDialog(),
       onClose: payload.onClose,
-      open: true
+      path: payload.path,
+      open: true,
+      isFetching: true
     }),
     [closeHistoryDialog.type]: (state) => ({
       ...initialState,
@@ -94,6 +103,19 @@ export default createReducer<GlobalState['dialogs']['history']>(
     [historyDialogChangePage.type]: (state, { payload }) => ({
       ...state,
       page: payload
+    }),
+    [revertContent.type]: (state, { payload }) => ({
+      ...state,
+      isFetching: true
+    }),
+    [revertContentComplete.type]: (state, { payload }) => ({
+      ...state,
+      isFetching: false
+    }),
+    [revertContentFailed.type]: (state, { payload }) => ({
+      ...state,
+      error: payload.response,
+      isFetching: false
     })
   }
 );

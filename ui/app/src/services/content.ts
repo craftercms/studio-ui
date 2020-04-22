@@ -1056,9 +1056,9 @@ export function getQuickCreateContentList(siteId: string) {
   );
 }
 
-export function getItemVersions(siteId: string, path: string): Observable<VersionsResponse> {
+export function getItemVersions(site: string, path: string): Observable<VersionsResponse> {
   // @ts-ignore
-  return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${siteId}&path=${path}`).pipe(
+  return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${path}`).pipe(
     pluck('response'),
     catchApi1Error
   );
@@ -1067,6 +1067,14 @@ export function getItemVersions(siteId: string, path: string): Observable<Versio
 export function getConfigurationVersions(siteId: string, path: string, environment: string, module: string): Observable<VersionsResponse> {
   return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${siteId}&path=${path}&environment=${environment}&module=${module}`).pipe(
     pluck('response', 'history')
+  );
+}
+
+export function revertContent(site: string, path: string, version: string): Observable<Boolean> {
+  // @ts-ignore
+  return get(`/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${path}`).pipe(
+    pluck('response'),
+    catchApi1Error
   );
 }
 

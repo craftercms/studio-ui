@@ -51,7 +51,11 @@ import clsx from 'clsx';
 import StandardAction from '../../../models/StandardAction';
 import { LegacyVersion } from '../../../models/version';
 import { useDispatch } from 'react-redux';
-import { compareHistories, historyDialogChangePage } from '../../../state/reducers/dialogs/history';
+import {
+  compareHistories,
+  historyDialogChangePage,
+  revertContent
+} from '../../../state/reducers/dialogs/history';
 
 const translations = defineMessages({
   previousPage: {
@@ -422,7 +426,7 @@ export interface HistoryDialogStateProps extends EntityState<LegacyVersion>, His
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, byId, item, error, current, compareAB, rowsPerPage, page } = props;
+  const { open, onClose, onDismiss, byId, item, error, current, compareAB, rowsPerPage, page, isFetching } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
@@ -430,9 +434,9 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
   const resource = useStateResource<LegacyVersion[], LookupTable<LegacyVersion>>(byId, {
-    shouldResolve: () => Boolean(byId),
+    shouldResolve: () => (Boolean(byId) && isFetching === false),
     shouldReject: () => Boolean(error),
-    shouldRenew: () => false,
+    shouldRenew: () => isFetching,
     resultSelector: () => Object.values(byId),
     errorSelector: () => error
   });
@@ -495,6 +499,11 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         break;
       }
       case 'compareToPrevious': {
+        break;
+      }
+      case 'revertToThisVersion': {
+        dispatch(revertContent(menu.activeItem.versionNumber));
+        setMenu(menuInitialState);
         break;
       }
       default:
