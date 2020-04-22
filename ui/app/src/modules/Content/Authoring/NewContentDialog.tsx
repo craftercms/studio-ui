@@ -335,7 +335,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
-          onClose={onDismiss}
+          onDismiss={onDismiss}
         />
         <DialogBody dividers classes={{ root: classes.dialogContent }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">

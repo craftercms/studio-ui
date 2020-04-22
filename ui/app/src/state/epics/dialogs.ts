@@ -20,15 +20,29 @@ import { closeConfirmDialog } from '../reducers/dialogs/confirm';
 import { NEVER } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { closeNewContentDialog } from '../reducers/dialogs/newContent';
+import { closePublishDialog } from '../reducers/dialogs/publish';
+import { camelize } from '../../utils/string';
+import { closeDeleteDialog } from '../reducers/dialogs/delete';
+
+function getDialogNameFromType(type: string): string {
+  let name = type.substring(type.indexOf("_") + 1);
+  name = name.substring(0, name.indexOf("_"));
+  return camelize(name.toLowerCase());
+}
 
 export default [
   // region Confirm Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(closeConfirmDialog.type, closeNewContentDialog.type),
+      ofType(
+        closeConfirmDialog.type,
+        closePublishDialog.type,
+        closeDeleteDialog.type,
+        closeNewContentDialog.type
+      ),
       withLatestFrom(state$),
-      map(([{ payload }, state]) =>
-        [payload, state.dialogs.confirm.onClose].filter((callback) => Boolean(callback))
+      map(([{ type, payload }, state]) =>
+        [payload, state.dialogs[getDialogNameFromType(type)].onClose].filter((callback) => Boolean(callback))
       ),
       switchMap((actions) => (actions.length ? actions : NEVER))
     )

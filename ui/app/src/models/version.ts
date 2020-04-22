@@ -14,10 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { LegacyItem } from "./Item";
+
 export interface LegacyVersion {
   lastModifiedDate: string;
   lastModifier: string;
   versionNumber: string;
   comment: string;
   contentItem: any;
+}
+
+export interface VersionsResponse {
+  item: LegacyItem;
+  versions: LegacyVersion[];
 }

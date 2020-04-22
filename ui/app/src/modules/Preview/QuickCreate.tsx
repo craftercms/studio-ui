@@ -182,7 +182,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           onSaveSuccess={onEmbeddedFormSaveSuccess}
         />
       )}
-      <ErrorDialog error={error} onClose={() => setError(null)} />
+      <ErrorDialog error={error} onDismiss={() => setError(null)} />
     </>
   );
 }

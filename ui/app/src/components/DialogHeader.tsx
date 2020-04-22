@@ -75,7 +75,7 @@ export type DialogTitleProps<
   classes?: {
     root?: string;
   };
-  onClose?(): void;
+  onDismiss?(): void;
   onBack?(): void;
 }>;
 
@@ -83,7 +83,7 @@ export default function DialogHeader(props: DialogTitleProps) {
   const classes = dialogTitleStyles({});
   const {
     id,
-    onClose,
+    onDismiss,
     onBack,
     title,
     children,
@@ -125,8 +125,8 @@ export default function DialogHeader(props: DialogTitleProps) {
             <Icon />
           </IconButton>
         ))}
-        {onClose && (
-          <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
+        {onDismiss && (
+          <IconButton aria-label="close" onClick={onDismiss} className={classes.closeIcon}>
             <CloseIcon />
           </IconButton>
         )}

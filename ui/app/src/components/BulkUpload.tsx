@@ -165,7 +165,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   status: {
     marginLeft: 'auto'
-  },
+  }
 }));
 
 const UppyItemStyles = makeStyles((theme: Theme) => createStyles({
@@ -262,7 +262,7 @@ function UppyItem(props: UppyItemProps) {
     <Card className={classes.cardRoot}>
       {
         file.preview &&
-        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia}/>
+        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />
       }
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
@@ -279,25 +279,29 @@ function UppyItem(props: UppyItemProps) {
           </div>
           {
             file.progress.percentage !== 100 &&
-            <IconButton onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              handleRemove(event, file)
-            }} className={classes.iconRetry}>
-              <DeleteRoundedIcon/>
+            <IconButton
+              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                handleRemove(event, file);
+              }} className={classes.iconRetry}
+            >
+              <DeleteRoundedIcon />
             </IconButton>
           }
           {
             file.progress.percentage === 'failed' &&
-            <IconButton onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              handleRetry(event, file)
-            }} className={classes.iconRetry}>
-              <ReplayIcon/>
+            <IconButton
+              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                handleRetry(event, file);
+              }} className={classes.iconRetry}
+            >
+              <ReplayIcon />
             </IconButton>
           }
         </div>
-        <ProgressBar status={file.progress.status} progress={file.progress.percentage}/>
+        <ProgressBar status={file.progress.status} progress={file.progress.percentage} />
       </CardContent>
     </Card>
-  )
+  );
 }
 
 interface DropZoneProps {
@@ -322,7 +326,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
   const retryFileUpload = (file: UppyFile) => {
-    uppy.retryUpload(file.id)
+    uppy.retryUpload(file.id);
   };
 
   const onRemove = (file: UppyFile) => {
@@ -368,11 +372,11 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
           relativePath: file.relativePath || null
         }
       })
-    )
+    );
   }
 
   function checkFileExist(newFile: File) {
-    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type)
+    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type);
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
@@ -446,7 +450,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
           uppy.setFileState(file.id, { preview: e.target.result });
           setFiles({ [file.id]: file });
         };
-        reader.readAsDataURL(file.data)
+        reader.readAsDataURL(file.data);
       } else {
         setFiles({ [file.id]: file });
       }
@@ -460,14 +464,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       uppy.off('file-added', handleFileAdded);
       uppy.off('upload-error', handleUploadError);
       uppy.off('upload-progress', handleUploadProgress);
-    }
+    };
 
   }, [filesPerPath, onStatusChange, path, setFiles, uppy]);
 
   useEffect(() => {
     const handleUploadSuccess = () => {
       setUploadedFiles(uploadedFiles + 1);
-      onStatusChange({ uploadedFiles: uploadedFiles + 1 })
+      onStatusChange({ uploadedFiles: uploadedFiles + 1 });
     };
 
     const handleComplete = () => {
@@ -483,7 +487,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     return () => {
       uppy.off('upload-success', handleUploadSuccess);
       uppy.off('complete', handleComplete);
-    }
+    };
   }, [onStatusChange, uploadedFiles, uppy]);
 
   useEffect(() => {
@@ -539,7 +543,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
             )
           ) : (
             <>
-              <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')}/>
+              <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')} />
               <Typography variant="subtitle1">
                 {
                   formatMessage(
@@ -569,14 +573,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}
       />
     </>
-  )
+  );
 });
 
 export interface DropZoneStatus {
-  status?: string,
-  files?: number,
-  uploadedFiles?: number,
-  progress?: number
+  status?: string;
+  files?: number;
+  uploadedFiles?: number;
+  progress?: number;
 }
 
 const initialDropZoneStatus: DropZoneStatus = {
@@ -592,7 +596,8 @@ interface BulkUploadProps {
   site?: string;
   maxSimultaneousUploads?: number;
 
-  onClose(dropZoneStatus: DropZoneStatus): void;
+  onClose?(dropZoneStatus: DropZoneStatus): void;
+  onDismiss?(dropZoneStatus: DropZoneStatus): void;
 }
 
 export default function BulkUpload(props: BulkUploadProps) {
@@ -603,6 +608,7 @@ export default function BulkUpload(props: BulkUploadProps) {
   const classes = useStyles({});
   const {
     onClose,
+    onDismiss,
     path,
     maxSimultaneousUploads = 1,
     open
@@ -646,7 +652,7 @@ export default function BulkUpload(props: BulkUploadProps) {
 
   useEffect(() => {
     const handleBeforeUpload = () => {
-      return formatMessage(translations.uploadInProgress)
+      return formatMessage(translations.uploadInProgress);
     };
     if (dropZoneStatus.status === 'uploading') {
       window.onbeforeunload = handleBeforeUpload;
@@ -655,7 +661,7 @@ export default function BulkUpload(props: BulkUploadProps) {
     }
     return () => {
       window.onbeforeunload = null;
-    }
+    };
   }, [dropZoneStatus.status, formatMessage]);
 
   return (
@@ -664,13 +670,14 @@ export default function BulkUpload(props: BulkUploadProps) {
       keepMounted={minimized}
       onDrop={preventWrongDrop}
       onDragOver={preventWrongDrop}
-      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
-      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
+      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
+      onClose={() => onClose(dropZoneStatus)}
     >
       <DialogHeader
         title={formatMessage(translations.title)}
         subtitle={formatMessage(translations.subtitle)}
-        onClose={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose(dropZoneStatus)}
+        onDismiss={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
         closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
       />
       <DialogBody className={classes.dialogContent}>
@@ -722,5 +729,5 @@ export default function BulkUpload(props: BulkUploadProps) {
         </DialogFooter>
       }
     </Dialog>
-  )
+  );
 }

@@ -14,25 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineEpics } from 'redux-observable';
-import auth from './auth';
-import sites from './sites';
-import contentTypes from './contentTypes';
-import assets from './assets';
-import audiencesPanel from './audiencesPanel';
-import dialogs from './dialogs';
-import preview from './preview';
-import legacy from './legacy';
+import { Epic, ofType, StateObservable } from 'redux-observable';
+import { ignoreElements, tap } from 'rxjs/operators';
+import GlobalState from '../../models/GlobalState';
 
-const epic: any[] = combineEpics.apply(this, [
-  ...auth,
-  ...sites,
-  ...contentTypes,
-  ...assets,
-  ...audiencesPanel,
-  ...preview,
-  ...dialogs,
-  ...legacy
-]);
-
-export default epic as any;
+export default [
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType('LEGACY_DIALOG_CALLBACK'),
+      tap(({ payload }) => {
+        let event = new CustomEvent(payload.id, { detail: payload });
+        document.dispatchEvent(event);
+      }),
+      ignoreElements()
+    ),
+] as Epic[];
