@@ -833,37 +833,37 @@ body.yui-skin-cstudioTheme .mask {
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
 
-#errorPostfix-dialog .bd{
-    max-height: 232px;
-    overflow: auto;
-    display: flex;
+#errorPostfix-dialog .bd {
+  max-height: 232px;
+  overflow: auto;
+  display: flex;
 }
 
-#errorPostfix-dialog .bd .postfixErrorContainer{
-    max-height: 180px;
-    overflow-y: auto;
-    width: 310px !important;
+#errorPostfix-dialog .bd .postfixErrorContainer {
+  max-height: 180px;
+  overflow-y: auto;
+  width: 310px !important;
 }
 
-#errorPostfix-dialog .bd .postfixErrorContainer ul{
-    padding-left: 24px;
+#errorPostfix-dialog .bd .postfixErrorContainer ul {
+  padding-left: 24px;
 }
 
-#errorPostfix-dialog .descriptionMessage{
-    color: #8e8c8c;
-    font-style: italic;
+#errorPostfix-dialog .descriptionMessage {
+  color: #8e8c8c;
+  font-style: italic;
 }
 
-#child-content-deprecated-dialog .button-group{
+#child-content-deprecated-dialog .button-group {
   overflow: hidden;
   padding: 3px 0 3px 8px;
 }
 
-#child-content-deprecated-dialog .button-group > span{
+#child-content-deprecated-dialog .button-group > span {
   float: left;
 }
 
-#child-content-deprecated-dialog .button-group > span.default{
+#child-content-deprecated-dialog .button-group > span.default {
   float: right;
 }
 
@@ -911,7 +911,7 @@ body.yui-skin-cstudioTheme .mask {
   touch-action: manipulation;
   cursor: pointer;
   background-image: none;
-  border: 1px solid transparent;
+  border: none;
   white-space: nowrap;
   padding: 6px 12px;
   font-size: 12px;
@@ -922,14 +922,15 @@ body.yui-skin-cstudioTheme .mask {
   -ms-user-select: none;
   user-select: none;
   color: white;
-  background-color: #7e9dbb;
-  border-color: #6d90b2;
+  background-color: var(--craftercms-blue);
+  box-shadow:
+    0 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 
 .yui-module.yui-overlay.yui-panel button:hover {
-  color: white;
-  background-color: #5d84a9;
-  border-color: #4e7294;
+  background-color: var(--craftercms-blueShade);
 }
 
 .action-wrapper button.btn-default.close-button {
@@ -961,7 +962,6 @@ body.yui-skin-cstudioTheme .mask {
 }
 
 #closeUserWarning .bd, #saveDraftWar .bd, #errMissingRequirements .bd, .studioDialog .bd {
-  height: 63px !important;
   padding: 24px;
 }
 

@@ -14,13 +14,13 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class="admin-console-view mainContainer">
+<div class="global-menu--root admin-console-view mainContainer">
   <div class="row mt30">
     <div class="col-sm-3">
       <ul class="nav nav-tabs nav-stacked nav-pills" role="tablist">
-        <li ng-repeat="entity in entities" ui-sref-active="active">
-          <a class="" ui-sref={{entity.id}} href="">
-            <span class="nav-icon fa {{entity.icon}}"></span> {{entity.label}}
+        <li class="global-menu--item" ng-repeat="entity in entities" ui-sref-active="global-menu--item__active">
+          <a class="global-menu--item-link" ui-sref={{entity.id}} href="">
+            <span class="nav-icon global-menu--nav-icon fa {{entity.icon}}"></span> {{entity.label}}
           </a>
         </li>
       </ul>

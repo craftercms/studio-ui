@@ -14,7 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "variables";
 @import "source-sans";
+@import "common";
 
 /* Sticky Footer */
 * {
@@ -258,8 +260,8 @@ span.navigation-separator-alt {
   cursor: pointer;
 }
 
-.cstudio-form-controls-container{
-  background: #f8f8f8;
+.cstudio-form-controls-container {
+  background: var(--craftercms-light0);
   border-top: 1px solid #e7e7e7;
   height: 50px;
   bottom: 0;
@@ -327,21 +329,22 @@ span.navigation-separator-alt {
   text-decoration: none;
 }
 
-.cstudio-rte-add-component div[role="listbox"]{
-  max-height: calc(80vh - 68px ) !important;
+.cstudio-rte-add-component div[role="listbox"] {
+  max-height: calc(80vh - 68px) !important;
   overflow-y: scroll;
   overflow-x: hidden;
   border: 1px solid #D4D0C8;
   background: white;
 }
 
-.cstudio-rte-add-component div[role="presentation"]{
+.cstudio-rte-add-component div[role="presentation"] {
   border: none;
 }
 
-.cstudio-rte-add-component .mceMenu table tr{
+.cstudio-rte-add-component .mceMenu table tr {
   white-space: nowrap;
 }
+
 .cstudio-rte-add-component div[role="listbox"]::-webkit-scrollbar {
   -webkit-appearance: none;
   width: 10px;
@@ -349,6 +352,6 @@ span.navigation-separator-alt {
 
 .cstudio-rte-add-component div[role="listbox"]::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: rgba(0,0,0,.5);
-  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+  background-color: rgba(0, 0, 0, .5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }

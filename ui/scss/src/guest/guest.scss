@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 @import "../variables";
 @import "../util/animate";
 @import "../../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins";
@@ -61,7 +60,7 @@
   background-position: 3px 3px;
 }
 
-.#{$ice-class-prefix}-indicator.lock{
+.#{$ice-class-prefix}-indicator.lock {
   background-image: url('/studio/static-assets/themes/cstudioTheme/images/edit_block.png');
 }
 
@@ -70,7 +69,7 @@
 .#{$ice-class-prefix}-overlay {
   border-color: $brand-danger;
   box-shadow: inset 0 0 10px 5px rgba($brand-danger, .4);
-  z-index:9999;
+  z-index: 9999;
 }
 
 .#{$ice-class-prefix}-indicator {
@@ -78,6 +77,7 @@
     background-color: transparent;
     box-sizing: content-box;
   }
+
   background-color: rgba(#fff, .7);
   z-index: 9999;
 }
@@ -91,6 +91,7 @@
   right: 0;
   left: 0;
   top: 0;
+
   &.fadeIn {
     display: block;
   }
@@ -117,15 +118,15 @@ body {
 
 }
 
-.f18{
+.f18 {
   font-size: 18px;
 }
 
-.fa.icon-yellow{
-  color: #f6cc2f!important;
+.fa.icon-yellow {
+  color: #f6cc2f !important;
 }
 
-.icon-default{
+.icon-default {
   color: #7e9dbb;
 }
 

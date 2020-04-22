@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 @import "variables";
 @import "util/animate";
 @import url("/studio/static-assets/themes/cstudioTheme/css/icons.css");
@@ -102,7 +101,7 @@ body, var {
 
   font-size: 12px;
   font-family: Arial, Verdana, sans-serif;
-  background-color: #f8f8f8;
+  background-color: var(--craftercms-light0);
   border-bottom: 1px solid #e7e7e7;
   height: 50px;
   top: 0;
@@ -114,6 +113,7 @@ body, var {
   table {
     font-size: inherit;
     background-color: transparent;
+
     &.ygtvtable td.ygtvcontent span {
       cursor: pointer;
     }
@@ -254,12 +254,12 @@ div#acn-active-content {
   cursor: pointer;
 }
 
-#acn-status{
+#acn-status {
   padding: 17px 11px 0 2px;
   cursor: pointer;
 }
 
-#acn-separator .ellipsis-icon{
+#acn-separator .ellipsis-icon {
   padding: 7px 8px 0 4px;
   font-size: 21px;
   color: #777;
@@ -319,13 +319,17 @@ div#acn-active-content {
   user-select: none;
 }
 
-#navbar-site-name{
+#navbar-site-name {
   color: #333;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 20px;
-  margin-bottom: -4px;
-  padding: 13px 4px 16.5px 8px;
-  font-size: 16px;
+  padding: 16px 10px;
+
+  &:hover {
+    color: var(--craftercms-blue);
+    background: var(--craftercms-light2);
+  }
 }
 
 .acn-dropdown-wrapper .acn-drop-arrow {
@@ -333,12 +337,23 @@ div#acn-active-content {
   padding: 16px 10px 15px;
 }
 
+.acn-dropdown-toggler {
+  color: var(--craftercms-gray);
+  padding: 19px 15px;
+  display: inline-block;
+  max-height: 52px;
+
+  &:hover {
+    color: var(--craftercms-blue);
+    background: var(--craftercms-light2);
+  }
+}
+
 .site-dropdown-open {
   .acn-dropdown-toggler {
-    font-weight: bold;
-    padding-left: 8px;
-    padding-right: 9px;
+
   }
+
   .site-dashboard {
     left: 265px;
   }
@@ -349,24 +364,22 @@ div#acn-active-content {
     animation-duration: 0s !important;
     border-width: 1px;
     border-style: none solid none none;
-    background-color: #f8f8f8;
+    background-color: var(--craftercms-light0);
     border-color: #e7e7e7;
     left: 0;
     bottom: 0;
-    top: 50px;
-    /*width: 265px;*/
+    top: 53px;
     position: fixed;
     z-index: 100;
   }
+
   .acn-dropdown-menu {
-    padding: 25px 0;
-    overflow-y: auto;
-    overflow-x: auto;
-    text-align: left;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+    overflow: hidden;
+    text-align: left;
     position: absolute;
 
     #acn-sites-link {
@@ -376,12 +389,13 @@ div#acn-active-content {
       color: #333333;
       cursor: pointer;
 
-      &:hover{
+      &:hover {
         color: #333333;
         text-decoration: none;
       }
     }
   }
+
   .treenode-label {
     margin: 0 0 5px 0;
 
@@ -389,13 +403,16 @@ div#acn-active-content {
       font-weight: bold;
     }
   }
-  .acn-dropdown-toggler {
-    text-decoration: none;
-  }
 }
 
 .sidebar-module-legacy {
-  margin: 0 15px;
+  margin: 0 15px !important;
+}
+
+.sidebar-module-legacy--with-divider {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
 }
 
 .acn-dropdown-wrapper .acn-dropdown-menu a {
@@ -411,7 +428,7 @@ div#acn-active-content {
   padding: 0;
 }
 
-#acn-dropdown-menu-wrapper.slideOutLeft{
+#acn-dropdown-menu-wrapper.slideOutLeft {
   display: none !important;
 }
 
@@ -427,7 +444,7 @@ div#acn-active-content {
   color: #444 !important;
 }
 
-.acn-dropdown-menu-wrapper .yuimenu .yuimenuitemlabel-selected{
+.acn-dropdown-menu-wrapper .yuimenu .yuimenuitemlabel-selected {
   background-color: #ddd !important;
 }
 
@@ -435,29 +452,29 @@ div#acn-active-content {
   color: #aaa !important;
 }
 
-.yui-module.yui-overlay{
+.yui-module.yui-overlay {
   border-radius: 6px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-.fa-spinner.yui-module.yui-overlay{
+.fa-spinner.yui-module.yui-overlay {
   border-radius: none;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
 
-.yui-skin-cstudioTheme .yui-menu-shadow-visible{
+.yui-skin-cstudioTheme .yui-menu-shadow-visible {
   border-radius: 6px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   background-color: transparent;
 }
 
-.yuimenu .bd, .yui-skin-cstudioTheme .yuimenu .bd{
+.yuimenu .bd, .yui-skin-cstudioTheme .yuimenu .bd {
   border: 1px #ddd solid;
   padding-top: 5px;
-  border-radius: 6px!important;
+  border-radius: 6px !important;
 }
 
 .yui-resize .yui-resize-handle-br {
@@ -481,7 +498,7 @@ div#acn-active-content {
   margin: 0 0 5px;
 }
 
-.yuimenuitem#yui-gen2, .yuimenuitem#yui-gen1{
+.yuimenuitem#yui-gen2, .yuimenuitem#yui-gen1 {
   background-color: #fff;
 }
 
@@ -575,16 +592,18 @@ div#acn-active-content {
   padding: 2px 0 0 18px;
 }
 
-a.acn-parent-folder{
+a.acn-parent-folder {
   font-size: 14px;
   line-height: 15px;
   color: #333333;
   cursor: pointer;
 }
-a.acn-parent-folder:hover{
+
+a.acn-parent-folder:hover {
   color: #333333;
   text-decoration: none;
 }
+
 a.acn-parent-folder:before {
   font-size: 14px;
 }
@@ -594,30 +613,11 @@ a.acn-parent-folder:before {
   font-style: italic;
 }
 
-.acn-dropdown-menu-inner{
-  min-height: calc(100% - 131px);
-}
-
-.acn-dropdown-wrapper .acn-dropdown-footer {
-  position: relative;
-  text-align: center;
-  width: inherit;
-  border-top: 1px solid #ccc;
-  margin-top: 28px;
-  height: 103px;
-}
-
-.acn-dropdown-wrapper .acn-dropdown-footer a{
-  display: inline-block;
-}
-
-.acn-dropdown-wrapper .acn-dropdown-footer-resize {
-  background: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat right #CDCDCD;
-  background-position: 100% -599px;
-  height: 20px;
-  position: relative;
-  width: inherit;
-  min-width: 20px;
+.acn-dropdown-menu-inner {
+  overflow: auto;
+  padding: 15px 0;
+  min-height: calc(100% - 100px);
+  max-height: calc(100% - 100px);
 }
 
 .acn-doc {
@@ -905,7 +905,7 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
 }
 
 .ygtvrow {
-  .ygtvlp, .ygtvtm, .ygtvtp, .ygtvlph, .ygtvlphh, .ygtvtph, .ygtvtphh, .ygtvtmh, .ygtvtmhh, .ygtvlm, .ygtvlmh, .ygtvlmhh{
+  .ygtvlp, .ygtvtm, .ygtvtp, .ygtvlph, .ygtvlphh, .ygtvtph, .ygtvtphh, .ygtvtmh, .ygtvtmhh, .ygtvlm, .ygtvlmh, .ygtvlmhh {
     background-image: none;
     font: normal normal normal 14px/1 FontAwesome;
     font-size: inherit;
@@ -920,7 +920,7 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
     width: 10px;
   }
 
-  .ygtvtm:before, .ygtvtmh:before, .ygtvtmhh:before, .ygtvlm:before, .ygtvlmh:before, .ygtvlmhh:before{
+  .ygtvtm:before, .ygtvtmh:before, .ygtvtmhh:before, .ygtvlm:before, .ygtvlmh:before, .ygtvlmhh:before {
     content: "\f147";
     position: absolute;
     top: 3px;
@@ -968,21 +968,21 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
 #acn-context-tooltipWrapper,
 #acn-context-tooltipWrapper-search,
 #acn-context-tooltipWrapper-widgets {
-  background: #f8f8f8;
+  background: var(--craftercms-light0);
   border: none;
   margin: 0;
   padding: 0;
   width: 290px;
   border-radius: 6px;
-  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-  box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
 }
 
 #acn-context-tooltipWrapper .bd,
 #acn-context-tooltipWrapper-search .bd,
 #acn-context-tooltipWrapper-widgets .bd {
-  background-color: #f8f8f8;
-  border: 1px solid rgba(0,0,0,.2);
+  background-color: var(--craftercms-light0);
+  border: 1px solid rgba(0, 0, 0, .2);
   margin: 0;
   padding: 0;
   width: 290px;
@@ -1551,7 +1551,7 @@ div.acnBox div.radio div.textField input {
 div.acnBox div.padTop {
   padding: 5px 0 11px;
 
-  label{
+  label {
     margin-top: 6px;
   }
 }
@@ -1638,7 +1638,7 @@ div.acnBox td.acnLiveTableRight div.acnGoLiveSetTime a:hover,
   text-decoration: none;
 }
 
-.admin-delete-view .items-feedback{
+.admin-delete-view .items-feedback {
   color: #777;
 }
 
@@ -1993,17 +1993,17 @@ div.acnBox table.acnLiveTable td.acnLiveTableRight {
   text-align: center;
 }
 
-div.rejectContainer{
+div.rejectContainer {
 
 
-  color:#000 !important;
+  color: #000 !important;
   overflow: initial !important;
 
-  table.acnLiveTable{
+  table.acnLiveTable {
     width: 100% !important;
     table-layout: fixed;
 
-    thead{
+    thead {
       background-color: #7f9db9;
       color: #fff;
       font-weight: normal;
@@ -2013,20 +2013,22 @@ div.rejectContainer{
       width: 100%;
       border-radius: 6px 6px 0 0;
 
-      tr{
+      tr {
         height: 45px;
 
-        th{
+        th {
           border-radius: inherit;
 
-          &.checkboxTh{
+          &.checkboxTh {
             width: 10%;
             border-top-left-radius: 6px;
           }
-          &.itemTh{
+
+          &.itemTh {
             width: 65%;
           }
-          &.submittedTh{
+
+          &.submittedTh {
             width: 25%;
             border-top-right-radius: 6px;
           }
@@ -2036,11 +2038,11 @@ div.rejectContainer{
 
     }
 
-    tbody{
+    tbody {
 
       border: 1px solid #CCCCCC;
 
-      tr{
+      tr {
         border-bottom: 1px solid #fff;
         height: 40px;
 
@@ -2050,11 +2052,11 @@ div.rejectContainer{
 
       }
 
-      tr:last-child{
+      tr:last-child {
         border-bottom-color: #CCC;
       }
 
-      div.in{
+      div.in {
         word-break: break-all !important;
       }
     }
@@ -2062,7 +2064,6 @@ div.rejectContainer{
   }
 
 }
-
 
 
 .liveColLast {
@@ -2216,7 +2217,9 @@ div.rejectContainer{
   height: 106px;
   overflow-y: scroll;
   width: 550px;
-  width /*\*/: 547px \9;
+  width /*\*/
+  : 547px \9
+;
   background-color: white;
 }
 
@@ -2277,7 +2280,9 @@ div.rejectContainer{
 
 .rejectTextarea {
   width: 547px;
-  width /*\*/: 540px \9;
+  width /*\*/
+  : 540px \9
+;
   height: 145px;
 }
 
@@ -2657,11 +2662,11 @@ span.acn-canned-search {
   padding: 3px 20px;
 }
 
-.copyContent .copy-content-container h5{
+.copyContent .copy-content-container h5 {
   border-radius: 6px 6px 0 0;
 }
 
-#cstudio-wcm-popup-div .copyContent .copy-content-container h5 span{
+#cstudio-wcm-popup-div .copyContent .copy-content-container h5 span {
   color: #fff;
 }
 
@@ -2694,7 +2699,7 @@ span.acn-canned-search {
   margin-left: 0;
 }
 
-.copy-content-container #copyCheckBoxItems{
+.copy-content-container #copyCheckBoxItems {
   margin-left: 11px;
   margin-top: 14px;
 }
@@ -2753,7 +2758,7 @@ span.acn-canned-search {
   border-radius: $border-radius-base;
 
   #ice-tools-panel-elem {
-    .studio-view{
+    .studio-view {
       overflow: hidden;
     }
   }
@@ -2807,16 +2812,19 @@ span.acn-canned-search {
     margin-left: 5px;
   }
 
-  .edit-code{
+  .edit-code {
     float: left;
-    &.template{
+
+    &.template {
       margin-right: 4px;
     }
-    button{
-      padding: 7px 0px!important;
+
+    button {
+      padding: 7px 0px !important;
       width: 119px;
     }
-    .acn-ptools-ice-label{
+
+    .acn-ptools-ice-label {
       margin-left: 0px;
     }
   }
@@ -2863,7 +2871,7 @@ span.acn-canned-search {
   height: 100%;
   z-index: 1031;
   background-color: rgb(68, 68, 68);
-  opacity: 0.5!important;
+  opacity: 0.5 !important;
 }
 
 #cstudioPreviewTargetingOverlay {
@@ -2873,16 +2881,16 @@ span.acn-canned-search {
   border-radius: 6px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   -o-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow:  0 5px 15px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   z-index: 1030;
 
-  .persona-container{
+  .persona-container {
     max-height: 463px;
     //overflow-y: scroll;
   }
 
-  img{
+  img {
     position: static;
     float: left;
     border: 1px solid rgb(201, 201, 201);
@@ -2892,15 +2900,15 @@ span.acn-canned-search {
     max-width: 140px;
   }
 
-  .form-control{
+  .form-control {
     margin-bottom: 7px;
   }
 
-  table{
+  table {
     margin-bottom: 10px;
   }
 
-  .control-container.datetime{
+  .control-container.datetime {
     .control-label {
       float: left;
     }
@@ -2943,19 +2951,19 @@ span.acn-canned-search {
     visibility: hidden;
   }
 
-  #targeting-container .control-container:hover .hint{
+  #targeting-container .control-container:hover .hint {
     visibility: visible;
   }
 
 }
 
-.target-btns{
+.target-btns {
   bottom: 21px;
   position: absolute;
   right: 33px;
 }
 
-#csupdatepersona, #cscancel{
+#csupdatepersona, #cscancel {
   width: 91px;
   height: 30px;
   float: right;
@@ -2963,19 +2971,19 @@ span.acn-canned-search {
   cursor: pointer;
 }
 
-#csupdatepersona{
+#csupdatepersona {
   margin-right: 10px;
 }
 
-#targeting-panel-elem{
+#targeting-panel-elem {
 
-  #container{
-    width: 229px!important;
+  #container {
+    width: 229px !important;
     padding: 21px 30px 30px 35px;
   }
 
-  span{
-    button{
+  span {
+    button {
       border-radius: 15px;
       font-weight: bold;
       font-size: 14px;
@@ -2989,11 +2997,11 @@ span.acn-canned-search {
 
   }
 
-  .yui-carousel-first-button button{
+  .yui-carousel-first-button button {
     left: 0px;
   }
 
-  .yui-carousel-next-button button{
+  .yui-carousel-next-button button {
     left: 203px;
   }
 
@@ -3005,9 +3013,9 @@ span.acn-canned-search {
 
 .yui-carousel-content {
   left: 0;
-  width: 161px!important;
+  width: 161px !important;
 
-  .yui-carousel-element li{
+  .yui-carousel-element li {
     border-radius: 6px;
   }
 }
@@ -3017,7 +3025,7 @@ span.acn-canned-search {
   width: 100%;
 }
 
-.yui-carousel .yui-carousel-item-selected{
+.yui-carousel .yui-carousel-item-selected {
   border: none;
   border-radius: 6px;
 }
@@ -3030,6 +3038,7 @@ span.acn-canned-search {
   .underlay {
     border-radius: $border-radius-base;
   }
+
   .yui-panel-container {
     span.yui-carousel-button {
       display: none;
@@ -3048,7 +3057,7 @@ span.acn-canned-search {
   height: 102px;
   margin-left: 70px;
 
-  img{
+  img {
     border: 1px solid rgb(201, 201, 201);
     border-radius: 6px;
   }
@@ -3332,7 +3341,7 @@ span.acn-canned-search {
   -moz-transition: width 0.6s ease;
   -o-transition: width 0.6s ease;
   transition: width 0.6s ease;
-  background: repeating-linear-gradient( 45deg, #5d84a9, #5d84a9 10px, #7e9dbb 10px, #7e9dbb 20px );
+  background: repeating-linear-gradient(45deg, #5d84a9, #5d84a9 10px, #7e9dbb 10px, #7e9dbb 20px);
 }
 
 .studio-preview #studioBar .navbar-right-wrapper {
@@ -3341,15 +3350,15 @@ span.acn-canned-search {
 
 .site-dashboard {
   .panel {
-    .ttTbody{
+    .ttTbody {
       td {
-        .anchorRow{
-            display: inline-block;
-            max-width: calc(100% - 45px);
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            margin-bottom: -3px;
+        .anchorRow {
+          display: inline-block;
+          max-width: calc(100% - 45px);
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          margin-bottom: -3px;
         }
       }
     }

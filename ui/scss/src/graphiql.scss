@@ -2,19 +2,18 @@
 .graphiql-container button,
 .graphiql-container input {
   color: #141823;
-  font-family:
-    system,
-    -apple-system,
-    'San Francisco',
-    '.SFNSDisplay-Regular',
-    'Segoe UI',
-    Segoe,
-    'Segoe WP',
-    'Helvetica Neue',
-    helvetica,
-    'Lucida Grande',
-    arial,
-    sans-serif;
+  font-family: system,
+  -apple-system,
+  'San Francisco',
+  '.SFNSDisplay-Regular',
+  'Segoe UI',
+  Segoe,
+  'Segoe WP',
+  'Helvetica Neue',
+  helvetica,
+  'Lucida Grande',
+  arial,
+  sans-serif;
   font-size: 14px;
 }
 
@@ -235,10 +234,9 @@
   background: linear-gradient(#f9f9f9, #ececec);
   border: 0;
   border-radius: 3px;
-  box-shadow:
-    inset 0 0 0 1px rgba(0,0,0,0.20),
-    0 1px 0 rgba(255,255,255, 0.7),
-    inset 0 1px #fff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.20),
+  0 1px 0 rgba(255, 255, 255, 0.7),
+  inset 0 1px #fff;
   color: #555;
   cursor: pointer;
   display: inline-block;
@@ -252,11 +250,10 @@
 
 .graphiql-container .toolbar-button:active {
   background: linear-gradient(#ececec, #d5d5d5);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 0 0 1px rgba(0,0,0,0.10),
-    inset 0 1px 1px 1px rgba(0, 0, 0, 0.12),
-    inset 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7),
+  inset 0 0 0 1px rgba(0, 0, 0, 0.10),
+  inset 0 1px 1px 1px rgba(0, 0, 0, 0.12),
+  inset 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .graphiql-container .toolbar-button.error {
@@ -293,7 +290,7 @@
 .graphiql-container .execute-button {
   background: linear-gradient(#fdfdfd, #d2d3d6);
   border-radius: 17px;
-  border: 1px solid rgba(0,0,0,0.25);
+  border: 1px solid rgba(0, 0, 0, 0.25);
   box-shadow: 0 1px 0 #fff;
   cursor: pointer;
   fill: #444;
@@ -309,10 +306,9 @@
 
 .graphiql-container .execute-button:active {
   background: linear-gradient(#e6e6e6, #c3c3c3);
-  box-shadow:
-    0 1px 0 #fff,
-    inset 0 0 2px rgba(0, 0, 0, 0.2),
-    inset 0 0 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 0 #fff,
+  inset 0 0 2px rgba(0, 0, 0, 0.2),
+  inset 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
 .graphiql-container .toolbar-menu,
@@ -324,9 +320,8 @@
 .graphiql-container .toolbar-menu-items,
 .graphiql-container .toolbar-select-options {
   background: #fff;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.1),
-    0 2px 4px rgba(0,0,0,0.25);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1),
+  0 2px 4px rgba(0, 0, 0, 0.25);
   margin: 0;
   padding: 6px 0;
   position: absolute;
@@ -407,12 +402,11 @@
 
 .graphiql-container .CodeMirror {
   color: #141823;
-  font-family:
-    'Consolas',
-    'Inconsolata',
-    'Droid Sans Mono',
-    'Monaco',
-    monospace;
+  font-family: 'Consolas',
+  'Inconsolata',
+  'Droid Sans Mono',
+  'Monaco',
+  monospace;
   font-size: 13px;
   height: 100%;
   left: 0;
@@ -503,9 +497,8 @@ div.CodeMirror-lint-tooltip > * + * {
   border-radius: 4px;
   background: #08f;
   background: linear-gradient(#43A8FF, #0F83E8);
-  box-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2),
+  inset 0 0 0 1px rgba(0, 0, 0, 0.1);
   color: white;
   font-family: arial;
   font-size: 12px;
@@ -639,7 +632,8 @@ div.CodeMirror-lint-tooltip > * + * {
   white-space: nowrap;
 }
 
-.CodeMirror-linenumbers {}
+.CodeMirror-linenumbers {
+}
 
 .CodeMirror-linenumber {
   color: #999;
@@ -649,9 +643,13 @@ div.CodeMirror-lint-tooltip > * + * {
   white-space: nowrap;
 }
 
-.CodeMirror-guttermarker { color: black; }
+.CodeMirror-guttermarker {
+  color: black;
+}
 
-.CodeMirror-guttermarker-subtle { color: #999; }
+.CodeMirror-guttermarker-subtle {
+  color: #999;
+}
 
 /* CURSOR */
 
@@ -682,16 +680,26 @@ div.CodeMirror-lint-tooltip > * + * {
 }
 
 @keyframes blink {
-  0% { background: #7e7; }
-  50% { background: none; }
-  100% { background: #7e7; }
+  0% {
+    background: #7e7;
+  }
+  50% {
+    background: none;
+  }
+  100% {
+    background: #7e7;
+  }
 }
 
 /* Can style cursor different in overwrite (non-insert) mode */
 
-div.CodeMirror-overwrite div.CodeMirror-cursor {}
+div.CodeMirror-overwrite div.CodeMirror-cursor {
+}
 
-.cm-tab { display: inline-block; text-decoration: inherit; }
+.cm-tab {
+  display: inline-block;
+  text-decoration: inherit;
+}
 
 .CodeMirror-ruler {
   border-left: 1px solid #ccc;
@@ -700,76 +708,141 @@ div.CodeMirror-overwrite div.CodeMirror-cursor {}
 
 /* DEFAULT THEME */
 
-.cm-s-default .cm-keyword {color: #708;}
+.cm-s-default .cm-keyword {
+  color: #708;
+}
 
-.cm-s-default .cm-atom {color: #219;}
+.cm-s-default .cm-atom {
+  color: #219;
+}
 
-.cm-s-default .cm-number {color: #164;}
+.cm-s-default .cm-number {
+  color: #164;
+}
 
-.cm-s-default .cm-def {color: #00f;}
+.cm-s-default .cm-def {
+  color: #00f;
+}
 
 .cm-s-default .cm-variable,
 .cm-s-default .cm-punctuation,
 .cm-s-default .cm-property,
-.cm-s-default .cm-operator {}
+.cm-s-default .cm-operator {
+}
 
-.cm-s-default .cm-variable-2 {color: #05a;}
+.cm-s-default .cm-variable-2 {
+  color: #05a;
+}
 
-.cm-s-default .cm-variable-3 {color: #085;}
+.cm-s-default .cm-variable-3 {
+  color: #085;
+}
 
-.cm-s-default .cm-comment {color: #a50;}
+.cm-s-default .cm-comment {
+  color: #a50;
+}
 
-.cm-s-default .cm-string {color: #a11;}
+.cm-s-default .cm-string {
+  color: #a11;
+}
 
-.cm-s-default .cm-string-2 {color: #f50;}
+.cm-s-default .cm-string-2 {
+  color: #f50;
+}
 
-.cm-s-default .cm-meta {color: #555;}
+.cm-s-default .cm-meta {
+  color: #555;
+}
 
-.cm-s-default .cm-qualifier {color: #555;}
+.cm-s-default .cm-qualifier {
+  color: #555;
+}
 
-.cm-s-default .cm-builtin {color: #30a;}
+.cm-s-default .cm-builtin {
+  color: #30a;
+}
 
-.cm-s-default .cm-bracket {color: #997;}
+.cm-s-default .cm-bracket {
+  color: #997;
+}
 
-.cm-s-default .cm-tag {color: #170;}
+.cm-s-default .cm-tag {
+  color: #170;
+}
 
-.cm-s-default .cm-attribute {color: #00c;}
+.cm-s-default .cm-attribute {
+  color: #00c;
+}
 
-.cm-s-default .cm-header {color: blue;}
+.cm-s-default .cm-header {
+  color: blue;
+}
 
-.cm-s-default .cm-quote {color: #090;}
+.cm-s-default .cm-quote {
+  color: #090;
+}
 
-.cm-s-default .cm-hr {color: #999;}
+.cm-s-default .cm-hr {
+  color: #999;
+}
 
-.cm-s-default .cm-link {color: #00c;}
+.cm-s-default .cm-link {
+  color: #00c;
+}
 
-.cm-negative {color: #d44;}
+.cm-negative {
+  color: #d44;
+}
 
-.cm-positive {color: #292;}
+.cm-positive {
+  color: #292;
+}
 
-.cm-header, .cm-strong {font-weight: bold;}
+.cm-header, .cm-strong {
+  font-weight: bold;
+}
 
-.cm-em {font-style: italic;}
+.cm-em {
+  font-style: italic;
+}
 
-.cm-link {text-decoration: underline;}
+.cm-link {
+  text-decoration: underline;
+}
 
-.cm-strikethrough {text-decoration: line-through;}
+.cm-strikethrough {
+  text-decoration: line-through;
+}
 
-.cm-s-default .cm-error {color: #f00;}
+.cm-s-default .cm-error {
+  color: #f00;
+}
 
-.cm-invalidchar {color: #f00;}
+.cm-invalidchar {
+  color: #f00;
+}
 
-.CodeMirror-composing { border-bottom: 2px solid; }
+.CodeMirror-composing {
+  border-bottom: 2px solid;
+}
 
 /* Default styles for common addons */
 
-div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
+div.CodeMirror span.CodeMirror-matchingbracket {
+  color: #0f0;
+}
 
-div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
+div.CodeMirror span.CodeMirror-nonmatchingbracket {
+  color: #f22;
+}
 
-.CodeMirror-matchingtag { background: rgba(255, 150, 0, .3); }
+.CodeMirror-matchingtag {
+  background: rgba(255, 150, 0, .3);
+}
 
-.CodeMirror-activeline-background {background: #e8f2ff;}
+.CodeMirror-activeline-background {
+  background: #e8f2ff;
+}
 
 /* STOP */
 
@@ -786,7 +859,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   height: 100%;
   /* 30px is the magic margin used to hide the element's real scrollbars */
   /* See overflow: hidden in .CodeMirror */
-  margin-bottom: -30px; margin-right: -30px;
+  margin-bottom: -30px;
+  margin-right: -30px;
   outline: none; /* Prevent dragging from highlighting the element */
   overflow: scroll !important; /* Things will break if this is overridden */
   padding-bottom: 30px;
@@ -811,26 +885,32 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .CodeMirror-vscrollbar {
   overflow-x: hidden;
   overflow-y: scroll;
-  right: 0; top: 0;
+  right: 0;
+  top: 0;
 }
 
 .CodeMirror-hscrollbar {
-  bottom: 0; left: 0;
+  bottom: 0;
+  left: 0;
   overflow-x: scroll;
   overflow-y: hidden;
 }
 
 .CodeMirror-scrollbar-filler {
-  right: 0; bottom: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .CodeMirror-gutter-filler {
-  left: 0; bottom: 0;
+  left: 0;
+  bottom: 0;
 }
 
 .CodeMirror-gutters {
   min-height: 100%;
-  position: absolute; left: 0; top: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
   z-index: 3;
 }
 
@@ -841,8 +921,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   vertical-align: top;
   white-space: normal;
   /* Hack to make IE7 behave */
-  *zoom:1;
-  *display:inline;
+  *zoom: 1;
+  *display: inline;
 }
 
 .CodeMirror-gutter-wrapper {
@@ -854,7 +934,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 
 .CodeMirror-gutter-background {
   position: absolute;
-  top: 0; bottom: 0;
+  top: 0;
+  bottom: 0;
   z-index: 4;
 }
 
@@ -900,7 +981,10 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 
 .CodeMirror-linebackground {
   position: absolute;
-  left: 0; right: 0; top: 0; bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   z-index: 0;
 }
 
@@ -910,7 +994,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   z-index: 2;
 }
 
-.CodeMirror-widget {}
+.CodeMirror-widget {
+}
 
 .CodeMirror-code {
   outline: none;
@@ -934,9 +1019,13 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
   width: 100%;
 }
 
-.CodeMirror-cursor { position: absolute; }
+.CodeMirror-cursor {
+  position: absolute;
+}
 
-.CodeMirror-measure pre { position: static; }
+.CodeMirror-measure pre {
+  position: static;
+}
 
 div.CodeMirror-cursors {
   position: relative;
@@ -952,15 +1041,25 @@ div.CodeMirror-dragcursors {
   visibility: visible;
 }
 
-.CodeMirror-selected { background: #d9d9d9; }
+.CodeMirror-selected {
+  background: #d9d9d9;
+}
 
-.CodeMirror-focused .CodeMirror-selected { background: #d7d4f0; }
+.CodeMirror-focused .CodeMirror-selected {
+  background: #d7d4f0;
+}
 
-.CodeMirror-crosshair { cursor: crosshair; }
+.CodeMirror-crosshair {
+  cursor: crosshair;
+}
 
-.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: #d7d4f0; }
+.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection {
+  background: #d7d4f0;
+}
 
-.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection { background: #d7d4f0; }
+.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection {
+  background: #d7d4f0;
+}
 
 .cm-searching {
   background: #ffa;
@@ -969,11 +1068,15 @@ div.CodeMirror-dragcursors {
 
 /* IE7 hack to prevent it from returning funny offsetTops on the spans */
 
-.CodeMirror span { *vertical-align: text-bottom; }
+.CodeMirror span {
+  *vertical-align: text-bottom;
+}
 
 /* Used to force a border model for a node */
 
-.cm-force-border { padding-right: .1px; }
+.cm-force-border {
+  padding-right: .1px;
+}
 
 @media print {
   /* Hide the cursor when printing */
@@ -984,16 +1087,21 @@ div.CodeMirror-dragcursors {
 
 /* See issue #2901 */
 
-.cm-tab-wrap-hack:after { content: ''; }
+.cm-tab-wrap-hack:after {
+  content: '';
+}
 
 /* Help users use markselection to safely style text background */
 
-span.CodeMirror-selectedtext { background: none; }
+span.CodeMirror-selectedtext {
+  background: none;
+}
 
 .CodeMirror-dialog {
   background: inherit;
   color: inherit;
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   overflow: hidden;
   padding: .1em .8em;
   position: absolute;
@@ -1030,16 +1138,20 @@ span.CodeMirror-selectedtext { background: none; }
   line-height: .3;
   text-shadow: #b9f 1px 1px 2px, #b9f -1px -1px 2px, #b9f 1px -1px 2px, #b9f -1px 1px 2px;
 }
+
 .CodeMirror-foldgutter {
   width: .7em;
 }
+
 .CodeMirror-foldgutter-open,
 .CodeMirror-foldgutter-folded {
   cursor: pointer;
 }
+
 .CodeMirror-foldgutter-open:after {
   content: "\25BE";
 }
+
 .CodeMirror-foldgutter-folded:after {
   content: "\25B8";
 }
@@ -1050,19 +1162,18 @@ span.CodeMirror-selectedtext { background: none; }
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
   box-sizing: border-box;
   color: #555;
-  font-family:
-    system,
-    -apple-system,
-    'San Francisco',
-    '.SFNSDisplay-Regular',
-    'Segoe UI',
-    Segoe,
-    'Segoe WP',
-    'Helvetica Neue',
-    helvetica,
-    'Lucida Grande',
-    arial,
-    sans-serif;
+  font-family: system,
+  -apple-system,
+  'San Francisco',
+  '.SFNSDisplay-Regular',
+  'Segoe UI',
+  Segoe,
+  'Segoe WP',
+  'Helvetica Neue',
+  helvetica,
+  'Lucida Grande',
+  arial,
+  sans-serif;
   font-size: 13px;
   line-height: 16px;
   margin: 8px -8px;
@@ -1161,6 +1272,7 @@ span.CodeMirror-selectedtext { background: none; }
 .CodeMirror-lint-markers {
   width: 16px;
 }
+
 .CodeMirror-lint-tooltip {
   background-color: infobackground;
   border-radius: 4px 4px 4px 4px;
@@ -1177,18 +1289,20 @@ span.CodeMirror-selectedtext { background: none; }
   white-space: pre-wrap;
   z-index: 100;
 }
+
 .CodeMirror-lint-mark-error, .CodeMirror-lint-mark-warning {
   background-position: left bottom;
   background-repeat: repeat-x;
 }
+
 .CodeMirror-lint-mark-error {
-  background-image:
-    url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/qPKMDAwAADLZwf5rvm+LQAAAABJRU5ErkJggg==")
-;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/qPKMDAwAADLZwf5rvm+LQAAAABJRU5ErkJggg==");
 }
+
 .CodeMirror-lint-mark-warning {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJFhQXEbhTg7YAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAMklEQVQI12NkgIIvJ3QXMjAwdDN+OaEbysDA4MPAwNDNwMCwiOHLCd1zX07o6kBVGQEAKBANtobskNMAAAAASUVORK5CYII=");
 }
+
 .CodeMirror-lint-marker-error, .CodeMirror-lint-marker-warning {
   background-position: center center;
   background-repeat: no-repeat;
@@ -1199,22 +1313,27 @@ span.CodeMirror-selectedtext { background: none; }
   vertical-align: middle;
   width: 16px;
 }
+
 .CodeMirror-lint-message-error, .CodeMirror-lint-message-warning {
   background-position: top left;
   background-repeat: no-repeat;
   padding-left: 18px;
 }
+
 .CodeMirror-lint-marker-error, .CodeMirror-lint-message-error {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAHlBMVEW7AAC7AACxAAC7AAC7AAAAAAC4AAC5AAD///+7AAAUdclpAAAABnRSTlMXnORSiwCK0ZKSAAAATUlEQVR42mWPOQ7AQAgDuQLx/z8csYRmPRIFIwRGnosRrpamvkKi0FTIiMASR3hhKW+hAN6/tIWhu9PDWiTGNEkTtIOucA5Oyr9ckPgAWm0GPBog6v4AAAAASUVORK5CYII=");
 }
+
 .CodeMirror-lint-marker-warning, .CodeMirror-lint-message-warning {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAANlBMVEX/uwDvrwD/uwD/uwD/uwD/uwD/uwD/uwD/uwD6twD/uwAAAADurwD2tQD7uAD+ugAAAAD/uwDhmeTRAAAADHRSTlMJ8mN1EYcbmiixgACm7WbuAAAAVklEQVR42n3PUQqAIBBFUU1LLc3u/jdbOJoW1P08DA9Gba8+YWJ6gNJoNYIBzAA2chBth5kLmG9YUoG0NHAUwFXwO9LuBQL1giCQb8gC9Oro2vp5rncCIY8L8uEx5ZkAAAAASUVORK5CYII=");
 }
+
 .CodeMirror-lint-marker-multiple {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAMAAADzjKfhAAAACVBMVEUAAAAAAAC/v7914kyHAAAAAXRSTlMAQObYZgAAACNJREFUeNo1ioEJAAAIwmz/H90iFFSGJgFMe3gaLZ0od+9/AQZ0ADosbYraAAAAAElFTkSuQmCC");
   background-position: right bottom;
   background-repeat: no-repeat;
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .graphiql-container .spinner-container {
@@ -1242,8 +1361,12 @@ span.CodeMirror-selectedtext { background: none; }
 }
 
 @keyframes rotation {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(359deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
 }
 
 .CodeMirror-hints {
@@ -1297,19 +1420,18 @@ li.CodeMirror-hint-active {
   background: #fffae8;
   box-shadow: inset 0 1px 1px -1px #bfb063;
   color: #867F70;
-  font-family:
-    system,
-    -apple-system,
-    'San Francisco',
-    '.SFNSDisplay-Regular',
-    'Segoe UI',
-    Segoe,
-    'Segoe WP',
-    'Helvetica Neue',
-    helvetica,
-    'Lucida Grande',
-    arial,
-    sans-serif;
+  font-family: system,
+  -apple-system,
+  'San Francisco',
+  '.SFNSDisplay-Regular',
+  'Segoe UI',
+  Segoe,
+  'Segoe WP',
+  'Helvetica Neue',
+  helvetica,
+  'Lucida Grande',
+  arial,
+  sans-serif;
   font-size: 13px;
   line-height: 16px;
   margin-top: 4px;
@@ -1416,7 +1538,7 @@ li.CodeMirror-hint-active {
   min-width: 300px;
 }
 
-.graphiql-container .doc-type-description p:first-child ,
+.graphiql-container .doc-type-description p:first-child,
 .graphiql-container .doc-type-description blockquote:first-child {
   margin-top: 0;
 }
@@ -1442,7 +1564,7 @@ li.CodeMirror-hint-active {
 .graphiql-container .doc-type-description pre,
 .graphiql-container .doc-category code,
 .graphiql-container .doc-category pre {
-  --saf-0: rgba(var(--sk_foreground_low,29,28,29),0.13);
+  --saf-0: rgba(var(--sk_foreground_low, 29, 28, 29), 0.13);
   font-size: 12px;
   line-height: 1.50001;
   font-variant-ligatures: none;
@@ -1460,7 +1582,7 @@ li.CodeMirror-hint-active {
   padding: 2px 3px 1px;
   border: 1px solid var(--saf-0);
   border-radius: 3px;
-  background-color: rgba(var(--sk_foreground_min,29,28,29),.04);
+  background-color: rgba(var(--sk_foreground_min, 29, 28, 29), .04);
   color: #e01e5a;
   background-color: white;
 }
@@ -1708,11 +1830,11 @@ li.CodeMirror-hint-active {
 
 /* position container under topbar */
 #graphContainer {
-    margin-top: 51px;
-    height: calc( 100vh - 51px );
+  margin-top: 51px;
+  height: calc(100vh - 51px);
 }
 
 #graphContainer .doc-explorer-title-bar,
 #graphContainer .history-title-bar {
-    height: 47px;
+  height: 47px;
 }

@@ -3187,7 +3187,8 @@ a:hover.editLink {
   color: #808080 !important; }
 
 .preview {
-    color: #52779b; }
+  color: var(--craftercms-tealShade);
+}
 
 
 .cs-input {

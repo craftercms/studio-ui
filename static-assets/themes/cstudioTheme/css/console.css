@@ -77,7 +77,7 @@ input[type="checkbox"].content-type-selector--checkbox {
 }
 
 #admin-console .categories-panel {
-  background: repeat-y scroll right center #f8f8f8;
+  background: repeat-y scroll right center var(--craftercms-light0);
   border-right: 1px solid #e7e7e7;
   margin: 0 0;
   height: 100%;
@@ -107,34 +107,19 @@ input[type="checkbox"].content-type-selector--checkbox {
   margin-top: 60px;
 }
 
-#cstudio-admin-console-item-selected-arrow {
-  -moz-transform: matrix(-0.6, 1, 0.6, 1, 0, 0);
-  -ms-transform: matrix(-0.6, 1, 0.6, 1, 0, 0);
-  -webkit-transform: matrix(-0.6, 1, 0.6, 1, 0, 0);
-  background: none repeat scroll 0 0 #7e9dbb;
-  border-right-width: 0;
-  float: right;
-  height: 13px;
-  left: 7px;
-  position: relative;
-  width: 13px;
-  top: 5px;
-}
-
 .cstudio-admin-console-item-selected {
-  background: none repeat scroll 0 0 #7e9dbb;
-  color: white;
+  background: var(--craftercms-blueHighlight);
+  color: var(--craftercms-blue);
   cursor: default;
 }
 
-.cstudio-admin-console-item-selected span {
-  color: white;
+.cstudio-admin-console-item-selected .fa {
+  color: var(--craftercms-blue);
 }
 
 #content-type-canvas {
   margin: 51px 38% 0 0;
   min-width: 400px;
-
 }
 
 #content-type-canvas .content-form-name {
@@ -160,7 +145,7 @@ input[type="checkbox"].content-type-selector--checkbox {
 }
 
 #content-type-tools {
-  background: none repeat scroll 0 0 #F8F8F8;
+  background: none repeat scroll 0 0 var(--craftercms-light0);
   border-left: 1px solid #e7e7e7;
   position: fixed;
   right: 0;
@@ -951,15 +936,8 @@ html, body {
 }
 
 #categoriesPanelWrapper {
-  min-height: calc(100% - 122px);
   overflow: hidden;
-}
-
-.entitlementValidator {
-  border-top: 1px solid #ccc;
-  padding-top: 12px;
-  margin: 28px 20px 0px 20px;
-  text-align: center;
+  min-height: calc(100% - 150px);
 }
 
 .quick-create-help {

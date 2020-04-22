@@ -56,8 +56,8 @@
       bottom: 30px;
 
       > iframe {
-        width:100%;
-        height:100%;
+        width: 100%;
+        height: 100%;
         border: none;
       }
 
@@ -69,7 +69,7 @@
 
 .centered-dialog {
   text-align: center;
-  padding: 0!important;
+  padding: 0 !important;
 
   &:before {
     content: '';
