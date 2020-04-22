@@ -299,7 +299,7 @@ function DeleteDialog(props: DeleteDialogProps) {
     deleteItems(siteId, user.username, submissionComment, data).subscribe(
       (response) => {
         setApiState({ submitting: false });
-        onSuccess(response);
+        onSuccess?.(response);
       },
       (error) => {
         setApiState({ error });

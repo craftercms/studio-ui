@@ -276,9 +276,9 @@ export function createCodebaseBridge() {
         }
       });
     },
-    createLegacyCallbackListener(id: string, listener: any) {
+    createLegacyCallbackListener(id: string, listener: EventListener) {
       const callback = () => {
-        listener();
+        listener(null);
         document.removeEventListener(id, listener, false);
       };
       document.addEventListener(id, callback, true);
@@ -286,6 +286,6 @@ export function createCodebaseBridge() {
 
   };
 
-// @ts-ignore
+ // @ts-ignore
   window.CrafterCMSNext = Bridge;
 }
