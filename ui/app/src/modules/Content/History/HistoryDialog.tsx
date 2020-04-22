@@ -36,6 +36,7 @@ import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../../styles/theme';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
+import HistoryRoundedIcon from '@material-ui/icons/HistoryRounded';
 import { useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import DialogFooter from '../../../components/DialogFooter';
@@ -90,8 +91,7 @@ const versionListStyles = makeStyles(() =>
     list: {
       backgroundColor: palette.white,
       padding: 0,
-      borderRadius: '5px 5px 0 0',
-      overflowY: 'auto'
+      borderRadius: '5px 5px 0 0'
     },
     listItem: {
       padding: ' 15px 20px',
@@ -149,6 +149,9 @@ const versionListStyles = makeStyles(() =>
 
 const historyStyles = makeStyles(() =>
   createStyles({
+    dialogBody: {
+      overflow: 'auto'
+    },
     dialogFooter: {
       padding: 0
     },
@@ -274,7 +277,7 @@ interface HistoryListProps {
     a?: string;
     b?: string;
   };
-  current: LegacyVersion;
+  current: string;
   handleHistoryItemClick(version: LegacyVersion): void;
   handleViewItem(version: LegacyVersion): void;
   handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
@@ -306,7 +309,7 @@ function HistoryList(props: HistoryListProps) {
               primary={
                 <>
                   <FancyFormattedDate date={version.lastModifiedDate} />
-                  {current.versionNumber === version.versionNumber && (
+                  {current === version.versionNumber && (
                     <Chip
                       label={
                         <FormattedMessage id="historyDialog.current" defaultMessage="current" />
@@ -323,7 +326,7 @@ function HistoryList(props: HistoryListProps) {
               <ListItemSecondaryAction>
                 <IconButton
                   edge="end"
-                  onClick={(e) => handleOpenMenu(e.currentTarget, version, current.versionNumber === version.versionNumber)}
+                  onClick={(e) => handleOpenMenu(e.currentTarget, version, current === version.versionNumber)}
                 >
                   <MoreVertIcon />
                 </IconButton>
@@ -489,6 +492,10 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     dispatch(historyDialogChangePage(nextPage));
   };
 
+  const backToHistoryList = () => {
+    dispatch(compareHistories({ a: null, b: null }));
+  };
+
   const handleDialogHeaderBack = () => {
     if (compareAB.b) {
       dispatch(compareHistories({ b: null }));
@@ -498,7 +505,14 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   return (
-    <Dialog onClose={onClose} open={open} fullWidth maxWidth="md">
+    <Dialog
+      onClose={onClose}
+      open={open}
+      fullWidth
+      maxWidth="md"
+      onEscapeKeyDown={compareAB.a ? handleDialogHeaderBack : onDismiss}
+      onBackdropClick={compareAB.a ? handleDialogHeaderBack : onDismiss}
+    >
       <DialogHeader
         title={
           compareAB.a ? (
@@ -524,10 +538,14 @@ export default function HistoryDialog(props: HistoryDialogProps) {
             />
           )
         }
-        onDismiss={onDismiss}
+        onDismiss={compareAB.a ? handleDialogHeaderBack : onDismiss}
+        rightActions={compareAB.a ? [{
+          icon: HistoryRoundedIcon,
+          onClick: backToHistoryList
+        }] : null}
         onBack={compareAB.a ? handleDialogHeaderBack : null}
       />
-      <DialogBody>
+      <DialogBody className={classes.dialogBody}>
         {compareAB.a && compareAB.b ? (
           <CompareRevision compareA={byId[compareAB.a]} compareB={byId[compareAB.b]} />
         ) : (
@@ -540,12 +558,12 @@ export default function HistoryDialog(props: HistoryDialogProps) {
               rowsPerPage={rowsPerPage}
               page={page}
               compareAB={compareAB}
-              current={byId[current]}
+              current={current}
             />
           </SuspenseWithEmptyState>
         )}
       </DialogBody>
-      {byId && (
+      {byId && !compareAB.b && (
         <DialogFooter className={classes.dialogFooter}>
           <TablePagination
             className={classes.pagination}

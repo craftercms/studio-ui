@@ -42,7 +42,7 @@ const dialogTitleStyles = makeStyles(() =>
       lineHeight: '18px',
       paddingRight: '35px'
     },
-    closeIcon: {
+    leftActions: {
       marginLeft: 'auto'
     },
     backIcon: {}
@@ -120,16 +120,18 @@ export default function DialogHeader(props: DialogTitleProps) {
           </IconButton>
         ))}
         <Typography {...titleTypographyProps}>{title}</Typography>
-        {rightActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) => (
-          <IconButton {...rest}>
-            <Icon />
-          </IconButton>
-        ))}
-        {onDismiss && (
-          <IconButton aria-label="close" onClick={onDismiss} className={classes.closeIcon}>
-            <CloseIcon />
-          </IconButton>
-        )}
+        <div className={classes.leftActions}>
+          {rightActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) => (
+            <IconButton {...rest}>
+              <Icon />
+            </IconButton>
+          ))}
+          {onDismiss && (
+            <IconButton aria-label="close" onClick={onDismiss}>
+              <CloseIcon />
+            </IconButton>
+          )}
+        </div>
       </div>
       {subtitle && (
         <Typography className={classes.subtitle} {...subtitleTypographyProps}>
