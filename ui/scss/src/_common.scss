@@ -1,0 +1,94 @@
+/*!
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+:root {
+  --craftercms-blue: #007AFF;
+  --craftercms-blueTint: #409CFF;
+  --craftercms-blueShade: #0040DD;
+  --craftercms-blueHighlight: #E6F2FF;
+  /* - - - - - - - - - - */
+  --craftercms-gray: #8E8393;
+  --craftercms-grayTint: #98989D;
+  --craftercms-grayShade: #69696E;
+  /* - - - - - - - - - - */
+  --craftercms-green: #34C759;
+  --craftercms-greenTint: #30DB5B;
+  --craftercms-greenShade: #248A3D;
+  /* - - - - - - - - - - */
+  --craftercms-indigo: #5856d6;
+  --craftercms-indigoTint: #7D7AFF;
+  --craftercms-indigoShade: #3634A3;
+  /* - - - - - - - - - - */
+  --craftercms-orange: #FF9500;
+  --craftercms-orangeTint: #FFB340;
+  --craftercms-orangeShade: #C93400;
+  /* - - - - - - - - - - */
+  --craftercms-pink: #FF2D55;
+  --craftercms-pinkTint: #FF6482;
+  --craftercms-pinkShade: #D30F45;
+  /* - - - - - - - - - - */
+  --craftercms-purple: #AF52DE;
+  --craftercms-purpleTint: #DA8FFF;
+  --craftercms-purpleShade: #8944AB;
+  /* - - - - - - - - - - */
+  --craftercms-red: #FF3B30;
+  --craftercms-redTint: #FF6961;
+  --craftercms-redShade: #D70015;
+  /* - - - - - - - - - - */
+  --craftercms-teal: #5AC8FA;
+  --craftercms-tealTint: #70D7FF;
+  --craftercms-tealShade: #0071A4;
+  /* - - - - - - - - - - */
+  --craftercms-yellow: #FFCC00;
+  --craftercms-yellowTint: #FFD426;
+  --craftercms-yellowShade: #A05A00;
+  /* - - - */
+  --craftercms-light0: #FAFAFA;
+  --craftercms-light1: #F3F3F3;
+  --craftercms-light2: #F2F2F7;
+  --craftercms-light3: #EBEBF0;
+  --craftercms-light4: #E5E5EA;
+  --craftercms-light5: #D8D8DC;
+  --craftercms-medium4: #7C7C80;
+}
+
+.btn {
+  box-shadow: $box-shadow;
+}
+
+.craftercms-entitlement {
+  text-align: center;
+  margin: 0;
+  padding: 20px 15px 15px;
+  border-top: 1px solid #eee;
+
+  &-logo {
+    width: 100px;
+  }
+
+  &-copy {
+    padding: 0;
+    font-size: 12px;
+    margin: 10px 0 0;
+    color: var(--craftercms-medium4);
+  }
+
+  &-copy a {
+    display: inline !important;
+    text-decoration: underline;
+    color: var(--craftercms-medium4);
+  }
+}

@@ -16,7 +16,7 @@
 
 
 .sites-view {
-  .site-message{
+  .site-message {
     position: relative;
     top: 80px;
     width: 100%;
@@ -42,15 +42,15 @@
 
 }
 
-.modal-body{
+.modal-body {
   word-wrap: break-word;
 }
 
-.modal-body .notificationBody{
+.modal-body .notificationBody {
   font-size: 15px;
   overflow: hidden;
 
-  .icon{
+  .icon {
     color: #f6cc2f;
     float: left;
     width: 6%;
@@ -59,7 +59,7 @@
     top: 3px;
   }
 
-  .text{
+  .text {
     display: block;
     float: left;
     width: 92%;
@@ -67,14 +67,14 @@
 
 }
 
-.green .modal-body .notificationBody .icon{
+.green .modal-body .notificationBody .icon {
   color: $success-green;
 }
 
-.createSitesBtn{
+.createSitesBtn {
   width: 194px;
 
-  .fa{
+  .fa {
     font-size: 14px;
   }
 
@@ -86,7 +86,7 @@
   top: 65px;
   width: 200px;
   position: absolute;
-  background-color: #f8f8f8;
+  background-color: var(--craftercms-light0);
 }
 
 .action-area {
@@ -98,7 +98,7 @@
 }
 
 .list-group-item {
-  border-color: #f8f8f8;;
+  border-color: var(--craftercms-light0);;
   border-radius: 0 !important;
   background-color: transparent;
   border-style: none solid none none;
@@ -110,25 +110,27 @@
       padding: 0;
     }
   }
+
   tbody {
     td {
       padding: 10px;
 
-      &.preview, &.dashboard{
+      &.preview, &.dashboard {
         text-align: center;
       }
 
-      &.name{
+      &.name {
         padding-left: 17px;
       }
 
-      &.remove{
+      &.remove {
         text-align: right;
         padding-right: 30px;
       }
 
     }
-    .site-description{
+
+    .site-description {
       max-width: 100px;
     }
   }
@@ -176,41 +178,41 @@
   }
 }
 
-@media (min-width: 768px){
-  .studioMedium .modal-dialog{
+@media (min-width: 768px) {
+  .studioMedium .modal-dialog {
     width: 400px;
   }
 }
 
-.creatingSpinner{
-  display:block;
+.creatingSpinner {
+  display: block;
   margin: 0 auto;
 }
 
-.validationComment{
+.validationComment {
   color: gray;
   font-size: 9px;
 }
 
-.submission-comment{
+.submission-comment {
   height: 65px;
 }
 
-.word-wrap{
+.word-wrap {
   word-wrap: break-word;
 }
 
-.errorMessage{
+.errorMessage {
   margin-top: 22px;
 }
 
-.showLoader{
+.showLoader {
   position: fixed;
   left: 48%;
   top: 48%;
 }
 
-.showLoader .fa.loading{
+.showLoader .fa.loading {
   color: #7e9dbb;
   font-size: 3em;
 }

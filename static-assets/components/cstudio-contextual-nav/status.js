@@ -17,7 +17,7 @@
 /**
  * Status
  */
-CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.StatusNavMod || {
+CStudioAuthoring.ContextualNav.StatusNavMod = {
   initialized: false,
 
   /**
@@ -76,7 +76,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                   if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
                   break;
                 default:
-                  iconColor = '#7e9dbb';
+                  iconColor = 'inherit';
                   iconClass = 'icon-default';
                   if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
               }
@@ -129,7 +129,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                     if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
                     break;
                   default:
-                    iconColor = '#7e9dbb';
+                    iconColor = 'inherit';
                     iconClass = 'icon-default';
                     if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
                 }
@@ -217,7 +217,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                     if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
                     break;
                   default:
-                    iconColor = '#7e9dbb';
+                    iconColor = 'inherit';
                     iconClass = 'icon-default';
                     if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
                 }
