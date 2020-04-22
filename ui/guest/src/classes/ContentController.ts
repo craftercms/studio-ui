@@ -233,8 +233,7 @@ export class ContentController {
 
     const models = this.getCachedModels();
     const model = models[modelId];
-
-    const result = getResult(model, fieldId, targetIndex);
+    const result = getCollection(model, fieldId, targetIndex);
 
     // Create Item
     // const now = new Date().toISOString();
@@ -304,7 +303,8 @@ export class ContentController {
   insertInstance(modelId: string, fieldId: string, targetIndex: number | string, instance: ContentInstance): void {
     const models = this.getCachedModels();
     const model = models[modelId];
-    const result = getResult(model, fieldId, targetIndex);
+
+    const result = getCollection(model, fieldId, targetIndex);
 
     // Insert in desired position
     result.splice(targetIndex as number, 0, instance.craftercms.id);
@@ -345,13 +345,13 @@ export class ContentController {
 
     const models = this.getCachedModels();
     const model = models[modelId];
-    const collection = ModelHelper.value(model, fieldId);
-    const result = collection
-      .slice(0, currentIndex)
-      .concat(collection.slice((currentIndex as number) + 1));
+    const currentIndexParsed = (typeof currentIndex === 'number') ? currentIndex : parseInt(popPiece(currentIndex));
+    const targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
+    const collection = getCollection(model, fieldId, currentIndex);
+    const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
 
     // Insert in desired position
-    result.splice(targetIndex, 0, collection[currentIndex]);
+    result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
     ContentController.models$.next({
       ...models,
@@ -361,10 +361,16 @@ export class ContentController {
       }
     });
 
-    post(SORT_ITEM_OPERATION, { modelId, fieldId, currentIndex, targetIndex });
+    post(SORT_ITEM_OPERATION, {
+      modelId,
+      fieldId,
+      currentIndex,
+      targetIndex,
+      parentModelId: getParentModelId(modelId, models, this.children)
+    });
 
     ContentController.operations$.next({
-      type: 'sort',
+      type: SORT_ITEM_OPERATION,
       args: arguments
     });
 
@@ -476,7 +482,7 @@ export class ContentController {
     });
 
     ContentController.operations$.next({
-      type: 'move',
+      type: MOVE_ITEM_OPERATION,
       args: arguments
     });
 
@@ -958,17 +964,18 @@ function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstan
 
 }
 
-function getResult(model: ContentInstance, fieldId: string, index: string | number): number[] | string[] {
-  const isStringIndex = typeof index === 'string';
+function getCollectionWithoutItemAtIndex(collection: string[], index: string | number): string[] {
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
-
-  const collection = isStringIndex
-    ? ModelHelper.extractCollection(model, fieldId, index)
-    : ModelHelper.value(model, fieldId);
-
   return collection
     .slice(0, parsedIndex)
     .concat(collection.slice(parsedIndex + 1));
+}
+
+function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
+  const isStringIndex = typeof index === 'string';
+  return isStringIndex
+    ? ModelHelper.extractCollection(model, fieldId, index)
+    : ModelHelper.value(model, fieldId);
 }
 
 export const contentController = new ContentController();
