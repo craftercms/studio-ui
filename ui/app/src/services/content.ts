@@ -1070,9 +1070,9 @@ export function getConfigurationVersions(siteId: string, path: string, environme
   );
 }
 
-export function revertContent(site: string, path: string, version: string): Observable<Boolean> {
+export function revertContentToVersion(site: string, path: string, version: string): Observable<Boolean> {
   // @ts-ignore
-  return get(`/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${path}`).pipe(
+  return get(`/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${path}&version=${version}`).pipe(
     pluck('response'),
     catchApi1Error
   );
@@ -1185,5 +1185,8 @@ export default {
   uploadDataUrl,
   getBulkUploadUrl,
   getQuickCreateContentList,
-  fetchLegacyContentTypes
+  fetchLegacyContentTypes,
+  getItemVersions,
+  getConfigurationVersions,
+  revertContentToVersion
 };

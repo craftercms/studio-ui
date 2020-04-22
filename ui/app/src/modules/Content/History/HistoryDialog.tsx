@@ -426,18 +426,18 @@ export interface HistoryDialogStateProps extends EntityState<LegacyVersion>, His
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, byId, item, error, current, compareAB, rowsPerPage, page, isFetching } = props;
+  const { open, onClose, onDismiss, byId, item, error, current, compareAB, rowsPerPage, page } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
-  const resource = useStateResource<LegacyVersion[], LookupTable<LegacyVersion>>(byId, {
-    shouldResolve: () => (Boolean(byId) && isFetching === false),
+  const resource = useStateResource<LegacyVersion[], HistoryDialogProps>(props, {
+    shouldResolve: (source) => (Boolean(source.byId) && !source.isFetching),
     shouldReject: () => Boolean(error),
-    shouldRenew: () => isFetching,
-    resultSelector: () => Object.values(byId),
+    shouldRenew: (source, resource) => resource.complete,
+    resultSelector: (source) => Object.values(source.byId),
     errorSelector: () => error
   });
 

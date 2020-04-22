@@ -27,9 +27,16 @@ import {
   fetchItemVersions,
   fetchItemVersionsComplete,
   fetchItemVersionsFailed,
+  revertContent,
+  revertContentComplete,
+  revertContentFailed,
   showHistoryDialog
 } from '../reducers/dialogs/history';
-import { getConfigurationVersions, getItemVersions } from '../../services/content';
+import {
+  getConfigurationVersions,
+  getItemVersions,
+  revertContentToVersion
+} from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 
 function getDialogNameFromType(type: string): string {
@@ -55,6 +62,7 @@ export default [
       switchMap((actions) => (actions.length ? actions : NEVER))
     ),
   // endregion
+  // region History Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(showHistoryDialog.type, fetchItemVersions.type),
@@ -68,5 +76,17 @@ export default [
           catchAjaxError(fetchItemVersionsFailed)
         );
       })
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(revertContent.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        revertContentToVersion(state.sites.active, state.dialogs.history.path, payload).pipe(
+          map(revertContentComplete),
+          catchAjaxError(revertContentFailed)
+        )
+      )
     )
+  // endregion
 ] as Epic[];

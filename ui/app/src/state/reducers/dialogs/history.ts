@@ -47,7 +47,7 @@ export const historyDialogChangePage = createAction<number>('HISTORY_DIALOG_CHAN
 
 export const revertContent = createAction<string>('REVERT_CONTENT');
 
-export const revertContentComplete = createAction<StandardAction>('REVERT_CONTENT_COMPLETE');
+export const revertContentComplete = createAction<Boolean>('REVERT_CONTENT_COMPLETE');
 
 export const revertContentFailed = createAction<AjaxError>('REVERT_CONTENT_FAILED');
 
