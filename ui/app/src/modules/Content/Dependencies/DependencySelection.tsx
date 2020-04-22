@@ -291,6 +291,8 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
       .filter(([key, value]) => value === true)
       .map(([key]) => key);
     onChange(result);
+    // TODO: Check infinite loop
+    // eslint-disable-next-line
   }, [checked]);
 
   return (
