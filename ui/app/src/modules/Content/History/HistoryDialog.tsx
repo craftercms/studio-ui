@@ -37,6 +37,8 @@ import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../../styles/theme';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import HistoryRoundedIcon from '@material-ui/icons/HistoryRounded';
+import CloseIconRounded from '@material-ui/icons/CloseRounded';
+import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import { useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import DialogFooter from '../../../components/DialogFooter';
@@ -83,6 +85,18 @@ const translations = defineMessages({
   revertToThisVersion: {
     id: 'historyDialog.options.revertToThisVersion',
     defaultMessage: 'Revert to <b>this version</b>'
+  },
+  dismiss: {
+    id: 'words.dismiss',
+    defaultMessage: 'Dismiss'
+  },
+  backToSelectRevision: {
+    id: 'historyDialog.back.selectRevision',
+    defaultMessage: 'Back to select revision'
+  },
+  backToHistoryList: {
+    id: 'historyDialog.back.selectRevision',
+    defaultMessage: 'Back to history list'
   }
 });
 
@@ -538,12 +552,34 @@ export default function HistoryDialog(props: HistoryDialogProps) {
             />
           )
         }
-        onDismiss={compareAB.a ? handleDialogHeaderBack : onDismiss}
-        rightActions={compareAB.a ? [{
-          icon: HistoryRoundedIcon,
-          onClick: backToHistoryList
-        }] : null}
-        onBack={compareAB.a ? handleDialogHeaderBack : null}
+        rightActions={
+          [
+            // ...(compareAB.a ? [{
+            //   icon: HistoryRoundedIcon,
+            //   onClick: backToHistoryList,
+            //   'aria-label': formatMessage(translations.backToHistoryList)
+            // }] : []),
+            {
+              icon: HistoryRoundedIcon,
+              onClick: backToHistoryList,
+              'aria-label': formatMessage(translations.backToHistoryList)
+            },
+            {
+              icon: CloseIconRounded,
+              onClick: compareAB.a ? handleDialogHeaderBack : onDismiss,
+              'aria-label': formatMessage(compareAB.b ? translations.backToSelectRevision : compareAB.a ? translations.backToHistoryList : translations.dismiss)
+            }
+          ]
+        }
+        leftActions={
+          [
+            ...(compareAB.a || compareAB.b ? [{
+              icon: ArrowBack,
+              onClick: backToHistoryList,
+              'aria-label': formatMessage(compareAB.b ? translations.backToSelectRevision : translations.backToHistoryList)
+            }] : [])
+          ]
+        }
       />
       <DialogBody className={classes.dialogBody}>
         {compareAB.a && compareAB.b ? (
