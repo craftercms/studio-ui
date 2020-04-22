@@ -17,12 +17,19 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
-import { HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
+import { CompareAB, HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
 import { VersionsResponse } from '../../../models/version';
 import { AjaxError } from 'rxjs/ajax';
 import { createEntityState, createLookupTable } from '../../../utils/object';
 
-export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>(
+interface HistoryConfigProps {
+  path: string;
+  environment?: string;
+  module?: string;
+  config?: boolean;
+}
+
+export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps> & HistoryConfigProps>(
   'SHOW_HISTORY_DIALOG'
 );
 
@@ -34,12 +41,20 @@ export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_I
 
 export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 
+export const compareHistories = createAction<CompareAB>('COMPARE_HISTORIES');
+
+export const historyDialogChangePage = createAction<number>('HISTORY_DIALOG_CHANGE_PAGE');
+
 const initialState = {
   open: false,
-  path: null,
   item: null,
-  environment: null,
-  module: null,
+  current: null,
+  rowsPerPage: 10,
+  page: 0,
+  compareAB: {
+    a: null,
+    b: null
+  },
   ...createEntityState()
 };
 
@@ -49,7 +64,7 @@ export default createReducer<GlobalState['dialogs']['history']>(
     [showHistoryDialog.type]: (state, { payload }) => ({
       ...state,
       onDismiss: closeHistoryDialog(),
-      ...payload,
+      onClose: payload.onClose,
       open: true
     }),
     [closeHistoryDialog.type]: (state) => ({
@@ -63,6 +78,7 @@ export default createReducer<GlobalState['dialogs']['history']>(
     [fetchItemVersionsComplete.type]: (state, { payload }) => ({
       ...state,
       byId: createLookupTable(payload.versions, 'versionNumber'),
+      current: payload.versions[0].versionNumber,
       item: payload.item,
       isFetching: false
     }),
@@ -70,6 +86,14 @@ export default createReducer<GlobalState['dialogs']['history']>(
       ...state,
       error: payload.response,
       isFetching: false
+    }),
+    [compareHistories.type]: (state, { payload }) => ({
+      ...state,
+      compareAB: { ...state.compareAB, ...payload }
+    }),
+    [historyDialogChangePage.type]: (state, { payload }) => ({
+      ...state,
+      page: payload
     })
   }
 );

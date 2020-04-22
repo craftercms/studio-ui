@@ -29,7 +29,7 @@ import {
   fetchItemVersionsFailed,
   showHistoryDialog
 } from '../reducers/dialogs/history';
-import { getItemVersions } from '../../services/content';
+import { getConfigurationVersions, getItemVersions } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 
 function getDialogNameFromType(type: string): string {
@@ -59,9 +59,14 @@ export default [
     action$.pipe(
       ofType(showHistoryDialog.type, fetchItemVersions.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => getItemVersions(state.sites.active, payload.path).pipe(
-        map(fetchItemVersionsComplete),
-        catchAjaxError(fetchItemVersionsFailed)
-      ))
+      switchMap(([{ payload }, state]) => {
+        const service = (payload.config)
+          ? getConfigurationVersions(state.sites.active, payload.path, payload.environment, payload.module)
+          : getItemVersions(state.sites.active, payload.path);
+        return service.pipe(
+          map(fetchItemVersionsComplete),
+          catchAjaxError(fetchItemVersionsFailed)
+        );
+      })
     )
 ] as Epic[];

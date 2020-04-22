@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
 import {
@@ -25,7 +25,6 @@ import {
   useIntl
 } from 'react-intl';
 import DialogBody from '../../../components/DialogBody';
-import { getConfigurationVersions, getItemVersions } from '../../../services/content';
 import { LegacyItem } from '../../../../../guest/src/models/Item';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -37,7 +36,7 @@ import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../../styles/theme';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import { useActiveSiteId, useSpreadState, useStateResource } from '../../../utils/hooks';
+import { useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import DialogFooter from '../../../components/DialogFooter';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -48,6 +47,8 @@ import { LookupTable } from '../../../models/LookupTable';
 import clsx from 'clsx';
 import StandardAction from '../../../models/StandardAction';
 import { LegacyVersion } from '../../../models/version';
+import { useDispatch } from 'react-redux';
+import { compareHistories, historyDialogChangePage } from '../../../state/reducers/dialogs/history';
 
 const translations = defineMessages({
   previousPage: {
@@ -222,23 +223,24 @@ function FancyFormattedDate(props: FancyFormattedDateProps) {
 }
 
 interface CompareRevisionProps {
-  compareTo: CompareTo;
+  compareA: LegacyVersion;
+  compareB: LegacyVersion;
 }
 
 function CompareRevision(props: CompareRevisionProps) {
   const classes = CompareRevisionStyles({});
-  const { compareTo } = props;
+  const { compareA, compareB } = props;
   return (
     <section className={classes.compareBoxHeader}>
       <div className={classes.compareBoxHeaderItem}>
         <ListItemText
-          primary={<FancyFormattedDate date={compareTo.version.lastModifiedDate} />}
+          primary={<FancyFormattedDate date={compareA.lastModifiedDate} />}
           secondary={
             <FormattedMessage
               id="historyDialog.versionNumber"
               defaultMessage="Version: <span>{versionNumber}</span>"
               values={{
-                versionNumber: compareTo.version.versionNumber,
+                versionNumber: compareA.versionNumber,
                 span: (msg) => <span className="blackText">{msg}</span>
               }}
             />
@@ -247,13 +249,13 @@ function CompareRevision(props: CompareRevisionProps) {
       </div>
       <div className={classes.compareBoxHeaderItem}>
         <ListItemText
-          primary={<FancyFormattedDate date={compareTo.nextVersion.lastModifiedDate} />}
+          primary={<FancyFormattedDate date={compareB.lastModifiedDate} />}
           secondary={
             <FormattedMessage
               id="historyDialog.versionNumber"
               defaultMessage="Version: <span>{versionNumber}</span>"
               values={{
-                versionNumber: compareTo.nextVersion.versionNumber,
+                versionNumber: compareB.versionNumber,
                 span: (msg) => <span className="blackText">{msg}</span>
               }}
             />
@@ -268,28 +270,26 @@ interface HistoryListProps {
   resource: Resource<LegacyVersion[]>;
   rowsPerPage: number;
   page: number;
-  compareTo: {
-    version?: LegacyVersion;
-    nextVersion?: LegacyVersion;
+  compareAB: {
+    a?: string;
+    b?: string;
   };
   current: LegacyVersion;
-
   handleHistoryItemClick(version: LegacyVersion): void;
-
   handleViewItem(version: LegacyVersion): void;
-
   handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
 }
 
 function HistoryList(props: HistoryListProps) {
   const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, compareTo, current, handleHistoryItemClick, handleViewItem } = props;
+  const { resource, handleOpenMenu, rowsPerPage, page, compareAB, handleHistoryItemClick, handleViewItem, current } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+
   return (
     <List component="div" className={classes.list} disablePadding>
       {versions.map((version: LegacyVersion, i: number) => {
-        let isSelected = version.versionNumber === compareTo.version?.versionNumber;
-        let compareMode = compareTo.version;
+        let isSelected = version.versionNumber === compareAB.a;
+        let compareMode = compareAB.a;
         return (
           <ListItem
             key={version.versionNumber}
@@ -371,14 +371,9 @@ const menuInitialState = {
   activeItem: null
 };
 
-const compareToInitialState = {
-  version: null,
-  nextVersion: null
-};
-
-interface CompareTo {
-  version: LegacyVersion;
-  nextVersion: LegacyVersion;
+export interface CompareAB {
+  a?: string;
+  b?: string;
 }
 
 interface Menu {
@@ -387,19 +382,16 @@ interface Menu {
   activeItem: LegacyVersion;
 }
 
-interface Data {
-  contentItem: LegacyItem;
-  versions: LegacyVersion[];
-  current: LegacyVersion;
-}
-
 interface HistoryDialogBaseProps {
   open: boolean;
-  path: string;
   item: LegacyItem;
+  current: string;
   byId: LookupTable<LegacyVersion>;
-  environment?: string;
-  module?: string;
+  error: APIError;
+  isFetching: boolean;
+  compareAB: CompareAB;
+  rowsPerPage: number;
+  page: number;
 }
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
@@ -413,65 +405,20 @@ export interface HistoryDialogStateProps extends EntityState<LegacyVersion>, His
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, path, environment, module } = props;
+  const { open, onClose, onDismiss, byId, item, error, current, compareAB, rowsPerPage, page } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
-  const site = useActiveSiteId();
-
-  const [compareTo, setCompareTo] = useSpreadState<CompareTo>(compareToInitialState);
+  const dispatch = useDispatch();
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
-  const rowsPerPage = 10;
-  const [page, setPage] = useState(0);
-
-  const [data, setData] = useState<Data>({
-    contentItem: null,
-    versions: null,
-    current: null
-  });
-
-  const [error, setError] = useState<APIError>(null);
-
-  const resource = useStateResource<LegacyVersion[], Data>(data, {
-    shouldResolve: (data) => Boolean(data.versions),
+  const resource = useStateResource<LegacyVersion[], LookupTable<LegacyVersion>>(byId, {
+    shouldResolve: () => Boolean(byId),
     shouldReject: () => Boolean(error),
     shouldRenew: () => false,
-    resultSelector: () => data.versions,
+    resultSelector: () => Object.values(byId),
     errorSelector: () => error
   });
-
-  useEffect(() => {
-    if (open) {
-      if (environment) {
-        getConfigurationVersions(site, path, environment, module).subscribe(
-          (response) => {
-            setData({
-              contentItem: response.item,
-              versions: response.versions,
-              current: response.versions[0] || null
-            });
-          },
-          (response) => {
-            setError(response);
-          }
-        );
-      } else {
-        getItemVersions(site, path).subscribe(
-          (response) => {
-            setData({
-              contentItem: response.item,
-              versions: response.versions,
-              current: response.versions[0] || null
-            });
-          },
-          (response) => {
-            setError(response);
-          }
-        );
-      }
-    }
-  }, [site, path, open, environment, module]);
 
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false) => {
@@ -501,7 +448,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   );
 
   const handleHistoryItemClick = (version: LegacyVersion) => {
-    setCompareTo({ nextVersion: version });
+    dispatch(compareHistories({ b: version.versionNumber }));
   };
 
   const handleViewItem = (version: LegacyVersion) => {
@@ -521,12 +468,12 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         break;
       }
       case 'compareTo': {
-        setCompareTo({ version: menu.activeItem });
+        dispatch(compareHistories({ a: menu.activeItem.versionNumber }));
         setMenu(menuInitialState);
         break;
       }
       case 'compareToCurrent': {
-        setCompareTo({ version: menu.activeItem, nextVersion: data.current });
+        dispatch(compareHistories({ a: menu.activeItem.versionNumber, b: current }));
         setMenu(menuInitialState);
         break;
       }
@@ -539,14 +486,14 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   const onPageChanged = (nextPage: number) => {
-    setPage(nextPage);
+    dispatch(historyDialogChangePage(nextPage));
   };
 
   const handleDialogHeaderBack = () => {
-    if (compareTo.nextVersion) {
-      setCompareTo({ nextVersion: null });
+    if (compareAB.b) {
+      dispatch(compareHistories({ b: null }));
     } else {
-      setCompareTo(compareToInitialState);
+      dispatch(compareHistories({ a: null, b: null }));
     }
   };
 
@@ -554,19 +501,19 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     <Dialog onClose={onClose} open={open} fullWidth maxWidth="md">
       <DialogHeader
         title={
-          compareTo.version ? (
-            compareTo.nextVersion ? (
+          compareAB.a ? (
+            compareAB.b ? (
               <FormattedMessage
                 id="historyDialog.comparingRevisions"
                 defaultMessage={`Comparing Revisions -- {fileName}`}
-                values={{ fileName: data.contentItem.internalName }}
+                values={{ fileName: item.internalName }}
               />
             ) : (
               <FormattedMessage
                 id="historyDialog.selectedRevisionToCompare"
                 defaultMessage={`Select a revision to compare to "{version}"`}
                 values={{
-                  version: <FancyFormattedDate date={compareTo.version.lastModifiedDate} />
+                  version: <FancyFormattedDate date={byId[compareAB.a].lastModifiedDate} />
                 }}
               />
             )
@@ -578,11 +525,11 @@ export default function HistoryDialog(props: HistoryDialogProps) {
           )
         }
         onDismiss={onDismiss}
-        onBack={compareTo.version ? handleDialogHeaderBack : null}
+        onBack={compareAB.a ? handleDialogHeaderBack : null}
       />
       <DialogBody>
-        {compareTo.version && compareTo.nextVersion ? (
-          <CompareRevision compareTo={compareTo} />
+        {compareAB.a && compareAB.b ? (
+          <CompareRevision compareA={byId[compareAB.a]} compareB={byId[compareAB.b]} />
         ) : (
           <SuspenseWithEmptyState resource={resource}>
             <HistoryList
@@ -592,13 +539,13 @@ export default function HistoryDialog(props: HistoryDialogProps) {
               handleViewItem={handleViewItem}
               rowsPerPage={rowsPerPage}
               page={page}
-              compareTo={compareTo}
-              current={data.current}
+              compareAB={compareAB}
+              current={byId[current]}
             />
           </SuspenseWithEmptyState>
         )}
       </DialogBody>
-      {data.versions && (
+      {byId && (
         <DialogFooter className={classes.dialogFooter}>
           <TablePagination
             className={classes.pagination}
@@ -606,7 +553,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
             component="div"
             labelRowsPerPage=""
             rowsPerPageOptions={[10, 20, 30]}
-            count={data.versions.length}
+            count={Object.keys(byId).length}
             rowsPerPage={rowsPerPage}
             page={page}
             backIconButtonProps={{

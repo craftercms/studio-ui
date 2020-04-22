@@ -37,7 +37,7 @@ const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialo
 
 function createCallback(
   action: StandardAction,
-  dispatch: Dispatch,
+  dispatch: Dispatch
 ): (output?: unknown) => void {
   return action
     ? (output) => dispatch({
@@ -141,9 +141,14 @@ function GlobalDialogManager() {
       {/* region History */}
       <HistoryDialog
         open={state.history.open}
-        path={state.history.path}
         item={state.history.item}
+        current={state.history.current}
+        compareAB={state.history.compareAB}
+        rowsPerPage={state.history.rowsPerPage}
+        page={state.history.page}
         byId={state.history.byId}
+        error={state.history.error}
+        isFetching={state.history.isFetching}
         onClose={createCallback(state.history.onClose, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
@@ -160,9 +165,9 @@ function GlobalDialogManager() {
 }
 
 function MinimizedDialogManager({
-  state,
-  dispatch
-}: {
+                                  state,
+                                  dispatch
+                                }: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {
