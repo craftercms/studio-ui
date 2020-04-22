@@ -17,6 +17,16 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
 
-const reducer = createReducer<GlobalState['env']>(null, {});
+const reducer = createReducer<GlobalState['env']>(
+  {
+    AUTHORING_BASE: `${window.location.origin}/studio`,
+    GUEST_BASE: window.location.origin,
+    PREVIEW_LANDING_BASE: `${window.location.origin}/studio/preview-landing`,
+    SITE_COOKIE: 'crafterSite',
+    XSRF_CONFIG_ARGUMENT: '_csrf',
+    XSRF_CONFIG_HEADER: 'X-XSRF-TOKEN'
+  },
+  {}
+);
 
 export default reducer;

@@ -17,16 +17,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#000000"/>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
   <title>Crafter CMS - Preview</title>
-  <link href="/studio/static-assets/styles/typography.css"
-        rel="stylesheet">
-  <link href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css"
-        rel="stylesheet">
-  <script type="application/json" id="initialState">
+  <link
+    href="/studio/static-assets/styles/typography.css"
+    rel="stylesheet"
+  >
+  <link
+    href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css"
+    rel="stylesheet"
+  >
+  <script>
+    document.write(`<script type="application/json" id="initialState">
     {
       "auth": {
         "active": true
@@ -92,14 +97,15 @@
         }
       },
       "env": {
-        "AUTHORING_BASE": "http://authoring.sample.com:8080/studio",
-        "GUEST_BASE": "http://preview.sample.com:8080",
+        "AUTHORING_BASE": "${window.location.origin}/studio",
+        "GUEST_BASE": "${window.location.origin}",
         "XSRF_CONFIG_HEADER": "X-XSRF-TOKEN",
         "XSRF_CONFIG_ARGUMENT": "_csrf",
         "SITE_COOKIE": "crafterSite",
-        "PREVIEW_LANDING_BASE": "/studio/preview-landing"
+        "PREVIEW_LANDING_BASE": "${window.location.origin}/studio/preview-landing"
       }
     }
+  <\/script>`);
   </script>
 </head>
 <body>
