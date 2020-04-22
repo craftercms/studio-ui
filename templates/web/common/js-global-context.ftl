@@ -22,7 +22,8 @@
     <p>The system won't work as expected.</p>
   </div>
 <#else>
-<script type="application/json" id="initialState">
+<script id="initialStateWriter">
+document.write(`<script type="application/json" id="initialState">
 {
   "auth": {
     "active": ${loggedIn?c}
@@ -73,13 +74,14 @@
   },
   </#if>
   "env": {
-    "AUTHORING_BASE": "${env_config.authoringServerUrl!"/studio"}",
-    "GUEST_BASE": "${env_config.previewServerUrl!"http://localhost:8080"}",
-    "XSRF_CONFIG_HEADER": "${env_config.headerName!"X-XSRF-TOKEN"}",
-    "XSRF_CONFIG_ARGUMENT": "${env_config.parameterName!"_csrf"}",
+    "AUTHORING_BASE": "${'$'}{window.location.origin}/studio",
+    "GUEST_BASE": "${'$'}{window.location.origin}",
+    "XSRF_CONFIG_HEADER": "${env_config.headerName!''}",
+    "XSRF_CONFIG_ARGUMENT": "${env_config.parameterName!''}",
     "SITE_COOKIE": "crafterSite",
-    "PREVIEW_LANDING_BASE": "/studio/preview-landing"
+    "PREVIEW_LANDING_BASE": "${'$'}{window.location.origin}/studio/preview-landing"
   }
 }
+<\/script>`);
 </script>
 </#if>

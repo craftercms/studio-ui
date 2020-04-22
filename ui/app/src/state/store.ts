@@ -51,7 +51,9 @@ function createInitialState(): GlobalState {
     console.error('[GlobalContext] Initial global state not found.');
   }
   if (process.env.NODE_ENV === 'production') {
+    const writer = document.querySelector('#initialStateWriter');
     script.parentNode.removeChild(script);
+    writer.parentNode.removeChild(writer);
   }
   return state;
 }
