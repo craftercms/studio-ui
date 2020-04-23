@@ -17,45 +17,24 @@
 import React, { PropsWithChildren, useCallback } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/DialogHeader';
-import {
-  defineMessages,
-  FormattedDateParts,
-  FormattedMessage,
-  FormattedTime,
-  useIntl
-} from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../../../components/DialogBody';
-import { LegacyItem } from '../../../../../guest/src/models/Item';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { palette } from '../../../styles/theme';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import HistoryRoundedIcon from '@material-ui/icons/HistoryRounded';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
-import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import { useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import DialogFooter from '../../../components/DialogFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import { APIError, EntityState } from '../../../models/GlobalState';
-import { Resource } from '../../../models/Resource';
+import { APIError } from '../../../models/GlobalState';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
-import clsx from 'clsx';
 import StandardAction from '../../../models/StandardAction';
 import { LegacyVersion } from '../../../models/version';
 import { useDispatch } from 'react-redux';
-import {
-  compareHistories,
-  historyDialogChangePage,
-  revertContent
-} from '../../../state/reducers/dialogs/history';
+import { historyDialogChangePage } from '../../../state/reducers/dialogs/history';
+import { VersionList } from './VersionList';
+import TablePagination from '@material-ui/core/TablePagination';
+import { Resource } from '../../../models/Resource';
 
 const translations = defineMessages({
   previousPage: {
@@ -104,67 +83,6 @@ const translations = defineMessages({
   }
 });
 
-const versionListStyles = makeStyles(() =>
-  createStyles({
-    list: {
-      backgroundColor: palette.white,
-      padding: 0,
-      borderRadius: '5px 5px 0 0'
-    },
-    listItem: {
-      padding: ' 15px 20px',
-      '&.selected': {
-        backgroundColor: palette.blue.highlight
-      }
-    },
-    listItemTextMultiline: {
-      margin: 0
-    },
-    listItemTextPrimary: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    chip: {
-      padding: '1px',
-      backgroundColor: palette.green.main,
-      height: 'auto',
-      color: palette.white,
-      marginLeft: '10px'
-    },
-    pagination: {
-      marginLeft: 'auto',
-      position: 'fixed',
-      zIndex: 1,
-      bottom: 0,
-      background: 'white',
-      color: 'black',
-      left: 0,
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      '& p': {
-        padding: 0
-      },
-      '& svg': {
-        top: 'inherit'
-      },
-      '& .hidden': {
-        display: 'none'
-      }
-    },
-    toolbar: {
-      padding: 0,
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: '20px',
-      '& .MuiTablePagination-spacer': {
-        display: 'none'
-      },
-      '& .MuiTablePagination-spacer + p': {
-        display: 'none'
-      }
-    }
-  })
-);
-
 const historyStyles = makeStyles(() =>
   createStyles({
     dialogBody: {
@@ -175,7 +93,12 @@ const historyStyles = makeStyles(() =>
     },
     menuList: {
       padding: 0
-    },
+    }
+  })
+);
+
+const paginationStyles = makeStyles(() =>
+  createStyles({
     pagination: {
       marginLeft: 'auto',
       background: 'white',
@@ -204,158 +127,6 @@ const historyStyles = makeStyles(() =>
     }
   })
 );
-
-const CompareRevisionStyles = makeStyles(() =>
-  createStyles({
-    compareBoxHeader: {
-      display: 'flex',
-      justifyContent: 'space-around'
-    },
-    compareBoxHeaderItem: {
-      flexBasis: '50%',
-      '& .blackText': {
-        color: palette.black
-      }
-    }
-  })
-);
-
-interface FancyFormattedDateProps {
-  date: string;
-}
-
-function FancyFormattedDate(props: FancyFormattedDateProps) {
-  const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
-  return (
-    <FormattedDateParts value={props.date} month="long" day="numeric" weekday="long" year="numeric">
-      {(parts) => (
-        <>
-          {`${parts[0].value} ${parts[2].value} `}
-          <FormattedMessage
-            id="historyDialog.ordinals"
-            defaultMessage={`{day, ${ordinals}}`}
-            values={{ day: parts[4].value }}
-          />{' '}
-          {parts[6].value} @ <FormattedTime value={props.date} />
-        </>
-      )}
-    </FormattedDateParts>
-  );
-}
-
-interface CompareRevisionProps {
-  compareA: LegacyVersion;
-  compareB: LegacyVersion;
-}
-
-function CompareRevision(props: CompareRevisionProps) {
-  const classes = CompareRevisionStyles({});
-  const { compareA, compareB } = props;
-  return (
-    <section className={classes.compareBoxHeader}>
-      <div className={classes.compareBoxHeaderItem}>
-        <ListItemText
-          primary={<FancyFormattedDate date={compareA.lastModifiedDate} />}
-          secondary={
-            <FormattedMessage
-              id="historyDialog.versionNumber"
-              defaultMessage="Version: <span>{versionNumber}</span>"
-              values={{
-                versionNumber: compareA.versionNumber,
-                span: (msg) => <span className="blackText">{msg}</span>
-              }}
-            />
-          }
-        />
-      </div>
-      <div className={classes.compareBoxHeaderItem}>
-        <ListItemText
-          primary={<FancyFormattedDate date={compareB.lastModifiedDate} />}
-          secondary={
-            <FormattedMessage
-              id="historyDialog.versionNumber"
-              defaultMessage="Version: <span>{versionNumber}</span>"
-              values={{
-                versionNumber: compareB.versionNumber,
-                span: (msg) => <span className="blackText">{msg}</span>
-              }}
-            />
-          }
-        />
-      </div>
-    </section>
-  );
-}
-
-interface HistoryListProps {
-  resource: Resource<LegacyVersion[]>;
-  rowsPerPage: number;
-  page: number;
-  compare: {
-    a?: string;
-    b?: string;
-  };
-  current: string;
-  handleHistoryItemClick(version: LegacyVersion): void;
-  handleViewItem(version: LegacyVersion): void;
-  handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
-}
-
-function HistoryList(props: HistoryListProps) {
-  const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, compare, handleHistoryItemClick, handleViewItem, current } = props;
-  const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-
-  return (
-    <List component="div" className={classes.list} disablePadding>
-      {versions.map((version: LegacyVersion, i: number) => {
-        let isSelected = version.versionNumber === compare.a;
-        let compareMode = compare.a;
-        return (
-          <ListItem
-            key={version.versionNumber}
-            divider={versions.length - 1 !== i}
-            button
-            onClick={compareMode ? () => handleHistoryItemClick(version) : () => handleViewItem(version)}
-            className={clsx(classes.listItem, isSelected && 'selected')}
-          >
-            <ListItemText
-              classes={{
-                multiline: classes.listItemTextMultiline,
-                primary: classes.listItemTextPrimary
-              }}
-              primary={
-                <>
-                  <FancyFormattedDate date={version.lastModifiedDate} />
-                  {current === version.versionNumber && (
-                    <Chip
-                      label={
-                        <FormattedMessage id="historyDialog.current" defaultMessage="current" />
-                      }
-                      className={classes.chip}
-                    />
-                  )}
-                </>
-              }
-              secondary={version.comment}
-            />
-            {
-              !compareMode &&
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={(e) => handleOpenMenu(e.currentTarget, version, current === version.versionNumber)}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            }
-          </ListItem>
-        );
-      })}
-    </List>
-  );
-}
 
 const menuOptions: LookupTable<SectionItem> = {
   view: {
@@ -392,28 +163,26 @@ const menuInitialState = {
   activeItem: null
 };
 
-export interface Compare {
-  a?: string;
-  b?: string;
-}
-
 interface Menu {
   sections: SectionItem[][];
   anchorEl: Element;
   activeItem: LegacyVersion;
 }
 
+export interface HistoryResource {
+  versions: LegacyVersion[];
+  page: number;
+  rowsPerPage: number;
+}
+
 interface HistoryDialogBaseProps {
   open: boolean;
-  item: LegacyItem;
-  current: string;
-  byId: LookupTable<LegacyVersion>;
+  versions: LegacyVersion[];
+  isFetching: Boolean;
   error: APIError;
-  isFetching: boolean;
-  compare: Compare;
-  rowsPerPage: number;
+  current: string;
   page: number;
-  order: string[];
+  rowsPerPage: number;
 }
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
@@ -421,7 +190,7 @@ export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   onDismiss?(): any;
 }>;
 
-export interface HistoryDialogStateProps extends EntityState<LegacyVersion>, HistoryDialogBaseProps {
+export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
   onDismiss?: StandardAction;
   path: string;
@@ -431,19 +200,25 @@ export interface HistoryDialogStateProps extends EntityState<LegacyVersion>, His
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, byId, item, error, current, compare, rowsPerPage, page, order } = props;
+  const { open, onClose, onDismiss, rowsPerPage, page, current } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
-  const resource = useStateResource<LegacyVersion[], HistoryDialogProps>(props, {
-    shouldResolve: (source) => (Boolean(source.byId) && !source.isFetching),
-    shouldReject: () => Boolean(error),
+  const resource = useStateResource<HistoryResource, HistoryDialogBaseProps>(props, {
+    shouldResolve: (source) => Boolean(source.versions) && !source.isFetching,
+    shouldReject: (source) => Boolean(source.error),
     shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source.order.map(versionNumber => source.byId[versionNumber]),
-    errorSelector: () => error
+    resultSelector: (source) => (
+      {
+        versions: source.versions,
+        rowsPerPage: source.rowsPerPage,
+        page: source.page
+      }
+    ),
+    errorSelector: (source) => source.error
   });
 
   const handleOpenMenu = useCallback(
@@ -473,12 +248,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     [setMenu]
   );
 
-  const handleHistoryItemClick = (version: LegacyVersion) => {
-    dispatch(compareHistories({ b: version.versionNumber }));
-  };
-
   const handleViewItem = (version: LegacyVersion) => {
-
   };
 
   const handleContextMenuClose = () => {
@@ -496,29 +266,18 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         break;
       }
       case 'compareTo': {
-        dispatch(compareHistories({ a: activeItem.versionNumber }));
         break;
       }
       case 'compareToCurrent': {
-        dispatch(compareHistories({ a: activeItem.versionNumber, b: current }));
         break;
       }
       case 'compareToPrevious': {
-        let previous = order.indexOf(activeItem.versionNumber) + 1;
-        if(order.length !== previous) {
-          dispatch(compareHistories({ a: activeItem.versionNumber, b: order[previous] }));
-        }
         break;
       }
       case 'revertToPrevious': {
-        let previous = order.indexOf(activeItem.versionNumber) + 1;
-        if(order.length !== previous) {
-          dispatch(revertContent(order[previous]));
-        }
         break;
       }
       case 'revertToThisVersion': {
-        dispatch(revertContent(activeItem.versionNumber));
         break;
       }
       default:
@@ -530,117 +289,44 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     dispatch(historyDialogChangePage(nextPage));
   };
 
-  const backToHistoryList = () => {
-    dispatch(compareHistories({ a: null, b: null }));
-  };
-
-  const handleDialogHeaderBack = () => {
-    if (compare.b) {
-      dispatch(compareHistories({ b: null }));
-    } else {
-      dispatch(compareHistories({ a: null, b: null }));
-    }
-  };
-
   return (
     <Dialog
       onClose={onClose}
       open={open}
       fullWidth
       maxWidth="md"
-      onEscapeKeyDown={compare.a ? handleDialogHeaderBack : onDismiss}
+      onEscapeKeyDown={onDismiss}
       //onBackdropClick={compare.a ? handleDialogHeaderBack : onDismiss}
     >
       <DialogHeader
         title={
-          compare.a ? (
-            compare.b ? (
-              <FormattedMessage
-                id="historyDialog.comparingRevisions"
-                defaultMessage={`Comparing Revisions -- {fileName}`}
-                values={{ fileName: item.internalName }}
-              />
-            ) : (
-              <FormattedMessage
-                id="historyDialog.selectedRevisionToCompare"
-                defaultMessage={`Select a revision to compare to "{version}"`}
-                values={{
-                  version: <FancyFormattedDate date={byId[compare.a].lastModifiedDate} />
-                }}
-              />
-            )
-          ) : (
-            <FormattedMessage
-              id="historyDialog.headerTitle"
-              defaultMessage="Content Item History"
-            />
-          )
+          <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Content Item History" />
         }
-        rightActions={
-          [
-            ...(compare.a ? [{
-              icon: HistoryRoundedIcon,
-              onClick: backToHistoryList,
-              'aria-label': formatMessage(translations.backToHistoryList)
-            }] : []),
-            {
-              icon: CloseIconRounded,
-              onClick: onDismiss,
-              'aria-label': formatMessage(translations.dismiss)
-            }
-          ]
-        }
-        leftActions={
-          [
-            ...(compare.a || compare.b ? [{
-              icon: ArrowBack,
-              onClick: handleDialogHeaderBack,
-              'aria-label': formatMessage(compare.b ? translations.backToSelectRevision : translations.backToHistoryList)
-            }] : [])
-          ]
-        }
+        rightActions={[
+          {
+            icon: CloseIconRounded,
+            onClick: onDismiss,
+            'aria-label': formatMessage(translations.dismiss)
+          }
+        ]}
       />
       <DialogBody className={classes.dialogBody}>
-        {compare.a && compare.b ? (
-          <CompareRevision compareA={byId[compare.a]} compareB={byId[compare.b]} />
-        ) : (
-          <SuspenseWithEmptyState resource={resource}>
-            <HistoryList
-              resource={resource}
-              handleOpenMenu={handleOpenMenu}
-              handleHistoryItemClick={handleHistoryItemClick}
-              handleViewItem={handleViewItem}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              compare={compare}
-              current={current}
-            />
-          </SuspenseWithEmptyState>
-        )}
-      </DialogBody>
-      {byId && !compare.b && (
-        <DialogFooter classes={{ root: classes.dialogFooter }}>
-          <TablePagination
-            className={classes.pagination}
-            classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-            component="div"
-            labelRowsPerPage=""
-            rowsPerPageOptions={[10, 20, 30]}
-            count={Object.keys(byId).length}
+        <SuspenseWithEmptyState resource={resource}>
+          <VersionList
+            resource={resource}
+            handleOpenMenu={handleOpenMenu}
+            handleViewItem={handleViewItem}
             rowsPerPage={rowsPerPage}
             page={page}
-            backIconButtonProps={{
-              'aria-label': formatMessage(translations.previousPage)
-            }}
-            nextIconButtonProps={{
-              'aria-label': formatMessage(translations.nextPage)
-            }}
-            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) =>
-              onPageChanged(nextPage)
-            }
+            current={current}
           />
-        </DialogFooter>
-      )}
+        </SuspenseWithEmptyState>
+      </DialogBody>
+      <DialogFooter classes={{ root: classes.dialogFooter }}>
+        <SuspenseWithEmptyState resource={resource} suspenseProps={{ fallback: null }}>
+          <Pagination resource={resource} onPageChanged={onPageChanged} />
+        </SuspenseWithEmptyState>
+      </DialogFooter>
       <ContextMenu
         open={!!menu.anchorEl}
         anchorEl={menu.anchorEl}
@@ -650,5 +336,38 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         classes={{ menuList: classes.menuList }}
       />
     </Dialog>
+  );
+}
+
+interface PaginationProps {
+  resource: Resource<HistoryResource>;
+  onPageChanged(nextPage: number): void;
+}
+
+function Pagination(props: PaginationProps) {
+  const classes = paginationStyles({});
+  const { formatMessage } = useIntl();
+
+  const { versions, rowsPerPage, page } = props.resource.read();
+  return (
+    <TablePagination
+      className={classes.pagination}
+      classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+      component="div"
+      labelRowsPerPage=""
+      rowsPerPageOptions={[10, 20, 30]}
+      count={versions.length}
+      rowsPerPage={rowsPerPage}
+      page={page}
+      backIconButtonProps={{
+        'aria-label': formatMessage(translations.previousPage)
+      }}
+      nextIconButtonProps={{
+        'aria-label': formatMessage(translations.nextPage)
+      }}
+      onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) =>
+        props.onPageChanged(nextPage)
+      }
+    />
   );
 }

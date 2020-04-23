@@ -141,15 +141,13 @@ function GlobalDialogManager() {
       {/* region History */}
       <HistoryDialog
         open={state.history.open}
-        item={state.history.item}
+        versions={state.history.versions}
+        isFetching={state.history.isFetching}
+        error={state.history.error}
         current={state.history.current}
-        compare={state.history.compare}
         rowsPerPage={state.history.rowsPerPage}
         page={state.history.page}
-        byId={state.history.byId}
-        error={state.history.error}
-        order={state.history.order}
-        isFetching={state.history.isFetching}
+
         onClose={createCallback(state.history.onClose, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
