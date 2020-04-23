@@ -24,6 +24,7 @@ const styles = makeStyles(() =>
   createStyles({
     dialogActions: {
       background: palette.white,
+      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
       minHeight: '55px'
     }
   })
