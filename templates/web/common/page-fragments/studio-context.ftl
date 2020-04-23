@@ -30,7 +30,7 @@
     baseUri: `${'$'}{origin}/studio`,
     authoringAppBaseUri: `${'$'}{origin}/studio`,
     formServerUri: `${'$'}{origin}/form`,
-    previewAppBaseUri: window.location.origin,
+    previewAppBaseUri: origin,
     contextMenuOffsetPage: false,
     brandedLogoUri: '/api/1/services/api/1/content/get-content-at-path.bin?path=/configuration/app-logo.png',
     homeUri: `${'$'}{origin}/site-dashboard`,
@@ -39,7 +39,7 @@
     openSiteDropdown: ${envConfig.openSiteDropdown!'false'},
     isPreview: false,
     liveAppBaseUri: '',
-    graphQLBaseURI: `${'$'}{window.location.origin}/api/1/site/graphql`,
+    graphQLBaseURI: `${'$'}{origin}/api/1/site/graphql`,
     xsrfHeaderName: "${_csrf.headerName}",
     xsrfParameterName: "${_csrf.parameterName}",
     passwordRequirementsRegex: "${envConfig.passwordRequirementsRegex?js_string}"
