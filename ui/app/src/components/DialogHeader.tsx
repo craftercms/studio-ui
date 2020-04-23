@@ -31,9 +31,8 @@ const dialogTitleStyles = makeStyles(() =>
   createStyles({
     titleRoot: {
       margin: 0,
-      borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
-      padding: '10px',
       borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+      padding: '10px',
       background: palette.white
     },
     title: {
