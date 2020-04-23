@@ -24,14 +24,15 @@ import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import React, { PropsWithChildren } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 import clsx from 'clsx';
+import { Tooltip } from '@material-ui/core';
+import { defineMessages, useIntl } from 'react-intl';
 
 const dialogTitleStyles = makeStyles(() =>
   createStyles({
     titleRoot: {
       margin: 0,
-      padding: '13px 20px 11px',
-      background: palette.white,
-      borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+      padding: '10px',
+      background: palette.white
     },
     title: {
       display: 'flex',
@@ -42,7 +43,8 @@ const dialogTitleStyles = makeStyles(() =>
       lineHeight: '18px',
       paddingRight: '35px'
     },
-    closeIcon: {
+    rightActions: {
+      paddingLeft: '5px',
       marginLeft: 'auto'
     },
     backIcon: {}
@@ -53,20 +55,42 @@ export interface DialogHeaderAction extends IconButtonProps {
   icon: React.ElementType;
 }
 
-export type DialogTitleProps<
-  PrimaryTypographyComponent extends React.ElementType = 'h2',
-  SecondaryTypographyComponent extends React.ElementType = 'p'
-> = PropsWithChildren<{
+const translations = defineMessages({
+  back: {
+    id: 'words.back',
+    defaultMessage: 'Back'
+  },
+  dismiss: {
+    id: 'words.dismiss',
+    defaultMessage: 'Dismiss'
+  }
+});
+
+function Action(props: any) {
+  const { icon: Icon, tooltip, ...rest } = props;
+  return (
+    tooltip ? (
+      <Tooltip title={tooltip}>
+        <IconButton {...rest}>
+          <Icon />
+        </IconButton>
+      </Tooltip>
+    ) : (
+      <IconButton {...rest}>
+        <Icon />
+      </IconButton>
+    )
+  );
+}
+
+export type DialogTitleProps<PrimaryTypographyComponent extends React.ElementType = 'h2',
+  SecondaryTypographyComponent extends React.ElementType = 'p'> = PropsWithChildren<{
   id?: string;
   title: string | JSX.Element;
-  titleTypographyProps?: TypographyProps<
-    PrimaryTypographyComponent,
-    { component?: PrimaryTypographyComponent }
-  >;
-  subtitleTypographyProps?: TypographyProps<
-    SecondaryTypographyComponent,
-    { component?: SecondaryTypographyComponent }
-  >;
+  titleTypographyProps?: TypographyProps<PrimaryTypographyComponent,
+    { component?: PrimaryTypographyComponent }>;
+  subtitleTypographyProps?: TypographyProps<SecondaryTypographyComponent,
+    { component?: SecondaryTypographyComponent }>;
   subtitle?: string;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
@@ -81,6 +105,7 @@ export type DialogTitleProps<
 
 export default function DialogHeader(props: DialogTitleProps) {
   const classes = dialogTitleStyles({});
+  const { formatMessage } = useIntl();
   const {
     id,
     onDismiss,
@@ -94,8 +119,7 @@ export default function DialogHeader(props: DialogTitleProps) {
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
-      component: 'h2',
-      color: 'textSecondary'
+      component: 'h2'
     },
     subtitleTypographyProps = {
       variant: 'subtitle1',
@@ -110,26 +134,31 @@ export default function DialogHeader(props: DialogTitleProps) {
     >
       <div className={classes.title}>
         {onBack && (
-          <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
-            <BackIcon />
-          </IconButton>
+          <Tooltip title={formatMessage(translations.back)}>
+            <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
+              <BackIcon />
+            </IconButton>
+          </Tooltip>
         )}
-        {leftActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) => (
-          <IconButton {...rest}>
-            <Icon />
-          </IconButton>
+        {leftActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
+          <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
         ))}
         <Typography {...titleTypographyProps}>{title}</Typography>
-        {rightActions?.map(({ icon: Icon, ...rest }: DialogHeaderAction) => (
-          <IconButton {...rest}>
-            <Icon />
-          </IconButton>
-        ))}
-        {onDismiss && (
-          <IconButton aria-label="close" onClick={onDismiss} className={classes.closeIcon}>
-            <CloseIcon />
-          </IconButton>
-        )}
+        {
+          (rightActions || onDismiss) &&
+          <div className={classes.rightActions}>
+            {rightActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
+              <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
+            ))}
+            {onDismiss && (
+              <Tooltip title={formatMessage(translations.dismiss)}>
+                <IconButton aria-label="close" onClick={onDismiss}>
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+          </div>
+        }
       </div>
       {subtitle && (
         <Typography className={classes.subtitle} {...subtitleTypographyProps}>
