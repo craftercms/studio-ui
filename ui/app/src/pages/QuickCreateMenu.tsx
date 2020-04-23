@@ -18,12 +18,12 @@ import React, { useEffect, useState } from 'react';
 import { QuickCreateMenu } from '../modules/Preview/QuickCreate';
 import { useSelection } from '../utils/hooks';
 
-export default function(props) {
+export default function (props) {
   const { anchorEl, previewItem, onClose } = props;
   const [menuAnchor, setMenuAnchor] = useState(anchorEl);
-  const createNewContentOpen = useSelection(state => state.dialogs.newContent.open);
-// TODO: Switch when Embedded legacy editors is moved to dialog manager
-// const editFormOpen = useSelection(state => state.dialogs.edit.open);
+  const createNewContentOpen = useSelection((state) => state.dialogs.newContent.open);
+  // TODO: Switch when Embedded legacy editors is moved to dialog manager
+  // const editFormOpen = useSelection(state => state.dialogs.edit.open);
   const editFormOpen = false;
 
   const onCloseMenu = () => setMenuAnchor(null);
@@ -35,6 +35,11 @@ export default function(props) {
   }, [menuAnchor, createNewContentOpen, editFormOpen, onClose]);
 
   return (
-    <QuickCreateMenu anchorEl={menuAnchor} previewItem={previewItem} onClose={onCloseMenu} onItemClicked={onCloseMenu} />
-  )
+    <QuickCreateMenu
+      anchorEl={menuAnchor}
+      previewItem={previewItem}
+      onClose={onCloseMenu}
+      onItemClicked={onCloseMenu}
+    />
+  );
 }
