@@ -34,6 +34,10 @@ export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps> &
 
 export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
 
+export const hideHistoryDialog = createAction<StandardAction>('HIDE_HISTORY_DIALOG');
+
+export const revealHistoryDialog = createAction<StandardAction>('REVEAL_HISTORY_DIALOG');
+
 export const fetchItemVersions = createAction<StandardAction>('FETCH_ITEM_VERSIONS');
 
 export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_ITEM_VERSIONS_COMPLETE');
@@ -60,6 +64,7 @@ const initialState = {
   error: null,
   isFetching: null,
   versions: null,
+  hidden: null
 };
 
 export default createReducer<GlobalState['dialogs']['history']>(
@@ -75,6 +80,16 @@ export default createReducer<GlobalState['dialogs']['history']>(
     [closeHistoryDialog.type]: (state) => ({
       ...initialState,
       onClose: state.onClose
+    }),
+    [hideHistoryDialog.type]: (state) => ({
+      ...state,
+      open: false,
+      hidden: true
+    }),
+    [revealHistoryDialog.type]: (state) => ({
+      ...state,
+      open: true,
+      hidden: null
     }),
     [fetchItemVersions.type]: (state) => ({
       ...state,

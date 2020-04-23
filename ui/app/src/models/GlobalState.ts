@@ -123,6 +123,7 @@ export interface GlobalState {
     minimizedDialogs: MinimizedDialogsStateProps;
     newContent: NewContentDialogStateProps;
     history: HistoryDialogStateProps;
+    viewVersion: any;
     publish: PublishDialogStateProps;
     dependencies: DependenciesDialogStateProps;
     delete: DeleteDialogStateProps;

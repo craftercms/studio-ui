@@ -35,9 +35,11 @@ import {
 import {
   getConfigurationVersions,
   getItemVersions,
-  revertContentToVersion
+  revertContentToVersion,
+  getContentVersion
 } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
+import { showViewVersionDialog, fetchContentVersion, fetchItemVersionComplete, fetchItemVersionFailed } from '../reducers/dialogs/viewVersion';
 
 function getDialogNameFromType(type: string): string {
   let name = type.replace(/(CLOSE_)|(_DIALOG)/g, '');
@@ -104,6 +106,19 @@ export default [
     action$.pipe(
       ofType(revertContentComplete.type),
       map(fetchItemVersions)
+    ),
+  // endregion
+  // region View Version Dialog
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(showViewVersionDialog.type, fetchContentVersion.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        getContentVersion(state.sites.active, payload.path, payload.versionNumber).pipe(
+          map(fetchItemVersionComplete),
+          catchAjaxError(fetchItemVersionFailed)
+        )
+      )
     )
   // endregion
 ] as Epic[];

@@ -95,7 +95,7 @@ interface FancyFormattedDateProps {
   date: string;
 }
 
-function FancyFormattedDate(props: FancyFormattedDateProps) {
+export function FancyFormattedDate(props: FancyFormattedDateProps) {
   const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
   return (
     <FormattedDateParts value={props.date} month="long" day="numeric" weekday="long" year="numeric">

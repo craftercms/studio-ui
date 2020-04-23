@@ -26,6 +26,7 @@ import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
+import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -141,15 +142,25 @@ function GlobalDialogManager() {
       {/* region History */}
       <HistoryDialog
         open={state.history.open}
+        path={state.history.path}
+        hidden={state.history.hidden}
         versions={state.history.versions}
         isFetching={state.history.isFetching}
         error={state.history.error}
         current={state.history.current}
         rowsPerPage={state.history.rowsPerPage}
         page={state.history.page}
-
         onClose={createCallback(state.history.onClose, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
+      />
+      <ViewVersionDialog
+        open={state.viewVersion.open}
+        isFetching={state.viewVersion.isFetching}
+        error={state.history.error}
+        version={state.viewVersion.version}
+        historyDialog={state.viewVersion.historyDialog}
+        onClose={createCallback(state.viewVersion.onClose, dispatch)}
+        onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
       />
       {/* endregion */}
 

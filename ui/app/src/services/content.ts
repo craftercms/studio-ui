@@ -1078,6 +1078,13 @@ export function revertContentToVersion(site: string, path: string, version: stri
   );
 }
 
+export function getContentVersion(site: string, path: string, versionNumber: string): Observable<any> {
+  return new Observable((observer: Observer<any>) => {
+    observer.next({ name: 'Test', versionNumber, lastModifiedDate: Date.now() });
+    observer.complete();
+  });
+}
+
 export function getChildrenByPath(site: string, path: string): Observable<any> {
   ///studio/api/2/content/children_by_path
   const response = {
