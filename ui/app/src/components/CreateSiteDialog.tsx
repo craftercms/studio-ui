@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEvent, useEffect, useReducer, useRef, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useEffect, useReducer, useRef, useState } from 'react';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -60,6 +60,8 @@ import Cookies from 'js-cookie';
 import { backgroundColor } from '../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -137,6 +139,10 @@ const messages = defineMessages({
   chooseCreationStrategy: {
     id: 'createSiteDialog.chooseCreationStrategy',
     defaultMessage: 'Choose creation strategy: start from an existing Git repo or create based on a blueprint that suits you best.'
+  },
+  showIncompatible: {
+    id: 'createSiteDialog.showIncompatible',
+    defaultMessage: 'Show Incompatible Plugins'
   }
 });
 
@@ -166,7 +172,8 @@ const siteInitialState: SiteState = {
     basic: false,
     token: false,
     key: false
-  }
+  },
+  showIncompatible: true
 };
 
 const CustomTabs = withStyles({
@@ -306,7 +313,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     height: '100%'
   },
   loadingStateRoot: {
-    height: '100%',
+    height: '100%'
   },
   loadingStateGraphic: {
     flexGrow: 1,
@@ -314,6 +321,16 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   errorPaperRoot: {
     height: '100%'
+  },
+  showIncompatible: {
+    marginLeft: 'auto'
+  },
+  showIncompatibleInput: {
+    fontSize: '0.8125rem'
+  },
+  showIncompatibleCheckbox: {
+    paddingTop: 0,
+    paddingBottom: 0
   }
 }));
 
@@ -418,14 +435,14 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         getBlueprints();
       }
       if (tab === 1 && marketplace === null && !apiState.error) {
-        getMarketPlace()
+        getMarketPlace();
       }
       if (finishRef && finishRef.current && site.selectedView === 2) {
         finishRef.current.focus();
       }
     },
     // eslint-disable-next-line
-    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView],
+    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView, site.showIncompatible]
   );
 
   function handleClose(event?: any, reason?: string) {
@@ -554,6 +571,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         createNewSite(blueprintParams);
       }
     }
+  }
+
+  function handleShowIncompatibleChange(e: ChangeEvent<HTMLInputElement>) {
+    setMarketplace(null);
+    setSite({ showIncompatible: e.target.checked });
   }
 
   function checkAdditionalFields() {
@@ -688,14 +710,21 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function getMarketPlace() {
-    fetchMarketplaceBlueprints()
+    fetchMarketplaceBlueprints({
+      showIncompatible: site.showIncompatible
+    })
       .subscribe(
-        ({response}) => {
+        ({ response }) => {
           setMarketplace(response.plugins);
         },
-        ({response}) => {
+        ({ response }) => {
           if (response) {
-            setApiState({...apiState, creatingSite: false, error: true, errorResponse: response.response});
+            setApiState({
+              ...apiState,
+              creatingSite: false,
+              error: true,
+              errorResponse: response.response
+            });
           }
         }
       );
@@ -766,8 +795,13 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     return list.map((item: Blueprint) => {
       return (
         <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={item.id}>
-          <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected} interval={5000}
-                         onDetails={onDetails}/>
+          <BlueprintCard
+            blueprint={item}
+            onBlueprintSelected={handleBlueprintSelected}
+            interval={5000}
+            onDetails={onDetails}
+            marketplace={tab === 1}
+          />
         </Grid>
       );
     })
@@ -826,6 +860,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               onBlueprintSelected={handleBlueprintSelected}
               onCloseDetails={handleCloseDetails}
               interval={5000}
+              marketplace={tab === 1}
             />
           )
         ) : (
@@ -835,13 +870,37 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               (site.selectedView === 0) &&
               <div className={classes.tabs}>
                 <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-                  <Tab label={formatMessage(messages.privateBlueprints)} className={classes.simpleTab}/>
-                  <Tab label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab}/>
+                  <Tab
+                    label={formatMessage(messages.privateBlueprints)} className={classes.simpleTab}
+                  />
+                  <Tab
+                    label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab}
+                  />
                 </CustomTabs>
                 <SearchIcon
                   className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
                   onClick={handleSearchClick}
                 />
+                {
+                  (tab === 1) &&
+                  <FormControlLabel
+                    className={classes.showIncompatible}
+                    control={
+                      <Checkbox
+                        checked={site.showIncompatible}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
+                        color="primary"
+                        className={classes.showIncompatibleCheckbox}
+                      />
+                    }
+                    label={
+                      <Typography className={classes.showIncompatibleInput}>
+                        {formatMessage(messages.showIncompatible)}
+                      </Typography>
+                    }
+                    labelPlacement="start"
+                  />
+                }
               </div>
             }
             {

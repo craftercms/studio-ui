@@ -15,32 +15,32 @@
  */
 
 import React, { useState } from 'react';
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
-import Typography from "@material-ui/core/Typography";
-import CardActions from "@material-ui/core/CardActions";
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Typography from '@material-ui/core/Typography';
+import CardActions from '@material-ui/core/CardActions';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Blueprint } from "../models/Blueprint";
-import { defineMessages, useIntl } from "react-intl";
-import MobileStepper from "./MobileStepper";
-import { backgroundColor } from "../styles/theme";
-import Button from "@material-ui/core/Button";
-import { Theme, Tooltip } from "@material-ui/core";
-import clsx from "clsx";
-
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Blueprint } from '../models/Blueprint';
+import { defineMessages, useIntl } from 'react-intl';
+import MobileStepper from './MobileStepper';
+import { backgroundColor } from '../styles/theme';
+import Button from '@material-ui/core/Button';
+import { Theme, Tooltip } from '@material-ui/core';
+import clsx from 'clsx';
 
 interface BlueprintCardProps {
+  blueprint: Blueprint,
+  interval: number,
+  marketplace: boolean,
+
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
 
   onDetails(blueprint: Blueprint, index?: number): any,
-
-  blueprint: Blueprint,
-  interval: number;
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
@@ -137,6 +137,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '50%',
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    flex: 1
   },
   background: {
     background: backgroundColor,
@@ -192,9 +193,9 @@ function BlueprintCard(props: BlueprintCardProps) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);
-  const {onBlueprintSelected, blueprint, interval, onDetails} = props;
-  const {media, name, license, id, developer} = blueprint;
-  const {formatMessage} = useIntl();
+  const { onBlueprintSelected, blueprint, interval, marketplace, onDetails } = props;
+  const { media, name, license, id, developer } = blueprint;
+  const { formatMessage } = useIntl();
 
   function handleChangeIndex(value: number) {
     setIndex(value);
@@ -213,8 +214,8 @@ function BlueprintCard(props: BlueprintCardProps) {
     setPlay(false);
   }
 
-  function onImageClick(e: any, index: number) {
-    if(blueprint.id === 'GIT') return false;
+  function onImageClick(e: any, index: number = 0) {
+    if (blueprint.id === 'GIT') return false;
     e.stopPropagation();
     e.preventDefault();
     onDetails(blueprint, index);
@@ -288,12 +289,28 @@ function BlueprintCard(props: BlueprintCardProps) {
     <Card className={classes.card}>
         {
           (id !== 'GIT') &&
-          <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
+          <CardActionArea
+            onClick={(e) => {
+              if ((marketplace && !blueprint.compatible)) {
+                onImageClick(e);
+              } else {
+                onBlueprintSelected(blueprint, 1);
+              }
+            }}
+          >
             <CardHeader
-                title={name}
-                subheader={id !== 'GIT'? renderSubtitle() :''}
-                titleTypographyProps={{variant: "subtitle2", component: "h2", className: "cardTitle"}}
-                subheaderTypographyProps={{variant: "subtitle2", component: "h2", color: "textSecondary"}}
+              title={name}
+              subheader={id !== 'GIT' ? renderSubtitle() : ''}
+              titleTypographyProps={{
+                variant: 'subtitle2',
+                component: 'h2',
+                className: 'cardTitle'
+              }}
+              subheaderTypographyProps={{
+                variant: 'subtitle2',
+                component: 'h2',
+                color: 'textSecondary'
+              }}
             />
           </CardActionArea>
         }
@@ -325,13 +342,20 @@ function BlueprintCard(props: BlueprintCardProps) {
       {
         (id !== 'GIT') &&
         <CardActions className={'cardActions'}>
-            <Button variant="outlined" color="primary" onClick={() => onBlueprintSelected(blueprint, 1)}
-                    className={classes.use}>
+          {
+            ((marketplace && blueprint.compatible) || !marketplace) &&    // if it's from marketplace and compatible, or not from marketplace (private bps)
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => onBlueprintSelected(blueprint, 1)}
+              className={classes.use}
+            >
               {formatMessage(messages.use)}
             </Button>
-            <Button className={classes.more} onClick={() => onDetails(blueprint)}>
-              {formatMessage(messages.more)}
-            </Button>
+          }
+          <Button className={classes.more} onClick={() => onDetails(blueprint)}>
+            {formatMessage(messages.more)}
+          </Button>
         </CardActions>
       }
     </Card>

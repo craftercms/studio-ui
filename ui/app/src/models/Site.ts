@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Blueprint } from "./Blueprint";
+import { Blueprint } from './Blueprint';
 
 interface View {
   title: string;
@@ -47,7 +47,7 @@ export interface SiteState {
   repoKey: string;
   submitted: boolean;
   selectedView: number;
-  details: { blueprint: Blueprint, index: number};
+  details: { blueprint: Blueprint, index: number };
   blueprintFields?: {
     [key: string]: string;
   };
@@ -55,7 +55,8 @@ export interface SiteState {
     basic: boolean,
     token: boolean,
     key: boolean
-  }
+  },
+  showIncompatible: boolean
 }
 
 export interface Site {
