@@ -17,7 +17,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
-import { CompareAB, HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
+import { Compare, HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
 import { VersionsResponse } from '../../../models/version';
 import { AjaxError } from 'rxjs/ajax';
 import { createEntityState, createLookupTable } from '../../../utils/object';
@@ -41,7 +41,7 @@ export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_I
 
 export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 
-export const compareHistories = createAction<CompareAB>('COMPARE_HISTORIES');
+export const compareHistories = createAction<Compare>('COMPARE_HISTORIES');
 
 export const historyDialogChangePage = createAction<number>('HISTORY_DIALOG_CHANGE_PAGE');
 
@@ -58,7 +58,10 @@ const initialState = {
   rowsPerPage: 10,
   page: 0,
   path: null,
-  compareAB: {
+  config: null,
+  environment: null,
+  module: null,
+  compare: {
     a: null,
     b: null
   },
@@ -71,8 +74,7 @@ export default createReducer<GlobalState['dialogs']['history']>(
     [showHistoryDialog.type]: (state, { payload }) => ({
       ...state,
       onDismiss: closeHistoryDialog(),
-      onClose: payload.onClose,
-      path: payload.path,
+      ...payload,
       open: true,
       isFetching: true
     }),
@@ -88,6 +90,7 @@ export default createReducer<GlobalState['dialogs']['history']>(
       ...state,
       byId: createLookupTable(payload.versions, 'versionNumber'),
       current: payload.versions[0].versionNumber,
+      //order:payload.version.map(version => version.versionNumber),
       item: payload.item,
       isFetching: false
     }),
@@ -98,7 +101,7 @@ export default createReducer<GlobalState['dialogs']['history']>(
     }),
     [compareHistories.type]: (state, { payload }) => ({
       ...state,
-      compareAB: { ...state.compareAB, ...payload }
+      compare: { ...state.compare, ...payload }
     }),
     [historyDialogChangePage.type]: (state, { payload }) => ({
       ...state,

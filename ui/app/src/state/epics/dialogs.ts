@@ -69,8 +69,13 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const service = (payload.config)
-          ? getConfigurationVersions(state.sites.active, payload.path, payload.environment, payload.module)
-          : getItemVersions(state.sites.active, payload.path);
+          ? getConfigurationVersions(
+            state.sites.active,
+            payload.path ?? state.dialogs.history.path,
+            payload.environment ?? state.dialogs.history.environment,
+            payload.module ?? state.dialogs.history.module
+          )
+          : getItemVersions(state.sites.active, payload.path ?? state.dialogs.history.path);
         return service.pipe(
           map(fetchItemVersionsComplete),
           catchAjaxError(fetchItemVersionsFailed)
@@ -87,6 +92,11 @@ export default [
           catchAjaxError(revertContentFailed)
         )
       )
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(revertContentComplete.type),
+      map(fetchItemVersions)
     )
   // endregion
 ] as Epic[];

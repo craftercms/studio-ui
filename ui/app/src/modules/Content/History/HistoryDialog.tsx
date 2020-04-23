@@ -291,7 +291,7 @@ interface HistoryListProps {
   resource: Resource<LegacyVersion[]>;
   rowsPerPage: number;
   page: number;
-  compareAB: {
+  compare: {
     a?: string;
     b?: string;
   };
@@ -303,14 +303,14 @@ interface HistoryListProps {
 
 function HistoryList(props: HistoryListProps) {
   const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, compareAB, handleHistoryItemClick, handleViewItem, current } = props;
+  const { resource, handleOpenMenu, rowsPerPage, page, compare, handleHistoryItemClick, handleViewItem, current } = props;
   const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
 
   return (
     <List component="div" className={classes.list} disablePadding>
       {versions.map((version: LegacyVersion, i: number) => {
-        let isSelected = version.versionNumber === compareAB.a;
-        let compareMode = compareAB.a;
+        let isSelected = version.versionNumber === compare.a;
+        let compareMode = compare.a;
         return (
           <ListItem
             key={version.versionNumber}
@@ -392,7 +392,7 @@ const menuInitialState = {
   activeItem: null
 };
 
-export interface CompareAB {
+export interface Compare {
   a?: string;
   b?: string;
 }
@@ -410,7 +410,7 @@ interface HistoryDialogBaseProps {
   byId: LookupTable<LegacyVersion>;
   error: APIError;
   isFetching: boolean;
-  compareAB: CompareAB;
+  compare: Compare;
   rowsPerPage: number;
   page: number;
 }
@@ -423,10 +423,14 @@ export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
 export interface HistoryDialogStateProps extends EntityState<LegacyVersion>, HistoryDialogBaseProps {
   onClose?: StandardAction;
   onDismiss?: StandardAction;
+  path: string;
+  module?: string;
+  environment?: string;
+  config?: boolean;
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, byId, item, error, current, compareAB, rowsPerPage, page } = props;
+  const { open, onClose, onDismiss, byId, item, error, current, compare, rowsPerPage, page } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
@@ -520,7 +524,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   const handleDialogHeaderBack = () => {
-    if (compareAB.b) {
+    if (compare.b) {
       dispatch(compareHistories({ b: null }));
     } else {
       dispatch(compareHistories({ a: null, b: null }));
@@ -533,13 +537,13 @@ export default function HistoryDialog(props: HistoryDialogProps) {
       open={open}
       fullWidth
       maxWidth="md"
-      onEscapeKeyDown={compareAB.a ? handleDialogHeaderBack : onDismiss}
-      onBackdropClick={compareAB.a ? handleDialogHeaderBack : onDismiss}
+      onEscapeKeyDown={compare.a ? handleDialogHeaderBack : onDismiss}
+      onBackdropClick={compare.a ? handleDialogHeaderBack : onDismiss}
     >
       <DialogHeader
         title={
-          compareAB.a ? (
-            compareAB.b ? (
+          compare.a ? (
+            compare.b ? (
               <FormattedMessage
                 id="historyDialog.comparingRevisions"
                 defaultMessage={`Comparing Revisions -- {fileName}`}
@@ -550,7 +554,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
                 id="historyDialog.selectedRevisionToCompare"
                 defaultMessage={`Select a revision to compare to "{version}"`}
                 values={{
-                  version: <FancyFormattedDate date={byId[compareAB.a].lastModifiedDate} />
+                  version: <FancyFormattedDate date={byId[compare.a].lastModifiedDate} />
                 }}
               />
             )
@@ -563,36 +567,36 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         }
         rightActions={
           [
-            // ...(compareAB.a ? [{
-            //   icon: HistoryRoundedIcon,
-            //   onClick: backToHistoryList,
-            //   'aria-label': formatMessage(translations.backToHistoryList)
-            // }] : []),
-            {
+            ...(compare.a ? [{
               icon: HistoryRoundedIcon,
               onClick: backToHistoryList,
               'aria-label': formatMessage(translations.backToHistoryList)
-            },
+            }] : []),
+            // {
+            //   icon: HistoryRoundedIcon,
+            //   onClick: backToHistoryList,
+            //   'aria-label': formatMessage(translations.backToHistoryList)
+            // },
             {
               icon: CloseIconRounded,
-              onClick: compareAB.a ? handleDialogHeaderBack : onDismiss,
-              'aria-label': formatMessage(compareAB.b ? translations.backToSelectRevision : compareAB.a ? translations.backToHistoryList : translations.dismiss)
+              onClick: onDismiss,
+              'aria-label': formatMessage(translations.dismiss)
             }
           ]
         }
         leftActions={
           [
-            ...(compareAB.a || compareAB.b ? [{
+            ...(compare.a || compare.b ? [{
               icon: ArrowBack,
-              onClick: backToHistoryList,
-              'aria-label': formatMessage(compareAB.b ? translations.backToSelectRevision : translations.backToHistoryList)
+              onClick: handleDialogHeaderBack,
+              'aria-label': formatMessage(compare.b ? translations.backToSelectRevision : translations.backToHistoryList)
             }] : [])
           ]
         }
       />
       <DialogBody className={classes.dialogBody}>
-        {compareAB.a && compareAB.b ? (
-          <CompareRevision compareA={byId[compareAB.a]} compareB={byId[compareAB.b]} />
+        {compare.a && compare.b ? (
+          <CompareRevision compareA={byId[compare.a]} compareB={byId[compare.b]} />
         ) : (
           <SuspenseWithEmptyState resource={resource}>
             <HistoryList
@@ -602,14 +606,14 @@ export default function HistoryDialog(props: HistoryDialogProps) {
               handleViewItem={handleViewItem}
               rowsPerPage={rowsPerPage}
               page={page}
-              compareAB={compareAB}
+              compare={compare}
               current={current}
             />
           </SuspenseWithEmptyState>
         )}
       </DialogBody>
-      {byId && !compareAB.b && (
-        <DialogFooter className={classes.dialogFooter}>
+      {byId && !compare.b && (
+        <DialogFooter classes={{ root: classes.dialogFooter }}>
           <TablePagination
             className={classes.pagination}
             classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
