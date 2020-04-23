@@ -28,15 +28,11 @@ export const closeNewContentDialog = createAction<StandardAction>('CLOSE_NEW_CON
 export default createReducer<GlobalState['dialogs']['newContent']>(
   { open: false, site: '', compact: false, previewItem: { label: '', path: '' } },
   {
-    [showNewContentDialog.type]: (state, { payload }) => {
-      const close = closeNewContentDialog();
-      return {
-        onClose: close,
-        onDismiss: close,
-        ...payload,
-        open: true
-      }
-    },
+    [showNewContentDialog.type]: (state, { payload }) => ({
+      onDismiss: closeNewContentDialog(),
+      ...payload,
+      open: true
+    }),
     [closeNewContentDialog.type]: (state, { payload }) => ({
       onClose: state.onClose,
       open: false

@@ -46,31 +46,26 @@ const useStyles = makeStyles((theme: Theme) =>
     addBtn: {
       padding: 0
     },
-
     addIcon: {
       width: 30,
       height: 30,
       fill: palette.green.main
     },
-
     menu: {
       paddingTop: 0,
       minWidth: '140px'
     },
-
     menuItem: {
       fontSize: 14
     },
-
     menuTitle: {
       fontSize: 14
     },
-
     menuSectionTitle: {
-      'fontSize': 12,
-      'backgroundColor': palette.gray.light0,
-      'color': palette.gray.medium3,
-      'padding': '5px 16px',
+      fontSize: 12,
+      backgroundColor: palette.gray.light0,
+      color: palette.gray.medium3,
+      padding: '5px 16px',
       '&:hover': {
         backgroundColor: palette.gray.light0,
         cursor: 'text'
@@ -82,11 +77,8 @@ const useStyles = makeStyles((theme: Theme) =>
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
   previewItem: Item;
-
   onSaveLegacySuccess?(response): void;
-
   onClose(): void;
-
   onItemClicked?(): void;
 }
 
@@ -131,9 +123,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     const formatPath = _path
       .replace('{year}', today.getFullYear())
       .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
-
     onItemClicked?.();
-
     setDialogConfig({
       open: true,
       src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`
@@ -144,7 +134,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     if (siteId) {
       getQuickCreateContentList(siteId).subscribe(
         (data) => setQuickCreateContentList(data.items),
-        error => setError(error.response.response)
+        (error) => setError(error.response.response)
       );
     }
   }, [siteId]);
@@ -165,7 +155,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         <Typography component="h4" className={classes.menuSectionTitle}>
           <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
-
         {quickCreateContentList?.map((item) => (
           <MenuItem key={item.path} onClick={onFormDisplay(item)} className={classes.menuItem}>
             {item.label}
@@ -191,7 +180,6 @@ export function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
   const { onMenuBtnClick } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-
   return (
     <IconButton
       onClick={onMenuBtnClick}
@@ -231,7 +219,12 @@ export default function QuickCreate() {
   return (
     <>
       <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
-      <QuickCreateMenu anchorEl={anchorEl} onClose={onMenuClose} previewItem={currentPreview} onItemClicked={onMenuClose}/>
+      <QuickCreateMenu
+        anchorEl={anchorEl}
+        onClose={onMenuClose}
+        previewItem={currentPreview}
+        onItemClicked={onMenuClose}
+      />
     </>
   );
 }

@@ -254,7 +254,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   );
 
   const onTypeOpen = (srcData) => () => {
-    onClose();
+    // TODO: Move edit dialog to dialog manager
     setDialogConfig({
       open: true,
       src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`
