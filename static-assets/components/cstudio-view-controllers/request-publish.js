@@ -20,94 +20,103 @@
  * @author: Roy Art
  * @date: 2015.04.15
  **/
-(function(CStudioAuthoring){
+(function (CStudioAuthoring) {
+  var Base = CStudioAuthoring.ViewController.Base,
+    publishUtil = CStudioAuthoring.Env.ModuleMap.get('publish-util'),
+    $ = jQuery;
 
-    var Base = CStudioAuthoring.ViewController.Base,
-        publishUtil = CStudioAuthoring.Env.ModuleMap.get("publish-util"),
-        $ = jQuery;
+  Base.extend('RequestPublish', {
+    events: ['submitStart', 'submitComplete', 'submitEnd'],
 
-    Base.extend('RequestPublish', {
+    actions: ['.close-button', '.submit-button'],
 
-        events: ['submitStart', 'submitComplete', 'submitEnd'],
-        
-        actions: ['.close-button', '.submit-button'],
+    startup: [
+      'fetchPublishingSettings',
+      'loadPublishingChannels',
+      'initDatePicker',
+      'initValidation',
+      'translateUI'
+    ],
 
-        startup: ['fetchPublishingSettings', 'loadPublishingChannels' ,'initDatePicker', 'initValidation', 'translateUI'],
+    loadItems: publishUtil.loadItems,
 
-        loadItems: publishUtil.loadItems,
+    renderItems: publishUtil.renderItems,
 
-        renderItems: publishUtil.renderItems,
+    loadPublishingChannels: publishUtil.loadPublishingChannels,
 
-        loadPublishingChannels: publishUtil.loadPublishingChannels,
+    populatePublishingOptions: publishUtil.populatePublishingOptions,
 
-        populatePublishingOptions: publishUtil.populatePublishingOptions,
+    submitButtonActionClicked: submit,
 
-        submitButtonActionClicked: submit,
+    closeButtonActionClicked: publishUtil.closeButtonClicked,
 
-        closeButtonActionClicked: publishUtil.closeButtonClicked,
+    initDatePicker: publishUtil.initDatePicker,
 
-        initDatePicker: publishUtil.initDatePicker,
+    fetchPublishingSettings: publishUtil.fetchPublishingSettings,
 
-        fetchPublishingSettings: publishUtil.fetchPublishingSettings,
+    initValidation: publishUtil.initValidation,
 
-        initValidation: publishUtil.initValidation,
+    publishValidation: publishUtil.publishValidation,
 
-        publishValidation: publishUtil.publishValidation,
-        
-        translateUI: publishUtil.translateUI,
+    translateUI: publishUtil.translateUI,
 
-        getGenDependency: publishUtil.getGenDependency
+    getGenDependency: publishUtil.getGenDependency
+  });
 
-    });
+  function submit() {
+    var data = {
+      sendEmail: this.getComponent('[name="notifyApproval"]').checked,
+      schedule: this.getComponent('[name="schedulingMode"]:checked').value,
+      submissionComment: this.getComponent('.submission-comment').value,
+      environment: this.getComponent('.publish-option').value,
+      items: this.result
+    };
 
-    function submit() {
-        var data = {
-            sendEmail: this.getComponent('[name="notifyApproval"]').checked,
-            schedule: this.getComponent('[name="schedulingMode"]:checked').value,
-            submissionComment: this.getComponent('.submission-comment').value,
-            environment: this.getComponent('.publish-option').value,
-            items: this.result
-        };
+    var timezone = $('select.zone-picker').find(':selected').attr('data-offset');
 
-        var timezone = $('select.zone-picker').find(':selected').attr('data-offset');
-  
-        if (data.schedule === 'custom') {
-        data.scheduledDate = getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
-        data.scheduledDate += timezone;
-        }
-
-        var loadSpinner = document.getElementById('loadSpinner');
-        var loadSpinnerMask = document.getElementById('loadSpinnerMask');
-
-        //this.showProcessingOverlay(true);
-        this.disableActions();
-        this.fire("submitStart");
-        loadSpinner.classList.remove("hidden");
-        loadSpinnerMask.classList.remove("hidden");
-        //var data = this.getData(),
-        var _this = this;
-        CStudioAuthoring.Service.request({
-            method: "POST",
-            data: JSON.stringify(data),
-            resetFormState: true,
-            url: CStudioAuthoringContext.baseUri + "/api/1/services/api/1/workflow/submit-to-go-live.json?site="+CStudioAuthoringContext.site+"&user="+CStudioAuthoringContext.user,
-            callback: {
-                success: function(oResponse) {
-                    _this.enableActions();
-                    var oResp = JSON.parse(oResponse.responseText);
-                    oResp.deps = _this.result;
-                    _this.fire('submitComplete', oResp);
-                    _this.fire('submitEnd', oResp);
-                    loadSpinner.classList.add('hidden');
-                    loadSpinnerMask.classList.add('hidden');
-                },
-                failure: function(oResponse) {
-                    var oResp = JSON.parse(oResponse.responseText);
-                    _this.fire('submitEnd', oResp);
-                    _this.enableActions();
-                }
-            }
-        });
+    if (data.schedule === 'custom') {
+      data.scheduledDate = getScheduledDateTimeForJson(
+        this.getComponent('[name="scheduleDate"]').value
+      );
+      data.scheduledDate += timezone;
     }
 
-}) (CStudioAuthoring);
+    var loadSpinner = document.getElementById('loadSpinner');
+    var loadSpinnerMask = document.getElementById('loadSpinnerMask');
+
+    //this.showProcessingOverlay(true);
+    this.disableActions();
+    this.fire('submitStart');
+    loadSpinner.classList.remove('hidden');
+    loadSpinnerMask.classList.remove('hidden');
+    //var data = this.getData(),
+    var _this = this;
+    CStudioAuthoring.Service.request({
+      method: 'POST',
+      data: JSON.stringify(data),
+      resetFormState: true,
+      url:
+        CStudioAuthoringContext.baseUri +
+        '/api/1/services/api/1/workflow/submit-to-go-live.json?site=' +
+        CStudioAuthoringContext.site +
+        '&user=' +
+        CStudioAuthoringContext.user,
+      callback: {
+        success: function (oResponse) {
+          _this.enableActions();
+          var oResp = JSON.parse(oResponse.responseText);
+          oResp.deps = _this.result;
+          _this.fire('submitComplete', oResp);
+          _this.fire('submitEnd', oResp);
+          loadSpinner.classList.add('hidden');
+          loadSpinnerMask.classList.add('hidden');
+        },
+        failure: function (oResponse) {
+          var oResp = JSON.parse(oResponse.responseText);
+          _this.fire('submitEnd', oResp);
+          _this.enableActions();
+        }
+      }
+    });
+  }
+})(CStudioAuthoring);

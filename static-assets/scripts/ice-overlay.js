@@ -15,35 +15,32 @@
  */
 
 crafterDefine('ice-overlay', ['crafter', 'jquery', 'animator'], function (crafter, $, Animator) {
-    'use strict';
+  'use strict';
 
-    function ICEOverlay() {
+  function ICEOverlay() {
+    var $overlay = $('<div class="studio-ice-overlay" style="display: none;"></div>');
+    $overlay.appendTo('body');
 
-        var $overlay = $('<div class="studio-ice-overlay" style="display: none;"></div>');
-        $overlay.appendTo('body');
+    this.animator = new Animator($overlay);
 
-        this.animator = new Animator($overlay);
-
-        this.getElement = function () {
-            return $overlay;
-        }
-
-    }
-
-    ICEOverlay.prototype = {
-        show: showOverlay,
-        hide: hideOverlay
+    this.getElement = function () {
+      return $overlay;
     };
+  }
 
-    function showOverlay(props) {
-        this.getElement().css(props);
-        this.animator.fadeIn();
-    }
+  ICEOverlay.prototype = {
+    show: showOverlay,
+    hide: hideOverlay
+  };
 
-    function hideOverlay() {
-        this.animator.fadeOut();
-    }
+  function showOverlay(props) {
+    this.getElement().css(props);
+    this.animator.fadeIn();
+  }
 
-    return ICEOverlay;
+  function hideOverlay() {
+    this.animator.fadeOut();
+  }
 
+  return ICEOverlay;
 });

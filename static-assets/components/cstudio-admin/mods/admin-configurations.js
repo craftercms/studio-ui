@@ -15,9 +15,7 @@
  */
 
 (function () {
-
-  const
-    i18n = CrafterCMSNext.i18n,
+  const i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     adminConfigurationMessages = i18n.messages.adminConfigurationMessages;
 
@@ -39,20 +37,30 @@
 -->
 `;
 
-  CStudioAuthoring.Module.requireModule('ace', '/static-assets/components/cstudio-common/ace/ace.js', {}, { moduleLoaded });
+  CStudioAuthoring.Module.requireModule(
+    'ace',
+    '/static-assets/components/cstudio-common/ace/ace.js',
+    {},
+    { moduleLoaded }
+  );
 
   function moduleLoaded() {
-
     CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
-    CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-common/ace/ext-language_tools.js');
+    CStudioAuthoring.Utils.addJavascript(
+      '/static-assets/components/cstudio-common/ace/ext-language_tools.js'
+    );
 
-    CStudioAuthoring.Utils.addCss('/static-assets/components/cstudio-admin/mods/admin-configurations.css');
-    CStudioAdminConsole.Tool.AdminConfig = CStudioAdminConsole.Tool.AdminConfig || function (config, el) {
-      this.containerEl = el;
-      this.config = config;
-      this.types = [];
-      return this;
-    };
+    CStudioAuthoring.Utils.addCss(
+      '/static-assets/components/cstudio-admin/mods/admin-configurations.css'
+    );
+    CStudioAdminConsole.Tool.AdminConfig =
+      CStudioAdminConsole.Tool.AdminConfig ||
+      function (config, el) {
+        this.containerEl = el;
+        this.config = config;
+        this.types = [];
+        return this;
+      };
 
     /**
      * Overarching class that drives the content type tools
@@ -86,33 +94,36 @@
       },
 
       renderJobsList: function () {
-
         var self = this,
           containerEl = document.getElementById('config-area');
 
         containerEl.innerHTML =
           '<div class="configuration-window">' +
-          /**/'<p id="activeEnvironment" class="hide"><strong>Active Environment:</strong> <span id="active-environment-value">' + this.environment + '</span></p>' +
-          /**/'<select id="config-list">' +
-          /****/'<option value="" >' + CMgs.format(langBundle, 'confTabSelectConf') + '</option>' +
-          /**/'</select>' +
-          /**/'<div id="edit-area">' +
-          /****/'<div id="menu-area">' +
-          /******/'<div id="config-description">' +
-          /******/'</div>' +
-          /******/'<div id="config-buttons">' +
-          /******/'</div>' +
-          /****/'</div>' +
-          /****/'<div id="content-area">' +
-          /******/'<div id="edit-window">' +
-          /******/'</div>' +
-          /******/'<div id="sample-window">' +
-          /******/'</div>' +
-          /****/'</div>' +
-          /**/'</div>' +
-          /**/'<div id="encryptHintText" style="display: none;">' +
-          /****/this.renderEncryptionHint() +
-          /**/'</div>' +
+          /**/ '<p id="activeEnvironment" class="hide"><strong>Active Environment:</strong> <span id="active-environment-value">' +
+          this.environment +
+          '</span></p>' +
+          /**/ '<select id="config-list">' +
+          /****/ '<option value="" >' +
+          CMgs.format(langBundle, 'confTabSelectConf') +
+          '</option>' +
+          /**/ '</select>' +
+          /**/ '<div id="edit-area">' +
+          /****/ '<div id="menu-area">' +
+          /******/ '<div id="config-description">' +
+          /******/ '</div>' +
+          /******/ '<div id="config-buttons">' +
+          /******/ '</div>' +
+          /****/ '</div>' +
+          /****/ '<div id="content-area">' +
+          /******/ '<div id="edit-window">' +
+          /******/ '</div>' +
+          /******/ '<div id="sample-window">' +
+          /******/ '</div>' +
+          /****/ '</div>' +
+          /**/ '</div>' +
+          /**/ '<div id="encryptHintText" style="display: none;">' +
+          /****/ this.renderEncryptionHint() +
+          /**/ '</div>' +
           '</div>';
         // set editor for configuration file
         var editorContainerEl = document.getElementById('edit-window');
@@ -147,34 +158,35 @@
 
         // hide display area by default
         editAreaEl.style.display = 'none';
-
       },
 
       renderEncryptionHint: function () {
-        const bold = { bold: msg => `<strong class="bold">${msg}</strong>` };
+        const bold = { bold: (msg) => `<strong class="bold">${msg}</strong>` };
         const tags = { lt: '&lt;', gt: '&gt;' };
         const tagsAndCurls = Object.assign({ lc: '{', rc: '}' }, tags);
         return (
           '<i class="hint-text--icon fa fa-info" aria-hidden="true"></i>' +
           '<div class="hint">' +
-          /**/`<h2 class="hint--title">${formatMessage(adminConfigurationMessages.encryptMarked)}</h2>` +
-          /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt1)}</p>` +
-          /**/`<p>` +
-          /**/  formatMessage(adminConfigurationMessages.encryptHintPt2, bold).join('') +
-          /**/  '</br>' +
-          /**/  formatMessage(adminConfigurationMessages.encryptHintPt3, tags) +
-          /**/`</p>` +
-          /**/`<p>` +
-          /**/  formatMessage(adminConfigurationMessages.encryptHintPt4, bold).join('') +
-          /**/  '</br>' +
-          /**/  formatMessage(adminConfigurationMessages.encryptHintPt5, tagsAndCurls) +
-          /**/`</p>` +
-          /**/`<p>${formatMessage(adminConfigurationMessages.encryptHintPt6)}</p>` +
-          /**/`<ul>` +
-          /****/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt7)}</li>` +
-          /****/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt8)}</li>` +
-          /****/`<li>${formatMessage(adminConfigurationMessages.encryptHintPt9)}</li>` +
-          /**/`</ul>` +
+          /**/ `<h2 class="hint--title">${formatMessage(
+            adminConfigurationMessages.encryptMarked
+          )}</h2>` +
+          /**/ `<p>${formatMessage(adminConfigurationMessages.encryptHintPt1)}</p>` +
+          /**/ `<p>` +
+          /**/ formatMessage(adminConfigurationMessages.encryptHintPt2, bold).join('') +
+          /**/ '</br>' +
+          /**/ formatMessage(adminConfigurationMessages.encryptHintPt3, tags) +
+          /**/ `</p>` +
+          /**/ `<p>` +
+          /**/ formatMessage(adminConfigurationMessages.encryptHintPt4, bold).join('') +
+          /**/ '</br>' +
+          /**/ formatMessage(adminConfigurationMessages.encryptHintPt5, tagsAndCurls) +
+          /**/ `</p>` +
+          /**/ `<p>${formatMessage(adminConfigurationMessages.encryptHintPt6)}</p>` +
+          /**/ `<ul>` +
+          /****/ `<li>${formatMessage(adminConfigurationMessages.encryptHintPt7)}</li>` +
+          /****/ `<li>${formatMessage(adminConfigurationMessages.encryptHintPt8)}</li>` +
+          /****/ `<li>${formatMessage(adminConfigurationMessages.encryptHintPt9)}</li>` +
+          /**/ `</ul>` +
           '</div>'
         );
       },
@@ -189,29 +201,43 @@
       },
 
       /*
-      * populate the list of configuration files
-      */
+       * populate the list of configuration files
+       */
       loadConfigFiles: function () {
         var self = this,
           itemSelectEl = this.configInfo.itemSelectEl;
         // load configuration to get the configuration files list
         CStudioAuthoring.Service.lookupConfigurtion(
           CStudioAuthoringContext.site,
-          '/administration/config-list.xml', {
+          '/administration/config-list.xml',
+          {
             success: function (config) {
               if (config.files.file && config.files.file.length) {
                 var index = 1;
                 for (var fileIndex in config.files.file) {
                   var fileConfig = config.files.file[fileIndex];
-                  var option = new Option(CMgs.format(langBundle, fileConfig.title), fileConfig.path, false, false);
-                  option.setAttribute('description', CMgs.format(langBundle, fileConfig.description));
+                  var option = new Option(
+                    CMgs.format(langBundle, fileConfig.title),
+                    fileConfig.path,
+                    false,
+                    false
+                  );
+                  option.setAttribute(
+                    'description',
+                    CMgs.format(langBundle, fileConfig.description)
+                  );
                   option.setAttribute('sample', fileConfig.samplePath);
                   option.setAttribute('module', fileConfig.module);
                   itemSelectEl.options[index++] = option;
                 }
               } else if (config.files.file) {
                 var fileConfig = config.files.file;
-                var option = new Option(CMgs.format(langBundle, fileConfig.title), fileConfig.path, false, false);
+                var option = new Option(
+                  CMgs.format(langBundle, fileConfig.title),
+                  fileConfig.path,
+                  false,
+                  false
+                );
                 option.setAttribute('description', CMgs.format(langBundle, fileConfig.description));
                 option.setAttribute('sample', fileConfig.samplePath);
                 option.setAttribute('module', fileConfig.module);
@@ -259,9 +285,13 @@
           descriptionEl.innerHTML = itemSelectEl[selectedIndex].getAttribute('description');
 
           // load configuration into editor
-          var url = '/studio/api/2/configuration/get_configuration?siteId=' +
-            CStudioAuthoringContext.site + '&module=' + itemSelectEl[selectedIndex].getAttribute('module') +
-            '&path=' + itemSelectEl[selectedIndex].value,
+          var url =
+              '/studio/api/2/configuration/get_configuration?siteId=' +
+              CStudioAuthoringContext.site +
+              '&module=' +
+              itemSelectEl[selectedIndex].getAttribute('module') +
+              '&path=' +
+              itemSelectEl[selectedIndex].value,
             elemPath = itemSelectEl[selectedIndex].value;
           if (environment) {
             url += '&environment=' + environment;
@@ -275,11 +305,16 @@
 
               //add history
 
-              var siteDropdownLangBundle = CMgs.getBundle('siteDropdown', CStudioAuthoringContext.lang);
+              var siteDropdownLangBundle = CMgs.getBundle(
+                'siteDropdown',
+                CStudioAuthoringContext.lang
+              );
 
               var historyLink = document.createElement('a');
               historyLink.className = 'cursor';
-              var textnode = document.createTextNode(CMgs.format(siteDropdownLangBundle, 'history'));         // Create a text node
+              var textnode = document.createTextNode(
+                CMgs.format(siteDropdownLangBundle, 'history')
+              ); // Create a text node
               historyLink.appendChild(textnode);
 
               historyLink.onclick = function () {
@@ -287,14 +322,20 @@
                   module: itemSelectEl[selectedIndex].getAttribute('module'),
                   path: itemSelectEl[selectedIndex].value,
                   environment: environment,
-                  uri: configFilesPath + '/' + itemSelectEl[selectedIndex].getAttribute('module') + '/' + environment + '/' + itemSelectEl[selectedIndex].value,
+                  uri:
+                    configFilesPath +
+                    '/' +
+                    itemSelectEl[selectedIndex].getAttribute('module') +
+                    '/' +
+                    environment +
+                    '/' +
+                    itemSelectEl[selectedIndex].value,
                   escaped: true
                 };
                 CStudioAuthoring.Operations.viewConfigurationHistory(content, true);
               };
 
               document.getElementById('historyEl').append(historyLink);
-
             },
             failure: function () {
               editor.setValue('');
@@ -309,8 +350,11 @@
           var samplePath = itemSelectEl[selectedIndex].getAttribute('sample');
           var viewSampleButtonEl = document.getElementById('view-sample-button');
           if (samplePath != 'undefined' && samplePath != '') {
-            var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?path=' +
-              configSampleFilesPath + '/' + itemSelectEl[selectedIndex].getAttribute('sample');
+            var url =
+              '/studio/api/1/services/api/1/content/get-content-at-path.bin?path=' +
+              configSampleFilesPath +
+              '/' +
+              itemSelectEl[selectedIndex].getAttribute('sample');
 
             YAHOO.util.Connect.asyncRequest('GET', url, {
               success: function (response) {
@@ -335,7 +379,6 @@
 
           CStudioAdminConsole.CommandBar.show();
           $('#encryptHintText').show();
-
         } else {
           editAreaEl.style.display = 'none';
           CStudioAdminConsole.CommandBar.hide();
@@ -344,8 +387,8 @@
       },
 
       /*
-      * create editor
-      */
+       * create editor
+       */
       setEditor: function (editorContainerEl, readOnly) {
         var editorEl = document.createElement('pre');
         editorEl.id = readOnly ? 'sample-text' : 'text-editor';
@@ -370,29 +413,38 @@
         }
 
         return aceEditor;
-
       },
 
-
       /*
-      * add save, view sample and hide sample buttons
-      */
+       * add save, view sample and hide sample buttons
+       */
       addButtons: function (containerEl, itemSelectEl, editor) {
-
         containerEl.innerHTML =
           '<a href="#" id="encryptHint" class="hint-btn"><i class="hint-btn--icon fa fa-question-circle-o" aria-hidden="true"></i></a>' +
-          '<button id="encryptButton" class="btn btn-default">' + formatMessage(adminConfigurationMessages.encryptMarked) + '</button> ' +
-          `<button type="submit" id="view-sample-button" class="btn btn-primary">${CMgs.format(formsLangBundle, 'viewSample')}</button>` +
-          `<button type="submit" id="hide-sample-button" class="btn btn-primary">${CMgs.format(formsLangBundle, 'hideSample')}</button>`;
+          '<button id="encryptButton" class="btn btn-default">' +
+          formatMessage(adminConfigurationMessages.encryptMarked) +
+          '</button> ' +
+          `<button type="submit" id="view-sample-button" class="btn btn-primary">${CMgs.format(
+            formsLangBundle,
+            'viewSample'
+          )}</button>` +
+          `<button type="submit" id="hide-sample-button" class="btn btn-primary">${CMgs.format(
+            formsLangBundle,
+            'hideSample'
+          )}</button>`;
 
         CStudioAdminConsole.CommandBar.render([
           {
-            label: CMgs.format(langBundle, 'save'), class: 'btn-primary', fn: function () {
+            label: CMgs.format(langBundle, 'save'),
+            class: 'btn-primary',
+            fn: function () {
               saveFn();
             }
           },
           {
-            label: CMgs.format(langBundle, 'cancel'), class: 'btn-default', fn: function () {
+            label: CMgs.format(langBundle, 'cancel'),
+            class: 'btn-default',
+            fn: function () {
               me.renderWorkarea();
               CStudioAdminConsole.CommandBar.hide();
             }
@@ -415,7 +467,6 @@
           var xml = editor.getValue();
           var savePath = itemSelectEl[selectedIndex].value;
           if (savePath != 'undefined' && savePath != '') {
-
             var defPath = itemSelectEl[selectedIndex].value;
 
             var url = '/api/2/configuration/write_configuration';
@@ -437,13 +488,24 @@
                 var requestAsString = JSON.stringify(reqObj);
                 YAHOO.util.Connect.setDefaultPostHeader(false);
                 YAHOO.util.Connect.initHeader('Content-Type', 'application/json; charset=utf-8');
-                YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
+                YAHOO.util.Connect.initHeader(
+                  CStudioAuthoringContext.xsrfHeaderName,
+                  CrafterCMSNext.util.auth.getRequestForgeryToken()
+                );
                 YAHOO.util.Connect.asyncRequest(
                   'POST',
                   CStudioAuthoring.Service.createServiceUri(url),
                   {
                     success: function () {
-                      CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, 'saved'), 'top', 'left', 'success', 48, 197, 'saveConf');
+                      CStudioAuthoring.Utils.showNotification(
+                        CMgs.format(langBundle, 'saved'),
+                        'top',
+                        'left',
+                        'success',
+                        48,
+                        197,
+                        'saveConf'
+                      );
                       me.clearCache();
                     },
                     failure: function () {
@@ -458,16 +520,23 @@
                       );
                     }
                   },
-                  requestAsString);
+                  requestAsString
+                );
               } else {
                 let tags;
                 if (unencryptedItems.length > 1) {
-                  tags = unencryptedItems.map((item) => {
-                    return `</br>&emsp;• ${formatMessage(adminConfigurationMessages.encryptionDetail, {
-                      name: item.tag.tagName,
-                      value: item.text
-                    })}`;
-                  }).join('') + '</br>';
+                  tags =
+                    unencryptedItems
+                      .map((item) => {
+                        return `</br>&emsp;• ${formatMessage(
+                          adminConfigurationMessages.encryptionDetail,
+                          {
+                            name: item.tag.tagName,
+                            value: item.text
+                          }
+                        )}`;
+                      })
+                      .join('') + '</br>';
                 } else {
                   tags = formatMessage(adminConfigurationMessages.encryptionDetail, {
                     name: unencryptedItems[0].tag.tagName,
@@ -475,10 +544,12 @@
                   });
                 }
 
-                showErrorDialog(formatMessage(adminConfigurationMessages.pendingEncryptions, {
-                  itemCount: unencryptedItems.length,
-                  tags
-                }));
+                showErrorDialog(
+                  formatMessage(adminConfigurationMessages.pendingEncryptions, {
+                    itemCount: unencryptedItems.length,
+                    tags
+                  })
+                );
               }
             } catch (e) {
               showErrorDialog(e);
@@ -520,18 +591,21 @@
             const items = findPendingEncryption(tags);
             if (items.length) {
               editor.setOption('readOnly', true);
-              editor.container.style.opacity = .5;
+              editor.container.style.opacity = 0.5;
               const {
-                rxjs: { forkJoin, operators: { map } },
+                rxjs: {
+                  forkJoin,
+                  operators: { map }
+                },
                 services: { security },
-                util: { auth: { setRequestForgeryToken } }
+                util: {
+                  auth: { setRequestForgeryToken }
+                }
               } = CrafterCMSNext;
               setRequestForgeryToken();
               forkJoin(
                 items.map(({ tag, text }) =>
-                  security.encrypt(text).pipe(
-                    map((text) => ({ tag, text }))
-                  )
+                  security.encrypt(text).pipe(map((text) => ({ tag, text })))
                 )
               ).subscribe(
                 (encrypted) => {
@@ -553,26 +627,27 @@
                   editor.container.style.opacity = 1;
                   if (ajaxError.response) {
                     const apiResponse = ajaxError.response.response;
-                    showErrorDialog(`Error: ${apiResponse.code}\n` +
-                      `${apiResponse.message}. ${apiResponse.remedialAction}.\n` +
-                      `${apiResponse.documentationUrl || ''}`);
+                    showErrorDialog(
+                      `Error: ${apiResponse.code}\n` +
+                        `${apiResponse.message}. ${apiResponse.remedialAction}.\n` +
+                        `${apiResponse.documentationUrl || ''}`
+                    );
                   } else {
                     showErrorDialog(formatMessage(adminConfigurationMessages.encryptError));
                   }
                 }
               );
             } else {
-              const errMessage = tags.length === 0
-                ? formatMessage(adminConfigurationMessages.noEncryptItems)
-                : formatMessage(adminConfigurationMessages.allEncrypted);
+              const errMessage =
+                tags.length === 0
+                  ? formatMessage(adminConfigurationMessages.noEncryptItems)
+                  : formatMessage(adminConfigurationMessages.allEncrypted);
 
               showErrorDialog(errMessage);
             }
-
           } catch (e) {
             showErrorDialog(e.message);
           }
-
         });
 
         $('#encryptHint').click((e) => {
@@ -592,10 +667,9 @@
               }
             ],
             null,
-            'studioDialog',
+            'studioDialog'
           );
         });
-
       },
 
       expandEditor: function (editor) {
@@ -633,37 +707,35 @@
       },
 
       clearCache: function () {
-        var serviceUri = '/api/1/services/api/1/site/clear-configuration-cache.json?site=' + CStudioAuthoringContext.site;
+        var serviceUri =
+          '/api/1/services/api/1/site/clear-configuration-cache.json?site=' +
+          CStudioAuthoringContext.site;
 
-        YConnect.asyncRequest(
-          'GET',
-          CStudioAuthoring.Service.createServiceUri(serviceUri),
-          {
-            success: function () {
-            },
+        YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUri), {
+          success: function () {},
 
-            failure: function () {
-              CStudioAuthoring.Operations.showSimpleDialog(
-                'cacheError-dialog',
-                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                CMgs.format(langBundle, 'notification'),
-                CMgs.format(langBundle, 'clearCacheError'),
-                null, // use default button
-                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog'
-              );
-            }
-          });
+          failure: function () {
+            CStudioAuthoring.Operations.showSimpleDialog(
+              'cacheError-dialog',
+              CStudioAuthoring.Operations.simpleDialogTypeINFO,
+              CMgs.format(langBundle, 'notification'),
+              CMgs.format(langBundle, 'clearCacheError'),
+              null, // use default button
+              YAHOO.widget.SimpleDialog.ICON_BLOCK,
+              'studioDialog'
+            );
+          }
+        });
       }
-
     });
 
-    CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-admin-configurations', CStudioAdminConsole.Tool.AdminConfig);
-
+    CStudioAuthoring.Module.moduleLoaded(
+      'cstudio-console-tools-admin-configurations',
+      CStudioAdminConsole.Tool.AdminConfig
+    );
   }
 
   function parseValidateDocument(editorText) {
-
     const xml = new DOMParser().parseFromString(editorText, 'application/xml');
     const parseError = xml.querySelector('parsererror');
 
@@ -673,17 +745,15 @@
           errors: parseError.querySelector('div').innerText
         })
       );
-
     }
 
     return xml;
-
   }
 
   function findPendingEncryption(tags) {
     const items = [];
     tags.forEach((tag) => {
-      (tag.getAttribute('encrypted') === '') && items.push({ tag: tag, text: tag.innerHTML.trim() });
+      tag.getAttribute('encrypted') === '' && items.push({ tag: tag, text: tag.innerHTML.trim() });
     });
     return items;
   }
@@ -699,5 +769,4 @@
       'studioDialog'
     );
   }
-
 })();

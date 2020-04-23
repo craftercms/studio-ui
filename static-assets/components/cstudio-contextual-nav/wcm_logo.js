@@ -26,17 +26,13 @@ CStudioAuthoring.ContextualNav.WcmLogo = CStudioAuthoring.ContextualNav.WcmLogo 
    * initialize module
    */
   initialize: function (config) {
-
     var LOGO = '/studio/static-assets/images/logo.svg';
 
     YDom.get('cstudio-logo').src = LOGO;
-    YDom.get("acn-wcm-logo-image").src = LOGO;
-    YDom.get("acn-wcm-logo-link").href = (
-      CStudioAuthoringContext.authoringAppBaseUri +
-      CStudioAuthoringContext.homeUri
-    );
-
+    YDom.get('acn-wcm-logo-image').src = LOGO;
+    YDom.get('acn-wcm-logo-link').href =
+      CStudioAuthoringContext.authoringAppBaseUri + CStudioAuthoringContext.homeUri;
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded("wcm_logo", CStudioAuthoring.ContextualNav.WcmLogo);
+CStudioAuthoring.Module.moduleLoaded('wcm_logo', CStudioAuthoring.ContextualNav.WcmLogo);
