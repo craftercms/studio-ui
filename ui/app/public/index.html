@@ -31,8 +31,9 @@
     rel="stylesheet"
   >
   <script>
-    document.write(`<script type="application/json" id="initialState">
-    {
+  (function (origin) {
+    origin = origin.replace(':3000', ':8080');
+    const initialState = JSON.stringify({
       "auth": {
         "active": true
       },
@@ -97,15 +98,16 @@
         }
       },
       "env": {
-        "AUTHORING_BASE": "${window.location.origin}/studio",
-        "GUEST_BASE": "${window.location.origin}",
+        "AUTHORING_BASE": `${origin}/studio`,
+        "GUEST_BASE": `${origin}`,
         "XSRF_CONFIG_HEADER": "X-XSRF-TOKEN",
         "XSRF_CONFIG_ARGUMENT": "_csrf",
         "SITE_COOKIE": "crafterSite",
         "PREVIEW_LANDING_BASE": "${window.location.origin}/studio/preview-landing"
       }
-    }
-  <\/script>`);
+    });
+    document.write(`<script type="application/json" id="initialState">${initialState}<\/script>`);
+  }) (window.location.origin);
   </script>
 </head>
 <body>

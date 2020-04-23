@@ -47,7 +47,7 @@ import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { Operation } from '../models/Operations';
 
-const apiUrl = 'http://authoring.sample.com:3030';
+const apiUrl = window.location.origin;
 
 export class ContentController {
 
