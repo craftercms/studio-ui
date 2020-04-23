@@ -15,28 +15,29 @@
 -->
 
 <#assign studioContext = envConfig.studioContext/>
-(function (crafterRequire, origin) {
+<#-- language=JavaScript -->
+${"(function (crafterRequire, origin) {
 
-const authoringServer = `${'$'}{origin}/${studioContext}`;
-const staticAssets = `${'$'}{authoringServer}/static-assets`;
+  const authoringServer = `${'$'}{origin}/${studioContext}`;
+  const staticAssets = `${'$'}{authoringServer}/static-assets`;
 
-test = crafterRequire.config({
-  baseUrl: `${'$'}{staticAssets}/scripts`,
-  paths: {
-    'libs': `${'$'}{staticAssets}/libs/`,
-    'jquery': `${'$'}{staticAssets}/libs/jquery/dist/jquery`,
-    'jquery-ui': `${'$'}{staticAssets}/libs/jquery-ui/jquery-ui`,
-    'amplify': `${'$'}{staticAssets}/libs/amplify/lib/amplify.core`,
-    'noty': `${'$'}{staticAssets}/libs/notify/notify.min`
-  }
-});
-
-crafterRequire(['guest'], function (guest) {
-  guest.init({
-    hostOrigin: origin,
-    studioContext: '${studioContext}',
-    studioStaticAssets: 'static-assets'
+  crafterRequire.config({
+    baseUrl: `${'$'}{staticAssets}/scripts`,
+    paths: {
+      'libs': `${'$'}{staticAssets}/libs/`,
+      'jquery': `${'$'}{staticAssets}/libs/jquery/dist/jquery`,
+      'jquery-ui': `${'$'}{staticAssets}/libs/jquery-ui/jquery-ui`,
+      'amplify': `${'$'}{staticAssets}/libs/amplify/lib/amplify.core`,
+      'noty': `${'$'}{staticAssets}/libs/notify/notify.min`
+    }
   });
-});
 
-}) (crafterRequire, window.location.origin);
+  crafterRequire(['guest'], function (guest) {
+    guest.init({
+      hostOrigin: origin,
+      studioContext: '${studioContext}',
+      studioStaticAssets: 'static-assets'
+    });
+  });
+
+}) (crafterRequire, window.location.origin);"}
