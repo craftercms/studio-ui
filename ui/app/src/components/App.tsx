@@ -80,7 +80,6 @@ function Intro() {
         Create a <em>.env.local</em> file and add the content below. Point the <em>REACT_APP_COMPONENT</em> variable to the component you'd like to see in your local dev server.
       </p>
       <code className={classes.code}>
-        HOST=authoring.sample.com<br />
         INLINE_RUNTIME_CHUNK=false<br />
         PUBLIC_URL=/studio/static-assets/next/<br />
         BROWSER=chrome<br />

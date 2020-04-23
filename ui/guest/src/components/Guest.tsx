@@ -92,7 +92,7 @@ const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
 
 interface GuestProps {
   modelId: string;
-  documentDomain: string;
+  documentDomain?: string;
   path?: string;
   styles?: any;
   children?: any;
