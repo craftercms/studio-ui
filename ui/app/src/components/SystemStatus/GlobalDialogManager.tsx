@@ -143,7 +143,7 @@ function GlobalDialogManager() {
         open={state.history.open}
         item={state.history.item}
         current={state.history.current}
-        compareAB={state.history.compareAB}
+        compare={state.history.compare}
         rowsPerPage={state.history.rowsPerPage}
         page={state.history.page}
         byId={state.history.byId}
