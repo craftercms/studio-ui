@@ -196,14 +196,14 @@
                   $revertDropdown = $(
                     `<div class="${dropdownClass} inline-block relative confirmation-dropdown">
                         <span id="actionRevert${
-                      version.versionNumber
-                    }" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
+                          version.versionNumber
+                        }" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
                         <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${
-                      version.versionNumber
-                    }">
+                          version.versionNumber
+                        }">
                           <li><a class="cancel" href="#" onclick="return false;">${formatMessage(
-                      words.cancel
-                    )}</a></li>
+                            words.cancel
+                          )}</a></li>
                           <li role="separator" class="divider"></li>
                           <li><a class="confirm" href="#">${formatMessage(words.confirm)}</a></li>
                         </ul>
@@ -255,8 +255,7 @@
                         }
                       );
                     });
-                    Event.addListener(revertActionEl, 'click', function () {
-                    });
+                    Event.addListener(revertActionEl, 'click', function () {});
                   }
 
                   Event.addListener(viewActionEl, 'click', function () {
@@ -404,7 +403,10 @@
                     checkboxEl,
                     $revertDropdown,
                     // if more than 5 versions, last 5 will have dropup
-                    dropdownClass = versions.length > 5 && i > 1 && i + 5 >= versions.length ? 'dropup' : 'dropdown';
+                    dropdownClass =
+                      versions.length > 5 && i > 1 && i + 5 >= versions.length
+                        ? 'dropup'
+                        : 'dropdown';
 
                   col2El = document.createElement('div');
                   Dom.addClass(col2El, 'c8');
@@ -491,9 +493,15 @@
                   if (_this.isWrite) {
                     $revertDropdown = $(
                       `<div class="${dropdownClass} inline-block relative confirmation-dropdown">
-                        <span id="actionRevert${version.versionNumber}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
-                        <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${version.versionNumber}">
-                          <li><a class="cancel" href="#" onclick="return false;">${formatMessage(words.cancel)}</a></li>
+                        <span id="actionRevert${
+                          version.versionNumber
+                        }" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
+                        <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${
+                          version.versionNumber
+                        }">
+                          <li><a class="cancel" href="#" onclick="return false;">${formatMessage(
+                            words.cancel
+                          )}</a></li>
                           <li role="separator" class="divider"></li>
                           <li><a class="confirm" href="#">${formatMessage(words.confirm)}</a></li>
                         </ul>
@@ -516,7 +524,11 @@
                         e.preventDefault();
                         const $dropdown = $(this).closest('.confirmation-dropdown');
 
-                        CStudioAuthoring.Service.revertContentItem(CStudioAuthoringContext.site, item, $dropdown.data('version'), {
+                        CStudioAuthoring.Service.revertContentItem(
+                          CStudioAuthoringContext.site,
+                          item,
+                          $dropdown.data('version'),
+                          {
                             success: function () {
                               if (CStudioAuthoringContext.isPreview) {
                                 CStudioAuthoring.Operations.refreshPreview();
@@ -529,7 +541,10 @@
                             },
                             failure: function () {
                               var CMgs = CStudioAuthoring.Messages;
-                              var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
+                              var langBundle = CMgs.getBundle(
+                                'forms',
+                                CStudioAuthoringContext.lang
+                              );
                               CStudioAuthoring.Operations.showSimpleDialog(
                                 'revertError-dialog',
                                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
