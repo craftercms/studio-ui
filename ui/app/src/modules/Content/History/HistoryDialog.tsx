@@ -413,6 +413,7 @@ interface HistoryDialogBaseProps {
   compare: Compare;
   rowsPerPage: number;
   page: number;
+  order: string[];
 }
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
@@ -430,7 +431,7 @@ export interface HistoryDialogStateProps extends EntityState<LegacyVersion>, His
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, byId, item, error, current, compare, rowsPerPage, page } = props;
+  const { open, onClose, onDismiss, byId, item, error, current, compare, rowsPerPage, page, order } = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
@@ -441,7 +442,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     shouldResolve: (source) => (Boolean(source.byId) && !source.isFetching),
     shouldReject: () => Boolean(error),
     shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => Object.values(source.byId),
+    resultSelector: (source) => source.order.map(versionNumber => source.byId[versionNumber]),
     errorSelector: () => error
   });
 
@@ -488,26 +489,36 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   const handleContextMenuItemClicked = (section: SectionItem) => {
+    const activeItem = menu.activeItem;
+    setMenu(menuInitialState);
     switch (section.id) {
       case 'view': {
         break;
       }
       case 'compareTo': {
-        dispatch(compareHistories({ a: menu.activeItem.versionNumber }));
-        setMenu(menuInitialState);
+        dispatch(compareHistories({ a: activeItem.versionNumber }));
         break;
       }
       case 'compareToCurrent': {
-        dispatch(compareHistories({ a: menu.activeItem.versionNumber, b: current }));
-        setMenu(menuInitialState);
+        dispatch(compareHistories({ a: activeItem.versionNumber, b: current }));
         break;
       }
       case 'compareToPrevious': {
+        let previous = order.indexOf(activeItem.versionNumber) + 1;
+        if(order.length !== previous) {
+          dispatch(compareHistories({ a: activeItem.versionNumber, b: order[previous] }));
+        }
+        break;
+      }
+      case 'revertToPrevious': {
+        let previous = order.indexOf(activeItem.versionNumber) + 1;
+        if(order.length !== previous) {
+          dispatch(revertContent(order[previous]));
+        }
         break;
       }
       case 'revertToThisVersion': {
-        dispatch(revertContent(menu.activeItem.versionNumber));
-        setMenu(menuInitialState);
+        dispatch(revertContent(activeItem.versionNumber));
         break;
       }
       default:
@@ -538,7 +549,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
       fullWidth
       maxWidth="md"
       onEscapeKeyDown={compare.a ? handleDialogHeaderBack : onDismiss}
-      onBackdropClick={compare.a ? handleDialogHeaderBack : onDismiss}
+      //onBackdropClick={compare.a ? handleDialogHeaderBack : onDismiss}
     >
       <DialogHeader
         title={
@@ -572,11 +583,6 @@ export default function HistoryDialog(props: HistoryDialogProps) {
               onClick: backToHistoryList,
               'aria-label': formatMessage(translations.backToHistoryList)
             }] : []),
-            // {
-            //   icon: HistoryRoundedIcon,
-            //   onClick: backToHistoryList,
-            //   'aria-label': formatMessage(translations.backToHistoryList)
-            // },
             {
               icon: CloseIconRounded,
               onClick: onDismiss,

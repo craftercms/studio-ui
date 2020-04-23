@@ -148,6 +148,7 @@ function GlobalDialogManager() {
         page={state.history.page}
         byId={state.history.byId}
         error={state.history.error}
+        order={state.history.order}
         isFetching={state.history.isFetching}
         onClose={createCallback(state.history.onClose, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}

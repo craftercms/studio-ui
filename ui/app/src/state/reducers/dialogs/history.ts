@@ -65,6 +65,7 @@ const initialState = {
     a: null,
     b: null
   },
+  order: null,
   ...createEntityState()
 };
 
@@ -90,7 +91,7 @@ export default createReducer<GlobalState['dialogs']['history']>(
       ...state,
       byId: createLookupTable(payload.versions, 'versionNumber'),
       current: payload.versions[0].versionNumber,
-      //order:payload.version.map(version => version.versionNumber),
+      order: payload.versions.map(version => version.versionNumber),
       item: payload.item,
       isFetching: false
     }),
