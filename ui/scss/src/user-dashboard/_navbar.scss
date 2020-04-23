@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 .navbar {
 
   margin-bottom: 0;
@@ -44,4 +43,8 @@
     }
   }
 
+}
+
+.navbar-default {
+  box-shadow: 0 1px 5px 0 rgba(0,0,0,0.12);
 }

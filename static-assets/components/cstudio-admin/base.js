@@ -186,14 +186,14 @@
                 handler: function() {
                   CStudioAdminConsole.isDirty = false;
                   selectedItem();
-                  this.hide();
+                  this.destroy();
                 },
                 isDefault: false
               },
               {
                 text: CMgs.format(formsLangBundle, 'no'),
                 handler: function() {
-                  this.hide();
+                  this.destroy();
                 },
                 isDefault: false
               }
