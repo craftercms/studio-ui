@@ -31,13 +31,18 @@ const dialogTitleStyles = makeStyles(() =>
   createStyles({
     titleRoot: {
       margin: 0,
-      padding: '13px 20px 11px',
-      background: palette.white,
-      borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+      borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+      padding: '10px',
+      background: palette.white
     },
     title: {
       display: 'flex',
       alignItems: 'center'
+    },
+    typography: {
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis'
     },
     subtitle: {
       fontSize: '14px',
@@ -45,7 +50,13 @@ const dialogTitleStyles = makeStyles(() =>
       paddingRight: '35px'
     },
     leftActions: {
-      marginLeft: 'auto'
+      marginRight: '5px',
+      whiteSpace: 'nowrap'
+    },
+    rightActions: {
+      paddingLeft: '5px',
+      marginLeft: 'auto',
+      whiteSpace: 'nowrap'
     },
     backIcon: {}
   })
@@ -123,8 +134,7 @@ export default function DialogHeader(props: DialogTitleProps) {
     backIcon: BackIcon = ArrowBack,
     titleTypographyProps = {
       variant: 'h6',
-      component: 'h2',
-      color: 'textSecondary'
+      component: 'h2'
     },
     subtitleTypographyProps = {
       variant: 'subtitle1',
@@ -138,33 +148,41 @@ export default function DialogHeader(props: DialogTitleProps) {
       classes={{ root: clsx(classes.titleRoot, props.classes?.root) }}
     >
       <div className={classes.title}>
-        {onBack && (
-          <Tooltip title={formatMessage(translations.back)}>
-            <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
-              <BackIcon />
-            </IconButton>
-          </Tooltip>
+        {(leftActions || onBack) && (
+          <div className={classes.leftActions}>
+            {onBack && (
+              <Tooltip title={formatMessage(translations.back)}>
+                <IconButton aria-label="close" onClick={onBack} className={classes.backIcon}>
+                  <BackIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {leftActions?.map(
+              ({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
+                <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
+              )
+            )}
+          </div>
         )}
-        {leftActions?.map(
-          ({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
-            <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
-          )
+        <Typography className={classes.typography} {...titleTypographyProps}>
+          {title}
+        </Typography>
+        {(rightActions || onDismiss) && (
+          <div className={classes.rightActions}>
+            {rightActions?.map(
+              ({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
+                <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
+              )
+            )}
+            {onDismiss && (
+              <Tooltip title={formatMessage(translations.dismiss)}>
+                <IconButton aria-label="close" onClick={onDismiss}>
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+          </div>
         )}
-        <Typography {...titleTypographyProps}>{title}</Typography>
-        <div className={classes.leftActions}>
-          {rightActions?.map(
-            ({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderAction, i: number) => (
-              <Action key={i} icon={icon} tooltip={tooltip} {...rest} />
-            )
-          )}
-          {onDismiss && (
-            <Tooltip title={formatMessage(translations.dismiss)}>
-              <IconButton aria-label="close" onClick={onDismiss}>
-                <CloseIcon />
-              </IconButton>
-            </Tooltip>
-          )}
-        </div>
       </div>
       {subtitle && (
         <Typography className={classes.subtitle} {...subtitleTypographyProps}>
