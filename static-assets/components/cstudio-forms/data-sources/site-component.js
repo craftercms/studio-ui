@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent ||
+CStudioForms.Datasources.SiteComponent =
+  CStudioForms.Datasources.SiteComponent ||
   function (id, form, properties, constraints) {
-
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -31,7 +31,8 @@ CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent 
     for (var i = 0; i < properties.length; i++) {
       var property = properties[i];
       if (property.name === 'componentPath') {
-        CrafterCMSNext.services.content.getDOM(CStudioAuthoringContext.siteId, property.value)
+        CrafterCMSNext.services.content
+          .getDOM(CStudioAuthoringContext.siteId, property.value)
           .subscribe(
             (dom) => {
               let items = Array.from(dom.querySelectorAll('items > item'));
@@ -43,7 +44,7 @@ CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent 
                 return values;
               });
               _self.list = items;
-              for(var j=0; j<_self.callbacks.length; j++) {
+              for (var j = 0; j < _self.callbacks.length; j++) {
                 _self.callbacks[j].success(items);
               }
             },
@@ -52,13 +53,16 @@ CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent 
                 'unableLoad-dialog',
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
                 CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
-                CrafterCMSNext.i18n.intl.formatMessage(_self.messages.siteComponentDSMessages.unableLoad, {file: property.value}),
+                CrafterCMSNext.i18n.intl.formatMessage(
+                  _self.messages.siteComponentDSMessages.unableLoad,
+                  { file: property.value }
+                ),
                 null,
                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
                 'studioDialog'
               );
             }
-          )
+          );
       }
     }
 
@@ -66,9 +70,10 @@ CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent 
   };
 
 YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDatasource, {
-
   getLabel: function () {
-    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.siteComponentDSMessages.siteComponent);
+    return CrafterCMSNext.i18n.intl.formatMessage(
+      CrafterCMSNext.i18n.messages.siteComponentDSMessages.siteComponent
+    );
   },
 
   getInterface: function () {
@@ -76,12 +81,12 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
   },
 
   /*
-  * Datasource controllers don't have direct access to the properties controls, only to their properties and their values.
-  * Because the property control (dropdown) and the dataType property share the property value, the dataType value must stay
-  * as an array of objects where each object corresponds to each one of the options of the control. In order to know exactly
-  * which of the options in the control is currently selected, we loop through all of the objects in the dataType value
-  * and check their selected value.
-  */
+   * Datasource controllers don't have direct access to the properties controls, only to their properties and their values.
+   * Because the property control (dropdown) and the dataType property share the property value, the dataType value must stay
+   * as an array of objects where each object corresponds to each one of the options of the control. In order to know exactly
+   * which of the options in the control is currently selected, we loop through all of the objects in the dataType value
+   * and check their selected value.
+   */
   getDataType: function getDataType() {
     var val = null;
 
@@ -104,48 +109,77 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
   },
 
   getSupportedProperties: function () {
-    return [{
-      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.dataType),
-      name: 'dataType',
-      type: 'dropdown',
-      defaultValue: [{ // Update this array if the dropdown options need to be updated
-        value: 'value',
-        label: '',
-        selected: true
-      }, {
-        value: 'value_s',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.string),
-        selected: false
-      }, {
-        value: 'value_i',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.integer),
-        selected: false
-      }, {
-        value: 'value_f',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.float),
-        selected: false
-      }, {
-        value: 'value_dt',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.date),
-        selected: false
-      }, {
-        value: 'value_html',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.html),
-        selected: false
-      }]
-    }, {
-      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.componentPath),
-      name: 'componentPath',
-      type: 'string'
-    }];
+    return [
+      {
+        label: CrafterCMSNext.i18n.intl.formatMessage(
+          this.messages.siteComponentDSMessages.dataType
+        ),
+        name: 'dataType',
+        type: 'dropdown',
+        defaultValue: [
+          {
+            // Update this array if the dropdown options need to be updated
+            value: 'value',
+            label: '',
+            selected: true
+          },
+          {
+            value: 'value_s',
+            label: CrafterCMSNext.i18n.intl.formatMessage(
+              this.messages.siteComponentDSMessages.string
+            ),
+            selected: false
+          },
+          {
+            value: 'value_i',
+            label: CrafterCMSNext.i18n.intl.formatMessage(
+              this.messages.siteComponentDSMessages.integer
+            ),
+            selected: false
+          },
+          {
+            value: 'value_f',
+            label: CrafterCMSNext.i18n.intl.formatMessage(
+              this.messages.siteComponentDSMessages.float
+            ),
+            selected: false
+          },
+          {
+            value: 'value_dt',
+            label: CrafterCMSNext.i18n.intl.formatMessage(
+              this.messages.siteComponentDSMessages.date
+            ),
+            selected: false
+          },
+          {
+            value: 'value_html',
+            label: CrafterCMSNext.i18n.intl.formatMessage(
+              this.messages.siteComponentDSMessages.html
+            ),
+            selected: false
+          }
+        ]
+      },
+      {
+        label: CrafterCMSNext.i18n.intl.formatMessage(
+          this.messages.siteComponentDSMessages.componentPath
+        ),
+        name: 'componentPath',
+        type: 'string'
+      }
+    ];
   },
 
   getSupportedConstraints: function () {
-    return [{
-      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.required),
-      name: 'required',
-      type: 'boolean'
-    }];
+    return [
+      {
+        label: CrafterCMSNext.i18n.intl.formatMessage(
+          this.messages.siteComponentDSMessages.required
+        ),
+        name: 'required',
+        type: 'boolean'
+      }
+    ];
   },
 
   getList: function (cb) {
@@ -155,8 +189,9 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
       cb.success(this.list);
     }
   }
-
-
 });
 
-CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-site-component', CStudioForms.Datasources.SiteComponent);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-forms-controls-site-component',
+  CStudioForms.Datasources.SiteComponent
+);

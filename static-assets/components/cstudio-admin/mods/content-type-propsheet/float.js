@@ -16,64 +16,76 @@
  *
  */
 
-CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float = CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float ||  function(fieldName, containerEl)  {
-  this.fieldName = fieldName;
-  this.containerEl = containerEl;
-  return this;
-}
+CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float =
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float ||
+  function (fieldName, containerEl) {
+    this.fieldName = fieldName;
+    this.containerEl = containerEl;
+    return this;
+  };
 
-YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float, CStudioAdminConsole.Tool.ContentTypes.PropertyType, {
-  render: function(value, updateFn) {
-    var _self = this;
-    var containerEl = this.containerEl;
-    var valueEl = document.createElement("input");
-    YAHOO.util.Dom.addClass(valueEl, "content-type-property-sheet-property-value");
-    containerEl.appendChild(valueEl);
-    valueEl.value = value;
-    valueEl.fieldName = this.fieldName;
+YAHOO.extend(
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float,
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType,
+  {
+    render: function (value, updateFn) {
+      var _self = this;
+      var containerEl = this.containerEl;
+      var valueEl = document.createElement('input');
+      YAHOO.util.Dom.addClass(valueEl, 'content-type-property-sheet-property-value');
+      containerEl.appendChild(valueEl);
+      valueEl.value = value;
+      valueEl.fieldName = this.fieldName;
 
-    var validFn = function(evt, el) {
+      var validFn = function (evt, el) {
+        if (evt && evt != null) {
+          var charCode = evt.which ? evt.which : evt.keyCode;
 
-      if (evt && evt != null) {
-        var charCode = (evt.which) ? evt.which : evt.keyCode
-
-        if(!_self.isNumberKey(charCode)) {
-          if(evt)
-            YAHOO.util.Event.stopEvent(evt);
+          if (!_self.isNumberKey(charCode)) {
+            if (evt) YAHOO.util.Event.stopEvent(evt);
+          }
         }
-      }
-    };
-
-    YAHOO.util.Event.on(valueEl, 'keydown', validFn, valueEl);
-
-    if(updateFn) {
-      var updateFieldFn = function(event, el) {
-        updateFn(event, el);
-        CStudioAdminConsole.Tool.ContentTypes.visualization.render();
       };
 
-      YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
+      YAHOO.util.Event.on(valueEl, 'keydown', validFn, valueEl);
+
+      if (updateFn) {
+        var updateFieldFn = function (event, el) {
+          updateFn(event, el);
+          CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+        };
+
+        YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
+      }
+
+      this.valueEl = valueEl;
+    },
+
+    getValue: function () {
+      return this.valueEl.value;
+    },
+
+    isNumberKey: function (charCode) {
+      // subtract sign (keyboard = 189, keyboard = 173 (firefox), numeric pad = 109)
+      const isSubtractSign = charCode === 109 || charCode === 189 || charCode === 173;
+
+      // decimal sign (keyboard = 190, numeric pad = 110)
+      const isDecimalSign = charCode === 190 || charCode === 110;
+
+      // charCode < 48 or > 57 = not numbers
+      // charCode 43 = execute
+      return !(
+        charCode != 43 &&
+        charCode > 31 &&
+        (charCode < 48 || charCode > 57) &&
+        !isSubtractSign &&
+        !isDecimalSign
+      );
     }
-
-    this.valueEl = valueEl;
-  },
-
-  getValue: function() {
-    return this.valueEl.value;
-  },
-
-  isNumberKey: function(charCode) {
-    // subtract sign (keyboard = 189, keyboard = 173 (firefox), numeric pad = 109)
-    const isSubtractSign = (charCode === 109 || charCode === 189 || charCode === 173);
-
-    // decimal sign (keyboard = 190, numeric pad = 110)
-    const isDecimalSign = (charCode === 190 || charCode === 110);
-
-    // charCode < 48 or > 57 = not numbers
-    // charCode 43 = execute
-    return !(charCode != 43 && charCode > 31 && (charCode < 48 || charCode > 57) && !isSubtractSign && !isDecimalSign);
   }
+);
 
-});
-
-CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-content-types-proptype-float", CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-console-tools-content-types-proptype-float',
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float
+);

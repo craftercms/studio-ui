@@ -19,18 +19,18 @@
  * Component ID: viewcontroller-dependencies
  **/
 (function (CStudioAuthoring) {
-
   var Base = CStudioAuthoring.ViewController.Base,
     Dom = YAHOO.util.Dom,
     Event = YAHOO.util.Event,
-    agent = new CStudioAuthoring.TemplateHolder.TemplateAgent(CStudioAuthoring.TemplateHolder.Dependencies),
+    agent = new CStudioAuthoring.TemplateHolder.TemplateAgent(
+      CStudioAuthoring.TemplateHolder.Dependencies
+    ),
     each = CStudioAuthoring.Utils.each,
     itemsData,
     depController;
   $ = jQuery;
 
   Base.extend('Dependencies', {
-
     events: ['submitStart', 'submitComplete', 'submitEnd'],
     actions: ['.close-button', '.submit-button'],
     startup: ['eventsDelegation'],
@@ -68,7 +68,8 @@
     document.addEventListener('legacyTemplateEditor.closed', closeCallback);
 
     const escapeEndDialog = (e) => {
-      if (e.keyCode === 27) {	// esc
+      if (e.keyCode === 27) {
+        // esc
         depController.end();
       }
     };
@@ -91,18 +92,15 @@
         success: function (oResponse) {
           var respJson = oResponse.responseText;
           try {
-            var elements = eval("(" + respJson + ")");
+            var elements = eval('(' + respJson + ')');
             depController.renderItems(elements.items);
             //enable submit button after loading items;
             verifyMixedSchedules(elements.items);
-
           } catch (err) {
             var error = err;
           }
         },
-        failure: function (oResponse) {
-
-        }
+        failure: function (oResponse) {}
       },
       select = $('.dependencies-option');
 
@@ -114,16 +112,14 @@
 
   function traverse(items, referenceDate) {
     var allHaveSameDate = true,
-      item, children;
+      item,
+      children;
 
-    for (var i = 0, l = items.length;
-      allHaveSameDate === true && i < l;
-      ++i) {
-
+    for (var i = 0, l = items.length; allHaveSameDate === true && i < l; ++i) {
       item = items[i];
       children = item.children;
 
-      allHaveSameDate = (item.scheduledDate === referenceDate);
+      allHaveSameDate = item.scheduledDate === referenceDate;
 
       if (!allHaveSameDate) {
         break;
@@ -137,10 +133,8 @@
     }
 
     return allHaveSameDate;
-
   }
   function verifyMixedSchedules(contentItems) {
-
     var reference = contentItems[0].scheduledDate,
       allHaveSameDate = traverse(contentItems, reference);
 
@@ -150,7 +144,7 @@
         this.$('[name="schedulingMode"]')[0].checked = true;
         this.$('[name="schedulingMode"]')[1].checked = false;
         this.$('.date-picker-control').hide();
-        this.$('.date-picker-control').value = "";
+        this.$('.date-picker-control').value = '';
       } else {
         this.$('[name="schedulingMode"]')[0].checked = false;
         this.$('[name="schedulingMode"]')[1].checked = true;
@@ -164,12 +158,9 @@
       this.$('[name="schedulingMode"]')[0].checked = false;
       this.$('[name="schedulingMode"]')[1].checked = true;
     }
-
-
   }
 
   function renderItems(items) {
-
     //TODO: get data as needed - each element in items has all the item data
 
     var html = [],
@@ -181,7 +172,7 @@
     var item = this.item;
 
     var temp = item.scheduledDate,
-      itemDependenciesClass = "toggle-deps",
+      itemDependenciesClass = 'toggle-deps',
       internalName = item.internalName;
 
     item.scheduledDate = CStudioAuthoring.Utils.formatDateFromString(temp);
@@ -200,7 +191,6 @@
 
     var depsCallback = {
       success: function (response) {
-
         var item = JSON.parse(response.responseText);
 
         $.each(item, function (index, dependency) {
@@ -212,21 +202,22 @@
 
           CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, elem.uri, {
             success: function (results) {
-
               var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
               var isWrite = CStudioAuthoring.Service.isWrite(results.permissions);
 
-              if ((dependency.uri.indexOf(".ftl") == -1
-                && dependency.uri.indexOf(".css") == -1
-                && dependency.uri.indexOf(".js") == -1
-                && dependency.uri.indexOf(".groovy") == -1
-                && dependency.uri.indexOf(".txt") == -1
-                && dependency.uri.indexOf(".html") == -1
-                && dependency.uri.indexOf(".hbs") == -1
-                && dependency.uri.indexOf(".xml") == -1)
-                || !isUserAllowed) {
+              if (
+                (dependency.uri.indexOf('.ftl') == -1 &&
+                  dependency.uri.indexOf('.css') == -1 &&
+                  dependency.uri.indexOf('.js') == -1 &&
+                  dependency.uri.indexOf('.groovy') == -1 &&
+                  dependency.uri.indexOf('.txt') == -1 &&
+                  dependency.uri.indexOf('.html') == -1 &&
+                  dependency.uri.indexOf('.hbs') == -1 &&
+                  dependency.uri.indexOf('.xml') == -1) ||
+                !isUserAllowed
+              ) {
                 // editLink.hide();
-                elem.hidden = "hidden";
+                elem.hidden = 'hidden';
               }
 
               var row = agent.get('SUBITEM_ROW', elem);
@@ -234,7 +225,7 @@
 
               if (isUserAllowed) {
                 if (!isWrite) {
-                  row = row.replace(">Edit<", ">View<");
+                  row = row.replace('>Edit<', '>View<');
                 }
                 row = $container.append(row);
                 //add event
@@ -253,7 +244,10 @@
                         contentTO.uri,
                         false,
                         {},
-                        isWrite ? [{ "ontop": true }] : [{ "ontop": true }, { "name": "readonly", "value": true }]);
+                        isWrite
+                          ? [{ ontop: true }]
+                          : [{ ontop: true }, { name: 'readonly', value: true }]
+                      );
                     },
 
                     failure: function () {
@@ -261,18 +255,21 @@
                     }
                   };
 
-                  CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentCallback, false, false);
+                  CStudioAuthoring.Service.lookupContentItem(
+                    CStudioAuthoringContext.site,
+                    itemUrl,
+                    getContentCallback,
+                    false,
+                    false
+                  );
                 });
               }
-
             },
             failure: function () {
               throw new Error('Unable to retrieve user permissions');
             }
           });
-
         });
-
       }
     };
 
@@ -293,30 +290,45 @@
     $('.toggleDependencies').on('click', function () {
       var $container = $(me.getComponent('tbody')),
         parentId = $(this).attr('id'),
-        $childItems = $container.find("." + parentId);
+        $childItems = $container.find('.' + parentId);
 
-      if ($(this).attr('class') == "ttClose parent-div-widget") {
+      if ($(this).attr('class') == 'ttClose parent-div-widget') {
         $childItems.hide();
         $(this).attr('class', 'ttOpen parent-div-widget');
       } else {
         $childItems.show();
         $(this).attr('class', 'ttClose parent-div-widget');
       }
-    })
-
+    });
   }
 
   function getScheduledDateTimeFromJson(dateTimeStr) {
     var dateTimeTokens = dateTimeStr.split('T');
     var dateTokens = dateTimeTokens[0].split('-');
     var timeTokens = dateTimeTokens[1].split(':');
-    var dateTime = new Date(dateTokens[0], dateTokens[1] - 1, dateTokens[2], timeTokens[0], timeTokens[1]);
+    var dateTime = new Date(
+      dateTokens[0],
+      dateTokens[1] - 1,
+      dateTokens[2],
+      timeTokens[0],
+      timeTokens[1]
+    );
 
-    var hrs = ((dateTime.getHours() % 12) ? dateTime.getHours() % 12 : 12);
+    var hrs = dateTime.getHours() % 12 ? dateTime.getHours() % 12 : 12;
     var mnts = dateTime.getMinutes();
 
-    return '' + dateTokens[1] + '/' + dateTokens[2] + '/' + dateTokens[0] + ' '
-      + (hrs < 10 ? '0' + hrs : hrs) + ':' + (mnts < 10 ? '0' + mnts : mnts) + (dateTime.getHours() < 12 ? ' am' : ' pm');
+    return (
+      '' +
+      dateTokens[1] +
+      '/' +
+      dateTokens[2] +
+      '/' +
+      dateTokens[0] +
+      ' ' +
+      (hrs < 10 ? '0' + hrs : hrs) +
+      ':' +
+      (mnts < 10 ? '0' + mnts : mnts) +
+      (dateTime.getHours() < 12 ? ' am' : ' pm')
+    );
   }
-
 })(CStudioAuthoring);

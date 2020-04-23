@@ -14,96 +14,99 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.ImgS3Upload = CStudioForms.Datasources.ImgS3Upload ||
-function(id, form, properties, constraints)  {
-   	this.id = id;
-   	this.form = form;
-   	this.properties = properties;
-   	this.constraints = constraints;
+CStudioForms.Datasources.ImgS3Upload =
+  CStudioForms.Datasources.ImgS3Upload ||
+  function (id, form, properties, constraints) {
+    this.id = id;
+    this.form = form;
+    this.properties = properties;
+    this.constraints = constraints;
 
-   	for(var i=0; i<properties.length; i++) {
-        if(properties[i].name == "repoPath") {
-            this.repoPath = properties[i].value;
-        }
-		if(properties[i].name === "profileId") {
-			this.profileId = properties[i].value;
-		}
-   	}
+    for (var i = 0; i < properties.length; i++) {
+      if (properties[i].name == 'repoPath') {
+        this.repoPath = properties[i].value;
+      }
+      if (properties[i].name === 'profileId') {
+        this.profileId = properties[i].value;
+      }
+    }
 
-	return this;
-}
+    return this;
+  };
 
 YAHOO.extend(CStudioForms.Datasources.ImgS3Upload, CStudioForms.CStudioFormDatasource, {
-	itemsAreContentReferences: true,
+  itemsAreContentReferences: true,
 
-	/**
-	 * action called when user clicks insert file
-	 */
-    insertImageAction: function(insertCb) {
-		this._self = this,
-			me = this;
+  /**
+   * action called when user clicks insert file
+   */
+  insertImageAction: function (insertCb) {
+    (this._self = this), (me = this);
 
-        var path = this._self.repoPath;
-        var site = CStudioAuthoringContext.site;
-        var isUploadOverwrite = true;
+    var path = this._self.repoPath;
+    var site = CStudioAuthoringContext.site;
+    var isUploadOverwrite = true;
 
-        for(var i=0; i<this.properties.length; i++) {
-            if(this.properties[i].name == "repoPath") {
-                path = this.properties[i].value;
+    for (var i = 0; i < this.properties.length; i++) {
+      if (this.properties[i].name == 'repoPath') {
+        path = this.properties[i].value;
 
-                path = this.processPathsForMacros(path);
-            }
-        }
+        path = this.processPathsForMacros(path);
+      }
+    }
 
-        var callback = {
-            success: function(fileData) {
-                var uri = fileData;
-                var fileExtension = fileData.split(".").pop();
+    var callback = {
+      success: function (fileData) {
+        var uri = fileData;
+        var fileExtension = fileData.split('.').pop();
 
-                var imageData = {
-                    previewUrl : uri,
-                    relativeUrl : uri,
-                    fileExtension : fileExtension,
-                    remote : true
-                };
-
-                insertCb.success(imageData);
-            },
-
-            failure: function() {
-                insertCb.failure("An error occurred while uploading the image.");
-            },
-
-            context: this
+        var imageData = {
+          previewUrl: uri,
+          relativeUrl: uri,
+          fileExtension: fileExtension,
+          remote: true
         };
 
-        CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback, { fileTypes: ["image/*"] });
+        insertCb.success(imageData);
+      },
 
-	},
+      failure: function () {
+        insertCb.failure('An error occurred while uploading the image.');
+      },
 
-    getLabel: function() {
-        return CMgs.format(langBundle, "S3UploadImage");
-    },
+      context: this
+    };
 
-   	getInterface: function() {
-   		return "image";
-   	},
+    CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback, {
+      fileTypes: ['image/*']
+    });
+  },
 
-	getName: function() {
-		return "img-S3-upload";
-	},
+  getLabel: function () {
+    return CMgs.format(langBundle, 'S3UploadImage');
+  },
 
-	getSupportedProperties: function() {
-		return [
-            { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
-			{ label: CMgs.format(langBundle, "profileId"), name: "profileId", type: "string" }
-		];
-	},
+  getInterface: function () {
+    return 'image';
+  },
 
-	getSupportedConstraints: function() {
-		return [
-		];
-	}
+  getName: function () {
+    return 'img-S3-upload';
+  },
+
+  getSupportedProperties: function () {
+    return [
+      { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
+      { label: CMgs.format(langBundle, 'profileId'), name: 'profileId', type: 'string' }
+    ];
+  },
+
+  getSupportedConstraints: function () {
+    return [];
+  }
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-img-S3-upload", CStudioForms.Datasources.ImgS3Upload);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-forms-controls-img-S3-upload',
+  CStudioForms.Datasources.ImgS3Upload
+);

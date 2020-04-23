@@ -18,7 +18,6 @@
  * Status
  */
 CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.StatusNavMod || {
-
   initialized: false,
 
   /**
@@ -30,8 +29,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
   },
 
   definePlugin: function () {
-    var
-      YDom = YAHOO.util.Dom,
+    var YDom = YAHOO.util.Dom,
       YEvent = YAHOO.util.Event;
     /**
      * WCM preview tools Contextual Nav Widget
@@ -50,7 +48,11 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
         },
 
         refreshStatus: function () {
-          var el, iconColor, iconClass, dialogEl, dialogText,
+          var el,
+            iconColor,
+            iconClass,
+            dialogEl,
+            dialogText,
             me = this,
             CMgs = CStudioAuthoring.Messages,
             contextNavLangBundle = CMgs.getBundle('contextnav', CStudioAuthoringContext.lang);
@@ -66,17 +68,20 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 case 'busy':
                   iconColor = '#FF8C00';
                   iconClass = 'icon-orange';
-                  if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
+                  if (dialogEl && !dialogEl.classList.contains('fa-spin'))
+                    dialogEl.classList.add('fa-spin');
                   break;
                 case 'stopped':
                   iconColor = '#FF0000';
                   iconClass = 'icon-red';
-                  if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
+                  if (dialogEl && dialogEl.classList.contains('fa-spin'))
+                    dialogEl.classList.remove('fa-spin');
                   break;
                 default:
                   iconColor = '#7e9dbb';
                   iconClass = 'icon-default';
-                  if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
+                  if (dialogEl && !dialogEl.classList.contains('fa-spin'))
+                    dialogEl.classList.add('fa-spin');
               }
 
               YDom.setStyle(el.children[0], 'color', iconColor);
@@ -95,7 +100,12 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
         },
 
         render: function () {
-          var el, iconColor, iconClass, dialogEl, dialog, dialogText,
+          var el,
+            iconColor,
+            iconClass,
+            dialogEl,
+            dialog,
+            dialogText,
             me = this,
             CMgs = CStudioAuthoring.Messages,
             contextNavLangBundle = CMgs.getBundle('contextnav', CStudioAuthoringContext.lang);
@@ -114,17 +124,20 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                   case 'busy':
                     iconColor = '#FF8C00';
                     iconClass = 'icon-orange';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
+                    if (dialogEl && !dialogEl.classList.contains('fa-spin'))
+                      dialogEl.classList.add('fa-spin');
                     break;
                   case 'stopped':
                     iconColor = '#FF0000';
                     iconClass = 'icon-red';
-                    if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
+                    if (dialogEl && dialogEl.classList.contains('fa-spin'))
+                      dialogEl.classList.remove('fa-spin');
                     break;
                   default:
                     iconColor = '#7e9dbb';
                     iconClass = 'icon-default';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
+                    if (dialogEl && !dialogEl.classList.contains('fa-spin'))
+                      dialogEl.classList.add('fa-spin');
                 }
 
                 YDom.setStyle(el.children[0], 'color', iconColor);
@@ -164,7 +177,6 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 }
               }
             });
-
           }
 
           statusLoop();
@@ -178,13 +190,19 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                   'status-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
                   CMgs.format(contextNavLangBundle, 'publishStatus'),
-                  '<span class=\'dialog-elt-text\'>' + me.getStatusMessage(contextNavLangBundle, response.status) + '</span>',
-                  [{
-                    text: CMgs.format(contextNavLangBundle, 'close'), handler: function () {
-                      me.dialogOpen = false;
-                      this.hide();
-                    }, isDefault: false
-                  }], // use default button
+                  "<span class='dialog-elt-text'>" +
+                    me.getStatusMessage(contextNavLangBundle, response.status) +
+                    '</span>',
+                  [
+                    {
+                      text: CMgs.format(contextNavLangBundle, 'close'),
+                      handler: function () {
+                        me.dialogOpen = false;
+                        this.hide();
+                      },
+                      isDefault: false
+                    }
+                  ], // use default button
                   'dialog-elt fa fa-circle-o-notch fa-spin fa-spin-fix ' + iconClass,
                   'studioDialog'
                 );
@@ -197,17 +215,20 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                   case 'busy':
                     iconColor = '#FF8C00';
                     iconClass = 'icon-orange';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
+                    if (dialogEl && !dialogEl.classList.contains('fa-spin'))
+                      dialogEl.classList.add('fa-spin');
                     break;
                   case 'stopped':
                     iconColor = '#FF0000';
                     iconClass = 'icon-red';
-                    if (dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove('fa-spin');
+                    if (dialogEl && dialogEl.classList.contains('fa-spin'))
+                      dialogEl.classList.remove('fa-spin');
                     break;
                   default:
                     iconColor = '#7e9dbb';
                     iconClass = 'icon-default';
-                    if (dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add('fa-spin');
+                    if (dialogEl && !dialogEl.classList.contains('fa-spin'))
+                      dialogEl.classList.add('fa-spin');
                 }
 
                 YDom.setStyle(el.children[0], 'color', iconColor);
@@ -215,10 +236,8 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 
                 me.dialogOpen = true;
                 statusLoop(dialogOpenDelay);
-
               },
               failure: function (response) {
-
                 let message;
                 try {
                   message = JSON.parse(response.responseText).message;
@@ -233,13 +252,17 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                   'error-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
                   CMgs.format(contextNavLangBundle, 'publishStatus'),
-                  '<span class=\'dialog-elt-text\'>' + message + '</span>',
-                  [{
-                    text: CMgs.format(contextNavLangBundle, 'close'), handler: function () {
-                      me.dialogOpen = false;
-                      this.hide();
-                    }, isDefault: false
-                  }], // use default button
+                  "<span class='dialog-elt-text'>" + message + '</span>',
+                  [
+                    {
+                      text: CMgs.format(contextNavLangBundle, 'close'),
+                      handler: function () {
+                        me.dialogOpen = false;
+                        this.hide();
+                      },
+                      isDefault: false
+                    }
+                  ], // use default button
                   YAHOO.widget.SimpleDialog.ICON_BLOCK,
                   'studioDialog'
                 );
@@ -251,12 +274,11 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 statusLoop(dialogOpenDelay);
               }
             });
-          }
-
+          };
         },
 
         getStatusMessage: function (contextNavLangBundle, status) {
-          return CMgs.format( contextNavLangBundle,status.toLowerCase() );
+          return CMgs.format(contextNavLangBundle, status.toLowerCase());
         }
       }
     });

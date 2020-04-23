@@ -15,10 +15,12 @@
  */
 
 (function (window) {
-
-  var define = (typeof window.crafterDefine === "function" && window.crafterDefine.amd) ? window.crafterDefine : function (a, b, f) {
-    f(window.crafter, window.amplify);
-  };
+  var define =
+    typeof window.crafterDefine === 'function' && window.crafterDefine.amd
+      ? window.crafterDefine
+      : function (a, b, f) {
+          f(window.crafter, window.amplify);
+        };
 
   define('communicator', ['crafter', 'amplify'], function (crafter, amplify) {
     'use strict';
@@ -37,7 +39,6 @@
       ALL_TOPICS = '*';
 
     function Communicator(remotes, targetWindows, allowedOrigins) {
-
       if (arguments.length === 1) {
         allowedOrigins = remotes;
         targetWindows = [];
@@ -60,21 +61,20 @@
         allowedOrigins = [];
       }
 
-      if ((typeof remotes === 'string') || !('splice' in remotes)) {
+      if (typeof remotes === 'string' || !('splice' in remotes)) {
         remotes = [remotes];
       }
 
-      if ((typeof targetWindows === 'string') || !('splice' in targetWindows)) {
+      if (typeof targetWindows === 'string' || !('splice' in targetWindows)) {
         targetWindows = [targetWindows];
       }
 
-      if ((typeof allowedOrigins === 'string') || !('splice' in allowedOrigins)) {
+      if (typeof allowedOrigins === 'string' || !('splice' in allowedOrigins)) {
         allowedOrigins = [allowedOrigins];
       }
 
       var me = this;
       var privates = {
-
         remotes: remotes,
 
         targetWindows: targetWindows,
@@ -82,7 +82,6 @@
         defaultScope: SCOPE_BROADCAST,
 
         allowedOrigins: allowedOrigins
-
       };
 
       this.setAllowedOrigins = function (origins) {
@@ -109,16 +108,18 @@
         privates.targetWindows = targetWindows;
       };
 
-      window.addEventListener('message', function (event) {
-        receiveMessage.call(me, event);
-      }, false);
+      window.addEventListener(
+        'message',
+        function (event) {
+          receiveMessage.call(me, event);
+        },
+        false
+      );
 
       return this;
-
-    };
+    }
 
     Communicator.prototype = {
-
       addOrigin: addOrigin,
 
       addTargetWindow: addTargetWindow,
@@ -134,7 +135,6 @@
       on: subscribe,
 
       unsubscribe: unsubscribe
-
     };
 
     /*public*/
@@ -154,9 +154,9 @@
 
     /*public*/
     function isAllowedOrigin(origin) {
-
       var origins = this.getAllowedOrigins(),
-        i, l;
+        i,
+        l;
 
       for (i = 0, l = origins.length; i < l; ++i) {
         if (origins[i] === origin) {
@@ -165,42 +165,37 @@
       }
 
       return false;
-
     }
 
     /*public*/
     function addTargetWindow(targetWindow) {
-
       var hasWindow = false,
         targetWindows = this.getTargetWindows();
 
-      for (var i = 0; (!hasWindow) && (i < targetWindows.length); ++i)
-        hasWindow = (targetWindow.window === targetWindows[i].window);
+      for (var i = 0; !hasWindow && i < targetWindows.length; ++i)
+        hasWindow = targetWindow.window === targetWindows[i].window;
 
       if (!hasWindow) targetWindows.push(targetWindow);
 
       return !hasWindow;
-
     }
 
     /*public*/
     function removeTargetWindow(targetWindow) {
-
-      var i, hasWindow = false,
+      var i,
+        hasWindow = false,
         targetWindows = this.getTargetWindows();
 
-      for (i = 0; (!hasWindow) && (i < targetWindows.length); ++i)
-        hasWindow = (targetWindow === targetWindows[i]);
+      for (i = 0; !hasWindow && i < targetWindows.length; ++i)
+        hasWindow = targetWindow === targetWindows[i];
 
       if (!hasWindow) targetWindows.push(targetWindow);
 
       return !hasWindow;
-
     }
 
     /*public*/
     function publish(topic, message, scope) {
-
       switch (message) {
         case SCOPE_LOCAL:
         case SCOPE_REMOTE:
@@ -230,18 +225,15 @@
       if (scope === SCOPE_BROADCAST || scope === SCOPE_EXTERNAL) {
         sendMessage.call(this, { topic: topic, message: message, scope: scope });
       }
-
     }
 
     /*private*/
     function sendMessage(message, targetWindows) {
-
-      (!targetWindows) && (targetWindows = this.getTargetWindows());
+      !targetWindows && (targetWindows = this.getTargetWindows());
 
       for (var i = 0, l = targetWindows.length; i < l; ++i) {
         targetWindows[i].window.postMessage(message, targetWindows[i].origin);
       }
-
     }
 
     /*private*/
@@ -256,7 +248,7 @@
 
     /*private*/
     function getScopeSpecificTopic(topic, scope) {
-      return topic + (scope ? (':' + scope) : '');
+      return topic + (scope ? ':' + scope : '');
     }
 
     /*private*/
@@ -274,7 +266,5 @@
     studio.define('Communicator', Communicator);
 
     return Communicator;
-
   });
-
 })(window);

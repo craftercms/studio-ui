@@ -14,7 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.VideoS3Transcoding = CStudioForms.Datasources.VideoS3Transcoding ||
+CStudioForms.Datasources.VideoS3Transcoding =
+  CStudioForms.Datasources.VideoS3Transcoding ||
   function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
@@ -40,8 +41,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
    * action called when user clicks insert file
    */
   insertVideoAction: function (insertCb) {
-    this._self = this,
-      me = this;
+    (this._self = this), (me = this);
 
     var path = this._self.repoPath;
     var site = CStudioAuthoringContext.site;
@@ -72,7 +72,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
       },
 
       failure: function () {
-        insertCb.failure("An error occurred while uploading the video.");
+        insertCb.failure('An error occurred while uploading the video.');
       },
 
       context: this
@@ -87,11 +87,11 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
       inputProfileId: me.inputProfileId
     };
 
-    CStudioAuthoring.Operations.uploadS3Asset(site, path, profiles, callback, params, ["video/*"]);
+    CStudioAuthoring.Operations.uploadS3Asset(site, path, profiles, callback, params, ['video/*']);
   },
 
   getLabel: function () {
-    return CMgs.format(langBundle, "videos3Transcoding");
+    return CMgs.format(langBundle, 'videos3Transcoding');
   },
 
   getInterface: function () {
@@ -99,20 +99,22 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
   },
 
   getName: function () {
-    return "video-S3-transcoding";
+    return 'video-S3-transcoding';
   },
 
   getSupportedProperties: function () {
     return [
-      { label: CMgs.format(langBundle, "inputProfileId"), name: "inputProfileId", type: "string" },
-      { label: CMgs.format(langBundle, "outputProfileId"), name: "outputProfileId", type: "string" }
+      { label: CMgs.format(langBundle, 'inputProfileId'), name: 'inputProfileId', type: 'string' },
+      { label: CMgs.format(langBundle, 'outputProfileId'), name: 'outputProfileId', type: 'string' }
     ];
   },
 
   getSupportedConstraints: function () {
-    return [
-    ];
+    return [];
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-video-S3-transcoding", CStudioForms.Datasources.VideoS3Transcoding);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-forms-controls-video-S3-transcoding',
+  CStudioForms.Datasources.VideoS3Transcoding
+);
