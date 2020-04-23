@@ -20,135 +20,135 @@
  * @author: Roy Art
  * @date: 05.01.2011
  **/
-(function(){
+(function () {
+  var Delete,
+    Event = YAHOO.util.Event,
+    Dom = YAHOO.util.Dom,
+    JSON = YAHOO.lang.JSON,
+    SUtils = CStudioAuthoring.StringUtils,
+    eachfn = CStudioAuthoring.Utils.each,
+    TemplateAgent = CStudioAuthoring.TemplateHolder.TemplateAgent,
+    template = CStudioAuthoring.TemplateHolder.Delete;
 
-    var Delete,
-        Event = YAHOO.util.Event,
-        Dom = YAHOO.util.Dom,
-        JSON = YAHOO.lang.JSON,
-        SUtils = CStudioAuthoring.StringUtils,
+  CStudioAuthoring.register('ViewController.Delete', function () {
+    CStudioAuthoring.ViewController.Delete.superclass.constructor.apply(this, arguments);
+  });
 
-        eachfn = CStudioAuthoring.Utils.each,
+  Delete = CStudioAuthoring.ViewController.Delete;
+  YAHOO.extend(Delete, CStudioAuthoring.ViewController.BaseDelete, {
+    actions: ['.do-delete', '.overlay-close'],
 
-        TemplateAgent = CStudioAuthoring.TemplateHolder.TemplateAgent,
-        template = CStudioAuthoring.TemplateHolder.Delete;
+    initialise: function (usrCfg) {
+      Dom.setStyle(this.cfg.getProperty('context'), 'overflow', 'visible');
+    },
 
-    CStudioAuthoring.register("ViewController.Delete", function() {
-        CStudioAuthoring.ViewController.Delete.superclass.constructor.apply(this, arguments);
-    });
-
-    Delete = CStudioAuthoring.ViewController.Delete;
-    YAHOO.extend(Delete, CStudioAuthoring.ViewController.BaseDelete, {
-
-        actions: [".do-delete", ".overlay-close"],
-
-        initialise: function(usrCfg) {
-            Dom.setStyle(this.cfg.getProperty("context"), "overflow", "visible");
-
-        },
-
-        renderItems: function(items) {
-            this.result = [];
-            CrafterCMSNext
-                .render(
-                    this.getComponent('.dependencies-display'),
-                    'DependencySelectionDelete',
-                    {
-                        onChange: (result) => {
-                            this.result = result;
-                            this.deleteValidation();
-                        },
-                        siteId: CStudioAuthoringContext.site,
-                        items: items
-                    }
-                )
-                .then(() => {
-                    this.getComponent(".delete-display").style.height = 'auto';
-                });
-        },
-
-        getData: function() {
-            return JSON.stringify({
-                items: this.result
-            });
-        },
-
-        afterSubmit: function(message, dataInf){
-            var agent = new TemplateAgent(template),
-                body = agent.get("SUCCESS", {
-                    title: CMgs.format(formsLangBundle, "deletedTitle"),
-                    msg: CMgs.format(formsLangBundle, "deletedMessage")
-                }),
-                self = this;
-            this.getComponent(".studio-view.admin-delete-view").innerHTML = body;
-            (function (dataInf) {
-                Event.addListener(self.getComponent(".action-complete-close1"), "click", function(){
-                    this.end();
-                    var data = JSON.parse(dataInf).items[0];
-                    var nodeName = data.split("/")[data.split("/").length - 2];
-                    CStudioAuthoring.Operations.pageReload('deleteSchedule', nodeName);
-                    if(CStudioAuthoringContext.isPreview) {
-                        if(data.indexOf("/website/") != -1){
-                            CStudioAuthoring.PreviewTools.turnToolsOff();
-                        }
-
-                    }
-                }, null, self);
-            })(dataInf);
-            if (this.getComponent(".action-complete-close1")) {
-                CStudioAuthoring.Utils.setDefaultFocusOn(this.getComponent(".action-complete-close1"));
-            }
-        },
-
-        doDeleteActionClicked: function(){
-			this.showProcessingOverlay(true);
-            //this.disableActions();
-            this.fire("submitStart");
-            var data = this.getData(),
-                _this = this;
-            (function (dataInf) {
-            CStudioAuthoring.Service.request({
-                    method: "POST",
-                    data: data,
-                    resetFormState: true,
-                    url: CStudioAuthoring.Service.createServiceUri(
-                        CStudioAuthoring.Service.deleteContentUrl +
-                            "?deletedep=true&site=" +CStudioAuthoringContext.site+
-                            "&user="+CStudioAuthoringContext.user + "&submissionComment="+
-                            _this.getComponent(".delete-submission-comment").value),
-                    callback: {
-                        success: function(oResponse) {
-                            _this.showProcessingOverlay(false);
-                            _this.enableActions();
-                            var oResp = JSON.parse(oResponse.responseText);
-                            _this.afterSubmit(oResp.message, dataInf);
-                            _this.fire("submitEnd", oResp);
-                            _this.fire("submitComplete", oResp);
-                        },
-                        failure: function(oResponse) {
-                            _this.showProcessingOverlay(false);
-                            var oResp = JSON.parse(oResponse.responseText);
-                            _this.fire("submitEnd", oResp);
-                            _this.enableActions();
-                        }
-                    }
-                });
-            })(data);
-        },
-        overlayCloseActionClicked: function() {
-            var o = this.overlay;
-            o.hide();
-        },
-
-        showProcessingOverlay: function (show) {
-            var elem = this.getComponent(".processing-overlay");
-            if ( elem ) {
-                elem.style.display = show ? '' : 'none';
-            }
+    renderItems: function (items) {
+      this.result = [];
+      CrafterCMSNext.render(
+        this.getComponent('.dependencies-display'),
+        'DependencySelectionDelete',
+        {
+          onChange: (result) => {
+            this.result = result;
+            this.deleteValidation();
+          },
+          siteId: CStudioAuthoringContext.site,
+          items: items
         }
+      ).then(() => {
+        this.getComponent('.delete-display').style.height = 'auto';
+      });
+    },
 
-    });
+    getData: function () {
+      return JSON.stringify({
+        items: this.result
+      });
+    },
 
-    CStudioAuthoring.Env.ModuleMap.map("viewcontroller-delete", Delete);
+    afterSubmit: function (message, dataInf) {
+      var agent = new TemplateAgent(template),
+        body = agent.get('SUCCESS', {
+          title: CMgs.format(formsLangBundle, 'deletedTitle'),
+          msg: CMgs.format(formsLangBundle, 'deletedMessage')
+        }),
+        self = this;
+      this.getComponent('.studio-view.admin-delete-view').innerHTML = body;
+      (function (dataInf) {
+        Event.addListener(
+          self.getComponent('.action-complete-close1'),
+          'click',
+          function () {
+            this.end();
+            var data = JSON.parse(dataInf).items[0];
+            var nodeName = data.split('/')[data.split('/').length - 2];
+            CStudioAuthoring.Operations.pageReload('deleteSchedule', nodeName);
+            if (CStudioAuthoringContext.isPreview) {
+              if (data.indexOf('/website/') != -1) {
+                CStudioAuthoring.PreviewTools.turnToolsOff();
+              }
+            }
+          },
+          null,
+          self
+        );
+      })(dataInf);
+      if (this.getComponent('.action-complete-close1')) {
+        CStudioAuthoring.Utils.setDefaultFocusOn(this.getComponent('.action-complete-close1'));
+      }
+    },
 
+    doDeleteActionClicked: function () {
+      this.showProcessingOverlay(true);
+      //this.disableActions();
+      this.fire('submitStart');
+      var data = this.getData(),
+        _this = this;
+      (function (dataInf) {
+        CStudioAuthoring.Service.request({
+          method: 'POST',
+          data: data,
+          resetFormState: true,
+          url: CStudioAuthoring.Service.createServiceUri(
+            CStudioAuthoring.Service.deleteContentUrl +
+              '?deletedep=true&site=' +
+              CStudioAuthoringContext.site +
+              '&user=' +
+              CStudioAuthoringContext.user +
+              '&submissionComment=' +
+              _this.getComponent('.delete-submission-comment').value
+          ),
+          callback: {
+            success: function (oResponse) {
+              _this.showProcessingOverlay(false);
+              _this.enableActions();
+              var oResp = JSON.parse(oResponse.responseText);
+              _this.afterSubmit(oResp.message, dataInf);
+              _this.fire('submitEnd', oResp);
+              _this.fire('submitComplete', oResp);
+            },
+            failure: function (oResponse) {
+              _this.showProcessingOverlay(false);
+              var oResp = JSON.parse(oResponse.responseText);
+              _this.fire('submitEnd', oResp);
+              _this.enableActions();
+            }
+          }
+        });
+      })(data);
+    },
+    overlayCloseActionClicked: function () {
+      var o = this.overlay;
+      o.hide();
+    },
+
+    showProcessingOverlay: function (show) {
+      var elem = this.getComponent('.processing-overlay');
+      if (elem) {
+        elem.style.display = show ? '' : 'none';
+      }
+    }
+  });
+
+  CStudioAuthoring.Env.ModuleMap.map('viewcontroller-delete', Delete);
 })();

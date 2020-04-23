@@ -14,23 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAdminConsole.Tool.CommentModeration = CStudioAdminConsole.Tool.CommentModeration ||  function(config, el)  {
-	return this;
-}
+CStudioAdminConsole.Tool.CommentModeration =
+  CStudioAdminConsole.Tool.CommentModeration ||
+  function (config, el) {
+    return this;
+  };
 
 YAHOO.extend(CStudioAdminConsole.Tool.CommentModeration, CStudioAdminConsole.Tool, {
-	renderWorkarea: function() {
-		var workareaEl = document.getElementById("cstudio-admin-console-workarea");
-		
-		workareaEl.innerHTML = "Not Yet Implemented"; 
+  renderWorkarea: function () {
+    var workareaEl = document.getElementById('cstudio-admin-console-workarea');
 
-		var actions = [ 
-		];
-		
-		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+    workareaEl.innerHTML = 'Not Yet Implemented';
 
-		CStudioAdminConsole.CommandBar.render([]); 
-	}
+    var actions = [];
+
+    CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+
+    CStudioAdminConsole.CommandBar.render([]);
+  }
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-comment-moderation",CStudioAdminConsole.Tool.CommentModeration);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-console-tools-comment-moderation',
+  CStudioAdminConsole.Tool.CommentModeration
+);

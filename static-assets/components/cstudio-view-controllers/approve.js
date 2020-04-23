@@ -21,26 +21,29 @@
  * @date: 12.09.2014
  **/
 (function (CStudioAuthoring) {
-
-  var
-    Base = CStudioAuthoring.ViewController.Base,
-    publishUtil = CStudioAuthoring.Env.ModuleMap.get("publish-util");
-    Dom = YAHOO.util.Dom,
-    Event = YAHOO.util.Event,
-    each = CStudioAuthoring.Utils.each,
-    genDependency = [],
-    $ = jQuery,
-    isValidateCommentOn = null;
+  var Base = CStudioAuthoring.ViewController.Base,
+    publishUtil = CStudioAuthoring.Env.ModuleMap.get('publish-util');
+  (Dom = YAHOO.util.Dom),
+    (Event = YAHOO.util.Event),
+    (each = CStudioAuthoring.Utils.each),
+    (genDependency = []),
+    ($ = jQuery),
+    (isValidateCommentOn = null);
 
   Base.extend('Approve', {
-
     events: ['submitStart', 'submitComplete', 'submitEnd'],
-    
+
     actions: ['.close-button', '.submit-button'],
 
     loadItems: publishUtil.loadItems,
 
-    startup: ['fetchPublishingSettings', 'loadPublishingChannels', 'initDatePicker', 'initValidation', 'translateUI'],
+    startup: [
+      'fetchPublishingSettings',
+      'loadPublishingChannels',
+      'initDatePicker',
+      'initValidation',
+      'translateUI'
+    ],
 
     loadPublishingChannels: publishUtil.loadPublishingChannels,
 
@@ -59,58 +62,59 @@
     initValidation: publishUtil.initValidation,
 
     publishValidation: publishUtil.publishValidation,
-    
+
     translateUI: publishUtil.translateUI,
 
     getGenDependency: publishUtil.getGenDependency
-
   });
-
 })(CStudioAuthoring);
 
 function submit() {
+  var data = {
+    schedule: this.getComponent('[name="schedulingMode"]:checked').value,
+    submissionComment: this.getComponent('.submission-comment').value,
+    publishOptionComment: this.getComponent('.publish-option-comment')
+      ? this.getComponent('.publish-option-comment').value
+      : '',
+    publishChannel: this.getComponent('.publish-option').value,
+    items: this.result
+  };
 
-    var data = {
-      schedule: this.getComponent('[name="schedulingMode"]:checked').value,
-      submissionComment: this.getComponent('.submission-comment').value,
-      publishOptionComment: (this.getComponent('.publish-option-comment')) ? this.getComponent('.publish-option-comment').value : '',
-      publishChannel: this.getComponent('.publish-option').value,
-      items: this.result
-    };
-  
-    var timezone = $('select.zone-picker').find(':selected').attr('data-offset');
-  
-    if (data.schedule === 'custom') {
-      data.scheduledDate = getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
-      data.scheduledDate += timezone;
-    }
-  
-    var loadSpinner = document.getElementById('loadSpinner');
-    var loadSpinnerMask = document.getElementById('loadSpinnerMask');
-  
-    this.disableActions();
-    loadSpinner.classList.remove('hidden');
-    loadSpinnerMask.classList.remove('hidden');
-    this.fire('submitStart');
-  
-    var _this = this,
-      data = JSON.stringify(data),
-      callback = {
-        success: function (oResponse) {
-          _this.enableActions();
-          var oResp = JSON.parse(oResponse.responseText);
-          oResp.deps = _this.result;
-          _this.fire('submitComplete', oResp);
-          _this.fire('submitEnd', oResp);
-          loadSpinner.classList.add('hidden');
-          loadSpinnerMask.classList.add('hidden');
-        },
-        failure: function (oResponse) {
-          var oResp = JSON.parse(oResponse.responseText);
-          _this.fire('submitEnd', oResp);
-          _this.enableActions();
-        }
-      };
-  
-    CStudioAuthoring.Service.getGoLive(callback, data);
+  var timezone = $('select.zone-picker').find(':selected').attr('data-offset');
+
+  if (data.schedule === 'custom') {
+    data.scheduledDate = getScheduledDateTimeForJson(
+      this.getComponent('[name="scheduleDate"]').value
+    );
+    data.scheduledDate += timezone;
   }
+
+  var loadSpinner = document.getElementById('loadSpinner');
+  var loadSpinnerMask = document.getElementById('loadSpinnerMask');
+
+  this.disableActions();
+  loadSpinner.classList.remove('hidden');
+  loadSpinnerMask.classList.remove('hidden');
+  this.fire('submitStart');
+
+  var _this = this,
+    data = JSON.stringify(data),
+    callback = {
+      success: function (oResponse) {
+        _this.enableActions();
+        var oResp = JSON.parse(oResponse.responseText);
+        oResp.deps = _this.result;
+        _this.fire('submitComplete', oResp);
+        _this.fire('submitEnd', oResp);
+        loadSpinner.classList.add('hidden');
+        loadSpinnerMask.classList.add('hidden');
+      },
+      failure: function (oResponse) {
+        var oResp = JSON.parse(oResponse.responseText);
+        _this.fire('submitEnd', oResp);
+        _this.enableActions();
+      }
+    };
+
+  CStudioAuthoring.Service.getGoLive(callback, data);
+}
