@@ -221,7 +221,8 @@ const globalNavUrlMapping = {
   'about': '#/about-us',
   'legacy.preview': '/preview',
   'siteConfig': '/site-config',
-  'search': '/search'
+  'search': '/search',
+  'siteDashboard': '/site-dashboard'
 };
 
 const siteMenuKeys = {
@@ -305,40 +306,23 @@ export default function GlobalNav(props: GlobalNavProps) {
   const crafterSite = useActiveSiteId();
   const dispatch = useDispatch();
 
-  const cardActions = [
+  const cardActions = useMemo(() => ([
     {
       name: formatMessage(messages.preview),
-      onClick: onPreviewClick
+      onClick: () => navigateTo(globalNavUrlMapping.siteDashboard)
     },
     {
       name: formatMessage(messages.dashboard),
-      onClick: onDashboardClick
+      onClick: () => navigateTo(globalNavUrlMapping.siteDashboard)
     }
-  ];
+  ]), [formatMessage]);
 
-  function handleErrorBack() {
-    setApiState({ ...apiState, error: false });
-  }
+  const handleErrorBack = () => setApiState({ ...apiState, error: false });
 
-  function onPreviewClick(id: string = crafterSite) {
-    onLinkClick('/next/preview');
-  }
-
-  function onDashboardClick(id: string = crafterSite) {
-    onLinkClick('/site-dashboard');
-  }
-
-  function onLinkClick(url: string) {
-    window.location.href = `${AUTHORING_BASE}${url}`;
-  }
-
-  function onSiteCardClick(id: string) {
+  const onSiteCardClick = (id: string) => {
     dispatch(changeSite(id));
-    // Go to new preview
-    // onPreviewClick(id);
-    // Go to legacy preview
-    onLinkClick('/preview');
-  }
+    navigateTo(`${AUTHORING_BASE}/preview`);
+  };
 
   useEffect(() => {
     if (crafterSite) {
@@ -464,7 +448,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                     key={item.id}
                     title={formatMessage(messages[popPiece(camelize(item.id))])}
                     icon={item.icon}
-                    link={getLink(item.id)}
+                    link={getLink(item.id, AUTHORING_BASE)}
                     onClick={onMenuClose}
                   />
                 ))}
@@ -474,7 +458,11 @@ export default function GlobalNav(props: GlobalNavProps) {
                   link="https://docs.craftercms.org/en/3.1/index.html"
                   target="_blank"
                 />
-                <Tile title={formatMessage(messages.about)} icon={About} link={getLink('about')} />
+                <Tile
+                  icon={About}
+                  link={getLink('about', AUTHORING_BASE)}
+                  title={formatMessage(messages.about)}
+                />
               </nav>
               <Typography variant="subtitle1" component="h2" className={classes.title}>
                 {formatMessage(messages.site)}
@@ -484,32 +472,34 @@ export default function GlobalNav(props: GlobalNavProps) {
                   <Tile
                     title={formatMessage(messages.dashboard)}
                     icon="fa-tasks"
-                    onClick={onDashboardClick}
+                    link={`${AUTHORING_BASE}/site-dashboard`}
+                    onClick={onMenuClose}
                   />
                 )}
                 <Tile
                   title={formatMessage(messages.preview)}
                   icon={Preview}
-                  onClick={onPreviewClick}
+                  link={`${AUTHORING_BASE}/next/preview`}
+                  onClick={onMenuClose}
                 />
                 <Tile
                   title={formatMessage(messages.legacyPreview)}
                   icon={DevicesIcon}
-                  link={getLink('legacy.preview')}
+                  link={getLink('legacy.preview', AUTHORING_BASE)}
                   disabled={!crafterSite}
                 />
                 {siteMenu?.[siteMenuKeys.siteConfig] && (
                   <Tile
                     title={formatMessage(messages.siteConfig)}
                     icon="fa-sliders"
-                    link={getLink('siteConfig')}
+                    link={getLink('siteConfig', AUTHORING_BASE)}
                     onClick={onMenuClose}
                   />
                 )}
                 <Tile
                   title={formatMessage(messages.search)}
                   icon={SearchIcon}
-                  link={getLink('search')}
+                  link={getLink('search', AUTHORING_BASE)}
                   disabled={!crafterSite}
                 />
               </nav>
@@ -525,7 +515,14 @@ export default function GlobalNav(props: GlobalNavProps) {
   );
 }
 
-function getLink(id: string) {
-  const base = window.location.host.replace('3000', '8080');
-  return `//${base}/studio${globalNavUrlMapping[id]}`;
+function getLink(id: string, authoringBase: string = `${getBase()}/studio`) {
+  return `${authoringBase}${globalNavUrlMapping[id]}`;
+}
+
+function getBase() {
+  return window.location.host.replace('3000', '8080');
+}
+
+function navigateTo(link: string): void {
+  window.location.href = link;
 }
