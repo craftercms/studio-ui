@@ -164,10 +164,7 @@ function GlobalDialogManager() {
   );
 }
 
-function MinimizedDialogManager({
-                                  state,
-                                  dispatch
-                                }: {
+function MinimizedDialogManager({ state, dispatch }: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {
