@@ -105,7 +105,7 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
       <DependencySelectionDelete
         items={items}
         resultItems={deleteDependencies}
-        onChange={(result) => onSelectionChange?.(result)}
+        onChange={onSelectionChange}
       />
       <form className={classes.submissionCommentField} noValidate autoComplete="off">
         <TextField
@@ -311,10 +311,6 @@ function DeleteDialog(props: DeleteDialogProps) {
 
   };
 
-  const onSelectionChange = (selection: LegacyItem[]) => {
-    setSelectedItems(selection);
-  };
-
   return (
     <DeleteDialogUI
       resource={resource}
@@ -325,7 +321,7 @@ function DeleteDialog(props: DeleteDialogProps) {
       open={open}
       apiState={apiState}
       handleSubmit={handleSubmit}
-      onSelectionChange={onSelectionChange}
+      onSelectionChange={setSelectedItems}
       onDismiss={onDismiss}
       onClose={onClose}
     />
