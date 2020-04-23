@@ -15,6 +15,7 @@
   -->
 
 <script>
+(function (origin) {
 
   /**
    * contextual variables
@@ -26,19 +27,19 @@
     site: "${envConfig.site}",
     siteId: "${envConfig.site}",
     authenticationType: "${envConfig.authenticationType}",
-    baseUri: `${'$'}{window.location.origin}/studio`,
-    authoringAppBaseUri: `${'$'}{window.location.origin}/studio`,
-    formServerUri: `${'$'}{window.location.origin}/form`,
-    previewAppBaseUri: window.location.origin,
+    baseUri: `${'$'}{origin}/studio`,
+    authoringAppBaseUri: `${'$'}{origin}/studio`,
+    formServerUri: `${'$'}{origin}/form`,
+    previewAppBaseUri: origin,
     contextMenuOffsetPage: false,
     brandedLogoUri: '/api/1/services/api/1/content/get-content-at-path.bin?path=/configuration/app-logo.png',
-    homeUri: `${'$'}{window.location.origin}/site-dashboard`,
+    homeUri: `${'$'}{origin}/site-dashboard`,
     navContext: 'default',
     cookieDomain: "${cookieDomain!'UNSET'}",
     openSiteDropdown: ${envConfig.openSiteDropdown!'false'},
     isPreview: false,
     liveAppBaseUri: '',
-    graphQLBaseURI: `${'$'}{window.location.origin}/api/1/site/graphql`,
+    graphQLBaseURI: `${'$'}{origin}/api/1/site/graphql`,
     xsrfHeaderName: "${_csrf.headerName}",
     xsrfParameterName: "${_csrf.parameterName}",
     passwordRequirementsRegex: "${envConfig.passwordRequirementsRegex?js_string}"
@@ -73,12 +74,14 @@
 
     if (!(isChromium || isFirefox)) {
       $('body').addClass('iewarning').prepend(`
-        <div class='ccms-iewarning'>
-          Your browser is currently not supported, please use
-          <a style='color: #24ddff;' target='_blank' href='https://www.google.com/chrome/browser/desktop/index.html'>Chrome</a>
-          or <a style='color: #24ddff;' target='_blank' href='https://www.mozilla.org/en-US/firefox/new/?scene=2'>Firefox</a>.
-        </div>`
+      <div class='ccms-iewarning'>
+        Your browser is currently not supported, please use
+        <a style='color: #24ddff;' target='_blank' href='https://www.google.com/chrome/browser/desktop/index.html'>Chrome</a>
+        or <a style='color: #24ddff;' target='_blank' href='https://www.mozilla.org/en-US/firefox/new/?scene=2'>Firefox</a>.
+      </div>`
       );
     }
   });
+
+})(window.location.origin);
 </script>

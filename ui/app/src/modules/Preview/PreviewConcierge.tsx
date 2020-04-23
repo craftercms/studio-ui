@@ -442,10 +442,3 @@ function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
       });
   });
 }
-
-try {
-  // TODO: Temp. To be removed.
-  document.domain = 'sample.com';
-} catch (e) {
-  console.log(e);
-}
