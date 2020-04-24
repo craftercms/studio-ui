@@ -66,7 +66,11 @@ const flagColor = 'rgba(255, 59, 48, 0.5)';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    wrapper: {},
+    root: {
+      '&.collapsed': {
+        paddingBottom: 5
+      }
+    },
     widgetSection: {
       padding: `0 10px`,
       '& .MuiSvgIcon-root': {
@@ -86,20 +90,22 @@ const useStyles = makeStyles((theme) =>
     optionsWrapperOver: {
       visibility: 'visible'
     },
-    pagesHeader: {
+    // region Header
+    headerRoot: {
       display: 'flex',
-      padding: '5px 5px 0',
+      padding: '5px 10px 0',
       alignItems: 'center',
       '& .MuiSvgIcon-root': {
         fontSize: '1.1rem'
       }
     },
-    pagesIcon: {
-      fontSize: '1.1rem'
-    },
-    pagesHeaderTitle: {
+    headerTitle: {
       marginLeft: '6px',
       flexGrow: 1
+    },
+    // endregion
+    pagesIcon: {
+      fontSize: '1.1rem'
     },
     iconButton: {
       padding: '6px'
@@ -133,37 +139,8 @@ const useStyles = makeStyles((theme) =>
       textDecoration: 'underline'
     },
     // endregion
-    pagesNavItem: {
-      justifyContent: 'space-between',
-      padding: '0 0 0 10px',
-      '&.noLeftPadding': {
-        paddingLeft: 0
-      },
-      '&:hover': {
-        backgroundColor: 'rgba(0, 0, 0, 0.08)'
-      }
-    },
-    pagesNavItemText: {
-      color: palette.teal.shade,
-      padding: 0,
-      marginRight: 'auto',
-      '&.opacity': {
-        opacity: '0.7'
-      },
-      '&.select-mode': {
-        color: palette.black
-      },
-      '&.non-navigable': {
-        color: palette.gray.medium7
-      }
-    },
-    pagesNavItemCheckbox: {
-      padding: '6px',
-      color: theme.palette.primary.main
-    },
+    // region Pagination
     pagination: {
-      marginTop: '10px',
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
       '& p': {
         padding: 0
       },
@@ -174,9 +151,9 @@ const useStyles = makeStyles((theme) =>
         display: 'none'
       }
     },
-    toolbar: {
+    paginationToolbar: {
       display: 'flex',
-      minHeight: '40px',
+      minHeight: '30px',
       justifyContent: 'space-between',
       '& .MuiTablePagination-spacer': {
         display: 'none'
@@ -188,6 +165,7 @@ const useStyles = makeStyles((theme) =>
         padding: 0
       }
     },
+    // endregion
     menuPaper: {
       width: '182px'
     },
@@ -214,7 +192,35 @@ const useStyles = makeStyles((theme) =>
       marginRight: 5,
       fontSize: '1.2rem',
       color: palette.gray.medium4
-    }
+    },
+    navItem: {
+      justifyContent: 'space-between',
+      padding: '0 0 0 10px',
+      '&.noLeftPadding': {
+        paddingLeft: 0
+      },
+      '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.08)'
+      }
+    },
+    navItemText: {
+      color: palette.teal.shade,
+      padding: 0,
+      marginRight: 'auto',
+      '&.opacity': {
+        opacity: '0.7'
+      },
+      '&.select-mode': {
+        color: palette.black
+      },
+      '&.non-navigable': {
+        color: palette.gray.medium7
+      }
+    },
+    navItemCheckbox: {
+      padding: '6px',
+      color: theme.palette.primary.main
+    },
     // endregion
   })
 );
@@ -387,12 +393,12 @@ function generateMenuSections(item: Item, menuState: MenuState, count?: number) 
     sections.push(
       menuState.hasClipboard
         ? [
-            menuOptions.cut,
-            menuOptions.copy,
-            menuOptions.paste,
-            menuOptions.duplicate,
-            menuOptions.delete
-          ]
+          menuOptions.cut,
+          menuOptions.copy,
+          menuOptions.paste,
+          menuOptions.duplicate,
+          menuOptions.delete
+        ]
         : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate, menuOptions.delete]
     );
     sections.push([menuOptions.translation]);
@@ -459,6 +465,9 @@ interface WidgetProps {
   icon?: string | React.ElementType;
   title?: string;
   locale: string;
+  classes?: {
+    root?: string;
+  }
 }
 
 interface MenuState {
@@ -470,7 +479,6 @@ interface MenuState {
 function Header(props: HeaderProps) {
   const classes = useStyles({});
   const { title, icon: Icon, locale, onLanguageMenu, onContextMenu, onClick } = props;
-
   const currentFlag = (locale: string) => {
     switch (locale) {
       case 'en': {
@@ -484,9 +492,8 @@ function Header(props: HeaderProps) {
       }
     }
   };
-
   return (
-    <header className={clsx(classes.pagesHeader)} onClick={onClick}>
+    <header className={clsx(classes.headerRoot)} onClick={onClick}>
       {typeof Icon === 'string' ? (
         <span className={`fa ${Icon}`} />
       ) : (
@@ -495,20 +502,26 @@ function Header(props: HeaderProps) {
       <Typography
         variant="body1"
         component="h6"
-        className={classes.pagesHeaderTitle}
+        className={classes.headerTitle}
         children={title}
       />
       <IconButton
         aria-label="language select"
         className={classes.iconButton}
-        onClick={(event) => onLanguageMenu(event.currentTarget)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onLanguageMenu(e.currentTarget)
+        }}
       >
         {currentFlag(locale)}
       </IconButton>
       <IconButton
         aria-label="options"
         className={classes.iconButton}
-        onClick={(event) => onContextMenu(event.currentTarget)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onContextMenu(e.currentTarget)
+        }}
       >
         <MoreVertIcon />
       </IconButton>
@@ -655,7 +668,7 @@ function NavItem(props: NavItemProps) {
   return (
     <ListItem
       button={!isSelectMode as true}
-      className={clsx(classes.pagesNavItem, isSelectMode && 'noLeftPadding')}
+      className={clsx(classes.navItem, isSelectMode && 'noLeftPadding')}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       onClick={navigable ? onClick : () => onChangeParent?.(item)}
@@ -663,7 +676,7 @@ function NavItem(props: NavItemProps) {
       {isSelectMode ? (
         <Checkbox
           color="default"
-          className={classes.pagesNavItemCheckbox}
+          className={classes.navItemCheckbox}
           onChange={(e) => {
             onItemChecked(item, e.currentTarget.checked);
           }}
@@ -681,7 +694,7 @@ function NavItem(props: NavItemProps) {
       <Typography
         variant="body2"
         className={clsx(
-          classes.pagesNavItemText,
+          classes.navItemText,
           !isSelectMode && locale !== item.localeCode && 'opacity',
           isSelectMode && 'select-mode',
           !navigable && 'non-navigable'
@@ -903,6 +916,7 @@ export default function(props: WidgetProps) {
     [dispatch, site, state]
   );
 
+  const [collapsed, setCollapsed] = useState(false);
   const [menuState, setMenuState] = useSpreadState<MenuState>({
     selectMode: false,
     hasClipboard: false
@@ -1167,64 +1181,66 @@ export default function(props: WidgetProps) {
   };
 
   return (
-    <section className={classes.wrapper}>
+    <section className={clsx(classes.root, props.classes?.root, collapsed && 'collapsed')}>
       <Header
         icon={icon}
         title={title}
         locale={state.localeCode}
-        onClick={() => console.log('Clicked.')}
+        onClick={() => setCollapsed(!collapsed)}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
       />
-      <SuspenseWithEmptyState
-        resource={itemsResource}
-        loadingStateProps={{
-          graphicProps: { className: classes.stateGraphics }
-        }}
-        errorBoundaryProps={{
-          errorStateProps: { classes: { graphic: classes.stateGraphics } }
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: 'No items at this location',
-            classes: { image: classes.stateGraphics }
-          }
-        }}
-      >
-        <Breadcrumbs
-          keyword={state.keyword}
-          breadcrumb={state.breadcrumb}
-          onMenu={onCurrentParentMenu}
-          onSearch={(q) => exec(setKeyword(q))}
-          onCrumbSelected={onBreadcrumbSelected}
-        />
-        <Nav
-          leafs={state.leafs}
-          locale={state.localeCode}
+      <div {...collapsed ? { hidden: true } : {}}>
+        <SuspenseWithEmptyState
           resource={itemsResource}
-          isSelectMode={menuState.selectMode}
-          onSelectItem={onSelectItem}
-          onPathSelected={onPathSelected}
-          onOpenItemMenu={onOpenItemMenu}
-          onItemClicked={onItemClicked}
-        />
-        <TablePagination
-          className={classes.pagination}
-          classes={{
-            root: classes.pagination,
-            selectRoot: 'hidden',
-            toolbar: clsx(classes.toolbar, classes.widgetSection)
+          loadingStateProps={{
+            graphicProps: { className: classes.stateGraphics }
           }}
-          component="div"
-          labelRowsPerPage=""
-          count={state.count}
-          rowsPerPage={state.limit}
-          page={Math.ceil(state.offset / state.limit)}
-          backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-          nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-          onChangePage={(e, page: number) => onPageChanged(page)}
-        />
-      </SuspenseWithEmptyState>
+          errorBoundaryProps={{
+            errorStateProps: { classes: { graphic: classes.stateGraphics } }
+          }}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              title: 'No items at this location',
+              classes: { image: classes.stateGraphics }
+            }
+          }}
+        >
+          <Breadcrumbs
+            keyword={state.keyword}
+            breadcrumb={state.breadcrumb}
+            onMenu={onCurrentParentMenu}
+            onSearch={(q) => exec(setKeyword(q))}
+            onCrumbSelected={onBreadcrumbSelected}
+          />
+          <Nav
+            leafs={state.leafs}
+            locale={state.localeCode}
+            resource={itemsResource}
+            isSelectMode={menuState.selectMode}
+            onSelectItem={onSelectItem}
+            onPathSelected={onPathSelected}
+            onOpenItemMenu={onOpenItemMenu}
+            onItemClicked={onItemClicked}
+          />
+          <TablePagination
+            className={classes.pagination}
+            classes={{
+              root: classes.pagination,
+              selectRoot: 'hidden',
+              toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
+            }}
+            component="div"
+            labelRowsPerPage=""
+            count={state.count}
+            rowsPerPage={state.limit}
+            page={Math.ceil(state.offset / state.limit)}
+            backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
+            nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+            onChangePage={(e, page: number) => onPageChanged(page)}
+          />
+        </SuspenseWithEmptyState>
+      </div>
       <ContextMenu
         anchorEl={menu.anchorEl}
         open={Boolean(menu.anchorEl)}
