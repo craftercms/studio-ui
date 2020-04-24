@@ -24,7 +24,7 @@ import createStyles from '@material-ui/styles/createStyles';
 import { useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import DialogFooter from '../../../components/DialogFooter';
-import { APIError } from '../../../models/GlobalState';
+import { APIError, EntityState } from '../../../models/GlobalState';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
 import StandardAction from '../../../models/StandardAction';
@@ -34,11 +34,15 @@ import {
   historyDialogChangePage,
   showHistoryDialog
 } from '../../../state/reducers/dialogs/history';
-import { VersionList } from './VersionList';
+import { VersionList, VersionsResource } from './VersionList';
 import TablePagination from '@material-ui/core/TablePagination';
 import { Resource } from '../../../models/Resource';
-import { showViewVersionDialog } from '../../../state/reducers/dialogs/viewVersion';
+import {
+  fetchContentVersion,
+  showViewVersionDialog
+} from '../../../state/reducers/dialogs/viewVersion';
 import HistoryRoundedIcon from '@material-ui/icons/HistoryRounded';
+import { fetchContentTypes } from '../../../state/actions/preview';
 
 const translations = defineMessages({
   previousPage: {
@@ -174,7 +178,6 @@ export interface HistoryResource {
 interface HistoryDialogBaseProps {
   open: boolean;
   path: string;
-  versions: LegacyVersion[];
   isFetching: Boolean;
   error: APIError;
   current: string;
@@ -184,6 +187,7 @@ interface HistoryDialogBaseProps {
 
 export type HistoryDialogProps = PropsWithChildren<
   HistoryDialogBaseProps & {
+    versionsBranch: Partial<EntityState<LegacyVersion>>;
     onClose?(): any;
     onDismiss?(): any;
   }
@@ -195,22 +199,24 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, path, rowsPerPage, page, current} = props;
+  const { open, onClose, onDismiss, path, rowsPerPage, page, current, versionsBranch} = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
-  const resource = useStateResource<HistoryResource, HistoryDialogBaseProps>(props, {
+  const versionsResource = useStateResource<VersionsResource, Partial<EntityState<LegacyVersion>>>(versionsBranch, {
     shouldResolve: (source) => Boolean(source.versions) && !source.isFetching,
     shouldReject: (source) => Boolean(source.error),
     shouldRenew: (source, resource) => source.isFetching && resource.complete,
-    resultSelector: (source) => ({
-      versions: source.versions,
-      rowsPerPage: source.rowsPerPage,
-      page: source.page
-    }),
+    resultSelector: (source) => (
+      {
+        versions: source.versions,
+        rowsPerPage: 10,
+        page: 0
+      }
+    ),
     errorSelector: (source) => source.error
   });
 
@@ -242,18 +248,20 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   );
 
   const handleViewItem = (version: LegacyVersion) => {
-    //dispatch(showViewVersionDialog({ path, versionNumber: version.versionNumber, historyDialog: true }))
-    dispatch(
-      showViewVersionDialog({
-        rightActions: [
-          {
-            icon: HistoryRoundedIcon,
-            onClick: showHistoryDialog(),
-            'aria-label': formatMessage(translations.backToHistoryList)
-          }
-        ]
-      })
-    );
+    dispatch(fetchContentTypes());
+    dispatch(fetchContentVersion({ path, versionNumber: version.versionNumber}));
+    dispatch(showViewVersionDialog());
+    // dispatch(
+    //   showViewVersionDialog({
+    //     rightActions: [
+    //       {
+    //         icon: HistoryRoundedIcon,
+    //         onClick: showHistoryDialog(),
+    //         'aria-label': formatMessage(translations.backToHistoryList)
+    //       }
+    //     ]
+    //   })
+    // );
   };
 
   const handleContextMenuClose = () => {
@@ -304,20 +312,18 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         onDismiss={onDismiss}
       />
       <DialogBody className={classes.dialogBody}>
-        <SuspenseWithEmptyState resource={resource}>
+        <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
-            resource={resource}
+            resource={versionsResource}
             handleOpenMenu={handleOpenMenu}
-            handleViewItem={handleViewItem}
-            rowsPerPage={rowsPerPage}
-            page={page}
+            handleItemClick={handleViewItem}
             current={current}
           />
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter classes={{ root: classes.dialogFooter }}>
-        <SuspenseWithEmptyState resource={resource} suspenseProps={{ fallback: null }}>
-          <Pagination resource={resource} onPageChanged={onPageChanged} />
+        <SuspenseWithEmptyState resource={versionsResource} suspenseProps={{ fallback: null }}>
+          <Pagination resource={versionsResource} onPageChanged={onPageChanged} />
         </SuspenseWithEmptyState>
       </DialogFooter>
       {Boolean(menu.anchorEl) && (

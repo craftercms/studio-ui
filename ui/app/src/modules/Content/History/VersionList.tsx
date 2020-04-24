@@ -114,19 +114,24 @@ export function FancyFormattedDate(props: FancyFormattedDateProps) {
   );
 }
 
-interface VersionListProps {
-  resource: Resource<HistoryResource>;
-  rowsPerPage: number;
+export interface VersionsResource {
+  versions: LegacyVersion[];
   page: number;
-  current: string;
-  handleViewItem(version: LegacyVersion): void;
-  handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
+  rowsPerPage: number;
+}
+
+interface VersionListProps {
+  resource: Resource<VersionsResource>;
+  current?: string;
+  handleItemClick(version: LegacyVersion): void;
+  handleOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
 }
 
 export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, handleViewItem, current } = props;
+  const { resource, handleOpenMenu, handleItemClick, current } = props;
   const historyResource = resource.read();
+  const { rowsPerPage, page } = historyResource;
   const versions = historyResource.versions.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
 
   return (
@@ -137,7 +142,7 @@ export function VersionList(props: VersionListProps) {
             key={version.versionNumber}
             divider={versions.length - 1 !== i}
             button
-            onClick={() => handleViewItem(version)}
+            onClick={() => handleItemClick(version)}
             className={classes.listItem}
           >
             <ListItemText
@@ -160,16 +165,19 @@ export function VersionList(props: VersionListProps) {
               }
               secondary={version.comment}
             />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                onClick={(e) =>
-                  handleOpenMenu(e.currentTarget, version, current === version.versionNumber)
-                }
-              >
-                <MoreVertIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
+            {
+              handleOpenMenu &&
+              <ListItemSecondaryAction>
+                <IconButton
+                  edge="end"
+                  onClick={(e) =>
+                    handleOpenMenu(e.currentTarget, version, current === version.versionNumber)
+                  }
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            }
           </ListItem>
         );
       })}

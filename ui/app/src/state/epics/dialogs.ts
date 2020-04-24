@@ -24,26 +24,19 @@ import { closePublishDialog } from '../reducers/dialogs/publish';
 import { camelize, dasherize } from '../../utils/string';
 import { closeDeleteDialog } from '../reducers/dialogs/delete';
 import {
-  fetchItemVersions,
-  fetchItemVersionsComplete,
-  fetchItemVersionsFailed,
   revertContent,
   revertContentComplete,
   revertContentFailed
 } from '../reducers/dialogs/history';
-import {
-  getConfigurationVersions,
-  getContentVersion,
-  getItemVersions,
-  revertContentToVersion
-} from '../../services/content';
+import { getContentVersion, revertContentToVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   fetchContentVersion,
-  fetchItemVersionComplete,
-  fetchItemVersionFailed,
+  fetchContentVersionComplete,
+  fetchContentVersionFailed,
   showViewVersionDialog
 } from '../reducers/dialogs/viewVersion';
+import { fetchItemVersions } from '../reducers/versions';
 
 function getDialogNameFromType(type: string): string {
   let name = type.replace(/(CLOSE_)|(_DIALOG)/g, '');
@@ -78,25 +71,6 @@ export default [
   // region History Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchItemVersions.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        const service = (payload.config)
-          ? getConfigurationVersions(
-            state.sites.active,
-            payload.path,
-            payload.environment,
-            payload.module
-          )
-          : getItemVersions(state.sites.active, payload.path);
-        return service.pipe(
-          map(fetchItemVersionsComplete),
-          catchAjaxError(fetchItemVersionsFailed)
-        );
-      })
-    ),
-  (action$, state$: StateObservable<GlobalState>) =>
-    action$.pipe(
       ofType(revertContent.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
@@ -115,12 +89,12 @@ export default [
   // region View Version Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(showViewVersionDialog.type, fetchContentVersion.type),
+      ofType(fetchContentVersion.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
         getContentVersion(state.sites.active, payload.path, payload.versionNumber).pipe(
-          map(fetchItemVersionComplete),
-          catchAjaxError(fetchItemVersionFailed)
+          map(fetchContentVersionComplete),
+          catchAjaxError(fetchContentVersionFailed)
         )
       )
     )

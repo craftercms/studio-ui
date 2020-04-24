@@ -30,7 +30,8 @@ import { showPublishDialog } from '../state/reducers/dialogs/publish';
 import { closeDeleteDialog, showDeleteDialog } from '../state/reducers/dialogs/delete';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
-import { fetchItemVersions, showHistoryDialog } from '../state/reducers/dialogs/history';
+import { showHistoryDialog } from '../state/reducers/dialogs/history';
+import { fetchItemVersions } from '../state/reducers/versions';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {

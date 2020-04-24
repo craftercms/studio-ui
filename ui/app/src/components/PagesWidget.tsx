@@ -52,13 +52,14 @@ import ContentLocalizationDialog from './ContentLocalizationDialog';
 import { palette } from '../styles/theme';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
-import { fetchItemVersions, showHistoryDialog } from '../state/reducers/dialogs/history';
+import { showHistoryDialog } from '../state/reducers/dialogs/history';
 import { Resource } from '../models/Resource';
 import { SuspenseWithEmptyState } from './SystemStatus/Suspencified';
 import StandardAction from '../models/StandardAction';
 import { createAction } from '@reduxjs/toolkit';
 import { createLookupTable, nou } from '../utils/object';
 import { EcoRounded } from '@material-ui/icons';
+import { fetchItemVersions } from '../state/reducers/versions';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 

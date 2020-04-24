@@ -14,11 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { APIError } from '../../../models/GlobalState';
+import { APIError, EntityState } from '../../../models/GlobalState';
 import { LegacyVersion } from '../../../models/version';
-import { DialogHeaderAction, DialogHeaderStateAction } from '../../../components/DialogHeader';
+import DialogHeader, {
+  DialogHeaderAction,
+  DialogHeaderStateAction
+} from '../../../components/DialogHeader';
 import StandardAction from '../../../models/StandardAction';
 import React from 'react';
+import Dialog from '@material-ui/core/Dialog';
+import { FormattedMessage } from 'react-intl';
+import DialogBody from '../../../components/DialogBody';
+import { useStateResource } from '../../../utils/hooks';
+import { VersionList, VersionsResource } from './VersionList';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 
 interface compare {
   a: string;
@@ -33,22 +42,67 @@ interface CompareVersionsDialogBaseProps {
 }
 
 interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
-  versions: LegacyVersion[];
+  versionsBranch: Partial<EntityState<LegacyVersion>>;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
   onClose(): void;
   onDismiss(): void;
 }
 
-interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps {
-  lefctActions?: DialogHeaderStateAction[];
+export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps {
+  leftActions?: DialogHeaderStateAction[];
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
   onDismiss?: StandardAction;
 }
 
-function CompareVersionsDialog(props: CompareVersionsDialogProps) {
+export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
+  const { open, compare, leftActions, rightActions, onDismiss, onClose, versionsBranch } = props;
+
+  const versionsResource = useStateResource<VersionsResource, Partial<EntityState<LegacyVersion>>>(versionsBranch, {
+    shouldResolve: (source) => Boolean(source.versions) && !source.isFetching,
+    shouldReject: (source) => Boolean(source.error),
+    shouldRenew: (source, resource) => source.isFetching && resource.complete,
+    resultSelector: (source) => (
+      {
+        versions: source.versions,
+        rowsPerPage: 10,
+        page: 0
+      }
+    ),
+    errorSelector: (source) => source.error
+  });
+
+  const handleItemClick = (version: LegacyVersion) => {
+  };
+
   return (
-    <p>CompareVersionsDialog</p>
-  )
+    <Dialog
+      onClose={onClose}
+      open={open}
+      fullWidth
+      maxWidth="md"
+      onEscapeKeyDown={onDismiss}
+    >
+      <DialogHeader
+        title={
+          <FormattedMessage
+            id="compareVersionsDialog.headerTitle"
+            defaultMessage="Comparing {name}"
+            values={{ name: 'Home' }}
+          />
+        }
+        rightActions={rightActions}
+        onDismiss={onDismiss}
+      />
+      <DialogBody>
+        <SuspenseWithEmptyState resource={versionsResource}>
+          <VersionList
+            resource={versionsResource}
+            handleItemClick={handleItemClick}
+          />
+        </SuspenseWithEmptyState>
+      </DialogBody>
+    </Dialog>
+  );
 }

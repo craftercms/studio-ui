@@ -21,6 +21,7 @@ import newContent from './newContent';
 import minimizedDialogs from './minimizedDialogs';
 import history from './history';
 import viewVersion from './viewVersion';
+import compareVersions from './compareVersions';
 import publish from './publish';
 import dependencies from './dependencies';
 import deleteDialog from './delete';
@@ -32,6 +33,7 @@ export default combineReducers({
   minimizedDialogs,
   history,
   viewVersion,
+  compareVersions,
   publish,
   dependencies,
   delete: deleteDialog

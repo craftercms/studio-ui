@@ -27,6 +27,7 @@ import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
+import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -71,6 +72,7 @@ export const useStyles = makeStyles(() =>
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection(state => state.contentTypes);
+  const versionsBranch = useSelection(state => state.versions);
   const dispatch = useDispatch();
   return (
     <Suspense fallback="">
@@ -144,7 +146,7 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         path={state.history.path}
-        versions={state.history.versions}
+        versionsBranch={versionsBranch}
         isFetching={state.history.isFetching}
         error={state.history.error}
         current={state.history.current}
@@ -165,6 +167,15 @@ function GlobalDialogManager() {
         contentTypesBranch={contentTypesBranch}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
         onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
+      />
+      <CompareVersionsDialog
+        open={state.compareVersions.open}
+        isFetching={state.compareVersions.isFetching}
+        error={state.compareVersions.error}
+        versionsBranch={versionsBranch}
+        compare={state.compareVersions.compare}
+        onClose={createCallback(state.compareVersions.onClose, dispatch)}
+        onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}
       />
       {/* endregion */}
 

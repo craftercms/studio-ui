@@ -32,6 +32,8 @@ import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialo
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
 import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
+import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
+import { LegacyVersion } from './version';
 
 export interface APIError {
   code?: number | string;
@@ -118,6 +120,7 @@ export interface GlobalState {
       byId: LookupTable<ContentTypeReceptacle>;
     };
   };
+  versions: Partial<EntityState<LegacyVersion>>;
   dialogs: {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;
@@ -125,6 +128,7 @@ export interface GlobalState {
     newContent: NewContentDialogStateProps;
     history: HistoryDialogStateProps;
     viewVersion: ViewVersionDialogStateProps;
+    compareVersions: CompareVersionsDialogStateProps;
     publish: PublishDialogStateProps;
     dependencies: DependenciesDialogStateProps;
     delete: DeleteDialogStateProps;

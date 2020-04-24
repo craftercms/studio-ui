@@ -25,9 +25,9 @@ export const closeViewVersionDialog = createAction<StandardAction>('CLOSE_VIEW_V
 
 export const fetchContentVersion = createAction<any>('FETCH_CONTENT_VERSION');
 
-export const fetchItemVersionComplete = createAction<any>('FETCH_CONTENT_VERSION_COMPLETE');
+export const fetchContentVersionComplete = createAction<any>('FETCH_CONTENT_VERSION_COMPLETE');
 
-export const fetchItemVersionFailed = createAction<any>('FETCH_CONTENT_VERSION_FAILED');
+export const fetchContentVersionFailed = createAction<any>('FETCH_CONTENT_VERSION_FAILED');
 
 const initialState: ViewVersionDialogStateProps = {
   open: false,
@@ -35,6 +35,7 @@ const initialState: ViewVersionDialogStateProps = {
   error: null,
   version: null,
   rightActions: null,
+  leftActions: null,
   onClose: null,
   onDismiss: null
 };
@@ -44,8 +45,7 @@ export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState
     ...state,
     onDismiss: closeViewVersionDialog(),
     ...payload,
-    open: true,
-    isFetching: true
+    open: true
   }),
   [closeViewVersionDialog.type]: (state) => ({
     ...initialState,
@@ -55,12 +55,12 @@ export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState
     ...state,
     isFetching: true
   }),
-  [fetchItemVersionComplete.type]: (state, { payload }) => ({
+  [fetchContentVersionComplete.type]: (state, { payload }) => ({
     ...state,
     isFetching: false,
     version: payload
   }),
-  [fetchItemVersionFailed.type]: (state) => ({
+  [fetchContentVersionFailed.type]: (state) => ({
     ...state,
     isFetching: false
   })

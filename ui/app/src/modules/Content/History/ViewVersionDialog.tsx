@@ -37,6 +37,8 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { LookupTable } from '../../../models/LookupTable';
+import { LegacyVersion } from '../../../models/version';
 
 const useStyles = makeStyles(() => ({
   viewVersionBox: {
@@ -129,10 +131,15 @@ export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps 
   onDismiss?: StandardAction;
 }
 
+interface Resource {
+  version: string;
+  contentTypes: LookupTable<ContentType>;
+}
+
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { open, onClose, onDismiss, rightActions } = props;
 
-  const resource = useStateResource<any, any>(props, {
+  const resource = useStateResource<Resource, ViewVersionDialogProps>(props, {
     shouldResolve: (source) => Boolean(source.version) && (!source.isFetching && !source.contentTypesBranch.isFetching),
     shouldReject: (source) => Boolean(source.error) || Boolean(source.contentTypesBranch.error),
     shouldRenew: (source, resource) => (source.isFetching || source.contentTypesBranch.isFetching) && resource.complete,

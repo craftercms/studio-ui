@@ -18,7 +18,6 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
 import { HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
-import { VersionsResponse } from '../../../models/version';
 import { AjaxError } from 'rxjs/ajax';
 import { closeViewVersionDialog, showViewVersionDialog } from './viewVersion';
 
@@ -32,12 +31,6 @@ interface HistoryConfigProps {
 export const showHistoryDialog = createAction<HistoryDialogStateProps>('SHOW_HISTORY_DIALOG');
 
 export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
-
-export const fetchItemVersions = createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
-
-export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_ITEM_VERSIONS_COMPLETE');
-
-export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 
 export const historyDialogChangePage = createAction<number>('HISTORY_DIALOG_CHANGE_PAGE');
 
@@ -73,21 +66,6 @@ export default createReducer<GlobalState['dialogs']['history']>(
     [closeHistoryDialog.type]: (state) => ({
       ...initialState,
       onClose: state.onClose
-    }),
-    [fetchItemVersions.type]: (state) => ({
-      ...state,
-      isFetching: true
-    }),
-    [fetchItemVersionsComplete.type]: (state, { payload }) => ({
-      ...state,
-      versions: payload.versions,
-      current: payload.versions[0].versionNumber,
-      isFetching: false
-    }),
-    [fetchItemVersionsFailed.type]: (state, { payload }) => ({
-      ...state,
-      error: payload.response,
-      isFetching: false
     }),
     [historyDialogChangePage.type]: (state, { payload }) => ({
       ...state,
