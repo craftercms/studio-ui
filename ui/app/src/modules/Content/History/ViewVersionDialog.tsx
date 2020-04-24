@@ -38,13 +38,6 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-const translations = defineMessages({
-  backToHistoryList: {
-    id: 'viewVersionDialog.back',
-    defaultMessage: 'Back to history list'
-  }
-});
-
 const useStyles = makeStyles(() => ({
   viewVersionBox: {
     margin: '0 10px 10px 10px',
@@ -123,22 +116,20 @@ interface ViewVersionDialogBaseProps {
 
 interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
   contentTypesBranch: EntityState<ContentType>;
+  leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
   onClose(): void;
   onDismiss(): void;
 }
 
 export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps {
-  rightActions: DialogHeaderStateAction[];
+  leftActions?: DialogHeaderStateAction[];
+  rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
   onDismiss?: StandardAction;
 }
 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
-  const { formatMessage } = useIntl();
-  const classes = useStyles({});
-  const dispatch = useDispatch();
-
   const { open, onClose, onDismiss, rightActions } = props;
 
   const resource = useStateResource<any, any>(props, {
