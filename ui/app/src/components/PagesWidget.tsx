@@ -1173,7 +1173,7 @@ export default function(props: WidgetProps) {
   };
 
   const onBreadcrumbSelected = (item: Item) => {
-    if (item.path === state.currentPath) {
+    if (unindex(item.path) === unindex(state.currentPath)) {
       onItemClicked(item);
     } else {
       exec(setCurrentPath(item.path));
