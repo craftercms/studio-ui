@@ -22,6 +22,7 @@ import assets from './assets';
 import audiencesPanel from './audiencesPanel';
 import dialogs from './dialogs';
 import preview from './preview';
+import legacy from './legacy';
 
 const epic: any[] = combineEpics.apply(this, [
   ...auth,
@@ -30,7 +31,8 @@ const epic: any[] = combineEpics.apply(this, [
   ...assets,
   ...audiencesPanel,
   ...preview,
-  ...dialogs
+  ...dialogs,
+  ...legacy
 ]);
 
 export default epic as any;

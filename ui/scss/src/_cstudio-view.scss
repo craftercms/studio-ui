@@ -162,14 +162,14 @@
   }
 
   .yui-module.yui-overlay.yui-panel {
-//    border: 1px solid $text-muted;
+    //    border: 1px solid $text-muted;
     border: none;
     border-radius: $border-radius-base;
   }
 
 }
 
-.cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"]{
+.cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"] {
   left: 0px !important;
   right: 0px !important;
   width: 90% !important;
@@ -186,13 +186,13 @@
     margin-top: 5%;
     margin-bottom: 5%;
 
-    .cstudio-dialogue-body{
+    .cstudio-dialogue-body {
       height: 100%;
 
-      .history-view{
+      .history-view {
         height: 100%;
 
-        .form-group{
+        .form-group {
           height: calc(100% - 110px);
 
           table.item-listing {
@@ -208,16 +208,16 @@
                 th, td {
                   width: 10%;
 
-                  &+ th, &+ td {
+                  & + th, & + td {
                     width: 17%;
 
-                      &+th, &+ td {
-                        width: 45%;
+                    & + th, & + td {
+                      width: 45%;
 
-                        &+th, &+ td {
-                          width: 8%;
-                        }
+                      & + th, & + td {
+                        width: 8%;
                       }
+                    }
 
                   }
                 }
@@ -263,6 +263,7 @@
 
     .dep-content {
       height: calc(100% - 140px);
+
       .dep-body {
         height: calc(100% - 36px);
 

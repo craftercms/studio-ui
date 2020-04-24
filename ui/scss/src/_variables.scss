@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 $lib-path: '/studio/static-assets/libs/' !default;
 $icon-font-path: '/studio/static-assets/libs/bootstrap-sass-official/assets/fonts/bootstrap/';
 
@@ -22,6 +21,10 @@ $crimson: #ED1C24;
 $studio-blue: #283277;
 $old-purple: #7e9dbb;
 $success-green: #28a745;
+
+$box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+0 2px 2px 0 rgba(0, 0, 0, 0.14),
+0 1px 5px 0 rgba(0, 0, 0, 0.12);
 
 $class-prefix: 'studio' !default;
 
@@ -34,12 +37,19 @@ $ice-component-attribute-name: 'data-studio-component' !default;
 
 /* Bootstrap Config */
 
-$brand-primary: #7e9dbb;
-$brand-danger: $crimson;
+$brand-primary: #007AFF;
+$brand-danger: #FF3B30;
 
-$font-size-base: 12px;
-$font-family-sans-serif:  'Open Sans', sans-serif !default;
+$btn-primary-border: transparent;
+
+$btn-default-border: transparent;
+
+$font-size-base: 14px;
+$font-family-sans-serif: 'Source Sans Pro', 'Open Sans', sans-serif !default;
 
 $headings-font-family: $font-family-sans-serif;
+
+$navbar-default-bg: #fafafa;
+$navbar-default-border: transparent;
 
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/variables";

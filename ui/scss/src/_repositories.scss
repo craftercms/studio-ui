@@ -31,10 +31,10 @@ $split-view-size: $diff-modal-size / 2;
     border-bottom: 1px solid #ddd;
   }
 
-  hr{
-    height: 5px; 
+  hr {
+    height: 5px;
     background-color: #f2f2f2;
-    margin: 5px 0 10px 0 ;
+    margin: 5px 0 10px 0;
   }
 
 }
@@ -91,6 +91,7 @@ $split-view-size: $diff-modal-size / 2;
         padding: 0 0 15px 0;
         border-bottom: 1px solid #e5e5e5;
       }
+
       .remote-version {
         padding: 15px 0 0 0;
       }

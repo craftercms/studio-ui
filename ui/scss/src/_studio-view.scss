@@ -24,7 +24,7 @@
 
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/glyphicons";
 
-.yui-skin-cstudioTheme{
+.yui-skin-cstudioTheme {
   overflow-x: hidden;
 }
 
@@ -47,14 +47,16 @@
   bottom: 0;
   position: absolute;
   padding-top: 31px;
-  div.container{
+
+  div.container {
     width: 92%;
   }
+
   .panel {
     .panel-heading {
       @include clearfix;
 
-      .studio-section-widget{
+      .studio-section-widget {
         background: url("../themes/cstudioTheme/images/icons/icon_strip.gif") no-repeat scroll -20px 5px transparent;
         display: block;
         float: left;
@@ -65,49 +67,58 @@
         top: 1px;
         cursor: pointer;
       }
-      .studio-section-widget-close{
+
+      .studio-section-widget-close {
         background: url("../themes/cstudioTheme/images/icons/icon_strip.gif") no-repeat scroll 0px 5px transparent;
       }
+
       .panel-title {
         float: left;
         line-height: 27px;
+
         &, * {
           font-size: 14px;
         }
       }
+
       .widget-controls {
         margin: 0;
         float: right;
         @extend .list-inline;
+
         [maxlength] {
           width: 50px;
           text-align: center;
         }
-        li{
+
+        li {
           vertical-align: top;
         }
       }
     }
+
     [id*="-body"] table {
       table-layout: fixed;
       margin: 0;
 
-      .urlCol, .itemNameCol{
+      .urlCol, .itemNameCol {
         word-break: break-all;
       }
     }
+
     .dashlet-item-check {
       margin-right: 5px;
     }
   }
 
-  .itemNameContainer{
-    span.iconRow{
+  .itemNameContainer {
+    span.iconRow {
       width: 15% !important;
       padding-left: 0% !important;
       float: left !important;
     }
-    a.anchorRow{
+
+    a.anchorRow {
       width: 85%;
       float: left;
     }
@@ -191,18 +202,18 @@
 
   }
 
-  #loadSpinner{
+  #loadSpinner {
     position: absolute;
     top: 48%;
     left: 48%;
-    z-index: 110038!important;
+    z-index: 110038 !important;
     color: #3f66a0;
 
   }
 
-  #loadSpinnerMask{
-        z-index: 110037!important;
-        display: block;
+  #loadSpinnerMask {
+    z-index: 110037 !important;
+    display: block;
   }
 
 }
@@ -215,14 +226,15 @@
 .studio-view,
 .studio-dialog {
 
-  &.history-view{
+  &.history-view {
 
-    table.item-listing{
-      thead,tbody{
+    table.item-listing {
+      thead, tbody {
         display: block;
       }
-      tbody{
-        height: 199px!important;
+
+      tbody {
+        height: 199px !important;
         overflow-y: scroll;
         background-color: #fff;
         border-radius: 0 0 4px 4px;
@@ -239,7 +251,7 @@
     margin: 0 0 15px;
   }
 
-  .action-wrapper{
+  .action-wrapper {
     float: right;
   }
 
@@ -255,19 +267,19 @@
       padding: 5px 10px;
     }
 
-    .original-schedule{
-       padding: 5px 10px 5px 6px;
+    .original-schedule {
+      padding: 5px 10px 5px 6px;
     }
 
     th {
       color: #fff;
       background-color: $brand-primary;
 
-      &:first-child{
+      &:first-child {
         border-radius: 3px 0 0 0;
       }
 
-      &:last-child{
+      &:last-child {
         border-radius: 0 3px 0 0;
       }
     }
@@ -278,17 +290,17 @@
 
   }
 
-  p.validation{
+  p.validation {
     color: #a94442;
     padding: 0px;
   }
 
-  #differentRequestedDatesWarning{
+  #differentRequestedDatesWarning {
     display: none;
     margin-top: 15px;
     margin-bottom: 18px;
 
-    p{
+    p {
       color: #dd7e2c;
     }
 
@@ -309,12 +321,29 @@ table.scroll-body {
       visibility: hidden;
     }*/
 
-    .small{width: 10%;}
-    .deleteSmall{width: 8%;}
-    .medium{width: 30%;}
-    .deleteMedium{width: 34%;}
-    .large{width: 60%;}
-    .deleteLarge{width: 46%;}
+    .small {
+      width: 10%;
+    }
+
+    .deleteSmall {
+      width: 8%;
+    }
+
+    .medium {
+      width: 30%;
+    }
+
+    .deleteMedium {
+      width: 34%;
+    }
+
+    .large {
+      width: 60%;
+    }
+
+    .deleteLarge {
+      width: 46%;
+    }
   }
 
   thead {
@@ -326,11 +355,11 @@ table.scroll-body {
       width: 100%;
       display: table-row;
 
-      th:first-child{
+      th:first-child {
         border-radius: 3px 0 0 0;
       }
 
-      th:last-child{
+      th:last-child {
         border-radius: 0 3px 0 0;
       }
     }
@@ -360,6 +389,7 @@ table.scroll-body {
   > .yui-panel {
     border: none;
   }
+
   .hd {
     display: none
   }
@@ -396,6 +426,7 @@ table.scroll-body {
   border-bottom-left-radius: $border-radius-base;
   border-bottom-right-radius: $border-radius-base;
   transition: height .25s, transform .25s;
+
   > .bd {
 
     &.overlay:before {
@@ -428,7 +459,7 @@ table.scroll-body {
   }
 }
 
-.studio-iframe-view{
+.studio-iframe-view {
   .overlay {
     position: fixed;
     top: 0;
@@ -440,7 +471,7 @@ table.scroll-body {
   }
 
   .studio-ice-dialog {
-    display:none;
+    display: none;
     overflow: hidden;
 
     .collapseForm {
@@ -462,7 +493,8 @@ table.scroll-body {
       padding: 0;
       width: 26px;
       height: 26px;
-      background-position: 0 0;z-index: 100000;
+      background-position: 0 0;
+      z-index: 100000;
     }
 
     iframe {
@@ -474,14 +506,14 @@ table.scroll-body {
 #checkAll-MyRecentActivity,
 #checkAll-recentlyMadeLive,
 #checkAll-approvedScheduledItems,
-#checkAll-GoLiveQueue{
+#checkAll-GoLiveQueue {
   padding-left: 23px;
   position: relative;
   padding-right: 2px;
   width: 50px;
 }
 
-.studio-view input.schedulingMode{
+.studio-view input.schedulingMode {
   margin: 0 0 0 -20px;
 }
 
@@ -489,27 +521,32 @@ table.scroll-body {
   z-index: 100;
 }
 
-#approve-dialog, #requestDialog{
-  .approve-subtitle{
+#approve-dialog, #requestDialog {
+  .approve-subtitle {
     font-size: 15px;
   }
-  .action-wrapper{
+
+  .action-wrapper {
     margin-top: 20px;
   }
 }
 
-.submission-comment{
-  height: 111px!important;
+.submission-comment {
+  height: 111px !important;
 }
 
-.delete-submission-comment{
-  height: 65px!important;
+.delete-submission-comment {
+  height: 65px !important;
 }
 
-.dependencies-display{
+.dependencies-display {
   height: 444px;
 }
 
-.dependencies-display.delete-display{
+.dependencies-display.delete-display {
   height: 385px;
+}
+
+.navbar-default {
+  box-shadow: 0 1px 5px 0 rgba(0,0,0,0.12);
 }

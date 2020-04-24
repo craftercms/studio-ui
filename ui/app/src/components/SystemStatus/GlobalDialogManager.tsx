@@ -14,7 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, Suspense, useLayoutEffect, useMemo, useState } from 'react';
+import React, {
+  lazy,
+  Suspense,
+  useLayoutEffect,
+  useMemo,
+  useState
+} from 'react';
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
@@ -25,10 +31,11 @@ import createStyles from '@material-ui/styles/createStyles/createStyles';
 import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
-import EmbeddedLegacyEditors from '../../modules/Preview/EmbeddedLegacyEditors';
+import { isPlainObject } from '../../utils/object';
 
 const ConfirmDialog = lazy(() => import('../UserControl/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
+const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
@@ -37,9 +44,18 @@ const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialo
 function createCallback(
   action: StandardAction,
   dispatch: Dispatch,
-  fallbackAction?: StandardAction
-): () => void {
-  return action ? () => dispatch(action) : fallbackAction ? () => dispatch(fallbackAction) : null;
+): (output?: unknown) => void {
+  return action
+    ? (output) => dispatch({
+      type: action.type,
+      ...(isPlainObject(output) || Boolean(action.payload) ? {
+        payload: {
+          ...action.payload,
+          ...(isPlainObject(output) ? { output } : {})
+        }
+      } : {})
+    })
+    : null;
 }
 
 export const useStyles = makeStyles(() =>
@@ -70,6 +86,7 @@ function GlobalDialogManager() {
         onOk={createCallback(state.confirm.onOk, dispatch)}
         onCancel={createCallback(state.confirm.onCancel, dispatch)}
         onClose={createCallback(state.confirm.onClose, dispatch)}
+        onDismiss={createCallback(state.confirm.onDismiss, dispatch)}
       />
       {/* endregion */}
 
@@ -77,16 +94,11 @@ function GlobalDialogManager() {
       <ErrorDialog
         error={state.error.error}
         onClose={createCallback(state.error.onClose, dispatch)}
+        onDismiss={createCallback(state.error.onDismiss, dispatch)}
       />
       {/* endregion */}
 
       {/* region Edit (Embedded Legacy Editor) */}
-      <EmbeddedLegacyEditors
-        showTabs={state.edit.showTabs}
-        showController={state.edit.showController}
-        dialogConfig={state.edit.dialogConfig}
-        setDialogConfig={state.edit.setDialogConfig}
-      />
 
       {/* endregion */}
 
@@ -96,12 +108,20 @@ function GlobalDialogManager() {
         items={state.publish.items}
         scheduling={state.publish.scheduling}
         onClose={createCallback(state.publish.onClose, dispatch)}
+        onDismiss={createCallback(state.publish.onDismiss, dispatch)}
         onSuccess={createCallback(state.publish.onSuccess, dispatch)}
       />
       {/* endregion */}
 
       {/* region Create Content */}
-
+      <NewContentDialog
+        open={state.newContent.open}
+        site={state.newContent.site}
+        previewItem={state.newContent.previewItem}
+        compact={state.newContent.compact}
+        onClose={createCallback(state.newContent.onClose, dispatch)}
+        onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Dependencies */}
@@ -110,6 +130,7 @@ function GlobalDialogManager() {
         item={state.dependencies.item}
         dependenciesShown={state.dependencies.dependenciesShown}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
+        onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}
       />
       {/* endregion */}
 
@@ -118,6 +139,7 @@ function GlobalDialogManager() {
         open={state.delete.open}
         items={state.delete.items}
         onClose={createCallback(state.delete.onClose, dispatch)}
+        onDismiss={createCallback(state.delete.onDismiss, dispatch)}
         onSuccess={createCallback(state.delete.onSuccess, dispatch)}
       />
       {/* endregion */}
@@ -127,6 +149,7 @@ function GlobalDialogManager() {
         open={state.history.open}
         path={state.history.path}
         onClose={createCallback(state.history.onClose, dispatch)}
+        onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
       {/* endregion */}
 
@@ -167,17 +190,17 @@ function MinimizedDialogManager({
   }, [el, inventory]);
   return inventory.length
     ? ReactDOM.createPortal(
-        inventory.map(({ id, title, subtitle, status }) => (
-          <MinimizedBar
-            key={id}
-            title={title}
-            subtitle={subtitle}
-            status={status}
-            onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
-          />
-        )),
-        el
-      )
+      inventory.map(({ id, title, subtitle, status }) => (
+        <MinimizedBar
+          key={id}
+          title={title}
+          subtitle={subtitle}
+          status={status}
+          onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
+        />
+      )),
+      el
+    )
     : null;
 }
 

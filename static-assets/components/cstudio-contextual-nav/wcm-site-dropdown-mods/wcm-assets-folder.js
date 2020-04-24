@@ -1974,23 +1974,20 @@ var storage = CStudioAuthoring.Storage;
     bulkUpload: function() {
       if (document.querySelector('#bulkUpload')) {
         const messages = CrafterCMSNext.i18n.messages.bulkUploadConfirmDialogMessages;
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_CONFIRM_DIALOG',
+          payload: {
+            open: true,
+            title: CrafterCMSNext.i18n.intl.formatMessage(messages.title),
+            body: CrafterCMSNext.i18n.intl.formatMessage(messages.description)
+          }
+        })
 
-        const confirm = document.createElement('div');
-        const onClose = () => {
-          CrafterCMSNext.ReactDOM.unmountComponentAtNode(confirm);
-        };
-        CrafterCMSNext.render(confirm, 'ConfirmDialog', {
-          title: CrafterCMSNext.i18n.intl.formatMessage(messages.title),
-          body: CrafterCMSNext.i18n.intl.formatMessage(messages.description),
-          onClose: onClose,
-          onOk: onClose,
-          open: true
-        });
       } else {
         const bulkUpload = document.createElement('div');
         bulkUpload.setAttribute('id', 'bulkUpload');
         document.documentElement.append(bulkUpload);
-        const onClose = (dropZoneStatus) => {
+        const onDismiss = (dropZoneStatus) => {
           CrafterCMSNext.ReactDOM.unmountComponentAtNode(bulkUpload);
           bulkUpload.remove();
           if (dropZoneStatus.uploadedFiles > 0) {
@@ -2001,7 +1998,7 @@ var storage = CStudioAuthoring.Storage;
           path: oCurrentTextNode.data.path,
           site: oCurrentTextNode.data.site,
           maxSimultaneousUploads: 2,
-          onClose: onClose,
+          onDismiss: onDismiss,
           open: true
         });
       }

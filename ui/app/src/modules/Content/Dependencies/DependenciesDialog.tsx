@@ -284,7 +284,8 @@ interface DependenciesDialogUIProps {
   setShowTypes: Function;
   dependenciesShown: string;
   setDependenciesShown: Function;
-  handleClose: any;
+  onClose(): any;
+  onDismiss(): any;
   isEditableItem: Function;
   editDialogConfig: any;
   setEditDialogConfig: Function;
@@ -308,7 +309,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     setShowTypes,
     dependenciesShown,
     setDependenciesShown,
-    handleClose,
+    onClose,
+    onDismiss,
     isEditableItem,
     editDialogConfig,
     setEditDialogConfig,
@@ -322,7 +324,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 
   return (
     <Dialog
-      onClose={handleClose}
+      onClose={onClose}
       open={open}
       fullWidth={true}
       maxWidth={'md'}
@@ -333,7 +335,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     >
       <DialogHeader
         title={formatMessage(translations.headerTitle)}
-        onClose={handleClose}
+        onDismiss={onDismiss}
       />
       <DialogBody>
         <div className={classes.selectionContent}>
@@ -393,7 +395,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           withEmptyStateProps={{
             emptyStateProps: {
               title: (
-                dependenciesShown === 'depends-on' 
+                dependenciesShown === 'depends-on'
                   ? (
                     <FormattedMessage
                       id="dependenciesDialog.emptyDependantsMessage"
@@ -535,10 +537,12 @@ interface DependenciesDialogBaseProps {
 
 export type DependenciesDialogProps = PropsWithChildren<DependenciesDialogBaseProps & {
   onClose(): any;
+  onDismiss(): any;
 }>;
 
 export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps {
   onClose?: StandardAction
+  onDismiss?: StandardAction
 }
 
 const dialogInitialState = {
@@ -550,7 +554,7 @@ const dialogInitialState = {
 };
 
 function DependenciesDialog(props: DependenciesDialogProps) {
-  const { open, item, dependenciesShown, onClose } = props;
+  const { open, item, dependenciesShown, onClose, onDismiss } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
@@ -604,10 +608,6 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       errorSelector: (source) => source.error
     }
   );
-
-  const handleClose = () => {
-    onClose?.();
-  };
 
   const getDepsItems = useCallback((siteId: string, path: string, newItem?: boolean) => {
     if (dialog.dependenciesShown === 'depends-on') {
@@ -708,7 +708,8 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       setShowTypes={setShowTypes}
       dependenciesShown={dialog.dependenciesShown}
       setDependenciesShown={setDependenciesShow}
-      handleClose={handleClose}
+      onClose={onClose}
+      onDismiss={onDismiss}
       isEditableItem={isEditableAsset}
       editDialogConfig={editDialogConfig}
       setEditDialogConfig={setEditDialogConfig}

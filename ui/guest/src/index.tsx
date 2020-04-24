@@ -22,10 +22,7 @@ import { GuestProxy } from './components/GuestProxy';
 const guestProxyElement = document.createElement('craftercms-guest-proxy');
 
 ReactDOM.render(
-  <Guest
-    modelId="8d7f21fa-5e09-00aa-8340-853b7db302da"
-    documentDomain="sample.com"
-  >
+  <Guest modelId="8d7f21fa-5e09-00aa-8340-853b7db302da">
     <GuestProxy/>
   </Guest>,
   guestProxyElement

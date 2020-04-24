@@ -49,11 +49,13 @@ export type ConfirmDialogProps = PropsWithChildren<ConfirmDialogBaseProps & {
   onOk?(): any;
   onCancel?(): any;
   onClose?(): any;
+  onDismiss?(): any;
 }>;
 
 export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
   onOk?: StandardAction;
   onCancel?: StandardAction;
+  onDismiss?: StandardAction;
   onClose?: StandardAction;
 }
 
@@ -63,6 +65,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
     onOk,
     onClose,
     onCancel,
+    onDismiss,
     body,
     title,
     children,
@@ -81,7 +84,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       disableBackdropClick={disableBackdropClick}
       disableEnforceFocus={disableEnforceFocus}
     >
-      {title && <DialogHeader id="confirmDialogTitle" title={title} />}
+      {title && <DialogHeader id="confirmDialogTitle" title={title} onDismiss={onDismiss} />}
       <DialogBody id="confirmDialogBody">
         {body && <DialogContentText color="textPrimary">{body}</DialogContentText>}
         {children}

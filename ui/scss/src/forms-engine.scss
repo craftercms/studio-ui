@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 @import "variables";
 @import "preview-dialog";
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins";
 
 #formContainer {
   padding: 20px 0 80px;
+
   &.padded-top {
     padding-top: 80px;
   }
@@ -36,6 +36,7 @@ header {
 
   .page-header {
     margin-bottom: 5px;
+
     p {
       margin: 0;
     }
@@ -43,21 +44,21 @@ header {
 
 }
 
-#zoomCancelButton{
+#zoomCancelButton {
   position: relative;
 }
 
 // minyMCE
-.mceListBoxMenu.cstudio-rteSkin{
+.mceListBoxMenu.cstudio-rteSkin {
   width: 175px !important;
   overflow: hidden !important;
 
-  .mceListBoxMenu{
+  .mceListBoxMenu {
     width: 175px !important;
-    overflow: auto!important;
+    overflow: auto !important;
     //overflow-x: hidden!important;
 
-    table{
+    table {
       width: 175px !important;
     }
 
@@ -65,23 +66,24 @@ header {
 
 }
 
-.panel > .table-responsive{
+.panel > .table-responsive {
   min-height: 35px;
 }
 
 div.xdsoft_datetimepicker {
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Source Sans Pro', 'Open Sans', sans-serif;
 }
 
-@media screen and (min-width:0\0) {
-  .CodeMirror .CodeMirror-lines pre.CodeMirror-cursor{
+@media screen and (min-width: 0 \0
+) {
+  .CodeMirror .CodeMirror-lines pre.CodeMirror-cursor {
     width: 9px;
     border-width: 0px;
     border-left-width: 2px;
   }
 }
 
-.panel-title{
+.panel-title {
   display: inline-block;
 }
 
@@ -120,22 +122,22 @@ div.xdsoft_datetimepicker {
 
 // RTE (tinymce 5) custom styles
 .tox-dialog.fullscreen {
-	width: 100% !important;
-	max-width: 100% !important;
-	height: 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
 }
 
 .tox-dialog.fullscreen .tox-dialog__body-content {
-	max-height: 100% !important;
-	border: 1px solid #cccccc;
+  max-height: 100% !important;
+  border: 1px solid #cccccc;
 }
 
 .tox.tox-tinymce:not(.tox-fullscreen) .tox-menubar,
-.tox.tox-tinymce:not(.tox-fullscreen) .tox-toolbar{
+.tox.tox-tinymce:not(.tox-fullscreen) .tox-toolbar {
   display: none;
 }
 
-.tox-tinymce.focused:not(.tox-fullscreen) .tox-menubar{
+.tox-tinymce.focused:not(.tox-fullscreen) .tox-menubar {
   display: flex;
   position: fixed;
   top: 0;
@@ -144,16 +146,16 @@ div.xdsoft_datetimepicker {
   z-index: 1001;
 }
 
-.tox-tinymce.focused:not(.tox-fullscreen) .tox-toolbar{
+.tox-tinymce.focused:not(.tox-fullscreen) .tox-toolbar {
   display: flex;
   position: fixed;
   left: 0;
   top: 39px;
   width: 100%;
   z-index: 1000;
-  -webkit-box-shadow: 0px 1px 6px -3px rgba(0,0,0,0.57);
-  -moz-box-shadow: 0px 1px 6px -3px rgba(0,0,0,0.57);
-  box-shadow: 0px 1px 6px -3px rgba(0,0,0,0.57);
+  -webkit-box-shadow: 0px 1px 6px -3px rgba(0, 0, 0, 0.57);
+  -moz-box-shadow: 0px 1px 6px -3px rgba(0, 0, 0, 0.57);
+  box-shadow: 0px 1px 6px -3px rgba(0, 0, 0, 0.57);
 }
 
 // Reset and dependencies
@@ -212,9 +214,9 @@ html {
 }
 
 body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, .yui-panel.yui-overlay {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Source Sans Pro', '', sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6  {
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   font-weight: 600;
 }

@@ -202,7 +202,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     addButtonEl.type = 'button';
     addButtonEl.value = CMgs.format(langBundle, 'add');
     addButtonEl.disabled = true;
-    YAHOO.util.Dom.addClass(addButtonEl, 'cstudio-button');
+    YAHOO.util.Dom.addClass(addButtonEl, 'btn btn-default');
     YAHOO.util.Dom.addClass(addButtonEl, 'cstudio-drop-arrow-button');
     YAHOO.util.Dom.addClass(addButtonEl, 'cstudio-button-disabled');
     nodeOptionsEl.appendChild(addButtonEl);
@@ -213,7 +213,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     editButtonEl.type = 'button';
     editButtonEl.value = CMgs.format(langBundle, 'edit');
     editButtonEl.disabled = true;
-    YAHOO.util.Dom.addClass(editButtonEl, 'cstudio-button');
+    YAHOO.util.Dom.addClass(editButtonEl, 'btn btn-default');
     YAHOO.util.Dom.addClass(editButtonEl, 'cstudio-button-disabled');
     nodeOptionsEl.appendChild(editButtonEl);
     this.editButtonEl = editButtonEl;
@@ -222,7 +222,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     var deleteButtonEl = document.createElement('input');
     deleteButtonEl.type = 'button';
     deleteButtonEl.value = 'X';
-    YAHOO.util.Dom.addClass(deleteButtonEl, 'cstudio-button');
+    YAHOO.util.Dom.addClass(deleteButtonEl, 'btn btn-default');
     YAHOO.util.Dom.addClass(deleteButtonEl, 'cstudio-button-disabled');
     nodeOptionsEl.appendChild(deleteButtonEl);
     deleteButtonEl.disabled = true;

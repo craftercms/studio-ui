@@ -92,7 +92,7 @@ const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
 
 interface GuestProps {
   modelId: string;
-  documentDomain: string;
+  documentDomain?: string;
   path?: string;
   styles?: any;
   children?: any;
@@ -419,7 +419,7 @@ export function Guest(props: GuestProps) {
     },
 
     /*onMouseOver*/
-    mouseover(e: Event, record: Record): void {
+    mouseover(e: MouseEvent, record: Record): void {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         clearTimeout(persistence.mouseOverTimeout);
         e.stopPropagation();
@@ -866,8 +866,12 @@ export function Guest(props: GuestProps) {
             contentController.sortItem(
               containerRecord.modelId,
               containerRecord.fieldId,
-              draggedElementIndex,
-              targetIndex
+              containerRecord.fieldId.includes('.')
+                ? `${containerRecord.index}.${draggedElementIndex}`
+                : draggedElementIndex,
+              containerRecord.fieldId.includes('.')
+                ? `${containerRecord.index}.${targetIndex}`
+                : targetIndex
             );
           });
         }
@@ -897,7 +901,6 @@ export function Guest(props: GuestProps) {
     },
 
     insertComponent(): void {
-
       const { targetIndex, contentType, dropZone } = stateRef.current.dragContext;
       const record = iceRegistry.recordOf(dropZone.iceId);
 
@@ -937,19 +940,29 @@ export function Guest(props: GuestProps) {
     },
 
     onDragEnd(): void {
-
       fn.destroySubjects();
 
       setState({
         dragContext: null,
         common: {
           ...stateRef.current.common,
-          status: EditingStatus.LISTENING,
+          status: EditingStatus.OFF,
           highlighted: {},
           register,
           deregister,
           onEvent
         }
+      });
+
+      // Chrome didn't trigger the dragend event
+      // without the set timeout.
+      setTimeout(() => {
+        setState({
+          common: {
+            ...stateRef.current.common,
+            status: EditingStatus.LISTENING
+          }
+        });
       });
 
     },

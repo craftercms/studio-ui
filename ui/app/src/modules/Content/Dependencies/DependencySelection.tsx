@@ -290,7 +290,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
     const result = Object.entries({ ...checked })
       .filter(([key, value]) => value === true)
       .map(([key]) => key);
-    onChange(result);
+    onChange?.(result);
   }, [checked, onChange]);
 
   return (

@@ -69,6 +69,7 @@ interface CodebaseBridge {
   util: object;
   render: Function;
   renderBackgroundUI: Function;
+  createLegacyCallbackListener: Function;
   rxjs: object;
   i18n: {
     intl: IntlShape;
@@ -129,7 +130,9 @@ export function createCodebaseBridge() {
       BulkUpload: lazy(() => import('../components/BulkUpload')),
       ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
       GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
-      PagesWidget: lazy(() => import('../components/PagesWidget'))
+      PagesWidget: lazy(() => import('../components/PagesWidget')),
+      QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
+      NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog'))
     },
 
     system: { generateClassName, theme, palette, store },
@@ -274,10 +277,17 @@ export function createCodebaseBridge() {
           reject(e);
         }
       });
+    },
+    createLegacyCallbackListener(id: string, listener: EventListener) {
+      const callback = () => {
+        listener(null);
+        document.removeEventListener(id, listener, false);
+      };
+      document.addEventListener(id, callback, true);
     }
 
   };
 
-  // @ts-ignore
+ // @ts-ignore
   window.CrafterCMSNext = Bridge;
 }

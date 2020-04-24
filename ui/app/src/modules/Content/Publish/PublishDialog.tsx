@@ -234,7 +234,8 @@ interface PublishDialogUIProps {
   resource: Resource<any>;
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
-  handleClose: any;
+  onClose(): void;
+  onDismiss(): void;
   handleSubmit: any;
   submitDisabled: boolean;
   setSubmitDisabled: Function;
@@ -264,7 +265,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
     resource,
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
-    handleClose,
+    onClose,
+    onDismiss,
     handleSubmit,
     submitDisabled,
     setSubmitDisabled,
@@ -291,7 +293,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
 
   return (
     <Dialog
-      onClose={handleClose}
+      onClose={onClose}
       aria-labelledby="requestPublishDialogTitle"
       open={open}
       disableBackdropClick={true}
@@ -301,7 +303,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
       <DialogHeader
         title={title}
         subtitle={subtitle}
-        onClose={handleClose}
+        onDismiss={onDismiss}
       />
       <DialogBody>
         <SuspenseWithEmptyState resource={resource}>
@@ -339,7 +341,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
           />
         </Button>
 
-        <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
+        <Button variant="contained" onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage
             id="requestPublishDialog.cancel"
             defaultMessage={`Cancel`}
@@ -374,11 +376,13 @@ interface PublishDialogBaseProps {
 
 export type PublishDialogProps = PropsWithChildren<PublishDialogBaseProps & {
   onClose?(response?: any): any;
+  onDismiss?(response?: any): any;
   onSuccess?(response?: any): any;
 }>;
 
 export interface PublishDialogStateProps extends PublishDialogBaseProps {
   onClose?: StandardAction;
+  onDismiss?: StandardAction;
   onSuccess?: StandardAction;
 }
 
@@ -393,6 +397,7 @@ function PublishDialog(props: PublishDialogProps) {
     items,
     scheduling = 'now',
     onClose,
+    onDismiss,
     onSuccess
   } = props;
 
@@ -494,10 +499,6 @@ function PublishDialog(props: PublishDialogProps) {
     setCheckedItems(checkState(items));
   }, [items, setCheckedItems])
 
-  const handleClose = () => {
-    // call externalClose fn
-    onClose?.();
-  };
 
   const handleSubmit = () => {
     const data = {
@@ -519,7 +520,6 @@ function PublishDialog(props: PublishDialogProps) {
       (response) => {
         setApiState({ error: null, submitting: false });
         onSuccess?.(response);
-        onClose?.(response);
       },
       (error) => {
         setApiState({ error });
@@ -575,7 +575,8 @@ function PublishDialog(props: PublishDialogProps) {
       resource={resource}
       publishingChannelsStatus={publishingChannelsStatus}
       onPublishingChannelsFailRetry={getPublishingChannels}
-      handleClose={handleClose}
+      onClose={onClose}
+      onDismiss={onDismiss}
       handleSubmit={handleSubmit}
       submitDisabled={submitDisabled}
       setSubmitDisabled={setSubmitDisabled}

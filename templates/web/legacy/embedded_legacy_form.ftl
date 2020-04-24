@@ -202,8 +202,8 @@
               false,
               false,
               {
-                success: (data) => {
-                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_SAVE', refresh: false, tab: type, action: 'success', redirectUrl: data.item?.browserUri }, '*');
+                success: (response) => {
+                  window.top.postMessage({ ...response, type: 'EMBEDDED_LEGACY_FORM_SAVE', refresh: false, tab: type, action: 'success', redirectUrl: response.item?.browserUri }, '*');
                 },
                 failure: (error) => {
                   error && console.error(error);

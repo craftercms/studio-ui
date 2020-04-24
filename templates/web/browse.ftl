@@ -23,17 +23,16 @@
     <#include "/templates/web/common/page-fragments/head.ftl" />
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/browse.css" />
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/browse.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/base.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 
     <link rel="stylesheet" href="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.contextMenu.css" type="text/css">
 
     <script src="/studio/static-assets/libs/handlebars/handlebars.js"></script>
     <script src="/studio/static-assets/libs/jstree/dist/jstree.js"></script>
 
-  
     <script src="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.contextMenu.js" type="text/javascript"></script>
     <script src="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.ui.position.js" type="text/javascript"></script>
-
 
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-browse/browse.js"></script>
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/libs/jstree/dist/themes/default/style.css" />
@@ -66,15 +65,15 @@
       <div id="cstudio-wcm-search-result">
 
           <div class="cstudio-results-actions"></div>
-          
+
           <div class="results"></div>
 
           <div id="cstudio-wcm-search-render-finish">
-          
+
           </div>
       </div>
 
-    </div>    
+    </div>
 
       <style>
       #cstudio-wcm-search-result .results > * {
@@ -92,10 +91,10 @@
         </#if>
         <input id="formCancelButton" type="button" class="cstudio-search-btn cstudio-button btn btn-default" value="Cancel">
 
-        
+
       </div>
     </div>
-  
+
     <#-- <#if view == "window" >
      <div id="studioBar" class="studio-view">
          <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -187,7 +186,7 @@
       {{/if}}
       <a class="cstudio-search-btn btn btn-default cstudio-search-clear-selection results-btn" href="#" role="button" style="margin-bottom: 20px;">{{labelClearAll}}</a>
     </script>
-    
+
     <script type="text/javascript">
         Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
             if (arguments.length < 3)
@@ -205,7 +204,7 @@
         });
 
     </script>
-  
+
    </body>
 
 </html>

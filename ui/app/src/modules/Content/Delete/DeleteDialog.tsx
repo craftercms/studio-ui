@@ -17,7 +17,12 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { LegacyItem } from '../../../models/Item';
 import { deleteItems } from '../../../services/content';
-import { useActiveSiteId, useActiveUser, useSpreadState, useStateResource } from '../../../utils/hooks';
+import {
+  useActiveSiteId,
+  useActiveUser,
+  useSpreadState,
+  useStateResource
+} from '../../../utils/hooks';
 import { fetchDeleteDependencies } from '../../../services/dependencies';
 import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
 import StandardAction from '../../../models/StandardAction';
@@ -100,7 +105,7 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
       <DependencySelectionDelete
         items={items}
         resultItems={deleteDependencies}
-        onChange={(result) => onSelectionChange?.(result)}
+        onChange={onSelectionChange}
       />
       <form className={classes.submissionCommentField} noValidate autoComplete="off">
         <TextField
@@ -114,7 +119,7 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
           rows="4"
           defaultValue={submissionComment}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setSubmissionComment(e.target.value)
+            setSubmissionComment(e.target.value);
           }}
           InputProps={{
             className: classes.textField
@@ -122,7 +127,7 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
         />
       </form>
     </>
-  )
+  );
 }
 
 interface DeleteDialogUIProps {
@@ -133,12 +138,13 @@ interface DeleteDialogUIProps {
   setSubmissionComment: Function;
   open: boolean;
   apiState: any;
-  handleClose: any;
   handleSubmit: any;
 
   onSelectionChange?(selection?: any): any;
 
-  onClose?(response?: any): any;
+  onClose?(): any;
+
+  onDismiss?(): any;
 }
 
 function DeleteDialogUI(props: DeleteDialogUIProps) {
@@ -150,9 +156,9 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
     setSubmissionComment,
     open,
     apiState,
-    handleClose,
     handleSubmit,
     onSelectionChange,
+    onDismiss,
     onClose
   } = props;
   const classes = deleteDialogStyles({});
@@ -169,7 +175,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
       <DialogHeader
         title={formatMessage(translations.headerTitle)}
         subtitle={formatMessage(translations.headerSubTitle)}
-        onClose={onClose}
+        onDismiss={onDismiss}
       />
       <DialogBody className={classes.dialogContent}>
         <SuspenseWithEmptyState
@@ -185,7 +191,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>
-        <Button variant="contained" onClick={handleClose} disabled={apiState.submitting}>
+        <Button variant="contained" onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage
             id="deleteDialog.cancel"
             defaultMessage={'Cancel'}
@@ -215,7 +221,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
         </Button>
       </DialogFooter>
     </Dialog>
-  )
+  );
 }
 
 interface DeleteDialogBaseProps {
@@ -223,14 +229,17 @@ interface DeleteDialogBaseProps {
   items?: LegacyItem[];
 }
 
-export type DeleteDialogProps = PropsWithChildren<DeleteDialogBaseProps & {
-  onClose(): any;
-  onSuccess?(response?: any): any;
+export type DeleteDialogProps = PropsWithChildren<
+  DeleteDialogBaseProps & {
+    onClose(): any;
+    onDismiss(): any;
+    onSuccess?(response?: any): any;
   }
 >;
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
   onClose?: StandardAction;
+  onDismiss?: StandardAction;
   onSuccess?: StandardAction;
 }
 
@@ -239,6 +248,7 @@ function DeleteDialog(props: DeleteDialogProps) {
     open,
     items,
     onClose,
+    onDismiss,
     onSuccess
   } = props;
   const [submissionComment, setSubmissionComment] = useState('');
@@ -248,13 +258,14 @@ function DeleteDialog(props: DeleteDialogProps) {
   });
   const user = useActiveUser();
   const siteId = useActiveSiteId();
-  //Dependency selection
+  // Dependency selection
   const [deleteDependencies, setDeleteDependencies] = useState<DeleteDependencies>();
   const [selectedItems, setSelectedItems] = useState([]);
 
-  const depsSource = useMemo(() => {
-    return { deleteDependencies, apiState }
-  }, [deleteDependencies, apiState]);
+  const depsSource = useMemo(
+    () => ({ deleteDependencies, apiState }),
+    [deleteDependencies, apiState]
+  );
 
   const resource = useStateResource<any, any>(
     depsSource,
@@ -281,11 +292,6 @@ function DeleteDialog(props: DeleteDialogProps) {
     );
   }, [selectedItems, setApiState, siteId]);
 
-  const handleClose = () => {
-    // call externalClose fn
-    onClose?.();
-  };
-
   const handleSubmit = () => {
     const data = {
       items: selectedItems
@@ -305,10 +311,6 @@ function DeleteDialog(props: DeleteDialogProps) {
 
   };
 
-  const onSelectionChange = (selection: LegacyItem[]) => {
-    setSelectedItems(selection);
-  };
-
   return (
     <DeleteDialogUI
       resource={resource}
@@ -318,12 +320,12 @@ function DeleteDialog(props: DeleteDialogProps) {
       setSubmissionComment={setSubmissionComment}
       open={open}
       apiState={apiState}
-      handleClose={handleClose}
       handleSubmit={handleSubmit}
-      onSelectionChange={onSelectionChange}
+      onSelectionChange={setSelectedItems}
+      onDismiss={onDismiss}
       onClose={onClose}
     />
-  )
+  );
 }
 
 export default DeleteDialog;

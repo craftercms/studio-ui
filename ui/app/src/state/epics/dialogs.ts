@@ -19,15 +19,37 @@ import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { closeConfirmDialog } from '../reducers/dialogs/confirm';
 import { NEVER } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
+import { closeNewContentDialog } from '../reducers/dialogs/newContent';
+import { closePublishDialog } from '../reducers/dialogs/publish';
+import { camelize, dasherize } from '../../utils/string';
+import { closeDeleteDialog } from '../reducers/dialogs/delete';
 
+function getDialogNameFromType(type: string): string {
+  let name = type.replace(/(CLOSE_)|(_DIALOG)/g, '');
+  return camelize(dasherize(name.toLowerCase()));
+}
+
+function getDialogState(type: string, state: GlobalState): any {
+  const stateName = getDialogNameFromType(type);
+  const dialog = state.dialogs[stateName];
+  if (!dialog) {
+    console.error(`[epics/dialogs] Unable to retrieve dialog state from "${stateName}" action`);
+  }
+  return dialog;
+}
 export default [
   // region Confirm Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(closeConfirmDialog.type),
+      ofType(
+        closeConfirmDialog.type,
+        closePublishDialog.type,
+        closeDeleteDialog.type,
+        closeNewContentDialog.type
+      ),
       withLatestFrom(state$),
-      map(([{ payload }, state]) =>
-        [payload, state.dialogs.confirm.onClose].filter((callback) => Boolean(callback))
+      map(([{ type, payload }, state]) =>
+        [payload, getDialogState(type, state)?.onClose].filter((callback) => Boolean(callback))
       ),
       switchMap((actions) => (actions.length ? actions : NEVER))
     )

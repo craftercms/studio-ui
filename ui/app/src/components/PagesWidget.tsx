@@ -54,11 +54,8 @@ const flagColor = 'rgba(255, 59, 48, 0.5)';
 const useStyles = makeStyles((theme) =>
   createStyles({
     wrapper: {},
-    primaryColor: {
-      color: theme.palette.primary.main
-    },
-    blackColor: {
-      color: palette.black
+    widgetSection: {
+      padding: `0 10px`
     },
     flag: {
       color: flagColor,
@@ -67,27 +64,37 @@ const useStyles = makeStyles((theme) =>
     },
     optionsWrapper: {
       marginLeft: 'auto',
-      display: 'flex'
+      display: 'flex',
+      visibility: 'hidden'
+    },
+    optionsWrapperOver: {
+      visibility: 'visible'
     },
     pagesHeader: {
       display: 'flex',
-      alignItems: 'center',
-      paddingLeft: '5px'
+      padding: '0 5px',
+      alignItems: 'center'
+    },
+    pagesIcon: {
+      fontSize: '1.1rem',
     },
     pagesHeaderTitle: {
       marginLeft: '6px',
       flexGrow: 1
     },
-    icon: {
+    iconButton: {
       padding: '6px'
     },
-    searchRoot: {
-      //margin: '10px 0'
+    itemIconButton: {
+      padding: '2px 3px'
     },
+    icon: {
+      fontSize: '1.2rem'
+    },
+    searchRoot: {},
     pagesBreadcrumbs: {
       display: 'flex',
-      alignItems: 'center',
-      paddingLeft: '10px'
+      alignItems: 'center'
     },
     pagesBreadcrumbsOl: {
       display: 'flex',
@@ -106,8 +113,7 @@ const useStyles = makeStyles((theme) =>
     },
     pagesNavItem: {
       justifyContent: 'space-between',
-      padding: '0px 0px 0px 10px',
-      height: '36px',
+      padding: '0 0 0 10px',
       '&.noLeftPadding': {
         paddingLeft: 0
       },
@@ -116,7 +122,7 @@ const useStyles = makeStyles((theme) =>
       }
     },
     pagesNavItemText: {
-      color: theme.palette.primary.main,
+      color: palette.teal.shade,
       padding: 0,
       marginRight: 'auto',
       '&.opacity': {
@@ -141,15 +147,17 @@ const useStyles = makeStyles((theme) =>
       }
     },
     toolbar: {
-      padding: 0,
       display: 'flex',
+      minHeight: '40px',
       justifyContent: 'space-between',
-      paddingLeft: '20px',
       '& .MuiTablePagination-spacer': {
         display: 'none'
       },
       '& .MuiTablePagination-spacer + p': {
         display: 'none'
+      },
+      '& .MuiButtonBase-root': {
+        padding: 0
       }
     },
     menuPaper: {
@@ -384,36 +392,36 @@ function PagesHeader(props: PagesHeaderProps) {
   const currentFlag = (locale: string) => {
     switch (locale) {
       case 'en': {
-        return <PhotoSizeSelectActualIcon className={classes.blackColor} />;
+        return <PhotoSizeSelectActualIcon />;
       }
       case 'es': {
-        return <PlaceRoundedIcon className={classes.blackColor} />;
+        return <PlaceRoundedIcon />;
       }
       default: {
-        return <PhotoSizeSelectActualIcon className={classes.blackColor} />;
+        return <PhotoSizeSelectActualIcon />;
       }
     }
   };
 
   return (
-    <header className={classes.pagesHeader}>
-      <DescriptionOutlinedIcon />
-      <Typography variant="subtitle1" className={classes.pagesHeaderTitle}>
+    <header className={clsx(classes.pagesHeader)}>
+      <DescriptionOutlinedIcon className={classes.pagesIcon} />
+      <Typography variant="body1" className={classes.pagesHeaderTitle}>
         {formatMessage(translations.title)}
       </Typography>
       <IconButton
         aria-label="language select"
-        className={classes.icon}
+        className={classes.iconButton}
         onClick={(event) => onPagesMenuOpen(event.currentTarget, 'language')}
       >
         {currentFlag(currentLocale)}
       </IconButton>
       <IconButton
         aria-label="options"
-        className={classes.icon}
+        className={classes.iconButton}
         onClick={(event) => onPagesMenuOpen(event.currentTarget, 'options')}
       >
-        <MoreVertIcon className={classes.blackColor} />
+        <MoreVertIcon />
       </IconButton>
     </header>
   );
@@ -449,7 +457,7 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
   };
 
   return (
-    <section className={classes.pagesBreadcrumbs}>
+    <section className={clsx(classes.pagesBreadcrumbs, classes.widgetSection)}>
       {showSearch ? (
         <SearchBar
           onChange={onChange}
@@ -493,17 +501,17 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
               );
             })}
           </Breadcrumbs>
-          <div className={classes.optionsWrapper}>
+          <div className={clsx(classes.optionsWrapper, classes.optionsWrapperOver)}>
             <IconButton
               aria-label="options"
-              className={clsx(classes.icon, classes.primaryColor)}
+              className={clsx(classes.iconButton)}
               onClick={(event) => onOpenBreadcrumbsMenu(event.currentTarget)}
             >
               <MoreVertIcon />
             </IconButton>
             <IconButton
               aria-label="search"
-              className={clsx(classes.icon, classes.primaryColor)}
+              className={clsx(classes.iconButton)}
               onClick={() => setShowSearch(true)}
             >
               <SearchRoundedIcon />
@@ -536,6 +544,10 @@ function PagesNavItem(props: PagesNavItemProps) {
       className={clsx(classes.pagesNavItem, selectMode && 'noLeftPadding')}
       onMouseOver={() => setOver(true)}
       onMouseLeave={() => setOver(false)}
+      button
+      onClick={() => {
+        console.log('At list item click');
+      }}
     >
       {selectMode && (
         <Checkbox
@@ -554,24 +566,28 @@ function PagesNavItem(props: PagesNavItemProps) {
         {item.label}
         {currentLocale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
       </Typography>
-      {over && (
-        <div className={classes.optionsWrapper}>
-          <IconButton
-            aria-label="options"
-            className={classes.icon}
-            onClick={(event) => onOpenItemMenu(event.currentTarget, item)}
-          >
-            <MoreVertIcon />
-          </IconButton>
-          <IconButton
-            aria-label="options"
-            className={classes.icon}
-            onClick={() => onItemSelected(item)}
-          >
-            <ChevronRightRoundedIcon />
-          </IconButton>
-        </div>
-      )}
+      <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
+        <IconButton
+          aria-label="options"
+          className={classes.itemIconButton}
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpenItemMenu(event.currentTarget, item);
+          }}
+        >
+          <MoreVertIcon className={classes.icon} />
+        </IconButton>
+        <IconButton
+          aria-label="options"
+          className={classes.itemIconButton}
+          onClick={(event) => {
+            event.stopPropagation();
+            onItemSelected(item);
+          }}
+        >
+          <ChevronRightRoundedIcon className={classes.icon} />
+        </IconButton>
+      </div>
     </ListItem>
   );
 }
@@ -649,19 +665,19 @@ export default function PagesWidget(props: PagesWidgetProps) {
         setBreadcrumb([...breadcrumb, response.parent]);
       },
       (response) => {
-        dispatch(
-          showErrorDialog({
-            error: response
-          })
-        );
+        dispatch(showErrorDialog({
+          error: response
+        }));
       }
     );
-  }, [site, activePath]);
+  // Suppressing the lack of breadcrumb since it creates infinite loop.
+  // Need to change approach so we can list all dependencies appropriately.
+  // eslint-disable-next-line
+  }, [site, activePath, /*breadcrumb, */dispatch]);
 
   setRequestForgeryToken();
 
   const onItemSelected = (item: Item) => {
-    //setBreadcrumb([...breadcrumb, item]);
     setActivePath(item.path);
   };
 
@@ -945,7 +961,11 @@ export default function PagesWidget(props: PagesWidgetProps) {
           )}
           <TablePagination
             className={classes.pagination}
-            classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+            classes={{
+              root: classes.pagination,
+              selectRoot: 'hidden',
+              toolbar: clsx(classes.toolbar, classes.widgetSection)
+            }}
             component="div"
             labelRowsPerPage=""
             count={10}
