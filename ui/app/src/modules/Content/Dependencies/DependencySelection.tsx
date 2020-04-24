@@ -290,10 +290,8 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
     const result = Object.entries({ ...checked })
       .filter(([key, value]) => value === true)
       .map(([key]) => key);
-    onChange(result);
-    // TODO: Check infinite loop
-    // eslint-disable-next-line
-  }, [checked]);
+    onChange?.(result);
+  }, [checked, onChange]);
 
   return (
     <div className={clsx(classes.dependencySelection, classes.dependencySelectionDelete)}>

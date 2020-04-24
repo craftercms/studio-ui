@@ -26,7 +26,7 @@ import { defineMessages, useIntl } from 'react-intl';
 const useStyles = makeStyles((theme: Theme) => ({
   search: {
     position: 'relative',
-    background: (props: any) => props.background,
+    background: (props: any) => props.background || palette.gray.light3,
     width: '100%',
     display: 'flex',
     alignItems: 'center',
@@ -75,30 +75,27 @@ interface SearchBarProps {
   actionButtonIcon?: any;
   showDecoratorIcon?: boolean;
   decoratorIcon?: any;
-  autofocus?: boolean;
+  autoFocus?: boolean;
   backgroundColor?: string;
   placeholder?: string;
   disabled?: boolean;
   classes?: {
     root?: any;
   };
-
   onChange(value: string): void;
-
   onKeyPress?(key: string): void;
-
   onActionButtonClick?(): void;
 }
 
 export default function SearchBar(props: SearchBarProps) {
-  const classes = useStyles({ background: props.backgroundColor || palette.gray.light5 });
+  const classes = useStyles({ background: props.backgroundColor });
   const {
     onChange,
     onKeyPress,
     keyword,
     showActionButton = false,
     actionButtonIcon: ActionButtonIcon = CloseIcon,
-    autofocus = false,
+    autoFocus = false,
     placeholder,
     disabled = false,
     showDecoratorIcon = false,
@@ -119,7 +116,7 @@ export default function SearchBar(props: SearchBarProps) {
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
         placeholder={placeholder || formatMessage(messages.placeholder)}
-        autoFocus={autofocus}
+        autoFocus={autoFocus}
         disabled={disabled}
         value={keyword}
         classes={{

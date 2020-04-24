@@ -30,7 +30,6 @@ import NewContentCard from './NewContentCard';
 import SingleItemSelector from './SingleItemSelector';
 import SearchBar from '../../../components/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
-import { Item } from '../../../models/Item';
 import {
   useDebouncedInput,
   useSelection,
@@ -349,7 +348,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
               />
             </Box>
             <Box className={classes.searchBox}>
-              <SearchBar onChange={onSearchChange} keyword={search} autofocus />
+              <SearchBar onChange={onSearchChange} keyword={search} autoFocus />
             </Box>
           </Box>
 
