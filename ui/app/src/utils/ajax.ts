@@ -19,6 +19,7 @@ import { catchError } from 'rxjs/operators';
 import { reversePluckProps } from './object';
 import { Observable, of } from 'rxjs';
 import { sessionTimeout } from '../state/actions/user';
+import { ObservableInput } from 'rxjs/src/internal/types';
 
 const HEADERS = {};
 export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
@@ -79,28 +80,30 @@ export function del(url: string, headers: object = {}): Observable<AjaxResponse>
   return ajax.delete(url, mergeHeaders(headers));
 }
 
-export const catchAjaxError = (fetchFailedCreator) =>
-  catchError((error: any) => {
-    if (error.name === 'AjaxError') {
-      const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
-      ajaxError.response = {
-        message: ajaxError.response?.message ?? 'An unknown error has occurred.'
-      };
-      if (ajaxError.status === 401) {
-        return of(fetchFailedCreator(ajaxError), sessionTimeout());
-      } else {
-        return of(fetchFailedCreator(ajaxError));
-      }
+export const catchAjaxError = (fetchFailedCreator) => catchError((error: any) => {
+  if (error.name === 'AjaxError') {
+    const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
+    ajaxError.response = {
+      message: ajaxError.response?.message ?? 'An unknown error has occurred.'
+    };
+    if (ajaxError.status === 401) {
+      return of(fetchFailedCreator(ajaxError), sessionTimeout());
     } else {
-      console.error(
-        '[ajax/catchAjaxError] An epic threw and hence it will be disabled. Check logic.',
-        error
-      );
-      throw error;
+      return of(fetchFailedCreator(ajaxError));
     }
-  });
+  } else {
+    console.error(
+      '[ajax/catchAjaxError] An epic threw and hence it will be disabled. Check logic.',
+      error
+    );
+    throw error;
+  }
+});
 
-export const catchApi1Error = catchError((error: any) => {
+export const errorSelectorApi1: <T, O extends ObservableInput<any>>(
+  err: any,
+  caught: Observable<T>
+) => O = (error: any) => {
   if (error.name === 'AjaxError') {
     switch (error.status) {
       case 400:
@@ -142,7 +145,7 @@ export const catchApi1Error = catchError((error: any) => {
       remedialAction: 'Contact support'
     };
   }
-});
+};
 
 export default {
   OMIT_GLOBAL_HEADERS,

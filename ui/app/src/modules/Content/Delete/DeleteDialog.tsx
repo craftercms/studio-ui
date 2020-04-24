@@ -279,7 +279,7 @@ function DeleteDialog(props: DeleteDialogProps) {
   );
 
   useEffect(() => {
-    fetchDeleteDependencies(siteId, selectedItems).subscribe(
+    open && fetchDeleteDependencies(siteId, selectedItems).subscribe(
       (response: any) => {
         setDeleteDependencies({
           childItems: response.items.childItems,
@@ -290,7 +290,7 @@ function DeleteDialog(props: DeleteDialogProps) {
         setApiState({ error });
       }
     );
-  }, [selectedItems, setApiState, siteId]);
+  }, [open, selectedItems, setApiState, siteId]);
 
   const handleSubmit = () => {
     const data = {

@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 export interface LegacyItem {
-  name: string;
-  internalName: string;
   uri: string;
-
-  [prop: string]: any;
-
+  name: string;
+  browserUri: string;
+  contentType: string;
+  internalName: string;
   children: LegacyItem[];
+  [prop: string]: any;
 }
 
 export interface LocalizationItem {

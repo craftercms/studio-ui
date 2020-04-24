@@ -66,14 +66,13 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-interface ErrorStateProps {
+export interface ErrorStateProps {
   graphicUrl?: string;
   classes?: {
     root?: string;
     graphic?: string;
   };
   error: APIError;
-
   onBack?(event: any): any;
 }
 

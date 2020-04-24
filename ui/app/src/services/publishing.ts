@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { catchApi1Error, get, postJSON } from '../utils/ajax';
+import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
-import { pluck } from 'rxjs/operators';
+import { catchError, pluck } from 'rxjs/operators';
 
 export function fetchPackages(siteId: string, filters: any) {
   let queryS = new URLSearchParams(filters).toString();
@@ -41,7 +41,7 @@ export function submitToGoLive(siteId: string, user: string, data): Observable<a
     data
   ).pipe(
     pluck('response'),
-    catchApi1Error
+    catchError(errorSelectorApi1)
   );
 }
 
@@ -51,7 +51,7 @@ export function goLive(siteId: string, user: string, data): Observable<any> {
     data
   ).pipe(
     pluck('response'),
-    catchApi1Error
+    catchError(errorSelectorApi1)
   );
 }
 

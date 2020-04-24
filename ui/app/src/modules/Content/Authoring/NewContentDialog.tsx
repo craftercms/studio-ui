@@ -361,7 +361,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
               />
             </Box>
             <Box className={classes.searchBox}>
-              <SearchBar onChange={onSearchChange} keyword={search} autofocus />
+              <SearchBar onChange={onSearchChange} keyword={search} autoFocus />
             </Box>
           </Box>
 
