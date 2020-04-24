@@ -1169,7 +1169,7 @@ export default function(props: WidgetProps) {
   const onTranslationDialogClose = () => setTranslationDialog(null);
 
   const onItemClicked = (item: Item) => {
-    window.location.href = `/studio/preview/#/?page=${item.previewUrl}&site=${site}`;
+    window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
   };
 
   const onBreadcrumbSelected = (item: Item) => {
