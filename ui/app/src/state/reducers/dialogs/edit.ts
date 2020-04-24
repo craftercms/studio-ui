@@ -23,18 +23,27 @@ export const showEdit = createAction<Partial<EmbeddedLegacyEditorsStateProps>>(
   'SHOW_EDIT'
 );
 
+export const updateEditConfig = createAction<any>('UPDATE_EDIT_CONFIG');
+
 export const closeEdit = createAction<StandardAction>(
   'CLOSE_EDIT'
 );
 
 export default createReducer<GlobalState['dialogs']['edit']>(
-  { dialogConfig: {}, setDialogConfig: {} },
+  { dialogConfig: { open: false }, setDialogConfig: {} },
   {
     [showEdit.type]: (state, { payload }) => ({
+      // onDismiss: closeDeleteDialog(),
       ...payload,
       dialogConfig: {
         ...payload.dialogConfig,
         open: true
+      }
+    }),
+    [updateEditConfig.type]: (state, { payload}) => ({
+      dialogConfig: {
+        ...state.dialogConfig,
+        ...payload
       }
     }),
     [closeEdit.type]: (state, { payload }) => ({

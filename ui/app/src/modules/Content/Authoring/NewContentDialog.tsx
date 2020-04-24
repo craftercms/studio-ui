@@ -30,7 +30,6 @@ import NewContentCard from './NewContentCard';
 import SingleItemSelector from './SingleItemSelector';
 import SearchBar from '../../../components/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
-import { Item } from '../../../models/Item';
 import {
   useDebouncedInput,
   useSelection,

@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar/AppBar';
 import Tabs from '@material-ui/core/Tabs';
@@ -40,6 +40,8 @@ import { filter } from 'rxjs/operators';
 import { getHostToGuestBus } from './previewContext';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { APIError } from '../../models/GlobalState';
+import StandardAction from '../../models/StandardAction';
+import { closeEdit, updateEditConfig } from '../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   contentForm: {
@@ -92,13 +94,13 @@ function filterBy(filter: string, changes: object, currentTab: string): Array<st
 }
 
 interface dialogConfig {
-  open: boolean;
-  src: string;
-  type: string;
-  inProgress: boolean;
+  open?: boolean;
+  src?: string;
+  type?: string;
+  inProgress?: boolean;
 }
 
-interface EmbeddedLegacyEditorsProps {
+interface EmbeddedLegacyEditorsBaseProps {
   dialogConfig: dialogConfig;
   setDialogConfig: any;
   showController?: boolean;
@@ -107,8 +109,16 @@ interface EmbeddedLegacyEditorsProps {
   onSaveLegacySuccess?(response): any;
 
   onSaveSuccess?(response): any;
+}
 
-  getPath?(type: string): void;
+export type EmbeddedLegacyEditorsProps = PropsWithChildren<
+  EmbeddedLegacyEditorsBaseProps & {
+    getPath?(type: string): void;
+  }
+>;
+
+export interface EmbeddedLegacyEditorsStateProps extends EmbeddedLegacyEditorsBaseProps {
+  getPath?: StandardAction;
 }
 
 export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
@@ -136,8 +146,15 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
   const handleClose = useCallback(() => {
-    setDialogConfig({ open: false, src: null, type: null, inProgress: true });
-  }, [setDialogConfig]);
+    dispatch(
+      closeEdit({
+        type: '',
+        payload: {
+          dialogConfig: { src: null, type: null, inProgress: true }
+        }
+      })
+    );
+  }, [dispatch]);
 
   const onErrorClose = () => {
     setError(null);
@@ -146,7 +163,9 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
 
   const handleTabChange = useCallback((event: React.ChangeEvent<{}>, type: string) => {
     let inProgress = !tabsState[type].loaded;
-    setDialogConfig({ type, inProgress });
+    const config = { type, inProgress };
+    setDialogConfig?.(config);
+    dispatch(updateEditConfig(config));
     iframeRef.current.contentWindow.postMessage(
       {
         type: EDIT_FORM_CHANGE_TAB,
@@ -155,7 +174,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       },
       '*'
     );
-  }, [getPath, setDialogConfig, tabsState]);
+  }, [getPath, setDialogConfig, tabsState, dispatch]);
 
   const closeEmbeddedLegacyForm = useCallback((refresh: boolean, tab?: string) => {
     let hasSomeLoaded = filterBy('loaded', tabsState, tab);
@@ -184,7 +203,10 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
           }
           case EMBEDDED_LEGACY_FORM_RENDERED: {
             if (dialogConfig.inProgress) {
-              setDialogConfig({ inProgress: false });
+              const config = { inProgress: false };
+
+              setDialogConfig?.(config);
+              dispatch(updateEditConfig(config));
             }
             setTabsState({
               [tab]: { loaded: true, pendingChanges: tabsState[tab].pendingChanges }

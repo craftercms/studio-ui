@@ -40,6 +40,7 @@ const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDi
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
+const EmbeddedLegacyEditors = lazy(() =>  import('../../modules/Preview/EmbeddedLegacyEditors'));
 
 function createCallback(
   action: StandardAction,
@@ -99,7 +100,12 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Edit (Embedded Legacy Editor) */}
-
+      <EmbeddedLegacyEditors
+        showTabs={state.edit.showTabs}
+        showController={state.edit.showController}
+        dialogConfig={state.edit.dialogConfig}
+        setDialogConfig={state.edit.setDialogConfig}
+      />
       {/* endregion */}
 
       {/* region Publish */}

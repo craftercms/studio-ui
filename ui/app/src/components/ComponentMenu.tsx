@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
-import EmbeddedLegacyEditors from '../modules/Preview/EmbeddedLegacyEditors';
 import { palette } from '../styles/theme';
 import { useSelection, useSpreadState } from '../utils/hooks';
 import { getLegacyItem } from '../services/content';
@@ -31,6 +30,7 @@ import { closeDeleteDialog, showDeleteDialog } from '../state/reducers/dialogs/d
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
 import { showHistoryDialog } from '../state/reducers/dialogs/history';
+import { showEdit } from '../state/reducers/dialogs/edit';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -58,12 +58,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
   const dispatch = useDispatch();
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: null,
-    type: null,
-    inProgress: true
-  });
 
   const [publishDialog, setPublishDialog] = useState({
     items: null
@@ -116,8 +110,8 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         break;
       }
       case 'history': {
-        dispatch(showHistoryDialog({ 
-          path: models[modelId].craftercms.path || models[parentId].craftercms.path 
+        dispatch(showHistoryDialog({
+          path: models[modelId].craftercms.path || models[parentId].craftercms.path
         }));
         break;
       }
@@ -143,12 +137,14 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         if (embeddedParentPath && type === 'form') {
           src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
         }
-        setDialogConfig(
-          {
-            open: true,
+
+        dispatch(showEdit({
+          dialogConfig: {
             src,
-            type
-          });
+            type,
+            inProgress: true
+          }
+        }));
         break;
       }
     }
@@ -246,15 +242,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           </MenuItem>
         }
       </Menu>
-      {
-        dialogConfig.open &&
-        <EmbeddedLegacyEditors
-          dialogConfig={dialogConfig}
-          setDialogConfig={setDialogConfig}
-          getPath={getPath}
-          showController={!embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page'}
-        />
-      }
     </>
   );
 }
