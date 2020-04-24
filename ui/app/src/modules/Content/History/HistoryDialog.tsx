@@ -31,13 +31,14 @@ import StandardAction from '../../../models/StandardAction';
 import { LegacyVersion } from '../../../models/version';
 import { useDispatch } from 'react-redux';
 import {
-  hideHistoryDialog,
-  historyDialogChangePage
+  historyDialogChangePage,
+  showHistoryDialog
 } from '../../../state/reducers/dialogs/history';
 import { VersionList } from './VersionList';
 import TablePagination from '@material-ui/core/TablePagination';
 import { Resource } from '../../../models/Resource';
 import { showViewVersionDialog } from '../../../state/reducers/dialogs/viewVersion';
+import HistoryRoundedIcon from '@material-ui/icons/HistoryRounded';
 
 const translations = defineMessages({
   previousPage: {
@@ -71,14 +72,6 @@ const translations = defineMessages({
   revertToThisVersion: {
     id: 'historyDialog.options.revertToThisVersion',
     defaultMessage: 'Revert to <b>this version</b>'
-  },
-  dismiss: {
-    id: 'words.dismiss',
-    defaultMessage: 'Dismiss'
-  },
-  backToSelectRevision: {
-    id: 'historyDialog.back.selectRevision',
-    defaultMessage: 'Back to select revision'
   },
   backToHistoryList: {
     id: 'historyDialog.back.selectRevision',
@@ -180,7 +173,6 @@ export interface HistoryResource {
 
 interface HistoryDialogBaseProps {
   open: boolean;
-  hidden?: boolean;
   path: string;
   versions: LegacyVersion[];
   isFetching: Boolean;
@@ -190,21 +182,20 @@ interface HistoryDialogBaseProps {
   rowsPerPage: number;
 }
 
-export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
-  onClose?(): any;
-  onDismiss?(): any;
-}>;
+export type HistoryDialogProps = PropsWithChildren<
+  HistoryDialogBaseProps & {
+    onClose?(): any;
+    onDismiss?(): any;
+  }
+>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
   onDismiss?: StandardAction;
-  module?: string;
-  environment?: string;
-  config?: boolean;
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, path, rowsPerPage, page, current, hidden = false } = props;
+  const { open, onClose, onDismiss, path, rowsPerPage, page, current} = props;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
@@ -215,13 +206,11 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     shouldResolve: (source) => Boolean(source.versions) && !source.isFetching,
     shouldReject: (source) => Boolean(source.error),
     shouldRenew: (source, resource) => source.isFetching && resource.complete,
-    resultSelector: (source) => (
-      {
-        versions: source.versions,
-        rowsPerPage: source.rowsPerPage,
-        page: source.page
-      }
-    ),
+    resultSelector: (source) => ({
+      versions: source.versions,
+      rowsPerPage: source.rowsPerPage,
+      page: source.page
+    }),
     errorSelector: (source) => source.error
   });
 
@@ -253,11 +242,18 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   );
 
   const handleViewItem = (version: LegacyVersion) => {
-    // TODO: Is this the best approach?
-    setTimeout(()=> {
-      dispatch(hideHistoryDialog());
-      dispatch(showViewVersionDialog({ path, versionNumber: version.versionNumber, historyDialog: true }));
-    }, 250)
+    //dispatch(showViewVersionDialog({ path, versionNumber: version.versionNumber, historyDialog: true }))
+    dispatch(
+      showViewVersionDialog({
+        rightActions: [
+          {
+            icon: HistoryRoundedIcon,
+            onClick: showHistoryDialog(),
+            'aria-label': formatMessage(translations.backToHistoryList)
+          }
+        ]
+      })
+    );
   };
 
   const handleContextMenuClose = () => {
@@ -300,14 +296,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      fullWidth
-      maxWidth="md"
-      onEscapeKeyDown={onDismiss}
-      keepMounted={hidden}
-    >
+    <Dialog onClose={onClose} open={open} fullWidth maxWidth="md" onEscapeKeyDown={onDismiss}>
       <DialogHeader
         title={
           <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Content Item History" />
@@ -331,8 +320,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
           <Pagination resource={resource} onPageChanged={onPageChanged} />
         </SuspenseWithEmptyState>
       </DialogFooter>
-      {
-        Boolean(menu.anchorEl) &&
+      {Boolean(menu.anchorEl) && (
         <ContextMenu
           open={true}
           anchorEl={menu.anchorEl}
@@ -341,7 +329,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
           onMenuItemClicked={handleContextMenuItemClicked}
           classes={{ menuList: classes.menuList }}
         />
-      }
+      )}
     </Dialog>
   );
 }

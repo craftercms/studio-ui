@@ -17,13 +17,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
-
-interface HistoryConfigProps {
-  path: string;
-  environment?: string;
-  module?: string;
-  config?: boolean;
-}
+import { ViewVersionDialogStateProps } from '../../../modules/Content/History/ViewVersionDialog';
 
 export const showViewVersionDialog = createAction<any>('SHOW_VIEW_VERSION_DIALOG');
 
@@ -35,11 +29,14 @@ export const fetchItemVersionComplete = createAction<any>('FETCH_CONTENT_VERSION
 
 export const fetchItemVersionFailed = createAction<any>('FETCH_CONTENT_VERSION_FAILED');
 
-const initialState = {
+const initialState: ViewVersionDialogStateProps = {
   open: false,
   isFetching: null,
+  error: null,
   version: null,
-  historyDialog: null,
+  rightActions: null,
+  onClose: null,
+  onDismiss: null
 };
 
 export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState, {
@@ -54,12 +51,17 @@ export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState
     ...initialState,
     onClose: state.onClose
   }),
+  [fetchContentVersion.type]: (state) => ({
+    ...state,
+    isFetching: true
+  }),
   [fetchItemVersionComplete.type]: (state, { payload }) => ({
     ...state,
     isFetching: false,
     version: payload
   }),
-  [fetchItemVersionFailed.type]: () => ({
+  [fetchItemVersionFailed.type]: (state) => ({
+    ...state,
     isFetching: false
   })
 });

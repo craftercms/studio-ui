@@ -70,6 +70,7 @@ export const useStyles = makeStyles(() =>
 
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
+  const contentTypesBranch = useSelection(state => state.contentTypes);
   const dispatch = useDispatch();
   return (
     <Suspense fallback="">
@@ -143,7 +144,6 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         path={state.history.path}
-        hidden={state.history.hidden}
         versions={state.history.versions}
         isFetching={state.history.isFetching}
         error={state.history.error}
@@ -156,9 +156,13 @@ function GlobalDialogManager() {
       <ViewVersionDialog
         open={state.viewVersion.open}
         isFetching={state.viewVersion.isFetching}
-        error={state.history.error}
+        error={state.viewVersion.error}
+        rightActions={state.viewVersion.rightActions?.map((action) => ({
+          ...action,
+          onClick: createCallback(action.onClick, dispatch)
+        }))}
         version={state.viewVersion.version}
-        historyDialog={state.viewVersion.historyDialog}
+        contentTypesBranch={contentTypesBranch}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
         onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
       />

@@ -52,7 +52,7 @@ import ContentLocalizationDialog from './ContentLocalizationDialog';
 import { palette } from '../styles/theme';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
-import { showHistoryDialog } from '../state/reducers/dialogs/history';
+import { fetchItemVersions, showHistoryDialog } from '../state/reducers/dialogs/history';
 import { Resource } from '../models/Resource';
 import { SuspenseWithEmptyState } from './SystemStatus/Suspencified';
 import StandardAction from '../models/StandardAction';
@@ -1021,7 +1021,8 @@ export default function(props: WidgetProps) {
         break;
       }
       case 'history': {
-        dispatch(showHistoryDialog({ path: menu.activeItem.path }));
+        dispatch(fetchItemVersions({ path: menu.activeItem.path }));
+        dispatch(showHistoryDialog());
         setMenu({
           activeItem: null,
           anchorEl: null

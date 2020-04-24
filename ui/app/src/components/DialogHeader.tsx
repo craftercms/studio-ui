@@ -26,6 +26,7 @@ import createStyles from '@material-ui/styles/createStyles/createStyles';
 import clsx from 'clsx';
 import { Tooltip } from '@material-ui/core';
 import { defineMessages, useIntl } from 'react-intl';
+import StandardAction from '../models/StandardAction';
 
 const dialogTitleStyles = makeStyles(() =>
   createStyles({
@@ -66,6 +67,13 @@ export interface DialogHeaderAction extends IconButtonProps {
   icon: React.ElementType;
 }
 
+export interface DialogHeaderStateAction {
+  icon: React.ElementType;
+  'aria-label': string;
+  onClick: StandardAction;
+  [prop: string]: any;
+}
+
 const translations = defineMessages({
   back: {
     id: 'words.back',
@@ -92,20 +100,14 @@ function Action(props: any) {
   );
 }
 
-export type DialogTitleProps<
-  PrimaryTypographyComponent extends React.ElementType = 'h2',
-  SecondaryTypographyComponent extends React.ElementType = 'p'
-> = PropsWithChildren<{
+export type DialogTitleProps<PrimaryTypographyComponent extends React.ElementType = 'h2',
+  SecondaryTypographyComponent extends React.ElementType = 'p'> = PropsWithChildren<{
   id?: string;
   title: string | JSX.Element;
-  titleTypographyProps?: TypographyProps<
-    PrimaryTypographyComponent,
-    { component?: PrimaryTypographyComponent }
-  >;
-  subtitleTypographyProps?: TypographyProps<
-    SecondaryTypographyComponent,
-    { component?: SecondaryTypographyComponent }
-  >;
+  titleTypographyProps?: TypographyProps<PrimaryTypographyComponent,
+    { component?: PrimaryTypographyComponent }>;
+  subtitleTypographyProps?: TypographyProps<SecondaryTypographyComponent,
+    { component?: SecondaryTypographyComponent }>;
   subtitle?: string;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];

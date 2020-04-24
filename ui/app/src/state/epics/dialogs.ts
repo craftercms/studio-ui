@@ -29,17 +29,21 @@ import {
   fetchItemVersionsFailed,
   revertContent,
   revertContentComplete,
-  revertContentFailed,
-  showHistoryDialog
+  revertContentFailed
 } from '../reducers/dialogs/history';
 import {
   getConfigurationVersions,
+  getContentVersion,
   getItemVersions,
-  revertContentToVersion,
-  getContentVersion
+  revertContentToVersion
 } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { showViewVersionDialog, fetchContentVersion, fetchItemVersionComplete, fetchItemVersionFailed } from '../reducers/dialogs/viewVersion';
+import {
+  fetchContentVersion,
+  fetchItemVersionComplete,
+  fetchItemVersionFailed,
+  showViewVersionDialog
+} from '../reducers/dialogs/viewVersion';
 
 function getDialogNameFromType(type: string): string {
   let name = type.replace(/(CLOSE_)|(_DIALOG)/g, '');
@@ -55,7 +59,7 @@ function getDialogState(type: string, state: GlobalState): any {
   return dialog;
 }
 export default [
-  // region Confirm Dialog
+  // region Dialogs
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(
@@ -74,17 +78,17 @@ export default [
   // region History Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(showHistoryDialog.type, fetchItemVersions.type),
+      ofType(fetchItemVersions.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const service = (payload.config)
           ? getConfigurationVersions(
             state.sites.active,
-            payload.path ?? state.dialogs.history.path,
-            payload.environment ?? state.dialogs.history.environment,
-            payload.module ?? state.dialogs.history.module
+            payload.path,
+            payload.environment,
+            payload.module
           )
-          : getItemVersions(state.sites.active, payload.path ?? state.dialogs.history.path);
+          : getItemVersions(state.sites.active, payload.path);
         return service.pipe(
           map(fetchItemVersionsComplete),
           catchAjaxError(fetchItemVersionsFailed)

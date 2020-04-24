@@ -20,6 +20,7 @@ import GlobalState from '../../../models/GlobalState';
 import { HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
 import { VersionsResponse } from '../../../models/version';
 import { AjaxError } from 'rxjs/ajax';
+import { closeViewVersionDialog, showViewVersionDialog } from './viewVersion';
 
 interface HistoryConfigProps {
   path: string;
@@ -28,17 +29,11 @@ interface HistoryConfigProps {
   config?: boolean;
 }
 
-export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps> & HistoryConfigProps>(
-  'SHOW_HISTORY_DIALOG'
-);
+export const showHistoryDialog = createAction<HistoryDialogStateProps>('SHOW_HISTORY_DIALOG');
 
 export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
 
-export const hideHistoryDialog = createAction<StandardAction>('HIDE_HISTORY_DIALOG');
-
-export const revealHistoryDialog = createAction<StandardAction>('REVEAL_HISTORY_DIALOG');
-
-export const fetchItemVersions = createAction<StandardAction>('FETCH_ITEM_VERSIONS');
+export const fetchItemVersions = createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
 
 export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_ITEM_VERSIONS_COMPLETE');
 
@@ -63,8 +58,7 @@ const initialState = {
   environment: null,
   error: null,
   isFetching: null,
-  versions: null,
-  hidden: null
+  versions: null
 };
 
 export default createReducer<GlobalState['dialogs']['history']>(
@@ -74,22 +68,11 @@ export default createReducer<GlobalState['dialogs']['history']>(
       ...state,
       onDismiss: closeHistoryDialog(),
       ...payload,
-      open: true,
-      isFetching: true
+      open: true
     }),
     [closeHistoryDialog.type]: (state) => ({
       ...initialState,
       onClose: state.onClose
-    }),
-    [hideHistoryDialog.type]: (state) => ({
-      ...state,
-      open: false,
-      hidden: true
-    }),
-    [revealHistoryDialog.type]: (state) => ({
-      ...state,
-      open: true,
-      hidden: null
     }),
     [fetchItemVersions.type]: (state) => ({
       ...state,
@@ -110,11 +93,11 @@ export default createReducer<GlobalState['dialogs']['history']>(
       ...state,
       page: payload
     }),
-    [revertContent.type]: (state, { payload }) => ({
+    [revertContent.type]: (state) => ({
       ...state,
       isFetching: true
     }),
-    [revertContentComplete.type]: (state, { payload }) => ({
+    [revertContentComplete.type]: (state) => ({
       ...state,
       isFetching: false
     }),
@@ -122,6 +105,11 @@ export default createReducer<GlobalState['dialogs']['history']>(
       ...state,
       error: payload.response,
       isFetching: false
+    }),
+    [closeViewVersionDialog.type]: () => initialState,
+    [showViewVersionDialog.type]: (state) => ({
+      ...state,
+      open: false
     })
   }
 );
