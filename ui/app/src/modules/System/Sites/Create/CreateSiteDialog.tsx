@@ -867,7 +867,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                     onActionButtonClick={() => handleOnSearchChange('')}
                     onChange={handleOnSearchChange}
                     keyword={search.searchKey}
-                    autofocus={true}
+                    autoFocus={true}
                     backgroundColor={backgroundColor}
                   />
                 </div>

@@ -15,11 +15,13 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import ErrorState from './SystemStatus/ErrorState';
+import ErrorState, { ErrorStateProps } from './SystemStatus/ErrorState';
 
-export type ErrorBoundaryProps = PropsWithChildren<{}>;
+export type ErrorBoundaryProps = PropsWithChildren<{
+  errorStateProps?: Omit<ErrorStateProps, 'error'>;
+}>;
 
-export class ErrorBoundary extends React.Component {
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
   state = { error: null };
 
   static getDerivedStateFromError(error) {
@@ -33,9 +35,8 @@ export class ErrorBoundary extends React.Component {
   render() {
     return this.state.error ? (
       <ErrorState
-        error={{
-          message: this.state.error.message || this.state.error
-        }}
+        {...this.props.errorStateProps}
+        error={{ message: this.state.error.message || this.state.error }}
       />
     ) : (
       this.props.children

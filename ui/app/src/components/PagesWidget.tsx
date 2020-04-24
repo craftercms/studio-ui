@@ -14,14 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useReducer, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import TablePagination from '@material-ui/core/TablePagination';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import PhotoSizeSelectActualIcon from '@material-ui/icons/PhotoSizeSelectActual';
+import PhotoSizeSelectActualIcon from '@material-ui/icons/PublicRounded';
 import FlagRoundedIcon from '@material-ui/icons/FlagRounded';
 import PlaceRoundedIcon from '@material-ui/icons/PlaceRounded';
 import Typography from '@material-ui/core/Typography';
@@ -31,8 +30,15 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import { copyItem, cutItem, getChildrenByPath, getPages, pasteItem } from '../services/content';
+import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
+import {
+  copyItem,
+  cutItem,
+  getChildrenByPath,
+  GetChildrenResponse,
+  getPages,
+  pasteItem
+} from '../services/content';
 import { getTargetLocales } from '../services/translation';
 import { Item, LegacyItem } from '../models/Item';
 import clsx from 'clsx';
@@ -40,14 +46,19 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
 import ContextMenu, { SectionItem } from './ContextMenu';
 import SearchBar from './SearchBar';
-import { setRequestForgeryToken } from '../utils/auth';
-import { useActiveSiteId, useSpreadState } from '../utils/hooks';
+import { useActiveSiteId, useOnMount, useSpreadState, useStateResource } from '../utils/hooks';
 import CopyItemsDialog from './CopyItemsDialog';
 import ContentLocalizationDialog from './ContentLocalizationDialog';
 import { palette } from '../styles/theme';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { showHistoryDialog } from '../state/reducers/dialogs/history';
+import { Resource } from '../models/Resource';
+import { SuspenseWithEmptyState } from './SystemStatus/Suspencified';
+import StandardAction from '../models/StandardAction';
+import { createAction } from '@reduxjs/toolkit';
+import { createLookupTable, nou } from '../utils/object';
+import { EcoRounded } from '@material-ui/icons';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 
@@ -55,7 +66,10 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     wrapper: {},
     widgetSection: {
-      padding: `0 10px`
+      padding: `0 10px`,
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.1rem'
+      }
     },
     flag: {
       color: flagColor,
@@ -72,11 +86,14 @@ const useStyles = makeStyles((theme) =>
     },
     pagesHeader: {
       display: 'flex',
-      padding: '0 5px',
-      alignItems: 'center'
+      padding: '5px 5px 0',
+      alignItems: 'center',
+      '& .MuiSvgIcon-root': {
+        fontSize: '1.1rem'
+      }
     },
     pagesIcon: {
-      fontSize: '1.1rem',
+      fontSize: '1.1rem'
     },
     pagesHeaderTitle: {
       marginLeft: '6px',
@@ -87,9 +104,6 @@ const useStyles = makeStyles((theme) =>
     },
     itemIconButton: {
       padding: '2px 3px'
-    },
-    icon: {
-      fontSize: '1.2rem'
     },
     searchRoot: {},
     pagesBreadcrumbs: {
@@ -127,6 +141,12 @@ const useStyles = makeStyles((theme) =>
       marginRight: 'auto',
       '&.opacity': {
         opacity: '0.7'
+      },
+      '&.select-mode': {
+        color: palette.black
+      },
+      '&.non-navigable': {
+        color: palette.gray.medium7
       }
     },
     pagesNavItemCheckbox: {
@@ -172,22 +192,28 @@ const useStyles = makeStyles((theme) =>
     helperText: {
       padding: '10px 16px 10px 16px',
       color: '#8E8E93'
+    },
+    // region Nav Styles
+    stateGraphics: {
+      width: 100
+    },
+    // endregion
+    // region Nav Item Styles
+    icon: {
+      fontSize: '1.2rem'
     }
+    // endregion
   })
 );
 
 const translations = defineMessages({
-  title: {
-    id: 'craftercms.pages.widget.title',
-    defaultMessage: 'Pages'
-  },
   previousPage: {
-    id: 'craftercms.pages.widget.previousPage',
-    defaultMessage: 'previous page'
+    id: 'pagination.previousPage',
+    defaultMessage: 'Previous page'
   },
   nextPage: {
-    id: 'craftercms.pages.widget.nextPage',
-    defaultMessage: 'next page'
+    id: 'pagination.nextPage',
+    defaultMessage: 'Next page'
   },
   itemsSelected: {
     id: 'craftercms.pages.widget.itemsSelected',
@@ -348,12 +374,12 @@ function generateMenuSections(item: Item, menuState: MenuState, count?: number) 
     sections.push(
       menuState.hasClipboard
         ? [
-          menuOptions.cut,
-          menuOptions.copy,
-          menuOptions.paste,
-          menuOptions.duplicate,
-          menuOptions.delete
-        ]
+            menuOptions.cut,
+            menuOptions.copy,
+            menuOptions.paste,
+            menuOptions.duplicate,
+            menuOptions.delete
+          ]
         : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate, menuOptions.delete]
     );
     sections.push([menuOptions.translation]);
@@ -376,18 +402,66 @@ function generateMenuSections(item: Item, menuState: MenuState, count?: number) 
   return sections;
 }
 
-interface PagesHeaderProps {
-  currentLocale: string;
-
-  setCurrentLocale(locale: string): void;
-
-  onPagesMenuOpen(anchorElement: Element, type: string): void;
+interface HeaderProps {
+  locale: string;
+  title: string;
+  icon: React.ElementType | string;
+  onLanguageMenu?(anchor: Element): void;
+  onContextMenu?(anchor: Element): void;
 }
 
-function PagesHeader(props: PagesHeaderProps) {
+interface Breadcrumb {
+  id: string;
+  label: string;
+  path: string;
+}
+
+interface BreadcrumbsProps {
+  keyword: string;
+  breadcrumb: Breadcrumb[];
+  onMenu(element: Element): void;
+  onSearch(keyword: string): void;
+  onCrumbSelected(breadcrumb: Breadcrumb): void;
+}
+
+interface NavItemProps {
+  item: Item;
+  locale: string;
+  isLeaf: boolean;
+  isSelectMode: boolean;
+  onItemClicked?(item: Item, event: React.MouseEvent): void;
+  onChangeParent?(item: Item): void;
+  onItemChecked?(item: Item, unselect: boolean): void;
+  onOpenItemMenu(element: Element, item: Item): void;
+}
+
+interface NavProps {
+  locale: string;
+  resource: Resource<Item[]>;
+  isSelectMode: boolean;
+  leafs: string[];
+  onItemClicked(item: Item): void;
+  onSelectItem(item: Item, unselect: boolean): void;
+  onPathSelected(item: Item): void;
+  onOpenItemMenu(element: Element, item: Item): void;
+}
+
+interface WidgetProps {
+  path: string;
+  icon?: string | React.ElementType;
+  title?: string;
+  locale: string;
+}
+
+interface MenuState {
+  selectMode: boolean;
+  hasClipboard: boolean;
+}
+
+// PathNavigatorHeader
+function Header(props: HeaderProps) {
   const classes = useStyles({});
-  const { currentLocale, onPagesMenuOpen } = props;
-  const { formatMessage } = useIntl();
+  const { title, icon: Icon, locale, onLanguageMenu, onContextMenu } = props;
 
   const currentFlag = (locale: string) => {
     switch (locale) {
@@ -405,21 +479,23 @@ function PagesHeader(props: PagesHeaderProps) {
 
   return (
     <header className={clsx(classes.pagesHeader)}>
-      <DescriptionOutlinedIcon className={classes.pagesIcon} />
-      <Typography variant="body1" className={classes.pagesHeaderTitle}>
-        {formatMessage(translations.title)}
-      </Typography>
+      {typeof Icon === 'string' ? (
+        <span className={`fa ${Icon}`} />
+      ) : (
+        <Icon className={classes.pagesIcon} />
+      )}
+      <Typography variant="body1" component="h6" className={classes.pagesHeaderTitle} children={title} />
       <IconButton
         aria-label="language select"
         className={classes.iconButton}
-        onClick={(event) => onPagesMenuOpen(event.currentTarget, 'language')}
+        onClick={(event) => onLanguageMenu(event.currentTarget)}
       >
-        {currentFlag(currentLocale)}
+        {currentFlag(locale)}
       </IconButton>
       <IconButton
         aria-label="options"
         className={classes.iconButton}
-        onClick={(event) => onPagesMenuOpen(event.currentTarget, 'options')}
+        onClick={(event) => onContextMenu(event.currentTarget)}
       >
         <MoreVertIcon />
       </IconButton>
@@ -427,26 +503,10 @@ function PagesHeader(props: PagesHeaderProps) {
   );
 }
 
-interface Breadcrumb {
-  id: string;
-  label: string;
-  path: string;
-}
-
-interface PagesBreadcrumbsProps {
-  breadcrumb: Breadcrumb[];
-  keyword: string;
-
-  onBreadcrumbSelected(breadcrumb: Breadcrumb): void;
-
-  onOpenBreadcrumbsMenu(element: Element): void;
-
-  onSearch(keyword: string): void;
-}
-
-function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
+// PathBreadcrumbs + PathOptions + (Path)Search
+function Breadcrumbs(props: BreadcrumbsProps) {
   const classes = useStyles({});
-  const { breadcrumb, onBreadcrumbSelected, onOpenBreadcrumbsMenu, keyword, onSearch } = props;
+  const { breadcrumb, onCrumbSelected, onMenu, keyword, onSearch } = props;
   const [showSearch, setShowSearch] = useState(false);
 
   const onChange = (keyword: string) => {
@@ -460,6 +520,7 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
     <section className={clsx(classes.pagesBreadcrumbs, classes.widgetSection)}>
       {showSearch ? (
         <SearchBar
+          autoFocus
           onChange={onChange}
           keyword={keyword}
           showActionButton={true}
@@ -468,17 +529,17 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
         />
       ) : (
         <>
-          <Breadcrumbs
-            aria-label="breadcrumb"
+          <MuiBreadcrumbs
             maxItems={2}
+            aria-label="Breadcrumbs"
             separator={<NavigateNextIcon fontSize="small" />}
             classes={{
               ol: classes.pagesBreadcrumbsOl,
               separator: classes.PagesBreadCrumbsSeparator
             }}
           >
-            {breadcrumb.map((item: Breadcrumb, i: number) => {
-              return breadcrumb.length !== i + 1 ? (
+            {breadcrumb.map((item: Breadcrumb, i: number) =>
+              breadcrumb.length !== i + 1 ? (
                 <Link
                   key={item.id}
                   color="inherit"
@@ -486,26 +547,24 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
                   variant="subtitle2"
                   underline="always"
                   TypographyClasses={{ root: classes.pagesBreadcrumbsTypo }}
-                  onClick={() => onBreadcrumbSelected(item)}
-                >
-                  {item.label}
-                </Link>
+                  onClick={() => onCrumbSelected(item)}
+                  children={item.label}
+                />
               ) : (
                 <Typography
                   key={item.id}
                   variant="subtitle2"
                   className={classes.pagesBreadcrumbsTypo}
-                >
-                  {item.label}
-                </Typography>
-              );
-            })}
-          </Breadcrumbs>
+                  children={item.label}
+                />
+              )
+            )}
+          </MuiBreadcrumbs>
           <div className={clsx(classes.optionsWrapper, classes.optionsWrapperOver)}>
             <IconButton
               aria-label="options"
               className={clsx(classes.iconButton)}
-              onClick={(event) => onOpenBreadcrumbsMenu(event.currentTarget)}
+              onClick={(event) => onMenu(event.currentTarget)}
             >
               <MoreVertIcon />
             </IconButton>
@@ -523,52 +582,89 @@ function PagesBreadcrumbs(props: PagesBreadcrumbsProps) {
   );
 }
 
-interface PagesNavItemProps {
-  item: Item;
-  currentLocale: string;
-  selectMode: boolean;
-
-  onItemSelected(item: Item): void;
-
-  onSelectItem(item: Item, unselect: boolean): void;
-
-  onOpenItemMenu(element: Element, item: Item): void;
+// PathListing
+function Nav(props: NavProps) {
+  const {
+    resource,
+    onPathSelected,
+    locale,
+    isSelectMode,
+    onSelectItem,
+    onOpenItemMenu,
+    onItemClicked,
+    leafs
+  } = props;
+  const items = resource.read();
+  return (
+    <List component="nav" disablePadding={true}>
+      {items.map((item: Item) => (
+        <NavItem
+          item={item}
+          key={item.id}
+          isLeaf={leafs.includes(item.id)}
+          locale={locale}
+          onChangeParent={onPathSelected}
+          isSelectMode={isSelectMode}
+          onItemChecked={onSelectItem}
+          onOpenItemMenu={onOpenItemMenu}
+          onItemClicked={onItemClicked}
+        />
+      ))}
+    </List>
+  );
 }
 
-function PagesNavItem(props: PagesNavItemProps) {
-  const classes = useStyles({});
-  const { item, onItemSelected, currentLocale, selectMode, onSelectItem, onOpenItemMenu } = props;
+// PathListItem
+function NavItem(props: NavItemProps) {
+  const classes = useStyles(props);
+  const {
+    item,
+    onItemClicked,
+    onChangeParent,
+    locale,
+    isSelectMode,
+    onItemChecked,
+    onOpenItemMenu,
+    isLeaf
+  } = props;
   const [over, setOver] = useState(false);
+  const onMouseOver = isSelectMode ? null : () => setOver(true);
+  const onMouseLeave = isSelectMode ? null : () => setOver(false);
+  const onClick = (e) => onItemClicked?.(item, e);
+  const isNavigable = Boolean(item.previewUrl);
   return (
     <ListItem
-      className={clsx(classes.pagesNavItem, selectMode && 'noLeftPadding')}
-      onMouseOver={() => setOver(true)}
-      onMouseLeave={() => setOver(false)}
-      button
-      onClick={() => {
-        console.log('At list item click');
-      }}
+      button={(!isSelectMode) as true}
+      className={clsx(classes.pagesNavItem, isSelectMode && 'noLeftPadding')}
+      onMouseOver={onMouseOver}
+      onMouseLeave={onMouseLeave}
+      onClick={isNavigable ? onClick : () => onChangeParent?.(item)}
     >
-      {selectMode && (
+      {isSelectMode && (
         <Checkbox
           color="default"
           className={classes.pagesNavItemCheckbox}
           onChange={(e) => {
-            onSelectItem(item, e.currentTarget.checked);
+            onItemChecked(item, e.currentTarget.checked);
           }}
           value="primary"
         />
       )}
       <Typography
         variant="body2"
-        className={clsx(classes.pagesNavItemText, currentLocale !== item.localeCode && 'opacity')}
+        className={clsx(
+          classes.pagesNavItemText,
+          !isSelectMode && locale !== item.localeCode && 'opacity',
+          isSelectMode && 'select-mode',
+          !isNavigable && 'non-navigable'
+        )}
       >
         {item.label}
-        {currentLocale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
+        {locale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
       </Typography>
       <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
         <IconButton
-          aria-label="options"
+          aria-label="Options"
           className={classes.itemIconButton}
           onClick={(event) => {
             event.stopPropagation();
@@ -578,123 +674,230 @@ function PagesNavItem(props: PagesNavItemProps) {
           <MoreVertIcon className={classes.icon} />
         </IconButton>
         <IconButton
-          aria-label="options"
+          disabled={isLeaf}
+          aria-label="Options"
           className={classes.itemIconButton}
           onClick={(event) => {
             event.stopPropagation();
-            onItemSelected(item);
+            onChangeParent(item);
           }}
         >
-          <ChevronRightRoundedIcon className={classes.icon} />
+          {isLeaf ? (
+            <EcoRounded className={classes.icon} />
+          ) : (
+            <ChevronRightRoundedIcon className={classes.icon} />
+          )}
         </IconButton>
       </div>
     </ListItem>
   );
 }
 
-interface PagesNavProps {
-  items: Item[];
-  currentLocale: string;
-  selectMode: boolean;
-
-  onSelectItem(item: Item, unselect: boolean): void;
-
-  onItemSelected(item: Item): void;
-
-  onOpenItemMenu(element: Element, item: Item): void;
-}
-
-function PagesNav(props: PagesNavProps) {
-  const { items, onItemSelected, currentLocale, selectMode, onSelectItem, onOpenItemMenu } = props;
-  return (
-    <List component="nav" aria-label="pages nav" disablePadding={true}>
-      {items.map((item: Item) => (
-        <PagesNavItem
-          item={item}
-          key={item.id}
-          onItemSelected={onItemSelected}
-          currentLocale={currentLocale}
-          selectMode={selectMode}
-          onSelectItem={onSelectItem}
-          onOpenItemMenu={onOpenItemMenu}
-        />
-      ))}
-    </List>
-  );
-}
-
-interface PagesWidgetProps {
-  path: string;
-  locale: string;
-}
-
-interface MenuState {
-  selectMode: boolean;
+interface WidgetState {
+  rootPath: string;
+  currentPath: string;
+  localeCode: string;
+  keyword: '';
+  isSelectMode: boolean;
   hasClipboard: boolean;
+  itemsInPath: string[];
+  items: LookupTable<Item>;
+  breadcrumb: Breadcrumb[];
+  selectedItems: string[];
+  leafs: string[];
+  count: number; // Number of items in the current path
+  limit: number;
+  offset: number;
 }
 
-export default function PagesWidget(props: PagesWidgetProps) {
+// TODO: an initial path with trailing `/` breaks
+function itemsFromPath(path: string, root: string, items: LookupTable<Item>): Item[] {
+  const rootWithIndex = `${root}/index.xml`;
+  const rootWithoutIndex = root.replace('/index.xml', '');
+  const rootItem = items[rootWithIndex] ?? items[root];
+  if (path === rootWithIndex || path === root) {
+    return [rootItem];
+  }
+  const regExp = new RegExp(`${rootWithIndex}|${rootWithoutIndex}|\\/index\\.xml|/$`, 'g');
+  const pathWithoutRoot = path.replace(regExp, '');
+  let accum = rootWithoutIndex;
+  return [
+    rootItem,
+    ...pathWithoutRoot
+      .split('/')
+      .slice(1)
+      .map((folder) => {
+        accum += `/${folder}`;
+        return items[accum] ?? items[(accum += `/index.xml`)];
+      })
+  ];
+}
+
+const init: (props: WidgetProps) => WidgetState = (props: WidgetProps) => ({
+  rootPath: props.path,
+  currentPath: props.path,
+  localeCode: props.locale,
+  keyword: '',
+  isSelectMode: false,
+  hasClipboard: false,
+  itemsInPath: null,
+  items: {},
+  breadcrumb: [],
+  selectedItems: [],
+  leafs: [],
+  limit: 10,
+  offset: 0,
+  count: 0
+});
+
+type WidgetReducer = React.Reducer<WidgetState, StandardAction>;
+
+const reducer: WidgetReducer = (state, { type, payload }) => {
+  switch (type) {
+    case fetchPath.type:
+      return state;
+    case fetchPathComplete.type: {
+      const path = state.currentPath;
+      // Check and handle if the item has no children
+      if (
+        payload.length === 0 &&
+        // If it is the root path, we want to show the empty state,
+        // vs child paths, want to show the previous path and inform
+        // that there aren't any items at that path
+        (path !== state.rootPath || path !== `${state.rootPath}/index.xml`)
+      ) {
+        let pieces = path.split('/').slice(0);
+        pieces.pop();
+        if (path.includes('index.xml')) {
+          pieces.pop();
+        }
+        let nextPath = pieces.join('/');
+        if (nou(state.items[nextPath])) {
+          nextPath += `/index.xml`;
+        }
+        return {
+          ...state,
+          // Revert path to previous (parent) path
+          currentPath: nextPath,
+          leafs: state.leafs.concat(path)
+        };
+      } else {
+        const nextItems = {
+          ...state.items,
+          [payload.parent.id]: payload.parent,
+          ...createLookupTable(payload)
+        };
+        return {
+          ...state,
+          breadcrumb: itemsFromPath(path, state.rootPath, nextItems),
+          itemsInPath: payload.map((item) => item.id),
+          items: nextItems,
+          count: payload.length
+        };
+      }
+    }
+    case setCurrentPath.type:
+      return {
+        ...state,
+        currentPath: payload
+      };
+    case setKeyword.type:
+      return {
+        ...state,
+        keyword: payload
+      };
+    case itemUnchecked.type:
+    case setLocaleCode.type:
+    case itemChecked.type:
+    case clearChecked.type:
+      return state;
+    default:
+      throw new Error(`Unknown action "${type}"`);
+  }
+};
+
+const setLocaleCode = createAction<string>('SET_LOCALE_CODE');
+const setCurrentPath = createAction<string>('SET_CURRENT_PATH');
+const itemChecked = createAction<Item>('ITEM_CHECKED');
+const itemUnchecked = createAction<Item>('ITEM_UNCHECKED');
+const clearChecked = createAction('CLEAR_CHECKED');
+const fetchPath = createAction<string>('FETCH_PATH');
+const fetchPathComplete = createAction<GetChildrenResponse>('FETCH_PATH_COMPLETE');
+const setKeyword = createAction<string>('SET_KEYWORD');
+
+// function useReducerMiddleware(reducer, initialArg, init, middleware) {
+//   const [state, _dispatch] = useReducer(reducer, initialArg, init);
+//   return [
+//     state,
+//     useCallback(
+//       (action) => {
+//         _dispatch(action);
+//         middleware(action, _dispatch);
+//       },
+//       [middleware]
+//     )
+//   ];
+// }
+
+// PathNavigator
+export default function(props: WidgetProps) {
+  const { title, icon, path } = props;
+  const [state, _dispatch] = useReducer(reducer, props, init);
+
   const classes = useStyles({});
+  const site = useActiveSiteId();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { path, locale } = props;
-  const [currentLocale, setCurrentLocale] = React.useState(locale);
-  const site = useActiveSiteId();
+
+  const exec = useCallback(
+    (action) => {
+      _dispatch(action);
+      const { type, payload } = action;
+      switch (type) {
+        case fetchPath.type:
+        case setCurrentPath.type:
+          getChildrenByPath(site, fetchPath.type === type ? state.currentPath : payload).subscribe(
+            (response) => exec(fetchPathComplete(response)),
+            (response) => dispatch(showErrorDialog({ error: response }))
+          );
+          break;
+      }
+    },
+    [dispatch, site, state]
+  );
+
   const [menuState, setMenuState] = useSpreadState<MenuState>({
     selectMode: false,
     hasClipboard: false
   });
-  const [items, setItems] = useState<Item[]>(null);
-  const [breadcrumb, setBreadcrumb] = useState<Breadcrumb[]>([]);
-  const [activePath, setActivePath] = useState<string>(path);
-  const [selectedItems, setSelectedItems] = useState<LookupTable>(null);
   const [menu, setMenu] = useSpreadState({
     sections: [],
     anchorEl: null,
     activeItem: null
   });
-  const [keyword, setKeyword] = useState('');
-
   const [copyDialog, setCopyDialog] = useState(null);
   const [translationDialog, setTranslationDialog] = useState(null);
 
-  useEffect(() => {
-    getChildrenByPath(site, activePath).subscribe(
-      (response) => {
-        setItems(response.items);
-        setBreadcrumb([...breadcrumb, response.parent]);
-      },
-      (response) => {
-        dispatch(showErrorDialog({
-          error: response
-        }));
-      }
-    );
-  // Suppressing the lack of breadcrumb since it creates infinite loop.
-  // Need to change approach so we can list all dependencies appropriately.
-  // eslint-disable-next-line
-  }, [site, activePath, /*breadcrumb, */dispatch]);
+  useOnMount(() => {
+    exec(fetchPath(path));
+  });
 
-  setRequestForgeryToken();
+  const itemsResource: Resource<Item[]> = useStateResource(state.itemsInPath, {
+    shouldResolve: (items) => Boolean(items),
+    shouldRenew: (items, resource) => resource.complete,
+    shouldReject: () => false,
+    resultSelector: (items) => items.map((path) => state.items[path]),
+    errorSelector: null
+  });
 
-  const onItemSelected = (item: Item) => {
-    setActivePath(item.path);
-  };
+  const onPathSelected = (item: Item) => exec(setCurrentPath(item.path));
 
-  const onBreadcrumbSelected = (item: Breadcrumb) => {
-    let newBreadcrumb = [...breadcrumb];
-    let i = newBreadcrumb.indexOf(item);
-    newBreadcrumb.splice(i + 1);
-    setBreadcrumb(newBreadcrumb);
-    setActivePath(item.path);
-  };
+  const onBreadcrumbSelected = (item: Breadcrumb) => exec(setCurrentPath(item.path));
 
-  const onPageChanged = (page: number) => {
-  };
+  const onPageChanged = (page: number) => void 0;
 
-  const onSelectItem = (item: Item, select: boolean) => {
-    setSelectedItems({ ...selectedItems, [item.id]: select ? item : false });
-  };
+  const onSelectItem = (item: Item, checked: boolean) =>
+    exec(checked ? itemChecked(item) : itemUnchecked(item));
 
   const onMenuItemClicked = (section: SectionItem) => {
     switch (section.id) {
@@ -708,7 +911,7 @@ export default function PagesWidget(props: PagesWidgetProps) {
       }
       case 'terminateSelection': {
         setMenuState({ selectMode: false });
-        setSelectedItems(null);
+        exec(clearChecked());
         setMenu({
           activeItem: null,
           anchorEl: null
@@ -831,37 +1034,30 @@ export default function PagesWidget(props: PagesWidgetProps) {
             ...menu,
             anchorEl: null
           });
-          onChangeLocale(section.id.split('.')[1]);
+          exec(setLocaleCode(section.id.split('.')[1]));
         }
         break;
       }
     }
   };
 
-  const onOpenBreadcrumbsMenu = (element: Element) => {
-    const count =
-      selectedItems &&
-      Object.values(selectedItems).filter((item: Item | false) => item !== false).length;
+  const onCurrentParentMenu = (element: Element) => {
+    const count = state.selectedItems.length;
     setMenu({
       sections: generateMenuSections(null, menuState, count),
       anchorEl: element,
-      activeItem: breadcrumb[breadcrumb.length - 1]
+      activeItem: state.currentPath
     });
   };
 
-  const onOpenItemMenu = (element: Element, item: Item) => {
+  const onOpenItemMenu = (element: Element, item: Item) =>
     setMenu({
       sections: generateMenuSections(item, menuState),
       anchorEl: element,
       activeItem: item
     });
-  };
 
-  const onChangeLocale = (locale: string) => {
-    setCurrentLocale(locale);
-  };
-
-  const onPagesMenuOpen = (anchorEl: Element, type: string) => {
+  const onHeaderButtonClick = (anchorEl: Element, type: string) => {
     if (type === 'language') {
       setMenu({
         sections: [
@@ -895,17 +1091,9 @@ export default function PagesWidget(props: PagesWidgetProps) {
     }
   };
 
-  const onSearch = (keyword: string) => {
-    setKeyword(keyword);
-  };
+  const onCloseCustomMenu = () => setMenu({ ...menu, anchorEl: null, activeItem: null });
 
-  const onCloseCustomMenu = () => {
-    setMenu({ ...menu, anchorEl: null, activeItem: null });
-  };
-
-  const onCopyDialogClose = () => {
-    setCopyDialog(null);
-  };
+  const onCopyDialogClose = () => setCopyDialog(null);
 
   const onCopyDialogOk = (item: Partial<LegacyItem>) => {
     setCopyDialog(null);
@@ -929,73 +1117,83 @@ export default function PagesWidget(props: PagesWidgetProps) {
     );
   };
 
-  const onTranslationDialogClose = () => {
-    setTranslationDialog(null);
+  const onTranslationDialogClose = () => setTranslationDialog(null);
+
+  const onItemClicked = (item: Item) => {
+    window.location.href = `/studio/preview/#/?page=${item.previewUrl}&site=${site}`;
   };
 
   return (
     <section className={classes.wrapper}>
-      {items !== null && (
-        <>
-          <PagesHeader
-            currentLocale={currentLocale}
-            setCurrentLocale={setCurrentLocale}
-            onPagesMenuOpen={onPagesMenuOpen}
-          />
-          <PagesBreadcrumbs
-            breadcrumb={breadcrumb}
-            onBreadcrumbSelected={onBreadcrumbSelected}
-            onOpenBreadcrumbsMenu={onOpenBreadcrumbsMenu}
-            keyword={keyword}
-            onSearch={onSearch}
-          />
-          {items && (
-            <PagesNav
-              items={items}
-              onItemSelected={onItemSelected}
-              currentLocale={currentLocale}
-              selectMode={menuState.selectMode}
-              onSelectItem={onSelectItem}
-              onOpenItemMenu={onOpenItemMenu}
-            />
-          )}
-          <TablePagination
-            className={classes.pagination}
-            classes={{
-              root: classes.pagination,
-              selectRoot: 'hidden',
-              toolbar: clsx(classes.toolbar, classes.widgetSection)
-            }}
-            component="div"
-            labelRowsPerPage=""
-            count={10}
-            rowsPerPage={10}
-            page={0}
-            backIconButtonProps={{
-              'aria-label': formatMessage(translations.previousPage)
-            }}
-            nextIconButtonProps={{
-              'aria-label': formatMessage(translations.nextPage)
-            }}
-            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
-              onPageChanged(page)
-            }
-          />
-          <ContextMenu
-            anchorEl={menu.anchorEl}
-            open={Boolean(menu.anchorEl)}
-            classes={{
-              paper: classes.menuPaper,
-              helperText: classes.helperText,
-              itemRoot: classes.menuItemRoot,
-              menuList: classes.menuList
-            }}
-            onClose={onCloseCustomMenu}
-            sections={menu.sections}
-            onMenuItemClicked={onMenuItemClicked}
-          />
-        </>
-      )}
+      <Header
+        icon={icon}
+        title={title}
+        locale={state.localeCode}
+        onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
+        onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
+      />
+      <SuspenseWithEmptyState
+        resource={itemsResource}
+        loadingStateProps={{
+          graphicProps: { className: classes.stateGraphics }
+        }}
+        errorBoundaryProps={{
+          errorStateProps: { classes: { graphic: classes.stateGraphics } }
+        }}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: 'No items at this location',
+            classes: { image: classes.stateGraphics }
+          }
+        }}
+      >
+        <Breadcrumbs
+          keyword={state.keyword}
+          breadcrumb={state.breadcrumb}
+          onMenu={onCurrentParentMenu}
+          onSearch={(q) => exec(setKeyword(q))}
+          onCrumbSelected={onBreadcrumbSelected}
+        />
+        <Nav
+          leafs={state.leafs}
+          locale={state.localeCode}
+          resource={itemsResource}
+          isSelectMode={menuState.selectMode}
+          onSelectItem={onSelectItem}
+          onPathSelected={onPathSelected}
+          onOpenItemMenu={onOpenItemMenu}
+          onItemClicked={onItemClicked}
+        />
+        <TablePagination
+          className={classes.pagination}
+          classes={{
+            root: classes.pagination,
+            selectRoot: 'hidden',
+            toolbar: clsx(classes.toolbar, classes.widgetSection)
+          }}
+          component="div"
+          labelRowsPerPage=""
+          count={state.count}
+          rowsPerPage={state.limit}
+          page={Math.ceil(state.offset / state.limit)}
+          backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
+          nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+          onChangePage={(e, page: number) => onPageChanged(page)}
+        />
+      </SuspenseWithEmptyState>
+      <ContextMenu
+        anchorEl={menu.anchorEl}
+        open={Boolean(menu.anchorEl)}
+        classes={{
+          paper: classes.menuPaper,
+          helperText: classes.helperText,
+          itemRoot: classes.menuItemRoot,
+          menuList: classes.menuList
+        }}
+        onClose={onCloseCustomMenu}
+        sections={menu.sections}
+        onMenuItemClicked={onMenuItemClicked}
+      />
       {copyDialog && (
         <CopyItemsDialog
           title={formatMessage(translations.copyDialogTitle)}
