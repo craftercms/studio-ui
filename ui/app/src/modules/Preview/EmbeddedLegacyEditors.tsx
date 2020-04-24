@@ -106,19 +106,21 @@ interface EmbeddedLegacyEditorsBaseProps {
   showController?: boolean;
   showTabs?: boolean;
 
+  getPath?(type?: string): void;
+
   onSaveLegacySuccess?(response): any;
 
   onSaveSuccess?(response): any;
 }
 
-export type EmbeddedLegacyEditorsProps = PropsWithChildren<
-  EmbeddedLegacyEditorsBaseProps & {
-    getPath?(type: string): void;
-  }
->;
+export type EmbeddedLegacyEditorsProps = PropsWithChildren<EmbeddedLegacyEditorsBaseProps & {
+  onClose?(): any;
+  onDismiss?(): any;
+}>;
 
 export interface EmbeddedLegacyEditorsStateProps extends EmbeddedLegacyEditorsBaseProps {
-  getPath?: StandardAction;
+  onClose?: StandardAction
+  onDismiss?: StandardAction
 }
 
 export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {

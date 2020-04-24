@@ -105,6 +105,13 @@ function GlobalDialogManager() {
         showController={state.edit.showController}
         dialogConfig={state.edit.dialogConfig}
         setDialogConfig={state.edit.setDialogConfig}
+
+        getPath={state.edit.getPath}
+        onSaveLegacySuccess={state.edit.onSaveLegacySuccess}
+        onSaveSuccess={state.edit.onSaveSuccess}
+
+        onClose={createCallback(state.dependencies.onClose, dispatch)}
+        onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}
       />
       {/* endregion */}
 
@@ -125,6 +132,8 @@ function GlobalDialogManager() {
         site={state.newContent.site}
         previewItem={state.newContent.previewItem}
         compact={state.newContent.compact}
+        onSaveSuccess={state.newContent.onSaveSuccess}
+        onSaveLegacySuccess={state.newContent.onSaveLegacySuccess}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />

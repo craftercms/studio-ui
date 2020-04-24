@@ -138,13 +138,17 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
         }
 
-        dispatch(showEdit({
-          dialogConfig: {
-            src,
-            type,
-            inProgress: true
-          }
-        }));
+        dispatch(
+          showEdit({
+            dialogConfig: {
+              src,
+              type,
+              inProgress: true
+            },
+            showController: !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page',
+            getPath: getPath
+          })
+        );
         break;
       }
     }

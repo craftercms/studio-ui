@@ -33,7 +33,7 @@ export default createReducer<GlobalState['dialogs']['edit']>(
   { dialogConfig: { open: false }, setDialogConfig: {} },
   {
     [showEdit.type]: (state, { payload }) => ({
-      // onDismiss: closeDeleteDialog(),
+      onDismiss: closeEdit(),
       ...payload,
       dialogConfig: {
         ...payload.dialogConfig,
@@ -41,6 +41,7 @@ export default createReducer<GlobalState['dialogs']['edit']>(
       }
     }),
     [updateEditConfig.type]: (state, { payload}) => ({
+      ...state,
       dialogConfig: {
         ...state.dialogConfig,
         ...payload
@@ -49,7 +50,8 @@ export default createReducer<GlobalState['dialogs']['edit']>(
     [closeEdit.type]: (state, { payload }) => ({
       dialogConfig: {
         ...payload.dialogConfig,
-        open: false
+        open: false,
+        onClose: state.onClose
       }
     })
   }

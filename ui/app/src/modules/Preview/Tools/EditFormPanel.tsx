@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import { ContentTypeHelper, ModelHelper } from '../../../utils/helpers';
 import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, usePreviewState, useSelection, useSpreadState } from '../../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -30,7 +30,7 @@ import { createStyles } from '@material-ui/core';
 import { findParentModelId } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import { getQueryVariable } from '../../../utils/path';
-import EmbeddedLegacyEditors from '../EmbeddedLegacyEditors';
+import { showEdit } from '../../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -84,12 +84,6 @@ export default function EditFormPanel() {
   const onBack = createBackHandler(dispatch);
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: null,
-    type: null,
-    inProgress: true
-  });
 
   const item = selected[0];
   const model = models[item.modelId];
@@ -138,12 +132,16 @@ export default function EditFormPanel() {
   }, [childrenMap, contentTypes, defaultSrc, model, models, path, selectedContentType, selectedId, site]);
 
   function openDialog(type: string) {
-    setDialogConfig(
-      {
-        open: true,
-        src: getSrc(type),
-        type
-      }
+    dispatch(
+      showEdit({
+        dialogConfig: {
+          src: getSrc(type),
+          type,
+          inProgress: true
+        },
+        showController: selectedContentType.includes('/page'),
+        getPath: getPath
+      })
     );
   }
 
@@ -210,15 +208,6 @@ export default function EditFormPanel() {
           }
         </div>
       </ToolPanel>
-      {
-        dialogConfig.open &&
-        <EmbeddedLegacyEditors
-          dialogConfig={dialogConfig}
-          setDialogConfig={setDialogConfig}
-          getPath={getPath}
-          showController={selectedContentType.includes('/page')}
-        />
-      }
     </>
   );
 }

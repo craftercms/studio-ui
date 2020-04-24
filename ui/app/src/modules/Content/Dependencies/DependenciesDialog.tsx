@@ -54,7 +54,8 @@ import DialogFooter from '../../../components/DialogFooter';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
-import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
+import { useDispatch } from 'react-redux';
+import { showEdit } from '../../../state/reducers/dialogs/edit';
 
 const assetsTypes = {
   'all-deps': {
@@ -287,8 +288,6 @@ interface DependenciesDialogUIProps {
   onClose(): any;
   onDismiss(): any;
   isEditableItem: Function;
-  editDialogConfig: any;
-  setEditDialogConfig: Function;
   handleEditorDisplay: Function;
   contextMenu: any;
 
@@ -312,8 +311,6 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     onClose,
     onDismiss,
     isEditableItem,
-    editDialogConfig,
-    setEditDialogConfig,
     handleEditorDisplay,
     contextMenu,
     handleContextMenuClick,
@@ -520,11 +517,6 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           </Select>
         </FormControl>
       </DialogFooter>
-      <EmbeddedLegacyEditors
-        showTabs={false}
-        dialogConfig={editDialogConfig}
-        setDialogConfig={setEditDialogConfig}
-      />
     </Dialog>
   )
 }
@@ -565,16 +557,11 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [editDialogConfig, setEditDialogConfig] = useSpreadState({
-    open: false,
-    src: defaultFormSrc,
-    type: 'form',
-    inProgress: false
-  });
   const [contextMenu, setContextMenu] = useSpreadState({
     el: null,
     dependency: null
   });
+  const dispatch = useDispatch();
 
   const handleEditorDisplay = item => {
     let type = 'controller';
@@ -586,12 +573,16 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     }
     let src = `${defaultFormSrc}?site=${siteId}&path=${item.uri}&type=${type}`;
 
-    setEditDialogConfig(
-      {
-        open: true,
-        src,
-        type: 'form'
-      });
+    dispatch(
+      showEdit({
+        dialogConfig: {
+          src,
+          type,
+          inProgress: true
+        },
+        showTabs: false
+      })
+    );
   };
 
   const depsSource = useMemo(() => {
@@ -711,8 +702,6 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       onClose={onClose}
       onDismiss={onDismiss}
       isEditableItem={isEditableAsset}
-      editDialogConfig={editDialogConfig}
-      setEditDialogConfig={setEditDialogConfig}
       handleEditorDisplay={handleEditorDisplay}
       contextMenu={contextMenu}
       handleContextMenuClick={handleContextMenuClick}

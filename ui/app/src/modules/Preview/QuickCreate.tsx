@@ -25,14 +25,14 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
-import { useActiveSiteId, usePreviewState, useSelection, useSpreadState } from '../../utils/hooks';
-import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { Item } from '../../models/Item';
 import { APIError } from '../../models/GlobalState';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
+import { showEdit } from '../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -95,12 +95,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [error, setError] = useState<APIError>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: defaultFormSrc,
-    type: 'form',
-    inProgress: false
-  });
 
   const onEmbeddedFormSaveSuccess = ({ data }) => {
     data.item?.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
@@ -112,7 +106,9 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
       showNewContentDialog({
         site: siteId,
         previewItem,
-        compact: false
+        compact: false,
+        onSaveLegacySuccess: onSaveLegacySuccess,
+        onSaveSuccess: onEmbeddedFormSaveSuccess
       })
     );
   };
@@ -124,10 +120,19 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
       .replace('{year}', today.getFullYear())
       .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
     onItemClicked?.();
-    setDialogConfig({
-      open: true,
-      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`
-    });
+
+    dispatch(
+      showEdit({
+        dialogConfig: {
+          src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`,
+          type: 'form',
+          inProgress: false
+        },
+        showTabs: false,
+        onSaveLegacySuccess,
+        onSaveSuccess: onEmbeddedFormSaveSuccess
+      })
+    );
   };
 
   useEffect(() => {
@@ -161,16 +166,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           </MenuItem>
         ))}
       </Menu>
-      {dialogConfig.open && (
-        <EmbeddedLegacyEditors
-          showTabs={false}
-          showController={false}
-          dialogConfig={dialogConfig}
-          setDialogConfig={setDialogConfig}
-          onSaveLegacySuccess={onSaveLegacySuccess}
-          onSaveSuccess={onEmbeddedFormSaveSuccess}
-        />
-      )}
       <ErrorDialog error={error} onDismiss={() => setError(null)} />
     </>
   );
