@@ -58,7 +58,9 @@ import { SuspenseWithEmptyState } from './SystemStatus/Suspencified';
 import StandardAction from '../models/StandardAction';
 import { createAction } from '@reduxjs/toolkit';
 import { createLookupTable, nou } from '../utils/object';
-import { EcoRounded } from '@material-ui/icons';
+import LeafIcon from '@material-ui/icons/EcoRounded';
+import FolderIcon from '@material-ui/icons/FolderOpenRounded';
+import PageIcon from '@material-ui/icons/InsertDriveFileOutlined';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 
@@ -106,11 +108,12 @@ const useStyles = makeStyles((theme) =>
       padding: '2px 3px'
     },
     searchRoot: {},
-    pagesBreadcrumbs: {
+    // region Breadcrumbs
+    breadcrumbs: {
       display: 'flex',
       alignItems: 'center'
     },
-    pagesBreadcrumbsOl: {
+    breadcrumbsList: {
       display: 'flex',
       alignItems: 'center',
       padding: '9px 0',
@@ -118,13 +121,18 @@ const useStyles = makeStyles((theme) =>
         lineHeight: 1
       }
     },
-    PagesBreadCrumbsSeparator: {
+    breadcrumbsSeparator: {
       margin: '0 2px'
     },
-    pagesBreadcrumbsTypo: {
+    breadcrumbsTypography: {
       fontWeight: 'bold',
       color: palette.gray.medium4
     },
+    breadcrumbLast: {
+      color: palette.teal.shade,
+      textDecoration: 'underline'
+    },
+    // endregion
     pagesNavItem: {
       justifyContent: 'space-between',
       padding: '0 0 0 10px',
@@ -201,6 +209,11 @@ const useStyles = makeStyles((theme) =>
     // region Nav Item Styles
     icon: {
       fontSize: '1.2rem'
+    },
+    typeIcon: {
+      marginRight: 5,
+      fontSize: '1.2rem',
+      color: palette.gray.medium4
     }
     // endregion
   })
@@ -406,22 +419,17 @@ interface HeaderProps {
   locale: string;
   title: string;
   icon: React.ElementType | string;
+  onClick?(): void;
   onLanguageMenu?(anchor: Element): void;
   onContextMenu?(anchor: Element): void;
 }
 
-interface Breadcrumb {
-  id: string;
-  label: string;
-  path: string;
-}
-
 interface BreadcrumbsProps {
   keyword: string;
-  breadcrumb: Breadcrumb[];
+  breadcrumb: Item[];
   onMenu(element: Element): void;
   onSearch(keyword: string): void;
-  onCrumbSelected(breadcrumb: Breadcrumb): void;
+  onCrumbSelected(breadcrumb: Item): void;
 }
 
 interface NavItemProps {
@@ -461,7 +469,7 @@ interface MenuState {
 // PathNavigatorHeader
 function Header(props: HeaderProps) {
   const classes = useStyles({});
-  const { title, icon: Icon, locale, onLanguageMenu, onContextMenu } = props;
+  const { title, icon: Icon, locale, onLanguageMenu, onContextMenu, onClick } = props;
 
   const currentFlag = (locale: string) => {
     switch (locale) {
@@ -478,13 +486,18 @@ function Header(props: HeaderProps) {
   };
 
   return (
-    <header className={clsx(classes.pagesHeader)}>
+    <header className={clsx(classes.pagesHeader)} onClick={onClick}>
       {typeof Icon === 'string' ? (
         <span className={`fa ${Icon}`} />
       ) : (
         <Icon className={classes.pagesIcon} />
       )}
-      <Typography variant="body1" component="h6" className={classes.pagesHeaderTitle} children={title} />
+      <Typography
+        variant="body1"
+        component="h6"
+        className={classes.pagesHeaderTitle}
+        children={title}
+      />
       <IconButton
         aria-label="language select"
         className={classes.iconButton}
@@ -516,8 +529,10 @@ function Breadcrumbs(props: BreadcrumbsProps) {
     onSearch(keyword);
   };
 
+  const maxIndex = breadcrumb.length - 1;
+
   return (
-    <section className={clsx(classes.pagesBreadcrumbs, classes.widgetSection)}>
+    <section className={clsx(classes.breadcrumbs, classes.widgetSection)}>
       {showSearch ? (
         <SearchBar
           autoFocus
@@ -534,19 +549,24 @@ function Breadcrumbs(props: BreadcrumbsProps) {
             aria-label="Breadcrumbs"
             separator={<NavigateNextIcon fontSize="small" />}
             classes={{
-              ol: classes.pagesBreadcrumbsOl,
-              separator: classes.PagesBreadCrumbsSeparator
+              ol: classes.breadcrumbsList,
+              separator: classes.breadcrumbsSeparator
             }}
           >
-            {breadcrumb.map((item: Breadcrumb, i: number) =>
-              breadcrumb.length !== i + 1 ? (
+            {breadcrumb.map((item: Item, i: number) =>
+              maxIndex !== i || (maxIndex === i && isNavigable(item)) ? (
                 <Link
                   key={item.id}
                   color="inherit"
                   component="button"
                   variant="subtitle2"
                   underline="always"
-                  TypographyClasses={{ root: classes.pagesBreadcrumbsTypo }}
+                  TypographyClasses={{
+                    root: clsx(
+                      classes.breadcrumbsTypography,
+                      maxIndex === i && classes.breadcrumbLast
+                    )
+                  }}
                   onClick={() => onCrumbSelected(item)}
                   children={item.label}
                 />
@@ -554,7 +574,7 @@ function Breadcrumbs(props: BreadcrumbsProps) {
                 <Typography
                   key={item.id}
                   variant="subtitle2"
-                  className={classes.pagesBreadcrumbsTypo}
+                  className={classes.breadcrumbsTypography}
                   children={item.label}
                 />
               )
@@ -631,16 +651,16 @@ function NavItem(props: NavItemProps) {
   const onMouseOver = isSelectMode ? null : () => setOver(true);
   const onMouseLeave = isSelectMode ? null : () => setOver(false);
   const onClick = (e) => onItemClicked?.(item, e);
-  const isNavigable = Boolean(item.previewUrl);
+  const navigable = isNavigable(item);
   return (
     <ListItem
-      button={(!isSelectMode) as true}
+      button={!isSelectMode as true}
       className={clsx(classes.pagesNavItem, isSelectMode && 'noLeftPadding')}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
-      onClick={isNavigable ? onClick : () => onChangeParent?.(item)}
+      onClick={navigable ? onClick : () => onChangeParent?.(item)}
     >
-      {isSelectMode && (
+      {isSelectMode ? (
         <Checkbox
           color="default"
           className={classes.pagesNavItemCheckbox}
@@ -649,6 +669,14 @@ function NavItem(props: NavItemProps) {
           }}
           value="primary"
         />
+      ) : navigable ? (
+        isLeaf ? (
+          <LeafIcon className={classes.typeIcon} />
+        ) : (
+          <PageIcon className={classes.typeIcon} />
+        )
+      ) : (
+        <FolderIcon className={classes.typeIcon} />
       )}
       <Typography
         variant="body2"
@@ -656,7 +684,7 @@ function NavItem(props: NavItemProps) {
           classes.pagesNavItemText,
           !isSelectMode && locale !== item.localeCode && 'opacity',
           isSelectMode && 'select-mode',
-          !isNavigable && 'non-navigable'
+          !navigable && 'non-navigable'
         )}
       >
         {item.label}
@@ -682,11 +710,7 @@ function NavItem(props: NavItemProps) {
             onChangeParent(item);
           }}
         >
-          {isLeaf ? (
-            <EcoRounded className={classes.icon} />
-          ) : (
-            <ChevronRightRoundedIcon className={classes.icon} />
-          )}
+          <ChevronRightRoundedIcon className={classes.icon} />
         </IconButton>
       </div>
     </ListItem>
@@ -702,7 +726,7 @@ interface WidgetState {
   hasClipboard: boolean;
   itemsInPath: string[];
   items: LookupTable<Item>;
-  breadcrumb: Breadcrumb[];
+  breadcrumb: Item[];
   selectedItems: string[];
   leafs: string[];
   count: number; // Number of items in the current path
@@ -712,8 +736,8 @@ interface WidgetState {
 
 // TODO: an initial path with trailing `/` breaks
 function itemsFromPath(path: string, root: string, items: LookupTable<Item>): Item[] {
-  const rootWithIndex = `${root}/index.xml`;
-  const rootWithoutIndex = root.replace('/index.xml', '');
+  const rootWithIndex = index(root);
+  const rootWithoutIndex = unindex(root);
   const rootItem = items[rootWithIndex] ?? items[root];
   if (path === rootWithIndex || path === root) {
     return [rootItem];
@@ -728,9 +752,21 @@ function itemsFromPath(path: string, root: string, items: LookupTable<Item>): It
       .slice(1)
       .map((folder) => {
         accum += `/${folder}`;
-        return items[accum] ?? items[(accum += `/index.xml`)];
+        return items[accum] ?? items[index(accum)];
       })
   ];
+}
+
+function unindex(path: string): string {
+  return path.replace('/index.xml', '');
+}
+
+function index(path: string): string {
+  return `${unindex(path)}/index.xml`;
+}
+
+function isNavigable(item: Item): boolean {
+  return Boolean(item.previewUrl);
 }
 
 const init: (props: WidgetProps) => WidgetState = (props: WidgetProps) => ({
@@ -764,7 +800,7 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
         // If it is the root path, we want to show the empty state,
         // vs child paths, want to show the previous path and inform
         // that there aren't any items at that path
-        (path !== state.rootPath || path !== `${state.rootPath}/index.xml`)
+        unindex(path) !== unindex(state.rootPath)
       ) {
         let pieces = path.split('/').slice(0);
         pieces.pop();
@@ -773,7 +809,7 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
         }
         let nextPath = pieces.join('/');
         if (nou(state.items[nextPath])) {
-          nextPath += `/index.xml`;
+          nextPath = index(nextPath);
         }
         return {
           ...state,
@@ -799,6 +835,7 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
     case setCurrentPath.type:
       return {
         ...state,
+        keyword: '',
         currentPath: payload
       };
     case setKeyword.type:
@@ -891,8 +928,6 @@ export default function(props: WidgetProps) {
   });
 
   const onPathSelected = (item: Item) => exec(setCurrentPath(item.path));
-
-  const onBreadcrumbSelected = (item: Breadcrumb) => exec(setCurrentPath(item.path));
 
   const onPageChanged = (page: number) => void 0;
 
@@ -1123,12 +1158,21 @@ export default function(props: WidgetProps) {
     window.location.href = `/studio/preview/#/?page=${item.previewUrl}&site=${site}`;
   };
 
+  const onBreadcrumbSelected = (item: Item) => {
+    if (item.path === state.currentPath) {
+      onItemClicked(item);
+    } else {
+      exec(setCurrentPath(item.path));
+    }
+  };
+
   return (
     <section className={classes.wrapper}>
       <Header
         icon={icon}
         title={title}
         locale={state.localeCode}
+        onClick={() => console.log('Clicked.')}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
       />
