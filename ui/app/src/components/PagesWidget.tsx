@@ -58,13 +58,19 @@ import { SuspenseWithEmptyState } from './SystemStatus/Suspencified';
 import StandardAction from '../models/StandardAction';
 import { createAction } from '@reduxjs/toolkit';
 import { createLookupTable, nou } from '../utils/object';
-import { EcoRounded } from '@material-ui/icons';
+import LeafIcon from '@material-ui/icons/EcoRounded';
+import FolderIcon from '@material-ui/icons/FolderOpenRounded';
+import PageIcon from '@material-ui/icons/InsertDriveFileOutlined';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    wrapper: {},
+    root: {
+      '&.collapsed': {
+        paddingBottom: 5
+      }
+    },
     widgetSection: {
       padding: `0 10px`,
       '& .MuiSvgIcon-root': {
@@ -84,20 +90,22 @@ const useStyles = makeStyles((theme) =>
     optionsWrapperOver: {
       visibility: 'visible'
     },
-    pagesHeader: {
+    // region Header
+    headerRoot: {
       display: 'flex',
-      padding: '5px 5px 0',
+      padding: '5px 10px 0',
       alignItems: 'center',
       '& .MuiSvgIcon-root': {
         fontSize: '1.1rem'
       }
     },
-    pagesIcon: {
-      fontSize: '1.1rem'
-    },
-    pagesHeaderTitle: {
+    headerTitle: {
       marginLeft: '6px',
       flexGrow: 1
+    },
+    // endregion
+    pagesIcon: {
+      fontSize: '1.1rem'
     },
     iconButton: {
       padding: '6px'
@@ -106,11 +114,12 @@ const useStyles = makeStyles((theme) =>
       padding: '2px 3px'
     },
     searchRoot: {},
-    pagesBreadcrumbs: {
+    // region Breadcrumbs
+    breadcrumbs: {
       display: 'flex',
       alignItems: 'center'
     },
-    pagesBreadcrumbsOl: {
+    breadcrumbsList: {
       display: 'flex',
       alignItems: 'center',
       padding: '9px 0',
@@ -118,44 +127,20 @@ const useStyles = makeStyles((theme) =>
         lineHeight: 1
       }
     },
-    PagesBreadCrumbsSeparator: {
+    breadcrumbsSeparator: {
       margin: '0 2px'
     },
-    pagesBreadcrumbsTypo: {
+    breadcrumbsTypography: {
       fontWeight: 'bold',
       color: palette.gray.medium4
     },
-    pagesNavItem: {
-      justifyContent: 'space-between',
-      padding: '0 0 0 10px',
-      '&.noLeftPadding': {
-        paddingLeft: 0
-      },
-      '&:hover': {
-        backgroundColor: 'rgba(0, 0, 0, 0.08)'
-      }
-    },
-    pagesNavItemText: {
+    breadcrumbLast: {
       color: palette.teal.shade,
-      padding: 0,
-      marginRight: 'auto',
-      '&.opacity': {
-        opacity: '0.7'
-      },
-      '&.select-mode': {
-        color: palette.black
-      },
-      '&.non-navigable': {
-        color: palette.gray.medium7
-      }
+      textDecoration: 'underline'
     },
-    pagesNavItemCheckbox: {
-      padding: '6px',
-      color: theme.palette.primary.main
-    },
+    // endregion
+    // region Pagination
     pagination: {
-      marginTop: '10px',
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
       '& p': {
         padding: 0
       },
@@ -166,9 +151,9 @@ const useStyles = makeStyles((theme) =>
         display: 'none'
       }
     },
-    toolbar: {
+    paginationToolbar: {
       display: 'flex',
-      minHeight: '40px',
+      minHeight: '30px',
       justifyContent: 'space-between',
       '& .MuiTablePagination-spacer': {
         display: 'none'
@@ -180,6 +165,7 @@ const useStyles = makeStyles((theme) =>
         padding: 0
       }
     },
+    // endregion
     menuPaper: {
       width: '182px'
     },
@@ -201,7 +187,40 @@ const useStyles = makeStyles((theme) =>
     // region Nav Item Styles
     icon: {
       fontSize: '1.2rem'
-    }
+    },
+    typeIcon: {
+      marginRight: 5,
+      fontSize: '1.2rem',
+      color: palette.gray.medium4
+    },
+    navItem: {
+      justifyContent: 'space-between',
+      padding: '0 0 0 10px',
+      '&.noLeftPadding': {
+        paddingLeft: 0
+      },
+      '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.08)'
+      }
+    },
+    navItemText: {
+      color: palette.teal.shade,
+      padding: 0,
+      marginRight: 'auto',
+      '&.opacity': {
+        opacity: '0.7'
+      },
+      '&.select-mode': {
+        color: palette.black
+      },
+      '&.non-navigable': {
+        color: palette.gray.medium7
+      }
+    },
+    navItemCheckbox: {
+      padding: '6px',
+      color: theme.palette.primary.main
+    },
     // endregion
   })
 );
@@ -374,12 +393,12 @@ function generateMenuSections(item: Item, menuState: MenuState, count?: number) 
     sections.push(
       menuState.hasClipboard
         ? [
-            menuOptions.cut,
-            menuOptions.copy,
-            menuOptions.paste,
-            menuOptions.duplicate,
-            menuOptions.delete
-          ]
+          menuOptions.cut,
+          menuOptions.copy,
+          menuOptions.paste,
+          menuOptions.duplicate,
+          menuOptions.delete
+        ]
         : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate, menuOptions.delete]
     );
     sections.push([menuOptions.translation]);
@@ -406,22 +425,17 @@ interface HeaderProps {
   locale: string;
   title: string;
   icon: React.ElementType | string;
+  onClick?(): void;
   onLanguageMenu?(anchor: Element): void;
   onContextMenu?(anchor: Element): void;
 }
 
-interface Breadcrumb {
-  id: string;
-  label: string;
-  path: string;
-}
-
 interface BreadcrumbsProps {
   keyword: string;
-  breadcrumb: Breadcrumb[];
+  breadcrumb: Item[];
   onMenu(element: Element): void;
   onSearch(keyword: string): void;
-  onCrumbSelected(breadcrumb: Breadcrumb): void;
+  onCrumbSelected(breadcrumb: Item): void;
 }
 
 interface NavItemProps {
@@ -451,6 +465,9 @@ interface WidgetProps {
   icon?: string | React.ElementType;
   title?: string;
   locale: string;
+  classes?: {
+    root?: string;
+  }
 }
 
 interface MenuState {
@@ -461,8 +478,7 @@ interface MenuState {
 // PathNavigatorHeader
 function Header(props: HeaderProps) {
   const classes = useStyles({});
-  const { title, icon: Icon, locale, onLanguageMenu, onContextMenu } = props;
-
+  const { title, icon: Icon, locale, onLanguageMenu, onContextMenu, onClick } = props;
   const currentFlag = (locale: string) => {
     switch (locale) {
       case 'en': {
@@ -476,26 +492,36 @@ function Header(props: HeaderProps) {
       }
     }
   };
-
   return (
-    <header className={clsx(classes.pagesHeader)}>
+    <header className={clsx(classes.headerRoot)} onClick={onClick}>
       {typeof Icon === 'string' ? (
         <span className={`fa ${Icon}`} />
       ) : (
         <Icon className={classes.pagesIcon} />
       )}
-      <Typography variant="body1" component="h6" className={classes.pagesHeaderTitle} children={title} />
+      <Typography
+        variant="body1"
+        component="h6"
+        className={classes.headerTitle}
+        children={title}
+      />
       <IconButton
         aria-label="language select"
         className={classes.iconButton}
-        onClick={(event) => onLanguageMenu(event.currentTarget)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onLanguageMenu(e.currentTarget)
+        }}
       >
         {currentFlag(locale)}
       </IconButton>
       <IconButton
         aria-label="options"
         className={classes.iconButton}
-        onClick={(event) => onContextMenu(event.currentTarget)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onContextMenu(e.currentTarget)
+        }}
       >
         <MoreVertIcon />
       </IconButton>
@@ -516,8 +542,10 @@ function Breadcrumbs(props: BreadcrumbsProps) {
     onSearch(keyword);
   };
 
+  const maxIndex = breadcrumb.length - 1;
+
   return (
-    <section className={clsx(classes.pagesBreadcrumbs, classes.widgetSection)}>
+    <section className={clsx(classes.breadcrumbs, classes.widgetSection)}>
       {showSearch ? (
         <SearchBar
           autoFocus
@@ -534,19 +562,24 @@ function Breadcrumbs(props: BreadcrumbsProps) {
             aria-label="Breadcrumbs"
             separator={<NavigateNextIcon fontSize="small" />}
             classes={{
-              ol: classes.pagesBreadcrumbsOl,
-              separator: classes.PagesBreadCrumbsSeparator
+              ol: classes.breadcrumbsList,
+              separator: classes.breadcrumbsSeparator
             }}
           >
-            {breadcrumb.map((item: Breadcrumb, i: number) =>
-              breadcrumb.length !== i + 1 ? (
+            {breadcrumb.map((item: Item, i: number) =>
+              maxIndex !== i || (maxIndex === i && isNavigable(item)) ? (
                 <Link
                   key={item.id}
                   color="inherit"
                   component="button"
                   variant="subtitle2"
                   underline="always"
-                  TypographyClasses={{ root: classes.pagesBreadcrumbsTypo }}
+                  TypographyClasses={{
+                    root: clsx(
+                      classes.breadcrumbsTypography,
+                      maxIndex === i && classes.breadcrumbLast
+                    )
+                  }}
                   onClick={() => onCrumbSelected(item)}
                   children={item.label}
                 />
@@ -554,7 +587,7 @@ function Breadcrumbs(props: BreadcrumbsProps) {
                 <Typography
                   key={item.id}
                   variant="subtitle2"
-                  className={classes.pagesBreadcrumbsTypo}
+                  className={classes.breadcrumbsTypography}
                   children={item.label}
                 />
               )
@@ -631,32 +664,40 @@ function NavItem(props: NavItemProps) {
   const onMouseOver = isSelectMode ? null : () => setOver(true);
   const onMouseLeave = isSelectMode ? null : () => setOver(false);
   const onClick = (e) => onItemClicked?.(item, e);
-  const isNavigable = Boolean(item.previewUrl);
+  const navigable = isNavigable(item);
   return (
     <ListItem
-      button={(!isSelectMode) as true}
-      className={clsx(classes.pagesNavItem, isSelectMode && 'noLeftPadding')}
+      button={!isSelectMode as true}
+      className={clsx(classes.navItem, isSelectMode && 'noLeftPadding')}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
-      onClick={isNavigable ? onClick : () => onChangeParent?.(item)}
+      onClick={navigable ? onClick : () => onChangeParent?.(item)}
     >
-      {isSelectMode && (
+      {isSelectMode ? (
         <Checkbox
           color="default"
-          className={classes.pagesNavItemCheckbox}
+          className={classes.navItemCheckbox}
           onChange={(e) => {
             onItemChecked(item, e.currentTarget.checked);
           }}
           value="primary"
         />
+      ) : navigable ? (
+        isLeaf ? (
+          <LeafIcon className={classes.typeIcon} />
+        ) : (
+          <PageIcon className={classes.typeIcon} />
+        )
+      ) : (
+        <FolderIcon className={classes.typeIcon} />
       )}
       <Typography
         variant="body2"
         className={clsx(
-          classes.pagesNavItemText,
+          classes.navItemText,
           !isSelectMode && locale !== item.localeCode && 'opacity',
           isSelectMode && 'select-mode',
-          !isNavigable && 'non-navigable'
+          !navigable && 'non-navigable'
         )}
       >
         {item.label}
@@ -682,11 +723,7 @@ function NavItem(props: NavItemProps) {
             onChangeParent(item);
           }}
         >
-          {isLeaf ? (
-            <EcoRounded className={classes.icon} />
-          ) : (
-            <ChevronRightRoundedIcon className={classes.icon} />
-          )}
+          <ChevronRightRoundedIcon className={classes.icon} />
         </IconButton>
       </div>
     </ListItem>
@@ -702,7 +739,7 @@ interface WidgetState {
   hasClipboard: boolean;
   itemsInPath: string[];
   items: LookupTable<Item>;
-  breadcrumb: Breadcrumb[];
+  breadcrumb: Item[];
   selectedItems: string[];
   leafs: string[];
   count: number; // Number of items in the current path
@@ -712,8 +749,8 @@ interface WidgetState {
 
 // TODO: an initial path with trailing `/` breaks
 function itemsFromPath(path: string, root: string, items: LookupTable<Item>): Item[] {
-  const rootWithIndex = `${root}/index.xml`;
-  const rootWithoutIndex = root.replace('/index.xml', '');
+  const rootWithIndex = index(root);
+  const rootWithoutIndex = unindex(root);
   const rootItem = items[rootWithIndex] ?? items[root];
   if (path === rootWithIndex || path === root) {
     return [rootItem];
@@ -728,9 +765,21 @@ function itemsFromPath(path: string, root: string, items: LookupTable<Item>): It
       .slice(1)
       .map((folder) => {
         accum += `/${folder}`;
-        return items[accum] ?? items[(accum += `/index.xml`)];
+        return items[accum] ?? items[index(accum)];
       })
   ];
+}
+
+function unindex(path: string): string {
+  return path.replace('/index.xml', '');
+}
+
+function index(path: string): string {
+  return `${unindex(path)}/index.xml`;
+}
+
+function isNavigable(item: Item): boolean {
+  return Boolean(item.previewUrl);
 }
 
 const init: (props: WidgetProps) => WidgetState = (props: WidgetProps) => ({
@@ -764,7 +813,7 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
         // If it is the root path, we want to show the empty state,
         // vs child paths, want to show the previous path and inform
         // that there aren't any items at that path
-        (path !== state.rootPath || path !== `${state.rootPath}/index.xml`)
+        unindex(path) !== unindex(state.rootPath)
       ) {
         let pieces = path.split('/').slice(0);
         pieces.pop();
@@ -773,7 +822,7 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
         }
         let nextPath = pieces.join('/');
         if (nou(state.items[nextPath])) {
-          nextPath += `/index.xml`;
+          nextPath = index(nextPath);
         }
         return {
           ...state,
@@ -799,6 +848,7 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
     case setCurrentPath.type:
       return {
         ...state,
+        keyword: '',
         currentPath: payload
       };
     case setKeyword.type:
@@ -866,6 +916,7 @@ export default function(props: WidgetProps) {
     [dispatch, site, state]
   );
 
+  const [collapsed, setCollapsed] = useState(false);
   const [menuState, setMenuState] = useSpreadState<MenuState>({
     selectMode: false,
     hasClipboard: false
@@ -891,8 +942,6 @@ export default function(props: WidgetProps) {
   });
 
   const onPathSelected = (item: Item) => exec(setCurrentPath(item.path));
-
-  const onBreadcrumbSelected = (item: Breadcrumb) => exec(setCurrentPath(item.path));
 
   const onPageChanged = (page: number) => void 0;
 
@@ -1120,67 +1169,78 @@ export default function(props: WidgetProps) {
   const onTranslationDialogClose = () => setTranslationDialog(null);
 
   const onItemClicked = (item: Item) => {
-    window.location.href = `/studio/preview/#/?page=${item.previewUrl}&site=${site}`;
+    window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
+  };
+
+  const onBreadcrumbSelected = (item: Item) => {
+    if (unindex(item.path) === unindex(state.currentPath)) {
+      onItemClicked(item);
+    } else {
+      exec(setCurrentPath(item.path));
+    }
   };
 
   return (
-    <section className={classes.wrapper}>
+    <section className={clsx(classes.root, props.classes?.root, collapsed && 'collapsed')}>
       <Header
         icon={icon}
         title={title}
         locale={state.localeCode}
+        onClick={() => setCollapsed(!collapsed)}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
       />
-      <SuspenseWithEmptyState
-        resource={itemsResource}
-        loadingStateProps={{
-          graphicProps: { className: classes.stateGraphics }
-        }}
-        errorBoundaryProps={{
-          errorStateProps: { classes: { graphic: classes.stateGraphics } }
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: 'No items at this location',
-            classes: { image: classes.stateGraphics }
-          }
-        }}
-      >
-        <Breadcrumbs
-          keyword={state.keyword}
-          breadcrumb={state.breadcrumb}
-          onMenu={onCurrentParentMenu}
-          onSearch={(q) => exec(setKeyword(q))}
-          onCrumbSelected={onBreadcrumbSelected}
-        />
-        <Nav
-          leafs={state.leafs}
-          locale={state.localeCode}
+      <div {...collapsed ? { hidden: true } : {}}>
+        <SuspenseWithEmptyState
           resource={itemsResource}
-          isSelectMode={menuState.selectMode}
-          onSelectItem={onSelectItem}
-          onPathSelected={onPathSelected}
-          onOpenItemMenu={onOpenItemMenu}
-          onItemClicked={onItemClicked}
-        />
-        <TablePagination
-          className={classes.pagination}
-          classes={{
-            root: classes.pagination,
-            selectRoot: 'hidden',
-            toolbar: clsx(classes.toolbar, classes.widgetSection)
+          loadingStateProps={{
+            graphicProps: { className: classes.stateGraphics }
           }}
-          component="div"
-          labelRowsPerPage=""
-          count={state.count}
-          rowsPerPage={state.limit}
-          page={Math.ceil(state.offset / state.limit)}
-          backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-          nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-          onChangePage={(e, page: number) => onPageChanged(page)}
-        />
-      </SuspenseWithEmptyState>
+          errorBoundaryProps={{
+            errorStateProps: { classes: { graphic: classes.stateGraphics } }
+          }}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              title: 'No items at this location',
+              classes: { image: classes.stateGraphics }
+            }
+          }}
+        >
+          <Breadcrumbs
+            keyword={state.keyword}
+            breadcrumb={state.breadcrumb}
+            onMenu={onCurrentParentMenu}
+            onSearch={(q) => exec(setKeyword(q))}
+            onCrumbSelected={onBreadcrumbSelected}
+          />
+          <Nav
+            leafs={state.leafs}
+            locale={state.localeCode}
+            resource={itemsResource}
+            isSelectMode={menuState.selectMode}
+            onSelectItem={onSelectItem}
+            onPathSelected={onPathSelected}
+            onOpenItemMenu={onOpenItemMenu}
+            onItemClicked={onItemClicked}
+          />
+          <TablePagination
+            className={classes.pagination}
+            classes={{
+              root: classes.pagination,
+              selectRoot: 'hidden',
+              toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
+            }}
+            component="div"
+            labelRowsPerPage=""
+            count={state.count}
+            rowsPerPage={state.limit}
+            page={Math.ceil(state.offset / state.limit)}
+            backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
+            nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+            onChangePage={(e, page: number) => onPageChanged(page)}
+          />
+        </SuspenseWithEmptyState>
+      </div>
       <ContextMenu
         anchorEl={menu.anchorEl}
         open={Boolean(menu.anchorEl)}
