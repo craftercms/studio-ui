@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { catchApi1Error, CONTENT_TYPE_JSON, get, getText, post, postJSON } from '../utils/ajax';
-import { map, pluck, switchMap } from 'rxjs/operators';
-import { forkJoin, Observable, Observer, of, zip } from 'rxjs';
+import { CONTENT_TYPE_JSON, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
+import { catchError, map, pluck, switchMap } from 'rxjs/operators';
+import { forkJoin, Observable, of, zip } from 'rxjs';
 import {
   createElements,
   fromString,
@@ -49,7 +49,11 @@ import {
 } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
-import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
+import {
+  ComponentsContentTypeParams,
+  ContentInstancePage,
+  PaginationOptions
+} from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
@@ -69,10 +73,9 @@ export function getContent(site: string, path: string): Observable<string> {
 }
 
 export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
-  // @ts-ignore
   return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
     pluck('response', 'item'),
-    catchApi1Error
+    catchError(errorSelectorApi1)
   );
 }
 
@@ -1057,10 +1060,9 @@ export function getQuickCreateContentList(siteId: string) {
 }
 
 export function getItemVersions(siteId: string, path: string): Observable<VersionsResponse> {
-  // @ts-ignore
   return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${siteId}&path=${path}`).pipe(
     pluck('response'),
-    catchApi1Error
+    catchError(errorSelectorApi1)
   );
 }
 
@@ -1070,75 +1072,84 @@ export function getConfigurationVersions(siteId: string, path: string, environme
   );
 }
 
-export function getChildrenByPath(site: string, path: string): Observable<any> {
-  ///studio/api/2/content/children_by_path
-  const response = {
-    response: {},
-    parent: {
-      id: 'home',
-      label: 'Home',
-      path: 'Path'
-    },
-    items: [
-      {
-        id: 'Style',
-        label: 'Style',
-        path: '/site/website/style/index.xml',
-        localeCode: 'en'
-      },
-      {
-        id: 'Salud',
-        label: 'Salud',
-        path: '/site/website/health/index.xml',
-        localeCode: 'es'
-      },
-      {
-        id: 'Entertainment',
-        label: 'Entertainment',
-        path: '/site/website/entertainment/index.xml',
-        localeCode: 'en'
-      },
-      {
-        id: 'Tecnologia',
-        label: 'Tecnologia',
-        path: '/site/website/technology/index.xml',
-        localeCode: 'es'
-      }
-    ]
-  };
+export interface GetChildrenResponse extends Array<Item> {
+  parent: Item;
+  // levelDescriptor: Item;
+}
 
-  return new Observable((observer: Observer<any>) => {
-    observer.next(response);
-    observer.complete();
-  });
+export interface GetChildrenOptions extends PaginationOptions {
+  order: 'ASC' | 'DESC';
+  locale: string;
+  keyword: string;
+  sortStrategy: 'default' | 'alphabetical' | 'foldersFirst';
+}
+
+export function getChildrenByPath(site: string, path: string, options?: GetChildrenOptions): Observable<GetChildrenResponse> {
+  function parse(item: LegacyItem): Item;
+  function parse(item: LegacyItem[]): Item[];
+  function parse(item: LegacyItem | LegacyItem[]): Item | Item[] {
+    if (Array.isArray(item)) {
+      // If no internalName then skipping (e.g. level descriptors)
+      return item.flatMap(i => i.internalName ? [parse(i)] : []);
+    }
+    return {
+      id: item.uri,
+      label: item.internalName,
+      path: item.uri,
+      localeCode: 'en',
+      contentTypeId: item.contentType,
+      // Assuming folders aren't navigable
+      previewUrl: item.uri.includes('index.xml') ? (item.browserUri || '/') : null,
+      systemType: null,
+      mimeType: null,
+      state: null,
+      lockOwner: null,
+      disabled: null,
+      translationSourceId: null,
+      creator: null,
+      createdDate: null,
+      modifier: null,
+      lastModifiedDate: null,
+      commitId: null,
+      sizeInBytes: null
+    };
+  }
+  // TODO: Waiting for API. Temporarily calling API1's get-items-tree
+  // return get(`/studio/api/2/content/children_by_path?siteId=${site}&path=${path}`).pipe(
+  return get(`/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${path}&depth=1&order=default`).pipe(
+    pluck('response'),
+    // map(({ items, parent }) => Object.assign(items, { parent })),
+    map(({ item }) => Object.assign(parse(item.children), { parent: parse(item) })),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function copyItem(site: string, item: Partial<LegacyItem>): Observable<any> {
   let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
   return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(
     pluck('response'),
-    catchApi1Error
+    catchError(errorSelectorApi1)
   );
 }
 
 export function cutItem(site: string, item: Item): Observable<any> {
   return post(`/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`, { item: [{ uri: item.path }] }, CONTENT_TYPE_JSON).pipe(
     pluck('response'),
-    catchApi1Error
+    catchError(errorSelectorApi1)
   );
 }
 
 export function pasteItem(site: string, item: Item): Observable<any> {
   return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(
     pluck('response'),
-    catchApi1Error
+    catchError(errorSelectorApi1)
   );
 }
 
 export function getPages(site: string, item: any): Observable<any> {
   return get(`/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`).pipe(
     pluck('response', 'item'),
-    catchApi1Error
+    catchError(errorSelectorApi1)
   );
 }
 
@@ -1148,7 +1159,7 @@ export function deleteItems(siteId: string, user: string, submissionComment: str
     data
   ).pipe(
     pluck('response'),
-    catchApi1Error
+    catchError(errorSelectorApi1)
   );
 }
 

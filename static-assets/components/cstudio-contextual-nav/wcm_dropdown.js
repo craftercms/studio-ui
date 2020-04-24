@@ -443,12 +443,11 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
               var dropdownInnerEl = YDom.get('acn-dropdown-menu-inner');
               var moduleContainerEl = document.createElement('div');
 
-              // Dividers don't really look good. Disabling this as somewhere the old class
-              // go lost anyway and dividers weren't getting shown. Modules may add on their own
-              // style set.
-              // if (module.showDivider === 'true') {
-              //   YDom.addClass(moduleContainerEl, 'sidebar-module-legacy--with-divider');
-              // }
+              // Dividers look unwell. Removing support for the old prop and adding a new one.
+              // The old class seemed to have been dropped at some point.
+              if (module.divider === 'true') {
+                YDom.addClass(moduleContainerEl, 'sidebar-module-legacy--with-divider');
+              }
 
               if (dropdownInnerEl) {
                 dropdownInnerEl.appendChild(moduleContainerEl);
@@ -483,15 +482,16 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                 }
               });
 
+              const $el = $(moduleContainerEl);
+              if (module.container) {
+                const containerProps = module.container;
+                containerProps.style && $el.css(containerProps.style);
+                containerProps.class && $el.addClass(containerProps.class);
+              }
+
               // render CrafterCMSNext Components
               if (module.render) {
-                const $el = $(moduleContainerEl);
                 $el.addClass('sidebar-module-next');
-                if (module.container) {
-                  const containerProps = module.container;
-                  containerProps.style && $el.css(containerProps.style);
-                  containerProps.class && $el.addClass(containerProps.class);
-                }
                 CrafterCMSNext.render(moduleContainerEl, module.render, module.props);
               } else {
                 $(moduleContainerEl).addClass(`sidebar-module-${module.plugin ? 'plugin' : 'legacy'}`);
