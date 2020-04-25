@@ -25,7 +25,7 @@ import {
 } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { isAsset, isCode, isEditableAsset, isImage } from '../../../utils/content';
-import { APIError } from '../../../models/GlobalState';
+import { ApiResponse } from '../../../models/GlobalState';
 import StandardAction from '../../../models/StandardAction';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
@@ -561,7 +561,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     dependenciesShown
   });
   const [deps, setDeps] = useState(null);
-  const [error, setError] = useState<APIError>(null);
+  const [error, setError] = useState<ApiResponse>(null);
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
@@ -598,7 +598,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     return { deps, error }
   }, [deps, error]);
 
-  const resource = useStateResource<LegacyItem[], { deps: LegacyItem[], error: APIError }>(
+  const resource = useStateResource<LegacyItem[], { deps: LegacyItem[], error: ApiResponse }>(
     depsSource,
     {
       shouldResolve: (source) => Boolean(source.deps),

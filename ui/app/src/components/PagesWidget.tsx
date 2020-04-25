@@ -40,7 +40,7 @@ import {
   pasteItem
 } from '../services/content';
 import { getTargetLocales } from '../services/translation';
-import { Item, LegacyItem } from '../models/Item';
+import { SandboxItem, LegacyItem } from '../models/Item';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
@@ -380,7 +380,7 @@ const menuOptions = {
   }
 };
 
-function generateMenuSections(item: Item, menuState: MenuState, count?: number) {
+function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: number) {
   let sections = [];
   if (menuState.selectMode && !item) {
     if (count > 0) {
@@ -432,32 +432,32 @@ interface HeaderProps {
 
 interface BreadcrumbsProps {
   keyword: string;
-  breadcrumb: Item[];
+  breadcrumb: SandboxItem[];
   onMenu(element: Element): void;
   onSearch(keyword: string): void;
-  onCrumbSelected(breadcrumb: Item): void;
+  onCrumbSelected(breadcrumb: SandboxItem): void;
 }
 
 interface NavItemProps {
-  item: Item;
+  item: SandboxItem;
   locale: string;
   isLeaf: boolean;
   isSelectMode: boolean;
-  onItemClicked?(item: Item, event: React.MouseEvent): void;
-  onChangeParent?(item: Item): void;
-  onItemChecked?(item: Item, unselect: boolean): void;
-  onOpenItemMenu(element: Element, item: Item): void;
+  onItemClicked?(item: SandboxItem, event: React.MouseEvent): void;
+  onChangeParent?(item: SandboxItem): void;
+  onItemChecked?(item: SandboxItem, unselect: boolean): void;
+  onOpenItemMenu(element: Element, item: SandboxItem): void;
 }
 
 interface NavProps {
   locale: string;
-  resource: Resource<Item[]>;
+  resource: Resource<SandboxItem[]>;
   isSelectMode: boolean;
   leafs: string[];
-  onItemClicked(item: Item): void;
-  onSelectItem(item: Item, unselect: boolean): void;
-  onPathSelected(item: Item): void;
-  onOpenItemMenu(element: Element, item: Item): void;
+  onItemClicked(item: SandboxItem): void;
+  onSelectItem(item: SandboxItem, unselect: boolean): void;
+  onPathSelected(item: SandboxItem): void;
+  onOpenItemMenu(element: Element, item: SandboxItem): void;
 }
 
 interface WidgetProps {
@@ -566,7 +566,7 @@ function Breadcrumbs(props: BreadcrumbsProps) {
               separator: classes.breadcrumbsSeparator
             }}
           >
-            {breadcrumb.map((item: Item, i: number) =>
+            {breadcrumb.map((item: SandboxItem, i: number) =>
               maxIndex !== i || (maxIndex === i && isNavigable(item)) ? (
                 <Link
                   key={item.id}
@@ -630,7 +630,7 @@ function Nav(props: NavProps) {
   const items = resource.read();
   return (
     <List component="nav" disablePadding={true}>
-      {items.map((item: Item) => (
+      {items.map((item: SandboxItem) => (
         <NavItem
           item={item}
           key={item.id}
@@ -738,8 +738,8 @@ interface WidgetState {
   isSelectMode: boolean;
   hasClipboard: boolean;
   itemsInPath: string[];
-  items: LookupTable<Item>;
-  breadcrumb: Item[];
+  items: LookupTable<SandboxItem>;
+  breadcrumb: SandboxItem[];
   selectedItems: string[];
   leafs: string[];
   count: number; // Number of items in the current path
@@ -748,7 +748,7 @@ interface WidgetState {
 }
 
 // TODO: an initial path with trailing `/` breaks
-function itemsFromPath(path: string, root: string, items: LookupTable<Item>): Item[] {
+function itemsFromPath(path: string, root: string, items: LookupTable<SandboxItem>): SandboxItem[] {
   const rootWithIndex = index(root);
   const rootWithoutIndex = unindex(root);
   const rootItem = items[rootWithIndex] ?? items[root];
@@ -778,7 +778,7 @@ function index(path: string): string {
   return `${unindex(path)}/index.xml`;
 }
 
-function isNavigable(item: Item): boolean {
+function isNavigable(item: SandboxItem): boolean {
   return Boolean(item.previewUrl);
 }
 
@@ -868,8 +868,8 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
 
 const setLocaleCode = createAction<string>('SET_LOCALE_CODE');
 const setCurrentPath = createAction<string>('SET_CURRENT_PATH');
-const itemChecked = createAction<Item>('ITEM_CHECKED');
-const itemUnchecked = createAction<Item>('ITEM_UNCHECKED');
+const itemChecked = createAction<SandboxItem>('ITEM_CHECKED');
+const itemUnchecked = createAction<SandboxItem>('ITEM_UNCHECKED');
 const clearChecked = createAction('CLEAR_CHECKED');
 const fetchPath = createAction<string>('FETCH_PATH');
 const fetchPathComplete = createAction<GetChildrenResponse>('FETCH_PATH_COMPLETE');
@@ -933,7 +933,7 @@ export default function(props: WidgetProps) {
     exec(fetchPath(path));
   });
 
-  const itemsResource: Resource<Item[]> = useStateResource(state.itemsInPath, {
+  const itemsResource: Resource<SandboxItem[]> = useStateResource(state.itemsInPath, {
     shouldResolve: (items) => Boolean(items),
     shouldRenew: (items, resource) => resource.complete,
     shouldReject: () => false,
@@ -941,11 +941,11 @@ export default function(props: WidgetProps) {
     errorSelector: null
   });
 
-  const onPathSelected = (item: Item) => exec(setCurrentPath(item.path));
+  const onPathSelected = (item: SandboxItem) => exec(setCurrentPath(item.path));
 
   const onPageChanged = (page: number) => void 0;
 
-  const onSelectItem = (item: Item, checked: boolean) =>
+  const onSelectItem = (item: SandboxItem, checked: boolean) =>
     exec(checked ? itemChecked(item) : itemUnchecked(item));
 
   const onMenuItemClicked = (section: SectionItem) => {
@@ -1099,7 +1099,7 @@ export default function(props: WidgetProps) {
     });
   };
 
-  const onOpenItemMenu = (element: Element, item: Item) =>
+  const onOpenItemMenu = (element: Element, item: SandboxItem) =>
     setMenu({
       sections: generateMenuSections(item, menuState),
       anchorEl: element,
@@ -1168,11 +1168,11 @@ export default function(props: WidgetProps) {
 
   const onTranslationDialogClose = () => setTranslationDialog(null);
 
-  const onItemClicked = (item: Item) => {
+  const onItemClicked = (item: SandboxItem) => {
     window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
   };
 
-  const onBreadcrumbSelected = (item: Item) => {
+  const onBreadcrumbSelected = (item: SandboxItem) => {
     if (unindex(item.path) === unindex(state.currentPath)) {
       onItemClicked(item);
     } else {

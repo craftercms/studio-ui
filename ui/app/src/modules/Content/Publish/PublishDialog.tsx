@@ -22,7 +22,7 @@ import { fetchDependencies } from '../../../services/dependencies';
 import { LegacyItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
-import GlobalState, { APIError } from '../../../models/GlobalState';
+import GlobalState, { ApiResponse } from '../../../models/GlobalState';
 import {
   useActiveSiteId,
   useOnMount,
@@ -410,7 +410,7 @@ function PublishDialog(props: PublishDialogProps) {
   const [showDepsButton, setShowDepsButton] = useState(true);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const [showDepsDisabled, setShowDepsDisabled] = useState(false);
-  const [apiState, setApiState] = useSpreadState<{ error: APIError, submitting: boolean }>({
+  const [apiState, setApiState] = useSpreadState<{ error: ApiResponse, submitting: boolean }>({
     error: null,
     submitting: false
   });

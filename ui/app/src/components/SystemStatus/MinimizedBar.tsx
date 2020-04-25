@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AddRoundedIcon from '@material-ui/icons/AddRounded';
 import React from 'react';
-import { Status } from '../../models/MinimizedDialog';
+import { MinimizedDialogStatus } from '../../models/MinimizedDialog';
 import { ProgressBar } from './ProgressBar';
 
 export const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -31,7 +31,7 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
 interface MinimizedBarProps {
   title: string;
   subtitle?: string;
-  status?: Status;
+  status?: MinimizedDialogStatus;
 
   onMaximized?(): void;
 }

@@ -15,7 +15,8 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import { Credentials, User } from '../../models/User';
+import { User } from '../../models/User';
+import { Credentials } from '../../models/Credentials';
 
 // region Login
 

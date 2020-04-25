@@ -26,7 +26,7 @@ import {
   useStateResource
 } from '../../../utils/hooks';
 import SearchBar from '../../../components/SearchBar';
-import { APIError } from '../../../models/GlobalState';
+import { ApiResponse } from '../../../models/GlobalState';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
@@ -158,7 +158,7 @@ export default function SearchPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const [keyword, setKeyword] = useState('');
-  const [error, setError] = useState<APIError>(null);
+  const [error, setError] = useState<ApiResponse>(null);
   const site = useActiveSiteId();
   const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
   // TODO: Components

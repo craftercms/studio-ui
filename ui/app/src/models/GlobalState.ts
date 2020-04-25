@@ -32,19 +32,18 @@ import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialo
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
 import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
 
-export interface APIError {
+export interface ApiResponse {
   code?: number | string;
-  title?: string;
+  title?: string; // Title is a UI-only property
   message?: string;
   remedialAction?: string;
   documentationUrl?: string;
 }
 
 export interface EntityState<T = any> {
-  error: APIError;
+  error: ApiResponse;
   byId: LookupTable<T>;
   isFetching: boolean;
-
   [key: string]: any;
 }
 
@@ -74,7 +73,7 @@ export interface GuestData {
 
 export interface GlobalState {
   auth: {
-    error: APIError;
+    error: ApiResponse;
     isFetching: boolean;
     active: boolean;
   };
@@ -106,7 +105,7 @@ export interface GlobalState {
     audiencesPanel: {
       isFetching: boolean;
       isApplying: boolean;
-      error: APIError;
+      error: ApiResponse;
       contentType: ContentType;
       model: ContentInstance;
       applied: boolean;

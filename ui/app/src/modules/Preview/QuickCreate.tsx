@@ -29,8 +29,8 @@ import { useActiveSiteId, usePreviewState, useSelection, useSpreadState } from '
 import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
-import { Item } from '../../models/Item';
-import { APIError } from '../../models/GlobalState';
+import { SandboxItem } from '../../models/Item';
+import { ApiResponse } from '../../models/GlobalState';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
 
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
-  previewItem: Item;
+  previewItem: SandboxItem;
   onSaveLegacySuccess?(response): void;
   onClose(): void;
   onItemClicked?(): void;
@@ -93,7 +93,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [error, setError] = useState<APIError>(null);
+  const [error, setError] = useState<ApiResponse>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,

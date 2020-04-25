@@ -26,7 +26,6 @@ export interface ContentInstanceSystemProps {
 
 export interface ContentInstance {
   craftercms: ContentInstanceSystemProps;
-
   [prop: string]: any;
 }
 

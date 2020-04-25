@@ -27,7 +27,7 @@ import { palette } from '../../../styles/theme';
 import { Variant } from '@material-ui/core/styles/createTypography';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Item } from '../../../models/Item';
+import { SandboxItem } from '../../../models/Item';
 
 // TODO remove mockup data as component menu is implemented
 const MENU_ITEMS = [
@@ -91,12 +91,12 @@ interface SingleItemSelectorProps {
     editIcon?: string;
     labelIcon?: string;
   };
-  selectItem: Item;
+  selectItem: SandboxItem;
   label: string;
   titleVariant?: Variant;
   labelVariant?: Variant;
 
-  onMenuItemClick(item: Item): any;
+  onMenuItemClick(item: SandboxItem): any;
 
   onEditClick(): void;
 }

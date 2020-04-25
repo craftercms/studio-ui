@@ -26,7 +26,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { createStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import { nnou } from '../../utils/object';
-import { APIError } from '../../models/GlobalState';
+import { ApiResponse } from '../../models/GlobalState';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   errorView: {
@@ -72,7 +72,7 @@ export interface ErrorStateProps {
     root?: string;
     graphic?: string;
   };
-  error: APIError;
+  error: ApiResponse;
   onBack?(event: any): any;
 }
 

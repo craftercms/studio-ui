@@ -41,7 +41,7 @@ import { useActiveSiteId, useSpreadState, useStateResource } from '../../../util
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import DialogFooter from '../../../components/DialogFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import { APIError } from '../../../models/GlobalState';
+import { ApiResponse } from '../../../models/GlobalState';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
@@ -429,7 +429,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     current: null
   });
 
-  const [error, setError] = useState<APIError>(null);
+  const [error, setError] = useState<ApiResponse>(null);
 
   const resource = useStateResource<LegacyVersion[], Data>(data, {
     shouldResolve: (data) => Boolean(data.versions),
