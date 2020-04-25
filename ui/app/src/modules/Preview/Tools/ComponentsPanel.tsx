@@ -38,11 +38,11 @@ import { PropsWithResource, SuspenseWithEmptyState } from '../../../components/S
 
 const translations = defineMessages({
   componentsPanel: {
-    id: 'craftercms.ice.components.title',
+    id: 'previewComponentsTool.title',
     defaultMessage: 'Components'
   },
   browse: {
-    id: 'craftercms.ice.components.browse',
+    id: 'previewComponentsTool.browse',
     defaultMessage: 'Browse existing instances'
   }
 });

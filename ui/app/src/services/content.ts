@@ -58,7 +58,7 @@ import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
 import { Item, LegacyItem } from '../models/Item';
-import { VersionsResponse } from '../models/version';
+import { VersionsResponse } from '../models/Version';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(

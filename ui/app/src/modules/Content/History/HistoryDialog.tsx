@@ -47,7 +47,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { LookupTable } from '../../../models/LookupTable';
 import clsx from 'clsx';
 import StandardAction from '../../../models/StandardAction';
-import { LegacyVersion } from '../../../models/version';
+import { LegacyVersion } from '../../../models/Version';
 
 const translations = defineMessages({
   previousPage: {

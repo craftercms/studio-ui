@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-type Tools =
+type PreviewTool =
   'craftercms.ice.components' |
   'craftercms.ice.assets' |
   'craftercms.ice.audiences' |
   'craftercms.ice.simulator' |
-  'craftercms.ice.ice' |
-  'craftercms.ice.editForm' |
+  'craftercms.ice.edit' |
   'craftercms.ice.browseComponents' |
   'craftercms.ice.contentTypeReceptacles' |
-  'craftercms.ice.contentTree';
+  'craftercms.ice.contentTree' |
+  'craftercms.ice.search';
 
-export default Tools;
+export default PreviewTool;

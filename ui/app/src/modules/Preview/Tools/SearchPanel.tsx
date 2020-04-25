@@ -51,11 +51,11 @@ import { search } from '../../../services/search';
 
 const translations = defineMessages({
   title: {
-    id: 'craftercms.ice.search.title',
+    id: 'previewSearchTool.title',
     defaultMessage: 'Search Everywhere'
   },
   titleKeyword: {
-    id: 'craftercms.ice.search.titleKeyword',
+    id: 'previewSearchTool.titleKeyword',
     defaultMessage: 'Search "{keyword}"'
   },
   previousPage: {
