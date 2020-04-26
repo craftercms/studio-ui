@@ -172,6 +172,8 @@ function GlobalDialogManager() {
         open={state.compareVersions.open}
         isFetching={state.compareVersions.isFetching}
         error={state.compareVersions.error}
+        rowsPerPage={state.compareVersions.rowsPerPage}
+        page={state.compareVersions.page}
         versionsBranch={versionsBranch}
         compare={state.compareVersions.compare}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}

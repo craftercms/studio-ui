@@ -26,7 +26,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../../../components/DialogBody';
 import { useStateResource } from '../../../utils/hooks';
-import { VersionList, VersionsResource } from './VersionList';
+import { VersionList } from './VersionList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 
 interface compare {
@@ -39,6 +39,8 @@ interface CompareVersionsDialogBaseProps {
   error: APIError;
   isFetching: boolean;
   compare: compare;
+  page: number;
+  rowsPerPage: number;
 }
 
 interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
@@ -59,18 +61,16 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const { open, compare, leftActions, rightActions, onDismiss, onClose, versionsBranch } = props;
 
-  const versionsResource = useStateResource<VersionsResource, Partial<EntityState<LegacyVersion>>>(versionsBranch, {
-    shouldResolve: (source) => Boolean(source.versions) && !source.isFetching,
-    shouldReject: (source) => Boolean(source.error),
-    shouldRenew: (source, resource) => source.isFetching && resource.complete,
-    resultSelector: (source) => (
-      {
-        versions: source.versions,
-        rowsPerPage: 10,
-        page: 0
-      }
+  const versionsResource = useStateResource<LegacyVersion[], CompareVersionsDialogProps>(props, {
+    shouldResolve: ({ versionsBranch }) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
+    shouldReject: ({ versionsBranch }) => Boolean(versionsBranch.error),
+    shouldRenew: ({ versionsBranch }, resource) => (
+      versionsBranch.isFetching && versionsBranch.complete
     ),
-    errorSelector: (source) => source.error
+    resultSelector: ({ versionsBranch, page, rowsPerPage }) => (
+      versionsBranch.versions.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+    ),
+    errorSelector: ({ versionsBranch }) => versionsBranch.error
   });
 
   const handleItemClick = (version: LegacyVersion) => {

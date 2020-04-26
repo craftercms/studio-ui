@@ -28,7 +28,6 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import { Resource } from '../../../models/Resource';
-import { HistoryResource } from './HistoryDialog';
 
 const versionListStyles = makeStyles(() =>
   createStyles({
@@ -114,14 +113,8 @@ export function FancyFormattedDate(props: FancyFormattedDateProps) {
   );
 }
 
-export interface VersionsResource {
-  versions: LegacyVersion[];
-  page: number;
-  rowsPerPage: number;
-}
-
 interface VersionListProps {
-  resource: Resource<VersionsResource>;
+  resource: Resource<LegacyVersion[]>;
   current?: string;
   handleItemClick(version: LegacyVersion): void;
   handleOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
@@ -130,9 +123,7 @@ interface VersionListProps {
 export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
   const { resource, handleOpenMenu, handleItemClick, current } = props;
-  const historyResource = resource.read();
-  const { rowsPerPage, page } = historyResource;
-  const versions = historyResource.versions.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  const versions = resource.read();
 
   return (
     <List component="div" className={classes.list} disablePadding>

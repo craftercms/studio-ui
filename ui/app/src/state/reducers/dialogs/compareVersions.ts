@@ -26,6 +26,8 @@ export const closeCompareVersionsDialog = createAction<StandardAction>('CLOSE_CO
 const initialState: CompareVersionsDialogStateProps = {
   open: false,
   isFetching: null,
+  rowsPerPage: 10,
+  page: 0,
   error: null,
   compare: {
     a: null,
