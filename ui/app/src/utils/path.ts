@@ -60,9 +60,19 @@ export function parseQueryString() {
   return parse(window.location.search);
 }
 
+export function withoutIndex(path: string): string {
+  return path.replace('/index.xml', '');
+}
+
+export function withIndex(path: string): string {
+  return `${withoutIndex(path)}/index.xml`;
+}
+
 export default {
   getPathFromPreviewURL,
   getPreviewURLFromPath,
   getQueryVariable,
-  parseQueryString
+  parseQueryString,
+  withoutIndex,
+  withIndex
 };

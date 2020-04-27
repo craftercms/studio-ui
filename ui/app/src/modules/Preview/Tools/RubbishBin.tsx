@@ -100,12 +100,12 @@ export default function RubbishBin(props: any) {
           {
             (trashed) ? (
               <FormattedMessage
-                id="rubbishBin.itemTrashed"
+                id="previewRubbishBin.itemTrashed"
                 defaultMessage="Trashed!"
               />
             ) : (
               <FormattedMessage
-                id="rubbishBin.dropToTrash"
+                id="previewRubbishBin.dropToTrash"
                 defaultMessage="Drop Here To Trash"
               />
             )

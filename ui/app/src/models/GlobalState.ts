@@ -19,11 +19,11 @@ import { User } from './User';
 import { Site } from './Site';
 import ContentType from './ContentType';
 import { WidthAndHeight } from './WidthAndHeight';
-import Tools from './PreviewToolIDs';
+import PreviewTool from './PreviewTool';
 import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeReceptacle } from './ContentTypeReceptacle';
-import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog';
+import { ConfirmDialogStateProps } from '../components/Dialogs/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';
@@ -31,22 +31,8 @@ import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialo
 import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
 import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
-
-export interface APIError {
-  code?: number | string;
-  title?: string;
-  message?: string;
-  remedialAction?: string;
-  documentationUrl?: string;
-}
-
-export interface EntityState<T = any> {
-  error: APIError;
-  byId: LookupTable<T>;
-  isFetching: boolean;
-
-  [key: string]: any;
-}
+import { EntityState } from './EntityState';
+import { ApiResponse } from './ApiResponse';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -74,7 +60,7 @@ export interface GuestData {
 
 export interface GlobalState {
   auth: {
-    error: APIError;
+    error: ApiResponse;
     isFetching: boolean;
     active: boolean;
   };
@@ -97,8 +83,8 @@ export interface GlobalState {
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;
-    selectedTool: Tools;
-    previousTool: Tools;
+    selectedTool: PreviewTool;
+    previousTool: PreviewTool;
     tools: Array<any>;
     hostSize: WidthAndHeight;
     guest: GuestData;
@@ -106,7 +92,7 @@ export interface GlobalState {
     audiencesPanel: {
       isFetching: boolean;
       isApplying: boolean;
-      error: APIError;
+      error: ApiResponse;
       contentType: ContentType;
       model: ContentInstance;
       applied: boolean;

@@ -14,25 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
-import { palette } from '../styles/theme';
+type PreviewTool =
+  'craftercms.ice.components' |
+  'craftercms.ice.assets' |
+  'craftercms.ice.audiences' |
+  'craftercms.ice.simulator' |
+  'craftercms.ice.edit' |
+  'craftercms.ice.browseComponents' |
+  'craftercms.ice.contentTypeReceptacles' |
+  'craftercms.ice.contentTree' |
+  'craftercms.ice.search';
 
-const styles = makeStyles(() =>
-  createStyles({
-    dialogActions: {
-      background: palette.white,
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      minHeight: '55px'
-    }
-  })
-);
-
-export default function DialogFooter(props) {
-  const classes = styles({});
-  return (
-    <MuiDialogActions className={classes.dialogActions} classes={props.classes} {...props} />
-  );
-}
+export default PreviewTool;

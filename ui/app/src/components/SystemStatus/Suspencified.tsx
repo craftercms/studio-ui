@@ -15,7 +15,7 @@
  */
 
 import React, { Fragment, PropsWithChildren, Suspense, SuspenseProps } from 'react';
-import { ErrorBoundary, ErrorBoundaryProps } from '../ErrorBoundary';
+import { ErrorBoundary, ErrorBoundaryProps } from './ErrorBoundary';
 import LoadingState, { LoadingStateProps } from './LoadingState';
 import { Resource } from '../../models/Resource';
 import EmptyState, { EmptyStateProps } from './EmptyState';

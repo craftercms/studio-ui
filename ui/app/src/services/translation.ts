@@ -14,13 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-//curl -X GET "http://localhost:8080/studio/api/2/translation/list_target_locales?siteId=editorial&path=asd" -H "accept: application/json"
-
 import { Observable, Observer } from 'rxjs';
 import { post } from '../utils/ajax';
 
-export function getTargetLocales(siteId: string, path: string): Observable<any> {
+export function getTargetLocales(site: string, path: string): Observable<any> {
   ///studio/api/2/translation/list_target_locales
   const response = {
     response: {},
@@ -58,8 +55,13 @@ export function getTargetLocales(siteId: string, path: string): Observable<any> 
   });
 }
 
-export function markForTranslation(siteId: string, path: string, locale: string) {
-  return post('/studio/api/2/translation/mark_for_translation_by_path', { siteId, path: [path], locales: [locale] }, {
+export function markForTranslation(site: string, path: string, locale: string) {
+  return post('/studio/api/2/translation/mark_for_translation_by_path', { siteId: site, path: [path], locales: [locale] }, {
     'Content-Type': 'application/json'
   })
 }
+
+export default {
+  getTargetLocales,
+  markForTranslation
+};

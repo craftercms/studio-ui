@@ -26,7 +26,7 @@ import {
 import { MediaItem } from '../../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import SearchBar from '../../../components/SearchBar';
+import SearchBar from '../../../components/Controls/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../../models/GlobalState';
 import TablePagination from '@material-ui/core/TablePagination';

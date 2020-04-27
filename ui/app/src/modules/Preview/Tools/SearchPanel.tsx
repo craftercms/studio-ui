@@ -25,8 +25,7 @@ import {
   useOnMount,
   useStateResource
 } from '../../../utils/hooks';
-import SearchBar from '../../../components/SearchBar';
-import { APIError } from '../../../models/GlobalState';
+import SearchBar from '../../../components/Controls/SearchBar';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
@@ -48,14 +47,15 @@ import {
 // import { createLookupTable } from '../../../utils/object';
 import ContentInstance from '../../../models/ContentInstance';
 import { search } from '../../../services/search';
+import { ApiResponse } from '../../../models/ApiResponse';
 
 const translations = defineMessages({
   title: {
-    id: 'craftercms.ice.search.title',
+    id: 'previewSearchTool.title',
     defaultMessage: 'Search Everywhere'
   },
   titleKeyword: {
-    id: 'craftercms.ice.search.titleKeyword',
+    id: 'previewSearchTool.titleKeyword',
     defaultMessage: 'Search "{keyword}"'
   },
   previousPage: {
@@ -158,7 +158,7 @@ export default function SearchPanel() {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const [keyword, setKeyword] = useState('');
-  const [error, setError] = useState<APIError>(null);
+  const [error, setError] = useState<ApiResponse>(null);
   const site = useActiveSiteId();
   const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
   // TODO: Components

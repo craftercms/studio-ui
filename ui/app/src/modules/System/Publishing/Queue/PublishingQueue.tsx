@@ -33,7 +33,7 @@ import {
   READY_FOR_LIVE,
   Selected
 } from '../../../../models/Publishing';
-import ConfirmDropdown from '../../../../components/UserControl/ConfirmDropdown';
+import ConfirmDropdown from '../../../../components/Controls/ConfirmDropdown';
 import FilterDropdown from '../../Sites/Create/FilterDropdown';
 import { setRequestForgeryToken } from '../../../../utils/auth';
 import TablePagination from '@material-ui/core/TablePagination';

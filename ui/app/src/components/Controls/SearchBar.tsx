@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { IconButton, InputBase, Theme } from '@material-ui/core';
-import { palette } from '../styles/theme';
+import { palette } from '../../styles/theme';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';

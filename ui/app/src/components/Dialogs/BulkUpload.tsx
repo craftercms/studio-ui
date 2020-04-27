@@ -38,20 +38,20 @@ import '@uppy/drag-drop/src/style.scss';
 
 import DialogHeader from './DialogHeader';
 import Button from '@material-ui/core/Button';
-import { getBulkUploadUrl } from '../services/content';
-import { LookupTable } from '../models/LookupTable';
-import { palette } from '../styles/theme';
-import { bytesToSize } from '../utils/string';
-import { useActiveSiteId, useMinimizeDialog, useSpreadState, useSubject } from '../utils/hooks';
+import { getBulkUploadUrl } from '../../services/content';
+import { LookupTable } from '../../models/LookupTable';
+import { palette } from '../../styles/theme';
+import { bytesToSize } from '../../utils/string';
+import { useActiveSiteId, useMinimizeDialog, useSpreadState, useSubject } from '../../utils/hooks';
 import clsx from 'clsx';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import RemoveRoundedIcon from '@material-ui/icons/RemoveRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import DialogFooter from './DialogFooter';
 import DialogBody from './DialogBody';
-import { minimizeDialog, updateDialog } from '../state/reducers/dialogs/minimizedDialogs';
+import { minimizeDialog, updateDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
-import { ProgressBar } from './SystemStatus/ProgressBar';
+import { ProgressBar } from '../SystemStatus/ProgressBar';
 
 const translations = defineMessages({
   title: {
