@@ -15,22 +15,15 @@
  */
 
 import React from 'react';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import ListItemText from '@material-ui/core/ListItemText';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader, {
-  DialogHeaderAction,
-  DialogHeaderStateAction
-} from '../../../components/DialogHeader';
-import DialogBody from '../../../components/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { useStateResource } from '../../../utils/hooks';
 import { FancyFormattedDate } from './VersionList';
 import { palette } from '../../../styles/theme';
-import { useDispatch } from 'react-redux';
 import StandardAction from '../../../models/StandardAction';
-import { APIError, EntityState } from '../../../models/GlobalState';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -38,7 +31,13 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { LookupTable } from '../../../models/LookupTable';
-import { LegacyVersion } from '../../../models/version';
+import { ApiResponse } from '../../../models/ApiResponse';
+import { EntityState } from '../../../models/EntityState';
+import DialogHeader, {
+  DialogHeaderAction,
+  DialogHeaderStateAction
+} from '../../../components/Dialogs/DialogHeader';
+import DialogBody from '../../../components/Dialogs/DialogBody';
 
 const useStyles = makeStyles(() => ({
   viewVersionBox: {
@@ -91,9 +90,11 @@ function VersionView(props: VersionViewProps) {
         {
           contentTypes &&
           values.map((field) =>
-            <ExpansionPanel key={field.id} classes={{root: classes.root}}>
+            <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography><span className={classes.bold}>{field.id} </span>({field.name})</Typography>
+                <Typography><span
+                  className={classes.bold}
+                >{field.id} </span>({field.name})</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <Typography>
@@ -111,7 +112,7 @@ function VersionView(props: VersionViewProps) {
 
 interface ViewVersionDialogBaseProps {
   open: boolean;
-  error: APIError;
+  error: ApiResponse;
   isFetching: boolean;
   version: string;
 }

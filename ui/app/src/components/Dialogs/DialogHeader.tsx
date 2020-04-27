@@ -26,7 +26,7 @@ import createStyles from '@material-ui/styles/createStyles/createStyles';
 import clsx from 'clsx';
 import { Tooltip } from '@material-ui/core';
 import { defineMessages, useIntl } from 'react-intl';
-import StandardAction from '../models/StandardAction';
+import StandardAction from '../../models/StandardAction';
 
 const dialogTitleStyles = makeStyles(() =>
   createStyles({

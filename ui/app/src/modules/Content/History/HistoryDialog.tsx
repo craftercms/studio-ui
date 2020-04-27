@@ -16,19 +16,14 @@
 
 import React, { PropsWithChildren, useCallback } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../../../components/DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import DialogBody from '../../../components/DialogBody';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
-import DialogFooter from '../../../components/DialogFooter';
-import { APIError, EntityState } from '../../../models/GlobalState';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
 import StandardAction from '../../../models/StandardAction';
-import { LegacyVersion } from '../../../models/version';
 import { useDispatch } from 'react-redux';
 import { historyDialogChangePage } from '../../../state/reducers/dialogs/history';
 import { VersionList } from './VersionList';
@@ -39,6 +34,12 @@ import {
   showViewVersionDialog
 } from '../../../state/reducers/dialogs/viewVersion';
 import { fetchContentTypes } from '../../../state/actions/preview';
+import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import DialogFooter from '../../../components/Dialogs/DialogFooter';
+import DialogBody from '../../../components/Dialogs/DialogBody';
+import { EntityState } from '../../../models/EntityState';
+import { ApiResponse } from '../../../models/ApiResponse';
+import { LegacyVersion } from '../../../models/Version';
 
 const translations = defineMessages({
   previousPage: {
@@ -169,7 +170,7 @@ interface HistoryDialogBaseProps {
   open: boolean;
   path: string;
   isFetching: Boolean;
-  error: APIError;
+  error: ApiResponse;
   current: string;
   page: number;
   rowsPerPage: number;
