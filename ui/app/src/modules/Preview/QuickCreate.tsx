@@ -127,8 +127,10 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         type: 'form',
         inProgress: false,
         showTabs: false,
-        onSaveLegacySuccess,
-        onSaveSuccess: onEmbeddedFormSaveSuccess
+        onSaveSuccess: (e) => {
+          onEmbeddedFormSaveSuccess?.(e);
+          onSaveLegacySuccess?.(e);
+        }
       })
     );
   };

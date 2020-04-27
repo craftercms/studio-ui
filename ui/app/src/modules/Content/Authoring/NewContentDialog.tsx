@@ -248,14 +248,10 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   );
   const dispatch = useDispatch();
 
-  const onSaveLegacySuccessNewContent = (e) => {
-    dispatch(closeNewContentDialog());
-    onSaveLegacySuccess?.(e);
-  }
-
   const onSaveSuccessNewContent = (e) => {
     dispatch(closeNewContentDialog());
     onSaveSuccess?.(e);
+    onSaveLegacySuccess?.(e);
   }
 
   const onTypeOpen = (srcData) => () => {
@@ -265,7 +261,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         type: 'form',
         inProgress: false,
         showTabs: false,
-        onSaveLegacySuccess: onSaveLegacySuccessNewContent,
         onSaveSuccess: onSaveSuccessNewContent
       })
     );

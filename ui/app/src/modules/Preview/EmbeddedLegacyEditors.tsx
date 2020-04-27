@@ -110,8 +110,6 @@ interface EmbeddedLegacyEditorsBaseProps {
 
   getPath?(type?: string): void;
 
-  onSaveLegacySuccess?(response): any;
-
   onSaveSuccess?(response): any;
 }
 
@@ -134,7 +132,6 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     getPath,
     showController = false,
     showTabs = true,
-    onSaveLegacySuccess,
     onSaveSuccess
   } = props;
   const { formatMessage } = useIntl();
@@ -226,7 +223,6 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
           }
           case EMBEDDED_LEGACY_FORM_SAVE: {
             closeEmbeddedLegacyForm(e.data.refresh, tab);
-            onSaveLegacySuccess?.(e);
             onSaveSuccess?.(e);
             break;
           }
@@ -244,7 +240,6 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     }
   }, [
     onSaveSuccess,
-    onSaveLegacySuccess,
     handleTabChange,
     setTabsState,
     tabsState,
