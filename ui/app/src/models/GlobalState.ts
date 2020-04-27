@@ -35,22 +35,6 @@ import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
 import { EmbeddedLegacyEditorsStateProps } from '../modules/Preview/EmbeddedLegacyEditors';
 
-export interface APIError {
-  code?: number | string;
-  title?: string;
-  message?: string;
-  remedialAction?: string;
-  documentationUrl?: string;
-}
-
-export interface EntityState<T = any> {
-  error: APIError;
-  byId: LookupTable<T>;
-  isFetching: boolean;
-
-  [key: string]: any;
-}
-
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
   pageNumber: number;
