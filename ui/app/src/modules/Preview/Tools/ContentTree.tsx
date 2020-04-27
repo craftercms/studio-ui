@@ -53,11 +53,11 @@ const rootPrefix = '{root}_';
 
 const translations = defineMessages({
   contentTree: {
-    id: 'craftercms.ice.contentTree.title',
+    id: 'previewContentTreeTool.title',
     defaultMessage: 'Content Tree'
   },
   loading: {
-    id: 'craftercms.ice.contentTree.loading',
+    id: 'previewContentTreeTool.loading',
     defaultMessage: 'Loading'
   }
 });

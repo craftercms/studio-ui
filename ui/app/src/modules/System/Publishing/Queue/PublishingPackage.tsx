@@ -21,7 +21,7 @@ import Button from '@material-ui/core/Button';
 import React, { ChangeEvent, useRef, useState } from 'react';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
-import SelectButton from '../../../../components/UserControl/ConfirmDropdown';
+import SelectButton from '../../../../components/Controls/ConfirmDropdown';
 import Typography from '@material-ui/core/Typography';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { cancelPackage, fetchPackage } from '../../../../services/publishing';

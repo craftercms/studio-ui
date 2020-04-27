@@ -22,15 +22,15 @@ import createStyles from '@material-ui/core/styles/createStyles';
 import Typography from '@material-ui/core/Typography';
 import DialogTitle from './DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import { palette } from '../styles/theme';
+import { palette } from '../../styles/theme';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import clsx from 'clsx';
-import ContextMenu, { Option, SectionItem } from './ContextMenu';
+import ContextMenu, { Option, SectionItem } from '../ContextMenu';
 import Link from '@material-ui/core/Link';
-import { markForTranslation } from '../services/translation';
-import { showErrorDialog } from '../state/reducers/dialogs/error';
+import { markForTranslation } from '../../services/translation';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({

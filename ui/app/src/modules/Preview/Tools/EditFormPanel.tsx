@@ -34,15 +34,15 @@ import { showEdit } from '../../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   openComponentForm: {
-    id: 'craftercms.edit.openComponentForm',
+    id: 'previewEditFormTool.openComponentForm',
     defaultMessage: 'Open Component Form'
   },
   editTemplate: {
-    id: 'craftercms.edit.editTemplate',
+    id: 'previewEditFormTool.editTemplate',
     defaultMessage: 'Edit Template'
   },
   editController: {
-    id: 'craftercms.edit.editController',
+    id: 'previewEditFormTool.editController',
     defaultMessage: 'Edit Controller'
   }
 });

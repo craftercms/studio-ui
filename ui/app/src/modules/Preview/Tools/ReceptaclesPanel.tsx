@@ -40,11 +40,11 @@ import {
 
 const translations = defineMessages({
   receptaclesPanel: {
-    id: 'craftercms.ice.contentTypeReceptacles.title',
+    id: 'previewContentTypeReceptaclesTool.title',
     defaultMessage: '{name} Receptacles'
   },
   selectContentType: {
-    id: 'craftercms.ice.contentTypeReceptacles.selectContentType',
+    id: 'previewContentTypeReceptaclesTool.selectContentType',
     defaultMessage: 'Select content type'
   }
 });

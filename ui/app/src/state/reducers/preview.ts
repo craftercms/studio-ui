@@ -61,7 +61,7 @@ import {
   SearchResult
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
-import Tools from '../../models/PreviewToolIDs';
+import PreviewTool from '../../models/PreviewTool';
 import { changeSite } from './sites';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
@@ -82,7 +82,7 @@ const reducer = createReducer<GlobalState['preview']>({
   showToolsPanel: true,
   previousTool: null,
   // Don't change/commit the tool you're working with. Use your .env.development to set it
-  selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as Tools) || null,
+  selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,
   tools: null,
   guest: null,
   assets: createEntityState({

@@ -35,28 +35,28 @@ import { useDispatch } from 'react-redux';
 import { useSelection } from '../../../utils/hooks';
 import { WidthAndHeight } from '../../../models/WidthAndHeight';
 
-const SIMULATOR_PANEL_RESPONSIVE_MODE = 'craftercms.ice.simulator.previewWindowSize';
-const SIMULATOR_PANEL_CUSTOM_MODE = 'craftercms.ice.simulator.custom';
+const SIMULATOR_PANEL_RESPONSIVE_MODE = 'previewSimulatorTool.previewWindowSize';
+const SIMULATOR_PANEL_CUSTOM_MODE = 'previewSimulatorTool.custom';
 
 const translations = defineMessages({
   simulatorPanel: {
-    id: 'craftercms.ice.simulator.title',
+    id: 'previewSimulatorTool.title',
     defaultMessage: 'Device Simulator'
   },
   smartPhone: {
-    id: 'craftercms.ice.simulator.phone',
+    id: 'words.phone',
     defaultMessage: 'Phone'
   },
   tablet: {
-    id: 'craftercms.ice.simulator.tablet',
+    id: 'words.tablet',
     defaultMessage: 'Tablet'
   },
   desktop: {
-    id: 'craftercms.ice.simulator.desktop',
+    id: 'words.desktop',
     defaultMessage: 'Desktop'
   },
   previewWindowSize: {
-    id: 'craftercms.ice.simulator.previewWindowSize',
+    id: 'previewSimulatorTool.previewWindowSize',
     defaultMessage: 'Preview Window Size'
   },
   presets: {
@@ -245,7 +245,7 @@ export default function SimulatorPanel(props: any) {
             value={preset}
             onChange={handlePresetChange}
             aria-label={PRESETS}
-            name="craftercms.ice.simulator.device"
+            name="words.device"
           >
             <FormControlLabel
               value={SIMULATOR_PANEL_CUSTOM_MODE}

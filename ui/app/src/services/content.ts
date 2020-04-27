@@ -49,16 +49,14 @@ import {
 } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
-import {
-  ComponentsContentTypeParams,
-  ContentInstancePage,
-  PaginationOptions
-} from '../models/Search';
+import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { Item, LegacyItem } from '../models/Item';
-import { VersionsResponse } from '../models/version';
+import { LegacyItem, SandboxItem } from '../models/Item';
+import { VersionsResponse } from '../models/Version';
+import { GetChildrenResponse } from '../models/GetChildrenResponse';
+import { GetChildrenOptions } from '../models/GetChildrenOptions';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -1072,22 +1070,10 @@ export function getConfigurationVersions(siteId: string, path: string, environme
   );
 }
 
-export interface GetChildrenResponse extends Array<Item> {
-  parent: Item;
-  // levelDescriptor: Item;
-}
-
-export interface GetChildrenOptions extends PaginationOptions {
-  order: 'ASC' | 'DESC';
-  locale: string;
-  keyword: string;
-  sortStrategy: 'default' | 'alphabetical' | 'foldersFirst';
-}
-
 export function getChildrenByPath(site: string, path: string, options?: GetChildrenOptions): Observable<GetChildrenResponse> {
-  function parse(item: LegacyItem): Item;
-  function parse(item: LegacyItem[]): Item[];
-  function parse(item: LegacyItem | LegacyItem[]): Item | Item[] {
+  function parse(item: LegacyItem): SandboxItem;
+  function parse(item: LegacyItem[]): SandboxItem[];
+  function parse(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
     if (Array.isArray(item)) {
       // If no internalName then skipping (e.g. level descriptors)
       return item.flatMap(i => i.internalName ? [parse(i)] : []);
@@ -1132,14 +1118,14 @@ export function copyItem(site: string, item: Partial<LegacyItem>): Observable<an
   );
 }
 
-export function cutItem(site: string, item: Item): Observable<any> {
+export function cutItem(site: string, item: SandboxItem): Observable<any> {
   return post(`/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`, { item: [{ uri: item.path }] }, CONTENT_TYPE_JSON).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );
 }
 
-export function pasteItem(site: string, item: Item): Observable<any> {
+export function pasteItem(site: string, item: SandboxItem): Observable<any> {
   return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)

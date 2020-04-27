@@ -15,18 +15,11 @@
  */
 
 import { LookupTable } from './LookupTable';
+import { ApiResponse } from './ApiResponse';
 
-export interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-  username: string;
-  authType: string;
-  rolesBySite: LookupTable<string[]>;
-  sites: string[];
-  preferences: LookupTable;
-}
-
-export interface LegacyUser extends Omit<User, 'authType'> {
-  authenticationType: string;
+export interface EntityState<T = any> {
+  error: ApiResponse;
+  byId: LookupTable<T>;
+  isFetching: boolean;
+  [key: string]: any;
 }

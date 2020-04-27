@@ -17,9 +17,10 @@
 import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
 import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { Observable, OperatorFunction } from 'rxjs';
-import { Credentials, LegacyUser, User } from '../models/User';
+import { LegacyUser, User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
-import { APIError } from '../models/GlobalState';
+import { Credentials } from '../models/Credentials';
+import { ApiResponse } from '../models/ApiResponse';
 
 const mapToUser: OperatorFunction<LegacyUser, User> = map<LegacyUser, User>((user) => ({
   ...user,
@@ -60,7 +61,7 @@ export function me(): Observable<User> {
   );
 }
 
-export function sendPasswordRecovery(username: string): Observable<APIError> {
+export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
   return get(`/studio/api/2/users/forgot_password?username=${username}`).pipe(
     pluck('response', 'response'),
     catchError((error: AjaxError) => {

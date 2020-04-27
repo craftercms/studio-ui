@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../../../components/DialogHeader';
+import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import {
   defineMessages,
   FormattedDateParts,
@@ -24,9 +24,9 @@ import {
   FormattedTime,
   useIntl
 } from 'react-intl';
-import DialogBody from '../../../components/DialogBody';
+import DialogBody from '../../../components/Dialogs/DialogBody';
 import { getConfigurationVersions, getItemVersions } from '../../../services/content';
-import { LegacyItem } from '../../../../../guest/src/models/Item';
+import { LegacyItem } from '../../../models/Item';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -39,15 +39,15 @@ import { palette } from '../../../styles/theme';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import { useActiveSiteId, useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
-import DialogFooter from '../../../components/DialogFooter';
+import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import { APIError } from '../../../models/GlobalState';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
 import clsx from 'clsx';
 import StandardAction from '../../../models/StandardAction';
-import { LegacyVersion } from '../../../models/version';
+import { LegacyVersion } from '../../../models/Version';
+import { ApiResponse } from '../../../models/ApiResponse';
 
 const translations = defineMessages({
   previousPage: {
@@ -429,7 +429,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     current: null
   });
 
-  const [error, setError] = useState<APIError>(null);
+  const [error, setError] = useState<ApiResponse>(null);
 
   const resource = useStateResource<LegacyVersion[], Data>(data, {
     shouldResolve: (data) => Boolean(data.versions),

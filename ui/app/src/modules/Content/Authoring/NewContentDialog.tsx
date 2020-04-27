@@ -25,18 +25,18 @@ import Grid from '@material-ui/core/Grid';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import { palette } from '../../../styles/theme';
 import { fetchLegacyContentTypes } from '../../../services/content';
-import DialogHeader from '../../../components/DialogHeader';
+import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import NewContentCard from './NewContentCard';
 import SingleItemSelector from './SingleItemSelector';
-import SearchBar from '../../../components/SearchBar';
+import SearchBar from '../../../components/Controls/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
 import {
   useDebouncedInput,
   useSelection,
   useStateResource
 } from '../../../utils/hooks';
-import DialogBody from '../../../components/DialogBody';
-import DialogFooter from '../../../components/DialogFooter';
+import DialogBody from '../../../components/Dialogs/DialogBody';
+import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import Typography from '@material-ui/core/Typography';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LegacyFormConfig } from '../../../models/ContentType';

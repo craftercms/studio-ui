@@ -28,10 +28,10 @@ import { getQuickCreateContentList } from '../../services/content';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
-import { Item } from '../../models/Item';
-import { APIError } from '../../models/GlobalState';
+import { SandboxItem } from '../../models/Item';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
+import { ApiResponse } from '../../models/ApiResponse';
 import { showEdit } from '../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
-  previewItem: Item;
+  previewItem: SandboxItem;
   onSaveLegacySuccess?(response): void;
   onClose(): void;
   onItemClicked?(): void;
@@ -93,7 +93,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [error, setError] = useState<APIError>(null);
+  const [error, setError] = useState<ApiResponse>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
 
   const onEmbeddedFormSaveSuccess = ({ data }) => {

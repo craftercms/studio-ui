@@ -13,31 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-export interface LegacyItem {
-  uri: string;
-  name: string;
-  browserUri: string;
-  contentType: string;
-  internalName: string;
-  children: LegacyItem[];
-  [prop: string]: any;
-}
 
-export interface LocalizationItem {
-  id: string;
-  label: string;
-  path: string;
-  previewUrl: string;
-  systemType: string;
-  mimeType: string;
-  state: number;
-  lockOwner: string;
-  disabled: boolean;
-  localeCode: string;
-  translationSourceId: string;
-}
-
-export interface Item {
+interface BaseItem {
   id: string;
   label: string;
   contentTypeId: string;
@@ -50,6 +27,9 @@ export interface Item {
   disabled: boolean;
   localeCode: string;
   translationSourceId: string;
+}
+
+interface SandboxEnvProps {
   creator: string;
   createdDate: string;
   modifier: string;
@@ -58,3 +38,54 @@ export interface Item {
   sizeInBytes: number;
 }
 
+interface PublishEnvProps {
+  lastScheduledDate: string;
+  lastPublishedDate: string;
+  publisher: string;
+  commitId: string;
+}
+
+export interface LocalizationItem extends BaseItem {
+
+}
+
+export interface SandboxItem extends BaseItem, SandboxEnvProps {
+
+}
+
+export interface DetailedItem extends BaseItem {
+  sandbox: PublishEnvProps;
+  staging: PublishEnvProps;
+  live: PublishEnvProps;
+}
+
+export interface AuditDashboardItem {
+  siteId: string;
+  actor: string;
+  operation: string;
+  operationTimestamp: string; // datetime
+  target: string;
+}
+
+export interface PublishingDashboardItem {
+  siteId: string;
+  label: string;
+  path: string;
+  publisher: string;
+  publishedDate: string; // datetime
+  environment: string;
+}
+
+export interface DashboardItem {
+
+}
+
+export interface LegacyItem {
+  uri: string;
+  name: string;
+  browserUri: string;
+  contentType: string;
+  internalName: string;
+  children: LegacyItem[];
+  [prop: string]: any;
+}

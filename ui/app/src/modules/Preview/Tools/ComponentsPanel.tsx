@@ -30,19 +30,19 @@ import {
   selectTool
 } from '../../../state/actions/preview';
 import { useStateResourceSelection } from '../../../utils/hooks';
-import { EntityState } from '../../../models/GlobalState';
 import { nnou } from '../../../utils/object';
 import { DraggablePanelListItem } from './DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
 import { PropsWithResource, SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import { EntityState } from '../../../models/EntityState';
 
 const translations = defineMessages({
   componentsPanel: {
-    id: 'craftercms.ice.components.title',
+    id: 'previewComponentsTool.title',
     defaultMessage: 'Components'
   },
   browse: {
-    id: 'craftercms.ice.components.browse',
+    id: 'previewComponentsTool.browse',
     defaultMessage: 'Browse existing instances'
   }
 });

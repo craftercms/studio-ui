@@ -14,15 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-type Tools =
-  'craftercms.ice.components' |
-  'craftercms.ice.assets' |
-  'craftercms.ice.audiences' |
-  'craftercms.ice.simulator' |
-  'craftercms.ice.ice' |
-  'craftercms.ice.editForm' |
-  'craftercms.ice.browseComponents' |
-  'craftercms.ice.contentTypeReceptacles' |
-  'craftercms.ice.contentTree';
+export interface ApiResponse {
+  code?: number | string;
+  title?: string; // Title is a UI-only property
+  message?: string;
+  remedialAction?: string;
+  documentationUrl?: string;
+}
 
-export default Tools;
+export default ApiResponse;
