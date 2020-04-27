@@ -52,7 +52,7 @@ import gitLogo from '../../../../assets/git-logo.svg';
 import { backgroundColor, palette } from '../../../../styles/theme';
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
-import SearchBar from '../../../../components/SearchBar';
+import SearchBar from '../../../../components/Controls/SearchBar';
 import { useEnv, useSpreadState } from '../../../../utils/hooks';
 import DialogHeader from '../../../../components/DialogHeader';
 import DialogBody from '../../../../components/DialogBody';

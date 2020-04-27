@@ -28,7 +28,7 @@ import { fetchLegacyContentTypes } from '../../../services/content';
 import DialogHeader from '../../../components/DialogHeader';
 import NewContentCard from './NewContentCard';
 import SingleItemSelector from './SingleItemSelector';
-import SearchBar from '../../../components/SearchBar';
+import SearchBar from '../../../components/Controls/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
 import {
   useDebouncedInput,

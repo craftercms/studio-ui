@@ -16,9 +16,9 @@
 
 import { camelize } from './string';
 import { LookupTable } from '../models/LookupTable';
-import { EntityState } from '../models/GlobalState';
 import { MutableRefObject } from 'react';
 import { forEach } from './array';
+import { EntityState } from '../models/EntityState';
 
 export function pluckProps(source: object, ...props: string[]): object {
   const object = {};
@@ -121,10 +121,14 @@ export function nnou(object: any): boolean {
   return object != null;
 }
 
+export const notNullOrUndefined = nnou;
+
 // Null Or Undefined (nou)
 export function nou(object: any): boolean {
   return object == null;
 }
+
+export const nullOrUndefined = nou;
 
 export function createEntityState(merge = {}): EntityState {
   return {
@@ -169,6 +173,65 @@ export function findParentModelId(
     null;
 }
 
-export function isPlainObject(obj) {
+export function isPlainObject<T extends any>(obj: T): boolean {
   return typeof obj === 'object' && obj !== null && obj.constructor === Object;
 }
+
+/** @deprecated Use extend(target, source) */
+export function extendDeep(target, source) {
+  return extend(target, source, { deep: true });
+}
+
+/** @deprecated Use extend(target, source, { existingOnly: true }) */
+export function extendDeepExistingProps(target, source) {
+  return extend(target, source, { existingOnly: true });
+}
+
+export function extend(
+  target: object,
+  source: object,
+  options?: {
+    deep?: boolean;
+    existingOnly?: boolean;
+  }
+) {
+  options = Object.assign({ existingOnly: false, deep: true }, options);
+  if (!options.deep) {
+    return Object.assign(target, source);
+  }
+  for (let prop in source) {
+    if (
+      source.hasOwnProperty(prop) && (
+        (!options.existingOnly) ||
+        (options.existingOnly && prop in target)
+      )
+    ) {
+      if (prop in target && isPlainObject(target[prop]) && isPlainObject(source[prop])) {
+        extend(target[prop], source[prop]);
+      } else {
+        target[prop] = source[prop];
+      }
+    }
+  }
+  return target;
+}
+
+export default {
+  pluckProps,
+  reversePluckProps,
+  camelizeProps,
+  createLookupTable,
+  flattenHierarchical,
+  hierarchicalToLookupTable,
+  normalizeProp,
+  retrieveProperty,
+  deleteProperty,
+  setProperty,
+  nnou,
+  nou,
+  resolveEntityCollectionFetch,
+  ref,
+  findParentModelId,
+  isPlainObject,
+  extend
+};

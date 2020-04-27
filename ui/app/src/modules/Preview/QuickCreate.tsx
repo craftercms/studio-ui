@@ -30,9 +30,9 @@ import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { SandboxItem } from '../../models/Item';
-import { ApiResponse } from '../../models/GlobalState';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
+import { ApiResponse } from '../../models/ApiResponse';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {

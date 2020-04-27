@@ -31,21 +31,14 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
-import {
-  copyItem,
-  cutItem,
-  getChildrenByPath,
-  GetChildrenResponse,
-  getPages,
-  pasteItem
-} from '../services/content';
+import { copyItem, cutItem, getChildrenByPath, getPages, pasteItem } from '../services/content';
 import { getTargetLocales } from '../services/translation';
-import { SandboxItem, LegacyItem } from '../models/Item';
+import { LegacyItem, SandboxItem } from '../models/Item';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import { LookupTable } from '../models/LookupTable';
 import ContextMenu, { SectionItem } from './ContextMenu';
-import SearchBar from './SearchBar';
+import SearchBar from './Controls/SearchBar';
 import { useActiveSiteId, useOnMount, useSpreadState, useStateResource } from '../utils/hooks';
 import CopyItemsDialog from './CopyItemsDialog';
 import ContentLocalizationDialog from './ContentLocalizationDialog';
@@ -61,6 +54,8 @@ import { createLookupTable, nou } from '../utils/object';
 import LeafIcon from '@material-ui/icons/EcoRounded';
 import FolderIcon from '@material-ui/icons/FolderOpenRounded';
 import PageIcon from '@material-ui/icons/InsertDriveFileOutlined';
+import { GetChildrenResponse } from '../models/GetChildrenResponse';
+import { withIndex, withoutIndex } from '../utils/path';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 
@@ -749,8 +744,8 @@ interface WidgetState {
 
 // TODO: an initial path with trailing `/` breaks
 function itemsFromPath(path: string, root: string, items: LookupTable<SandboxItem>): SandboxItem[] {
-  const rootWithIndex = index(root);
-  const rootWithoutIndex = unindex(root);
+  const rootWithIndex = withIndex(root);
+  const rootWithoutIndex = withoutIndex(root);
   const rootItem = items[rootWithIndex] ?? items[root];
   if (path === rootWithIndex || path === root) {
     return [rootItem];
@@ -765,17 +760,9 @@ function itemsFromPath(path: string, root: string, items: LookupTable<SandboxIte
       .slice(1)
       .map((folder) => {
         accum += `/${folder}`;
-        return items[accum] ?? items[index(accum)];
+        return items[accum] ?? items[withIndex(accum)];
       })
   ];
-}
-
-function unindex(path: string): string {
-  return path.replace('/index.xml', '');
-}
-
-function index(path: string): string {
-  return `${unindex(path)}/index.xml`;
 }
 
 function isNavigable(item: SandboxItem): boolean {
@@ -813,7 +800,7 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
         // If it is the root path, we want to show the empty state,
         // vs child paths, want to show the previous path and inform
         // that there aren't any items at that path
-        unindex(path) !== unindex(state.rootPath)
+        withoutIndex(path) !== withoutIndex(state.rootPath)
       ) {
         let pieces = path.split('/').slice(0);
         pieces.pop();
@@ -822,7 +809,7 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
         }
         let nextPath = pieces.join('/');
         if (nou(state.items[nextPath])) {
-          nextPath = index(nextPath);
+          nextPath = withIndex(nextPath);
         }
         return {
           ...state,
@@ -1173,7 +1160,7 @@ export default function(props: WidgetProps) {
   };
 
   const onBreadcrumbSelected = (item: SandboxItem) => {
-    if (unindex(item.path) === unindex(state.currentPath)) {
+    if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
       onItemClicked(item);
     } else {
       exec(setCurrentPath(item.path));

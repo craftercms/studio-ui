@@ -25,7 +25,6 @@ import {
 } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { isAsset, isCode, isEditableAsset, isImage } from '../../../utils/content';
-import { ApiResponse } from '../../../models/GlobalState';
 import StandardAction from '../../../models/StandardAction';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
@@ -55,6 +54,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
+import { ApiResponse } from '../../../models/ApiResponse';
 
 const assetsTypes = {
   'all-deps': {

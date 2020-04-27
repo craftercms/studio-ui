@@ -25,8 +25,7 @@ import {
   useOnMount,
   useStateResource
 } from '../../../utils/hooks';
-import SearchBar from '../../../components/SearchBar';
-import { ApiResponse } from '../../../models/GlobalState';
+import SearchBar from '../../../components/Controls/SearchBar';
 import {
   ComponentsContentTypeParams,
   ContentInstancePage,
@@ -48,6 +47,7 @@ import {
 // import { createLookupTable } from '../../../utils/object';
 import ContentInstance from '../../../models/ContentInstance';
 import { search } from '../../../services/search';
+import { ApiResponse } from '../../../models/ApiResponse';
 
 const translations = defineMessages({
   title: {

@@ -39,7 +39,7 @@ import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { getHostToGuestBus } from './previewContext';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
-import { ApiResponse } from '../../models/GlobalState';
+import { ApiResponse } from '../../models/ApiResponse';
 
 const translations = defineMessages({
   contentForm: {

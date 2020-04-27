@@ -24,14 +24,14 @@ import ContentInstance from '../models/ContentInstance';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
-export function getRawContent(site: string, configPath: string, module: CrafterCMSModules): Observable<string> {
+export function getConfiguration(site: string, configPath: string, module: CrafterCMSModules): Observable<string> {
   return get(`/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`).pipe(
     map(({ response }) => response.content)
   );
 }
 
 export function getDOM(site: string, configPath: string, module: CrafterCMSModules): Observable<XMLDocument> {
-  return getRawContent(site, configPath, module).pipe(map(fromString));
+  return getConfiguration(site, configPath, module).pipe(map(fromString));
 }
 
 // region PreviewToolsConfig
@@ -65,7 +65,7 @@ const audienceTypesMap: any = {
 };
 
 export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConfig> {
-  return getRawContent(site, `/preview-tools/panel.xml`, 'studio').pipe(
+  return getConfiguration(site, `/preview-tools/panel.xml`, 'studio').pipe(
     map((content) => {
       try {
         return JSON.parse(content);
@@ -116,7 +116,7 @@ interface ActiveTargetingModel {
 }
 
 export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
-  return getRawContent(site, `/targeting/targeting-config.xml`, 'studio').pipe(
+  return getConfiguration(site, `/targeting/targeting-config.xml`, 'studio').pipe(
     map((content) => {
       try {
         return JSON.parse(content);
@@ -314,7 +314,7 @@ export function getProductLanguages(): Observable<{ id: string; label: string }[
 
 export default {
   getProductLanguages,
-  getRawContent,
+  getRawContent: getConfiguration,
   getDOM,
   getGlobalMenuItems
 };

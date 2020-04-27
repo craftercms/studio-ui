@@ -20,7 +20,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { useDebouncedInput, useSelection, useStateResourceSelection } from '../../../utils/hooks';
 import { PagedEntityState } from '../../../models/GlobalState';
 import { nnou, pluckProps } from '../../../utils/object';
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import { ErrorBoundary } from '../../../components/SystemStatus/ErrorBoundary';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { createStyles, makeStyles } from '@material-ui/core';
 import ContentInstance from '../../../models/ContentInstance';
@@ -33,7 +33,7 @@ import {
   setContentTypeFilter
 } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import SearchBar from '../../../components/SearchBar';
+import SearchBar from '../../../components/Controls/SearchBar';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';

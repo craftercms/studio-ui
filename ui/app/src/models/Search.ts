@@ -16,6 +16,7 @@
 
 import { LookupTable } from './LookupTable';
 import ContentInstance from './ContentInstance';
+import { PaginationOptions } from './PaginationOptions';
 
 export interface ElasticParams extends PaginationOptions {
   query?: string;
@@ -58,11 +59,6 @@ export interface Facet {
   values: {
     [key: string]: any;
   }
-}
-
-export interface PaginationOptions {
-  limit: number;
-  offset: number;
 }
 
 export interface SearchItem {

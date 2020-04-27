@@ -19,8 +19,8 @@ import { catchError, map, mapTo, pluck } from 'rxjs/operators';
 import { Observable, OperatorFunction } from 'rxjs';
 import { LegacyUser, User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
-import { ApiResponse } from '../models/GlobalState';
 import { Credentials } from '../models/Credentials';
+import { ApiResponse } from '../models/ApiResponse';
 
 const mapToUser: OperatorFunction<LegacyUser, User> = map<LegacyUser, User>((user) => ({
   ...user,

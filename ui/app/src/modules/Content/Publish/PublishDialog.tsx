@@ -22,7 +22,7 @@ import { fetchDependencies } from '../../../services/dependencies';
 import { LegacyItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
-import GlobalState, { ApiResponse } from '../../../models/GlobalState';
+import GlobalState from '../../../models/GlobalState';
 import {
   useActiveSiteId,
   useOnMount,
@@ -43,6 +43,7 @@ import DialogFooter from '../../../components/DialogFooter';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { palette } from '../../../styles/theme';
+import { ApiResponse } from '../../../models/ApiResponse';
 
 const goLiveMessages = defineMessages({
   title: {

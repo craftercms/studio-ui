@@ -26,7 +26,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { createStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import { nnou } from '../../utils/object';
-import { ApiResponse } from '../../models/GlobalState';
+import { ApiResponse } from '../../models/ApiResponse';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   errorView: {

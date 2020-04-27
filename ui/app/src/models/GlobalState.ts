@@ -31,21 +31,8 @@ import { HistoryDialogStateProps } from '../modules/Content/History/HistoryDialo
 import { PublishDialogStateProps } from '../modules/Content/Publish/PublishDialog';
 import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/DependenciesDialog';
 import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
-
-export interface ApiResponse {
-  code?: number | string;
-  title?: string; // Title is a UI-only property
-  message?: string;
-  remedialAction?: string;
-  documentationUrl?: string;
-}
-
-export interface EntityState<T = any> {
-  error: ApiResponse;
-  byId: LookupTable<T>;
-  isFetching: boolean;
-  [key: string]: any;
-}
+import { EntityState } from './EntityState';
+import { ApiResponse } from './ApiResponse';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;

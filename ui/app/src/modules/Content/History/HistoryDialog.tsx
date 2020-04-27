@@ -26,7 +26,7 @@ import {
 } from 'react-intl';
 import DialogBody from '../../../components/DialogBody';
 import { getConfigurationVersions, getItemVersions } from '../../../services/content';
-import { LegacyItem } from '../../../../../guest/src/models/Item';
+import { LegacyItem } from '../../../models/Item';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -41,13 +41,13 @@ import { useActiveSiteId, useSpreadState, useStateResource } from '../../../util
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import DialogFooter from '../../../components/DialogFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import { ApiResponse } from '../../../models/GlobalState';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
 import clsx from 'clsx';
 import StandardAction from '../../../models/StandardAction';
 import { LegacyVersion } from '../../../models/Version';
+import { ApiResponse } from '../../../models/ApiResponse';
 
 const translations = defineMessages({
   previousPage: {

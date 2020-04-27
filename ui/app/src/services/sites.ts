@@ -16,10 +16,10 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { CreateSiteMeta, Site } from '../models/Site';
-import { PaginationOptions } from '../models/Search';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
+import { PaginationOptions } from '../models/PaginationOptions';
 
 export function fetchBlueprints() {
   return get('/studio/api/2/sites/available_blueprints');

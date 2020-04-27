@@ -49,16 +49,14 @@ import {
 } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
-import {
-  ComponentsContentTypeParams,
-  ContentInstancePage,
-  PaginationOptions
-} from '../models/Search';
+import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { SandboxItem, LegacyItem } from '../models/Item';
+import { LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
+import { GetChildrenResponse } from '../models/GetChildrenResponse';
+import { GetChildrenOptions } from '../models/GetChildrenOptions';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -1070,18 +1068,6 @@ export function getConfigurationVersions(siteId: string, path: string, environme
   return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${siteId}&path=${path}&environment=${environment}&module=${module}`).pipe(
     pluck('response', 'history')
   );
-}
-
-export interface GetChildrenResponse extends Array<SandboxItem> {
-  parent: SandboxItem;
-  // levelDescriptor: Item;
-}
-
-export interface GetChildrenOptions extends PaginationOptions {
-  order: 'ASC' | 'DESC';
-  locale: string;
-  keyword: string;
-  sortStrategy: 'default' | 'alphabetical' | 'foldersFirst';
 }
 
 export function getChildrenByPath(site: string, path: string, options?: GetChildrenOptions): Observable<GetChildrenResponse> {

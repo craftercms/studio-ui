@@ -24,10 +24,10 @@ import DateFnsUtils from '@date-io/date-fns';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { getTimezones } from '../utils/datetime';
+import { getTimezones } from '../../utils/datetime';
 import FormControl from '@material-ui/core/FormControl';
-import { nnou, nou } from '../utils/object';
-import { palette } from '../styles/theme';
+import { nnou, nou } from '../../utils/object';
+import { palette } from '../../styles/theme';
 
 const translations = defineMessages({
   datePlaceholder: {
