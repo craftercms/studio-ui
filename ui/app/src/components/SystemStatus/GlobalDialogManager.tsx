@@ -109,7 +109,7 @@ function GlobalDialogManager() {
         showController={state.edit.showController}
 
         getPath={state.edit.getPath}
-        onSaveSuccess={state.edit.onSaveSuccess}
+        onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
 
         onClose={createCallback(state.dependencies.onClose, dispatch)}
         onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}

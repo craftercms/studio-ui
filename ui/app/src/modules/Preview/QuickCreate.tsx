@@ -97,7 +97,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
 
   const onEmbeddedFormSaveSuccess = ({ data }) => {
-    data.item?.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
+    data.item?.isPage && dispatch(changeCurrentUrl(data.redirectUrl));      // TODO: CAN IT BE DIF THAN PAGE?
   };
 
   const onNewContentClick = () => {
@@ -127,10 +127,10 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         type: 'form',
         inProgress: false,
         showTabs: false,
-        onSaveSuccess: (e) => {
-          onEmbeddedFormSaveSuccess?.(e);
-          onSaveLegacySuccess?.(e);
-        }
+        // onSaveSuccess: (e) => {
+        //   onEmbeddedFormSaveSuccess?.(e);
+        //   onSaveLegacySuccess?.(e);
+        // }
       })
     );
   };
