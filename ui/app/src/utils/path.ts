@@ -65,7 +65,7 @@ export function withoutIndex(path: string): string {
 }
 
 export function withIndex(path: string): string {
-  return withoutIndex(`${withoutIndex(path)}/index.xml`);
+  return `${withoutIndex(path)}/index.xml`;
 }
 
 export default {
