@@ -31,7 +31,6 @@ import {
 
 const initialState: HistoryDialogStateProps = {
   open: false,
-  path: null,
   error: null,
   isFetching: null
 };

@@ -40,6 +40,7 @@ import {
 } from '../../../state/reducers/versions';
 import {
   fetchContentVersion,
+  revertContent,
   showCompareVersionsDialog,
   showHistoryDialog,
   showViewVersionDialog
@@ -172,7 +173,6 @@ interface Menu {
 
 interface HistoryDialogBaseProps {
   open: boolean;
-  path: string;
   isFetching: Boolean;
   error: ApiResponse;
 }
@@ -189,8 +189,8 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, path, versionsBranch } = props;
-  const { count, page, limit, current } = versionsBranch;
+  const { open, onClose, onDismiss, versionsBranch } = props;
+  const { count, page, limit, current, path } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
@@ -252,6 +252,27 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     );
   };
 
+  const compareTo = (versionNumber: string) => {
+    dispatch(fetchContentTypes());
+    dispatch(compareVersion(versionNumber));
+    dispatch(showCompareVersionsDialog({
+      onClose: resetVersionsState(),
+      rightActions: [
+        {
+          icon: 'HistoryIcon',
+          onClick: showHistoryDialog({
+            onClose: resetVersionsState()
+          }),
+          'aria-label': formatMessage(translations.backToHistoryList)
+        }
+      ]
+    }));
+  };
+
+  const revertTo = (versionNumber: string) => {
+    dispatch(revertContent({ path, versionNumber }));
+  };
+
   const handleContextMenuClose = () => {
     setMenu({
       anchorEl: null,
@@ -268,23 +289,11 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         break;
       }
       case 'compareTo': {
-        dispatch(fetchContentTypes());
-        dispatch(compareVersion(activeItem.versionNumber));
-        dispatch(showCompareVersionsDialog({
-          onClose: resetVersionsState(),
-          rightActions: [
-            {
-              icon: 'HistoryIcon',
-              onClick: showHistoryDialog({
-                onClose: resetVersionsState()
-              }),
-              'aria-label': formatMessage(translations.backToHistoryList)
-            }
-          ]
-        }));
+        compareTo(activeItem.versionNumber);
         break;
       }
       case 'compareToCurrent': {
+        compareTo(current);
         break;
       }
       case 'compareToPrevious': {
@@ -294,6 +303,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         break;
       }
       case 'revertToThisVersion': {
+        revertTo(activeItem.versionNumber);
         break;
       }
       default:

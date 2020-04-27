@@ -77,7 +77,7 @@ export default [
       ofType(revertContent.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        revertContentToVersion(state.sites.active, state.dialogs.history.path, payload).pipe(
+        revertContentToVersion(state.sites.active, payload.path, payload.versionNumber).pipe(
           map(revertContentComplete),
           catchAjaxError(revertContentFailed)
         )

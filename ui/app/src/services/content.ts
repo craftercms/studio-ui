@@ -1070,8 +1070,8 @@ export function getConfigurationVersions(site: string, path: string, environment
   );
 }
 
-export function revertContentToVersion(site: string, path: string, version: string): Observable<Boolean> {
-  return get(`/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${path}&version=${version}`).pipe(
+export function revertContentToVersion(site: string, path: string, versionNumber: string): Observable<Boolean> {
+  return get(`/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${path}&version=${versionNumber}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );

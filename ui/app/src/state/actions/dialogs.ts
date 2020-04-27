@@ -25,7 +25,7 @@ import { CompareVersionsDialogStateProps } from '../../modules/Content/History/C
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
 export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
-export const revertContent = createAction<string>('REVERT_CONTENT');
+export const revertContent = createAction<FetchContentVersion>('REVERT_CONTENT');
 export const revertContentComplete = createAction<Boolean>('REVERT_CONTENT_COMPLETE');
 export const revertContentFailed = createAction<AjaxError>('REVERT_CONTENT_FAILED');
 // endregion

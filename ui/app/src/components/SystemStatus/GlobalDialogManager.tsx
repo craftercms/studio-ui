@@ -145,7 +145,6 @@ function GlobalDialogManager() {
       {/* region History */}
       <HistoryDialog
         open={state.history.open}
-        path={state.history.path}
         versionsBranch={versionsBranch}
         isFetching={state.history.isFetching}
         error={state.history.error}
