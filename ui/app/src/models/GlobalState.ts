@@ -23,7 +23,7 @@ import PreviewTool from './PreviewTool';
 import { ElasticParams, MediaItem } from './Search';
 import ContentInstance from './ContentInstance';
 import { ContentTypeReceptacle } from './ContentTypeReceptacle';
-import { ConfirmDialogStateProps } from '../components/UserControl/ConfirmDialog';
+import { ConfirmDialogStateProps } from '../components/Dialogs/ConfirmDialog';
 import { ErrorDialogStateProps } from '../components/SystemStatus/ErrorDialog';
 import { MinimizedDialogsStateProps } from './MinimizedDialog';
 import { NewContentDialogStateProps } from '../modules/Content/Authoring/NewContentDialog';

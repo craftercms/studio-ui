@@ -15,9 +15,9 @@
  */
 
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../DialogHeader';
-import DialogBody from '../DialogBody';
-import DialogFooter from '../DialogFooter';
+import DialogHeader from './DialogHeader';
+import DialogBody from './DialogBody';
+import DialogFooter from './DialogFooter';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';

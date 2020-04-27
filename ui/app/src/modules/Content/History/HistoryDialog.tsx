@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../../../components/DialogHeader';
+import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import {
   defineMessages,
   FormattedDateParts,
@@ -24,7 +24,7 @@ import {
   FormattedTime,
   useIntl
 } from 'react-intl';
-import DialogBody from '../../../components/DialogBody';
+import DialogBody from '../../../components/Dialogs/DialogBody';
 import { getConfigurationVersions, getItemVersions } from '../../../services/content';
 import { LegacyItem } from '../../../models/Item';
 import List from '@material-ui/core/List';
@@ -39,7 +39,7 @@ import { palette } from '../../../styles/theme';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import { useActiveSiteId, useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
-import DialogFooter from '../../../components/DialogFooter';
+import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';

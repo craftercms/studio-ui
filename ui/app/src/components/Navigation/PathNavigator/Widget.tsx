@@ -15,294 +15,43 @@
  */
 
 import React, { useCallback, useReducer, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
-import PhotoSizeSelectActualIcon from '@material-ui/icons/PublicRounded';
-import FlagRoundedIcon from '@material-ui/icons/FlagRounded';
-import PlaceRoundedIcon from '@material-ui/icons/PlaceRounded';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
-import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
-import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
-import { copyItem, cutItem, getChildrenByPath, getPages, pasteItem } from '../services/content';
-import { getTargetLocales } from '../services/translation';
-import { LegacyItem, SandboxItem } from '../models/Item';
+import {
+  copyItem,
+  cutItem,
+  getChildrenByPath,
+  getPages,
+  pasteItem
+} from '../../../services/content';
+import { getTargetLocales } from '../../../services/translation';
+import { LegacyItem, SandboxItem } from '../../../models/Item';
 import clsx from 'clsx';
-import Checkbox from '@material-ui/core/Checkbox';
-import { LookupTable } from '../models/LookupTable';
-import ContextMenu, { SectionItem } from './ContextMenu';
-import SearchBar from './Controls/SearchBar';
-import { useActiveSiteId, useOnMount, useSpreadState, useStateResource } from '../utils/hooks';
-import CopyItemsDialog from './CopyItemsDialog';
-import ContentLocalizationDialog from './ContentLocalizationDialog';
-import { palette } from '../styles/theme';
+import { LookupTable } from '../../../models/LookupTable';
+import ContextMenu, { SectionItem } from '../../ContextMenu';
+import {
+  useActiveSiteId,
+  useOnMount,
+  useSpreadState,
+  useStateResource
+} from '../../../utils/hooks';
+import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
+import ContentLocalizationDialog from '../../Dialogs/ContentLocalizationDialog';
 import { useDispatch } from 'react-redux';
-import { showErrorDialog } from '../state/reducers/dialogs/error';
-import { showHistoryDialog } from '../state/reducers/dialogs/history';
-import { Resource } from '../models/Resource';
-import { SuspenseWithEmptyState } from './SystemStatus/Suspencified';
-import StandardAction from '../models/StandardAction';
+import { showErrorDialog } from '../../../state/reducers/dialogs/error';
+import { showHistoryDialog } from '../../../state/reducers/dialogs/history';
+import { Resource } from '../../../models/Resource';
+import { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
+import StandardAction from '../../../models/StandardAction';
 import { createAction } from '@reduxjs/toolkit';
-import { createLookupTable, nou } from '../utils/object';
-import LeafIcon from '@material-ui/icons/EcoRounded';
-import FolderIcon from '@material-ui/icons/FolderOpenRounded';
-import PageIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import { GetChildrenResponse } from '../models/GetChildrenResponse';
-import { withIndex, withoutIndex } from '../utils/path';
-
-const flagColor = 'rgba(255, 59, 48, 0.5)';
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      '&.collapsed': {
-        paddingBottom: 5
-      }
-    },
-    widgetSection: {
-      padding: `0 10px`,
-      '& .MuiSvgIcon-root': {
-        fontSize: '1.1rem'
-      }
-    },
-    flag: {
-      color: flagColor,
-      fontSize: '1rem',
-      marginLeft: '5px'
-    },
-    optionsWrapper: {
-      marginLeft: 'auto',
-      display: 'flex',
-      visibility: 'hidden'
-    },
-    optionsWrapperOver: {
-      visibility: 'visible'
-    },
-    // region Header
-    headerRoot: {
-      display: 'flex',
-      padding: '5px 10px 0',
-      alignItems: 'center',
-      '& .MuiSvgIcon-root': {
-        fontSize: '1.1rem'
-      }
-    },
-    headerTitle: {
-      marginLeft: '6px',
-      flexGrow: 1
-    },
-    // endregion
-    pagesIcon: {
-      fontSize: '1.1rem'
-    },
-    iconButton: {
-      padding: '6px'
-    },
-    itemIconButton: {
-      padding: '2px 3px'
-    },
-    searchRoot: {},
-    // region Breadcrumbs
-    breadcrumbs: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    breadcrumbsList: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '9px 0',
-      '& li': {
-        lineHeight: 1
-      }
-    },
-    breadcrumbsSeparator: {
-      margin: '0 2px'
-    },
-    breadcrumbsTypography: {
-      fontWeight: 'bold',
-      color: palette.gray.medium4
-    },
-    breadcrumbLast: {
-      color: palette.teal.shade,
-      textDecoration: 'underline'
-    },
-    // endregion
-    // region Pagination
-    pagination: {
-      '& p': {
-        padding: 0
-      },
-      '& svg': {
-        top: 'inherit'
-      },
-      '& .hidden': {
-        display: 'none'
-      }
-    },
-    paginationToolbar: {
-      display: 'flex',
-      minHeight: '30px',
-      justifyContent: 'space-between',
-      '& .MuiTablePagination-spacer': {
-        display: 'none'
-      },
-      '& .MuiTablePagination-spacer + p': {
-        display: 'none'
-      },
-      '& .MuiButtonBase-root': {
-        padding: 0
-      }
-    },
-    // endregion
-    menuPaper: {
-      width: '182px'
-    },
-    menuList: {
-      padding: 0
-    },
-    menuItemRoot: {
-      whiteSpace: 'initial'
-    },
-    helperText: {
-      padding: '10px 16px 10px 16px',
-      color: '#8E8E93'
-    },
-    // region Nav Styles
-    stateGraphics: {
-      width: 100
-    },
-    // endregion
-    // region Nav Item Styles
-    icon: {
-      fontSize: '1.2rem'
-    },
-    typeIcon: {
-      marginRight: 5,
-      fontSize: '1.2rem',
-      color: palette.gray.medium4
-    },
-    navItem: {
-      justifyContent: 'space-between',
-      padding: '0 0 0 10px',
-      '&.noLeftPadding': {
-        paddingLeft: 0
-      },
-      '&:hover': {
-        backgroundColor: 'rgba(0, 0, 0, 0.08)'
-      }
-    },
-    navItemText: {
-      color: palette.teal.shade,
-      padding: 0,
-      marginRight: 'auto',
-      '&.opacity': {
-        opacity: '0.7'
-      },
-      '&.select-mode': {
-        color: palette.black
-      },
-      '&.non-navigable': {
-        color: palette.gray.medium7
-      }
-    },
-    navItemCheckbox: {
-      padding: '6px',
-      color: theme.palette.primary.main
-    },
-    // endregion
-  })
-);
-
-const translations = defineMessages({
-  previousPage: {
-    id: 'pagination.previousPage',
-    defaultMessage: 'Previous page'
-  },
-  nextPage: {
-    id: 'pagination.nextPage',
-    defaultMessage: 'Next page'
-  },
-  itemsSelected: {
-    id: 'craftercms.pages.widget.itemsSelected',
-    defaultMessage: '{count, plural, one {{count} Item selected} other {{count} Items selected}}'
-  },
-  copyDialogTitle: {
-    id: 'craftercms.copy.dialog.title',
-    defaultMessage: 'Copy'
-  },
-  copyDialogSubtitle: {
-    id: 'craftercms.copy.dialog.subtitle',
-    defaultMessage:
-      'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
-  },
-  edit: {
-    id: 'words.edit',
-    defaultMessage: 'Edit'
-  },
-  view: {
-    id: 'words.view',
-    defaultMessage: 'View'
-  },
-  newContent: {
-    id: 'craftercms.pages.option.newContent',
-    defaultMessage: 'New Content'
-  },
-  newFolder: {
-    id: 'craftercms.pages.option.newFolder',
-    defaultMessage: 'New Folder'
-  },
-  changeTemplate: {
-    id: 'craftercms.pages.option.changeTemplate',
-    defaultMessage: 'Change Template'
-  },
-  cut: {
-    id: 'words.cut',
-    defaultMessage: 'Cut'
-  },
-  copy: {
-    id: 'words.copy',
-    defaultMessage: 'Copy'
-  },
-  paste: {
-    id: 'words.paste',
-    defaultMessage: 'Paste'
-  },
-  duplicate: {
-    id: 'words.duplicate',
-    defaultMessage: 'Duplicate'
-  },
-  delete: {
-    id: 'words.delete',
-    defaultMessage: 'Delete'
-  },
-  dependencies: {
-    id: 'words.dependencies',
-    defaultMessage: 'Dependencies'
-  },
-  history: {
-    id: 'words.history',
-    defaultMessage: 'History'
-  },
-  translation: {
-    id: 'words.translation',
-    defaultMessage: 'Translation'
-  },
-  select: {
-    id: 'words.select',
-    defaultMessage: 'Select'
-  },
-  terminateSelection: {
-    id: 'craftercms.pages.option.terminateSelection',
-    defaultMessage: 'Terminate Selection'
-  }
-});
+import { createLookupTable, nou } from '../../../utils/object';
+import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
+import { withIndex, withoutIndex } from '../../../utils/path';
+import { useStyles } from './styles';
+import { translations } from './translations';
+import Header from './PathNavigatorHeader';
+import Breadcrumbs from './PathNavigatorBreadcrumbs';
+import Nav from './PathNavigatorList';
 
 const menuOptions = {
   edit: {
@@ -416,45 +165,6 @@ function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: n
   return sections;
 }
 
-interface HeaderProps {
-  locale: string;
-  title: string;
-  icon: React.ElementType | string;
-  onClick?(): void;
-  onLanguageMenu?(anchor: Element): void;
-  onContextMenu?(anchor: Element): void;
-}
-
-interface BreadcrumbsProps {
-  keyword: string;
-  breadcrumb: SandboxItem[];
-  onMenu(element: Element): void;
-  onSearch(keyword: string): void;
-  onCrumbSelected(breadcrumb: SandboxItem): void;
-}
-
-interface NavItemProps {
-  item: SandboxItem;
-  locale: string;
-  isLeaf: boolean;
-  isSelectMode: boolean;
-  onItemClicked?(item: SandboxItem, event: React.MouseEvent): void;
-  onChangeParent?(item: SandboxItem): void;
-  onItemChecked?(item: SandboxItem, unselect: boolean): void;
-  onOpenItemMenu(element: Element, item: SandboxItem): void;
-}
-
-interface NavProps {
-  locale: string;
-  resource: Resource<SandboxItem[]>;
-  isSelectMode: boolean;
-  leafs: string[];
-  onItemClicked(item: SandboxItem): void;
-  onSelectItem(item: SandboxItem, unselect: boolean): void;
-  onPathSelected(item: SandboxItem): void;
-  onOpenItemMenu(element: Element, item: SandboxItem): void;
-}
-
 interface WidgetProps {
   path: string;
   icon?: string | React.ElementType;
@@ -468,261 +178,6 @@ interface WidgetProps {
 interface MenuState {
   selectMode: boolean;
   hasClipboard: boolean;
-}
-
-// PathNavigatorHeader
-function Header(props: HeaderProps) {
-  const classes = useStyles({});
-  const { title, icon: Icon, locale, onLanguageMenu, onContextMenu, onClick } = props;
-  const currentFlag = (locale: string) => {
-    switch (locale) {
-      case 'en': {
-        return <PhotoSizeSelectActualIcon />;
-      }
-      case 'es': {
-        return <PlaceRoundedIcon />;
-      }
-      default: {
-        return <PhotoSizeSelectActualIcon />;
-      }
-    }
-  };
-  return (
-    <header className={clsx(classes.headerRoot)} onClick={onClick}>
-      {typeof Icon === 'string' ? (
-        <span className={`fa ${Icon}`} />
-      ) : (
-        <Icon className={classes.pagesIcon} />
-      )}
-      <Typography
-        variant="body1"
-        component="h6"
-        className={classes.headerTitle}
-        children={title}
-      />
-      <IconButton
-        aria-label="language select"
-        className={classes.iconButton}
-        onClick={(e) => {
-          e.stopPropagation();
-          onLanguageMenu(e.currentTarget)
-        }}
-      >
-        {currentFlag(locale)}
-      </IconButton>
-      <IconButton
-        aria-label="options"
-        className={classes.iconButton}
-        onClick={(e) => {
-          e.stopPropagation();
-          onContextMenu(e.currentTarget)
-        }}
-      >
-        <MoreVertIcon />
-      </IconButton>
-    </header>
-  );
-}
-
-// PathBreadcrumbs + PathOptions + (Path)Search
-function Breadcrumbs(props: BreadcrumbsProps) {
-  const classes = useStyles({});
-  const { breadcrumb, onCrumbSelected, onMenu, keyword, onSearch } = props;
-  const [showSearch, setShowSearch] = useState(false);
-
-  const onChange = (keyword: string) => {
-    if (keyword === '') {
-      setShowSearch(false);
-    }
-    onSearch(keyword);
-  };
-
-  const maxIndex = breadcrumb.length - 1;
-
-  return (
-    <section className={clsx(classes.breadcrumbs, classes.widgetSection)}>
-      {showSearch ? (
-        <SearchBar
-          autoFocus
-          onChange={onChange}
-          keyword={keyword}
-          showActionButton={true}
-          onActionButtonClick={() => onChange('')}
-          classes={{ root: classes.searchRoot }}
-        />
-      ) : (
-        <>
-          <MuiBreadcrumbs
-            maxItems={2}
-            aria-label="Breadcrumbs"
-            separator={<NavigateNextIcon fontSize="small" />}
-            classes={{
-              ol: classes.breadcrumbsList,
-              separator: classes.breadcrumbsSeparator
-            }}
-          >
-            {breadcrumb.map((item: SandboxItem, i: number) =>
-              maxIndex !== i || (maxIndex === i && isNavigable(item)) ? (
-                <Link
-                  key={item.id}
-                  color="inherit"
-                  component="button"
-                  variant="subtitle2"
-                  underline="always"
-                  TypographyClasses={{
-                    root: clsx(
-                      classes.breadcrumbsTypography,
-                      maxIndex === i && classes.breadcrumbLast
-                    )
-                  }}
-                  onClick={() => onCrumbSelected(item)}
-                  children={item.label}
-                />
-              ) : (
-                <Typography
-                  key={item.id}
-                  variant="subtitle2"
-                  className={classes.breadcrumbsTypography}
-                  children={item.label}
-                />
-              )
-            )}
-          </MuiBreadcrumbs>
-          <div className={clsx(classes.optionsWrapper, classes.optionsWrapperOver)}>
-            <IconButton
-              aria-label="options"
-              className={clsx(classes.iconButton)}
-              onClick={(event) => onMenu(event.currentTarget)}
-            >
-              <MoreVertIcon />
-            </IconButton>
-            <IconButton
-              aria-label="search"
-              className={clsx(classes.iconButton)}
-              onClick={() => setShowSearch(true)}
-            >
-              <SearchRoundedIcon />
-            </IconButton>
-          </div>
-        </>
-      )}
-    </section>
-  );
-}
-
-// PathListing
-function Nav(props: NavProps) {
-  const {
-    resource,
-    onPathSelected,
-    locale,
-    isSelectMode,
-    onSelectItem,
-    onOpenItemMenu,
-    onItemClicked,
-    leafs
-  } = props;
-  const items = resource.read();
-  return (
-    <List component="nav" disablePadding={true}>
-      {items.map((item: SandboxItem) => (
-        <NavItem
-          item={item}
-          key={item.id}
-          isLeaf={leafs.includes(item.id)}
-          locale={locale}
-          onChangeParent={onPathSelected}
-          isSelectMode={isSelectMode}
-          onItemChecked={onSelectItem}
-          onOpenItemMenu={onOpenItemMenu}
-          onItemClicked={onItemClicked}
-        />
-      ))}
-    </List>
-  );
-}
-
-// PathListItem
-function NavItem(props: NavItemProps) {
-  const classes = useStyles(props);
-  const {
-    item,
-    onItemClicked,
-    onChangeParent,
-    locale,
-    isSelectMode,
-    onItemChecked,
-    onOpenItemMenu,
-    isLeaf
-  } = props;
-  const [over, setOver] = useState(false);
-  const onMouseOver = isSelectMode ? null : () => setOver(true);
-  const onMouseLeave = isSelectMode ? null : () => setOver(false);
-  const onClick = (e) => onItemClicked?.(item, e);
-  const navigable = isNavigable(item);
-  return (
-    <ListItem
-      button={!isSelectMode as true}
-      className={clsx(classes.navItem, isSelectMode && 'noLeftPadding')}
-      onMouseOver={onMouseOver}
-      onMouseLeave={onMouseLeave}
-      onClick={navigable ? onClick : () => onChangeParent?.(item)}
-    >
-      {isSelectMode ? (
-        <Checkbox
-          color="default"
-          className={classes.navItemCheckbox}
-          onChange={(e) => {
-            onItemChecked(item, e.currentTarget.checked);
-          }}
-          value="primary"
-        />
-      ) : navigable ? (
-        isLeaf ? (
-          <LeafIcon className={classes.typeIcon} />
-        ) : (
-          <PageIcon className={classes.typeIcon} />
-        )
-      ) : (
-        <FolderIcon className={classes.typeIcon} />
-      )}
-      <Typography
-        variant="body2"
-        className={clsx(
-          classes.navItemText,
-          !isSelectMode && locale !== item.localeCode && 'opacity',
-          isSelectMode && 'select-mode',
-          !navigable && 'non-navigable'
-        )}
-      >
-        {item.label}
-        {locale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
-      </Typography>
-      <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
-        <IconButton
-          aria-label="Options"
-          className={classes.itemIconButton}
-          onClick={(event) => {
-            event.stopPropagation();
-            onOpenItemMenu(event.currentTarget, item);
-          }}
-        >
-          <MoreVertIcon className={classes.icon} />
-        </IconButton>
-        <IconButton
-          disabled={isLeaf}
-          aria-label="Options"
-          className={classes.itemIconButton}
-          onClick={(event) => {
-            event.stopPropagation();
-            onChangeParent(item);
-          }}
-        >
-          <ChevronRightRoundedIcon className={classes.icon} />
-        </IconButton>
-      </div>
-    </ListItem>
-  );
 }
 
 interface WidgetState {
@@ -763,10 +218,6 @@ function itemsFromPath(path: string, root: string, items: LookupTable<SandboxIte
         return items[accum] ?? items[withIndex(accum)];
       })
   ];
-}
-
-function isNavigable(item: SandboxItem): boolean {
-  return Boolean(item.previewUrl);
 }
 
 const init: (props: WidgetProps) => WidgetState = (props: WidgetProps) => ({
