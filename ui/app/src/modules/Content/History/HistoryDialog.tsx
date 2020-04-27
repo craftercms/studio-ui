@@ -34,6 +34,7 @@ import DialogBody from '../../../components/Dialogs/DialogBody';
 import { ApiResponse } from '../../../models/ApiResponse';
 import { LegacyVersion, VersionsStateProps } from '../../../models/Version';
 import {
+  compareBothVersions,
   compareVersion,
   resetVersionsState,
   versionsChangePage
@@ -269,6 +270,23 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     }));
   };
 
+  const compareBoth = (selected: string[]) => {
+    dispatch(fetchContentTypes());
+    dispatch(compareBothVersions(selected));
+    dispatch(showCompareVersionsDialog({
+      onClose: resetVersionsState(),
+      rightActions: [
+        {
+          icon: 'HistoryIcon',
+          onClick: showHistoryDialog({
+            onClose: resetVersionsState()
+          }),
+          'aria-label': formatMessage(translations.backToHistoryList)
+        }
+      ]
+    }));
+  };
+
   const revertTo = (versionNumber: string) => {
     dispatch(revertContent({ path, versionNumber }));
   };
@@ -293,7 +311,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         break;
       }
       case 'compareToCurrent': {
-        compareTo(current);
+        compareBoth([activeItem.versionNumber, current]);
         break;
       }
       case 'compareToPrevious': {
