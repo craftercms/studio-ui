@@ -149,12 +149,12 @@ function GlobalDialogManager() {
         versionsBranch={versionsBranch}
         isFetching={state.history.isFetching}
         error={state.history.error}
-        current={state.history.current}
-        rowsPerPage={state.history.rowsPerPage}
-        page={state.history.page}
         onClose={createCallback(state.history.onClose, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
+      {/* endregion */}
+
+      {/* region View Versions */}
       <ViewVersionDialog
         open={state.viewVersion.open}
         isFetching={state.viewVersion.isFetching}
@@ -168,14 +168,19 @@ function GlobalDialogManager() {
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
         onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
       />
+      {/* endregion */}
+
+      {/* region Compare Versions */}
       <CompareVersionsDialog
         open={state.compareVersions.open}
         isFetching={state.compareVersions.isFetching}
         error={state.compareVersions.error}
-        rowsPerPage={state.compareVersions.rowsPerPage}
-        page={state.compareVersions.page}
+        rightActions={state.compareVersions.rightActions?.map((action) => ({
+          ...action,
+          onClick: createCallback(action.onClick, dispatch)
+        }))}
+        contentTypesBranch={contentTypesBranch}
         versionsBranch={versionsBranch}
-        compare={state.compareVersions.compare}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}
       />

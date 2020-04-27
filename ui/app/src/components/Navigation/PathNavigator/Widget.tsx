@@ -39,7 +39,6 @@ import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
 import ContentLocalizationDialog from '../../Dialogs/ContentLocalizationDialog';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
-import { showHistoryDialog } from '../../../state/reducers/dialogs/history';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
 import StandardAction from '../../../models/StandardAction';
@@ -53,6 +52,7 @@ import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import { fetchItemVersions } from '../../../state/reducers/versions';
+import { showHistoryDialog } from '../../../state/actions/dialogs';
 
 const menuOptions = {
   edit: {

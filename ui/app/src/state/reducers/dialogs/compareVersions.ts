@@ -14,25 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import StandardAction from '../../../models/StandardAction';
+import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { CompareVersionsDialogStateProps } from '../../../modules/Content/History/CompareVersionsDialog';
-
-export const showCompareVersionsDialog = createAction<any>('SHOW_COMPARE_VERSIONS_DIALOG');
-
-export const closeCompareVersionsDialog = createAction<StandardAction>('CLOSE_COMPARE_VERSIONS_DIALOG');
+import {
+  closeCompareVersionsDialog,
+  showCompareVersionsDialog,
+  showHistoryDialog
+} from '../../actions/dialogs';
 
 const initialState: CompareVersionsDialogStateProps = {
   open: false,
   isFetching: null,
-  rowsPerPage: 10,
-  page: 0,
   error: null,
-  compare: {
-    a: null,
-    b: null
-  },
   rightActions: null,
   leftActions: null,
   onClose: null,
@@ -50,5 +44,6 @@ export default createReducer<GlobalState['dialogs']['compareVersions']>(initialS
   [closeCompareVersionsDialog.type]: (state) => ({
     ...initialState,
     onClose: state.onClose
-  })
+  }),
+  [showHistoryDialog.type]: () => initialState
 });

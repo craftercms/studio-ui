@@ -17,32 +17,55 @@
 import { Epic, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import GlobalState from '../../models/GlobalState';
-import { getConfigurationVersions, getItemVersions } from '../../services/content';
+import {
+  getConfigurationVersions,
+  getContentVersion,
+  getItemVersions
+} from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
+  compareBothVersions,
+  compareBothVersionsComplete,
+  compareBothVersionsFailed,
   fetchItemVersions,
   fetchItemVersionsComplete,
-  fetchItemVersionsFailed
+  fetchItemVersionsFailed,
+  versionsChangePage
 } from '../reducers/versions';
+import { forkJoin } from 'rxjs';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchItemVersions.type),
+      ofType(fetchItemVersions.type, versionsChangePage.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const service = (payload.config)
           ? getConfigurationVersions(
             state.sites.active,
-            payload.path,
-            payload.environment,
-            payload.module
+            payload.path ?? state.versions.path,
+            payload.environment ?? state.versions.environment,
+            payload.module ?? state.versions.module
           )
-          : getItemVersions(state.sites.active, payload.path);
+          : getItemVersions(state.sites.active, payload.path ?? state.versions.path);
         return service.pipe(
           map(fetchItemVersionsComplete),
           catchAjaxError(fetchItemVersionsFailed)
         );
       })
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(compareBothVersions.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        forkJoin(
+          getContentVersion(state.sites.active, payload.path, payload[0]),
+          getContentVersion(state.sites.active, payload.path, payload[1])
+        ).pipe(
+          map(compareBothVersionsComplete),
+          catchAjaxError(compareBothVersionsFailed)
+        )
+      )
     )
 ] as Epic[];

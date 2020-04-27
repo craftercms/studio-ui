@@ -14,44 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import StandardAction from '../../../models/StandardAction';
+import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
-import { AjaxError } from 'rxjs/ajax';
-import { closeViewVersionDialog, showViewVersionDialog } from './viewVersion';
+import {
+  closeCompareVersionsDialog,
+  closeHistoryDialog,
+  closeViewVersionDialog,
+  revertContent,
+  revertContentComplete,
+  revertContentFailed,
+  showCompareVersionsDialog,
+  showHistoryDialog,
+  showViewVersionDialog
+} from '../../actions/dialogs';
 
-interface HistoryConfigProps {
-  path: string;
-  environment?: string;
-  module?: string;
-  config?: boolean;
-}
-
-export const showHistoryDialog = createAction<HistoryDialogStateProps>('SHOW_HISTORY_DIALOG');
-
-export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
-
-export const historyDialogChangePage = createAction<number>('HISTORY_DIALOG_CHANGE_PAGE');
-
-export const revertContent = createAction<string>('REVERT_CONTENT');
-
-export const revertContentComplete = createAction<Boolean>('REVERT_CONTENT_COMPLETE');
-
-export const revertContentFailed = createAction<AjaxError>('REVERT_CONTENT_FAILED');
-
-const initialState = {
+const initialState: HistoryDialogStateProps = {
   open: false,
-  item: null,
-  current: null,
-  rowsPerPage: 10,
-  page: 0,
   path: null,
-  config: null,
-  environment: null,
   error: null,
-  isFetching: null,
-  versions: null
+  isFetching: null
 };
 
 export default createReducer<GlobalState['dialogs']['history']>(
@@ -67,10 +49,6 @@ export default createReducer<GlobalState['dialogs']['history']>(
       ...initialState,
       onClose: state.onClose
     }),
-    [historyDialogChangePage.type]: (state, { payload }) => ({
-      ...state,
-      page: payload
-    }),
     [revertContent.type]: (state) => ({
       ...state,
       isFetching: true
@@ -85,7 +63,12 @@ export default createReducer<GlobalState['dialogs']['history']>(
       isFetching: false
     }),
     [closeViewVersionDialog.type]: () => initialState,
+    [closeCompareVersionsDialog.type]: () => initialState,
     [showViewVersionDialog.type]: (state) => ({
+      ...state,
+      open: false
+    }),
+    [showCompareVersionsDialog.type]: (state) => ({
       ...state,
       open: false
     })

@@ -14,7 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LegacyItem } from "./Item";
+import { LegacyItem } from './Item';
+import ApiResponse from './ApiResponse';
 
 export interface LegacyVersion {
   lastModifiedDate: string;
@@ -27,4 +28,25 @@ export interface LegacyVersion {
 export interface VersionsResponse {
   item: LegacyItem;
   versions: LegacyVersion[];
+}
+
+export interface FetchContentVersion {
+  path: string;
+  versionNumber: string;
+}
+
+export interface VersionsStateProps {
+  byId: string;
+  path: string;
+  environment?: string;
+  module?: string;
+  error: ApiResponse;
+  isFetching: Boolean;
+  current: string;
+  versions: LegacyVersion[];
+  count: number;
+  page: number;
+  limit: number;
+  selected: string[];
+  compareVersionsBranch: any;
 }

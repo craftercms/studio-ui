@@ -27,6 +27,7 @@ import clsx from 'clsx';
 import { Tooltip } from '@material-ui/core';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
+import Action, { ActionIcon } from './DialogHeaderAction';
 
 const dialogTitleStyles = makeStyles(() =>
   createStyles({
@@ -64,11 +65,11 @@ const dialogTitleStyles = makeStyles(() =>
 );
 
 export interface DialogHeaderAction extends IconButtonProps {
-  icon: React.ElementType;
+  icon: ActionIcon | React.ElementType;
 }
 
 export interface DialogHeaderStateAction {
-  icon: React.ElementType;
+  icon: ActionIcon;
   'aria-label': string;
   onClick: StandardAction;
   [prop: string]: any;
@@ -84,21 +85,6 @@ const translations = defineMessages({
     defaultMessage: 'Dismiss'
   }
 });
-
-function Action(props: any) {
-  const { icon: Icon, tooltip, ...rest } = props;
-  return tooltip ? (
-    <Tooltip title={tooltip}>
-      <IconButton {...rest}>
-        <Icon />
-      </IconButton>
-    </Tooltip>
-  ) : (
-    <IconButton {...rest}>
-      <Icon />
-    </IconButton>
-  );
-}
 
 export type DialogTitleProps<PrimaryTypographyComponent extends React.ElementType = 'h2',
   SecondaryTypographyComponent extends React.ElementType = 'p'> = PropsWithChildren<{

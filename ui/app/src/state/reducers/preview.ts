@@ -376,7 +376,7 @@ const reducer = createReducer<GlobalState['preview']>({
   [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
     let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
     let page = [...state.assets.page];
-    page[state.assets.pageNumber] = Object.keys(itemsLookupTable);
+    page[state.assets.pageNumber] = searchResult.items.map(item => item.path);
     return {
       ...state,
       assets: {

@@ -114,7 +114,7 @@ interface ViewVersionDialogBaseProps {
   open: boolean;
   error: ApiResponse;
   isFetching: boolean;
-  version: string;
+  version: any;
 }
 
 interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
@@ -133,7 +133,7 @@ export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps 
 }
 
 interface Resource {
-  version: string;
+  version: any;
   contentTypes: LookupTable<ContentType>;
 }
 
@@ -141,7 +141,12 @@ export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { open, onClose, onDismiss, rightActions } = props;
 
   const resource = useStateResource<Resource, ViewVersionDialogProps>(props, {
-    shouldResolve: (source) => Boolean(source.version) && (!source.isFetching && !source.contentTypesBranch.isFetching),
+    shouldResolve: (source) => (
+      source.version &&
+      source.contentTypesBranch.byId &&
+      !source.isFetching &&
+      !source.contentTypesBranch.isFetching
+    ),
     shouldReject: (source) => Boolean(source.error) || Boolean(source.contentTypesBranch.error),
     shouldRenew: (source, resource) => (source.isFetching || source.contentTypesBranch.isFetching) && resource.complete,
     resultSelector: (source) => ({

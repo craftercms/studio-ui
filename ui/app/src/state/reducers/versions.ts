@@ -15,13 +15,9 @@
  */
 
 import GlobalState from '../../models/GlobalState';
-import { createEntityState, createLookupTable } from '../../utils/object';
 import { createAction, createReducer } from '@reduxjs/toolkit';
-//import { FETCH_CONTENT_TYPES, FETCH_CONTENT_TYPES_COMPLETE, FETCH_CONTENT_TYPES_FAILED } from '../actions/preview';
-import ContentType from '../../models/ContentType';
-import { changeSite } from './sites';
-import { LegacyVersion, VersionsResponse } from '../../models/version';
 import { AjaxError } from 'rxjs/ajax';
+import { VersionsResponse, VersionsStateProps } from '../../models/Version';
 
 interface HistoryConfigProps {
   path: string;
@@ -36,23 +32,47 @@ export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_I
 
 export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 
-const initialState = {
-  //byId: null,
+export const versionsChangePage = createAction<number>('VERSIONS_CHANGE_PAGE');
+
+export const compareVersion = createAction<string>('COMPARE_VERSIONS');
+
+export const resetVersionsState = createAction('RESET_VERSIONS_STATE');
+
+export const compareBothVersions = createAction<string[]>('COMPARE_BOTH_VERSIONS');
+
+export const compareBothVersionsComplete = createAction<any>('COMPARE_BOTH_VERSIONS_COMPLETE');
+
+export const compareBothVersionsFailed = createAction<any>('COMPARE_BOTH_VERSIONS_FAILED');
+
+const initialState: VersionsStateProps = {
+  byId: null,
+  path: null,
   error: null,
   isFetching: null,
-  versions: null
-}
-
+  current: null,
+  versions: null,
+  count: 0,
+  page: 0,
+  limit: 10,
+  selected: [],
+  compareVersionsBranch: {
+    compareVersions: null,
+    isFetching: null,
+    error: null
+  }
+};
 
 const reducer = createReducer<GlobalState['versions']>(initialState, {
-  [fetchItemVersions.type]: (state) => ({
+  [fetchItemVersions.type]: (state, { payload }) => ({
     ...state,
+    ...payload,
     isFetching: true
   }),
   [fetchItemVersionsComplete.type]: (state, { payload: { versions } }) => ({
     ...state,
-    //byId: createLookupTable<LegacyVersion>(versions, 'versionNumber'),
-    versions: versions,
+    count: versions.length,
+    current: versions[0].versionNumber,
+    versions: versions.slice(state.page * state.limit, (state.page + 1) * state.limit),
     isFetching: false,
     error: null
   }),
@@ -60,7 +80,41 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     ...state,
     error: payload.response,
     isFetching: false
-  })
+  }),
+  [versionsChangePage.type]: (state, { payload }) => ({
+    ...state,
+    page: payload,
+    isFetching: true
+  }),
+  [compareVersion.type]: (state, { payload }) => ({
+    ...state,
+    selected: [payload]
+  }),
+  [compareBothVersions.type]: (state, { payload }) => ({
+    ...state,
+    selected: payload,
+    compareVersionsBranch: {
+      ...state.compareVersionsBranch,
+      isFetching: true
+    }
+  }),
+  [compareBothVersionsComplete.type]: (state, { payload }) => ({
+    ...state,
+    compareVersionsBranch: {
+      ...state.compareVersionsBranch,
+      compareVersions: payload,
+      isFetching: false
+    }
+  }),
+  [compareBothVersionsFailed.type]: (state, { payload }) => ({
+    ...state,
+    compareVersionsBranch: {
+      ...state.compareVersionsBranch,
+      error: payload,
+      isFetching: false
+    }
+  }),
+  [resetVersionsState.type]: () => initialState
 });
 
 export default reducer;

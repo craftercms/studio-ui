@@ -23,20 +23,20 @@ import { closeNewContentDialog } from '../reducers/dialogs/newContent';
 import { closePublishDialog } from '../reducers/dialogs/publish';
 import { camelize, dasherize } from '../../utils/string';
 import { closeDeleteDialog } from '../reducers/dialogs/delete';
-import {
-  revertContent,
-  revertContentComplete,
-  revertContentFailed
-} from '../reducers/dialogs/history';
 import { getContentVersion, revertContentToVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
+import { fetchItemVersions } from '../reducers/versions';
 import {
+  closeCompareVersionsDialog,
+  closeHistoryDialog,
+  closeViewVersionDialog,
   fetchContentVersion,
   fetchContentVersionComplete,
   fetchContentVersionFailed,
-  showViewVersionDialog
-} from '../reducers/dialogs/viewVersion';
-import { fetchItemVersions } from '../reducers/versions';
+  revertContent,
+  revertContentComplete,
+  revertContentFailed
+} from '../actions/dialogs';
 
 function getDialogNameFromType(type: string): string {
   let name = type.replace(/(CLOSE_)|(_DIALOG)/g, '');
@@ -59,7 +59,10 @@ export default [
         closeConfirmDialog.type,
         closePublishDialog.type,
         closeDeleteDialog.type,
-        closeNewContentDialog.type
+        closeNewContentDialog.type,
+        closeHistoryDialog.type,
+        closeViewVersionDialog.type,
+        closeCompareVersionsDialog.type
       ),
       withLatestFrom(state$),
       map(([{ type, payload }, state]) =>

@@ -25,21 +25,25 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { LookupTable } from '../../../models/LookupTable';
 import StandardAction from '../../../models/StandardAction';
 import { useDispatch } from 'react-redux';
-import { historyDialogChangePage } from '../../../state/reducers/dialogs/history';
 import { VersionList } from './VersionList';
 import TablePagination from '@material-ui/core/TablePagination';
-import { Resource } from '../../../models/Resource';
-import {
-  fetchContentVersion,
-  showViewVersionDialog
-} from '../../../state/reducers/dialogs/viewVersion';
 import { fetchContentTypes } from '../../../state/actions/preview';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import DialogBody from '../../../components/Dialogs/DialogBody';
-import { EntityState } from '../../../models/EntityState';
 import { ApiResponse } from '../../../models/ApiResponse';
-import { LegacyVersion } from '../../../models/Version';
+import { LegacyVersion, VersionsStateProps } from '../../../models/Version';
+import {
+  compareVersion,
+  resetVersionsState,
+  versionsChangePage
+} from '../../../state/reducers/versions';
+import {
+  fetchContentVersion,
+  showCompareVersionsDialog,
+  showHistoryDialog,
+  showViewVersionDialog
+} from '../../../state/actions/dialogs';
 
 const translations = defineMessages({
   previousPage: {
@@ -171,13 +175,10 @@ interface HistoryDialogBaseProps {
   path: string;
   isFetching: Boolean;
   error: ApiResponse;
-  current: string;
-  page: number;
-  rowsPerPage: number;
 }
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
-  versionsBranch: Partial<EntityState<LegacyVersion>>;
+  versionsBranch: VersionsStateProps;
   onClose?(): any;
   onDismiss?(): any;
 }>;
@@ -188,33 +189,22 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, path, rowsPerPage, page, current } = props;
+  const { open, onClose, onDismiss, path, versionsBranch } = props;
+  const { count, page, limit, current } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
-  const versionsResource = useStateResource<LegacyVersion[], HistoryDialogProps>(props, {
-    shouldResolve: ({ versionsBranch }) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
-    shouldReject: ({ versionsBranch }) => Boolean(versionsBranch.error),
-    shouldRenew: ({ versionsBranch }, resource) => (
-      versionsBranch.isFetching && versionsBranch.complete
+  const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
+    shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
+    shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
+    shouldRenew: (versionsBranch, resource) => (
+      versionsBranch.isFetching && resource.complete
     ),
-    resultSelector: ({ versionsBranch, page, rowsPerPage }) => (
-      versionsBranch.versions.slice(page * rowsPerPage, (page + 1) * rowsPerPage)
-    ),
-    errorSelector: ({ versionsBranch }) => versionsBranch.error
-  });
-
-  const paginationResource = useStateResource<number, HistoryDialogProps>(props, {
-    shouldResolve: ({ versionsBranch }) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
-    shouldReject: ({ versionsBranch }) => Boolean(versionsBranch.error),
-    shouldRenew: ({ versionsBranch }, resource) => (
-      versionsBranch.isFetching && versionsBranch.complete
-    ),
-    resultSelector: ({ versionsBranch }) => versionsBranch.versions.length,
-    errorSelector: ({ versionsBranch }) => versionsBranch.error
+    resultSelector: (versionsBranch) => versionsBranch.versions,
+    errorSelector: (versionsBranch) => versionsBranch.error
   });
 
   const handleOpenMenu = useCallback(
@@ -247,18 +237,19 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   const handleViewItem = (version: LegacyVersion) => {
     dispatch(fetchContentTypes());
     dispatch(fetchContentVersion({ path, versionNumber: version.versionNumber }));
-    dispatch(showViewVersionDialog());
-    // dispatch(
-    //   showViewVersionDialog({
-    //     rightActions: [
-    //       {
-    //         icon: HistoryRoundedIcon,
-    //         onClick: showHistoryDialog(),
-    //         'aria-label': formatMessage(translations.backToHistoryList)
-    //       }
-    //     ]
-    //   })
-    // );
+    dispatch(
+      showViewVersionDialog({
+        rightActions: [
+          {
+            icon: 'HistoryIcon',
+            onClick: showHistoryDialog({
+              onClose: resetVersionsState()
+            }),
+            'aria-label': formatMessage(translations.backToHistoryList)
+          }
+        ]
+      })
+    );
   };
 
   const handleContextMenuClose = () => {
@@ -277,6 +268,20 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         break;
       }
       case 'compareTo': {
+        dispatch(fetchContentTypes());
+        dispatch(compareVersion(activeItem.versionNumber));
+        dispatch(showCompareVersionsDialog({
+          onClose: resetVersionsState(),
+          rightActions: [
+            {
+              icon: 'HistoryIcon',
+              onClick: showHistoryDialog({
+                onClose: resetVersionsState()
+              }),
+              'aria-label': formatMessage(translations.backToHistoryList)
+            }
+          ]
+        }));
         break;
       }
       case 'compareToCurrent': {
@@ -297,7 +302,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   const onPageChanged = (nextPage: number) => {
-    dispatch(historyDialogChangePage(nextPage));
+    dispatch(versionsChangePage(nextPage));
   };
 
   return (
@@ -308,26 +313,25 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         }
         onDismiss={onDismiss}
       />
-      <DialogBody className={classes.dialogBody}>
-        <SuspenseWithEmptyState resource={versionsResource}>
+      <SuspenseWithEmptyState resource={versionsResource}>
+        <DialogBody className={classes.dialogBody}>
           <VersionList
             resource={versionsResource}
-            handleOpenMenu={handleOpenMenu}
-            handleItemClick={handleViewItem}
+            onOpenMenu={handleOpenMenu}
+            onItemClick={handleViewItem}
             current={current}
           />
-        </SuspenseWithEmptyState>
-      </DialogBody>
-      <DialogFooter classes={{ root: classes.dialogFooter }}>
-        <SuspenseWithEmptyState resource={versionsResource} suspenseProps={{ fallback: null }}>
+        </DialogBody>
+        <DialogFooter classes={{ root: classes.dialogFooter }}>
           <Pagination
-            resource={paginationResource}
+            count={count}
             page={page}
-            rowsPerPage={rowsPerPage}
+            rowsPerPage={limit}
             onPageChanged={onPageChanged}
           />
-        </SuspenseWithEmptyState>
-      </DialogFooter>
+        </DialogFooter>
+      </SuspenseWithEmptyState>
+
       {Boolean(menu.anchorEl) && (
         <ContextMenu
           open={true}
@@ -343,17 +347,16 @@ export default function HistoryDialog(props: HistoryDialogProps) {
 }
 
 interface PaginationProps {
-  resource: Resource<number>;
+  count: number;
   page: number;
   rowsPerPage: number;
   onPageChanged(nextPage: number): void;
 }
 
-function Pagination(props: PaginationProps) {
+export function Pagination(props: PaginationProps) {
   const classes = paginationStyles({});
   const { formatMessage } = useIntl();
-  const { resource, page, rowsPerPage } = props;
-  const count = resource.read();
+  const { count, page, rowsPerPage } = props;
   return (
     <TablePagination
       className={classes.pagination}

@@ -35,7 +35,7 @@ import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
 import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
-import { LegacyVersion } from './Version';
+import { VersionsStateProps } from './Version';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -106,7 +106,7 @@ export interface GlobalState {
       byId: LookupTable<ContentTypeReceptacle>;
     };
   };
-  versions: Partial<EntityState<LegacyVersion>>;
+  versions: VersionsStateProps;
   dialogs: {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;

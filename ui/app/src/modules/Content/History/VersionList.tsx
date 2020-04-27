@@ -20,7 +20,6 @@ import { palette } from '../../../styles/theme';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
 import List from '@material-ui/core/List';
-import { LegacyVersion } from '../../../models/version';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Chip from '@material-ui/core/Chip';
@@ -28,6 +27,8 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import { Resource } from '../../../models/Resource';
+import { LegacyVersion } from '../../../models/Version';
+import clsx from 'clsx';
 
 const versionListStyles = makeStyles(() =>
   createStyles({
@@ -115,14 +116,15 @@ export function FancyFormattedDate(props: FancyFormattedDateProps) {
 
 interface VersionListProps {
   resource: Resource<LegacyVersion[]>;
+  selected?: string[];
   current?: string;
-  handleItemClick(version: LegacyVersion): void;
-  handleOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
+  onItemClick(version: LegacyVersion): void;
+  onOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
 }
 
 export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
-  const { resource, handleOpenMenu, handleItemClick, current } = props;
+  const { resource, onOpenMenu, onItemClick, current, selected } = props;
   const versions = resource.read();
 
   return (
@@ -133,8 +135,8 @@ export function VersionList(props: VersionListProps) {
             key={version.versionNumber}
             divider={versions.length - 1 !== i}
             button
-            onClick={() => handleItemClick(version)}
-            className={classes.listItem}
+            onClick={() => onItemClick(version)}
+            className={clsx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
           >
             <ListItemText
               classes={{
@@ -157,12 +159,12 @@ export function VersionList(props: VersionListProps) {
               secondary={version.comment}
             />
             {
-              handleOpenMenu &&
+              onOpenMenu &&
               <ListItemSecondaryAction>
                 <IconButton
                   edge="end"
                   onClick={(e) =>
-                    handleOpenMenu(e.currentTarget, version, current === version.versionNumber)
+                    onOpenMenu(e.currentTarget, version, current === version.versionNumber)
                   }
                 >
                   <MoreVertIcon />

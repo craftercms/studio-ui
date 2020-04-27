@@ -14,20 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import StandardAction from '../../../models/StandardAction';
+import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { ViewVersionDialogStateProps } from '../../../modules/Content/History/ViewVersionDialog';
-
-export const showViewVersionDialog = createAction<any>('SHOW_VIEW_VERSION_DIALOG');
-
-export const closeViewVersionDialog = createAction<StandardAction>('CLOSE_VIEW_VERSION_DIALOG');
-
-export const fetchContentVersion = createAction<any>('FETCH_CONTENT_VERSION');
-
-export const fetchContentVersionComplete = createAction<any>('FETCH_CONTENT_VERSION_COMPLETE');
-
-export const fetchContentVersionFailed = createAction<any>('FETCH_CONTENT_VERSION_FAILED');
+import {
+  closeViewVersionDialog,
+  fetchContentVersion,
+  fetchContentVersionComplete,
+  fetchContentVersionFailed,
+  showHistoryDialog,
+  showViewVersionDialog
+} from '../../actions/dialogs';
 
 const initialState: ViewVersionDialogStateProps = {
   open: false,
@@ -63,5 +60,6 @@ export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState
   [fetchContentVersionFailed.type]: (state) => ({
     ...state,
     isFetching: false
-  })
+  }),
+  [showHistoryDialog.type]: (state) => initialState
 });
