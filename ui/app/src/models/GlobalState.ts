@@ -35,7 +35,7 @@ import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
 import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
-import { LegacyVersion } from './version';
+import { LegacyVersion } from './Version';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
