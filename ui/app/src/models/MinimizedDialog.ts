@@ -1,7 +1,7 @@
 import StandardAction from './StandardAction';
 import { LookupTable } from './LookupTable';
 
-export interface Status {
+export interface MinimizedDialogStatus {
   status?: string,
   files?: number,
   uploadedFiles?: number,
@@ -13,7 +13,7 @@ export interface MinimizedDialog {
   title: string;
   minimized: boolean;
   subtitle?: string;
-  status?: Status;
+  status?: MinimizedDialogStatus;
   onMaximized?: StandardAction;
 }
 

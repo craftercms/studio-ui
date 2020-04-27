@@ -19,7 +19,7 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { Theme } from '@material-ui/core';
-import { palette } from '../styles/theme';
+import { palette } from '../../styles/theme';
 import clsx from 'clsx';
 
 const styles = makeStyles((theme: Theme) => createStyles({

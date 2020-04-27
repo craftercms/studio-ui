@@ -39,7 +39,7 @@ import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { getHostToGuestBus } from './previewContext';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
-import { APIError } from '../../models/GlobalState';
+import { ApiResponse } from '../../models/ApiResponse';
 
 const translations = defineMessages({
   contentForm: {
@@ -125,7 +125,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   const classes = styles({});
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
-  const [error, setError] = useState<APIError>(null);
+  const [error, setError] = useState<ApiResponse>(null);
 
   const [tabsState, setTabsState] = useSpreadState({
     form: { loaded: false, pendingChanges: false },

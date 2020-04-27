@@ -107,7 +107,7 @@ export function createCodebaseBridge() {
       CrafterCMSNextBridge,
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
-      SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
+      SingleFileUpload: lazy(() => import('../components/Controls/SingleFileUpload')),
       DependencySelection: lazy(() =>
         import('../modules/Content/Dependencies/DependencySelection')
       ),
@@ -127,10 +127,10 @@ export function createCodebaseBridge() {
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
       Login: lazy(() => import('../pages/Login')),
-      BulkUpload: lazy(() => import('../components/BulkUpload')),
-      ConfirmDialog: lazy(() => import('../components/UserControl/ConfirmDialog')),
+      BulkUpload: lazy(() => import('../components/Dialogs/BulkUpload')),
+      ConfirmDialog: lazy(() => import('../components/Dialogs/ConfirmDialog')),
       GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
-      PagesWidget: lazy(() => import('../components/PagesWidget')),
+      PagesWidget: lazy(() => import('../components/Navigation/PathNavigator/Widget')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog'))
     },

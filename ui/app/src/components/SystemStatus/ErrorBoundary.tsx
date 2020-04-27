@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import ErrorState, { ErrorStateProps } from './SystemStatus/ErrorState';
+import ErrorState, { ErrorStateProps } from './ErrorState';
 
 export type ErrorBoundaryProps = PropsWithChildren<{
   errorStateProps?: Omit<ErrorStateProps, 'error'>;

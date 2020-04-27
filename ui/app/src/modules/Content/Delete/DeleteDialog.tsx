@@ -33,10 +33,10 @@ import { palette } from '../../../styles/theme';
 import { Resource } from '../../../models/Resource';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../../../components/DialogHeader';
-import DialogBody from '../../../components/DialogBody';
+import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import DialogBody from '../../../components/Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import DialogFooter from '../../../components/DialogFooter';
+import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -279,7 +279,7 @@ function DeleteDialog(props: DeleteDialogProps) {
   );
 
   useEffect(() => {
-    fetchDeleteDependencies(siteId, selectedItems).subscribe(
+    open && fetchDeleteDependencies(siteId, selectedItems).subscribe(
       (response: any) => {
         setDeleteDependencies({
           childItems: response.items.childItems,
@@ -290,7 +290,7 @@ function DeleteDialog(props: DeleteDialogProps) {
         setApiState({ error });
       }
     );
-  }, [selectedItems, setApiState, siteId]);
+  }, [open, selectedItems, setApiState, siteId]);
 
   const handleSubmit = () => {
     const data = {

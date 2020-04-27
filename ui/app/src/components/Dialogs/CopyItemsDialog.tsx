@@ -23,13 +23,13 @@ import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { Theme } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { palette } from '../styles/theme';
-import { LegacyItem } from '../models/Item';
+import { palette } from '../../styles/theme';
+import { LegacyItem } from '../../models/Item';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { TreeView } from '@material-ui/lab';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { LookupTable } from '../models/LookupTable';
+import { LookupTable } from '../../models/LookupTable';
 import DialogTitle, { DialogTitleProps } from './DialogTitle';
 
 

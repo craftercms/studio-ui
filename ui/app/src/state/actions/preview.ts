@@ -18,7 +18,7 @@ import { StandardAction } from '../../models/StandardAction';
 import ContentType from '../../models/ContentType';
 import ContentInstance from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
-import Tools from '../../models/PreviewToolIDs';
+import PreviewTool from '../../models/PreviewTool';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
 import {
@@ -119,7 +119,7 @@ export const EMBEDDED_LEGACY_FORM_FAILURE = 'EMBEDDED_LEGACY_FORM_FAILURE';
 
 // region Action Creators
 
-export function selectTool(tool: Tools = null): StandardAction {
+export function selectTool(tool: PreviewTool = null): StandardAction {
   return {
     type: SELECT_TOOL,
     payload: tool

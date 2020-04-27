@@ -22,7 +22,7 @@ import { fetchDependencies } from '../../../services/dependencies';
 import { LegacyItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
-import GlobalState, { APIError } from '../../../models/GlobalState';
+import GlobalState from '../../../models/GlobalState';
 import {
   useActiveSiteId,
   useOnMount,
@@ -36,13 +36,14 @@ import DependencySelection from '../Dependencies/DependencySelection';
 import PublishForm from './PublishForm';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../../../components/DialogHeader';
-import DialogBody from '../../../components/DialogBody';
+import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import DialogBody from '../../../components/Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import DialogFooter from '../../../components/DialogFooter';
+import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { palette } from '../../../styles/theme';
+import { ApiResponse } from '../../../models/ApiResponse';
 
 const goLiveMessages = defineMessages({
   title: {
@@ -410,7 +411,7 @@ function PublishDialog(props: PublishDialogProps) {
   const [showDepsButton, setShowDepsButton] = useState(true);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const [showDepsDisabled, setShowDepsDisabled] = useState(false);
-  const [apiState, setApiState] = useSpreadState<{ error: APIError, submitting: boolean }>({
+  const [apiState, setApiState] = useSpreadState<{ error: ApiResponse, submitting: boolean }>({
     error: null,
     submitting: false
   });

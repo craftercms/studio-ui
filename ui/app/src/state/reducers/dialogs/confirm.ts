@@ -15,7 +15,7 @@
  */
 
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { ConfirmDialogStateProps } from '../../../components/UserControl/ConfirmDialog';
+import { ConfirmDialogStateProps } from '../../../components/Dialogs/ConfirmDialog';
 import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
 

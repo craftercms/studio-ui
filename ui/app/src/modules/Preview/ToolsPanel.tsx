@@ -54,8 +54,10 @@ import ContentTree from './Tools/ContentTree';
 import { nnou } from '../../utils/object';
 import Suspencified from '../../components/SystemStatus/Suspencified';
 import SearchPanel from './Tools/SearchPanel';
-import Tools from '../../models/PreviewToolIDs';
+import PreviewTool from '../../models/PreviewTool';
 import { Resource } from '../../models/Resource';
+import { SvgIconTypeMap } from '@material-ui/core/SvgIcon/SvgIcon';
+import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -170,7 +172,7 @@ interface Config {
 
 interface Tool {
   config: Config;
-  id: Tools;
+  id: PreviewTool;
   title: string;
 }
 
@@ -231,7 +233,9 @@ function ToolSelector(props: ToolSelectorProps) {
   );
 }
 
-const componentIconMap: any = {
+const componentIconMap: { [key in PreviewTool]: OverridableComponent<SvgIconTypeMap> } = {
+  "craftercms.ice.contentTypeReceptacles": undefined,
+  "craftercms.ice.edit": undefined,
   'craftercms.ice.components': ExtensionRounded,
   'craftercms.ice.assets': ImageRounded,
   'craftercms.ice.audiences': EmojiPeopleRounded,
@@ -241,12 +245,12 @@ const componentIconMap: any = {
   'craftercms.ice.search': SearchRoundedIcon
 };
 
-const componentMap: any = {
+const componentMap: {  [key in PreviewTool]: React.ElementType } = {
   'craftercms.ice.components': ComponentsPanel,
   'craftercms.ice.assets': AssetsPanel,
   'craftercms.ice.audiences': AudiencesPanel,
   'craftercms.ice.simulator': SimulatorPanel,
-  'craftercms.ice.editForm': EditFormPanel,
+  'craftercms.ice.edit': EditFormPanel,
   'craftercms.ice.browseComponents': BrowseComponentsPanel,
   'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,
   'craftercms.ice.contentTree': ContentTree,

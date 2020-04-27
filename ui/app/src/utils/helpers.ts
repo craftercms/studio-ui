@@ -97,7 +97,6 @@ export class ContentTypeHelper {
 
 }
 
-
 const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
 
 export class ModelHelper {

@@ -16,7 +16,7 @@
 
 import makeStyles from '@material-ui/styles/makeStyles';
 import { Theme } from '@material-ui/core';
-import { palette } from '../styles/theme';
+import { palette } from '../../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';

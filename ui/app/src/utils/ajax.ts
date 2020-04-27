@@ -19,7 +19,7 @@ import { catchError } from 'rxjs/operators';
 import { reversePluckProps } from './object';
 import { Observable, of } from 'rxjs';
 import { sessionTimeout } from '../state/actions/user';
-import { ObservableInput } from 'rxjs/src/internal/types';
+import { ObservableInput } from 'rxjs';
 
 const HEADERS = {};
 export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
