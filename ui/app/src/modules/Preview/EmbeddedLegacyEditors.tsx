@@ -101,8 +101,10 @@ interface dialogConfig {
 }
 
 interface EmbeddedLegacyEditorsBaseProps {
-  dialogConfig: dialogConfig;
-  setDialogConfig: any;
+  open?: boolean;
+  src?: string;
+  type?: string;
+  inProgress?: boolean;
   showController?: boolean;
   showTabs?: boolean;
 
@@ -125,8 +127,10 @@ export interface EmbeddedLegacyEditorsStateProps extends EmbeddedLegacyEditorsBa
 
 export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
   const {
-    dialogConfig,
-    setDialogConfig,
+    open,
+    src,
+    type,
+    inProgress,
     getPath,
     showController = false,
     showTabs = true,
@@ -152,7 +156,9 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       closeEdit({
         type: '',
         payload: {
-          dialogConfig: { src: null, type: null, inProgress: true }
+          src: null,
+          type: null,
+          inProgress: true
         }
       })
     );
@@ -166,7 +172,6 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   const handleTabChange = useCallback((event: React.ChangeEvent<{}>, type: string) => {
     let inProgress = !tabsState[type].loaded;
     const config = { type, inProgress };
-    setDialogConfig?.(config);
     dispatch(updateEditConfig(config));
     iframeRef.current.contentWindow.postMessage(
       {
@@ -176,7 +181,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       },
       '*'
     );
-  }, [getPath, setDialogConfig, tabsState, dispatch]);
+  }, [getPath, tabsState, dispatch]);
 
   const closeEmbeddedLegacyForm = useCallback((refresh: boolean, tab?: string) => {
     let hasSomeLoaded = filterBy('loaded', tabsState, tab);
@@ -195,7 +200,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   }, [handleClose, handleTabChange, setTabsState, tabsState, showTabs]);
 
   useEffect(() => {
-    if (dialogConfig.open) {
+    if (open) {
       const messagesSubscription = messages.subscribe((e: any) => {
         let tab = e.data.tab || 'form';
         switch (e.data.type) {
@@ -204,10 +209,8 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
             break;
           }
           case EMBEDDED_LEGACY_FORM_RENDERED: {
-            if (dialogConfig.inProgress) {
+            if (inProgress) {
               const config = { inProgress: false };
-
-              setDialogConfig?.(config);
               dispatch(updateEditConfig(config));
             }
             setTabsState({
@@ -243,21 +246,19 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     onSaveSuccess,
     onSaveLegacySuccess,
     handleTabChange,
-    setDialogConfig,
     setTabsState,
     tabsState,
-    dialogConfig,
     messages,
     closeEmbeddedLegacyForm,
     dispatch
   ]);
 
   return (
-    <Dialog fullScreen open={dialogConfig.open} onClose={handleClose}>
+    <Dialog fullScreen open={open} onClose={handleClose}>
       {showTabs && (
         <AppBar position="static" color="default">
           <Tabs
-            value={dialogConfig.type}
+            value={type}
             onChange={handleTabChange}
             aria-label="simple tabs example"
             centered
@@ -270,7 +271,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
                   {tabsState.form.pendingChanges && <CreateIcon className={classes.edited} />}
                 </div>
               }
-              disabled={dialogConfig.inProgress}
+              disabled={inProgress}
             />
             <Tab
               value="template"
@@ -280,7 +281,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
                   {tabsState.template.pendingChanges && <CreateIcon className={classes.edited} />}
                 </div>
               }
-              disabled={dialogConfig.inProgress}
+              disabled={inProgress}
             />
             {showController && (
               <Tab
@@ -293,14 +294,14 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
                     )}
                   </div>
                 }
-                disabled={dialogConfig.inProgress}
+                disabled={inProgress}
               />
             )}
           </Tabs>
         </AppBar>
       )}
 
-      {dialogConfig.inProgress && dialogConfig.open && (
+      {inProgress && open && (
         <LoadingState
           title={formatMessage(translations.loadingForm)}
           classes={{ root: classes.loadingRoot }}
@@ -308,9 +309,9 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       )}
       <iframe
         ref={iframeRef}
-        src={dialogConfig.src}
+        src={src}
         title="Embedded Legacy Form"
-        className={clsx(classes.iframe, !dialogConfig.inProgress && 'complete')}
+        className={clsx(classes.iframe, !inProgress && 'complete')}
       />
       <ErrorDialog error={error} onDismiss={onErrorClose} />
     </Dialog>

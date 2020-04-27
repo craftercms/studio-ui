@@ -123,11 +123,9 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
     dispatch(
       showEdit({
-        dialogConfig: {
-          src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`,
-          type: 'form',
-          inProgress: false
-        },
+        src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`,
+        type: 'form',
+        inProgress: false,
         showTabs: false,
         onSaveLegacySuccess,
         onSaveSuccess: onEmbeddedFormSaveSuccess

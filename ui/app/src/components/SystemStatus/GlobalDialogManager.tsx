@@ -101,10 +101,12 @@ function GlobalDialogManager() {
 
       {/* region Edit (Embedded Legacy Editor) */}
       <EmbeddedLegacyEditors
+        open={state.edit.open}
+        src={state.edit.src}
+        type={state.edit.type}
+        inProgress={state.edit.inProgress}
         showTabs={state.edit.showTabs}
         showController={state.edit.showController}
-        dialogConfig={state.edit.dialogConfig}
-        setDialogConfig={state.edit.setDialogConfig}
 
         getPath={state.edit.getPath}
         onSaveLegacySuccess={state.edit.onSaveLegacySuccess}

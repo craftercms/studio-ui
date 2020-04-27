@@ -30,29 +30,22 @@ export const closeEdit = createAction<StandardAction>(
 );
 
 export default createReducer<GlobalState['dialogs']['edit']>(
-  { dialogConfig: { open: false }, setDialogConfig: {} },
+  { open: false },
   {
     [showEdit.type]: (state, { payload }) => ({
       onDismiss: closeEdit(),
       ...payload,
-      dialogConfig: {
-        ...payload.dialogConfig,
-        open: true
-      }
+      open: true
     }),
     [updateEditConfig.type]: (state, { payload}) => ({
       ...state,
-      dialogConfig: {
-        ...state.dialogConfig,
-        ...payload
-      }
+      ...payload
     }),
     [closeEdit.type]: (state, { payload }) => ({
-      dialogConfig: {
-        ...payload.dialogConfig,
-        open: false,
-        onClose: state.onClose
-      }
+      ...state,
+      ...payload,
+      open: false,
+      onClose: state.onClose
     })
   }
 );

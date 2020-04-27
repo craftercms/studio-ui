@@ -140,11 +140,9 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
         dispatch(
           showEdit({
-            dialogConfig: {
-              src,
-              type,
-              inProgress: true
-            },
+            src,
+            type,
+            inProgress: true,
             showController: !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page',
             getPath: getPath
           })

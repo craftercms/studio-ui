@@ -575,11 +575,9 @@ function DependenciesDialog(props: DependenciesDialogProps) {
 
     dispatch(
       showEdit({
-        dialogConfig: {
-          src,
-          type,
-          inProgress: true
-        },
+        src,
+        type,
+        inProgress: true,
         showTabs: false
       })
     );

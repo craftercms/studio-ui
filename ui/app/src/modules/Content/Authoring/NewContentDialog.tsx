@@ -261,11 +261,9 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const onTypeOpen = (srcData) => () => {
     dispatch(
       showEdit({
-        dialogConfig: {
-          src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`,
-          type: 'form',
-          inProgress: false
-        },
+        src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`,
+        type: 'form',
+        inProgress: false,
         showTabs: false,
         onSaveLegacySuccess: onSaveLegacySuccessNewContent,
         onSaveSuccess: onSaveSuccessNewContent

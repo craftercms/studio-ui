@@ -134,11 +134,9 @@ export default function EditFormPanel() {
   function openDialog(type: string) {
     dispatch(
       showEdit({
-        dialogConfig: {
-          src: getSrc(type),
-          type,
-          inProgress: true
-        },
+        src: getSrc(type),
+        type,
+        inProgress: true,
         showController: selectedContentType.includes('/page'),
         getPath: getPath
       })
