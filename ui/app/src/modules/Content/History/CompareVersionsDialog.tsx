@@ -49,6 +49,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import EmptyState from '../../../components/SystemStatus/EmptyState';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -83,7 +84,7 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const { open, leftActions, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch } = props;
-  const { count, page, limit, selected, compareVersionsBranch, current } = versionsBranch;
+  const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
@@ -156,6 +157,14 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
             defaultMessage="Compare item versions"
           />
         }
+        subtitle={
+          selectedA && !selectedB &&
+          <FormattedMessage
+            id="compareVersionsDialog.headerSubtitle"
+            defaultMessage="Select a revision to compare to “{selectedA}”"
+            values={{ selectedA: <FancyFormattedDate date={selectedA.lastModifiedDate} /> }}
+          />
+        }
         leftActions={selected.length === 2 ? [{
           icon: 'BackIcon',
           onClick: () => dispatch(compareVersion(selected[0])),
@@ -163,16 +172,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         }] : null}
         rightActions={rightActions}
         onDismiss={onDismiss}
-      >
-        {
-          selectedA && !selectedB &&
-          <FormattedMessage
-            id="compareVersionsDialog.headerSubtitle"
-            defaultMessage='Select a revision to compare to "{selectedA}"'
-            values={{ selectedA: <FancyFormattedDate date={selectedA.lastModifiedDate} /> }}
-          />
-        }
-      </DialogHeader>
+      />
       {
         selected.length === 2 ? (
           <SuspenseWithEmptyState resource={compareVersionsResource}>
@@ -180,25 +180,44 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
               <CompareVersions resource={compareVersionsResource} />
             </DialogBody>
           </SuspenseWithEmptyState>
-        ) : (
-          <SuspenseWithEmptyState resource={versionsResource}>
-            <DialogBody>
-              <VersionList
-                selected={selected}
-                resource={versionsResource}
-                current={current}
-                onItemClick={handleItemClick}
-              />
-            </DialogBody>
-            <DialogFooter>
-              <Pagination
-                count={count}
-                page={page}
-                rowsPerPage={limit}
-                onPageChanged={onPageChanged}
-              />
-            </DialogFooter>
-          </SuspenseWithEmptyState>
+        ) : (path ? (
+            <SuspenseWithEmptyState resource={versionsResource}>
+              <DialogBody>
+                <VersionList
+                  selected={selected}
+                  resource={versionsResource}
+                  current={current}
+                  onItemClick={handleItemClick}
+                />
+              </DialogBody>
+              <DialogFooter>
+                <Pagination
+                  count={count}
+                  page={page}
+                  rowsPerPage={limit}
+                  onPageChanged={onPageChanged}
+                />
+              </DialogFooter>
+            </SuspenseWithEmptyState>
+          ) : (
+            <EmptyState
+              title={
+                <FormattedMessage
+                  id="compareVersionsDialog.pleaseContentItem"
+                  defaultMessage="Please content item"
+                />
+              }
+            >
+              <section>
+                <Typography variant="subtitle1" color="textSecondary">
+                  1. Select item <br />
+                  2. Select revision “A” <br />
+                  3. Select revision “B” <br />
+                  4. View diff
+                </Typography>
+              </section>
+            </EmptyState>
+          )
         )
       }
     </Dialog>
