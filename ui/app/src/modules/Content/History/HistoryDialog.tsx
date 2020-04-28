@@ -210,31 +210,37 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false) => {
       if (isCurrent) {
+        let sections = count > 0 ? [
+          [menuOptions.view],
+          [menuOptions.compareTo, menuOptions.compareToPrevious],
+          [menuOptions.revertToPrevious]
+        ] : [
+          [menuOptions.view]
+        ];
         setMenu({
-          sections: [
-            [menuOptions.view],
-            [menuOptions.compareTo, menuOptions.compareToPrevious],
-            [menuOptions.revertToPrevious]
-          ],
+          sections: sections,
           anchorEl,
           activeItem: version
         });
       } else {
+        let sections = count > 0 ? [
+          [menuOptions.view],
+          [menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious],
+          [menuOptions.revertToThisVersion]
+        ] : [
+          [menuOptions.view]
+        ];
         setMenu({
-          sections: [
-            [menuOptions.view],
-            [menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious],
-            [menuOptions.revertToThisVersion]
-          ],
+          sections: sections,
           anchorEl,
           activeItem: version
         });
       }
     },
-    [setMenu]
+    [count, setMenu]
   );
 
-  function dispathCompareVersionDialogWithOnClose() {
+  function dispatchCompareVersionDialogWithOnClose() {
     dispatch(showCompareVersionsDialog({
       onClose: resetVersionsState(),
       rightActions: [
@@ -287,13 +293,13 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   const compareBoth = (selected: string[]) => {
     dispatch(fetchContentTypes());
     dispatch(compareBothVersions(selected));
-    dispathCompareVersionDialogWithOnClose();
+    dispatchCompareVersionDialogWithOnClose();
   };
 
   const compareToPrevious = (versionNumber: string) => {
     dispatch(fetchContentTypes());
     dispatch(compareToPreviousVersion(versionNumber));
-    dispathCompareVersionDialogWithOnClose();
+    dispatchCompareVersionDialogWithOnClose();
   };
 
   const revertToPrevious = (versionNumber: string) => {
