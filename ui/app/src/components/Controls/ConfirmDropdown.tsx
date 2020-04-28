@@ -16,7 +16,7 @@
 
 import withStyles from '@material-ui/styles/withStyles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDown from '@material-ui/icons/ArrowDropDownRounded';
 import Button from '@material-ui/core/Button';
 import React from 'react';
 import Menu from '@material-ui/core/Menu';
@@ -62,8 +62,7 @@ interface ConfirmDropdownProps {
   onConfirm(): any
 }
 
-
-export default function SelectButton(props: ConfirmDropdownProps) {
+export default function (props: ConfirmDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
   const {
@@ -89,16 +88,14 @@ export default function SelectButton(props: ConfirmDropdownProps) {
   };
 
   return (
-    <div>
+    <>
       <ColorButton variant="outlined" onClick={handleClick} disabled={disabled}>
-        {text} <ArrowDropDownIcon />
+        {text} <ArrowDown />
       </ColorButton>
       <Menu
-        id="simple-menu"
         anchorEl={anchorEl}
         getContentAnchorEl={null}
         classes={{ paper: classes.paper }}
-        keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
         anchorOrigin={{
@@ -116,6 +113,6 @@ export default function SelectButton(props: ConfirmDropdownProps) {
         <MenuItem onClick={handleConfirm}>{confirmText}</MenuItem>
         <MenuItem onClick={handleClose}>{cancelText}</MenuItem>
       </Menu>
-    </div>
+    </>
   );
 }

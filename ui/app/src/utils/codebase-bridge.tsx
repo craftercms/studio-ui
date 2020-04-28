@@ -127,7 +127,7 @@ export function createCodebaseBridge() {
       EncryptTool: lazy(() => import('../components/EncryptTool')),
       AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
       Login: lazy(() => import('../pages/Login')),
-      BulkUpload: lazy(() => import('../components/Dialogs/BulkUpload')),
+      BulkUpload: lazy(() => import('../components/Dialogs/BulkUploadDialog')),
       ConfirmDialog: lazy(() => import('../components/Dialogs/ConfirmDialog')),
       GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
       PagesWidget: lazy(() => import('../components/Navigation/PathNavigator/Widget')),

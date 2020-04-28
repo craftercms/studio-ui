@@ -57,7 +57,7 @@ export function LogInForm(props: LogInFormProps) {
         onChange={(e: any) => onSetUsername?.(e.target.value)}
         className={classes?.username}
         label={
-          <FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Email/Username" />
+          <FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />
         }
       />
       <PasswordTextField

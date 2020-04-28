@@ -15,10 +15,16 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Core, FileInput, Form, ProgressBar, XHRUpload } from 'uppy';
+import Core from '@uppy/core';
+import XHRUpload from '@uppy/xhr-upload';
+import ProgressBar from '@uppy/progress-bar';
+import FileInput from '@uppy/file-input';
+import Form from '@uppy/form';
 import { defineMessages, useIntl } from 'react-intl';
 
-import 'uppy/src/style.scss';
+import '@uppy/core/src/style.scss';
+import '@uppy/progress-bar/src/style.scss';
+import '@uppy/file-input/src/style.scss';
 
 const messages = defineMessages({
   chooseFile: {
@@ -43,15 +49,12 @@ interface UppyProps {
   formTarget: string;
   url: string;
   fileTypes?: [string];
-
   onUploadStart?(): void;
-
   onComplete?(result: any): void;
-
   onError?(file: any, error: any, response: any): void;
 }
 
-function SingleFileUpload(props: UppyProps) {
+export default function SingleFileUpload(props: UppyProps) {
 
   const
     {
@@ -161,5 +164,3 @@ function SingleFileUpload(props: UppyProps) {
     </>
   );
 }
-
-export default SingleFileUpload;
