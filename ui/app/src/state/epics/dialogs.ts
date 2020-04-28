@@ -68,7 +68,6 @@ export default [
     ),
   // endregion
   // region View Version Dialog
-  // region View Version Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(fetchContentVersion.type),
