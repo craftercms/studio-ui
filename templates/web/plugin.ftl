@@ -14,15 +14,15 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<#assign site = RequestParameters.site!''>
-<#assign type = RequestParameters.type!''>
-<#assign name = RequestParameters.name!''>
-<#assign file = RequestParameters.file!'index.js'>
-<#if site?? && type?? && name?? && file?ends_with('.html')>
+<#assign pSite = RequestParameters.site!''>
+<#assign pType = RequestParameters.type!''>
+<#assign pName = RequestParameters.name!''>
+<#assign pFile = RequestParameters.file!'index.js'>
+<#if pSite?? && pType?? && pName?? && pFile?ends_with('.html')>
   <#assign html = applicationContext.configurationService.getConfigurationAsString(
-      site,
+      pSite,
       "studio",
-      "/plugins/${type}/${name}/${file}",
+      "/plugins/${pType}/${pName}/${pFile}",
       ""
     )!"CONTENT_NOT_FOUND"
   />
@@ -54,7 +54,7 @@
   ${html}
   </#if>
 <#else>
-  <@layout title="${name?replace('-', ' ')?cap_first} - ${contentModel['common-title']!''}">
+  <@layout title="${pName?replace('-', ' ')?cap_first} - ${contentModel['common-title']!''}">
     <script>
       window.CRAFTER_CMS_PLUGIN_PAGE = true;
       (function () {
@@ -64,7 +64,7 @@
 
         const script = document.createElement('script');
 
-        script.src = '/studio/api/2/plugin/file?siteId=${site}&type=${type}&name=${name}&filename=${file}';
+        script.src = '/studio/api/2/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}';
 
         script.onload = function () {
           if (['yes', 'true', 'enable', '1'].includes(qs.monitor)) {
@@ -87,8 +87,8 @@
               code: '',
               message: 'Unable to render the requested plugin.',
               remedialAction: (
-                      'Please check that the url has all the necessary params (site, type, name and file), ' +
-                      'that these values are correct and that you\'ve committed all your work to the site repo.'
+                'Please check that the url has all the necessary params (site, type, name and file), ' +
+                'that these values are correct and that you\'ve committed all your work to the site repo.'
               )
             }
           });
