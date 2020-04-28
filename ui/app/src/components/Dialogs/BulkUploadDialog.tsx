@@ -28,7 +28,9 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
-import { Core, ProgressBar as UppyProgressBar, XHRUpload } from 'uppy';
+import Core from '@uppy/core';
+import UppyProgressBar from '@uppy/progress-bar';
+import XHRUpload from '@uppy/xhr-upload';
 
 import getDroppedFiles from '@uppy/utils/lib/getDroppedFiles';
 import toArray from '@uppy/utils/lib/toArray';
@@ -600,7 +602,7 @@ interface BulkUploadProps {
   onDismiss?(dropZoneStatus: DropZoneStatus): void;
 }
 
-export default function BulkUpload(props: BulkUploadProps) {
+export default function (props: BulkUploadProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   // NOTE: this id needs to changed if we added support to many dialogs at the same time;
