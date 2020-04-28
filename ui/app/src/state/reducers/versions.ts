@@ -17,7 +17,7 @@
 import GlobalState from '../../models/GlobalState';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { AjaxError } from 'rxjs/ajax';
-import { VersionsResponse, VersionsStateProps } from '../../models/Version';
+import { FetchContentVersion, VersionsResponse, VersionsStateProps } from '../../models/Version';
 import { createLookupTable } from '../../utils/object';
 
 interface HistoryConfigProps {
@@ -37,6 +37,8 @@ export const versionsChangePage = createAction<number>('VERSIONS_CHANGE_PAGE');
 
 export const compareVersion = createAction<string>('COMPARE_VERSIONS');
 
+export const compareToPreviousVersion = createAction<string>('COMPARE_TO_PREVIOUS_VERSION');
+
 export const resetVersionsState = createAction('RESET_VERSIONS_STATE');
 
 export const compareBothVersions = createAction<string[]>('COMPARE_BOTH_VERSIONS');
@@ -45,7 +47,13 @@ export const compareBothVersionsComplete = createAction<any>('COMPARE_BOTH_VERSI
 
 export const compareBothVersionsFailed = createAction<any>('COMPARE_BOTH_VERSIONS_FAILED');
 
-export const revertToPrevious = createAction<any>('REVERT_TO_PREVIOUS');
+export const revertContent = createAction<FetchContentVersion>('REVERT_CONTENT');
+
+export const revertContentComplete = createAction<Boolean>('REVERT_CONTENT_COMPLETE');
+
+export const revertContentFailed = createAction<AjaxError>('REVERT_CONTENT_FAILED');
+
+export const revertToPreviousVersion = createAction<string>('REVERT_TO_PREVIOUS_VERSION');
 
 const initialState: VersionsStateProps = {
   byId: null,
@@ -59,6 +67,7 @@ const initialState: VersionsStateProps = {
   page: 0,
   limit: 10,
   selected: [],
+  previous: null,
   compareVersionsBranch: {
     compareVersions: null,
     isFetching: null,
@@ -91,12 +100,19 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     ...state,
     page: payload,
     versions: state.allVersions.slice(payload * state.limit, (payload + 1) * state.limit)
-    //isFetching: true
   }),
   [compareVersion.type]: (state, { payload }) => ({
     ...state,
     selected: payload ? [payload] : []
   }),
+  [compareToPreviousVersion.type]: (state, { payload }) => {
+    let i = state.allVersions.findIndex(version => version.versionNumber === payload);
+    let previous = state.allVersions?.[i + 1].versionNumber;
+    return {
+      ...state,
+      selected: [payload, previous]
+    };
+  },
   [compareBothVersions.type]: (state, { payload }) => ({
     ...state,
     selected: payload,
@@ -120,6 +136,29 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
       error: payload,
       isFetching: false
     }
+  }),
+  [revertToPreviousVersion.type]: (state, { payload }) => {
+    let i = state.allVersions.findIndex(version => version.versionNumber === payload);
+    let previous = state.allVersions?.[i + 1].versionNumber;
+    return {
+      ...state,
+      previous: previous,
+      isFetching: true
+    };
+  },
+  [revertContent.type]: (state) => ({
+    ...state,
+    isFetching: true
+  }),
+  [revertContentComplete.type]: (state) => ({
+    ...state
+    // epic revertContentComplete is handling the isFetching true
+    //isFetching: false
+  }),
+  [revertContentFailed.type]: (state, { payload }) => ({
+    ...state,
+    error: payload.response,
+    isFetching: false
   }),
   [resetVersionsState.type]: () => initialState
 });

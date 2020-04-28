@@ -20,16 +20,22 @@ import GlobalState from '../../models/GlobalState';
 import {
   getConfigurationVersions,
   getContentVersion,
-  getItemVersions
+  getItemVersions,
+  revertContentToVersion
 } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   compareBothVersions,
   compareBothVersionsComplete,
   compareBothVersionsFailed,
+  compareToPreviousVersion,
   fetchItemVersions,
   fetchItemVersionsComplete,
-  fetchItemVersionsFailed
+  fetchItemVersionsFailed,
+  revertContent,
+  revertContentComplete,
+  revertContentFailed,
+  revertToPreviousVersion
 } from '../reducers/versions';
 import { forkJoin } from 'rxjs';
 
@@ -55,16 +61,44 @@ export default [
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(compareBothVersions.type),
+      ofType(compareBothVersions.type, compareToPreviousVersion.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
         forkJoin(
-          getContentVersion(state.sites.active, payload.path, payload[0]),
-          getContentVersion(state.sites.active, payload.path, payload[1])
+          getContentVersion(
+            state.sites.active,
+            state.versions.path,
+            state.versions.selected[0]
+          ),
+          getContentVersion(
+            state.sites.active,
+            state.versions.path,
+            state.versions.selected[1]
+          )
         ).pipe(
           map(compareBothVersionsComplete),
           catchAjaxError(compareBothVersionsFailed)
         )
       )
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(revertContent.type, revertToPreviousVersion.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        revertContentToVersion(
+          state.sites.active,
+          payload.path ?? state.versions.path,
+          payload.versionNumber ?? state.versions.previous
+        ).pipe(
+          map(revertContentComplete),
+          catchAjaxError(revertContentFailed)
+        )
+      )
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(revertContentComplete.type),
+      map(fetchItemVersions)
     )
 ] as Epic[];

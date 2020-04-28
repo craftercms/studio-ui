@@ -21,18 +21,13 @@ import {
   closeCompareVersionsDialog,
   closeHistoryDialog,
   closeViewVersionDialog,
-  revertContent,
-  revertContentComplete,
-  revertContentFailed,
   showCompareVersionsDialog,
   showHistoryDialog,
   showViewVersionDialog
 } from '../../actions/dialogs';
 
 const initialState: HistoryDialogStateProps = {
-  open: false,
-  error: null,
-  isFetching: null
+  open: false
 };
 
 export default createReducer<GlobalState['dialogs']['history']>(
@@ -47,19 +42,6 @@ export default createReducer<GlobalState['dialogs']['history']>(
     [closeHistoryDialog.type]: (state) => ({
       ...initialState,
       onClose: state.onClose
-    }),
-    [revertContent.type]: (state) => ({
-      ...state,
-      isFetching: true
-    }),
-    [revertContentComplete.type]: (state) => ({
-      ...state,
-      isFetching: false
-    }),
-    [revertContentFailed.type]: (state, { payload }) => ({
-      ...state,
-      error: payload.response,
-      isFetching: false
     }),
     [closeViewVersionDialog.type]: () => initialState,
     [closeCompareVersionsDialog.type]: () => initialState,

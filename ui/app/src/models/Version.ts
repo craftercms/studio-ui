@@ -49,5 +49,6 @@ export interface VersionsStateProps {
   page: number;
   limit: number;
   selected: string[];
+  previous: string;
   compareVersionsBranch: any;
 }

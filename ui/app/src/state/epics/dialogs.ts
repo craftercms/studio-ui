@@ -23,20 +23,16 @@ import { closeNewContentDialog } from '../reducers/dialogs/newContent';
 import { closePublishDialog } from '../reducers/dialogs/publish';
 import { camelize, dasherize } from '../../utils/string';
 import { closeDeleteDialog } from '../reducers/dialogs/delete';
-import { getContentVersion, revertContentToVersion } from '../../services/content';
-import { catchAjaxError } from '../../utils/ajax';
-import { fetchItemVersions } from '../reducers/versions';
 import {
   closeCompareVersionsDialog,
   closeHistoryDialog,
   closeViewVersionDialog,
   fetchContentVersion,
   fetchContentVersionComplete,
-  fetchContentVersionFailed,
-  revertContent,
-  revertContentComplete,
-  revertContentFailed
+  fetchContentVersionFailed
 } from '../actions/dialogs';
+import { getContentVersion } from '../../services/content';
+import { catchAjaxError } from '../../utils/ajax';
 
 function getDialogNameFromType(type: string): string {
   let name = type.replace(/(CLOSE_)|(_DIALOG)/g, '');
@@ -71,24 +67,7 @@ export default [
       switchMap((actions) => (actions.length ? actions : NEVER))
     ),
   // endregion
-  // region History Dialog
-  (action$, state$: StateObservable<GlobalState>) =>
-    action$.pipe(
-      ofType(revertContent.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) =>
-        revertContentToVersion(state.sites.active, payload.path, payload.versionNumber).pipe(
-          map(revertContentComplete),
-          catchAjaxError(revertContentFailed)
-        )
-      )
-    ),
-  (action$, state$: StateObservable<GlobalState>) =>
-    action$.pipe(
-      ofType(revertContentComplete.type),
-      map(fetchItemVersions)
-    ),
-  // endregion
+  // region View Version Dialog
   // region View Version Dialog
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(

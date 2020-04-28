@@ -31,17 +31,18 @@ import { fetchContentTypes } from '../../../state/actions/preview';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import DialogBody from '../../../components/Dialogs/DialogBody';
-import { ApiResponse } from '../../../models/ApiResponse';
 import { LegacyVersion, VersionsStateProps } from '../../../models/Version';
 import {
   compareBothVersions,
+  compareToPreviousVersion,
   compareVersion,
   resetVersionsState,
+  revertContent,
+  revertToPreviousVersion,
   versionsChangePage
 } from '../../../state/reducers/versions';
 import {
   fetchContentVersion,
-  revertContent,
   showCompareVersionsDialog,
   showHistoryDialog,
   showViewVersionDialog
@@ -174,8 +175,6 @@ interface Menu {
 
 interface HistoryDialogBaseProps {
   open: boolean;
-  isFetching: Boolean;
-  error: ApiResponse;
 }
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
@@ -235,6 +234,21 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     [setMenu]
   );
 
+  function dispathCompareVersionDialogWithOnClose() {
+    dispatch(showCompareVersionsDialog({
+      onClose: resetVersionsState(),
+      rightActions: [
+        {
+          icon: 'HistoryIcon',
+          onClick: showHistoryDialog({
+            onClose: resetVersionsState()
+          }),
+          'aria-label': formatMessage(translations.backToHistoryList)
+        }
+      ]
+    }));
+  }
+
   const handleViewItem = (version: LegacyVersion) => {
     dispatch(fetchContentTypes());
     dispatch(fetchContentVersion({ path, versionNumber: version.versionNumber }));
@@ -273,18 +287,17 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   const compareBoth = (selected: string[]) => {
     dispatch(fetchContentTypes());
     dispatch(compareBothVersions(selected));
-    dispatch(showCompareVersionsDialog({
-      onClose: resetVersionsState(),
-      rightActions: [
-        {
-          icon: 'HistoryIcon',
-          onClick: showHistoryDialog({
-            onClose: resetVersionsState()
-          }),
-          'aria-label': formatMessage(translations.backToHistoryList)
-        }
-      ]
-    }));
+    dispathCompareVersionDialogWithOnClose();
+  };
+
+  const compareToPrevious = (versionNumber: string) => {
+    dispatch(fetchContentTypes());
+    dispatch(compareToPreviousVersion(versionNumber));
+    dispathCompareVersionDialogWithOnClose();
+  };
+
+  const revertToPrevious = (versionNumber: string) => {
+    dispatch(revertToPreviousVersion(versionNumber));
   };
 
   const revertTo = (versionNumber: string) => {
@@ -315,9 +328,11 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         break;
       }
       case 'compareToPrevious': {
+        compareToPrevious(activeItem.versionNumber);
         break;
       }
       case 'revertToPrevious': {
+        revertToPrevious(activeItem.versionNumber);
         break;
       }
       case 'revertToThisVersion': {
