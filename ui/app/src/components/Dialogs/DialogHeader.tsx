@@ -89,13 +89,17 @@ const translations = defineMessages({
 export type DialogTitleProps<
   PrimaryTypographyComponent extends React.ElementType = 'h2',
   SecondaryTypographyComponent extends React.ElementType = 'p'
-  > = PropsWithChildren<{
+> = PropsWithChildren<{
   id?: string;
   title: string | JSX.Element;
-  titleTypographyProps?: TypographyProps<PrimaryTypographyComponent,
-    { component?: PrimaryTypographyComponent }>;
-  subtitleTypographyProps?: TypographyProps<SecondaryTypographyComponent,
-    { component?: SecondaryTypographyComponent }>;
+  titleTypographyProps?: TypographyProps<
+    PrimaryTypographyComponent,
+    { component?: PrimaryTypographyComponent }
+  >;
+  subtitleTypographyProps?: TypographyProps<
+    SecondaryTypographyComponent,
+    { component?: SecondaryTypographyComponent }
+  >;
   subtitle?: string | JSX.Element;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
