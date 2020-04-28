@@ -1057,17 +1057,31 @@ export function getQuickCreateContentList(siteId: string) {
   );
 }
 
-export function getItemVersions(siteId: string, path: string): Observable<VersionsResponse> {
-  return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${siteId}&path=${path}`).pipe(
+export function getItemVersions(site: string, path: string): Observable<VersionsResponse> {
+  return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${path}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );
 }
 
-export function getConfigurationVersions(siteId: string, path: string, environment: string, module: string): Observable<VersionsResponse> {
-  return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${siteId}&path=${path}&environment=${environment}&module=${module}`).pipe(
+export function getConfigurationVersions(site: string, path: string, environment: string, module: string): Observable<VersionsResponse> {
+  return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${path}&environment=${environment}&module=${module}`).pipe(
     pluck('response', 'history')
   );
+}
+
+export function revertContentToVersion(site: string, path: string, versionNumber: string): Observable<Boolean> {
+  return get(`/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${path}&version=${versionNumber}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
+}
+
+export function getContentVersion(site: string, path: string, versionNumber: string): Observable<any> {
+  return new Observable((observer) => {
+    observer.next({ name: 'Test', versionNumber, lastModifiedDate: Date.now(), contentType: '/page/home' });
+    observer.complete();
+  });
 }
 
 export function getChildrenByPath(site: string, path: string, options?: GetChildrenOptions): Observable<GetChildrenResponse> {
@@ -1174,5 +1188,8 @@ export default {
   uploadDataUrl,
   getBulkUploadUrl,
   getQuickCreateContentList,
-  fetchLegacyContentTypes
+  fetchLegacyContentTypes,
+  getItemVersions,
+  getConfigurationVersions,
+  revertContentToVersion
 };

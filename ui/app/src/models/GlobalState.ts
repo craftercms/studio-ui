@@ -33,6 +33,9 @@ import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/De
 import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
 import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
+import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
+import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
+import { VersionsStateProps } from './Version';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -103,12 +106,15 @@ export interface GlobalState {
       byId: LookupTable<ContentTypeReceptacle>;
     };
   };
+  versions: VersionsStateProps;
   dialogs: {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;
     minimizedDialogs: MinimizedDialogsStateProps;
     newContent: NewContentDialogStateProps;
     history: HistoryDialogStateProps;
+    viewVersion: ViewVersionDialogStateProps;
+    compareVersions: CompareVersionsDialogStateProps;
     publish: PublishDialogStateProps;
     dependencies: DependenciesDialogStateProps;
     delete: DeleteDialogStateProps;

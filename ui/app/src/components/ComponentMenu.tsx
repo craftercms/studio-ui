@@ -30,7 +30,8 @@ import { showPublishDialog } from '../state/reducers/dialogs/publish';
 import { closeDeleteDialog, showDeleteDialog } from '../state/reducers/dialogs/delete';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
-import { showHistoryDialog } from '../state/reducers/dialogs/history';
+import { fetchItemVersions } from '../state/reducers/versions';
+import { showHistoryDialog } from '../state/actions/dialogs';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -116,9 +117,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         break;
       }
       case 'history': {
-        dispatch(showHistoryDialog({ 
-          path: models[modelId].craftercms.path || models[parentId].craftercms.path 
+        dispatch(fetchItemVersions({
+          path: models[modelId].craftercms.path || models[parentId].craftercms.path
         }));
+        dispatch(showHistoryDialog());
         break;
       }
       case 'dependencies' : {

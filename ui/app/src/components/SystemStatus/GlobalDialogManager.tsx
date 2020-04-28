@@ -14,13 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  lazy,
-  Suspense,
-  useLayoutEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { lazy, Suspense, useLayoutEffect, useMemo, useState } from 'react';
 import ReactDOM from 'react-dom';
 import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
@@ -32,6 +26,8 @@ import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
+import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
+import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -43,7 +39,7 @@ const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialo
 
 function createCallback(
   action: StandardAction,
-  dispatch: Dispatch,
+  dispatch: Dispatch
 ): (output?: unknown) => void {
   return action
     ? (output) => dispatch({
@@ -75,6 +71,8 @@ export const useStyles = makeStyles(() =>
 
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
+  const contentTypesBranch = useSelection(state => state.contentTypes);
+  const versionsBranch = useSelection(state => state.versions);
   const dispatch = useDispatch();
   return (
     <Suspense fallback="">
@@ -147,9 +145,43 @@ function GlobalDialogManager() {
       {/* region History */}
       <HistoryDialog
         open={state.history.open}
-        path={state.history.path}
+        versionsBranch={versionsBranch}
         onClose={createCallback(state.history.onClose, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region View Versions */}
+      <ViewVersionDialog
+        open={state.viewVersion.open}
+        isFetching={state.viewVersion.isFetching}
+        error={state.viewVersion.error}
+        rightActions={state.viewVersion.rightActions?.map((action) => ({
+          ...action,
+          onClick: createCallback(action.onClick, dispatch)
+        }))}
+        version={state.viewVersion.version}
+        contentTypesBranch={contentTypesBranch}
+        onClose={createCallback(state.viewVersion.onClose, dispatch)}
+        onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Compare Versions */}
+      <CompareVersionsDialog
+        open={state.compareVersions.open}
+        isFetching={state.compareVersions.isFetching}
+        error={state.compareVersions.error}
+        rightActions={state.compareVersions.rightActions?.map((action) => ({
+          ...action,
+          onClick: createCallback(action.onClick, dispatch)
+        }))}
+        contentTypesBranch={contentTypesBranch}
+        selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
+        selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
+        versionsBranch={versionsBranch}
+        onClose={createCallback(state.compareVersions.onClose, dispatch)}
+        onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}
       />
       {/* endregion */}
 
@@ -163,10 +195,7 @@ function GlobalDialogManager() {
   );
 }
 
-function MinimizedDialogManager({
-  state,
-  dispatch
-}: {
+function MinimizedDialogManager({ state, dispatch }: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {

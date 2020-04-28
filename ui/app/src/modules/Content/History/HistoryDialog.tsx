@@ -14,40 +14,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import React, { PropsWithChildren, useCallback } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import DialogHeader from '../../../components/Dialogs/DialogHeader';
-import {
-  defineMessages,
-  FormattedDateParts,
-  FormattedMessage,
-  FormattedTime,
-  useIntl
-} from 'react-intl';
-import DialogBody from '../../../components/Dialogs/DialogBody';
-import { getConfigurationVersions, getItemVersions } from '../../../services/content';
-import { LegacyItem } from '../../../models/Item';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { palette } from '../../../styles/theme';
-import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import { useActiveSiteId, useSpreadState, useStateResource } from '../../../utils/hooks';
+import { useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
-import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
-import clsx from 'clsx';
 import StandardAction from '../../../models/StandardAction';
-import { LegacyVersion } from '../../../models/Version';
-import { ApiResponse } from '../../../models/ApiResponse';
+import { useDispatch } from 'react-redux';
+import { VersionList } from './VersionList';
+import TablePagination from '@material-ui/core/TablePagination';
+import { fetchContentTypes } from '../../../state/actions/preview';
+import DialogHeader from '../../../components/Dialogs/DialogHeader';
+import DialogFooter from '../../../components/Dialogs/DialogFooter';
+import DialogBody from '../../../components/Dialogs/DialogBody';
+import { LegacyVersion, VersionsStateProps } from '../../../models/Version';
+import {
+  compareBothVersions,
+  compareToPreviousVersion,
+  compareVersion,
+  resetVersionsState,
+  revertContent,
+  revertToPreviousVersion,
+  versionsChangePage
+} from '../../../state/reducers/versions';
+import {
+  fetchContentVersion,
+  showCompareVersionsDialog,
+  showHistoryDialog,
+  showViewVersionDialog
+} from '../../../state/actions/dialogs';
 
 const translations = defineMessages({
   previousPage: {
@@ -81,79 +80,29 @@ const translations = defineMessages({
   revertToThisVersion: {
     id: 'historyDialog.options.revertToThisVersion',
     defaultMessage: 'Revert to <b>this version</b>'
+  },
+  backToHistoryList: {
+    id: 'historyDialog.back.selectRevision',
+    defaultMessage: 'Back to history list'
   }
 });
 
-const versionListStyles = makeStyles(() =>
-  createStyles({
-    list: {
-      backgroundColor: palette.white,
-      padding: 0,
-      borderRadius: '5px 5px 0 0',
-      overflowY: 'auto'
-    },
-    listItem: {
-      padding: ' 15px 20px',
-      '&.selected': {
-        backgroundColor: palette.blue.highlight
-      }
-    },
-    listItemTextMultiline: {
-      margin: 0
-    },
-    listItemTextPrimary: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    chip: {
-      padding: '1px',
-      backgroundColor: palette.green.main,
-      height: 'auto',
-      color: palette.white,
-      marginLeft: '10px'
-    },
-    pagination: {
-      marginLeft: 'auto',
-      position: 'fixed',
-      zIndex: 1,
-      bottom: 0,
-      background: 'white',
-      color: 'black',
-      left: 0,
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      '& p': {
-        padding: 0
-      },
-      '& svg': {
-        top: 'inherit'
-      },
-      '& .hidden': {
-        display: 'none'
-      }
-    },
-    toolbar: {
-      padding: 0,
-      display: 'flex',
-      justifyContent: 'space-between',
-      paddingLeft: '20px',
-      '& .MuiTablePagination-spacer': {
-        display: 'none'
-      },
-      '& .MuiTablePagination-spacer + p': {
-        display: 'none'
-      }
-    }
-  })
-);
-
 const historyStyles = makeStyles(() =>
   createStyles({
+    dialogBody: {
+      overflow: 'auto'
+    },
     dialogFooter: {
       padding: 0
     },
     menuList: {
       padding: 0
-    },
+    }
+  })
+);
+
+const paginationStyles = makeStyles(() =>
+  createStyles({
     pagination: {
       marginLeft: 'auto',
       background: 'white',
@@ -182,159 +131,6 @@ const historyStyles = makeStyles(() =>
     }
   })
 );
-
-const CompareRevisionStyles = makeStyles(() =>
-  createStyles({
-    compareBoxHeader: {
-      display: 'flex',
-      justifyContent: 'space-around'
-    },
-    compareBoxHeaderItem: {
-      flexBasis: '50%',
-      '& .blackText': {
-        color: palette.black
-      }
-    }
-  })
-);
-
-interface FancyFormattedDateProps {
-  date: string;
-}
-
-function FancyFormattedDate(props: FancyFormattedDateProps) {
-  const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
-  return (
-    <FormattedDateParts value={props.date} month="long" day="numeric" weekday="long" year="numeric">
-      {(parts) => (
-        <>
-          {`${parts[0].value} ${parts[2].value} `}
-          <FormattedMessage
-            id="historyDialog.ordinals"
-            defaultMessage={`{day, ${ordinals}}`}
-            values={{ day: parts[4].value }}
-          />{' '}
-          {parts[6].value} @ <FormattedTime value={props.date} />
-        </>
-      )}
-    </FormattedDateParts>
-  );
-}
-
-interface CompareRevisionProps {
-  compareTo: CompareTo;
-}
-
-function CompareRevision(props: CompareRevisionProps) {
-  const classes = CompareRevisionStyles({});
-  const { compareTo } = props;
-  return (
-    <section className={classes.compareBoxHeader}>
-      <div className={classes.compareBoxHeaderItem}>
-        <ListItemText
-          primary={<FancyFormattedDate date={compareTo.version.lastModifiedDate} />}
-          secondary={
-            <FormattedMessage
-              id="historyDialog.versionNumber"
-              defaultMessage="Version: <span>{versionNumber}</span>"
-              values={{
-                versionNumber: compareTo.version.versionNumber,
-                span: (msg) => <span className="blackText">{msg}</span>
-              }}
-            />
-          }
-        />
-      </div>
-      <div className={classes.compareBoxHeaderItem}>
-        <ListItemText
-          primary={<FancyFormattedDate date={compareTo.nextVersion.lastModifiedDate} />}
-          secondary={
-            <FormattedMessage
-              id="historyDialog.versionNumber"
-              defaultMessage="Version: <span>{versionNumber}</span>"
-              values={{
-                versionNumber: compareTo.nextVersion.versionNumber,
-                span: (msg) => <span className="blackText">{msg}</span>
-              }}
-            />
-          }
-        />
-      </div>
-    </section>
-  );
-}
-
-interface HistoryListProps {
-  resource: Resource<LegacyVersion[]>;
-  rowsPerPage: number;
-  page: number;
-  compareTo: {
-    version?: LegacyVersion;
-    nextVersion?: LegacyVersion;
-  };
-  current: LegacyVersion;
-
-  handleHistoryItemClick(version: LegacyVersion): void;
-
-  handleViewItem(version: LegacyVersion): void;
-
-  handleOpenMenu(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
-}
-
-function HistoryList(props: HistoryListProps) {
-  const classes = versionListStyles({});
-  const { resource, handleOpenMenu, rowsPerPage, page, compareTo, current, handleHistoryItemClick, handleViewItem } = props;
-  const versions = resource.read().slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-  return (
-    <List component="div" className={classes.list} disablePadding>
-      {versions.map((version: LegacyVersion, i: number) => {
-        let isSelected = version.versionNumber === compareTo.version?.versionNumber;
-        let compareMode = compareTo.version;
-        return (
-          <ListItem
-            key={version.versionNumber}
-            divider={versions.length - 1 !== i}
-            button
-            onClick={compareMode ? () => handleHistoryItemClick(version) : () => handleViewItem(version)}
-            className={clsx(classes.listItem, isSelected && 'selected')}
-          >
-            <ListItemText
-              classes={{
-                multiline: classes.listItemTextMultiline,
-                primary: classes.listItemTextPrimary
-              }}
-              primary={
-                <>
-                  <FancyFormattedDate date={version.lastModifiedDate} />
-                  {current.versionNumber === version.versionNumber && (
-                    <Chip
-                      label={
-                        <FormattedMessage id="historyDialog.current" defaultMessage="current" />
-                      }
-                      className={classes.chip}
-                    />
-                  )}
-                </>
-              }
-              secondary={version.comment}
-            />
-            {
-              !compareMode &&
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={(e) => handleOpenMenu(e.currentTarget, version, current.versionNumber === version.versionNumber)}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            }
-          </ListItem>
-        );
-      })}
-    </List>
-  );
-}
 
 const menuOptions: LookupTable<SectionItem> = {
   view: {
@@ -371,36 +167,18 @@ const menuInitialState = {
   activeItem: null
 };
 
-const compareToInitialState = {
-  version: null,
-  nextVersion: null
-};
-
-interface CompareTo {
-  version: LegacyVersion;
-  nextVersion: LegacyVersion;
-}
-
 interface Menu {
   sections: SectionItem[][];
   anchorEl: Element;
   activeItem: LegacyVersion;
 }
 
-interface Data {
-  contentItem: LegacyItem;
-  versions: LegacyVersion[];
-  current: LegacyVersion;
-}
-
 interface HistoryDialogBaseProps {
   open: boolean;
-  path: string;
-  environment?: string;
-  module?: string;
 }
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
+  versionsBranch: VersionsStateProps;
   onClose?(): any;
   onDismiss?(): any;
 }>;
@@ -411,99 +189,125 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, path, environment, module } = props;
+  const { open, onClose, onDismiss, versionsBranch } = props;
+  const { count, page, limit, current, path } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
-  const site = useActiveSiteId();
-
-  const [compareTo, setCompareTo] = useSpreadState<CompareTo>(compareToInitialState);
+  const dispatch = useDispatch();
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
-  const rowsPerPage = 10;
-  const [page, setPage] = useState(0);
-
-  const [data, setData] = useState<Data>({
-    contentItem: null,
-    versions: null,
-    current: null
+  const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
+    shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
+    shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
+    shouldRenew: (versionsBranch, resource) => (
+      resource.complete
+    ),
+    resultSelector: (versionsBranch) => versionsBranch.versions,
+    errorSelector: (versionsBranch) => versionsBranch.error
   });
-
-  const [error, setError] = useState<ApiResponse>(null);
-
-  const resource = useStateResource<LegacyVersion[], Data>(data, {
-    shouldResolve: (data) => Boolean(data.versions),
-    shouldReject: () => Boolean(error),
-    shouldRenew: () => false,
-    resultSelector: () => data.versions,
-    errorSelector: () => error
-  });
-
-  useEffect(() => {
-    if (open) {
-      if (environment) {
-        getConfigurationVersions(site, path, environment, module).subscribe(
-          (response) => {
-            setData({
-              contentItem: response.item,
-              versions: response.versions,
-              current: response.versions[0] || null
-            });
-          },
-          (response) => {
-            setError(response);
-          }
-        );
-      } else {
-        getItemVersions(site, path).subscribe(
-          (response) => {
-            setData({
-              contentItem: response.item,
-              versions: response.versions,
-              current: response.versions[0] || null
-            });
-          },
-          (response) => {
-            setError(response);
-          }
-        );
-      }
-    }
-  }, [site, path, open, environment, module]);
 
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false) => {
       if (isCurrent) {
+        let sections = count > 0 ? [
+          [menuOptions.view],
+          [menuOptions.compareTo, menuOptions.compareToPrevious],
+          [menuOptions.revertToPrevious]
+        ] : [
+          [menuOptions.view]
+        ];
         setMenu({
-          sections: [
-            [menuOptions.view],
-            [menuOptions.compareTo, menuOptions.compareToPrevious],
-            [menuOptions.revertToPrevious]
-          ],
+          sections: sections,
           anchorEl,
           activeItem: version
         });
       } else {
+        let sections = count > 0 ? [
+          [menuOptions.view],
+          [menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious],
+          [menuOptions.revertToThisVersion]
+        ] : [
+          [menuOptions.view]
+        ];
         setMenu({
-          sections: [
-            [menuOptions.view],
-            [menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious],
-            [menuOptions.revertToThisVersion]
-          ],
+          sections: sections,
           anchorEl,
           activeItem: version
         });
       }
     },
-    [setMenu]
+    [count, setMenu]
   );
 
-  const handleHistoryItemClick = (version: LegacyVersion) => {
-    setCompareTo({ nextVersion: version });
-  };
+  function dispatchCompareVersionDialogWithOnClose() {
+    dispatch(showCompareVersionsDialog({
+      onClose: resetVersionsState(),
+      rightActions: [
+        {
+          icon: 'HistoryIcon',
+          onClick: showHistoryDialog({
+            onClose: resetVersionsState()
+          }),
+          'aria-label': formatMessage(translations.backToHistoryList)
+        }
+      ]
+    }));
+  }
 
   const handleViewItem = (version: LegacyVersion) => {
+    dispatch(fetchContentTypes());
+    dispatch(fetchContentVersion({ path, versionNumber: version.versionNumber }));
+    dispatch(
+      showViewVersionDialog({
+        rightActions: [
+          {
+            icon: 'HistoryIcon',
+            onClick: showHistoryDialog({
+              onClose: resetVersionsState()
+            }),
+            'aria-label': formatMessage(translations.backToHistoryList)
+          }
+        ]
+      })
+    );
+  };
 
+  const compareTo = (versionNumber: string) => {
+    dispatch(fetchContentTypes());
+    dispatch(compareVersion(versionNumber));
+    dispatch(showCompareVersionsDialog({
+      onClose: resetVersionsState(),
+      rightActions: [
+        {
+          icon: 'HistoryIcon',
+          onClick: showHistoryDialog({
+            onClose: resetVersionsState()
+          }),
+          'aria-label': formatMessage(translations.backToHistoryList)
+        }
+      ]
+    }));
+  };
+
+  const compareBoth = (selected: string[]) => {
+    dispatch(fetchContentTypes());
+    dispatch(compareBothVersions(selected));
+    dispatchCompareVersionDialogWithOnClose();
+  };
+
+  const compareToPrevious = (versionNumber: string) => {
+    dispatch(fetchContentTypes());
+    dispatch(compareToPreviousVersion(versionNumber));
+    dispatchCompareVersionDialogWithOnClose();
+  };
+
+  const revertToPrevious = (versionNumber: string) => {
+    dispatch(revertToPreviousVersion(versionNumber));
+  };
+
+  const revertTo = (versionNumber: string) => {
+    dispatch(revertContent({ path, versionNumber }));
   };
 
   const handleContextMenuClose = () => {
@@ -514,21 +318,31 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   const handleContextMenuItemClicked = (section: SectionItem) => {
+    const activeItem = menu.activeItem;
+    setMenu(menuInitialState);
     switch (section.id) {
       case 'view': {
+        handleViewItem(activeItem);
         break;
       }
       case 'compareTo': {
-        setCompareTo({ version: menu.activeItem });
-        setMenu(menuInitialState);
+        compareTo(activeItem.versionNumber);
         break;
       }
       case 'compareToCurrent': {
-        setCompareTo({ version: menu.activeItem, nextVersion: data.current });
-        setMenu(menuInitialState);
+        compareBoth([activeItem.versionNumber, current]);
         break;
       }
       case 'compareToPrevious': {
+        compareToPrevious(activeItem.versionNumber);
+        break;
+      }
+      case 'revertToPrevious': {
+        revertToPrevious(activeItem.versionNumber);
+        break;
+      }
+      case 'revertToThisVersion': {
+        revertTo(activeItem.versionNumber);
         break;
       }
       default:
@@ -537,96 +351,80 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   const onPageChanged = (nextPage: number) => {
-    setPage(nextPage);
-  };
-
-  const handleDialogHeaderBack = () => {
-    if (compareTo.nextVersion) {
-      setCompareTo({ nextVersion: null });
-    } else {
-      setCompareTo(compareToInitialState);
-    }
+    dispatch(versionsChangePage(nextPage));
   };
 
   return (
-    <Dialog onClose={onClose} open={open} fullWidth maxWidth="md">
+    <Dialog onClose={onClose} open={open} fullWidth maxWidth="md" onEscapeKeyDown={onDismiss}>
       <DialogHeader
         title={
-          compareTo.version ? (
-            compareTo.nextVersion ? (
-              <FormattedMessage
-                id="historyDialog.comparingRevisions"
-                defaultMessage={`Comparing Revisions -- {fileName}`}
-                values={{ fileName: data.contentItem.internalName }}
-              />
-            ) : (
-              <FormattedMessage
-                id="historyDialog.selectedRevisionToCompare"
-                defaultMessage={`Select a revision to compare to "{version}"`}
-                values={{
-                  version: <FancyFormattedDate date={compareTo.version.lastModifiedDate} />
-                }}
-              />
-            )
-          ) : (
-            <FormattedMessage
-              id="historyDialog.headerTitle"
-              defaultMessage="Content Item History"
-            />
-          )
+          <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Content Item History" />
         }
         onDismiss={onDismiss}
-        onBack={compareTo.version ? handleDialogHeaderBack : null}
       />
-      <DialogBody>
-        {compareTo.version && compareTo.nextVersion ? (
-          <CompareRevision compareTo={compareTo} />
-        ) : (
-          <SuspenseWithEmptyState resource={resource}>
-            <HistoryList
-              resource={resource}
-              handleOpenMenu={handleOpenMenu}
-              handleHistoryItemClick={handleHistoryItemClick}
-              handleViewItem={handleViewItem}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              compareTo={compareTo}
-              current={data.current}
-            />
-          </SuspenseWithEmptyState>
-        )}
-      </DialogBody>
-      {data.versions && (
-        <DialogFooter className={classes.dialogFooter}>
-          <TablePagination
-            className={classes.pagination}
-            classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-            component="div"
-            labelRowsPerPage=""
-            rowsPerPageOptions={[10, 20, 30]}
-            count={data.versions.length}
-            rowsPerPage={rowsPerPage}
+      <SuspenseWithEmptyState resource={versionsResource}>
+        <DialogBody className={classes.dialogBody}>
+          <VersionList
+            resource={versionsResource}
+            onOpenMenu={handleOpenMenu}
+            onItemClick={handleViewItem}
+            current={current}
+          />
+        </DialogBody>
+        <DialogFooter classes={{ root: classes.dialogFooter }}>
+          <Pagination
+            count={count}
             page={page}
-            backIconButtonProps={{
-              'aria-label': formatMessage(translations.previousPage)
-            }}
-            nextIconButtonProps={{
-              'aria-label': formatMessage(translations.nextPage)
-            }}
-            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) =>
-              onPageChanged(nextPage)
-            }
+            rowsPerPage={limit}
+            onPageChanged={onPageChanged}
           />
         </DialogFooter>
+      </SuspenseWithEmptyState>
+
+      {Boolean(menu.anchorEl) && (
+        <ContextMenu
+          open={true}
+          anchorEl={menu.anchorEl}
+          onClose={handleContextMenuClose}
+          sections={menu.sections}
+          onMenuItemClicked={handleContextMenuItemClicked}
+          classes={{ menuList: classes.menuList }}
+        />
       )}
-      <ContextMenu
-        open={!!menu.anchorEl}
-        anchorEl={menu.anchorEl}
-        onClose={handleContextMenuClose}
-        sections={menu.sections}
-        onMenuItemClicked={handleContextMenuItemClicked}
-        classes={{ menuList: classes.menuList }}
-      />
     </Dialog>
+  );
+}
+
+interface PaginationProps {
+  count: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChanged(nextPage: number): void;
+}
+
+export function Pagination(props: PaginationProps) {
+  const classes = paginationStyles({});
+  const { formatMessage } = useIntl();
+  const { count, page, rowsPerPage } = props;
+  return (
+    <TablePagination
+      className={classes.pagination}
+      classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+      component="div"
+      labelRowsPerPage=""
+      rowsPerPageOptions={[10, 20, 30]}
+      count={count}
+      rowsPerPage={rowsPerPage}
+      page={page}
+      backIconButtonProps={{
+        'aria-label': formatMessage(translations.previousPage)
+      }}
+      nextIconButtonProps={{
+        'aria-label': formatMessage(translations.nextPage)
+      }}
+      onChangePage={(e: React.MouseEvent<HTMLButtonElement>, nextPage: number) =>
+        props.onPageChanged(nextPage)
+      }
+    />
   );
 }
