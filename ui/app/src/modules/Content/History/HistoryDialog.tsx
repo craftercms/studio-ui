@@ -202,7 +202,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
     shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
     shouldRenew: (versionsBranch, resource) => (
-      versionsBranch.isFetching && resource.complete
+      resource.complete
     ),
     resultSelector: (versionsBranch) => versionsBranch.versions,
     errorSelector: (versionsBranch) => versionsBranch.error

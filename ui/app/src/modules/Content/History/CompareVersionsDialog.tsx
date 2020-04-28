@@ -65,6 +65,8 @@ interface CompareVersionsDialogBaseProps {
 
 interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
   versionsBranch: VersionsStateProps;
+  selectedA: LegacyVersion;
+  selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
@@ -80,8 +82,8 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 }
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
-  const { open, leftActions, rightActions, onDismiss, onClose, versionsBranch, contentTypesBranch } = props;
-  const { count, page, limit, selected, compareVersionsBranch } = versionsBranch;
+  const { open, leftActions, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch } = props;
+  const { count, page, limit, selected, compareVersionsBranch, current } = versionsBranch;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
@@ -89,7 +91,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
     shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
     shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
     shouldRenew: (versionsBranch, resource) => (
-      versionsBranch.isFetching && resource.complete
+      resource.complete
     ),
     resultSelector: (versionsBranch) => versionsBranch.versions,
     errorSelector: (versionsBranch) => versionsBranch.error
@@ -126,8 +128,12 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   });
 
   const handleItemClick = (version: LegacyVersion) => {
-    if (selected[0] !== version.versionNumber) {
+    if (!selected[0]) {
+      dispatch(compareVersion(version.versionNumber));
+    } else if (selected[0] !== version.versionNumber) {
       dispatch(compareBothVersions([selected[0], version.versionNumber]));
+    } else {
+      dispatch(compareVersion());
     }
   };
 
@@ -147,8 +153,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         title={
           <FormattedMessage
             id="compareVersionsDialog.headerTitle"
-            defaultMessage="Comparing {name}"
-            values={{ name: 'Home' }}
+            defaultMessage="Compare item versions"
           />
         }
         leftActions={selected.length === 2 ? [{
@@ -158,34 +163,43 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         }] : null}
         rightActions={rightActions}
         onDismiss={onDismiss}
-      />
+      >
+        {
+          selectedA && !selectedB &&
+          <FormattedMessage
+            id="compareVersionsDialog.headerSubtitle"
+            defaultMessage='Select a revision to compare to "{selectedA}"'
+            values={{ selectedA: <FancyFormattedDate date={selectedA.lastModifiedDate} /> }}
+          />
+        }
+      </DialogHeader>
       {
-        selected.length === 1 &&
-        <SuspenseWithEmptyState resource={versionsResource}>
-          <DialogBody>
-            <VersionList
-              selected={selected}
-              resource={versionsResource}
-              onItemClick={handleItemClick}
-            />
-          </DialogBody>
-          <DialogFooter>
-            <Pagination
-              count={count}
-              page={page}
-              rowsPerPage={limit}
-              onPageChanged={onPageChanged}
-            />
-          </DialogFooter>
-        </SuspenseWithEmptyState>
-      }
-      {
-        selected.length === 2 &&
-        <SuspenseWithEmptyState resource={compareVersionsResource}>
-          <DialogBody>
-            <CompareVersions resource={compareVersionsResource} />
-          </DialogBody>
-        </SuspenseWithEmptyState>
+        selected.length === 2 ? (
+          <SuspenseWithEmptyState resource={compareVersionsResource}>
+            <DialogBody>
+              <CompareVersions resource={compareVersionsResource} />
+            </DialogBody>
+          </SuspenseWithEmptyState>
+        ) : (
+          <SuspenseWithEmptyState resource={versionsResource}>
+            <DialogBody>
+              <VersionList
+                selected={selected}
+                resource={versionsResource}
+                current={current}
+                onItemClick={handleItemClick}
+              />
+            </DialogBody>
+            <DialogFooter>
+              <Pagination
+                count={count}
+                page={page}
+                rowsPerPage={limit}
+                onPageChanged={onPageChanged}
+              />
+            </DialogFooter>
+          </SuspenseWithEmptyState>
+        )
       }
     </Dialog>
   );

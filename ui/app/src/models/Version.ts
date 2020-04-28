@@ -44,6 +44,7 @@ export interface VersionsStateProps {
   isFetching: Boolean;
   current: string;
   versions: LegacyVersion[];
+  allVersions: LegacyVersion[];
   count: number;
   page: number;
   limit: number;

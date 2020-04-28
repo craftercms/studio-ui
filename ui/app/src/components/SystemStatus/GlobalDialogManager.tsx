@@ -179,6 +179,8 @@ function GlobalDialogManager() {
           onClick: createCallback(action.onClick, dispatch)
         }))}
         contentTypesBranch={contentTypesBranch}
+        selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
+        selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
         versionsBranch={versionsBranch}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}

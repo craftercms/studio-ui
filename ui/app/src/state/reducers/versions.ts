@@ -18,6 +18,7 @@ import GlobalState from '../../models/GlobalState';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { AjaxError } from 'rxjs/ajax';
 import { VersionsResponse, VersionsStateProps } from '../../models/Version';
+import { createLookupTable } from '../../utils/object';
 
 interface HistoryConfigProps {
   path: string;
@@ -44,6 +45,8 @@ export const compareBothVersionsComplete = createAction<any>('COMPARE_BOTH_VERSI
 
 export const compareBothVersionsFailed = createAction<any>('COMPARE_BOTH_VERSIONS_FAILED');
 
+export const revertToPrevious = createAction<any>('REVERT_TO_PREVIOUS');
+
 const initialState: VersionsStateProps = {
   byId: null,
   path: null,
@@ -51,6 +54,7 @@ const initialState: VersionsStateProps = {
   isFetching: null,
   current: null,
   versions: null,
+  allVersions: null,
   count: 0,
   page: 0,
   limit: 10,
@@ -70,8 +74,10 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
   }),
   [fetchItemVersionsComplete.type]: (state, { payload: { versions } }) => ({
     ...state,
+    byId: createLookupTable(versions, 'versionNumber'),
     count: versions.length,
     current: versions[0].versionNumber,
+    allVersions: versions,
     versions: versions.slice(state.page * state.limit, (state.page + 1) * state.limit),
     isFetching: false,
     error: null
@@ -84,11 +90,12 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
   [versionsChangePage.type]: (state, { payload }) => ({
     ...state,
     page: payload,
-    isFetching: true
+    versions: state.allVersions.slice(payload * state.limit, (payload + 1) * state.limit)
+    //isFetching: true
   }),
   [compareVersion.type]: (state, { payload }) => ({
     ...state,
-    selected: [payload]
+    selected: payload ? [payload] : []
   }),
   [compareBothVersions.type]: (state, { payload }) => ({
     ...state,

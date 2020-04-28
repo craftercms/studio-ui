@@ -29,15 +29,14 @@ import {
   compareBothVersionsFailed,
   fetchItemVersions,
   fetchItemVersionsComplete,
-  fetchItemVersionsFailed,
-  versionsChangePage
+  fetchItemVersionsFailed
 } from '../reducers/versions';
 import { forkJoin } from 'rxjs';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchItemVersions.type, versionsChangePage.type),
+      ofType(fetchItemVersions.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const service = (payload.config)

@@ -168,8 +168,7 @@ export default function ViewVersionDialog(props: ViewVersionDialogProps) {
         title={
           <FormattedMessage
             id="viewVersionDialog.headerTitle"
-            defaultMessage="Viewing {name}"
-            values={{ name: 'Home' }}
+            defaultMessage="Viewing item version"
           />
         }
         rightActions={rightActions}
