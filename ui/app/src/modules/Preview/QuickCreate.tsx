@@ -27,12 +27,11 @@ import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { changeCurrentUrl } from '../../state/actions/preview';
 import { SandboxItem } from '../../models/Item';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
 import { ApiResponse } from '../../models/ApiResponse';
-import { showEdit } from '../../state/reducers/dialogs/edit';
+import { newContentCreationComplete, showEdit } from '../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -96,10 +95,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const [error, setError] = useState<ApiResponse>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
 
-  const onEmbeddedFormSaveSuccess = ({ data }) => {
-    data.item?.isPage && dispatch(changeCurrentUrl(data.redirectUrl));      // TODO: CAN IT BE DIF THAN PAGE?
-  };
-
   const onNewContentClick = () => {
     onItemClicked?.();
     dispatch(
@@ -107,8 +102,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         site: siteId,
         previewItem,
         compact: false,
-        onSaveLegacySuccess: onSaveLegacySuccess,
-        onSaveSuccess: onEmbeddedFormSaveSuccess
+        onSaveLegacySuccess: onSaveLegacySuccess
       })
     );
   };
@@ -127,10 +121,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         type: 'form',
         inProgress: false,
         showTabs: false,
-        // onSaveSuccess: (e) => {
-        //   onEmbeddedFormSaveSuccess?.(e);
-        //   onSaveLegacySuccess?.(e);
-        // }
+        onSaveSuccess: newContentCreationComplete()   // TODO: handle onSaveLegacySuccess
       })
     );
   };

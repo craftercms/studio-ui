@@ -24,7 +24,7 @@ import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
-import { useSpreadState } from '../../utils/hooks';
+import { useSelection, useSpreadState } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
   EDIT_FORM_CHANGE_TAB,
@@ -42,6 +42,8 @@ import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { closeEdit, updateEditConfig } from '../../state/reducers/dialogs/edit';
+import { popPiece } from '../../utils/string';
+import ContentInstance from '../../models/ContentInstance';
 
 const translations = defineMessages({
   contentForm: {
@@ -93,13 +95,6 @@ function filterBy(filter: string, changes: object, currentTab: string): Array<st
   return array;
 }
 
-interface dialogConfig {
-  open?: boolean;
-  src?: string;
-  type?: string;
-  inProgress?: boolean;
-}
-
 interface EmbeddedLegacyEditorsBaseProps {
   open?: boolean;
   src?: string;
@@ -107,8 +102,8 @@ interface EmbeddedLegacyEditorsBaseProps {
   inProgress?: boolean;
   showController?: boolean;
   showTabs?: boolean;
-
-  getPath?(type?: string): void;
+  itemModel?: ContentInstance;
+  embeddedParentPath?: string;
 }
 
 export type EmbeddedLegacyEditorsProps = PropsWithChildren<EmbeddedLegacyEditorsBaseProps & {
@@ -129,9 +124,10 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     src,
     type,
     inProgress,
-    getPath,
     showController = false,
     showTabs = true,
+    itemModel,
+    embeddedParentPath,
     onSaveSuccess
   } = props;
   const { formatMessage } = useIntl();
@@ -139,6 +135,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
   const [error, setError] = useState<ApiResponse>(null);
+  const contentTypesBranch = useSelection(state => state.contentTypes);
 
   const [tabsState, setTabsState] = useSpreadState({
     form: { loaded: false, pendingChanges: false },
@@ -166,6 +163,26 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     closeEmbeddedLegacyForm(false);
   };
 
+  const getPath = (type?: string) => {
+    switch (type) {
+      case 'publish':
+      case 'form': {
+        if (embeddedParentPath) return embeddedParentPath;
+        return itemModel.craftercms.path;
+      }
+      case 'template': {
+        return contentTypesBranch.byId[itemModel.craftercms.contentType].displayTemplate;
+      }
+      case 'controller': {
+        let pageName = popPiece(itemModel.craftercms.contentType, '/');
+        return `/scripts/pages/${pageName}.groovy`;
+      }
+      default: {
+        return itemModel.craftercms.path;
+      }
+    }
+  };
+
   const handleTabChange = useCallback((event: React.ChangeEvent<{}>, type: string) => {
     let inProgress = !tabsState[type].loaded;
     const config = { type, inProgress };
@@ -178,6 +195,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       },
       '*'
     );
+
   }, [getPath, tabsState, dispatch]);
 
   const closeEmbeddedLegacyForm = useCallback((refresh: boolean, tab?: string) => {
@@ -223,7 +241,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
           }
           case EMBEDDED_LEGACY_FORM_SAVE: {
             closeEmbeddedLegacyForm(e.data.refresh, tab);
-            onSaveSuccess?.(e);
+            onSaveSuccess?.(e.data);
             break;
           }
           case EMBEDDED_LEGACY_FORM_FAILURE: {

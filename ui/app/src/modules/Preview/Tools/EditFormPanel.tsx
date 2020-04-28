@@ -29,7 +29,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
 import { findParentModelId } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
-import { getQueryVariable } from '../../../utils/path';
 import { showEdit } from '../../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
@@ -138,12 +137,10 @@ export default function EditFormPanel() {
         type,
         inProgress: true,
         showController: selectedContentType.includes('/page'),
-        getPath: getPath
+        itemModel: model
       })
     );
   }
-
-  const getPath = (type) => getQueryVariable(getSrc(type), 'path');
 
   useEffect(() => {
     const handler = (e) => {

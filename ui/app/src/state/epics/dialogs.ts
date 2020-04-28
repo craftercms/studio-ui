@@ -17,12 +17,14 @@
 import { Epic, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { closeConfirmDialog } from '../reducers/dialogs/confirm';
-import { NEVER } from 'rxjs';
+import { NEVER, Observable, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { closeNewContentDialog } from '../reducers/dialogs/newContent';
 import { closePublishDialog } from '../reducers/dialogs/publish';
 import { camelize, dasherize } from '../../utils/string';
 import { closeDeleteDialog } from '../reducers/dialogs/delete';
+import { newContentCreationComplete } from '../reducers/dialogs/edit';
+import { changeCurrentUrl } from '../actions/preview';
 
 function getDialogNameFromType(type: string): string {
   let name = type.replace(/(CLOSE_)|(_DIALOG)/g, '');
@@ -37,6 +39,7 @@ function getDialogState(type: string, state: GlobalState): any {
   }
   return dialog;
 }
+
 export default [
   // region Confirm Dialog
   (action$, state$: StateObservable<GlobalState>) =>
@@ -52,6 +55,10 @@ export default [
         [payload, getDialogState(type, state)?.onClose].filter((callback) => Boolean(callback))
       ),
       switchMap((actions) => (actions.length ? actions : NEVER))
-    )
+    ),
   // endregion
+  (action$, state$: Observable<GlobalState>) => action$.pipe(
+    ofType(newContentCreationComplete.type),
+    switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
+  )
 ] as Epic[];

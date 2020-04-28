@@ -29,6 +29,10 @@ export const closeEdit = createAction<StandardAction>(
   'CLOSE_EDIT'
 );
 
+export const newContentCreationComplete = createAction<StandardAction>(
+  'NEW_CONTENT_CREATION_COMPLETE',
+);
+
 export default createReducer<GlobalState['dialogs']['edit']>(
   { open: false },
   {

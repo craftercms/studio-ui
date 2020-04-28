@@ -50,10 +50,10 @@ function createCallback(
     ? (output) => dispatch({
       type: action.type,
       ...(isPlainObject(output) || Boolean(action.payload) ? {
-        payload: {
+        payload: action.payload ? {
           ...action.payload,
           ...(isPlainObject(output) ? { output } : {})
-        }
+        } : output
       } : {})
     })
     : null;
@@ -107,10 +107,10 @@ function GlobalDialogManager() {
         inProgress={state.edit.inProgress}
         showTabs={state.edit.showTabs}
         showController={state.edit.showController}
+        itemModel={state.edit.itemModel}
+        embeddedParentPath={state.edit.embeddedParentPath}
 
-        getPath={state.edit.getPath}
         onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
-
         onClose={createCallback(state.dependencies.onClose, dispatch)}
         onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}
       />

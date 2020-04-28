@@ -18,6 +18,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
 import { NewContentDialogStateProps } from '../../../modules/Content/Authoring/NewContentDialog';
+import { newContentCreationComplete } from './edit';
 
 export const showNewContentDialog = createAction<Partial<NewContentDialogStateProps>>(
   'SHOW_NEW_CONTENT_DIALOG'
@@ -34,6 +35,10 @@ export default createReducer<GlobalState['dialogs']['newContent']>(
       open: true
     }),
     [closeNewContentDialog.type]: (state, { payload }) => ({
+      onClose: state.onClose,
+      open: false
+    }),
+    [newContentCreationComplete.type]: (state, { payload }) => ({
       onClose: state.onClose,
       open: false
     })

@@ -43,7 +43,7 @@ import { LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
 import { useDispatch } from 'react-redux';
-import { showEdit } from '../../../state/reducers/dialogs/edit';
+import { newContentCreationComplete, showEdit } from '../../../state/reducers/dialogs/edit';
 import { closeNewContentDialog } from '../../../state/reducers/dialogs/newContent';
 
 const translations = defineMessages({
@@ -153,7 +153,7 @@ interface NewContentDialogBaseProps {
 
   onSaveLegacySuccess?(response): any;
 
-  onSaveSuccess?(response): any;
+  onSaveSuccess?(response?: any): any;
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
@@ -248,7 +248,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   );
   const dispatch = useDispatch();
 
-  const onSaveSuccessNewContent = (e) => {
+  const onSaveSuccessNewContent = (e) => {    //TODO: remove -  handle onSaveLegacySuccess
     dispatch(closeNewContentDialog());
     onSaveSuccess?.(e);
     onSaveLegacySuccess?.(e);
@@ -261,7 +261,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         type: 'form',
         inProgress: false,
         showTabs: false,
-        onSaveSuccess: closeNewContentDialog()
+        onSaveSuccess: newContentCreationComplete()
       })
     );
   };

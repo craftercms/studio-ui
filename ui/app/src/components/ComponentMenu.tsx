@@ -144,7 +144,8 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             type,
             inProgress: true,
             showController: !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page',
-            getPath: getPath
+            itemModel: models[modelId],
+            embeddedParentPath
           })
         );
         break;
