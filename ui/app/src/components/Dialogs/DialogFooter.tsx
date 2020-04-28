@@ -15,24 +15,28 @@
  */
 
 import React from 'react';
-import MuiDialogActions from '@material-ui/core/DialogActions';
+import MuiDialogActions, { DialogActionsProps } from '@material-ui/core/DialogActions';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { palette } from '../../styles/theme';
+import clsx from 'clsx';
 
 const styles = makeStyles(() =>
   createStyles({
-    dialogActions: {
+    root: {
+      minHeight: '50px',
       background: palette.white,
-      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      minHeight: '55px'
+      borderTop: '1px solid rgba(0, 0, 0, 0.12)'
     }
   })
 );
 
-export default function DialogFooter(props) {
-  const classes = styles({});
+export default function DialogFooter(props: DialogActionsProps) {
+  const classes = styles();
   return (
-    <MuiDialogActions className={classes.dialogActions} classes={props.classes} {...props} />
+    <MuiDialogActions
+      {...props}
+      className={clsx(classes.root, props.className)}
+    />
   );
 }

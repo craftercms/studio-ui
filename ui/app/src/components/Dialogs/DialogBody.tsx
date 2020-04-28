@@ -15,26 +15,31 @@
  */
 
 import React from 'react';
-import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogContent, { DialogContentProps } from '@material-ui/core/DialogContent';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { Theme } from '@material-ui/core';
 import { palette } from '../../styles/theme';
 import clsx from 'clsx';
 
-const styles = makeStyles((theme: Theme) => createStyles({
-  dialogContent: {
-    padding: theme.spacing(2),
-    backgroundColor: palette.gray.light0,
-    display: 'flex',
-    flexDirection: 'column',
-    flex: '1 1 auto'
-  }
-}));
+const styles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+      flex: '1 1 auto',
+      flexDirection: 'column',
+      padding: theme.spacing(2),
+      backgroundColor: palette.gray.light0
+    }
+  })
+);
 
-export default function DialogBody(props) {
-  const classes = styles({});
+export default function DialogBody(props: DialogContentProps) {
+  const classes = styles();
   return (
-    <MuiDialogContent classes={{ root: clsx(classes.dialogContent, props.classes?.root) }} {...props} />
+    <MuiDialogContent
+      {...props}
+      className={clsx(classes.root, props.className)}
+    />
   );
 }

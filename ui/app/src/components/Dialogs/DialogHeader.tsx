@@ -21,7 +21,7 @@ import { palette } from '../../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 import clsx from 'clsx';
 import { Tooltip } from '@material-ui/core';
@@ -29,19 +29,20 @@ import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import Action, { ActionIcon } from './DialogHeaderAction';
 
-const dialogTitleStyles = makeStyles(() =>
+const dialogTitleStyles = makeStyles((theme) =>
   createStyles({
-    titleRoot: {
+    root: {
       margin: 0,
       borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-      padding: '10px',
+      padding: theme.spacing(1),
       background: palette.white
     },
-    title: {
+    titleWrapper: {
       display: 'flex',
       alignItems: 'center'
     },
-    typography: {
+    title: {
+      padding: `0 ${theme.spacing(1)}px`,
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis'
@@ -51,12 +52,13 @@ const dialogTitleStyles = makeStyles(() =>
       lineHeight: '18px',
       paddingRight: '35px'
     },
+    subtitleWrapper: {
+      padding: `${theme.spacing(1)}px`
+    },
     leftActions: {
-      marginRight: '5px',
       whiteSpace: 'nowrap'
     },
     rightActions: {
-      paddingLeft: '5px',
       marginLeft: 'auto',
       whiteSpace: 'nowrap'
     },
@@ -65,7 +67,7 @@ const dialogTitleStyles = makeStyles(() =>
 );
 
 export interface DialogHeaderAction extends IconButtonProps {
-  icon: ActionIcon | React.ElementType;
+  icon: ActionIcon | ElementType;
 }
 
 export interface DialogHeaderStateAction {
@@ -87,8 +89,8 @@ const translations = defineMessages({
 });
 
 export type DialogTitleProps<
-  PrimaryTypographyComponent extends React.ElementType = 'h2',
-  SecondaryTypographyComponent extends React.ElementType = 'p'
+  PrimaryTypographyComponent extends ElementType = 'h2',
+  SecondaryTypographyComponent extends ElementType = 'p'
 > = PropsWithChildren<{
   id?: string;
   title: ReactNode;
@@ -103,16 +105,19 @@ export type DialogTitleProps<
   subtitle?: ReactNode;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
-  closeIcon?: React.ElementType;
-  backIcon?: React.ElementType;
+  closeIcon?: ElementType;
+  backIcon?: ElementType;
   classes?: {
     root?: string;
+    titleWrapper?: string;
+    subtitleWrapper?: string;
   };
   onDismiss?(): void;
   onBack?(): void;
 }>;
 
 export default function DialogHeader(props: DialogTitleProps) {
+  // region
   const classes = dialogTitleStyles({});
   const { formatMessage } = useIntl();
   const {
@@ -135,13 +140,14 @@ export default function DialogHeader(props: DialogTitleProps) {
       component: 'p'
     }
   } = props;
+  // endregion
   return (
     <MuiDialogTitle
       id={id}
       disableTypography
-      classes={{ root: clsx(classes.titleRoot, props.classes?.root) }}
+      classes={{ root: clsx(classes.root, props.classes?.root) }}
     >
-      <div className={classes.title}>
+      <section className={clsx(classes.titleWrapper, props.classes?.titleWrapper)}>
         {(leftActions || onBack) && (
           <div className={classes.leftActions}>
             {onBack && (
@@ -158,7 +164,7 @@ export default function DialogHeader(props: DialogTitleProps) {
             )}
           </div>
         )}
-        <Typography className={classes.typography} {...titleTypographyProps}>
+        <Typography className={classes.title} {...titleTypographyProps}>
           {title}
         </Typography>
         {(rightActions || onDismiss) && (
@@ -177,13 +183,17 @@ export default function DialogHeader(props: DialogTitleProps) {
             )}
           </div>
         )}
-      </div>
-      {subtitle && (
-        <Typography className={classes.subtitle} {...subtitleTypographyProps}>
-          {subtitle}
-        </Typography>
+      </section>
+      {(subtitle || children) && (
+        <section className={clsx(classes.subtitleWrapper, props.classes?.subtitleWrapper)}>
+          {subtitle && (
+            <Typography className={classes.subtitle} {...subtitleTypographyProps}>
+              {subtitle}
+            </Typography>
+          )}
+          {children}
+        </section>
       )}
-      {children}
     </MuiDialogTitle>
   );
 }
