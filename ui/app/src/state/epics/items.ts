@@ -14,29 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReducersMapObject } from 'redux';
+import { Epic, ofType, StateObservable } from 'redux-observable';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import GlobalState from '../../models/GlobalState';
-import { StandardAction } from '../../models/StandardAction';
-import auth from './auth';
-import user from './user';
-import sites from './sites';
-import env from './env';
-import preview from './preview';
-import contentTypes from './contentTypes';
-import dialogs from './dialogs';
-import versions from './versions';
-import items from './items';
+import { getChildrenByPath } from '../../services/content';
+import { catchAjaxError } from '../../utils/ajax';
+import { fetchPath, fetchPathComplete, fetchPathFailed } from '../reducers/items';
 
-const reducer: ReducersMapObject<GlobalState, StandardAction> = {
-  auth,
-  user,
-  sites,
-  env,
-  preview,
-  contentTypes,
-  dialogs,
-  versions,
-  items
-};
-
-export default reducer;
+export default [
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(fetchPath.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        getChildrenByPath(state.sites.active, payload?? state.items.path).pipe(
+          map(fetchPathComplete),
+          catchAjaxError(fetchPathFailed)
+        )
+      )
+    )
+] as Epic[];

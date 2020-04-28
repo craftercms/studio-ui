@@ -23,7 +23,7 @@ import { Resource } from '../../../models/Resource';
 interface NavProps {
   locale: string;
   resource: Resource<SandboxItem[]>;
-  isSelectMode: boolean;
+  isSelectMode?: boolean;
   leafs: string[];
   onItemClicked(item: SandboxItem): void;
   onSelectItem(item: SandboxItem, unselect: boolean): void;

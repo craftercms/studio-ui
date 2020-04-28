@@ -22,7 +22,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import { palette } from '../../../styles/theme';
 import { fetchLegacyContentTypes } from '../../../services/content';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
@@ -341,10 +340,9 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             <Box>
               <SingleItemSelector
                 label="Parent"
-                selectItem={previewItem}
-                LabelIcon={InsertDriveFileOutlinedIcon}
-                onEditClick={() => null}
-                onMenuItemClick={onParentItemClick}
+                selectedItem={previewItem}
+                onSelectClick={() => null}
+                onItemClicked={onParentItemClick}
               />
             </Box>
             <Box className={classes.searchBox}>

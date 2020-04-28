@@ -14,6 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { LookupTable } from './LookupTable';
+import ApiResponse from './ApiResponse';
+
 interface BaseItem {
   id: string;
   label: string;
@@ -88,4 +91,12 @@ export interface LegacyItem {
   internalName: string;
   children: LegacyItem[];
   [prop: string]: any;
+}
+
+export interface ItemsStateProps {
+  byId: LookupTable<SandboxItem>,
+  error: ApiResponse;
+  isFetching: boolean;
+  items: string[],
+  path: string
 }

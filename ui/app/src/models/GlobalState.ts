@@ -36,6 +36,7 @@ import { ApiResponse } from './ApiResponse';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
 import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
 import { VersionsStateProps } from './Version';
+import { ItemsStateProps } from './Item';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -107,6 +108,7 @@ export interface GlobalState {
     };
   };
   versions: VersionsStateProps;
+  items: ItemsStateProps;
   dialogs: {
     confirm: ConfirmDialogStateProps;
     error: ErrorDialogStateProps;

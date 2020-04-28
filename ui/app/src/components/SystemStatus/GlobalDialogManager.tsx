@@ -73,6 +73,7 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const versionsBranch = useSelection(state => state.versions);
+
   const dispatch = useDispatch();
   return (
     <Suspense fallback="">

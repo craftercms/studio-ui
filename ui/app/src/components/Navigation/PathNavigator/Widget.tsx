@@ -51,7 +51,7 @@ import { translations } from './translations';
 import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
-import { fetchItemVersions } from '../../../state/reducers/versions';
+import { fetchItemVersions, resetVersionsState } from '../../../state/reducers/versions';
 import { showHistoryDialog } from '../../../state/actions/dialogs';
 
 const menuOptions = {
@@ -510,7 +510,9 @@ export default function(props: WidgetProps) {
       }
       case 'history': {
         dispatch(fetchItemVersions({ path: menu.activeItem.path  }));
-        dispatch(showHistoryDialog());
+        dispatch(showHistoryDialog({
+          onClose: resetVersionsState()
+        }));
         setMenu({
           activeItem: null,
           anchorEl: null

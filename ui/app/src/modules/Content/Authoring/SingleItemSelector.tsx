@@ -18,43 +18,27 @@ import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
-import { OverridableComponent } from '@material-ui/core/OverridableComponent';
-import { SvgIconTypeMap } from '@material-ui/core/SvgIcon';
-import Paper from '@material-ui/core/Paper';
-import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
 import { palette } from '../../../styles/theme';
 import { Variant } from '@material-ui/core/styles/createTypography';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { SandboxItem } from '../../../models/Item';
-
-// TODO remove mockup data as component menu is implemented
-const MENU_ITEMS = [
-  {
-    label: 'Style',
-    path: '/site/website/style/index.xml'
-  },
-  {
-    label: 'Health',
-    path: '/site/website/health/index.xml'
-  },
-  {
-    label: 'Technology',
-    path: '/site/website/technology/index.xml'
-  },
-  {
-    label: 'Root path',
-    path: '/'
-  }
-];
+import { ItemsStateProps, SandboxItem } from '../../../models/Item';
+import InsertDriveFileRoundedIcon from '@material-ui/icons/InsertDriveFileRounded';
+import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
+import Popover from '@material-ui/core/Popover';
+import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import { useSelection, useStateResource } from '../../../utils/hooks';
+import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     'backgroundColor': palette.white,
     'display': 'flex',
-    'justifyContent': 'space-between',
-    'padding': '10px 15px',
+    'padding-left': '15px',
+    'align-items': 'center',
+    'justify-content': 'space-between',
+    'align-self': 'flex-start',
+    'min-width': '200px',
     '& p': {
       padding: 0
     }
@@ -71,56 +55,60 @@ const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 600
   },
-  changeBtn: {
-    padding: 0
-  },
-  labelIcon: {
+  changeBtn: {},
+  itemIcon: {
     fill: palette.teal.main,
     marginRight: 10
   },
-  editIcon: {
-    fontSize: 17
-  }
+  selectIcon: {}
 }));
 
 interface SingleItemSelectorProps {
-  LabelIcon: OverridableComponent<SvgIconTypeMap>;
+  itemIcon?: React.ElementType;
+  selectIcon?: React.ElementType;
   classes?: {
     root?: string;
     title?: string;
-    editIcon?: string;
-    labelIcon?: string;
+    selectIcon?: string;
+    itemIcon?: string;
   };
-  selectItem: SandboxItem;
+  selectedItem?: SandboxItem;
   label: string;
   titleVariant?: Variant;
   labelVariant?: Variant;
-
-  onMenuItemClick(item: SandboxItem): any;
-
-  onEditClick(): void;
+  onSelectClick(): void;
+  onItemClicked(item: SandboxItem): void;
 }
 
 export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const {
-    LabelIcon,
+    itemIcon: ItemIcon = InsertDriveFileRoundedIcon,
+    selectIcon: SelectIcon = ExpandMoreRoundedIcon,
     classes: propClasses,
     titleVariant,
     labelVariant,
-    onEditClick,
-    selectItem,
+    onSelectClick,
+    onItemClicked,
+    selectedItem,
     label,
-    onMenuItemClick: onMenuItemClickProp
   } = props;
   const classes = useStyles();
-  const [anchorEl, setanchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const itemsBranch = useSelection(state => state.items);
 
-  const onMenuClose = () => setanchorEl(null);
+  const itemsResource = useStateResource<SandboxItem[], ItemsStateProps>(itemsBranch, {
+    shouldResolve: (itemsBranch) => Boolean(itemsBranch.byId) && !itemsBranch.isFetching,
+    shouldReject: (itemsBranch) => Boolean(itemsBranch.error),
+    shouldRenew: (itemsBranch, resource) => (
+      itemsBranch.isFetching && resource.complete
+    ),
+    resultSelector: (itemsBranch) => {
+      return itemsBranch.items.map(id => itemsBranch.byId[id])
+    },
+    errorSelector: (itemsBranch) => itemsBranch.error
+  });
 
-  const onMenuItemClick = (item) => () => {
-    onMenuItemClickProp(item);
-    onMenuClose();
-  };
+  const onMenuClose = () => setAnchorEl(null);
 
   return (
     <Paper className={clsx(classes.root, propClasses?.root)} elevation={0}>
@@ -131,25 +119,53 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         >
           {label}
         </Typography>
-        <LabelIcon className={clsx(classes.labelIcon, propClasses?.labelIcon)} />
-        <Typography variant={labelVariant || 'body1'}>{selectItem.label}</Typography>
+        {
+          selectedItem &&
+          <>
+            <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
+            <Typography variant={labelVariant || 'body1'}>{selectedItem.label}</Typography>
+          </>
+        }
       </div>
       <IconButton
         className={classes.changeBtn}
         onClick={(e) => {
-          setanchorEl(e.currentTarget);
-          onEditClick();
+          setAnchorEl(e.currentTarget);
+          onSelectClick();
         }}
       >
-        <EditIcon className={clsx(classes.editIcon, propClasses?.editIcon)} />
+        <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
       </IconButton>
-      <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={onMenuClose}>
-        {MENU_ITEMS.map((item) => (
-          <MenuItem key={item.label} onClick={onMenuItemClick(item)}>
-            {item.label}
-          </MenuItem>
-        ))}
-      </Menu>
+      <Popover
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={onMenuClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        <SuspenseWithEmptyState resource={itemsResource}>
+          <PathNavigatorList
+            leafs={[]}
+            locale={'en'}
+            resource={itemsResource}
+            onSelectItem={() => {
+            }}
+            onPathSelected={() => {
+            }}
+            onOpenItemMenu={() => {
+            }}
+            onItemClicked={() => {
+            }}
+          />
+        </SuspenseWithEmptyState>
+      </Popover>
     </Paper>
   );
 }

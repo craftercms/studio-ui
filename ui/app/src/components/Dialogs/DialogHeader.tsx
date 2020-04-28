@@ -21,7 +21,7 @@ import { palette } from '../../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 import clsx from 'clsx';
 import { Tooltip } from '@material-ui/core';
@@ -91,7 +91,7 @@ export type DialogTitleProps<
   SecondaryTypographyComponent extends React.ElementType = 'p'
 > = PropsWithChildren<{
   id?: string;
-  title: string | JSX.Element;
+  title: ReactNode;
   titleTypographyProps?: TypographyProps<
     PrimaryTypographyComponent,
     { component?: PrimaryTypographyComponent }
@@ -100,7 +100,7 @@ export type DialogTitleProps<
     SecondaryTypographyComponent,
     { component?: SecondaryTypographyComponent }
   >;
-  subtitle?: string | JSX.Element;
+  subtitle?: ReactNode;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
   closeIcon?: React.ElementType;

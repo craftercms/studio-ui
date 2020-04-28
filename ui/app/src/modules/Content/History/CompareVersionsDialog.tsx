@@ -50,6 +50,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
+import SingleItemSelector from '../Authoring/SingleItemSelector';
+import { fetchPath } from '../../../state/reducers/items';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -57,6 +59,14 @@ const translations = defineMessages({
     defaultMessage: 'Back to select revision'
   }
 });
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    typography: {
+      lineHeight: '1.5'
+    }
+  })
+);
 
 interface CompareVersionsDialogBaseProps {
   open: boolean;
@@ -83,8 +93,19 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 }
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
-  const { open, leftActions, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch } = props;
+  const {
+    open,
+    leftActions,
+    rightActions,
+    selectedA,
+    selectedB,
+    onDismiss,
+    onClose,
+    versionsBranch,
+    contentTypesBranch
+  } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
+  const classes = useStyles({});
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
@@ -98,35 +119,38 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
     errorSelector: (versionsBranch) => versionsBranch.error
   });
 
-  const compareVersionsResource = useStateResource<CompareVersionsResource, any>({
-    compareVersionsBranch,
-    contentTypesBranch
-  }, {
-    shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) => (
-      Boolean(
-        compareVersionsBranch.compareVersions &&
-        contentTypesBranch.byId &&
-        !compareVersionsBranch.isFetching &&
-        !contentTypesBranch.isFetching
+  const compareVersionsResource = useStateResource<CompareVersionsResource, any>(
+    {
+      compareVersionsBranch,
+      contentTypesBranch
+    },
+    {
+      shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) => (
+        Boolean(
+          compareVersionsBranch.compareVersions &&
+          contentTypesBranch.byId &&
+          !compareVersionsBranch.isFetching &&
+          !contentTypesBranch.isFetching
+        )
+      ),
+      shouldReject: ({ compareVersionsBranch, contentTypesBranch }) => (
+        Boolean(compareVersionsBranch.error || contentTypesBranch.error)
+      ),
+      shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) => (
+        (compareVersionsBranch.isFetching || contentTypesBranch.isFetching) && resource.complete
+      ),
+      resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => (
+        {
+          a: compareVersionsBranch.compareVersions?.[0],
+          b: compareVersionsBranch.compareVersions?.[1],
+          contentTypes: contentTypesBranch.byId
+        }
+      ),
+      errorSelector: ({ compareVersionsBranch, contentTypesBranch }) => (
+        compareVersionsBranch.error || contentTypesBranch.error
       )
-    ),
-    shouldReject: ({ compareVersionsBranch, contentTypesBranch }) => (
-      Boolean(compareVersionsBranch.error || contentTypesBranch.error)
-    ),
-    shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) => (
-      (compareVersionsBranch.isFetching || contentTypesBranch.isFetching) && resource.complete
-    ),
-    resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => (
-      {
-        a: compareVersionsBranch.compareVersions?.[0],
-        b: compareVersionsBranch.compareVersions?.[1],
-        contentTypes: contentTypesBranch.byId
-      }
-    ),
-    errorSelector: ({ compareVersionsBranch, contentTypesBranch }) => (
-      compareVersionsBranch.error || contentTypesBranch.error
-    )
-  });
+    }
+  );
 
   const handleItemClick = (version: LegacyVersion) => {
     if (!selected[0]) {
@@ -200,23 +224,35 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
               </DialogFooter>
             </SuspenseWithEmptyState>
           ) : (
-            <EmptyState
-              title={
-                <FormattedMessage
-                  id="compareVersionsDialog.pleaseContentItem"
-                  defaultMessage="Please content item"
-                />
-              }
-            >
-              <section>
-                <Typography variant="subtitle1" color="textSecondary">
-                  1. Select item <br />
-                  2. Select revision “A” <br />
-                  3. Select revision “B” <br />
-                  4. View diff
-                </Typography>
-              </section>
-            </EmptyState>
+            <DialogBody>
+              <SingleItemSelector
+                label="Item"
+                onSelectClick={() => {
+                  dispatch(fetchPath());
+                }}
+                onItemClicked={() => {
+                }}
+              />
+              <EmptyState
+                title={
+                  <FormattedMessage
+                    id="compareVersionsDialog.pleaseContentItem"
+                    defaultMessage="Please content item"
+                  />
+                }
+              >
+                <section>
+                  <Typography
+                    variant="subtitle1" color="textSecondary" className={classes.typography}
+                  >
+                    1. Select item <br />
+                    2. Select revision “A” <br />
+                    3. Select revision “B” <br />
+                    4. View diff
+                  </Typography>
+                </section>
+              </EmptyState>
+            </DialogBody>
           )
         )
       }

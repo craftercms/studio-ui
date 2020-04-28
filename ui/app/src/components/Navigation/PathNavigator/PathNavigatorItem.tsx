@@ -34,7 +34,7 @@ interface NavItemProps {
   item: SandboxItem;
   locale: string;
   isLeaf: boolean;
-  isSelectMode: boolean;
+  isSelectMode?: boolean;
   onItemClicked?(item: SandboxItem, event: React.MouseEvent): void;
   onChangeParent?(item: SandboxItem): void;
   onItemChecked?(item: SandboxItem, unselect: boolean): void;
