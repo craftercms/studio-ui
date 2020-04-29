@@ -2211,7 +2211,7 @@
               localStorage.setItem(userCookie, $scope.langSelected);
               let loginSuccess = new CustomEvent('setlocale', { detail: $scope.langSelected });
               document.dispatchEvent(loginSuccess);
-              window.location.href = window.location.href.replace('#/login', '');
+              window.location.href = window.location.href.replace('login', '');
             }
           },
           function error(response) {

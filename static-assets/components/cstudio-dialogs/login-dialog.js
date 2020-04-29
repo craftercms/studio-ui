@@ -74,7 +74,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
     }
 
     function authRedirect(authConfig) {
-      location = '/studio/#/login';
+      location = '/studio/login';
     }
 
     var divIdName = 'cstudio-wcm-popup-div-login';
