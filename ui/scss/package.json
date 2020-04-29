@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/index.js",
+    "build:dev": "node scripts/withSourceMaps.js",
     "watch": "node scripts/watch.js"
   },
   "dependencies": {},

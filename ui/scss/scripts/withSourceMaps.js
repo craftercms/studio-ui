@@ -14,19 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
-import { GlobalState } from '../../models/GlobalState';
+const { FILES, processFileDevMode } = require('./lib');
 
-const reducer = createReducer<GlobalState['env']>(
-  {
-    AUTHORING_BASE: `${window.location.origin}/studio`,
-    GUEST_BASE: window.location.origin,
-    PREVIEW_LANDING_BASE: `/studio/preview-landing`,
-    SITE_COOKIE: 'crafterSite',
-    XSRF_CONFIG_ARGUMENT: '_csrf',
-    XSRF_CONFIG_HEADER: 'X-XSRF-TOKEN'
-  },
-  {}
-);
-
-export default reducer;
+FILES.forEach(processFileDevMode);

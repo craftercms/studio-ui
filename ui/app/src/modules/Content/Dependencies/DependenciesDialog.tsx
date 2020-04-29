@@ -59,19 +59,23 @@ import { ApiResponse } from '../../../models/ApiResponse';
 
 const assetsTypes = {
   'all-deps': {
-    label: <FormattedMessage id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies"/>,
+    label: <FormattedMessage
+      id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies"
+    />,
     filter: () => true
   },
   'content-items': {
-    label: <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only"/>,
+    label: <FormattedMessage
+      id="dependenciesDialog.contentItems" defaultMessage="Content items only"
+    />,
     filter: (dependency: LegacyItem) => ((dependency.isComponent && !dependency.isAsset) || dependency.isPage)
   },
   'assets': {
-    label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only"/>,
+    label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only" />,
     filter: (dependency: LegacyItem) => isAsset(dependency.uri)
   },
   'code': {
-    label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only"/>,
+    label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only" />,
     filter: (dependency: LegacyItem) => isCode(dependency.uri)
   }
 };
@@ -249,7 +253,7 @@ function DependenciesList(props: DependenciesListProps) {
               {
                 isImage(dependency.uri) && !compactView &&
                 <ListItemAvatar>
-                  <Avatar className={classes.listItemPreview} src={dependency.uri}/>
+                  <Avatar className={classes.listItemPreview} src={dependency.uri} />
                 </ListItemAvatar>
               }
               <ListItemText
@@ -265,13 +269,13 @@ function DependenciesList(props: DependenciesListProps) {
                 }}
                 className={classes.listEllipsis}
               >
-                <MoreVertIcon/>
+                <MoreVertIcon />
               </IconButton>
             </ListItem>
           )
       }
     </List>
-  )
+  );
 }
 
 interface DependenciesDialogUIProps {
@@ -340,7 +344,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             item &&
             <Chip
               variant="outlined"
-              deleteIcon={isEditableItem(item.uri) ? <CreateIcon/> : null}
+              deleteIcon={isEditableItem(item.uri) ? <CreateIcon /> : null}
               onDelete={isEditableItem(item.uri) ?
                 () => {
                   handleEditorDisplay(item);
@@ -355,7 +359,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               label={
                 <>
                   <span className='label'>Selected</span>
-                  <InsertDriveFileOutlinedIcon className='item-icon'/>
+                  <InsertDriveFileOutlinedIcon className='item-icon' />
                   <span className='item-title'>{item.internalName}</span>
                 </>
               }
@@ -433,10 +437,12 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           >
             {
               contextMenu.dependency && isEditableItem(contextMenu.dependency.uri) &&
-              <MenuItem onClick={() => {
-                handleEditorDisplay(contextMenu.dependency);
-                handleContextMenuClose();
-              }}>
+              <MenuItem
+                onClick={() => {
+                  handleEditorDisplay(contextMenu.dependency);
+                  handleContextMenuClose();
+                }}
+              >
                 <FormattedMessage
                   id="dependenciesDialog.edit"
                   defaultMessage="Edit"
@@ -445,10 +451,12 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             }
             {
               contextMenu.dependency &&
-              <MenuItem onClick={() => {
-                setItem(contextMenu.dependency);
-                handleContextMenuClose();
-              }}>
+              <MenuItem
+                onClick={() => {
+                  setItem(contextMenu.dependency);
+                  handleContextMenuClose();
+                }}
+              >
                 <FormattedMessage
                   id="dependenciesDialog.dependencies"
                   defaultMessage="Dependencies"
@@ -456,7 +464,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               </MenuItem>
             }
             <MenuItem
-              onClick={handleContextMenuClose}>   {/* TODO: pending, waiting for new history dialog */}
+              onClick={handleContextMenuClose}
+            >   {/* TODO: pending, waiting for new history dialog */}
               <FormattedMessage
                 id="dependenciesDialog.history"
                 defaultMessage="History"
@@ -518,7 +527,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         </FormControl>
       </DialogFooter>
     </Dialog>
-  )
+  );
 }
 
 interface DependenciesDialogBaseProps {
@@ -567,7 +576,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     let type = 'controller';
 
     if ((item.isComponent && !item.isAsset) || item.isPage) {
-      type = 'form'
+      type = 'form';
     } else if (item.contentType === 'renderingTemplate') {
       type = 'template';
     }
@@ -584,7 +593,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   };
 
   const depsSource = useMemo(() => {
-    return { deps, error }
+    return { deps, error };
   }, [deps, error]);
 
   const resource = useStateResource<LegacyItem[], { deps: LegacyItem[], error: ApiResponse }>(
@@ -664,7 +673,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   };
 
   const setItem = (item: LegacyItem) => {
-    setDialog({ item })
+    setDialog({ item });
   };
 
   const setDependenciesShow = (dependenciesShown: string) => {
@@ -705,7 +714,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       handleContextMenuClick={handleContextMenuClick}
       handleContextMenuClose={handleContextMenuClose}
     />
-  )
+  );
 }
 
 export default DependenciesDialog;

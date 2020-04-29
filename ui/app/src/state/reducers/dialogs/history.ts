@@ -14,28 +14,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import StandardAction from '../../../models/StandardAction';
+import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
+import {
+  closeCompareVersionsDialog,
+  closeHistoryDialog,
+  closeViewVersionDialog,
+  showCompareVersionsDialog,
+  showHistoryDialog,
+  showViewVersionDialog
+} from '../../actions/dialogs';
 
-export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>(
-  'SHOW_HISTORY_DIALOG'
-);
-
-export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
+const initialState: HistoryDialogStateProps = {
+  open: false
+};
 
 export default createReducer<GlobalState['dialogs']['history']>(
-  {
-    open: false,
-    path: null,
-  },
+  initialState,
   {
     [showHistoryDialog.type]: (state, { payload }) => ({
+      ...state,
       onDismiss: closeHistoryDialog(),
       ...payload,
-      open: true,
+      open: true
     }),
-    [closeHistoryDialog.type]: (state) => ({ open: false, path: null, onClose: state.onClose }),
+    [closeHistoryDialog.type]: (state) => ({
+      ...initialState,
+      onClose: state.onClose
+    }),
+    [closeViewVersionDialog.type]: () => initialState,
+    [closeCompareVersionsDialog.type]: () => initialState,
+    [showViewVersionDialog.type]: (state) => ({
+      ...state,
+      open: false
+    }),
+    [showCompareVersionsDialog.type]: (state) => ({
+      ...state,
+      open: false
+    })
   }
 );

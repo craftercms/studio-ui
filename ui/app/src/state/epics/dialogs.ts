@@ -25,6 +25,16 @@ import { camelize, dasherize } from '../../utils/string';
 import { closeDeleteDialog } from '../reducers/dialogs/delete';
 import { newContentCreationComplete } from '../reducers/dialogs/edit';
 import { changeCurrentUrl } from '../actions/preview';
+import {
+  closeCompareVersionsDialog,
+  closeHistoryDialog,
+  closeViewVersionDialog,
+  fetchContentVersion,
+  fetchContentVersionComplete,
+  fetchContentVersionFailed
+} from '../actions/dialogs';
+import { getContentVersion } from '../../services/content';
+import { catchAjaxError } from '../../utils/ajax';
 
 function getDialogNameFromType(type: string): string {
   let name = type.replace(/(CLOSE_)|(_DIALOG)/g, '');
@@ -41,20 +51,36 @@ function getDialogState(type: string, state: GlobalState): any {
 }
 
 export default [
-  // region Confirm Dialog
+  // region Dialogs
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(
         closeConfirmDialog.type,
         closePublishDialog.type,
         closeDeleteDialog.type,
-        closeNewContentDialog.type
+        closeNewContentDialog.type,
+        closeHistoryDialog.type,
+        closeViewVersionDialog.type,
+        closeCompareVersionsDialog.type
       ),
       withLatestFrom(state$),
       map(([{ type, payload }, state]) =>
         [payload, getDialogState(type, state)?.onClose].filter((callback) => Boolean(callback))
       ),
       switchMap((actions) => (actions.length ? actions : NEVER))
+    ),
+  // endregion
+  // region View Version Dialog
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(fetchContentVersion.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        getContentVersion(state.sites.active, payload.path, payload.versionNumber).pipe(
+          map(fetchContentVersionComplete),
+          catchAjaxError(fetchContentVersionFailed)
+        )
+      )
     ),
   // endregion
   (action$, state$: Observable<GlobalState>) => action$.pipe(
