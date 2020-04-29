@@ -26,7 +26,6 @@ import { palette } from '../../../styles/theme';
 import { fetchLegacyContentTypes } from '../../../services/content';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import NewContentCard from './NewContentCard';
-import SingleItemSelector from './SingleItemSelector';
 import SearchBar from '../../../components/Controls/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
 import {
@@ -338,12 +337,12 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         <DialogBody dividers classes={{ root: classes.dialogContent }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box>
-              <SingleItemSelector
-                label="Parent"
-                selectedItem={previewItem}
-                onSelectClick={() => null}
-                onItemClicked={onParentItemClick}
-              />
+              {/*<SingleItemSelector*/}
+              {/*  label="Parent"*/}
+              {/*  selectedItem={previewItem}*/}
+              {/*  onSelectClick={() => null}*/}
+              {/*  onItemClicked={onParentItemClick}*/}
+              {/*/>*/}
             </Box>
             <Box className={classes.searchBox}>
               <SearchBar onChange={onSearchChange} keyword={search} autoFocus />

@@ -20,33 +20,57 @@ import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { ItemsStateProps } from '../../models/Item';
 import { createLookupTable } from '../../utils/object';
 
-export const fetchPath = createAction<string>('FETCH_PATH');
-export const fetchPathComplete = createAction<GetChildrenResponse>('FETCH_PATH_COMPLETE');
-export const fetchPathFailed = createAction<any>('FETCH_PATH_COMPLETE_FAILED');
+interface consumer {
+  id: string;
+  path: string;
+}
+
+export const addItemConsumer = createAction<consumer>('ADD_ITEM_CONSUMER');
+
+export const removeItemConsumer = createAction<string>('REMOVE_ITEM_CONSUMER');
+
+export const fetchChildrenByPath = createAction<consumer>('FETCH_CHILDREN_BY_PATH');
+export const fetchChildrenByPathComplete = createAction<{
+  id: string;
+  childrenResponse: GetChildrenResponse;
+}>('FETCH_CHILDREN_BY_PATH_COMPLETE');
+export const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
 const initialState: ItemsStateProps = {
-  byId: null,
-  isFetching: null,
-  error: null,
-  items: null,
-  path: 'site/website'
+  consumers: null
 };
 
-const reducer = createReducer<GlobalState['items']>(
-  initialState,
-  {
-    [fetchPath.type]: (state, { payload }) => ({
-      ...state,
-      ...payload,
-      isFetching: true
-    }),
-    [fetchPathComplete.type]: (state, { payload }) => ({
-      ...state,
-      byId: {...state.byId, ...createLookupTable(payload)},
-      items: payload.map(item => item.id),
-      isFetching: false
-    })
-  }
-);
+const reducer = createReducer<GlobalState['items']>(initialState, {
+  [addItemConsumer.type]: (state, { payload }) => ({
+    ...state,
+    consumers: {
+      ...state.consumers,
+      [payload.id]: {
+        rootPath: payload.path
+      }
+    }
+  }),
+  [fetchChildrenByPath.type]: (state, { payload }) => ({
+    ...state,
+    consumers: {
+      ...state.consumers,
+      [payload.id]: {
+        path: payload.path,
+        isFetching: true
+      }
+    }
+  }),
+  [fetchChildrenByPathComplete.type]: (state, { payload }) => ({
+    ...state,
+    consumers: {
+      ...state.consumers,
+      [payload.id]: {
+        byId: { ...state.consumers[payload.id].byId, ...createLookupTable(payload) },
+        items: payload.map((item) => item.id),
+        isFetching: false
+      }
+    }
+  })
+});
 
 export default reducer;

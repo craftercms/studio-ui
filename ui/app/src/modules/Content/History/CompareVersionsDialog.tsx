@@ -15,7 +15,7 @@
  */
 
 import StandardAction from '../../../models/StandardAction';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useStateResource } from '../../../utils/hooks';
@@ -51,7 +51,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { fetchPath } from '../../../state/reducers/items';
+import { addItemConsumer } from '../../../state/reducers/items';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -95,7 +95,6 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const {
     open,
-    leftActions,
     rightActions,
     selectedA,
     selectedB,
@@ -107,7 +106,9 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
+  const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
+  const id = 'CompareVersionsDialog';
 
   const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
@@ -151,6 +152,14 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
       )
     }
   );
+
+  useEffect(() => {
+    dispatch(addItemConsumer({ id, path: '/site/website' }));
+  }, [dispatch, path]);
+
+  //useEffect
+  //dispatch addConsumer('id', rootPath: '/site/website')
+  // path?? dispatch fetchChildrenByPath('id', path) : dispatch fetchChildrenByPath('id', rootPath);
 
   const handleItemClick = (version: LegacyVersion) => {
     if (!selected[0]) {
@@ -227,10 +236,10 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
             <DialogBody>
               <SingleItemSelector
                 label="Item"
-                onSelectClick={() => {
-                  dispatch(fetchPath());
-                }}
-                onItemClicked={() => {
+                open={openSelector}
+                onSelectClick={() => setOpenSelector(!openSelector)}
+                onItemClicked={(item) => {
+                  //dispatch fetchChangeCurrentPath(item.path)
                 }}
               />
               <EmptyState

@@ -19,17 +19,21 @@ import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import GlobalState from '../../models/GlobalState';
 import { getChildrenByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { fetchPath, fetchPathComplete, fetchPathFailed } from '../reducers/items';
+import {
+  fetchChildrenByPath,
+  fetchChildrenByPathComplete,
+  fetchChildrenByPathFailed
+} from '../reducers/items';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchPath.type),
+      ofType(fetchChildrenByPath.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        getChildrenByPath(state.sites.active, payload?? state.items.path).pipe(
-          map(fetchPathComplete),
-          catchAjaxError(fetchPathFailed)
+        getChildrenByPath(state.sites.active, state.items.consumers[payload.id].path).pipe(
+          map((response) => fetchChildrenByPathComplete({id: payload.id, childrenResponse: response })),
+          catchAjaxError(fetchChildrenByPathFailed)
         )
       )
     )

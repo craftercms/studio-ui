@@ -29,6 +29,7 @@ import PathNavigatorList from '../../../components/Navigation/PathNavigator/Path
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { useSelection, useStateResource } from '../../../utils/hooks';
 import Paper from '@material-ui/core/Paper';
+import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,6 +77,7 @@ interface SingleItemSelectorProps {
   label: string;
   titleVariant?: Variant;
   labelVariant?: Variant;
+  open: boolean;
   onSelectClick(): void;
   onItemClicked(item: SandboxItem): void;
 }
@@ -97,15 +99,15 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const itemsBranch = useSelection(state => state.items);
 
   const itemsResource = useStateResource<SandboxItem[], ItemsStateProps>(itemsBranch, {
-    shouldResolve: (itemsBranch) => Boolean(itemsBranch.byId) && !itemsBranch.isFetching,
-    shouldReject: (itemsBranch) => Boolean(itemsBranch.error),
+    shouldResolve: (itemsBranch) => false,
+    shouldReject: (itemsBranch) => false,
     shouldRenew: (itemsBranch, resource) => (
-      itemsBranch.isFetching && resource.complete
+      resource.complete
     ),
     resultSelector: (itemsBranch) => {
-      return itemsBranch.items.map(id => itemsBranch.byId[id])
+      return []
     },
-    errorSelector: (itemsBranch) => itemsBranch.error
+    errorSelector: (itemsBranch) => false
   });
 
   const onMenuClose = () => setAnchorEl(null);
@@ -151,6 +153,13 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         }}
       >
         <SuspenseWithEmptyState resource={itemsResource}>
+          <Breadcrumbs
+            keyword={''}
+            breadcrumb={[]}
+            onMenu={()=> {}}
+            onSearch={()=> {}}
+            onCrumbSelected={()=> {}}
+          />
           <PathNavigatorList
             leafs={[]}
             locale={'en'}
