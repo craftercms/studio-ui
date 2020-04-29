@@ -49,14 +49,10 @@ const useStyles = makeStyles((theme) => ({
       padding: 0
     }
   },
-  textWrapper: {
-    'display': 'flex',
-    '& > *': {
-      marginRight: 15
-    },
-    '& > p': {
-      color: palette.black
-    }
+  selectedItem: {
+    marginLeft: 'auto',
+    display: 'flex',
+    marginRight: '15px'
   },
   title: {
     fontWeight: 600
@@ -124,21 +120,19 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   return (
     <Paper className={clsx(classes.root, propClasses?.root)} elevation={0}>
-      <div className={classes.textWrapper}>
-        <Typography
-          variant={titleVariant || 'body1'}
-          className={clsx(classes.title, propClasses?.title)}
-        >
-          {label}
-        </Typography>
-        {
-          selectedItem &&
-          <>
-            <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
-            <Typography variant={labelVariant || 'body1'}>{selectedItem.label}</Typography>
-          </>
-        }
-      </div>
+      <Typography
+        variant={titleVariant || 'body1'}
+        className={clsx(classes.title, propClasses?.title)}
+      >
+        {label}
+      </Typography>
+      {
+        selectedItem &&
+        <div className={classes.selectedItem}>
+          <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
+          <Typography variant={labelVariant || 'body1'}>{selectedItem.label}</Typography>
+        </div>
+      }
       <IconButton
         className={classes.changeBtn}
         ref={anchorEl}
@@ -160,15 +154,15 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           horizontal: 'right'
         }}
       >
+        <Breadcrumbs
+          keyword={consumer?.keywords}
+          breadcrumb={consumer ? consumer?.breadcrumb : []}
+          onSearch={() => {
+          }}
+          onCrumbSelected={() => {
+          }}
+        />
         <SuspenseWithEmptyState resource={itemsResource}>
-          <Breadcrumbs
-            keyword={consumer?.keywords}
-            breadcrumb={consumer ? consumer?.breadcrumb : []}
-            onSearch={() => {
-            }}
-            onCrumbSelected={() => {
-            }}
-          />
           <PathNavigatorList
             leafs={[]}
             locale={'en'}

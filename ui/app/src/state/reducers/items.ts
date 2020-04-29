@@ -79,6 +79,7 @@ const reducer = createReducer<GlobalState['items']>(initialState, {
         [payload.id]: {
           ...consumer,
           byId: nextItems,
+          selectedItem: payload.childrenResponse.parent,
           items: payload.childrenResponse.map((item) => item.id),
           isFetching: false,
           breadcrumb: itemsFromPath(consumer.path, consumer.rootPath, nextItems)

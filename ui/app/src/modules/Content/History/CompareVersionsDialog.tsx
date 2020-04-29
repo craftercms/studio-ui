@@ -33,6 +33,7 @@ import { Pagination } from './HistoryDialog';
 import {
   compareBothVersions,
   compareVersion,
+  fetchItemVersions,
   versionsChangePage
 } from '../../../state/reducers/versions';
 import { useDispatch } from 'react-redux';
@@ -40,7 +41,6 @@ import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import { EntityState } from '../../../models/EntityState';
-import SingleItemSelector from '../Authoring/SingleItemSelector';
 import { addItemConsumer, fetchChildrenByPath } from '../../../state/reducers/items';
 import { ItemsStateProps } from '../../../models/Item';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
@@ -53,6 +53,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
+import SingleItemSelector from '../Authoring/SingleItemSelector';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -63,6 +64,9 @@ const translations = defineMessages({
 
 const useStyles = makeStyles(() =>
   createStyles({
+    singleItemSelector: {
+      marginBottom: '10px'
+    },
     typography: {
       lineHeight: '1.5'
     }
@@ -101,6 +105,8 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   const dispatch = useDispatch();
   const id = 'CompareVersionsItemSelector';
   const rootPath = '/site/website';
+  const selectMode = selectedA && !selectedB;
+  const compareMode = selectedA && selectedB;
 
   const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
@@ -146,16 +152,23 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   );
 
   useEffect(() => {
-    dispatch(addItemConsumer({ id, path: rootPath }));
-    if (path) {
-      dispatch(fetchChildrenByPath({ id, path }));
-    } else {
-      dispatch(fetchChildrenByPath({ id, path: rootPath }));
+    if (open) {
+      dispatch(addItemConsumer({ id, path: rootPath }));
+      return () => {
+        //removeItemConsumer
+      };
     }
-    return () => {
-      //removeItemConsumer
-    };
-  }, [dispatch, path]);
+  }, [dispatch, open]);
+
+  useEffect(() => {
+    if (open) {
+      if (path) {
+        dispatch(fetchChildrenByPath({ id, path }));
+      } else {
+        dispatch(fetchChildrenByPath({ id, path: rootPath }));
+      }
+    }
+  }, [dispatch, path, open]);
 
   const handleItemClick = (version: LegacyVersion) => {
     if (!selected[0]) {
@@ -187,14 +200,21 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
           />
         }
         subtitle={
-          selectedA && !selectedB &&
-          <FormattedMessage
-            id="compareVersionsDialog.headerSubtitle"
-            defaultMessage="Select a revision to compare to “{selectedA}”"
-            values={{ selectedA: <FancyFormattedDate date={selectedA.lastModifiedDate} /> }}
-          />
+          (selectMode) ? (
+            <FormattedMessage
+              id="compareVersionsDialog.headerSubtitle"
+              defaultMessage="Select a revision to compare to “{selectedA}”"
+              values={{ selectedA: <FancyFormattedDate date={selectedA.lastModifiedDate} /> }}
+            />
+          ) : (
+            (!compareMode) &&
+            <FormattedMessage
+              id="compareVersionsDialog.headerSubtitle"
+              defaultMessage="Select a revision to compare"
+            />
+          )
         }
-        leftActions={selected.length === 2 ? [{
+        leftActions={compareMode ? [{
           icon: 'BackIcon',
           onClick: () => dispatch(compareVersion(selected[0])),
           'aria-label': formatMessage(translations.backToSelectRevision)
@@ -202,45 +222,37 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         rightActions={rightActions}
         onDismiss={onDismiss}
       />
-      {
-        selected.length === 2 ? (
-          <SuspenseWithEmptyState resource={compareVersionsResource}>
-            <DialogBody>
+      <DialogBody>
+        <SingleItemSelector
+          classes={{ root: classes.singleItemSelector }}
+          label="Item"
+          rootPath={rootPath}
+          consumer={itemsBranch.consumers?.[id]}
+          open={openSelector}
+          onClose={() => setOpenSelector(false)}
+          selectedItem={itemsBranch.consumers?.[id].selectedItem}
+          onSelectClick={() => setOpenSelector(!openSelector)}
+          onItemClicked={(item) => {
+            setOpenSelector(false);
+            dispatch(fetchChildrenByPath({ id, path: item.path }));
+            dispatch(fetchItemVersions({ path: item.path }));
+          }}
+        />
+        {
+          compareMode ? (
+            <SuspenseWithEmptyState resource={compareVersionsResource}>
               <CompareVersions resource={compareVersionsResource} />
-            </DialogBody>
-          </SuspenseWithEmptyState>
-        ) : (path ? (
-            <SuspenseWithEmptyState resource={versionsResource}>
-              <DialogBody>
+            </SuspenseWithEmptyState>
+          ) : (path ? (
+              <SuspenseWithEmptyState resource={versionsResource}>
                 <VersionList
                   selected={selected}
                   resource={versionsResource}
                   current={current}
                   onItemClick={handleItemClick}
                 />
-              </DialogBody>
-              <DialogFooter>
-                <Pagination
-                  count={count}
-                  page={page}
-                  rowsPerPage={limit}
-                  onPageChanged={onPageChanged}
-                />
-              </DialogFooter>
-            </SuspenseWithEmptyState>
-          ) : (
-            <DialogBody>
-              <SingleItemSelector
-                label="Item"
-                rootPath={rootPath}
-                consumer={itemsBranch.consumers?.[id]}
-                open={openSelector}
-                onClose={() => setOpenSelector(!openSelector)}
-                onSelectClick={() => setOpenSelector(!openSelector)}
-                onItemClicked={(item) => {
-                  dispatch(fetchChildrenByPath({ id, path: item.path }));
-                }}
-              />
+              </SuspenseWithEmptyState>
+            ) : (
               <EmptyState
                 title={
                   <FormattedMessage
@@ -251,7 +263,9 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
               >
                 <section>
                   <Typography
-                    variant="subtitle1" color="textSecondary" className={classes.typography}
+                    variant="subtitle1"
+                    color="textSecondary"
+                    className={classes.typography}
                   >
                     1. Select item <br />
                     2. Select revision “A” <br />
@@ -260,9 +274,20 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
                   </Typography>
                 </section>
               </EmptyState>
-            </DialogBody>
+            )
           )
-        )
+        }
+      </DialogBody>
+      {
+        !compareMode &&
+        <DialogFooter>
+          <Pagination
+            count={count}
+            page={page}
+            rowsPerPage={limit}
+            onPageChanged={onPageChanged}
+          />
+        </DialogFooter>
       }
     </Dialog>
   );
