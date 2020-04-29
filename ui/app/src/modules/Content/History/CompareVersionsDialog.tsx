@@ -41,8 +41,12 @@ import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import { EntityState } from '../../../models/EntityState';
-import { addItemConsumer, fetchChildrenByPath } from '../../../state/reducers/items';
-import { ItemsStateProps } from '../../../models/Item';
+import {
+  addItemConsumer,
+  fetchChildrenByPath,
+  setSelectedItem
+} from '../../../state/reducers/items';
+import { ItemsStateProps, SandboxItem } from '../../../models/Item';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import Typography from '@material-ui/core/Typography';
 import { palette } from '../../../styles/theme';
@@ -54,6 +58,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
+import { withoutIndex } from '../../../utils/path';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -154,21 +159,24 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   useEffect(() => {
     if (open) {
       dispatch(addItemConsumer({ id, path: rootPath }));
+      dispatch(fetchChildrenByPath({ id, path: rootPath }));
       return () => {
         //removeItemConsumer
       };
     }
   }, [dispatch, open]);
 
-  useEffect(() => {
-    if (open) {
-      if (path) {
-        dispatch(fetchChildrenByPath({ id, path }));
-      } else {
-        dispatch(fetchChildrenByPath({ id, path: rootPath }));
-      }
-    }
-  }, [dispatch, path, open]);
+  // useEffect(() => {
+  //   if (open && !) {
+  //     dispatch(fetchChildrenByPath({ id, path: rootPath }));
+  //     //dispatch(fetchChildrenByPath({ id, path }));
+  //     // if (path) {
+  //     //   dispatch(fetchChildrenByPath({ id, path }));
+  //     // } else {
+  //     //   dispatch(fetchChildrenByPath({ id, path: rootPath }));
+  //     // }
+  //   }
+  // }, [dispatch, path, open]);
 
   const handleItemClick = (version: LegacyVersion) => {
     if (!selected[0]) {
@@ -226,15 +234,31 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         <SingleItemSelector
           classes={{ root: classes.singleItemSelector }}
           label="Item"
-          rootPath={rootPath}
           consumer={itemsBranch.consumers?.[id]}
           open={openSelector}
           onClose={() => setOpenSelector(false)}
           selectedItem={itemsBranch.consumers?.[id].selectedItem}
-          onSelectClick={() => setOpenSelector(!openSelector)}
+          onDropdownClick={() => {
+            //dispatch(fetchChildrenByPath({ id, path }));
+            setOpenSelector(!openSelector);
+          }}
+          onPathSelected={(item) => {
+            dispatch(fetchChildrenByPath({ id, path: item.path }));
+            //dispatch(fetchItemVersions({ path: item.path }));
+          }}
+          onBreadcrumbSelected={(item: SandboxItem) => {
+            if (withoutIndex(item.path) === withoutIndex(itemsBranch.consumers?.[id].path)) {
+              setOpenSelector(false);
+              dispatch(setSelectedItem({ id, path: item.path }));
+              dispatch(fetchItemVersions({ path: item.path }));
+            } else {
+              dispatch(fetchChildrenByPath({ id, path: item.path }));
+            }
+          }}
           onItemClicked={(item) => {
             setOpenSelector(false);
-            dispatch(fetchChildrenByPath({ id, path: item.path }));
+            dispatch(setSelectedItem({ id, path: item.path }));
+            //dispatch(fetchChildrenByPath({ id, path: item.path }));
             dispatch(fetchItemVersions({ path: item.path }));
           }}
         />
@@ -279,7 +303,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         }
       </DialogBody>
       {
-        !compareMode &&
+        (!compareMode && path) &&
         <DialogFooter>
           <Pagination
             count={count}

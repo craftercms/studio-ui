@@ -55,7 +55,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: '15px'
   },
   title: {
-    fontWeight: 600
+    fontWeight: 600,
+    marginRight: '15px'
   },
   changeBtn: {},
   itemIcon: {
@@ -79,11 +80,12 @@ interface SingleItemSelectorProps {
   titleVariant?: Variant;
   labelVariant?: Variant;
   open: boolean;
-  rootPath: string;
   consumer: Consumer;
-  onSelectClick(): void;
+  onDropdownClick(): void;
   onClose(): void;
   onItemClicked(item: SandboxItem): void;
+  onBreadcrumbSelected(item: SandboxItem): void;
+  onPathSelected(item: SandboxItem): void;
 }
 
 export default function SingleItemSelector(props: SingleItemSelectorProps) {
@@ -93,13 +95,14 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     classes: propClasses,
     titleVariant,
     labelVariant,
-    onSelectClick,
+    onDropdownClick,
+    onBreadcrumbSelected,
     onItemClicked,
     onClose,
     selectedItem,
+    onPathSelected,
     label,
     open,
-    rootPath,
     consumer
   } = props;
   const classes = useStyles();
@@ -136,7 +139,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       <IconButton
         className={classes.changeBtn}
         ref={anchorEl}
-        onClick={onSelectClick}
+        onClick={onDropdownClick}
       >
         <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
       </IconButton>
@@ -159,17 +162,14 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           breadcrumb={consumer ? consumer?.breadcrumb : []}
           onSearch={() => {
           }}
-          onCrumbSelected={() => {
-          }}
+          onCrumbSelected={onBreadcrumbSelected}
         />
         <SuspenseWithEmptyState resource={itemsResource}>
           <PathNavigatorList
-            leafs={[]}
+            leafs={consumer ? consumer?.leafs : []}
             locale={'en'}
             resource={itemsResource}
-            onPathSelected={() => {
-              console.log('onPathSelected')
-            }}
+            onPathSelected={onPathSelected}
             onItemClicked={onItemClicked}
           />
         </SuspenseWithEmptyState>

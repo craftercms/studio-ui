@@ -99,6 +99,7 @@ export interface Consumer extends PaginationOptions {
   isFetching: boolean;
   error: ApiResponse;
   items: string[];
+  leafs: string[];
   rootPath: string;
   path: string;
   keywords?: string;

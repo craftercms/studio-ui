@@ -18,9 +18,9 @@ import GlobalState from '../../models/GlobalState';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { ItemsStateProps, SandboxItem } from '../../models/Item';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, nou } from '../../utils/object';
 import { LookupTable } from '../../models/LookupTable';
-import { itemsFromPath } from '../../utils/path';
+import { itemsFromPath, withIndex, withoutIndex } from '../../utils/path';
 
 interface consumer {
   id: string;
@@ -31,7 +31,10 @@ export const addItemConsumer = createAction<consumer>('ADD_ITEM_CONSUMER');
 
 export const removeItemConsumer = createAction<string>('REMOVE_ITEM_CONSUMER');
 
+export const setSelectedItem = createAction<consumer>('SET_SELECTED_ITEM');
+
 export const fetchChildrenByPath = createAction<consumer>('FETCH_CHILDREN_BY_PATH');
+
 export const fetchChildrenByPathComplete = createAction<{
   id: string;
   childrenResponse: GetChildrenResponse;
@@ -48,7 +51,20 @@ const reducer = createReducer<GlobalState['items']>(initialState, {
     consumers: {
       ...state.consumers,
       [payload.id]: {
-        rootPath: payload.path
+        rootPath: payload.path,
+        leafs: []
+      }
+    }
+  }),
+  [setSelectedItem.type]: (state, { payload }) => ({
+    ...state,
+    consumers: {
+      ...state.consumers,
+      [payload.id]: {
+        ...state.consumers[payload.id],
+        selectedItem: state.consumers[payload.id].byId[payload.path]
+        //path: payload.path,
+        //isFetching: true
       }
     }
   }),
@@ -65,27 +81,62 @@ const reducer = createReducer<GlobalState['items']>(initialState, {
   }),
   [fetchChildrenByPathComplete.type]: (state, { payload }) => {
     const consumer = state.consumers[payload.id];
-    const byId: LookupTable<SandboxItem> =  { ...consumer.byId, ...createLookupTable(payload.childrenResponse)};
+    const { path, rootPath, items, leafs } = consumer;
 
-    const nextItems = {
-      ...byId,
-      [payload.childrenResponse.parent.id]: payload.childrenResponse.parent,
-    };
-
-    return {
-      ...state,
-      consumers: {
-        ...state.consumers,
-        [payload.id]: {
-          ...consumer,
-          byId: nextItems,
-          selectedItem: payload.childrenResponse.parent,
-          items: payload.childrenResponse.map((item) => item.id),
-          isFetching: false,
-          breadcrumb: itemsFromPath(consumer.path, consumer.rootPath, nextItems)
-        }
+    // Check and handle if the item has no children
+    if (
+      payload.childrenResponse.length === 0 &&
+      // If it is the root path, we want to show the empty state,
+      // vs child paths, want to show the previous path and inform
+      // that there aren't any items at that path
+      withoutIndex(path) !== withoutIndex(rootPath)
+    ) {
+      let pieces = path.split('/').slice(0);
+      pieces.pop();
+      if (path.includes('index.xml')) {
+        pieces.pop();
       }
-    };
+      let nextPath = pieces.join('/');
+      if (nou(items[nextPath])) {
+        nextPath = withIndex(nextPath);
+      }
+      return {
+        ...state,
+        consumers: {
+          ...state.consumers,
+          [payload.id]: {
+            ...consumer,
+            //selectedItem: payload.childrenResponse.parent,
+            // Revert path to previous (parent) path
+            path: nextPath,
+            leafs: leafs.concat(path),
+            isFetching: false
+          }
+        }
+      };
+    } else {
+      const byId: LookupTable<SandboxItem> = { ...consumer.byId, ...createLookupTable(payload.childrenResponse) };
+
+      const nextItems = {
+        ...byId,
+        [payload.childrenResponse.parent.id]: payload.childrenResponse.parent
+      };
+
+      return {
+        ...state,
+        consumers: {
+          ...state.consumers,
+          [payload.id]: {
+            ...consumer,
+            byId: nextItems,
+            //selectedItem: payload.childrenResponse.parent,
+            items: payload.childrenResponse.map((item) => item.id),
+            isFetching: false,
+            breadcrumb: itemsFromPath(path, rootPath, nextItems)
+          }
+        }
+      };
+    }
   }
 });
 
