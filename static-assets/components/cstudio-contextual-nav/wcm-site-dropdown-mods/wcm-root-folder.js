@@ -3308,18 +3308,31 @@
 
         function renderNewContentDialog(open) {
           const { site, internalName, uri } = oCurrentTextNode.data;
-          let unmount;
-          CrafterCMSNext.render(container, 'NewContentDialog', {
-            onSaveLegacySuccess: createSuccess(oCurrentTextNode),
-            previewItem: {
-              label: internalName,
-              path: uri
-            },
-            open,
-            onClose: () => renderNewContentDialog(false),
-            onDismiss: () => unmount(),
-            site
-          }).then((done) => (unmount = done.unmount));
+          const eventIdSuccess = 'newContentDialogSuccess';
+
+          CrafterCMSNext.system.store.dispatch({
+            type: 'SHOW_NEW_CONTENT_DIALOG',
+            payload: {
+              open: true,
+              site,
+              previewItem: {
+                label: internalName,
+                path: uri
+              },
+              onSaveSuccess: {
+                type: 'LEGACY_DIALOG_CALLBACK',
+                payload: { id: eventIdSuccess }
+              }
+            }
+          });
+
+          CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+            if (response) {
+              // TODO: implement
+            }
+            CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
+          });
+
         }
         renderNewContentDialog(true);
       },

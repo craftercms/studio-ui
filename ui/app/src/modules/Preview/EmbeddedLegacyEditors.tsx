@@ -257,6 +257,8 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
       };
     }
   }, [
+    inProgress,
+    open,
     onSaveSuccess,
     handleTabChange,
     setTabsState,

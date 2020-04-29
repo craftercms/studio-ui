@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
   previewItem: SandboxItem;
-  onSaveLegacySuccess?(response): void;
+  onSaveSuccess?(response?: any): any;
   onClose(): void;
   onItemClicked?(): void;
 }
@@ -86,7 +86,7 @@ interface QuickCreateMenuButtonProps {
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const { anchorEl, onClose, previewItem, onSaveLegacySuccess, onItemClicked } = props;
+  const { anchorEl, onClose, previewItem, onSaveSuccess, onItemClicked } = props;
   const classes = useStyles({});
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
@@ -102,7 +102,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         site: siteId,
         previewItem,
         compact: false,
-        onSaveLegacySuccess: onSaveLegacySuccess
+        onSaveSuccess: onSaveSuccess?.()
       })
     );
   };
@@ -121,7 +121,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         type: 'form',
         inProgress: false,
         showTabs: false,
-        onSaveSuccess: newContentCreationComplete()   // TODO: handle onSaveLegacySuccess
+        onSaveSuccess: onSaveSuccess ? onSaveSuccess() : newContentCreationComplete()
       })
     );
   };

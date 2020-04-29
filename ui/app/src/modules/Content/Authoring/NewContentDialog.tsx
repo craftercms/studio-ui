@@ -44,7 +44,6 @@ import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
 import { useDispatch } from 'react-redux';
 import { newContentCreationComplete, showEdit } from '../../../state/reducers/dialogs/edit';
-import { closeNewContentDialog } from '../../../state/reducers/dialogs/newContent';
 
 const translations = defineMessages({
   title: {
@@ -150,18 +149,16 @@ interface NewContentDialogBaseProps {
   site: string;
   previewItem: PreviewItem;
   compact: boolean;
-
-  onSaveLegacySuccess?(response): any;
-
-  onSaveSuccess?(response?: any): any;
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
+  onSaveSuccess?(response?: any): any;
   onClose?(): any;
   onDismiss?(): any;
 }>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
+  onSaveSuccess?: StandardAction;
   onClose?: StandardAction;
   onDismiss?: StandardAction;
 }
@@ -194,7 +191,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     onDismiss,
     site,
     previewItem: previewItemProp,
-    onSaveLegacySuccess,
     onSaveSuccess,
     compact
   } = props;
@@ -248,12 +244,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   );
   const dispatch = useDispatch();
 
-  const onSaveSuccessNewContent = (e) => {    //TODO: remove -  handle onSaveLegacySuccess
-    dispatch(closeNewContentDialog());
-    onSaveSuccess?.(e);
-    onSaveLegacySuccess?.(e);
-  }
-
   const onTypeOpen = (srcData) => () => {
     dispatch(
       showEdit({
@@ -261,7 +251,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         type: 'form',
         inProgress: false,
         showTabs: false,
-        onSaveSuccess: newContentCreationComplete()
+        onSaveSuccess: onSaveSuccess ? onSaveSuccess() : newContentCreationComplete()
       })
     );
   };
