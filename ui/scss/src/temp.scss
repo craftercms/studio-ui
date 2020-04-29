@@ -233,30 +233,27 @@ div#acn-active-content {
   width: auto;
 }
 
-#acn-ice-tools-container {
-  padding: 15px 5px 0;
+#acn-status,
+#acn-persona,
+#acn-ice-tools,
+#acn-searchtext,
+#acn-preview-tools {
+  margin: 0;
+  float: right;
+  display: block;
   cursor: pointer;
-  margin-right: 7px;
+  padding: 18px 10px 14px;
+  &:hover {
+    background: rgba(0, 0, 0, .04);
+  }
+  &:empty {
+    display: none;
+  }
 }
 
-#acn-ice-tools-image {
-  padding-top: 2px;
-  cursor: pointer;
-}
-
-#acn-preview-tools-container {
-  cursor: pointer;
-  padding: 15px 5px 0;
-}
-
-#acn-persona-container {
-  padding: 14px 3px 0 12px;
-  cursor: pointer;
-}
-
-#acn-status {
-  padding: 17px 11px 0 2px;
-  cursor: pointer;
+#acn-persona,
+#acn-preview-tools {
+  padding: 16px 10px 15px
 }
 
 #acn-separator .ellipsis-icon {
@@ -325,10 +322,28 @@ div#acn-active-content {
   font-weight: 600;
   line-height: 20px;
   padding: 16px 10px;
-
   &:hover {
     color: var(--craftercms-blue);
-    background: var(--craftercms-light2);
+    background: rgba(0, 0, 0, .04);
+  }
+}
+
+#studioBar {
+  .navbar-items-wrapper {
+    display: flex;
+  }
+  @media (max-width: 767px) {
+    .navbar-items-wrapper {
+      justify-content: flex-end;
+    }
+    .nav.navbar-nav,
+    #acn-status,
+    #acn-persona,
+    #acn-ice-tools,
+    #acn-searchtext,
+    #acn-preview-tools {
+      display: none;
+    }
   }
 }
 
@@ -345,7 +360,7 @@ div#acn-active-content {
 
   &:hover {
     color: var(--craftercms-blue);
-    background: var(--craftercms-light2);
+    background: rgba(0, 0, 0, .04);
   }
 }
 

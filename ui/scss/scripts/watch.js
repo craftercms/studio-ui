@@ -17,14 +17,17 @@
 const fs = require('fs');
 const Subject = require('rxjs').Subject;
 const { filter, map, tap, debounceTime } = require('rxjs/operators');
-const { processFile, FILES } = require('./lib');
+const { processFileDevMode, FILES } = require('./lib');
 
 const fileChanged$ = new Subject();
 const fileIgnored$ = new Subject();
 const queue = [];
 
+FILES.forEach(processFileDevMode);
+
 fs.watch('.', { recursive: true }, (eventType, fileName) => {
-  fileChanged$.next({ eventType, fileName });
+  // fileChanged$.next({ eventType, fileName });
+  FILES.forEach(processFileDevMode);
 });
 
 fileChanged$.pipe(
@@ -54,7 +57,7 @@ fileChanged$.pipe(
   for (let i = 0, l = queue.length; i < l; i++) {
     const item = queue.pop();
     console.log(`Processing ${item.input || item}.scss`);
-    processFile(item);
+    processFileDevMode(item);
   }
 });
 

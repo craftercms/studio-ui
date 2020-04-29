@@ -79,32 +79,20 @@ interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
   selectedA: LegacyVersion;
   selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
-  leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
   onClose(): void;
   onDismiss(): void;
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps {
-  leftActions?: DialogHeaderStateAction[];
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
   onDismiss?: StandardAction;
 }
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
-  const {
-    open,
-    rightActions,
-    selectedA,
-    selectedB,
-    onDismiss,
-    onClose,
-    versionsBranch,
-    contentTypesBranch
-  } = props;
-  const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
-  const classes = useStyles({});
+  const { open, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch } = props;
+  const { count, page, limit, selected, compareVersionsBranch, current } = versionsBranch;
   const { formatMessage } = useIntl();
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();

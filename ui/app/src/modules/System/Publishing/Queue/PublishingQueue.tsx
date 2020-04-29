@@ -45,6 +45,8 @@ import Spinner from '../../../../components/SystemStatus/Spinner';
 import RefreshIcon from '@material-ui/icons/RefreshRounded';
 import Button from '@material-ui/core/Button';
 import { useSpreadState } from '../../../../utils/hooks';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import { palette } from '../../../../styles/theme';
 
 const messages = defineMessages({
   selectAll: {
@@ -148,6 +150,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   empty: {
     padding: '40px 0'
+  },
+  cancelButton: {
+    paddingRight: '10px',
+    color: palette.orange.main,
+    border: `1px solid ${fade(palette.orange.main, 0.5)}`,
+    '&:hover': {
+      backgroundColor: fade(palette.orange.main, 0.08)
+    }
   }
 }));
 
@@ -395,6 +405,7 @@ function PublishingQueue(props: PublishingQueueProps) {
         {
           currentFilters.state.includes(READY_FOR_LIVE) &&
           <ConfirmDropdown
+            classes={{ button: classes.cancelButton }}
             text={formatMessage(messages.cancelSelected)}
             cancelText={formatMessage(messages.cancel)}
             confirmText={formatMessage(messages.confirm)}

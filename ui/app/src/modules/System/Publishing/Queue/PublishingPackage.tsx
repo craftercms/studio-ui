@@ -31,6 +31,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../../../styles/animations.scss';
 import clsx from 'clsx';
 import { READY_FOR_LIVE } from '../../../../models/Publishing';
+import { palette } from '../../../../styles/theme';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -86,6 +88,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     '-webkit-animation': 'pulse 3s infinite ease-in-out',
     'animation': 'pulse 3s infinite ease-in-out',
     pointerEvents: 'none'
+  },
+  cancelButton: {
+    paddingRight: '10px',
+    color: palette.orange.main,
+    border: `1px solid ${fade(palette.orange.main, 0.5)}`,
+    '&:hover': {
+      backgroundColor: fade(palette.orange.main, 0.08)
+    }
   }
 }));
 
@@ -262,6 +272,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
         {
           (state === READY_FOR_LIVE) &&
           <SelectButton
+            classes={{ button: classes.cancelButton }}
             text={formatMessage(translations.cancelText)}
             cancelText={formatMessage(translations.cancel)}
             confirmText={formatMessage(translations.confirm)}

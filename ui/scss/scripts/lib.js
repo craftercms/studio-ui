@@ -34,7 +34,7 @@ const
     'typography'
   ];
 
-function processFile(data) {
+function processFile(data, devMode = false) {
   let input, output;
   if (typeof data === 'string') {
     input = output = data;
@@ -44,17 +44,25 @@ function processFile(data) {
   }
   sass.render({
     file: `./src/${input}.scss`,
-    outputStyle: 'compressed'
+    outputStyle: 'compressed',
+    sourceMap: devMode === true,
+    sourceMapEmbed: devMode === true,
+    sourceMapContents: devMode === true,
+    outFile: `${OUT_DIR}/${output}.css`
   }, function (error, result) {
     if (!error) {
-      write({ file: output, content: result.css.toString() });
+      write({ file: output, content: result.css.toString(), map: result.map, devMode });
     } else {
       console.log(`Error compiling ${input}.scss`, error);
     }
   });
 }
 
-function write({ file, content }) {
+function processFileDevMode(data) {
+  processFile(data, true);
+}
+
+function write({ file, content, devMode }) {
   if (!fs.existsSync(OUT_DIR)) {
     fs.mkdirSync(OUT_DIR);
   }
@@ -67,14 +75,15 @@ function write({ file, content }) {
       .replace(String.fromCharCode(65279), ''),
     css = copyright ? `${copyright[0]}\n\n${withoutCopyrights}` : content;
 
-  fs.writeFile(`${OUT_DIR}/${file}.css`, css, function (error) {
+  fs.writeFile(`${OUT_DIR}/${file}.css`, devMode ? content : css, function (error) {
     if (!error) {
-      console.log(`${file}.css wrote.`);
+      console.log(`[CSS] ${file}.css`);
     } else {
       console.log(`Error writing ${file}.css`);
       console.log(error);
     }
   });
+
 }
 
-module.exports = { processFile, write, FILES, OUT_DIR };
+module.exports = { processFile, write, FILES, OUT_DIR, processFileDevMode };
