@@ -17,7 +17,7 @@
 <div id="studioBar" class="studio-view">
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container-fluid navbar-items-wrapper">
-      <#--<div class="collapse navbar-collapse">-->
+
       <ul class="nav navbar-nav">
         <li id="acn-dropdown-wrapper" class="acn-dropdown-wrapper"></li>
         <li>
@@ -53,7 +53,7 @@
         <div id="acn-preview-tools"></div>
         <div id="acn-ice-tools"></div>
       </div>
-      <#--</div>-->
+
     </div>
   </nav>
 </div>
