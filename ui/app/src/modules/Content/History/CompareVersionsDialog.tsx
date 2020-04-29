@@ -92,8 +92,9 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const { open, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch } = props;
-  const { count, page, limit, selected, compareVersionsBranch, current } = versionsBranch;
+  const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
   const { formatMessage } = useIntl();
+  const classes = useStyles({});
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
   const id = 'CompareVersionsDialog';
@@ -143,7 +144,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
 
   useEffect(() => {
     dispatch(addItemConsumer({ id, path: '/site/website' }));
-  }, [dispatch, path]);
+  }, [dispatch]);
 
   //useEffect
   //dispatch addConsumer('id', rootPath: '/site/website')
