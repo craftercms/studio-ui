@@ -3280,61 +3280,53 @@
        * Creates new content. Opens the form to create content
        */
       createContent: function() {
-        const container = document.createElement('div');
-        const createSuccess = (currentTextNode) => ({ data }) => {
-          const acnDraftContent = YDom.getElementsByClassName(
-            'acnDraftContent',
-            null,
-            parent.document
-          )[0];
-          eventYS.data = currentTextNode;
-          eventYS.typeAction = 'createContent';
-          eventYS.oldPath = null;
-          eventYS.parent = currentTextNode.data.path == '/site/website' ? null : false;
-          document.dispatchEvent(eventYS);
+        const eventIdSuccess = 'newContentDialogSuccess';
+        const { site, internalName, uri } = oCurrentTextNode.data;
 
-          if (data.item.isPage) {
-            CStudioAuthoring.Operations.refreshPreview(data.item);
-            if (
-              CStudioAuthoring.Utils.getQueryParameterURL('page') == data.redirectUrl &&
-              acnDraftContent
-            ) {
-              CStudioAuthoring.SelectedContent.setContent(data.item);
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_NEW_CONTENT_DIALOG',
+          payload: {
+            open: true,
+            site,
+            previewItem: {
+              label: internalName,
+              path: uri
+            },
+            onSaveSuccess: {
+              type: 'LEGACY_DIALOG_CALLBACK',
+              payload: { id: eventIdSuccess }
             }
-          } else {
-            CStudioAuthoring.Operations.refreshPreview();
           }
-        };
+        });
 
-        function renderNewContentDialog(open) {
-          const { site, internalName, uri } = oCurrentTextNode.data;
-          const eventIdSuccess = 'newContentDialogSuccess';
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+          if (response) {
+            const acnDraftContent = YDom.getElementsByClassName(
+              'acnDraftContent',
+              null,
+              parent.document
+            )[0];
+            eventYS.data = oCurrentTextNode;
+            eventYS.typeAction = 'createContent';
+            eventYS.oldPath = null;
+            eventYS.parent = oCurrentTextNode.data.path == '/site/website' ? null : false;
+            document.dispatchEvent(eventYS);
 
-          CrafterCMSNext.system.store.dispatch({
-            type: 'SHOW_NEW_CONTENT_DIALOG',
-            payload: {
-              open: true,
-              site,
-              previewItem: {
-                label: internalName,
-                path: uri
-              },
-              onSaveSuccess: {
-                type: 'LEGACY_DIALOG_CALLBACK',
-                payload: { id: eventIdSuccess }
+            if (data.item.isPage) {
+              CStudioAuthoring.Operations.refreshPreview(response.item);
+              if (
+                CStudioAuthoring.Utils.getQueryParameterURL('page') == response.redirectUrl &&
+                acnDraftContent
+              ) {
+                CStudioAuthoring.SelectedContent.setContent(response.item);
               }
+            } else {
+              CStudioAuthoring.Operations.refreshPreview();
             }
-          });
+          }
+          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
+        });
 
-          CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
-            if (response) {
-              // TODO: implement
-            }
-            CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
-          });
-
-        }
-        renderNewContentDialog(true);
       },
       /**
        * Edits the label of the TextNode that was the target of the

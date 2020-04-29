@@ -131,7 +131,7 @@ function GlobalDialogManager() {
         site={state.newContent.site}
         previewItem={state.newContent.previewItem}
         compact={state.newContent.compact}
-        onSaveSuccess={createCallback(state.newContent.onSaveSuccess, dispatch)}
+        onSaveSuccess={state.newContent.onSaveSuccess}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />

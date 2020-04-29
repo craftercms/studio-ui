@@ -149,16 +149,17 @@ interface NewContentDialogBaseProps {
   site: string;
   previewItem: PreviewItem;
   compact: boolean;
+  onSaveSuccess?: StandardAction;
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
-  onSaveSuccess?(response?: any): any;
+  // onSaveSuccess?(response?: any): any;
   onClose?(): any;
   onDismiss?(): any;
 }>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
-  onSaveSuccess?: StandardAction;
+  // onSaveSuccess?: StandardAction;
   onClose?: StandardAction;
   onDismiss?: StandardAction;
 }
@@ -245,13 +246,14 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const dispatch = useDispatch();
 
   const onTypeOpen = (srcData) => () => {
+
     dispatch(
       showEdit({
         src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`,
         type: 'form',
         inProgress: false,
         showTabs: false,
-        onSaveSuccess: onSaveSuccess ? onSaveSuccess() : newContentCreationComplete()
+        onSaveSuccess: onSaveSuccess ? onSaveSuccess : newContentCreationComplete()
       })
     );
   };
