@@ -141,7 +141,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                     success: function(isWrite, perms) {
                       var totalPerms, isWrite;
 
-                      this._self.addFilePermissions(this.filePath, perms, filePermissions, permissionAggregateCounter);
+                      this._self.addFilePermissions(
+                        this.filePath,
+                        perms,
+                        filePermissions,
+                        permissionAggregateCounter
+                      );
                       totalPerms = this._self.getAgreggatePermissions(
                         filePermissions.fileLen,
                         permissionAggregateCounter
@@ -149,11 +154,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                       isWrite = this._self.hasWritePermission(totalPerms);
                       this._self._drawNav(selectedContent, isWrite, totalPerms);
 
-                      if (CStudioAuthoringContext.isPreview == true && selectedContent[0].disabled == true) {
+                      if (
+                        CStudioAuthoringContext.isPreview == true &&
+                        selectedContent[0].disabled == true
+                      ) {
                         var noticeEl = document.createElement('div');
                         this._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
                         YDom.addClass(noticeEl, 'acnDisabledContent');
-                        noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentPageDisabled');
+                        noticeEl.innerHTML = CMgs.format(
+                          contextNavLangBundle,
+                          'wcmContentPageDisabled'
+                        );
                       } else {
                         me.removeDisableMessage();
                       }
@@ -174,9 +185,14 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                             saveDraftFlag = true;
                             if (noticeEls.length < 1) {
                               var noticeEl = document.createElement('div');
-                              thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                              thisContext._self.containerEl.parentNode.parentNode.appendChild(
+                                noticeEl
+                              );
                               YDom.addClass(noticeEl, 'acnDraftContent');
-                              noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentSavedAsDraft');
+                              noticeEl.innerHTML = CMgs.format(
+                                contextNavLangBundle,
+                                'wcmContentSavedAsDraft'
+                              );
                             }
                           } else {
                             if (!saveDraftFlag) {
@@ -222,7 +238,11 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                 'crafter.refresh',
                 function(e) {
                   function lookupSiteContent(curNode, paramCont) {
-                    var dataUri = e.data.uri ? e.data.uri : e.data[0] ? e.data[0].uri : e.data.data.uri,
+                    var dataUri = e.data.uri
+                        ? e.data.uri
+                        : e.data[0]
+                        ? e.data[0].uri
+                        : e.data.data.uri,
                       contentUri = curNode && curNode.uri ? curNode.uri : dataUri,
                       typeAction = e.typeAction ? e.typeAction : '';
 
@@ -238,7 +258,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
 
                             if (
                               typeAction === 'publish' &&
-                              treeData.item.inProgress && !treeData.item.scheduled &&
+                              treeData.item.inProgress &&
+                              !treeData.item.scheduled &&
                               cont < 5
                             ) {
                               treeData.item.inFlight = true;
@@ -322,10 +343,15 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                             var noticeEl = document.createElement('div');
                             _this.containerEl.parentNode.parentNode.appendChild(noticeEl);
                             YDom.addClass(noticeEl, 'acnDraftContent');
-                            noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentSavedAsDraft');
+                            noticeEl.innerHTML = CMgs.format(
+                              contextNavLangBundle,
+                              'wcmContentSavedAsDraft'
+                            );
                           }
                         } else {
-                          if (!saveDraftFlag /*|| (saveDraftFlag && selectedContent.length-1 == s )*/) {
+                          if (
+                            !saveDraftFlag /*|| (saveDraftFlag && selectedContent.length-1 == s )*/
+                          ) {
                             me.removeNotices(noticeEls);
                           }
                         }
@@ -340,19 +366,32 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                     }
                   })(saveDraftFlag, noticeEls, selectedContent);
 
-                  _this.removeFilePermissions(contentTO[0].path, filePermissions, permissionAggregateCounter);
+                  _this.removeFilePermissions(
+                    contentTO[0].path,
+                    filePermissions,
+                    permissionAggregateCounter
+                  );
 
                   if (filePermissions.fileLen) {
                     selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
-                    totalPerms = _this.getAgreggatePermissions(filePermissions.fileLen, permissionAggregateCounter);
+                    totalPerms = _this.getAgreggatePermissions(
+                      filePermissions.fileLen,
+                      permissionAggregateCounter
+                    );
                     isWrite = _this.hasWritePermission(totalPerms);
                     _this._drawNav(selectedContent, isWrite, totalPerms);
 
-                    if (CStudioAuthoringContext.isPreview == true && selectedContent[0].disabled == true) {
+                    if (
+                      CStudioAuthoringContext.isPreview == true &&
+                      selectedContent[0].disabled == true
+                    ) {
                       noticeEl = document.createElement('div');
                       _this.containerEl.parentNode.parentNode.appendChild(noticeEl);
                       YDom.addClass(noticeEl, 'acnDisabledContent');
-                      noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentPageDisabled');
+                      noticeEl.innerHTML = CMgs.format(
+                        contextNavLangBundle,
+                        'wcmContentPageDisabled'
+                      );
                     } else {
                       me.removeDisableMessage();
                     }
@@ -364,7 +403,11 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                 }
               });
 
-              for (var i = 0, opts = this.options, l = opts.length, opt = opts[0]; i < l; opt = opts[++i]) {
+              for (
+                var i = 0, opts = this.options, l = opts.length, opt = opts[0];
+                i < l;
+                opt = opts[++i]
+              ) {
                 opts[i].renderer = this['render' + opt.renderId];
               }
               navWcmContent = _this;
@@ -382,7 +425,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
             /*
              * Adds a file and its permissions to a hash map and adds its permissions to a permissionAggregator.
              */
-            addFilePermissions: function addFilePermissions(fileId, perms, permissionsHash, permissionAgreggator) {
+            addFilePermissions: function addFilePermissions(
+              fileId,
+              perms,
+              permissionsHash,
+              permissionAgreggator
+            ) {
               if (typeof fileId == 'string') {
                 permissionsHash.fileLen++; // Increment file counter
                 permissionsHash[fileId] = perms;
@@ -401,7 +449,11 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
             /*
              * Removes a file and its permissions from a hash map and subtracts its permissions from a permissionAggregator.
              */
-            removeFilePermissions: function removeFilePermissions(fileId, permissionsHash, permissionAgreggator) {
+            removeFilePermissions: function removeFilePermissions(
+              fileId,
+              permissionsHash,
+              permissionAgreggator
+            ) {
               var perms;
 
               if (typeof fileId == 'string' && permissionsHash.hasOwnProperty(fileId)) {
@@ -420,12 +472,18 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
               }
             },
 
-            getAgreggatePermissions: function getAgreggatePermissions(totalFiles, permissionAgreggator) {
+            getAgreggatePermissions: function getAgreggatePermissions(
+              totalFiles,
+              permissionAgreggator
+            ) {
               var result = [];
               var permObj;
 
               for (var permission in permissionAgreggator) {
-                if (permissionAgreggator.hasOwnProperty(permission) && permissionAgreggator[permission] == totalFiles) {
+                if (
+                  permissionAgreggator.hasOwnProperty(permission) &&
+                  permissionAgreggator[permission] == totalFiles
+                ) {
                   // Permissions that are present for all files are added to permissions array
                   //permObj = {};
                   //permObj['permission'] = permission;
@@ -458,50 +516,63 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
               var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent(),
                 me = this;
 
-              var callback = {
-                success: function(isWrite, perms) {
-                  this._self._drawNav(selectedContent, isWrite, perms);
+              if (selectedContent.length != 0) {
+                this.checkWritePermission(selectedContent[0].uri, {
+                  success: function(isWrite, perms) {
+                    this._self._drawNav(selectedContent, isWrite, perms);
 
-                  if (CStudioAuthoringContext.isPreview == true && selectedContent[0].disabled == true) {
-                    var noticeEl = document.createElement('div');
-                    this._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                    YDom.addClass(noticeEl, 'acnDisabledContent');
-                    noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentPageDisabled');
-                  } else {
-                    me.removeDisableMessage();
-                  }
+                    if (
+                      CStudioAuthoringContext.isPreview == true &&
+                      selectedContent[0].disabled == true
+                    ) {
+                      var noticeEl = document.createElement('div');
+                      this._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                      YDom.addClass(noticeEl, 'acnDisabledContent');
+                      noticeEl.innerHTML = CMgs.format(
+                        contextNavLangBundle,
+                        'wcmContentPageDisabled'
+                      );
+                    } else {
+                      me.removeDisableMessage();
+                    }
 
-                  var thisContext = this;
-                  for (var s = 0; s < selectedContent.length; s++) {
-                    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
-                      success: function(content) {
-                        if (content.item.savedAsDraft == true) {
-                          var noticeEls = YDom.getElementsByClassName(
-                            'acnDraftContent',
-                            null,
-                            _this.containerEl.parentNode.parentNode
-                          );
-                          if (noticeEls.length < 1) {
-                            var noticeEl = document.createElement('div');
-                            thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                            YDom.addClass(noticeEl, 'acnDraftContent');
-                            noticeEl.innerHTML = CMgs.format(contextNavLangBundle, 'wcmContentSavedAsDraft');
+                    var thisContext = this;
+                    for (var s = 0; s < selectedContent.length; s++) {
+                      CStudioAuthoring.Service.lookupContentItem(
+                        CStudioAuthoringContext.site,
+                        selectedContent[s].uri,
+                        {
+                          success: function(content) {
+                            if (content.item.savedAsDraft == true) {
+                              var noticeEls = YDom.getElementsByClassName(
+                                'acnDraftContent',
+                                null,
+                                _this.containerEl.parentNode.parentNode
+                              );
+                              if (noticeEls.length < 1) {
+                                var noticeEl = document.createElement('div');
+                                thisContext._self.containerEl.parentNode.parentNode.appendChild(
+                                  noticeEl
+                                );
+                                YDom.addClass(noticeEl, 'acnDraftContent');
+                                noticeEl.innerHTML = CMgs.format(
+                                  contextNavLangBundle,
+                                  'wcmContentSavedAsDraft'
+                                );
+                              }
+                            }
                           }
                         }
-                      }
-                    });
-                  }
-                },
-                failure: function() {
-                  //TDOD: log error, not mute it
-                },
+                      );
+                    }
+                  },
+                  failure: function() {
+                    //TDOD: log error, not mute it
+                  },
 
-                selectedContent: selectedContent,
-                _self: this
-              };
-
-              if (selectedContent.length != 0) {
-                this.checkWritePermission(selectedContent[0].uri, callback);
+                  selectedContent: selectedContent,
+                  _self: this
+                });
               } else {
                 this.renderSelectNone();
               }
@@ -524,7 +595,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                 itemLocked,
                 spanIcon;
 
-              if (selectedContent.length == 0) {
+              if (selectedContent.length === 0) {
                 this.renderSelectNone();
               } else {
                 if (selectedContent.length > 1) {
@@ -536,7 +607,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                     newFileFlag = true;
 
                   for (i = 0; i < l; i++) {
-                    auxState = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[i], true).string;
+                    auxState = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[i], true)
+                      .string;
                     auxIcon = CStudioAuthoring.Utils.getIconFWClasses(selectedContent[i]);
                     itemLocked = CStudioAuthoring.Utils.isItemLocked(selectedContent[i]);
 
@@ -575,14 +647,25 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                   }
                 } else {
                   isBulk = false;
-                  state = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[0], true).string;
-                  stateKey = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[0], true).key;
+                  state = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[0], true)
+                    .string;
+                  stateKey = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[0], true)
+                    .key;
+
                   icon = CStudioAuthoring.Utils.getContentItemIcon(selectedContent[0]);
-                  // icon = CStudioAuthoring.Utils.getIconFWClasses(selectedContent[0]);
+                  if (selectedContent[0].internalName) {
+                    $(icon)
+                      .append(selectedContent[0].internalName)
+                      .attr('title', selectedContent[0].internalName)
+                      .addClass('active-content-icon-with-item-name')
+                      .find('.status-icon')
+                      .css('marginRight', 20);
+                  }
+
                   isInFlight = selectedContent[0].inFlight;
                   isOneItemLocked = CStudioAuthoring.Utils.isItemLocked(selectedContent[0]);
 
-                  if (selectedContent[0].lockOwner != '') {
+                  if (selectedContent[0].lockOwner !== '') {
                     if (selectedContent[0].lockOwner != CStudioAuthoringContext.user) {
                       isWrite = false;
                     } else {
@@ -650,7 +733,11 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                   },
                   failure: function() {}
                 };
-              CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, path, checkPermissionsCb);
+              CStudioAuthoring.Service.getUserPermissions(
+                CStudioAuthoringContext.site,
+                path,
+                checkPermissionsCb
+              );
             },
 
             /**
@@ -676,10 +763,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
               stateKey
             ) {
               this.containerEl.innerHTML = '';
-              var navLabelElContainer = document.createElement('li'),
-                navLabelEl = document.createElement('span'),
-                statSplit = state.split('|'),
-                hasOperations;
+              var navLabelElContainer = document.createElement('li');
+              var navLabelEl = document.createElement('span');
 
               navLabelEl.innerHTML = '';
 
@@ -707,15 +792,11 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                 }
               }
 
-              hasOperations = YDom.getElementsByClassName('acn-link', null, this.containerEl).length;
-
               if ('string' === typeof icon) {
-                YDom.addClass(navLabelEl, [icon, 'context-nav-title-element', 'navbar-text'].join(' '));
+                $(navLabelEl).addClass(`${icon} context-nav-title-element navbar-text`);
               } else {
-                YDom.addClass(navLabelEl, ['context-nav-title-element', 'navbar-text'].join(' '));
+                $(navLabelEl).addClass('context-nav-title-element navbar-text');
                 navLabelEl.appendChild(icon);
-                navLabelEl.innerHTML +=
-                  "<span style='line-height: 15px;color: #777;font-weight: bold;font-size: 21px;'>|</span>";
               }
 
               navLabelElContainer.appendChild(navLabelEl);
@@ -743,7 +824,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
              * handle edit
              */
             renderEdit: {
-              render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
+              render: function(
+                option,
+                isBulk,
+                isAdmin,
+                state,
+                isRelevant,
+                isWrite,
+                perms,
+                isOneItemLocked,
+                stateKey
+              ) {
                 var content = CStudioAuthoring.SelectedContent.getSelectedContent();
 
                 //                            for (var i = 0, l = content.length; i < l; ++i) {
@@ -752,10 +843,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
 
                 var editCallback = {
                   success: function(contentTO, editorId, name, value, draft) {
-                    var oCurrentTextNodeOldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri;
+                    var oCurrentTextNodeOldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0]
+                      .browserUri;
                     var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL('page');
                     if (
-                      CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri != contentTO.item.browserUri
+                      CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri !=
+                      contentTO.item.browserUri
                     ) {
                       eventNS.oldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
                       CStudioAuthoring.SelectedContent.getSelectedContent()[0] = contentTO.item;
@@ -774,7 +867,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                       try {
                         var currentContentTO,
                           URLBrowseUri = pageParameter,
-                          contentTOBrowseUri = contentTO.item.browserUri == '' ? '/' : contentTO.item.browserUri;
+                          contentTOBrowseUri =
+                            contentTO.item.browserUri == '' ? '/' : contentTO.item.browserUri;
 
                         if (URLBrowseUri == contentTOBrowseUri) {
                           currentContentTO = null;
@@ -824,7 +918,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
 
                     if (!CStudioAuthoringContext.isPreview) {
                       if (draft) {
-                        //console.log(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"));
                         CStudioAuthoring.Utils.Cookies.createCookie(
                           'dashboard-checked',
                           JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent())
@@ -884,7 +977,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                     (content.component && content.contentType.indexOf('level-descriptor') != -1)) &&
                   state.indexOf('Delete') == -1;
                 //if item is deleted and in the go live queue , enable edit.
-                if (state.indexOf('Submitted for Delete') >= 0 || state.indexOf('Scheduled for Delete') >= 0) {
+                if (
+                  state.indexOf('Submitted for Delete') >= 0 ||
+                  state.indexOf('Scheduled for Delete') >= 0
+                ) {
                   rflag = true;
                 }
 
@@ -920,7 +1016,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                     }
                   };
                   option.onclick = function() {
-                    //YDom.get("duplicate-loading").style.display = "block";
                     CStudioAuthoring.Operations.showSimpleDialog(
                       'duplicate-dialog',
                       CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -964,7 +1059,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
              * render submit option
              */
             renderSimpleSubmit: {
-              render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
+              render: function(
+                option,
+                isBulk,
+                isAdmin,
+                state,
+                isRelevant,
+                isWrite,
+                perms,
+                isOneItemLocked,
+                stateKey
+              ) {
                 if (CStudioAuthoring.Service.isPublishAllowed(perms)) {
                   return;
                 }
@@ -1017,11 +1122,16 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                       isRelevant = true;
                     }
 
-                    if (state.indexOf('Submitted for Delete') >= 0 || state.indexOf('Scheduled for Delete') >= 0) {
+                    if (
+                      state.indexOf('Submitted for Delete') >= 0 ||
+                      state.indexOf('Scheduled for Delete') >= 0
+                    ) {
                       isRelevant = true;
                     }
                     option.onclick = function() {
-                      CStudioAuthoring.Operations.deleteContent(CStudioAuthoring.SelectedContent.getSelectedContent());
+                      CStudioAuthoring.Operations.deleteContent(
+                        CStudioAuthoring.SelectedContent.getSelectedContent()
+                      );
                     };
                   }
 
@@ -1031,7 +1141,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
             },
 
             renderDelete: {
-              render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
+              render: function(
+                option,
+                isBulk,
+                isAdmin,
+                state,
+                isRelevant,
+                isWrite,
+                perms,
+                isOneItemLocked,
+                stateKey
+              ) {
                 if (isWrite && CStudioAuthoring.Service.isDeleteAllowed(perms)) {
                   var isRelevant = true;
                   var isAdminFlag = isAdmin;
@@ -1046,7 +1166,9 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                   }
 
                   option.onclick = function() {
-                    CStudioAuthoring.Operations.deleteContent(CStudioAuthoring.SelectedContent.getSelectedContent());
+                    CStudioAuthoring.Operations.deleteContent(
+                      CStudioAuthoring.SelectedContent.getSelectedContent()
+                    );
                   };
                   _this.createNavItem(option, isBulk, isAdminFlag, isRelevant, !isWrite);
                 }
@@ -1066,7 +1188,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
             },
 
             renderApproveCommon: {
-              render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
+              render: function(
+                option,
+                isBulk,
+                isAdmin,
+                state,
+                isRelevant,
+                isWrite,
+                perms,
+                isOneItemLocked,
+                stateKey
+              ) {
                 if (CStudioAuthoring.Service.isPublishAllowed(perms)) {
                   var isRelevant = !isOneItemLocked;
                   var items = CStudioAuthoring.SelectedContent.getSelectedContent();
@@ -1109,7 +1241,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
              * render approve / golive option
              */
             renderApprove: {
-              render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
+              render: function(
+                option,
+                isBulk,
+                isAdmin,
+                state,
+                isRelevant,
+                isWrite,
+                perms,
+                isOneItemLocked,
+                stateKey
+              ) {
                 if (CStudioAuthoring.Service.isPublishAllowed(perms)) {
                   var isRelevant = !isOneItemLocked;
                   var items = CStudioAuthoring.SelectedContent.getSelectedContent();
@@ -1135,7 +1277,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
              * render approve-schedule option
              */
             renderApproveSchedule: {
-              render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
+              render: function(
+                option,
+                isBulk,
+                isAdmin,
+                state,
+                isRelevant,
+                isWrite,
+                perms,
+                isOneItemLocked,
+                stateKey
+              ) {
                 if (CStudioAuthoring.Service.isPublishAllowed(perms)) {
                   var isRelevant = !isOneItemLocked;
                   var items = CStudioAuthoring.SelectedContent.getSelectedContent();
@@ -1208,7 +1360,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
              * render Dependencies option
              */
             renderViewDependencies: {
-              render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
+              render: function(
+                option,
+                isBulk,
+                isAdmin,
+                state,
+                isRelevant,
+                isWrite,
+                perms,
+                isOneItemLocked,
+                stateKey
+              ) {
                 isRelevant = true;
 
                 option.onclick = function() {
@@ -1240,15 +1402,18 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
             createNavItem: function(item, isBulk, isAdmin, isRelevant, disableItem) {
               var parentEl = this.containerEl;
               var content = CStudioAuthoring.SelectedContent.getSelectedContent();
-              var showItem = (!item.isInFlight && ((isAdmin && item.allowAdmin) || (!isAdmin && item.allowAuthor)));
+              var showItem =
+                !item.isInFlight &&
+                ((isAdmin && item.allowAdmin) || (!isAdmin && item.allowAuthor));
 
               const mimeType = content[0].mimeType;
               if (content[0] && mimeType) {
-                const nonEditable = mimeType.match(/\bimage\b/)
-                  || mimeType.match(/\bpdf\b/)
-                  || mimeType.match(/\bvideo\b/);
+                const nonEditable =
+                  mimeType.match(/\bimage\b/) ||
+                  mimeType.match(/\bpdf\b/) ||
+                  mimeType.match(/\bvideo\b/);
 
-                showItem = nonEditable && ('Edit' === item.renderId) ? false : showItem;
+                showItem = nonEditable && 'Edit' === item.renderId ? false : showItem;
               }
 
               if (showItem) {
@@ -1296,18 +1461,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                 parentEl.appendChild(linkContainerEl);
                 linkContainerEl.appendChild(linkEl);
 
-                /**
-                 * adding ajax status image for item who has renderId
-                 */
-                if (item.renderId != null) {
-                  var loadingImageEl = document.createElement('img');
-                  loadingImageEl.id = item.renderId.toLowerCase() + '-loading';
-                  loadingImageEl.src =
-                    contextPath +
-                    CStudioAuthoringContext.baseUri +
-                    '/static-assets/themes/cstudioTheme/images/treeview-loading.gif';
-                  linkContainerEl.appendChild(loadingImageEl);
-                }
               }
             },
 
@@ -1339,4 +1492,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
     };
   })();
 
-CStudioAuthoring.Module.moduleLoaded('wcm_content', CStudioAuthoring.ContextualNav.WcmActiveContentMod);
+CStudioAuthoring.Module.moduleLoaded(
+  'wcm_content',
+  CStudioAuthoring.ContextualNav.WcmActiveContentMod
+);

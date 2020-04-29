@@ -107,7 +107,12 @@ input[type="checkbox"].content-type-selector--checkbox {
   margin-top: 60px;
 }
 
-.cstudio-admin-console-item-selected {
+.cstudio-admin-console-item:hover {
+  background: rgba(0, 0, 0, .04);
+}
+
+.cstudio-admin-console-item-selected,
+.cstudio-admin-console-item-selected:hover {
   background: var(--craftercms-blueHighlight);
   color: var(--craftercms-blue);
   cursor: default;

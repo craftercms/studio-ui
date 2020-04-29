@@ -16,61 +16,44 @@
 
 <div id="studioBar" class="studio-view">
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
+    <div class="container-fluid navbar-items-wrapper">
+      <#--<div class="collapse navbar-collapse">-->
+      <ul class="nav navbar-nav">
+        <li id="acn-dropdown-wrapper" class="acn-dropdown-wrapper"></li>
+        <li>
+          <a id="navbar-site-name" href="/studio/site-dashboard"></a>
+        </li>
+        <li class="dropdown quick-create hide" dropdown>
+          <button
+                  id="quick-create-dropdown"
+                  class="dropdown-toggle nav-link ng-binding"
+                  dropdown-toggle=""
+                  aria-haspopup="true"
+                  aria-expanded="true"
+          >
+            <span class="fa fa-plus-circle pointer quick-create-button-icon" data-title="quickCreate"></span>
+          </button>
+          <div id="quick-create-menu"></div>
+        </li>
+      </ul>
 
-      <div class="collapse navbar-collapse">
-        <ul class="nav navbar-nav">
-          <li id="acn-dropdown-wrapper" class="acn-dropdown-wrapper"></li>
-          <li>
-            <a id="navbar-site-name" href="/studio/site-dashboard"></a>
-          </li>
-          <li class="dropdown quick-create hide" dropdown>
-            <a
-              id="quick-create-dropdown"
-              class="dropdown-toggle nav-link ng-binding"
-              dropdown-toggle=""
-              aria-haspopup="true"
-              aria-expanded="true"
-            >
-              <span class="nav-icon fa fa-plus-circle pointer" data-title="quickCreate"></span>
-            </a>
-            <div id="quick-create-menu"></div>
-          </li>
-        </ul>
+      <ul class="nav navbar-nav" id="acn-quick-content"></ul>
 
-        <ul class="nav navbar-nav" id="acn-quick-content"></ul>
+      <ul class="nav navbar-nav" id="activeContentActions"></ul>
 
-        <ul class="nav navbar-nav" id="activeContentActions"></ul>
-
-        <div class="navbar-right-wrapper navbar-right">
-          <div id="toolbarGlobalNav">
-
-          </div>
-
-          <div id="acn-separator" class="navbar-right">
-            <p class="ellipsis-icon">&#124;</p>
-          </div>
-
-          <div class="acn-status-container navbar-right">
-            <div id="acn-status" class="nav-link form-group">
-              <span
-                value=""
-                class="nav-icon fa fa-cloud-upload f18"
-                data-title="publishingStatus"
-              ></span>
-            </div>
-          </div>
-          <div class="navbar-form navbar-right" role="search">
-            <div id="acn-searchtext" class="nav-link form-group">
-              <span value="" class="nav-icon fa fa-search f18" data-title="search"></span>
-            </div>
-          </div>
-          <div id="acn-persona" class="navbar-right"></div>
-          <div id="acn-preview-tools" class="navbar-right"></div>
-          <div id="acn-ice-tools" class="navbar-right"></div>
+      <div class="navbar-right-wrapper navbar-right">
+        <div id="toolbarGlobalNav"></div>
+        <div id="acn-status">
+          <span class="nav-icon fa fa-cloud-upload f18" data-title="publishingStatus"></span>
         </div>
-
+        <div id="acn-searchtext">
+          <span value="" class="nav-icon fa fa-search f18" data-title="search"></span>
+        </div>
+        <div id="acn-persona"></div>
+        <div id="acn-preview-tools"></div>
+        <div id="acn-ice-tools"></div>
       </div>
+      <#--</div>-->
     </div>
   </nav>
 </div>
@@ -83,14 +66,13 @@
         <div id="acn-wcm-logo">
           <a id="acn-wcm-logo-link" href="javascript:">
             <img
-              id="acn-wcm-logo-image"
-              class="acn-logo-image"
-              alt="Dashboard"
+                    id="acn-wcm-logo-image"
+                    class="acn-logo-image"
+                    alt="Dashboard"
             />
           </a>
         </div>
         <div id="_acn-dropdown-wrapper" class="acn-dropdown-wrapper"></div>
-
         <div id="acn-active-content"></div>
         <div id="acn-admin-console" style="float: left"></div>
         <div id="contextual_nav_menu_items"></div>
