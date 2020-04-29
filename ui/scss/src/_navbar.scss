@@ -54,19 +54,19 @@
   }
 }
 
-.quick-create {
-
-  #quick-create-dropdown {
-    padding: 17px 8px 15px;
-
-    .nav-icon {
-      color: #3dd2ef;
-    }
+#quick-create-dropdown {
+  border: none;
+  background: none;
+  padding: 17px 10px 15px;
+  color: var(--craftercms-teal);
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
   }
+}
 
+.quick-create {
   .dropdown-menu {
     padding-top: 0px;
-
     .title {
       padding: 5px 20px 5px;
       margin-bottom: 5px;
@@ -78,11 +78,9 @@
       background-color: var(--craftercms-light0);
       position: relative;
     }
-
     .quickCreateEmpty {
       padding: 20px 18px;
       text-align: center;
-
       .fa {
         display: block;
         text-align: center;
@@ -90,9 +88,7 @@
         color: #444;
         font-size: 15px;
       }
-
     }
-
   }
 }
 
@@ -199,24 +195,46 @@
 }
 
 #activeContentActions {
-  margin-left: 12px;
-
-  li {
-    > a {
-      padding-left: 0;
-      padding-right: 10px;
+  flex: 1;
+  display: flex;
+  overflow: auto;
+  white-space: nowrap;
+  padding: 0 5px 0 10px;
+  border: 1px solid #eee;
+  border-style: none solid;
+  .context-nav-title-element {
+    padding: 17px 0 10px;
+    margin: 0 5px 0 0;
+    &:empty {
+      display: none;
     }
-
-    > .navbar-text {
-      margin-left: 0;
-      margin-right: 10px;
+  }
+  .acn-link {
+    float: none;
+    display: inline-block;
+    a {
+      padding: 17px 5px 15px;
+      color: var(--craftercms-tealShade);
+      &:hover {
+        background: rgba(0, 0, 0, .04)
+      }
     }
   }
 }
 
-#toolbarGlobalNav {
-  display: flex;
-  float: right;
-  align-items: center;
-  height: 52px;
+.active-content-icon-with-item-name {
+  overflow: hidden;
+  max-width: 120px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
+
+#toolbarGlobalNav {
+  float: right;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid #eee;
+}
+

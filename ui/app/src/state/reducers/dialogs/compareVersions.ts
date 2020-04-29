@@ -28,7 +28,6 @@ const initialState: CompareVersionsDialogStateProps = {
   isFetching: null,
   error: null,
   rightActions: null,
-  leftActions: null,
   onClose: null,
   onDismiss: null
 };
