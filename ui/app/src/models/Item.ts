@@ -94,15 +94,16 @@ export interface LegacyItem {
   [prop: string]: any;
 }
 
-interface Consumer extends PaginationOptions {
+export interface Consumer extends PaginationOptions {
   byId: LookupTable<SandboxItem>;
   isFetching: boolean;
   error: ApiResponse;
   items: string[];
   rootPath: string;
   path: string;
-  keywords: string;
-  pageNumber: number;
+  keywords?: string;
+  pageNumber?: number;
+  breadcrumb?: SandboxItem[];
 }
 
 export interface ItemsStateProps {

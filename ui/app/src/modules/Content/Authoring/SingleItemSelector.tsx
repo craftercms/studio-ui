@@ -14,24 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { palette } from '../../../styles/theme';
 import { Variant } from '@material-ui/core/styles/createTypography';
-import { ItemsStateProps, SandboxItem } from '../../../models/Item';
+import { Consumer, SandboxItem } from '../../../models/Item';
 import InsertDriveFileRoundedIcon from '@material-ui/icons/InsertDriveFileRounded';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import Popover from '@material-ui/core/Popover';
 import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { useSelection, useStateResource } from '../../../utils/hooks';
+import { useStateResource } from '../../../utils/hooks';
 import Paper from '@material-ui/core/Paper';
 import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
 
 const useStyles = makeStyles((theme) => ({
+  popoverRoot: {
+    minWidth: '245px',
+    marginTop: '5px',
+    padding: '0px 5px 5px 5px'
+  },
   root: {
     'backgroundColor': palette.white,
     'display': 'flex',
@@ -39,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     'align-items': 'center',
     'justify-content': 'space-between',
     'align-self': 'flex-start',
-    'min-width': '200px',
+    'min-width': '245px',
     '& p': {
       padding: 0
     }
@@ -78,7 +83,10 @@ interface SingleItemSelectorProps {
   titleVariant?: Variant;
   labelVariant?: Variant;
   open: boolean;
+  rootPath: string;
+  consumer: Consumer;
   onSelectClick(): void;
+  onClose(): void;
   onItemClicked(item: SandboxItem): void;
 }
 
@@ -91,26 +99,28 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     labelVariant,
     onSelectClick,
     onItemClicked,
+    onClose,
     selectedItem,
     label,
+    open,
+    rootPath,
+    consumer
   } = props;
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const itemsBranch = useSelection(state => state.items);
 
-  const itemsResource = useStateResource<SandboxItem[], ItemsStateProps>(itemsBranch, {
-    shouldResolve: (itemsBranch) => false,
-    shouldReject: (itemsBranch) => false,
-    shouldRenew: (itemsBranch, resource) => (
-      resource.complete
+  const anchorEl = useRef();
+
+  const itemsResource = useStateResource<SandboxItem[], Consumer>(consumer, {
+    shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
+    shouldReject: (consumer) => Boolean(consumer.error),
+    shouldRenew: (consumer, resource) => (
+      consumer.isFetching && resource.complete
     ),
-    resultSelector: (itemsBranch) => {
-      return []
+    resultSelector: (consumer) => {
+      return consumer.items.map(id => consumer.byId[id]);
     },
-    errorSelector: (itemsBranch) => false
+    errorSelector: (consumer) => consumer.error
   });
-
-  const onMenuClose = () => setAnchorEl(null);
 
   return (
     <Paper className={clsx(classes.root, propClasses?.root)} elevation={0}>
@@ -131,47 +141,42 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       </div>
       <IconButton
         className={classes.changeBtn}
-        onClick={(e) => {
-          setAnchorEl(e.currentTarget);
-          onSelectClick();
-        }}
+        ref={anchorEl}
+        onClick={onSelectClick}
       >
         <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
       </IconButton>
       <Popover
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={onMenuClose}
+        anchorEl={anchorEl.current}
+        open={open}
+        classes={{paper: classes.popoverRoot}}
+        onClose={onClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
       >
         <SuspenseWithEmptyState resource={itemsResource}>
           <Breadcrumbs
-            keyword={''}
-            breadcrumb={[]}
-            onMenu={()=> {}}
-            onSearch={()=> {}}
-            onCrumbSelected={()=> {}}
+            keyword={consumer?.keywords}
+            breadcrumb={consumer ? consumer?.breadcrumb : []}
+            onSearch={() => {
+            }}
+            onCrumbSelected={() => {
+            }}
           />
           <PathNavigatorList
             leafs={[]}
             locale={'en'}
             resource={itemsResource}
-            onSelectItem={() => {
-            }}
             onPathSelected={() => {
+              console.log('onPathSelected')
             }}
-            onOpenItemMenu={() => {
-            }}
-            onItemClicked={() => {
-            }}
+            onItemClicked={onItemClicked}
           />
         </SuspenseWithEmptyState>
       </Popover>

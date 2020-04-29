@@ -73,6 +73,7 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const versionsBranch = useSelection(state => state.versions);
+  const itemsBranch = useSelection(state => state.items);
 
   const dispatch = useDispatch();
   return (
@@ -181,6 +182,7 @@ function GlobalDialogManager() {
         selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
         selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
         versionsBranch={versionsBranch}
+        itemsBranch={itemsBranch}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}
       />

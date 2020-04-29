@@ -15,6 +15,8 @@
  */
 
 import { parse } from 'query-string';
+import { LookupTable } from '../models/LookupTable';
+import { SandboxItem } from '../models/Item';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string) {
@@ -60,6 +62,29 @@ export function parseQueryString() {
   return parse(window.location.search);
 }
 
+// TODO: an initial path with trailing `/` breaks
+export function itemsFromPath(path: string, root: string, items: LookupTable<SandboxItem>): SandboxItem[] {
+  const rootWithIndex = withIndex(root);
+  const rootWithoutIndex = withoutIndex(root);
+  const rootItem = items[rootWithIndex] ?? items[root];
+  if (path === rootWithIndex || path === root) {
+    return [rootItem];
+  }
+  const regExp = new RegExp(`${rootWithIndex}|${rootWithoutIndex}|\\/index\\.xml|/$`, 'g');
+  const pathWithoutRoot = path.replace(regExp, '');
+  let accum = rootWithoutIndex;
+  return [
+    rootItem,
+    ...pathWithoutRoot
+      .split('/')
+      .slice(1)
+      .map((folder) => {
+        accum += `/${folder}`;
+        return items[accum] ?? items[withIndex(accum)];
+      })
+  ];
+}
+
 export function withoutIndex(path: string): string {
   return path.replace('/index.xml', '');
 }
@@ -73,6 +98,7 @@ export default {
   getPreviewURLFromPath,
   getQueryVariable,
   parseQueryString,
+  itemsFromPath,
   withoutIndex,
   withIndex
 };

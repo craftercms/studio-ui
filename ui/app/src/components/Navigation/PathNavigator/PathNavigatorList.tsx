@@ -26,9 +26,9 @@ interface NavProps {
   isSelectMode?: boolean;
   leafs: string[];
   onItemClicked(item: SandboxItem): void;
-  onSelectItem(item: SandboxItem, unselect: boolean): void;
+  onSelectItem?(item: SandboxItem, unselect: boolean): void;
   onPathSelected(item: SandboxItem): void;
-  onOpenItemMenu(element: Element, item: SandboxItem): void;
+  onOpenItemMenu?(element: Element, item: SandboxItem): void;
 }
 
 // PathNavigatorList

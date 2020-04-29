@@ -38,20 +38,21 @@ import {
 import { useDispatch } from 'react-redux';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { palette } from '../../../styles/theme';
-import ListItemText from '@material-ui/core/ListItemText';
-import { Resource } from '../../../models/Resource';
-import { LookupTable } from '../../../models/LookupTable';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import { EntityState } from '../../../models/EntityState';
+import SingleItemSelector from '../Authoring/SingleItemSelector';
+import { addItemConsumer, fetchChildrenByPath } from '../../../state/reducers/items';
+import { ItemsStateProps } from '../../../models/Item';
+import EmptyState from '../../../components/SystemStatus/EmptyState';
+import Typography from '@material-ui/core/Typography';
+import { palette } from '../../../styles/theme';
+import { LookupTable } from '../../../models/LookupTable';
+import { Resource } from '../../../models/Resource';
+import ListItemText from '@material-ui/core/ListItemText';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import EmptyState from '../../../components/SystemStatus/EmptyState';
-import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { addItemConsumer } from '../../../state/reducers/items';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -76,6 +77,7 @@ interface CompareVersionsDialogBaseProps {
 
 interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
   versionsBranch: VersionsStateProps;
+  itemsBranch: ItemsStateProps;
   selectedA: LegacyVersion;
   selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
@@ -91,13 +93,14 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 }
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
-  const { open, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch } = props;
+  const { open, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch, itemsBranch } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
-  const id = 'CompareVersionsDialog';
+  const id = 'CompareVersionsItemSelector';
+  const rootPath = '/site/website';
 
   const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
@@ -143,12 +146,16 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   );
 
   useEffect(() => {
-    dispatch(addItemConsumer({ id, path: '/site/website' }));
-  }, [dispatch]);
-
-  //useEffect
-  //dispatch addConsumer('id', rootPath: '/site/website')
-  // path?? dispatch fetchChildrenByPath('id', path) : dispatch fetchChildrenByPath('id', rootPath);
+    dispatch(addItemConsumer({ id, path: rootPath }));
+    if (path) {
+      dispatch(fetchChildrenByPath({ id, path }));
+    } else {
+      dispatch(fetchChildrenByPath({ id, path: rootPath }));
+    }
+    return () => {
+      //removeItemConsumer
+    };
+  }, [dispatch, path]);
 
   const handleItemClick = (version: LegacyVersion) => {
     if (!selected[0]) {
@@ -225,10 +232,13 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
             <DialogBody>
               <SingleItemSelector
                 label="Item"
+                rootPath={rootPath}
+                consumer={itemsBranch.consumers?.[id]}
                 open={openSelector}
+                onClose={() => setOpenSelector(!openSelector)}
                 onSelectClick={() => setOpenSelector(!openSelector)}
                 onItemClicked={(item) => {
-                  //dispatch fetchChangeCurrentPath(item.path)
+                  dispatch(fetchChildrenByPath({ id, path: item.path }));
                 }}
               />
               <EmptyState

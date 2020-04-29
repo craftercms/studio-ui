@@ -45,7 +45,7 @@ import StandardAction from '../../../models/StandardAction';
 import { createAction } from '@reduxjs/toolkit';
 import { createLookupTable, nou } from '../../../utils/object';
 import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
-import { withIndex, withoutIndex } from '../../../utils/path';
+import { itemsFromPath, withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
@@ -196,29 +196,6 @@ interface WidgetState {
   count: number; // Number of items in the current path
   limit: number;
   offset: number;
-}
-
-// TODO: an initial path with trailing `/` breaks
-function itemsFromPath(path: string, root: string, items: LookupTable<SandboxItem>): SandboxItem[] {
-  const rootWithIndex = withIndex(root);
-  const rootWithoutIndex = withoutIndex(root);
-  const rootItem = items[rootWithIndex] ?? items[root];
-  if (path === rootWithIndex || path === root) {
-    return [rootItem];
-  }
-  const regExp = new RegExp(`${rootWithIndex}|${rootWithoutIndex}|\\/index\\.xml|/$`, 'g');
-  const pathWithoutRoot = path.replace(regExp, '');
-  let accum = rootWithoutIndex;
-  return [
-    rootItem,
-    ...pathWithoutRoot
-      .split('/')
-      .slice(1)
-      .map((folder) => {
-        accum += `/${folder}`;
-        return items[accum] ?? items[withIndex(accum)];
-      })
-  ];
 }
 
 const init: (props: WidgetProps) => WidgetState = (props: WidgetProps) => ({

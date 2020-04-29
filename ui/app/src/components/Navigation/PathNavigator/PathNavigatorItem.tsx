@@ -38,7 +38,7 @@ interface NavItemProps {
   onItemClicked?(item: SandboxItem, event: React.MouseEvent): void;
   onChangeParent?(item: SandboxItem): void;
   onItemChecked?(item: SandboxItem, unselect: boolean): void;
-  onOpenItemMenu(element: Element, item: SandboxItem): void;
+  onOpenItemMenu?(element: Element, item: SandboxItem): void;
 }
 
 // PathNavigatorListItem
@@ -98,16 +98,19 @@ export default function (props: NavItemProps) {
         {locale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
       </Typography>
       <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
-        <IconButton
-          aria-label="Options"
-          className={classes.itemIconButton}
-          onClick={(event) => {
-            event.stopPropagation();
-            onOpenItemMenu(event.currentTarget, item);
-          }}
-        >
-          <MoreVertIcon className={classes.icon} />
-        </IconButton>
+        {
+          onOpenItemMenu &&
+          <IconButton
+            aria-label="Options"
+            className={classes.itemIconButton}
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpenItemMenu(event.currentTarget, item);
+            }}
+          >
+            <MoreVertIcon className={classes.icon} />
+          </IconButton>
+        }
         <IconButton
           disabled={isLeaf}
           aria-label="Options"

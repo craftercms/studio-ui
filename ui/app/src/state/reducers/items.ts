@@ -17,8 +17,10 @@
 import GlobalState from '../../models/GlobalState';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import { ItemsStateProps } from '../../models/Item';
+import { ItemsStateProps, SandboxItem } from '../../models/Item';
 import { createLookupTable } from '../../utils/object';
+import { LookupTable } from '../../models/LookupTable';
+import { itemsFromPath } from '../../utils/path';
 
 interface consumer {
   id: string;
@@ -55,22 +57,35 @@ const reducer = createReducer<GlobalState['items']>(initialState, {
     consumers: {
       ...state.consumers,
       [payload.id]: {
+        ...state.consumers[payload.id],
         path: payload.path,
         isFetching: true
       }
     }
   }),
-  [fetchChildrenByPathComplete.type]: (state, { payload }) => ({
-    ...state,
-    consumers: {
-      ...state.consumers,
-      [payload.id]: {
-        byId: { ...state.consumers[payload.id].byId, ...createLookupTable(payload) },
-        items: payload.map((item) => item.id),
-        isFetching: false
+  [fetchChildrenByPathComplete.type]: (state, { payload }) => {
+    const consumer = state.consumers[payload.id];
+    const byId: LookupTable<SandboxItem> =  { ...consumer.byId, ...createLookupTable(payload.childrenResponse)};
+
+    const nextItems = {
+      ...byId,
+      [payload.childrenResponse.parent.id]: payload.childrenResponse.parent,
+    };
+
+    return {
+      ...state,
+      consumers: {
+        ...state.consumers,
+        [payload.id]: {
+          ...consumer,
+          byId: nextItems,
+          items: payload.childrenResponse.map((item) => item.id),
+          isFetching: false,
+          breadcrumb: itemsFromPath(consumer.path, consumer.rootPath, nextItems)
+        }
       }
-    }
-  })
+    };
+  }
 });
 
 export default reducer;
