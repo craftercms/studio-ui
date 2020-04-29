@@ -37,9 +37,7 @@ YAHOO.extend(
 
       var validFn = function (evt, el) {
         if (evt && evt != null) {
-          var charCode = evt.which ? evt.which : event.keyCode;
-
-          if (!_self.isNumberKey(charCode)) {
+          if (!_self.isValidKey(evt)) {
             if (evt) YAHOO.util.Event.stopEvent(evt);
           }
         }
@@ -63,14 +61,17 @@ YAHOO.extend(
       return this.valueEl.value;
     },
 
-    isNumberKey: function (charCode) {
-      const isSubtractSign = charCode === 109 || charCode === 189 || charCode === 173;
-      return !(
-        charCode != 43 &&
-        charCode > 31 &&
-        (charCode < 48 || charCode > 57) &&
-        !isSubtractSign
-      );
+    isValidKey: function (evt) {
+      const key = evt.key,
+        charCode = evt.which ? evt.which : evt.keyCode,
+        isDelete = charCode === 8 || charCode === 46,
+        isValid = !isNaN(parseFloat(key)) ||    // if it's a number
+          key === '-' ||                        // is it's a minus sign
+          key === '.' ||                        // if it's a decimal point
+          isDelete ||                           // if it's delete/backspace
+          evt.ctrlKey;                          // if it's a control key (ctrl + a ...)
+
+      return isValid;
     }
   }
 );
