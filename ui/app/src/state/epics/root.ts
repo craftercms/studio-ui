@@ -24,7 +24,6 @@ import dialogs from './dialogs';
 import preview from './preview';
 import legacy from './legacy';
 import versions from './versions';
-import items from './items';
 
 const epic: any[] = combineEpics.apply(this, [
   ...auth,
@@ -36,7 +35,6 @@ const epic: any[] = combineEpics.apply(this, [
   ...dialogs,
   ...legacy,
   ...versions,
-  ...items
 ]);
 
 export default epic as any;

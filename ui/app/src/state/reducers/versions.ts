@@ -85,7 +85,7 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     ...state,
     byId: createLookupTable(versions, 'versionNumber'),
     count: versions.length,
-    current: versions[0].versionNumber,
+    current: versions.length? versions[0].versionNumber: null,
     allVersions: versions,
     versions: versions.slice(state.page * state.limit, (state.page + 1) * state.limit),
     isFetching: false,

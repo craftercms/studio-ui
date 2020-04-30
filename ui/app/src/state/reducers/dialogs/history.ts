@@ -27,7 +27,9 @@ import {
 } from '../../actions/dialogs';
 
 const initialState: HistoryDialogStateProps = {
-  open: false
+  open: false,
+  rootPath: null,
+  item: null
 };
 
 export default createReducer<GlobalState['dialogs']['history']>(

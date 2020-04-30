@@ -14,9 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LookupTable } from './LookupTable';
-import { SandBoxItemConsumer } from './Consumer';
-
 interface BaseItem {
   id: string;
   label: string;
@@ -93,6 +90,3 @@ export interface LegacyItem {
   [prop: string]: any;
 }
 
-export interface ItemsStateProps {
-  consumers: LookupTable<SandBoxItemConsumer>;
-}

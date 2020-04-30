@@ -1085,41 +1085,13 @@ export function getContentVersion(site: string, path: string, versionNumber: str
 }
 
 export function getChildrenByPath(site: string, path: string, options?: GetChildrenOptions): Observable<GetChildrenResponse> {
-  function parse(item: LegacyItem): SandboxItem;
-  function parse(item: LegacyItem[]): SandboxItem[];
-  function parse(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
-    if (Array.isArray(item)) {
-      // If no internalName then skipping (e.g. level descriptors)
-      return item.flatMap(i => i.internalName ? [parse(i)] : []);
-    }
-    return {
-      id: item.uri,
-      label: item.internalName,
-      path: item.uri,
-      localeCode: 'en',
-      contentTypeId: item.contentType,
-      // Assuming folders aren't navigable
-      previewUrl: item.uri.includes('index.xml') ? (item.browserUri || '/') : null,
-      systemType: null,
-      mimeType: null,
-      state: null,
-      lockOwner: null,
-      disabled: null,
-      translationSourceId: null,
-      creator: null,
-      createdDate: null,
-      modifier: null,
-      lastModifiedDate: null,
-      commitId: null,
-      sizeInBytes: null
-    };
-  }
+
   // TODO: Waiting for API. Temporarily calling API1's get-items-tree
   // return get(`/studio/api/2/content/children_by_path?siteId=${site}&path=${path}`).pipe(
   return get(`/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${path}&depth=1&order=default`).pipe(
     pluck('response'),
     // map(({ items, parent }) => Object.assign(items, { parent })),
-    map(({ item }) => Object.assign(parse(item.children), { parent: parse(item) })),
+    map(({ item }) => Object.assign(parseLegacyItemToSandBoxItem(item.children), { parent: parseLegacyItemToSandBoxItem(item) })),
     catchError(errorSelectorApi1)
   );
 }
@@ -1161,6 +1133,37 @@ export function deleteItems(siteId: string, user: string, submissionComment: str
     pluck('response'),
     catchError(errorSelectorApi1)
   );
+}
+
+
+export function parseLegacyItemToSandBoxItem(item: LegacyItem): SandboxItem;
+export function parseLegacyItemToSandBoxItem(item: LegacyItem[]): SandboxItem[];
+export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
+  if (Array.isArray(item)) {
+    // If no internalName then skipping (e.g. level descriptors)
+    return item.flatMap(i => i.internalName ? [parseLegacyItemToSandBoxItem(i)] : []);
+  }
+  return {
+    id: item.uri,
+    label: item.internalName,
+    path: item.uri,
+    localeCode: 'en',
+    contentTypeId: item.contentType,
+    // Assuming folders aren't navigable
+    previewUrl: item.uri.includes('index.xml') ? (item.browserUri || '/') : null,
+    systemType: null,
+    mimeType: null,
+    state: null,
+    lockOwner: null,
+    disabled: null,
+    translationSourceId: null,
+    creator: null,
+    createdDate: null,
+    modifier: null,
+    lastModifiedDate: null,
+    commitId: null,
+    sizeInBytes: null
+  };
 }
 
 export default {

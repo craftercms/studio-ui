@@ -25,7 +25,6 @@ import preview from './preview';
 import contentTypes from './contentTypes';
 import dialogs from './dialogs';
 import versions from './versions';
-import items from './items';
 
 const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   auth,
@@ -36,7 +35,6 @@ const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   contentTypes,
   dialogs,
   versions,
-  items
 };
 
 export default reducer;

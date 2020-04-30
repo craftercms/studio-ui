@@ -48,11 +48,9 @@ import {
   showHistoryDialog,
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
-import { addItemConsumer, fetchChildrenByPath } from '../../../state/reducers/items';
-import { compareVersionsDialogID } from './CompareVersionsDialog';
-import { ItemsStateProps, SandboxItem } from '../../../models/Item';
+import { LegacyItem } from '../../../models/Item';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { withoutIndex } from '../../../utils/path';
+import { parseLegacyItemToSandBoxItem } from '../../../services/content';
 
 const translations = defineMessages({
   previousPage: {
@@ -184,11 +182,12 @@ interface Menu {
 
 interface HistoryDialogBaseProps {
   open: boolean;
+  item?: LegacyItem;
+  rootPath: string;
 }
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   versionsBranch: VersionsStateProps;
-  itemsBranch: ItemsStateProps;
   onClose?(): any;
   onDismiss?(): any;
 }>;
@@ -201,10 +200,10 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 export const historyDialogID = 'historyDialog';
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, versionsBranch, itemsBranch } = props;
-  const { count, page, limit, current, path } = versionsBranch;
+  const { open, onClose, onDismiss, versionsBranch, item, rootPath } = props;
+  const { count, page, limit, current } = versionsBranch;
+  const path = item ? item.path : '';
   const [openSelector, setOpenSelector] = useState(false);
-  const { consumers } = itemsBranch;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
@@ -255,7 +254,6 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   );
 
   function dispatchCompareVersionDialogWithOnClose() {
-    dispatch(addItemConsumer({ id: compareVersionsDialogID, rootPath: '/site/website', path }));
     dispatch(showCompareVersionsDialog({
       onClose: resetVersionsState(),
       rightActions: [
@@ -370,37 +368,24 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         <SingleItemSelector
           classes={{ root: classes.singleItemSelector }}
           label="Item"
-          consumer={consumers[historyDialogID]}
           open={openSelector}
           onClose={() => setOpenSelector(false)}
-          selectedItem={consumers[historyDialogID]?.byId?.[path]}
-          onDropdownClick={() => {
-            setOpenSelector(!openSelector);
-          }}
-          onPathSelected={(item) => {
-            dispatch(fetchChildrenByPath({ id: historyDialogID, path: item.path }));
-          }}
-          onBreadcrumbSelected={(item: SandboxItem) => {
-            if (withoutIndex(item.path) === withoutIndex(consumers[historyDialogID]?.path)) {
-              setOpenSelector(false);
-              dispatch(fetchItemVersions({ path: item.path }));
-            } else {
-              dispatch(fetchChildrenByPath({ id: historyDialogID, path: item.path }));
-            }
-          }}
+          onDropdownClick={() => setOpenSelector(!openSelector)}
+          rootPath={rootPath}
+          selectedItem={item && parseLegacyItemToSandBoxItem(item)}
           onItemClicked={(item) => {
             setOpenSelector(false);
             dispatch(fetchItemVersions({ path: item.path }));
           }}
         />
-      <SuspenseWithEmptyState resource={versionsResource}>
+        <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
             resource={versionsResource}
             onOpenMenu={handleOpenMenu}
             onItemClick={handleViewItem}
             current={current}
           />
-      </SuspenseWithEmptyState>
+        </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter classes={{ root: classes.dialogFooter }}>
         {

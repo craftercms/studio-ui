@@ -73,7 +73,6 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const versionsBranch = useSelection(state => state.versions);
-  const itemsBranch = useSelection(state => state.items);
 
   const dispatch = useDispatch();
   return (
@@ -119,7 +118,6 @@ function GlobalDialogManager() {
         site={state.newContent.site}
         previewItem={state.newContent.previewItem}
         compact={state.newContent.compact}
-        itemsBranch={itemsBranch}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />
@@ -149,7 +147,8 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         versionsBranch={versionsBranch}
-        itemsBranch={itemsBranch}
+        item={state.history.item}
+        rootPath={state.history.rootPath}
         onClose={createCallback(state.history.onClose, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
@@ -166,7 +165,6 @@ function GlobalDialogManager() {
         }))}
         version={state.viewVersion.version}
         contentTypesBranch={contentTypesBranch}
-        itemsBranch={itemsBranch}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
         onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
       />
@@ -185,7 +183,6 @@ function GlobalDialogManager() {
         selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
         selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
         versionsBranch={versionsBranch}
-        itemsBranch={itemsBranch}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}
       />

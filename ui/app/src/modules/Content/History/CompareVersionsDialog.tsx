@@ -33,7 +33,6 @@ import { Pagination } from './HistoryDialog';
 import {
   compareBothVersions,
   compareVersion,
-  fetchItemVersions,
   versionsChangePage
 } from '../../../state/reducers/versions';
 import { useDispatch } from 'react-redux';
@@ -41,8 +40,6 @@ import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import { EntityState } from '../../../models/EntityState';
-import { fetchChildrenByPath } from '../../../state/reducers/items';
-import { ItemsStateProps, SandboxItem } from '../../../models/Item';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import Typography from '@material-ui/core/Typography';
 import { palette } from '../../../styles/theme';
@@ -53,8 +50,6 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
-import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { withoutIndex } from '../../../utils/path';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -82,7 +77,6 @@ interface CompareVersionsDialogBaseProps {
 
 interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
   versionsBranch: VersionsStateProps;
-  itemsBranch: ItemsStateProps;
   selectedA: LegacyVersion;
   selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
@@ -100,12 +94,11 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 export const compareVersionsDialogID = 'compareVersionsDialog';
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
-  const { open, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch, itemsBranch } = props;
+  const { open, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [openSelector, setOpenSelector] = useState(false);
-  const { consumers } = itemsBranch;
   const dispatch = useDispatch();
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
@@ -206,35 +199,35 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         onDismiss={onDismiss}
       />
       <DialogBody>
-        {
-          !compareMode &&
-          <SingleItemSelector
-            classes={{ root: classes.singleItemSelector }}
-            label="Item"
-            consumer={consumers[compareVersionsDialogID]}
-            open={openSelector}
-            onClose={() => setOpenSelector(false)}
-            selectedItem={consumers[compareVersionsDialogID]?.byId?.[path]}
-            onDropdownClick={() => {
-              setOpenSelector(!openSelector);
-            }}
-            onPathSelected={(item) => {
-              dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));
-            }}
-            onBreadcrumbSelected={(item: SandboxItem) => {
-              if (withoutIndex(item.path) === withoutIndex(consumers[compareVersionsDialogID]?.path)) {
-                setOpenSelector(false);
-                dispatch(fetchItemVersions({ path: item.path }));
-              } else {
-                dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));
-              }
-            }}
-            onItemClicked={(item) => {
-              setOpenSelector(false);
-              dispatch(fetchItemVersions({ path: item.path }));
-            }}
-          />
-        }
+        {/*{*/}
+        {/*  !compareMode &&*/}
+        {/*  <SingleItemSelector*/}
+        {/*    classes={{ root: classes.singleItemSelector }}*/}
+        {/*    label="Item"*/}
+        {/*    consumer={consumers[compareVersionsDialogID]}*/}
+        {/*    open={openSelector}*/}
+        {/*    onClose={() => setOpenSelector(false)}*/}
+        {/*    selectedItem={consumers[compareVersionsDialogID]?.byId?.[consumers[compareVersionsDialogID].path]}*/}
+        {/*    onDropdownClick={() => {*/}
+        {/*      setOpenSelector(!openSelector);*/}
+        {/*    }}*/}
+        {/*    onPathSelected={(item) => {*/}
+        {/*      dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));*/}
+        {/*    }}*/}
+        {/*    onBreadcrumbSelected={(item: SandboxItem) => {*/}
+        {/*      if (withoutIndex(item.path) === withoutIndex(consumers[compareVersionsDialogID]?.path)) {*/}
+        {/*        setOpenSelector(false);*/}
+        {/*        dispatch(fetchItemVersions({ path: item.path }));*/}
+        {/*      } else {*/}
+        {/*        dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));*/}
+        {/*      }*/}
+        {/*    }}*/}
+        {/*    onItemClicked={(item) => {*/}
+        {/*      setOpenSelector(false);*/}
+        {/*      dispatch(fetchItemVersions({ path: item.path }));*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*}*/}
         {
           compareMode ? (
             <SuspenseWithEmptyState resource={compareVersionsResource}>

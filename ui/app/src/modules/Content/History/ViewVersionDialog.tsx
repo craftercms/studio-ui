@@ -38,7 +38,6 @@ import DialogHeader, {
   DialogHeaderStateAction
 } from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
-import { ItemsStateProps } from '../../../models/Item';
 import { Resource } from '../../../models/Resource';
 
 const versionViewStyles = makeStyles(() => ({
@@ -124,7 +123,6 @@ interface ViewVersionDialogBaseProps {
 
 interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
   contentTypesBranch: EntityState<ContentType>;
-  itemsBranch: ItemsStateProps;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
   onClose(): void;

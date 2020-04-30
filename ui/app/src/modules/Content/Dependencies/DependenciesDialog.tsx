@@ -55,6 +55,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 import { ApiResponse } from '../../../models/ApiResponse';
+import { useDispatch } from 'react-redux';
 
 const assetsTypes = {
   'all-deps': {
@@ -325,6 +326,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   } = props;
   const classes = dependenciesDialogStyles({});
   const { formatMessage } = useIntl();
+  const [openSelector, setOpenSelector] = useState(false);
+  const dispatch = useDispatch();
 
   return (
     <Dialog
@@ -343,6 +346,32 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
       />
       <DialogBody>
         <div className={classes.selectionContent}>
+          {/*<SingleItemSelector*/}
+          {/*  //classes={{ root: classes.singleItemSelector }}*/}
+          {/*  label="Item"*/}
+          {/*  consumer={consumers[dependenciesDialogID]}*/}
+          {/*  open={openSelector}*/}
+          {/*  onClose={() => setOpenSelector(false)}*/}
+          {/*  selectedItem={consumers[dependenciesDialogID]?.byId?.[item.path]}*/}
+          {/*  onDropdownClick={() => {*/}
+          {/*    setOpenSelector(!openSelector);*/}
+          {/*  }}*/}
+          {/*  onPathSelected={(item) => {*/}
+          {/*    dispatch(fetchChildrenByPath({ id: dependenciesDialogID, path: item.path }));*/}
+          {/*  }}*/}
+          {/*  onBreadcrumbSelected={(item: SandboxItem) => {*/}
+          {/*    if (withoutIndex(item.path) === withoutIndex(consumers[dependenciesDialogID]?.path)) {*/}
+          {/*      setOpenSelector(false);*/}
+          {/*      dispatch(fetchItemVersions({ path: item.path }));*/}
+          {/*    } else {*/}
+          {/*      dispatch(fetchChildrenByPath({ id: dependenciesDialogID, path: item.path }));*/}
+          {/*    }*/}
+          {/*  }}*/}
+          {/*  onItemClicked={(item) => {*/}
+          {/*    setOpenSelector(false);*/}
+          {/*    dispatch(fetchItemVersions({ path: item.path }));*/}
+          {/*  }}*/}
+          {/*/>*/}
           {
             item &&
             <Chip
@@ -561,6 +590,8 @@ const dialogInitialState = {
   compactView: false,
   showTypes: 'all-deps'
 };
+
+export const dependenciesDialogID = 'dependenciesDialog';
 
 function DependenciesDialog(props: DependenciesDialogProps) {
   const { open, item, dependenciesShown, onClose, onDismiss } = props;
