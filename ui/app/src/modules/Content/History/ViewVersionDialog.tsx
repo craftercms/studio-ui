@@ -66,12 +66,6 @@ const versionViewStyles = makeStyles(() => ({
   },
 }));
 
-const useStyles = makeStyles(() => ({
-  singleItemSelector: {
-    marginBottom: '10px'
-  },
-}));
-
 interface VersionViewProps {
   resource: Resource<VersionResource>;
 }
@@ -151,8 +145,6 @@ interface VersionResource {
 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { open, onClose, onDismiss, rightActions } = props;
-  const classes = useStyles({});
-
   const resource = useStateResource<VersionResource, ViewVersionDialogProps>(props, {
     shouldResolve: (source) => (
       source.version &&
