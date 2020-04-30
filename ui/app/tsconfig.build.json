@@ -21,13 +21,12 @@
     "src/serviceWorker.ts",
     "src/index.tsx",
     "src/components/App.tsx",
+    "src/components/PluginHost.tsx",
+    "src/modules/Preview/Tools/YoastPanel.tsx",
     "src/translations/src",
     "src/translations/whitelists",
     "src/state/themeContext.tsx",
-    "src/utils/amd.ts",
     "src/**/*.ignore.*",
-    "src/utils/codebase-bridge.tsx",
-    "src/utils/babelHelpers-legacy.ts",
-    "src/utils/i18n-legacy.ts"
+    "src/utils/amd.ts"
   ]
 }
