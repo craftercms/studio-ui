@@ -335,6 +335,10 @@ const contentTypesMessages = defineMessages({
   switchToMessage: {
     id: 'siteConfig.switchToMessage',
     defaultMessage: 'Switch to {type}'
+  },
+  invalidNumber: {
+    id: 'siteConfig.invalidNumber',
+    defaultMessage: '"{value}" is not a valid number.'
   }
 });
 

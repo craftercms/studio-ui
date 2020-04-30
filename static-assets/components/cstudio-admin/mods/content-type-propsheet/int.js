@@ -19,6 +19,9 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int =
   function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
+    this.lastValidValue = '';
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
     return this;
   };
 
@@ -33,17 +36,32 @@ YAHOO.extend(
       YAHOO.util.Dom.addClass(valueEl, 'content-type-property-sheet-property-value');
       containerEl.appendChild(valueEl);
       valueEl.value = value;
+      this.lastValidValue = value;
       valueEl.fieldName = this.fieldName;
 
-      var validFn = function (evt, el) {
-        if (evt && evt != null) {
-          if (!_self.isValidKey(evt)) {
-            if (evt) YAHOO.util.Event.stopEvent(evt);
-          }
-        }
-      };
+      $(valueEl).on('blur', function () {
+        const currentValue = this.value;
+        const isNumber = /^[+-]?\d+(\.\d+)?$/;
+        const isValid = (currentValue.match(isNumber) !== null) || currentValue === '';
+        const $element = $(this);
 
-      YAHOO.util.Event.on(valueEl, 'keydown', validFn, valueEl);
+        if (isValid) {
+          _self.lastValidValue = currentValue;
+          $element.removeClass('invalid');
+        } else {
+          $element.addClass('invalid');
+          this.value = _self.lastValidValue;
+
+          CStudioAuthoring.Utils.showNotification(
+            _self.formatMessage(_self.contentTypesMessages.invalidNumber, { value: currentValue }),
+            'top',
+            'right',
+            'error',
+            48,
+            'int-property'
+          );
+        }
+      });
 
       if (updateFn) {
         var updateFieldFn = function (event, el) {
@@ -59,19 +77,6 @@ YAHOO.extend(
 
     getValue: function () {
       return this.valueEl.value;
-    },
-
-    isValidKey: function (evt) {
-      const key = evt.key,
-        charCode = evt.which ? evt.which : evt.keyCode,
-        isDelete = charCode === 8 || charCode === 46,
-        isValid = !isNaN(parseFloat(key)) ||    // if it's a number
-          key === '-' ||                        // is it's a minus sign
-          key === '.' ||                        // if it's a decimal point
-          isDelete ||                           // if it's delete/backspace
-          evt.ctrlKey;                          // if it's a control key (ctrl + a ...)
-
-      return isValid;
     }
   }
 );

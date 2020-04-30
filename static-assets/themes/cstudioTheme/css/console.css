@@ -510,6 +510,10 @@ body, tbody {
   color: #BBBBBB;
 }
 
+.property-label + input.invalid {
+  border: 1px solid #efa48a;
+}
+
 .property-label + div {
   float: left;
   width: 55%;
