@@ -1,17 +1,33 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./src",
-    "rootDir": "./src",
-    "outDir": "./build_tsc",
+    "baseUrl": "src",
+    "rootDir": "src",
+    "outDir": "build_tsc",
+    "module": "esnext",
+    "target": "esnext",
+    "removeComments": true,
+    "sourceMap": true,
     "noEmit": false,
     "declaration": true,
     "declarationMap": true,
     "jsx": "react"
   },
-  "include": ["./src"],
+  "include": ["src"],
   "exclude": [
+    "src/tests",
     "node_modules",
-    "../../node_modules"
+    "../../node_modules",
+    "src/serviceWorker.ts",
+    "src/index.tsx",
+    "src/components/App.tsx",
+    "src/translations/src",
+    "src/translations/whitelists",
+    "src/state/themeContext.tsx",
+    "src/utils/amd.ts",
+    "src/**/*.ignore.*",
+    "src/utils/codebase-bridge.tsx",
+    "src/utils/babelHelpers-legacy.ts",
+    "src/utils/i18n-legacy.ts"
   ]
 }
