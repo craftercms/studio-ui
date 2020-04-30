@@ -21,7 +21,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { palette } from '../../../styles/theme';
 import { Variant } from '@material-ui/core/styles/createTypography';
-import { Consumer, SandboxItem } from '../../../models/Item';
+import { SandboxItem } from '../../../models/Item';
 import InsertDriveFileRoundedIcon from '@material-ui/icons/InsertDriveFileRounded';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import Popover from '@material-ui/core/Popover';
@@ -30,6 +30,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { useStateResource } from '../../../utils/hooks';
 import Paper from '@material-ui/core/Paper';
 import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
+import { SandBoxItemConsumer } from '../../../models/Consumer';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
@@ -80,7 +81,7 @@ interface SingleItemSelectorProps {
   titleVariant?: Variant;
   labelVariant?: Variant;
   open: boolean;
-  consumer: Consumer;
+  consumer: SandBoxItemConsumer;
   onDropdownClick(): void;
   onClose(): void;
   onItemClicked(item: SandboxItem): void;
@@ -93,8 +94,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     itemIcon: ItemIcon = InsertDriveFileRoundedIcon,
     selectIcon: SelectIcon = ExpandMoreRoundedIcon,
     classes: propClasses,
-    titleVariant,
-    labelVariant,
+    titleVariant = 'body1',
+    labelVariant = 'body1',
     onDropdownClick,
     onBreadcrumbSelected,
     onItemClicked,
@@ -109,7 +110,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   const anchorEl = useRef();
 
-  const itemsResource = useStateResource<SandboxItem[], Consumer>(consumer, {
+  const itemsResource = useStateResource<SandboxItem[], SandBoxItemConsumer>(consumer, {
     shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
     shouldReject: (consumer) => Boolean(consumer.error),
     shouldRenew: (consumer, resource) => (
@@ -124,7 +125,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   return (
     <Paper className={clsx(classes.root, propClasses?.root)} elevation={0}>
       <Typography
-        variant={titleVariant || 'body1'}
+        variant={titleVariant}
         className={clsx(classes.title, propClasses?.title)}
       >
         {label}
@@ -133,7 +134,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         selectedItem &&
         <div className={classes.selectedItem}>
           <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
-          <Typography variant={labelVariant || 'body1'}>{selectedItem.label}</Typography>
+          <Typography variant={labelVariant}>{selectedItem.label}</Typography>
         </div>
       }
       <IconButton
@@ -159,14 +160,14 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       >
         <Breadcrumbs
           keyword={consumer?.keywords}
-          breadcrumb={consumer ? consumer?.breadcrumb : []}
+          breadcrumb={consumer?.breadcrumb ?? []}
           onSearch={() => {
           }}
           onCrumbSelected={onBreadcrumbSelected}
         />
         <SuspenseWithEmptyState resource={itemsResource}>
           <PathNavigatorList
-            leafs={consumer ? consumer?.leafs : []}
+            leafs={consumer?.leafs ?? []}
             locale={'en'}
             resource={itemsResource}
             onPathSelected={onPathSelected}

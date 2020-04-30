@@ -15,8 +15,7 @@
  */
 
 import { LookupTable } from './LookupTable';
-import ApiResponse from './ApiResponse';
-import PaginationOptions from './PaginationOptions';
+import { SandBoxItemConsumer } from './Consumer';
 
 interface BaseItem {
   id: string;
@@ -94,20 +93,6 @@ export interface LegacyItem {
   [prop: string]: any;
 }
 
-export interface Consumer extends PaginationOptions {
-  byId: LookupTable<SandboxItem>;
-  isFetching: boolean;
-  error: ApiResponse;
-  items: string[];
-  leafs: string[];
-  rootPath: string;
-  path: string;
-  keywords?: string;
-  pageNumber?: number;
-  breadcrumb?: SandboxItem[];
-  selectedItem?: string;
-}
-
 export interface ItemsStateProps {
-  consumers: LookupTable<Consumer>;
+  consumers: LookupTable<SandBoxItemConsumer>;
 }

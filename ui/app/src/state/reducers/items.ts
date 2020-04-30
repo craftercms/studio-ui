@@ -22,18 +22,18 @@ import { createLookupTable, nou } from '../../utils/object';
 import { LookupTable } from '../../models/LookupTable';
 import { itemsFromPath, withIndex, withoutIndex } from '../../utils/path';
 
-interface consumerPayload {
+interface ConsumerPayload {
   id: string;
   path: string;
   rootPath?: string;
   preFetch?: boolean;
 }
 
-export const addItemConsumer = createAction<consumerPayload>('ADD_ITEM_CONSUMER');
+export const addItemConsumer = createAction<ConsumerPayload>('ADD_ITEM_CONSUMER');
 
 export const removeItemConsumer = createAction<string>('REMOVE_ITEM_CONSUMER');
 
-export const fetchChildrenByPath = createAction<consumerPayload>('FETCH_CHILDREN_BY_PATH');
+export const fetchChildrenByPath = createAction<ConsumerPayload>('FETCH_CHILDREN_BY_PATH');
 
 export const fetchChildrenByPathComplete = createAction<{
   id: string;
