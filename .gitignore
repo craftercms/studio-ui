@@ -82,6 +82,7 @@ fabric.properties
 # node
 node_modules
 build
+build_tsc
 
 #
 # builds
