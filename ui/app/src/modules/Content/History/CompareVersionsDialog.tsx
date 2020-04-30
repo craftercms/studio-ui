@@ -15,7 +15,7 @@
  */
 
 import StandardAction from '../../../models/StandardAction';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useStateResource } from '../../../utils/hooks';
@@ -41,11 +41,7 @@ import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import { EntityState } from '../../../models/EntityState';
-import {
-  addItemConsumer,
-  fetchChildrenByPath,
-  setSelectedItem
-} from '../../../state/reducers/items';
+import { fetchChildrenByPath } from '../../../state/reducers/items';
 import { ItemsStateProps, SandboxItem } from '../../../models/Item';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import Typography from '@material-ui/core/Typography';
@@ -101,15 +97,16 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
   onDismiss?: StandardAction;
 }
 
+export const compareVersionsDialogID = 'compareVersionsDialog';
+
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const { open, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch, itemsBranch } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
+  const { consumers } = itemsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
-  const id = 'CompareVersionsItemSelector';
-  const rootPath = '/site/website';
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
 
@@ -155,28 +152,6 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
       )
     }
   );
-
-  useEffect(() => {
-    if (open) {
-      dispatch(addItemConsumer({ id, path: rootPath }));
-      dispatch(fetchChildrenByPath({ id, path: rootPath }));
-      return () => {
-        //removeItemConsumer
-      };
-    }
-  }, [dispatch, open]);
-
-  // useEffect(() => {
-  //   if (open && !) {
-  //     dispatch(fetchChildrenByPath({ id, path: rootPath }));
-  //     //dispatch(fetchChildrenByPath({ id, path }));
-  //     // if (path) {
-  //     //   dispatch(fetchChildrenByPath({ id, path }));
-  //     // } else {
-  //     //   dispatch(fetchChildrenByPath({ id, path: rootPath }));
-  //     // }
-  //   }
-  // }, [dispatch, path, open]);
 
   const handleItemClick = (version: LegacyVersion) => {
     if (!selected[0]) {
@@ -231,37 +206,35 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         onDismiss={onDismiss}
       />
       <DialogBody>
-        <SingleItemSelector
-          classes={{ root: classes.singleItemSelector }}
-          label="Item"
-          consumer={itemsBranch.consumers?.[id]}
-          open={openSelector}
-          onClose={() => setOpenSelector(false)}
-          selectedItem={itemsBranch.consumers?.[id].selectedItem}
-          onDropdownClick={() => {
-            //dispatch(fetchChildrenByPath({ id, path }));
-            setOpenSelector(!openSelector);
-          }}
-          onPathSelected={(item) => {
-            dispatch(fetchChildrenByPath({ id, path: item.path }));
-            //dispatch(fetchItemVersions({ path: item.path }));
-          }}
-          onBreadcrumbSelected={(item: SandboxItem) => {
-            if (withoutIndex(item.path) === withoutIndex(itemsBranch.consumers?.[id].path)) {
+        {
+          !compareMode &&
+          <SingleItemSelector
+            classes={{ root: classes.singleItemSelector }}
+            label="Item"
+            consumer={consumers[compareVersionsDialogID]}
+            open={openSelector}
+            onClose={() => setOpenSelector(false)}
+            selectedItem={consumers[compareVersionsDialogID]?.byId?.[path]}
+            onDropdownClick={() => {
+              setOpenSelector(!openSelector);
+            }}
+            onPathSelected={(item) => {
+              dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));
+            }}
+            onBreadcrumbSelected={(item: SandboxItem) => {
+              if (withoutIndex(item.path) === withoutIndex(consumers[compareVersionsDialogID]?.path)) {
+                setOpenSelector(false);
+                dispatch(fetchItemVersions({ path: item.path }));
+              } else {
+                dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));
+              }
+            }}
+            onItemClicked={(item) => {
               setOpenSelector(false);
-              dispatch(setSelectedItem({ id, path: item.path }));
               dispatch(fetchItemVersions({ path: item.path }));
-            } else {
-              dispatch(fetchChildrenByPath({ id, path: item.path }));
-            }
-          }}
-          onItemClicked={(item) => {
-            setOpenSelector(false);
-            dispatch(setSelectedItem({ id, path: item.path }));
-            //dispatch(fetchChildrenByPath({ id, path: item.path }));
-            dispatch(fetchItemVersions({ path: item.path }));
-          }}
-        />
+            }}
+          />
+        }
         {
           compareMode ? (
             <SuspenseWithEmptyState resource={compareVersionsResource}>

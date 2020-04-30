@@ -22,18 +22,18 @@ import { createLookupTable, nou } from '../../utils/object';
 import { LookupTable } from '../../models/LookupTable';
 import { itemsFromPath, withIndex, withoutIndex } from '../../utils/path';
 
-interface consumer {
+interface consumerPayload {
   id: string;
   path: string;
+  rootPath?: string;
+  preFetch?: boolean;
 }
 
-export const addItemConsumer = createAction<consumer>('ADD_ITEM_CONSUMER');
+export const addItemConsumer = createAction<consumerPayload>('ADD_ITEM_CONSUMER');
 
 export const removeItemConsumer = createAction<string>('REMOVE_ITEM_CONSUMER');
 
-export const setSelectedItem = createAction<consumer>('SET_SELECTED_ITEM');
-
-export const fetchChildrenByPath = createAction<consumer>('FETCH_CHILDREN_BY_PATH');
+export const fetchChildrenByPath = createAction<consumerPayload>('FETCH_CHILDREN_BY_PATH');
 
 export const fetchChildrenByPathComplete = createAction<{
   id: string;
@@ -42,7 +42,7 @@ export const fetchChildrenByPathComplete = createAction<{
 export const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
 const initialState: ItemsStateProps = {
-  consumers: null
+  consumers: {}
 };
 
 const reducer = createReducer<GlobalState['items']>(initialState, {
@@ -51,21 +51,19 @@ const reducer = createReducer<GlobalState['items']>(initialState, {
     consumers: {
       ...state.consumers,
       [payload.id]: {
-        rootPath: payload.path,
-        leafs: []
+        rootPath: payload.rootPath,
+        path: payload.path,
+        selectedItem: payload.path,
+        leafs: [],
+        items: []
       }
     }
   }),
-  [setSelectedItem.type]: (state, { payload }) => ({
+  [removeItemConsumer.type]: (state, { payload }) => ({
     ...state,
     consumers: {
       ...state.consumers,
-      [payload.id]: {
-        ...state.consumers[payload.id],
-        selectedItem: state.consumers[payload.id].byId[payload.path]
-        //path: payload.path,
-        //isFetching: true
-      }
+      [payload.id]: null
     }
   }),
   [fetchChildrenByPath.type]: (state, { payload }) => ({
@@ -81,7 +79,7 @@ const reducer = createReducer<GlobalState['items']>(initialState, {
   }),
   [fetchChildrenByPathComplete.type]: (state, { payload }) => {
     const consumer = state.consumers[payload.id];
-    const { path, rootPath, items, leafs } = consumer;
+    const { path, rootPath, leafs, byId } = consumer;
 
     // Check and handle if the item has no children
     if (
@@ -97,7 +95,7 @@ const reducer = createReducer<GlobalState['items']>(initialState, {
         pieces.pop();
       }
       let nextPath = pieces.join('/');
-      if (nou(items[nextPath])) {
+      if (nou(byId[nextPath])) {
         nextPath = withIndex(nextPath);
       }
       return {
@@ -106,7 +104,6 @@ const reducer = createReducer<GlobalState['items']>(initialState, {
           ...state.consumers,
           [payload.id]: {
             ...consumer,
-            //selectedItem: payload.childrenResponse.parent,
             // Revert path to previous (parent) path
             path: nextPath,
             leafs: leafs.concat(path),
@@ -129,7 +126,6 @@ const reducer = createReducer<GlobalState['items']>(initialState, {
           [payload.id]: {
             ...consumer,
             byId: nextItems,
-            //selectedItem: payload.childrenResponse.parent,
             items: payload.childrenResponse.map((item) => item.id),
             isFetching: false,
             breadcrumb: itemsFromPath(path, rootPath, nextItems)

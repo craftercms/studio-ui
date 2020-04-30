@@ -20,6 +20,7 @@ import GlobalState from '../../models/GlobalState';
 import { getChildrenByPath } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
+  addItemConsumer,
   fetchChildrenByPath,
   fetchChildrenByPathComplete,
   fetchChildrenByPathFailed
@@ -28,10 +29,10 @@ import {
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchChildrenByPath.type),
+      ofType(fetchChildrenByPath.type, addItemConsumer.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        getChildrenByPath(state.sites.active, state.items.consumers[payload.id].path).pipe(
+        getChildrenByPath(state.sites.active, payload.rootPath?? state.items.consumers[payload.id].path).pipe(
           map((response) => fetchChildrenByPathComplete({id: payload.id, childrenResponse: response })),
           catchAjaxError(fetchChildrenByPathFailed)
         )

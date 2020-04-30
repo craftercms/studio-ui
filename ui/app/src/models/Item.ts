@@ -105,7 +105,7 @@ export interface Consumer extends PaginationOptions {
   keywords?: string;
   pageNumber?: number;
   breadcrumb?: SandboxItem[];
-  selectedItem?: SandboxItem;
+  selectedItem?: string;
 }
 
 export interface ItemsStateProps {

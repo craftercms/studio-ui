@@ -47,6 +47,8 @@ import {
   showHistoryDialog,
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
+import { addItemConsumer } from '../../../state/reducers/items';
+import { compareVersionsDialogID } from './CompareVersionsDialog';
 
 const translations = defineMessages({
   previousPage: {
@@ -210,7 +212,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false) => {
       if (isCurrent) {
-        let sections = count > 0 ? [
+        let sections = count > 1 ? [
           [menuOptions.view],
           [menuOptions.compareTo, menuOptions.compareToPrevious],
           [menuOptions.revertToPrevious]
@@ -223,7 +225,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
           activeItem: version
         });
       } else {
-        let sections = count > 0 ? [
+        let sections = count > 1 ? [
           [menuOptions.view],
           [menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious],
           [menuOptions.revertToThisVersion]
@@ -241,6 +243,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   );
 
   function dispatchCompareVersionDialogWithOnClose() {
+    dispatch(addItemConsumer({ id: compareVersionsDialogID, rootPath: '/site/website', path }));
     dispatch(showCompareVersionsDialog({
       onClose: resetVersionsState(),
       rightActions: [
@@ -276,18 +279,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   const compareTo = (versionNumber: string) => {
     dispatch(fetchContentTypes());
     dispatch(compareVersion(versionNumber));
-    dispatch(showCompareVersionsDialog({
-      onClose: resetVersionsState(),
-      rightActions: [
-        {
-          icon: 'HistoryIcon',
-          onClick: showHistoryDialog({
-            onClose: resetVersionsState()
-          }),
-          'aria-label': formatMessage(translations.backToHistoryList)
-        }
-      ]
-    }));
+    dispatchCompareVersionDialogWithOnClose();
   };
 
   const compareBoth = (selected: string[]) => {
