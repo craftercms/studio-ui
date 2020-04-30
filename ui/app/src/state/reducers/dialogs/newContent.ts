@@ -30,6 +30,7 @@ export default createReducer<GlobalState['dialogs']['newContent']>(
   {
     [showNewContentDialog.type]: (state, { payload }) => ({
       onDismiss: closeNewContentDialog(),
+      onClose: closeNewContentDialog(),
       ...payload,
       open: true
     }),

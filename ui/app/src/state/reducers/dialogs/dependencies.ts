@@ -27,6 +27,7 @@ export default createReducer<GlobalState['dialogs']['dependencies']>(
   { open: false },
   {
     [showDependenciesDialog.type]: (state, { payload }) => ({
+      onClose: closeDependenciesDialog(),
       onDismiss: closeDependenciesDialog(),
       ...payload,
       open: true

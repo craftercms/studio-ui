@@ -58,7 +58,7 @@
     "build:tsc": "tsc -p tsconfig.build.json",
     "format:npm": "prettier --config ../../prettier.config.js ./build_tsc/**/*.js --write",
     "package:npm": "node scripts/package",
-    "build:npm": "yarn clean:npm && yarn build:npm && yarn format:npm && yarn package:npm",
+    "build:npm": "yarn clean:npm && yarn build:tsc && yarn format:npm && yarn package:npm",
     "clean:npm": "rm -rf ./build_tsc",
     "test": "react-scripts test",
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
