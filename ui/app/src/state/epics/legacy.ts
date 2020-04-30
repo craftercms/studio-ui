@@ -19,7 +19,7 @@ import { ignoreElements, tap } from 'rxjs/operators';
 import GlobalState from '../../models/GlobalState';
 
 export default [
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$) =>
     action$.pipe(
       ofType('LEGACY_DIALOG_CALLBACK'),
       tap(({ payload }) => {
