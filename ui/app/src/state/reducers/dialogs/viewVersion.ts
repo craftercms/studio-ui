@@ -39,6 +39,7 @@ const initialState: ViewVersionDialogStateProps = {
 
 export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState, {
   [showViewVersionDialog.type]: (state, { payload }) => ({
+    onClose: closeViewVersionDialog(),
     ...state,
     onDismiss: closeViewVersionDialog(),
     ...payload,

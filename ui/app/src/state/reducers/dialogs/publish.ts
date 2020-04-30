@@ -14,23 +14,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import StandardAction from '../../../models/StandardAction';
+import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { PublishDialogStateProps } from '../../../modules/Content/Publish/PublishDialog';
-
-export const showPublishDialog = createAction<Partial<PublishDialogStateProps>>('SHOW_PUBLISH_DIALOG');
-
-export const closePublishDialog = createAction<StandardAction>('CLOSE_PUBLISH_DIALOG');
+import { closePublishDialog, publishDialogClosed, showPublishDialog } from '../../actions/dialogs';
 
 export default createReducer<GlobalState['dialogs']['publish']>(
   { open: false },
   {
     [showPublishDialog.type]: (state, { payload }) => ({
+      onClose: closePublishDialog(),
       onDismiss: closePublishDialog(),
       ...payload,
       open: true
     }),
-    [closePublishDialog.type]: (state) => ({ open: false, onClose: state.onClose })
+    [closePublishDialog.type]: (state) => ({ open: false, onClose: state.onClose }),
+    [publishDialogClosed.type]: () => ({ open: false })
   }
 );

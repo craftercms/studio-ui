@@ -29,6 +29,7 @@ export default createReducer<GlobalState['dialogs']['error']>(
   { error: null },
   {
     [showErrorDialog.type]: (state, { payload }) => ({
+      onClose: closeErrorDialog(),
       onDismiss: closeErrorDialog(),
       ...payload
     }),

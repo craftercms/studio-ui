@@ -22,6 +22,7 @@ import GlobalState from '../models/GlobalState';
 import { createEpicMiddleware } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
+import createMockInitialState from '../utils/createMockInitialState';
 
 const epicMiddleware = createEpicMiddleware();
 const middleware = [...getDefaultMiddleware<GlobalState>({ thunk: false }), epicMiddleware];
@@ -29,12 +30,14 @@ const middleware = [...getDefaultMiddleware<GlobalState>({ thunk: false }), epic
 const store = configureStore<GlobalState, StandardAction>({
   reducer,
   middleware,
-  preloadedState: createInitialState()
+  preloadedState: process.env.NODE_ENV === 'production'
+    ? retrieveInitialStateScript()
+    : createMockInitialState()
 });
 
 epicMiddleware.run(epic);
 
-function createInitialState(): GlobalState {
+function retrieveInitialStateScript(): GlobalState {
   let state = {} as GlobalState;
   const script = document.querySelector('#initialState');
   if (script) {
@@ -45,16 +48,17 @@ function createInitialState(): GlobalState {
         cookie && (state.sites.active = Cookies.get(state.env.SITE_COOKIE));
       }
     } catch {
+      // The login screen won't have the preloaded state
+      !window.location.href.includes('/login') &&
       console.error('[GlobalContext] Malformed initial global state.');
+      // TODO: Login view should be built separately from the main app to avoid this hack and specially to avoid the bulky build
     }
   } else {
     console.error('[GlobalContext] Initial global state not found.');
   }
-  if (process.env.NODE_ENV === 'production') {
-    const writer = document.querySelector('#initialStateWriter');
-    script.parentNode.removeChild(script);
-    writer.parentNode.removeChild(writer);
-  }
+  const writer = document.querySelector('#initialStateWriter');
+  script.parentNode.removeChild(script);
+  writer.parentNode.removeChild(writer);
   return state;
 }
 

@@ -12,6 +12,7 @@
       <excludeFolder url="file://$MODULE_DIR$/ui/app.backup" />
       <excludeFolder url="file://$MODULE_DIR$/ui/app/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/ui/app/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/app/build_tsc" />
       <excludeFolder url="file://$MODULE_DIR$/ui/guest-ts" />
       <excludeFolder url="file://$MODULE_DIR$/ui/guest/dist" />
     </content>
