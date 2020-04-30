@@ -253,7 +253,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         type: 'form',
         inProgress: false,
         showTabs: false,
-        onSaveSuccess: onSaveSuccess ? onSaveSuccess : newContentCreationComplete()
+        onSaveSuccess: onSaveSuccess ?? newContentCreationComplete()
       })
     );
   };

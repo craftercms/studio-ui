@@ -3301,6 +3301,7 @@
 
         CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           if (response) {
+            const data = response.output;
             const acnDraftContent = YDom.getElementsByClassName(
               'acnDraftContent',
               null,
@@ -3313,12 +3314,12 @@
             document.dispatchEvent(eventYS);
 
             if (data.item.isPage) {
-              CStudioAuthoring.Operations.refreshPreview(response.item);
+              CStudioAuthoring.Operations.refreshPreview(data.item);
               if (
-                CStudioAuthoring.Utils.getQueryParameterURL('page') == response.redirectUrl &&
+                CStudioAuthoring.Utils.getQueryParameterURL('page') == data.redirectUrl &&
                 acnDraftContent
               ) {
-                CStudioAuthoring.SelectedContent.setContent(response.item);
+                CStudioAuthoring.SelectedContent.setContent(data.item);
               }
             } else {
               CStudioAuthoring.Operations.refreshPreview();
