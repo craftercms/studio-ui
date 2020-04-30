@@ -72,7 +72,6 @@ export default [
         closeCompareVersionsDialog.type,
         closeDependenciesDialog.type
       ),
-      tap(({ type }) => console.log(`Passed "${type}".`)),
       withLatestFrom(state$),
       map(([{ type, payload }, state]) => {
         // Setting both onDismiss & onClose to the close*Dialog action, allows escape
