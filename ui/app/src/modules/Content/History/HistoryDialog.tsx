@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback } from 'react';
+import React, { PropsWithChildren, useCallback, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
@@ -36,6 +36,7 @@ import {
   compareBothVersions,
   compareToPreviousVersion,
   compareVersion,
+  fetchItemVersions,
   resetVersionsState,
   revertContent,
   revertToPreviousVersion,
@@ -47,8 +48,11 @@ import {
   showHistoryDialog,
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
-import { addItemConsumer } from '../../../state/reducers/items';
+import { addItemConsumer, fetchChildrenByPath } from '../../../state/reducers/items';
 import { compareVersionsDialogID } from './CompareVersionsDialog';
+import { ItemsStateProps, SandboxItem } from '../../../models/Item';
+import SingleItemSelector from '../Authoring/SingleItemSelector';
+import { withoutIndex } from '../../../utils/path';
 
 const translations = defineMessages({
   previousPage: {
@@ -99,6 +103,9 @@ const historyStyles = makeStyles(() =>
     },
     menuList: {
       padding: 0
+    },
+    singleItemSelector: {
+      marginBottom: '10px'
     }
   })
 );
@@ -181,6 +188,7 @@ interface HistoryDialogBaseProps {
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   versionsBranch: VersionsStateProps;
+  itemsBranch: ItemsStateProps;
   onClose?(): any;
   onDismiss?(): any;
 }>;
@@ -191,8 +199,10 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, versionsBranch } = props;
+  const { open, onClose, onDismiss, versionsBranch, itemsBranch } = props;
   const { count, page, limit, current, path } = versionsBranch;
+  const [openSelector, setOpenSelector] = useState(false);
+  const { consumers } = itemsBranch;
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
@@ -354,24 +364,53 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         }
         onDismiss={onDismiss}
       />
+      <DialogBody className={classes.dialogBody}>
+        <SingleItemSelector
+          classes={{ root: classes.singleItemSelector }}
+          label="Item"
+          consumer={consumers[compareVersionsDialogID]}
+          open={openSelector}
+          onClose={() => setOpenSelector(false)}
+          selectedItem={consumers[compareVersionsDialogID]?.byId?.[path]}
+          onDropdownClick={() => {
+            setOpenSelector(!openSelector);
+          }}
+          onPathSelected={(item) => {
+            dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));
+          }}
+          onBreadcrumbSelected={(item: SandboxItem) => {
+            if (withoutIndex(item.path) === withoutIndex(consumers[compareVersionsDialogID]?.path)) {
+              setOpenSelector(false);
+              dispatch(fetchItemVersions({ path: item.path }));
+            } else {
+              dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));
+            }
+          }}
+          onItemClicked={(item) => {
+            setOpenSelector(false);
+            dispatch(fetchItemVersions({ path: item.path }));
+          }}
+        />
       <SuspenseWithEmptyState resource={versionsResource}>
-        <DialogBody className={classes.dialogBody}>
           <VersionList
             resource={versionsResource}
             onOpenMenu={handleOpenMenu}
             onItemClick={handleViewItem}
             current={current}
           />
-        </DialogBody>
-        <DialogFooter classes={{ root: classes.dialogFooter }}>
+      </SuspenseWithEmptyState>
+      </DialogBody>
+      <DialogFooter classes={{ root: classes.dialogFooter }}>
+        {
+          count &&
           <Pagination
             count={count}
             page={page}
             rowsPerPage={limit}
             onPageChanged={onPageChanged}
           />
-        </DialogFooter>
-      </SuspenseWithEmptyState>
+        }
+      </DialogFooter>
 
       {Boolean(menu.anchorEl) && (
         <ContextMenu

@@ -38,8 +38,10 @@ import DialogHeader, {
   DialogHeaderStateAction
 } from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
+import { ItemsStateProps } from '../../../models/Item';
+import { Resource } from '../../../models/Resource';
 
-const useStyles = makeStyles(() => ({
+const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
     margin: '0 10px 10px 10px',
     '& .blackText': {
@@ -58,16 +60,25 @@ const useStyles = makeStyles(() => ({
   },
   bold: {
     fontWeight: 600
-  }
+  },
+  singleItemSelector: {
+    marginBottom: '10px'
+  },
+}));
+
+const useStyles = makeStyles(() => ({
+  singleItemSelector: {
+    marginBottom: '10px'
+  },
 }));
 
 interface VersionViewProps {
-  resource: any;
+  resource: Resource<VersionResource>;
 }
 
 function VersionView(props: VersionViewProps) {
   const { version, contentTypes } = props.resource.read();
-  const classes = useStyles({});
+  const classes = versionViewStyles({});
   const values = Object.values(contentTypes[version.contentType].fields) as ContentTypeField[];
   return (
     <>
@@ -119,6 +130,7 @@ interface ViewVersionDialogBaseProps {
 
 interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
   contentTypesBranch: EntityState<ContentType>;
+  itemsBranch: ItemsStateProps;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
   onClose(): void;
@@ -132,15 +144,16 @@ export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps 
   onDismiss?: StandardAction;
 }
 
-interface Resource {
+interface VersionResource {
   version: any;
   contentTypes: LookupTable<ContentType>;
 }
 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { open, onClose, onDismiss, rightActions } = props;
+  const classes = useStyles({});
 
-  const resource = useStateResource<Resource, ViewVersionDialogProps>(props, {
+  const resource = useStateResource<VersionResource, ViewVersionDialogProps>(props, {
     shouldResolve: (source) => (
       source.version &&
       source.contentTypesBranch.byId &&

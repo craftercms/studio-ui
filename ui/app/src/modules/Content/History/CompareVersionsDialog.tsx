@@ -102,10 +102,10 @@ export const compareVersionsDialogID = 'compareVersionsDialog';
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const { open, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch, itemsBranch } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
-  const { consumers } = itemsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [openSelector, setOpenSelector] = useState(false);
+  const { consumers } = itemsBranch;
   const dispatch = useDispatch();
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;

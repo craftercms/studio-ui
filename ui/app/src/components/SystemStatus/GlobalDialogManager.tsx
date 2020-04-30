@@ -148,6 +148,7 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         versionsBranch={versionsBranch}
+        itemsBranch={itemsBranch}
         onClose={createCallback(state.history.onClose, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
@@ -164,6 +165,7 @@ function GlobalDialogManager() {
         }))}
         version={state.viewVersion.version}
         contentTypesBranch={contentTypesBranch}
+        itemsBranch={itemsBranch}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
         onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
       />
