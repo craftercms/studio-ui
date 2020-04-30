@@ -42,6 +42,11 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
+import SingleItemSelector from './SingleItemSelector';
+import { fetchChildrenByPath } from '../../../state/reducers/items';
+import { ItemsStateProps, SandboxItem } from '../../../models/Item';
+import { withoutIndex } from '../../../utils/path';
+import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({
   title: {
@@ -154,6 +159,7 @@ interface NewContentDialogBaseProps {
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
+  itemsBranch: ItemsStateProps;
   onClose?(): any;
   onDismiss?(): any;
 }>;
@@ -184,6 +190,8 @@ function ContentTypesGrid(props: ContentTypesGridProps) {
   );
 }
 
+export const newContentDialogID = 'newContentDialog';
+
 export default function NewContentDialog(props: NewContentDialogProps) {
   const {
     open,
@@ -193,8 +201,12 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     previewItem: previewItemProp,
     onSaveLegacySuccess,
     onSaveSuccess,
-    compact
+    compact,
+    itemsBranch
   } = props;
+  const [openSelector, setOpenSelector] = useState(false);
+  const { consumers } = itemsBranch;
+  const dispatch = useDispatch();
   const defaultFilterType = 'all';
   const { formatMessage } = useIntl();
   const classes = useStyles({});
@@ -307,7 +319,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       : defaultPrevImgUrl;
 
   useEffect(() => {
-    setIsCompact(compact)
+    setIsCompact(compact);
   }, [compact]);
 
   useEffect(() => {
@@ -315,15 +327,16 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   }, [previewItemProp]);
 
   useEffect(() => {
-    open &&
-    fetchLegacyContentTypes(site, path).subscribe(
-      (response) => {
-        setFilterContentTypes(response);
-        contentTypes.current = response;
-        setLoading(false);
-      },
-      (error) => setFilterContentTypes(null)
-    );
+    if (open && path) {
+      fetchLegacyContentTypes(site, path).subscribe(
+        (response) => {
+          setFilterContentTypes(response);
+          contentTypes.current = response;
+          setLoading(false);
+        },
+        (error) => setFilterContentTypes(null)
+      )
+    }
   }, [open, path, site]);
 
   return (
@@ -337,12 +350,31 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         <DialogBody dividers classes={{ root: classes.dialogContent }}>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Box>
-              {/*<SingleItemSelector*/}
-              {/*  label="Parent"*/}
-              {/*  selectedItem={previewItem}*/}
-              {/*  onSelectClick={() => null}*/}
-              {/*  onItemClicked={onParentItemClick}*/}
-              {/*/>*/}
+              <SingleItemSelector
+                label="Item"
+                consumer={consumers[newContentDialogID]}
+                open={openSelector}
+                onClose={() => setOpenSelector(false)}
+                selectedItem={consumers[newContentDialogID]?.byId?.[previewItem.path]}
+                onDropdownClick={() => {
+                  setOpenSelector(!openSelector);
+                }}
+                onPathSelected={(item) => {
+                  dispatch(fetchChildrenByPath({ id: newContentDialogID, path: item.path }));
+                }}
+                onBreadcrumbSelected={(item: SandboxItem) => {
+                  if (withoutIndex(item.path) === withoutIndex(consumers[newContentDialogID]?.path)) {
+                    setOpenSelector(false);
+                    onParentItemClick(item);
+                  } else {
+                    dispatch(fetchChildrenByPath({ id: newContentDialogID, path: item.path }));
+                  }
+                }}
+                onItemClicked={(item) => {
+                  setOpenSelector(false);
+                  onParentItemClick(item);
+                }}
+              />
             </Box>
             <Box className={classes.searchBox}>
               <SearchBar onChange={onSearchChange} keyword={search} autoFocus />

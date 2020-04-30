@@ -198,6 +198,8 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
+export const historyDialogID = 'historyDialog';
+
 export default function HistoryDialog(props: HistoryDialogProps) {
   const { open, onClose, onDismiss, versionsBranch, itemsBranch } = props;
   const { count, page, limit, current, path } = versionsBranch;
@@ -368,22 +370,22 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         <SingleItemSelector
           classes={{ root: classes.singleItemSelector }}
           label="Item"
-          consumer={consumers[compareVersionsDialogID]}
+          consumer={consumers[historyDialogID]}
           open={openSelector}
           onClose={() => setOpenSelector(false)}
-          selectedItem={consumers[compareVersionsDialogID]?.byId?.[path]}
+          selectedItem={consumers[historyDialogID]?.byId?.[path]}
           onDropdownClick={() => {
             setOpenSelector(!openSelector);
           }}
           onPathSelected={(item) => {
-            dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));
+            dispatch(fetchChildrenByPath({ id: historyDialogID, path: item.path }));
           }}
           onBreadcrumbSelected={(item: SandboxItem) => {
-            if (withoutIndex(item.path) === withoutIndex(consumers[compareVersionsDialogID]?.path)) {
+            if (withoutIndex(item.path) === withoutIndex(consumers[historyDialogID]?.path)) {
               setOpenSelector(false);
               dispatch(fetchItemVersions({ path: item.path }));
             } else {
-              dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));
+              dispatch(fetchChildrenByPath({ id: historyDialogID, path: item.path }));
             }
           }}
           onItemClicked={(item) => {

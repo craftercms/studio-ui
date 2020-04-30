@@ -165,7 +165,7 @@ const systemPropsList = [
 
 export function fetchLegacyContentTypes(site, path) {
   return get(
-    `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}&path=${path}'`
+    `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}&path=${path}`
   ).pipe(pluck('response'));
 }
 
