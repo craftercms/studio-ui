@@ -14,29 +14,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import StandardAction from '../../../models/StandardAction';
-import GlobalState from '../../../models/GlobalState';
+import { createReducer } from '@reduxjs/toolkit';
+import {
+  closeNewContentDialog,
+  newContentDialogClosed,
+  showNewContentDialog
+} from '../../actions/dialogs';
 import { NewContentDialogStateProps } from '../../../modules/Content/Authoring/NewContentDialog';
 
-export const showNewContentDialog = createAction<Partial<NewContentDialogStateProps>>(
-  'SHOW_NEW_CONTENT_DIALOG'
-);
+const initialState: NewContentDialogStateProps = {
+  open: false,
+  site: null,
+  compact: false,
+  previewItem: null
+};
 
-export const closeNewContentDialog = createAction<StandardAction>('CLOSE_NEW_CONTENT_DIALOG');
-
-export default createReducer<GlobalState['dialogs']['newContent']>(
-  { open: false, site: '', compact: false, previewItem: { label: '', path: '' } },
-  {
-    [showNewContentDialog.type]: (state, { payload }) => ({
-      onDismiss: closeNewContentDialog(),
-      onClose: closeNewContentDialog(),
-      ...payload,
-      open: true
-    }),
-    [closeNewContentDialog.type]: (state, { payload }) => ({
-      onClose: state.onClose,
-      open: false
-    })
-  }
-);
+export default createReducer<NewContentDialogStateProps>(initialState, {
+  [showNewContentDialog.type]: (state, { payload }) => ({
+    onClose: closeNewContentDialog(),
+    onDismiss: closeNewContentDialog(),
+    ...payload,
+    open: true
+  }),
+  [closeNewContentDialog.type]: (state) => ({
+    ...state,
+    onClose: state.onClose,
+    open: false
+  }),
+  [newContentDialogClosed.type]: () => initialState
+});

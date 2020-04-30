@@ -175,8 +175,8 @@ export default function LoginView() {
           localStorage.setItem('userName', username);
           localStorage.setItem(`${username}_crafterStudioLanguage`, language);
           setTimeout(() => {
-            const redirectUrl = parse(window.location.search)['redirect'] as string;
-            window.location.href = redirectUrl ?? '/studio';
+            let redirectUrl = parse(window.location.search)['redirect'] as string;
+            window.location.href = decodeURIComponent(redirectUrl ?? '/studio');
           });
         },
         () => {

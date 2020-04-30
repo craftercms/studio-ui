@@ -31,8 +31,8 @@ import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { SandboxItem } from '../../models/Item';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
-import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
 import { ApiResponse } from '../../models/ApiResponse';
+import { showNewContentDialog } from '../../state/actions/dialogs';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {

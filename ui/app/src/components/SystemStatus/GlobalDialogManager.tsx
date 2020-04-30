@@ -188,6 +188,7 @@ function GlobalDialogManager() {
       {/* region Minimized Dialogs */}
       <MinimizedDialogManager state={state} dispatch={dispatch} />
       {/* endregion */}
+
       {/* region Auth Monitor */}
       {/* TODO: Move auth monitor here */}
       {/* endregion */}

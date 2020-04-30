@@ -48,7 +48,10 @@ function retrieveInitialStateScript(): GlobalState {
         cookie && (state.sites.active = Cookies.get(state.env.SITE_COOKIE));
       }
     } catch {
+      // The login screen won't have the preloaded state
+      !window.location.href.includes('/login') &&
       console.error('[GlobalContext] Malformed initial global state.');
+      // TODO: Login view should be built separately from the main app to avoid this hack and specially to avoid the bulky build
     }
   } else {
     console.error('[GlobalContext] Initial global state not found.');

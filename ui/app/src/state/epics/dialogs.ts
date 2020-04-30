@@ -15,17 +15,18 @@
  */
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { closeConfirmDialog } from '../reducers/dialogs/confirm';
+import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
-import { closeNewContentDialog } from '../reducers/dialogs/newContent';
-import { closePublishDialog } from '../reducers/dialogs/publish';
 import { camelize, dasherize } from '../../utils/string';
-import { closeDeleteDialog } from '../reducers/dialogs/delete';
 import {
   closeCompareVersionsDialog,
+  closeConfirmDialog,
+  closeDeleteDialog,
+  closeDependenciesDialog,
   closeHistoryDialog,
+  closeNewContentDialog,
+  closePublishDialog,
   closeViewVersionDialog,
   fetchContentVersion,
   fetchContentVersionComplete,
@@ -35,8 +36,12 @@ import { getContentVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 
 function getDialogNameFromType(type: string): string {
-  let name = type.replace(/(CLOSE_)|(_DIALOG)/g, '');
+  let name = getDialogActionNameFromType(type);
   return camelize(dasherize(name.toLowerCase()));
+}
+
+function getDialogActionNameFromType(type: string): string {
+  return type.replace(/(CLOSE_)|(_DIALOG)/g, '');
 }
 
 function getDialogState(type: string, state: GlobalState): any {
@@ -47,6 +52,12 @@ function getDialogState(type: string, state: GlobalState): any {
   }
   return dialog;
 }
+
+function createClosedAction(type: string) {
+  const stateName = getDialogActionNameFromType(type);
+  return { type: `${stateName}_DIALOG_CLOSED` };
+}
+
 export default [
   // region Dialogs
   (action$, state$: StateObservable<GlobalState>) =>
@@ -58,12 +69,26 @@ export default [
         closeNewContentDialog.type,
         closeHistoryDialog.type,
         closeViewVersionDialog.type,
-        closeCompareVersionsDialog.type
+        closeCompareVersionsDialog.type,
+        closeDependenciesDialog.type
       ),
+      tap(({ type }) => console.log(`Passed "${type}".`)),
       withLatestFrom(state$),
-      map(([{ type, payload }, state]) =>
-        [payload, getDialogState(type, state)?.onClose].filter((callback) => Boolean(callback))
-      ),
+      map(([{ type, payload }, state]) => {
+        // Setting both onDismiss & onClose to the close*Dialog action, allows escape
+        // and backdrop click to work. This is the default on reducers. However this
+        // send on a infinite loop of CLOSE_*_DIALOG actions. Checking that the onClose
+        // is not the following action to execute avoids that. On top, the *DialogClosed action
+        // is also dispatched for the state to clean up the onClose handler
+        const onClose = getDialogState(type, state)?.onClose;
+        // TODO: allow multi-dispatch by supporting arrays on onClose/payload
+        // Array.isArray(payload) ? payload.includes(onClose.type)
+        return [
+          payload,
+          onClose && payload && onClose.type !== payload.type && onClose,
+          createClosedAction(type)
+        ].filter((callback) => Boolean(callback));
+      }),
       switchMap((actions) => (actions.length ? actions : NEVER))
     ),
   // endregion
