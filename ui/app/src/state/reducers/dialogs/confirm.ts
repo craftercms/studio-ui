@@ -14,16 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import { ConfirmDialogStateProps } from '../../../components/Dialogs/ConfirmDialog';
-import StandardAction from '../../../models/StandardAction';
+import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-
-export const showConfirmDialog = createAction<Partial<ConfirmDialogStateProps>>(
-  'SHOW_CONFIRM_DIALOG'
-);
-
-export const closeConfirmDialog = createAction<StandardAction>('CLOSE_CONFIRM_DIALOG');
+import { closeConfirmDialog, confirmDialogClosed, showConfirmDialog } from '../../actions/dialogs';
 
 export default createReducer<GlobalState['dialogs']['confirm']>(
   { open: false },
@@ -39,6 +32,7 @@ export default createReducer<GlobalState['dialogs']['confirm']>(
     // Leaving/carrying the onClose as otherwise, it would never get executed since,
     // the callback would be gone by the time the dialog animation is done (react would have
     // already updated the props. Every time the dialog is opened, the onClose is cleansed anyway.
-    [closeConfirmDialog.type]: (state) => ({ open: false, onClose: state.onClose })
+    [closeConfirmDialog.type]: (state) => ({ open: false, onClose: state.onClose }),
+    [confirmDialogClosed.type]: () => ({ open: false })
   }
 );

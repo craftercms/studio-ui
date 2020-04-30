@@ -23,12 +23,7 @@ import { LegacyItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
-import {
-  useActiveSiteId,
-  useOnMount,
-  useSpreadState,
-  useStateResource
-} from '../../../utils/hooks';
+import { useActiveSiteId, useSpreadState, useStateResource } from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 import { Resource } from '../../../models/Resource';
 import Grid from '@material-ui/core/Grid';
@@ -297,9 +292,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
       onClose={onClose}
       aria-labelledby="requestPublishDialogTitle"
       open={open}
-      disableBackdropClick={true}
-      fullWidth={true}
-      maxWidth={'md'}
+      fullWidth
+      maxWidth="md"
     >
       <DialogHeader
         title={title}
@@ -345,7 +339,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
         <Button variant="contained" onClick={onDismiss} disabled={apiState.submitting}>
           <FormattedMessage
             id="requestPublishDialog.cancel"
-            defaultMessage={`Cancel`}
+            defaultMessage="Cancel"
           />
         </Button>
         <Button variant="contained" autoFocus onClick={handleSubmit} color="primary" disabled={submitDisabled || apiState.submitting}>
@@ -481,7 +475,9 @@ function PublishDialog(props: PublishDialogProps) {
     }
   )
 
-  useOnMount(getPublishingChannels);
+  useEffect(() => {
+    open && getPublishingChannels();
+  }, [getPublishingChannels, open]);
 
   useEffect(() => {
     const result = (

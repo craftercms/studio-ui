@@ -106,7 +106,7 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
 
           var cstopic = crafter.studio.preview.cstopic;
 
-          containerEl.onclick = function() {
+          el.onclick = function() {
             var ptoOn = !!sessionStorage.getItem('pto-on'),
               componentsOn = !!sessionStorage.getItem('components-on');
 
@@ -136,7 +136,6 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
             }
           };
 
-          containerEl.onClick.containerEl = containerEl;
         }
       }
     });
