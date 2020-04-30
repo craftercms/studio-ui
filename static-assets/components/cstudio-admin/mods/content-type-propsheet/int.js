@@ -76,19 +76,6 @@ YAHOO.extend(
 
     getValue: function() {
       return this.valueEl.value;
-    },
-
-    isValidKey: function (evt) {
-      const key = evt.key,
-        charCode = evt.which ? evt.which : evt.keyCode,
-        isDelete = charCode === 8 || charCode === 46,
-        isValid = !isNaN(parseFloat(key)) ||    // if it's a number
-          key === '-' ||                        // is it's a minus sign
-          key === '.' ||                        // if it's a decimal point
-          isDelete ||                           // if it's delete/backspace
-          evt.ctrlKey;                          // if it's a control key (ctrl + a ...)
-
-      return isValid;
     }
   }
 );
