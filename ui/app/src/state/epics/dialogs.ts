@@ -15,7 +15,7 @@
  */
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
-import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NEVER } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
@@ -34,6 +34,9 @@ import {
 } from '../actions/dialogs';
 import { getContentVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
+import { batchActions } from '../actions/misc';
+import StandardAction from '../../models/StandardAction';
+import { asArray } from '../../utils/array';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -44,7 +47,7 @@ function getDialogActionNameFromType(type: string): string {
   return type.replace(/(CLOSE_)|(_DIALOG)/g, '');
 }
 
-function getDialogState(type: string, state: GlobalState): any {
+function getDialogState(type: string, state: GlobalState): { onClose: StandardAction } {
   const stateName = getDialogNameFromType(type);
   const dialog = state.dialogs[stateName];
   if (!dialog) {
@@ -74,19 +77,20 @@ export default [
       ),
       withLatestFrom(state$),
       map(([{ type, payload }, state]) => {
-        // Setting both onDismiss & onClose to the close*Dialog action, allows escape
-        // and backdrop click to work. This is the default on reducers. However this
-        // send on a infinite loop of CLOSE_*_DIALOG actions. Checking that the onClose
-        // is not the following action to execute avoids that. On top, the *DialogClosed action
-        // is also dispatched for the state to clean up the onClose handler
+        // Setting both onDismiss & onClose to the "CLOSE_*_DIALOG" action, allows escape
+        // and backdrop click to work. MUI dialogs will call onClose either when escape is
+        // pressed or the backdrop is clicked which is fine. When onDismiss is called, however
+        // the MUI dialog would later also call the onClose action and this causes a infinite
+        // "loop" of "CLOSE_*_DIALOG" actions. The filter insures the actions to be called
+        // don't include the "CLOSE_*_DIALOG" action to avoid said loop.
         const onClose = getDialogState(type, state)?.onClose;
-        // TODO: allow multi-dispatch by supporting arrays on onClose/payload
-        // Array.isArray(payload) ? payload.includes(onClose.type)
         return [
-          payload,
-          onClose && payload && onClose.type !== payload.type && onClose,
-          createClosedAction(type)
-        ].filter((callback) => Boolean(callback));
+          createClosedAction(type),
+          // In the case of batch actions, save the additional BATCH_ACTIONS action itself
+          // and jump straight to the actions to dispatch.
+          ...asArray(payload?.type === batchActions.type ? payload.payload : payload),
+          ...asArray(onClose?.type === batchActions.type ? onClose.payload : onClose)
+        ].filter((action) => Boolean(action) && action.type !== type);
       }),
       switchMap((actions) => (actions.length ? actions : NEVER))
     ),

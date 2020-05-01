@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineEpics } from 'redux-observable';
+import { combineEpics, ofType } from 'redux-observable';
 import auth from './auth';
 import sites from './sites';
 import contentTypes from './contentTypes';
@@ -24,8 +24,15 @@ import dialogs from './dialogs';
 import preview from './preview';
 import legacy from './legacy';
 import versions from './versions';
+import { switchMap } from 'rxjs/operators';
+import { batchActions } from '../actions/misc';
 
 const epic: any[] = combineEpics.apply(this, [
+  (action$) =>
+    action$.pipe(
+      ofType(batchActions.type),
+      switchMap(({ payload }) => payload)
+    ),
   ...auth,
   ...sites,
   ...contentTypes,

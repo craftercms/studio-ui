@@ -14,32 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function forEach<T = any>(
-  array: T[],
-  fn: (item: T, index: number, array: T[]) => any,
-  emptyReturnValue: any = undefined
-): any {
-  if ((emptyReturnValue != null) && (array?.length === 0)) {
-    return emptyReturnValue;
-  }
-  for (let i = 0, l = array.length; i < l; i++) {
-    const result = fn(array[i], i, array);
-    if (result === 'continue') {
+import { createAction } from '@reduxjs/toolkit';
+import StandardAction from '../../models/StandardAction';
 
-    } else if (result === 'break') {
-      break;
-    } else if (result !== undefined) {
-      return result;
-    }
-  }
-  return emptyReturnValue;
-}
-
-export function asArray<T = unknown>(value: T): T[] {
-  return Array.isArray(value) ? value : [value];
-}
-
-export default {
-  forEach,
-  asArray
-};
+export const batchActions = createAction<StandardAction[]>('BATCH_ACTIONS');
