@@ -17,6 +17,7 @@
 const path = require('path');
 const fse = require('fs-extra');
 const glob = require('glob');
+const prettier = require('prettier');
 
 const packagePath = process.cwd();
 const buildPath = path.join(packagePath, './build_tsc');
@@ -95,21 +96,39 @@ async function createPackageFile() {
   const newPackageData = {
     ...packageDataOther,
     private: false,
-    // name: '@rart/25d0661d',
     ...packageDeps
   };
   const targetPath = path.resolve(buildPath, './package.json');
 
   await fse.writeFile(targetPath, JSON.stringify(newPackageData, null, 2), 'utf8');
+  console.log(`Created package.json`);
+}
 
-  return newPackageData;
+// TODO: This will likely screw up source maps
+async function bannerAndFormat() {
+  const filePattern = '**/**.{ts,js}';
+  const filesToProcess = glob.sync(filePattern, { cwd: buildPath });
+  console.log(`Beginning copyright & format of ${filesToProcess.length} files (${filePattern}).`);
+  const banner = `${await fse.readFile(path.resolve(packagePath, './scripts/license.txt'), 'utf8')}\n`;
+  const config = path.join(__dirname, '../../../prettier.config.js');
+  filesToProcess.forEach((async (filePath) => {
+    const fullPath = path.join(buildPath, filePath);
+    const options = prettier.resolveConfig.sync(fullPath, { config });
+    const code = await fse.readFile(fullPath, 'utf8');
+    try {
+      const output = `${banner}${prettier.format(code, { ...options, filepath: fullPath })}`;
+      await fse.writeFile(fullPath, output, 'utf8');
+    } catch {
+      console.log(`Error formatting "${filePath}"`);
+    }
+  }));
+  console.log(`Formatted and added license to "${filePattern}".`);
 }
 
 async function run() {
   try {
 
     await createPackageFile();
-    console.log(`Created package.json`);
 
     const directoryPackages = glob.sync('**/**.scss', { cwd: srcPath });
     await Promise.all(
@@ -121,6 +140,20 @@ async function run() {
 
     fse.copy(path.join(srcPath, 'assets'), path.join(buildPath, 'assets'));
     console.log(`Copied assets to build`);
+
+    await fse.copyFile(
+      path.join(packagePath, 'scripts', 'LICENSE'),
+      path.join(buildPath, 'LICENSE')
+    );
+    console.log('License file added');
+
+    await fse.copyFile(
+      path.join(packagePath, 'scripts', 'README.md'),
+      path.join(buildPath, 'README.md')
+    );
+    console.log('Readme file added');
+
+    await bannerAndFormat();
 
   } catch (err) {
     console.error(err);

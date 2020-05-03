@@ -20,7 +20,7 @@ export interface ContentTypeSection {
   title: string;
   fields: string[];
   description: string;
-  expandByDefault: string;
+  expandByDefault: boolean;
 }
 
 export interface ContentTypeFieldValidations {
@@ -37,7 +37,7 @@ export interface ContentTypeField {
   defaultValue: any;
   required: boolean;
   fields?: LookupTable<ContentTypeField>;
-  values?: { label: string, value: string }[];
+  values?: { label: string; value: string }[];
   helpText?: string;
   // localized: boolean;
   // disabled: boolean;
@@ -87,7 +87,7 @@ export interface LegacyFormDefinitionProperty {
 
 export interface LegacyFormDefinitionField {
   constraints: {
-    constraint: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty>
+    constraint: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty>;
   };
   defaultValue: string;
   description: string;
@@ -95,12 +95,12 @@ export interface LegacyFormDefinitionField {
   iceId: string;
   id: string;
   properties: {
-    property: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty>
+    property: LegacyFormDefinitionProperty | Array<LegacyFormDefinitionProperty>;
   };
   title: string;
   type: string;
   fields?: {
-    field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField>
+    field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField>;
   };
 }
 
@@ -108,7 +108,7 @@ export interface LegacyFormDefinitionSection {
   defaultOpen: 'true' | 'false';
   description: string;
   fields: {
-    field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField>
+    field: LegacyFormDefinitionField | Array<LegacyFormDefinitionField>;
   };
   title: string;
 }
@@ -119,8 +119,8 @@ export interface LegacyDataSource {
   type: string; // data source id
   interface: string; // ?
   properties: {
-    property: LegacyFormDefinitionProperty[] | LegacyFormDefinitionProperty
-  }
+    property: LegacyFormDefinitionProperty[] | LegacyFormDefinitionProperty;
+  };
 }
 
 export interface LegacyFormDefinition {
@@ -133,12 +133,12 @@ export interface LegacyFormDefinition {
   quickCreate: 'true' | 'false';
   quickCreatePath: string; // e.g. /site/pages
   sections: {
-    section: LegacyFormDefinitionSection | Array<LegacyFormDefinitionSection>
+    section: LegacyFormDefinitionSection | Array<LegacyFormDefinitionSection>;
   };
   properties: {
-    property: LegacyFormDefinitionProperty[] | LegacyFormDefinitionProperty
+    property: LegacyFormDefinitionProperty[] | LegacyFormDefinitionProperty;
   };
-  datasources: { datasource: LegacyDataSource | Array<LegacyDataSource> }
+  datasources: { datasource: LegacyDataSource | Array<LegacyDataSource> };
 }
 
 export interface LegacyFormConfig {
@@ -151,18 +151,18 @@ export interface LegacyFormConfig {
   label: string;
   modelInstancePath: string;
   noThumbnail: 'true' | 'false';
-  paths: { excludes: LegacyFormConfigPattern | Array<LegacyFormConfigPattern> }
+  paths: { excludes: LegacyFormConfigPattern | Array<LegacyFormConfigPattern> };
   previewable: 'true' | 'false';
   quickCreate: 'true' | 'false';
   quickCreatePath: string;
 }
 
-export interface LegacyContentTypeDescriptorCamelized {
-  // As returned by `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`
-  allowedRoles: [];
+// As returned by `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`
+export interface LegacyContentType {
+  allowedRoles: string[];
   contentAsFolder: boolean;
-  copyDepedencyPattern: [];
-  deleteDependencyPattern: [];
+  copyDepedencyPattern: string[];
+  deleteDependencyPattern: string[];
   form: string;
   formPath: string;
   imageThumbnail: string;

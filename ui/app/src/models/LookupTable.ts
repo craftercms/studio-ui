@@ -17,3 +17,5 @@
 export interface LookupTable<T = any> {
   [id: string]: T
 }
+
+export default LookupTable;

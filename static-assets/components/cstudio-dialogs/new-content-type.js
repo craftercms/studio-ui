@@ -138,7 +138,6 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
     // Instantiate the Dialog
     var dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
       width: '360px',
-      height: '306px',
       effect: {
         effect: YAHOO.widget.ContainerEffect.FADE,
         duration: 0.25

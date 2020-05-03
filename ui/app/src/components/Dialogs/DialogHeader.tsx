@@ -49,11 +49,11 @@ const dialogTitleStyles = makeStyles((theme) =>
     },
     subtitle: {
       fontSize: '14px',
-      lineHeight: '18px',
-      paddingRight: '35px'
+      lineHeight: '18px'
     },
     subtitleWrapper: {
-      padding: `${theme.spacing(1)}px`
+      padding: `${theme.spacing(1)}px`,
+      paddingTop: 0
     },
     leftActions: {
       whiteSpace: 'nowrap'

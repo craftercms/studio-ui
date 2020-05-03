@@ -14,18 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
-import { GlobalState } from '../../models/GlobalState';
-
-export const initialState: GlobalState['env'] = {
-  AUTHORING_BASE: `${window.location.origin}/studio`,
-  GUEST_BASE: window.location.origin,
-  PREVIEW_LANDING_BASE: `/studio/preview-landing`,
-  SITE_COOKIE: 'crafterSite',
-  XSRF_CONFIG_ARGUMENT: '_csrf',
-  XSRF_CONFIG_HEADER: 'X-XSRF-TOKEN'
-};
-
-const reducer = createReducer<GlobalState['env']>(initialState, {});
-
-export default reducer;
+export const READY_FOR_LIVE = 'READY_FOR_LIVE';
+export const PROCESSING = 'PROCESSING';
+export const COMPLETED = 'COMPLETED';
+export const CANCELLED = 'CANCELLED';
+export const BLOCKED = 'BLOCKED';

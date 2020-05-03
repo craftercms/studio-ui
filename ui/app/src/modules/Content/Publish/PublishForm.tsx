@@ -115,6 +115,11 @@ const useStyles = makeStyles(() => createStyles({
     borderRadius: '4px',
     width: '100%'
   },
+  environmentEmpty: {
+    padding: '10px 12px',
+    borderRadius: '4px',
+    width: '100%'
+  },
   datePicker: {
     position: 'relative',
     paddingLeft: '30px',
@@ -333,8 +338,10 @@ function PublishForm(props: PublishFormProps) {
           }
 
           {
-            publishingChannels &&
-            <Select
+            publishingChannels && (
+            publishingChannels.length
+            ? (
+              <Select
               fullWidth
               style={{ borderRadius: '4px' }}
               value={inputs.environment}
@@ -354,6 +361,17 @@ function PublishForm(props: PublishFormProps) {
                 )
               }
             </Select>
+              ) : (
+                <div className={classes.environmentLoaderContainer}>
+                  <Typography
+                    variant="body1"
+                    className={classes.environmentEmpty}
+                  >
+                    No publishing channels are available.
+                  </Typography>
+                </div>
+              )
+            )
           }
 
         </FormControl>

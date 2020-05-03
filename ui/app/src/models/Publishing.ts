@@ -42,8 +42,3 @@ export interface CurrentFilters {
   page: number
 }
 
-export const READY_FOR_LIVE = 'READY_FOR_LIVE';
-export const PROCESSING = 'PROCESSING';
-export const COMPLETED = 'COMPLETED';
-export const CANCELLED = 'CANCELLED';
-export const BLOCKED = 'BLOCKED';

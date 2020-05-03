@@ -30,7 +30,7 @@ import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../../../styles/animations.scss';
 import clsx from 'clsx';
-import { READY_FOR_LIVE } from '../../../../models/Publishing';
+import { READY_FOR_LIVE } from '../constants';
 import { palette } from '../../../../styles/theme';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
