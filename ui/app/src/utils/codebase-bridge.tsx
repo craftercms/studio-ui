@@ -32,7 +32,7 @@ import { debounceTime, filter, map, switchMap, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import { nou } from './object';
-import babel from '../utils/babelHelpers-legacy';
+import babel from './babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
 import { jssPreset, makeStyles } from '@material-ui/core/styles';

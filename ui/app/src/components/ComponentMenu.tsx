@@ -25,13 +25,15 @@ import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { useDispatch } from 'react-redux';
-import { showPublishDialog } from '../state/reducers/dialogs/publish';
-import { closeDeleteDialog, showDeleteDialog } from '../state/reducers/dialogs/delete';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
-import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
 import { fetchItemVersions } from '../state/reducers/versions';
-import { showHistoryDialog } from '../state/actions/dialogs';
-import { showEditDialog } from '../state/reducers/dialogs/edit';
+import {
+  closeDeleteDialog,
+  showDeleteDialog, showDependenciesDialog,
+  showHistoryDialog,
+  showPublishDialog
+} from '../state/actions/dialogs';
+import { showEditDialog } from '../state/reducers/dialogs/edit';    //TODO: update
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {

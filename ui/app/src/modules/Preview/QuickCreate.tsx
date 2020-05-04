@@ -29,8 +29,8 @@ import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hook
 import { useDispatch } from 'react-redux';
 import { SandboxItem } from '../../models/Item';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
-import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
 import { ApiResponse } from '../../models/ApiResponse';
+import { showNewContentDialog } from '../../state/actions/dialogs';
 import { newContentCreationComplete, showEditDialog } from '../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({

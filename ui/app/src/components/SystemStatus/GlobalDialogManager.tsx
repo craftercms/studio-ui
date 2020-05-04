@@ -42,17 +42,23 @@ function createCallback(
   action: StandardAction,
   dispatch: Dispatch
 ): (output?: unknown) => void {
-  return action
-    ? (output) => dispatch({
+  return action ? (output) => {
+    const hasPayload = Boolean(action.payload);
+    const hasOutput = Boolean(output) && isPlainObject(output);
+    const payload = hasPayload && !hasOutput
+      ? action.payload
+      : !hasPayload && hasOutput
+        ? output
+        // We're using objects for all our payloads - I think - but this
+        // could fail with literal native values such as strings or numbers
+        : hasPayload && hasOutput
+          ? Object.assign(action.payload, { output })
+          : false;
+    dispatch({
       type: action.type,
-      ...(isPlainObject(output) || Boolean(action.payload) ? {
-        payload: action.payload ? {
-          ...action.payload,
-          ...(isPlainObject(output) ? { output } : {})
-        } : output
-      } : {})
-    })
-    : null;
+      ...(payload ? { payload } : {})
+    });
+  } : null;
 }
 
 export const useStyles = makeStyles(() =>
@@ -203,6 +209,7 @@ function GlobalDialogManager() {
       {/* region Minimized Dialogs */}
       <MinimizedDialogManager state={state} dispatch={dispatch} />
       {/* endregion */}
+
       {/* region Auth Monitor */}
       {/* TODO: Move auth monitor here */}
       {/* endregion */}
