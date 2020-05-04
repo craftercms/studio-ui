@@ -20,7 +20,8 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Range =
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.fieldValue = { exact: '', min: '', max: '' };
-
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
     return this;
   };
 
@@ -130,16 +131,6 @@ YAHOO.extend(
 
       valEl.value = this.fieldValue[label];
 
-      var validFn = function (evt, el) {
-        if (evt && evt != null) {
-          var charCode = evt.which ? evt.which : event.keyCode;
-
-          if (!_self.isNumberKey(charCode)) {
-            if (evt) YAHOO.util.Event.stopEvent(evt);
-          }
-        }
-      };
-
       var hideFn = function (evt, el) {
         var spanEl = YDom.getNextSibling(el);
         YDom.addClass(spanEl, 'hide');
@@ -149,14 +140,31 @@ YAHOO.extend(
         var spanEl = YDom.getNextSibling(el);
         YDom.removeClass(spanEl, 'hide');
 
-        _self.fieldValue[label] = el.value;
+        const currentValue = el.value;
+        const isNumber = /^[+-]?\d+(\.\d+)?$/;
+        const isValid = (currentValue.match(isNumber) !== null) || currentValue === '';
+        const $element = $(el);
+        if (isValid) {
+          _self.fieldValue[label] = el.value;
+          $element.removeClass('invalid');
+        } else {
+          $element.addClass('invalid');
+          this.value = _self.fieldValue[label];
+          CStudioAuthoring.Utils.showNotification(
+            _self.formatMessage(_self.contentTypesMessages.invalidNumber, { value: currentValue }),
+            'top',
+            'right',
+            'error',
+            48,
+            'int-property'
+          );
+        }
         updateFn(null, {
           fieldName: _self.fieldName,
           value: _self.valueToJsonString(_self.fieldValue)
         });
       };
 
-      YAHOO.util.Event.on(valEl, 'keydown', validFn, valEl);
       YAHOO.util.Event.on(valEl, 'focus', hideFn, valEl);
       YAHOO.util.Event.on(valEl, 'blur', showFn, valEl);
 
