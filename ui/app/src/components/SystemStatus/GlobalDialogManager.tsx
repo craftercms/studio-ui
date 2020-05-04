@@ -127,6 +127,7 @@ function GlobalDialogManager() {
       <DependenciesDialog
         open={state.dependencies.open}
         item={state.dependencies.item}
+        rootPath={state.dependencies.rootPath}
         dependenciesShown={state.dependencies.dependenciesShown}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
         onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}

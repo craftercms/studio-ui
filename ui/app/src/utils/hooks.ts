@@ -184,8 +184,15 @@ export function useStateResource<ReturnType = unknown, SourceType = unknown, Err
 ): Resource<ReturnType> {
   const [bundle, setBundle] = useState(() => createResourceBundle<ReturnType>());
   const [resource, resolve, reject] = bundle;
-  const effectFn = () => {
-    const { shouldRenew, shouldReject, shouldResolve, errorSelector, resultSelector } = checkers;
+  const ref = useRef<any>();
+  ref.current = checkers;
+
+  // Purposely not adding checkers on to the effect dependencies to avoid
+  // consumer re-renders to trigger the effect. `checkers` should be taken
+  // as a "initialValue" sort of param. The functions should not mutate
+  // throughout the component lifecycle.
+  useEffect(() => {
+    const { shouldRenew, shouldReject, shouldResolve, errorSelector, resultSelector } = ref.current;
     if (shouldRenew(source, resource)) {
       setBundle(createResourceBundle);
     } else if (shouldReject(source, resource)) {
@@ -193,13 +200,7 @@ export function useStateResource<ReturnType = unknown, SourceType = unknown, Err
     } else if (shouldResolve(source, resource)) {
       resolve(resultSelector(source, resource));
     }
-  };
-
-  // Purposely not adding checkers on to the effect dependencies to avoid
-  // consumer re-renders to trigger the effect. `checkers` should be taken
-  // as a "initialValue" sort of param. The functions should not mutate
-  // throughout the component lifecycle.
-  useEffect(effectFn, [source, bundle]);
+  }, [source, resource, reject, resolve]);
 
   return resource;
 }

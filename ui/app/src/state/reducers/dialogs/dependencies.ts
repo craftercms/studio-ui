@@ -23,14 +23,23 @@ export const showDependenciesDialog = createAction<Partial<DependenciesDialogSta
 
 export const closeDependenciesDialog = createAction<StandardAction>('CLOSE_DEPENDENCIES_DIALOG');
 
+const initialState: DependenciesDialogStateProps = {
+  open: false,
+  rootPath: '/site/website'
+}
+
 export default createReducer<GlobalState['dialogs']['dependencies']>(
-  { open: false },
+  initialState,
   {
     [showDependenciesDialog.type]: (state, { payload }) => ({
+      ...state,
       onDismiss: closeDependenciesDialog(),
       ...payload,
       open: true
     }),
-    [closeDependenciesDialog.type]: (state) => ({ open: false, onClose: state.onClose })
+    [closeDependenciesDialog.type]: (state) => ({
+      ...initialState,
+      onClose: state.onClose
+    })
   }
 );

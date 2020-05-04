@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { LegacyItem } from '../../../models/Item';
+import { LegacyItem, SandboxItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import {
   useActiveSiteId,
@@ -281,7 +281,7 @@ function DependenciesList(props: DependenciesListProps) {
 interface DependenciesDialogUIProps {
   resource: Resource<LegacyItem[]>
   open: boolean;
-  item: LegacyItem;
+  item: SandboxItem;
   setItem: Function;
   compactView: boolean;
   setCompactView: Function;
@@ -376,8 +376,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             item &&
             <Chip
               variant="outlined"
-              deleteIcon={isEditableItem(item.uri) ? <CreateIcon /> : null}
-              onDelete={isEditableItem(item.uri) ?
+              deleteIcon={isEditableItem(item.path) ? <CreateIcon /> : null}
+              onDelete={isEditableItem(item.path) ?
                 () => {
                   handleEditorDisplay(item);
                 } :
@@ -392,7 +392,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                 <>
                   <span className='label'>Selected</span>
                   <InsertDriveFileOutlinedIcon className='item-icon' />
-                  <span className='item-title'>{item.internalName}</span>
+                  <span className='item-title'>{item.label}</span>
                 </>
               }
             />
@@ -569,7 +569,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 
 interface DependenciesDialogBaseProps {
   open: boolean;
-  item?: LegacyItem;
+  item?: SandboxItem;
+  rootPath: string;
   dependenciesShown?: string;
 }
 
@@ -584,17 +585,14 @@ export interface DependenciesDialogStateProps extends DependenciesDialogBaseProp
 }
 
 const dialogInitialState = {
-  dependenciesShown: 'depends-on',
   dependantItems: null,
   dependencies: null,
   compactView: false,
   showTypes: 'all-deps'
 };
 
-export const dependenciesDialogID = 'dependenciesDialog';
-
 function DependenciesDialog(props: DependenciesDialogProps) {
-  const { open, item, dependenciesShown, onClose, onDismiss } = props;
+  const { open, item, dependenciesShown = 'depends-on', onClose, onDismiss } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
@@ -696,13 +694,13 @@ function DependenciesDialog(props: DependenciesDialogProps) {
 
   useEffect(() => {
     if (dialog.item) {
-      getDepsItems(siteId, dialog.item.uri, true);
+      getDepsItems(siteId, dialog.item.path, true);
     }
   }, [dialog.item, siteId, getDepsItems]);
 
   useEffect(() => {
     if (dialog.item) {
-      getDepsItems(siteId, dialog.item.uri);
+      getDepsItems(siteId, dialog.item.path);
     }
   }, [dialog.dependenciesShown, dialog.item, getDepsItems, siteId]);
 
@@ -714,7 +712,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     setDialog({ showTypes });
   };
 
-  const setItem = (item: LegacyItem) => {
+  const setItem = (item: SandboxItem) => {
     setDialog({ item });
   };
 
