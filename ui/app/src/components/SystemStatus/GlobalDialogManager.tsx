@@ -179,6 +179,8 @@ function GlobalDialogManager() {
           ...action,
           onClick: createCallback(action.onClick, dispatch)
         }))}
+        item={state.compareVersions.item}
+        rootPath={state.compareVersions.rootPath}
         contentTypesBranch={contentTypesBranch}
         selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
         selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}

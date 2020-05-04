@@ -93,6 +93,14 @@ export function withIndex(path: string): string {
   return `${withoutIndex(path)}/index.xml`;
 }
 
+export function getParentsFromPath(path: string): string[] {
+  let splitPath = withoutIndex(path).split('/');
+  splitPath.pop();
+  return splitPath.map( function(value, i) {
+    return '/' + splitPath.slice(1, i + 1).join('/');
+  }).splice(2);
+}
+
 export default {
   getPathFromPreviewURL,
   getPreviewURLFromPath,
@@ -100,5 +108,6 @@ export default {
   parseQueryString,
   itemsFromPath,
   withoutIndex,
-  withIndex
+  withIndex,
+  getParentsFromPath
 };

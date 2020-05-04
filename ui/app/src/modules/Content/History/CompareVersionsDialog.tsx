@@ -33,6 +33,7 @@ import { Pagination } from './HistoryDialog';
 import {
   compareBothVersions,
   compareVersion,
+  fetchItemVersions,
   versionsChangePage
 } from '../../../state/reducers/versions';
 import { useDispatch } from 'react-redux';
@@ -50,6 +51,9 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
+import SingleItemSelector from '../Authoring/SingleItemSelector';
+import { parseLegacyItemToSandBoxItem } from '../../../services/content';
+import { LegacyItem } from '../../../models/Item';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -73,6 +77,8 @@ interface CompareVersionsDialogBaseProps {
   open: boolean;
   error: ApiResponse;
   isFetching: boolean;
+  item?: LegacyItem;
+  rootPath: string;
 }
 
 interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
@@ -94,7 +100,18 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 export const compareVersionsDialogID = 'compareVersionsDialog';
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
-  const { open, rightActions, selectedA, selectedB, onDismiss, onClose, versionsBranch, contentTypesBranch } = props;
+  const {
+    open,
+    rightActions,
+    selectedA,
+    selectedB,
+    onDismiss,
+    onClose,
+    versionsBranch,
+    contentTypesBranch,
+    rootPath,
+    item
+  } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
@@ -104,11 +121,10 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   const compareMode = selectedA && selectedB;
 
   const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
-    shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
+    shouldResolve: (versionsBranch) =>
+      Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
     shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
-    shouldRenew: (versionsBranch, resource) => (
-      resource.complete
-    ),
+    shouldRenew: (versionsBranch, resource) => resource.complete,
     resultSelector: (versionsBranch) => versionsBranch.versions,
     errorSelector: (versionsBranch) => versionsBranch.error
   });
@@ -119,30 +135,23 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
       contentTypesBranch
     },
     {
-      shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) => (
-        Boolean(
-          compareVersionsBranch.compareVersions &&
-          contentTypesBranch.byId &&
-          !compareVersionsBranch.isFetching &&
-          !contentTypesBranch.isFetching
-        )
-      ),
-      shouldReject: ({ compareVersionsBranch, contentTypesBranch }) => (
-        Boolean(compareVersionsBranch.error || contentTypesBranch.error)
-      ),
-      shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) => (
-        (compareVersionsBranch.isFetching || contentTypesBranch.isFetching) && resource.complete
-      ),
-      resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => (
-        {
-          a: compareVersionsBranch.compareVersions?.[0],
-          b: compareVersionsBranch.compareVersions?.[1],
-          contentTypes: contentTypesBranch.byId
-        }
-      ),
-      errorSelector: ({ compareVersionsBranch, contentTypesBranch }) => (
+      shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) =>
+        compareVersionsBranch.compareVersions &&
+        contentTypesBranch.byId &&
+        !compareVersionsBranch.isFetching &&
+        !contentTypesBranch.isFetching
+      ,
+      shouldReject: ({ compareVersionsBranch, contentTypesBranch }) =>
+        Boolean(compareVersionsBranch.error || contentTypesBranch.error),
+      shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) =>
+        (compareVersionsBranch.isFetching || contentTypesBranch.isFetching) && resource.complete,
+      resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => ({
+        a: compareVersionsBranch.compareVersions?.[0],
+        b: compareVersionsBranch.compareVersions?.[1],
+        contentTypes: contentTypesBranch.byId
+      }),
+      errorSelector: ({ compareVersionsBranch, contentTypesBranch }) =>
         compareVersionsBranch.error || contentTypesBranch.error
-      )
     }
   );
 
@@ -161,13 +170,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   };
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      fullWidth
-      maxWidth="md"
-      onEscapeKeyDown={onDismiss}
-    >
+    <Dialog onClose={onClose} open={open} fullWidth maxWidth="md" onEscapeKeyDown={onDismiss}>
       <DialogHeader
         title={
           <FormattedMessage
@@ -176,109 +179,89 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
           />
         }
         subtitle={
-          (selectMode) ? (
+          selectMode ? (
             <FormattedMessage
               id="compareVersionsDialog.headerSubtitle"
               defaultMessage="Select a revision to compare to “{selectedA}”"
               values={{ selectedA: <FancyFormattedDate date={selectedA.lastModifiedDate} /> }}
             />
           ) : (
-            (!compareMode) &&
-            <FormattedMessage
-              id="compareVersionsDialog.headerSubtitle"
-              defaultMessage="Select a revision to compare"
-            />
+            !compareMode && (
+              <FormattedMessage
+                id="compareVersionsDialog.headerSubtitle"
+                defaultMessage="Select a revision to compare"
+              />
+            )
           )
         }
-        leftActions={compareMode ? [{
-          icon: 'BackIcon',
-          onClick: () => dispatch(compareVersion(selected[0])),
-          'aria-label': formatMessage(translations.backToSelectRevision)
-        }] : null}
+        leftActions={
+          compareMode
+            ? [
+              {
+                icon: 'BackIcon',
+                onClick: () => dispatch(compareVersion(selected[0])),
+                'aria-label': formatMessage(translations.backToSelectRevision)
+              }
+            ]
+            : null
+        }
         rightActions={rightActions}
         onDismiss={onDismiss}
       />
       <DialogBody>
-        {/*{*/}
-        {/*  !compareMode &&*/}
-        {/*  <SingleItemSelector*/}
-        {/*    classes={{ root: classes.singleItemSelector }}*/}
-        {/*    label="Item"*/}
-        {/*    consumer={consumers[compareVersionsDialogID]}*/}
-        {/*    open={openSelector}*/}
-        {/*    onClose={() => setOpenSelector(false)}*/}
-        {/*    selectedItem={consumers[compareVersionsDialogID]?.byId?.[consumers[compareVersionsDialogID].path]}*/}
-        {/*    onDropdownClick={() => {*/}
-        {/*      setOpenSelector(!openSelector);*/}
-        {/*    }}*/}
-        {/*    onPathSelected={(item) => {*/}
-        {/*      dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));*/}
-        {/*    }}*/}
-        {/*    onBreadcrumbSelected={(item: SandboxItem) => {*/}
-        {/*      if (withoutIndex(item.path) === withoutIndex(consumers[compareVersionsDialogID]?.path)) {*/}
-        {/*        setOpenSelector(false);*/}
-        {/*        dispatch(fetchItemVersions({ path: item.path }));*/}
-        {/*      } else {*/}
-        {/*        dispatch(fetchChildrenByPath({ id: compareVersionsDialogID, path: item.path }));*/}
-        {/*      }*/}
-        {/*    }}*/}
-        {/*    onItemClicked={(item) => {*/}
-        {/*      setOpenSelector(false);*/}
-        {/*      dispatch(fetchItemVersions({ path: item.path }));*/}
-        {/*    }}*/}
-        {/*  />*/}
-        {/*}*/}
-        {
-          compareMode ? (
-            <SuspenseWithEmptyState resource={compareVersionsResource}>
-              <CompareVersions resource={compareVersionsResource} />
-            </SuspenseWithEmptyState>
-          ) : (path ? (
-              <SuspenseWithEmptyState resource={versionsResource}>
-                <VersionList
-                  selected={selected}
-                  resource={versionsResource}
-                  current={current}
-                  onItemClick={handleItemClick}
-                />
-              </SuspenseWithEmptyState>
-            ) : (
-              <EmptyState
-                title={
-                  <FormattedMessage
-                    id="compareVersionsDialog.pleaseContentItem"
-                    defaultMessage="Please content item"
-                  />
-                }
-              >
-                <section>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    className={classes.typography}
-                  >
-                    1. Select item <br />
-                    2. Select revision “A” <br />
-                    3. Select revision “B” <br />
-                    4. View diff
-                  </Typography>
-                </section>
-              </EmptyState>
-            )
-          )
-        }
-      </DialogBody>
-      {
-        (!compareMode && path) &&
-        <DialogFooter>
-          <Pagination
-            count={count}
-            page={page}
-            rowsPerPage={limit}
-            onPageChanged={onPageChanged}
+        {!compareMode && (
+          <SingleItemSelector
+            classes={{ root: classes.singleItemSelector }}
+            label="Item"
+            open={openSelector}
+            onClose={() => setOpenSelector(false)}
+            onDropdownClick={() => setOpenSelector(!openSelector)}
+            rootPath={rootPath}
+            selectedItem={item && parseLegacyItemToSandBoxItem(item)}
+            onItemClicked={(item) => {
+              setOpenSelector(false);
+              dispatch(fetchItemVersions({ path: item.path }));
+            }}
           />
+        )}
+        {compareMode ? (
+          <SuspenseWithEmptyState resource={compareVersionsResource}>
+            <CompareVersions resource={compareVersionsResource} />
+          </SuspenseWithEmptyState>
+        ) : path ? (
+          <SuspenseWithEmptyState resource={versionsResource}>
+            <VersionList
+              selected={selected}
+              resource={versionsResource}
+              current={current}
+              onItemClick={handleItemClick}
+            />
+          </SuspenseWithEmptyState>
+        ) : (
+          <EmptyState
+            title={
+              <FormattedMessage
+                id="compareVersionsDialog.pleaseContentItem"
+                defaultMessage="Please content item"
+              />
+            }
+          >
+            <section>
+              <Typography variant="subtitle1" color="textSecondary" className={classes.typography}>
+                1. Select item <br />
+                2. Select revision “A” <br />
+                3. Select revision “B” <br />
+                4. View diff
+              </Typography>
+            </section>
+          </EmptyState>
+        )}
+      </DialogBody>
+      {!compareMode && path && (
+        <DialogFooter>
+          <Pagination count={count} page={page} rowsPerPage={limit} onPageChanged={onPageChanged} />
         </DialogFooter>
-      }
+      )}
     </Dialog>
   );
 }
@@ -362,24 +345,22 @@ function CompareVersions(props: CompareVersionsProps) {
         </div>
       </section>
       <section className={classes.compareVersionsContent}>
-        {
-          contentTypes &&
-          values.map((field) =>
-            <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography><span
-                  className={classes.bold}
-                >{field.id} </span>({field.name})</Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                  sit amet blandit leo lobortis eget.
-                </Typography>
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
-          )
-        }
+        {contentTypes &&
+        values.map((field) => (
+          <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography>
+                <span className={classes.bold}>{field.id} </span>({field.name})
+              </Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Typography>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada
+                lacus ex, sit amet blandit leo lobortis eget.
+              </Typography>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+        ))}
       </section>
     </>
   );

@@ -27,9 +27,8 @@ const initialState: CompareVersionsDialogStateProps = {
   open: false,
   isFetching: null,
   error: null,
-  rightActions: null,
-  onClose: null,
-  onDismiss: null
+  rootPath: null,
+  item: null
 };
 
 export default createReducer<GlobalState['dialogs']['compareVersions']>(initialState, {
