@@ -34,6 +34,13 @@ import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { ApiResponse } from '../../models/ApiResponse';
 import { showNewContentDialog } from '../../state/actions/dialogs';
 
+import Card from '@material-ui/core/Card'
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
+
+
 const translations = defineMessages({
   quickCreateBtnLabel: {
     id: 'quickCreateBtnLabel.label',
@@ -70,7 +77,19 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: palette.gray.light0,
         cursor: 'text'
       }
+    },
+    quickCreateEmptyRoot: {
+      width: '155px',
+      justifyContent: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      textAlign: 'center',
+      alignItems: 'center'
+    },
+    quickCreateEmptyDescription: {
+      fontSize: '12px'
     }
+
   })
 );
 
@@ -160,6 +179,22 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
             {item.label}
           </MenuItem>
         ))}
+        {
+          quickCreateContentList && quickCreateContentList.length === 0 &&
+          <Card className={classes.quickCreateEmptyRoot}>
+            <CardContent>
+              <Typography color="textSecondary" gutterBottom>
+                <ErrorOutlineOutlinedIcon />
+              </Typography>
+              <Typography className={classes.quickCreateEmptyDescription}>
+                Quick create has not been configured. Please contact your system administrator.
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button size="small">Learn More</Button>
+            </CardActions>
+          </Card>
+        }
       </Menu>
       {dialogConfig.open && (
         <EmbeddedLegacyEditors
