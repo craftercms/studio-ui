@@ -93,6 +93,12 @@ export function withIndex(path: string): string {
   return `${withoutIndex(path)}/index.xml`;
 }
 
+export function getParentPath(path: string): string {
+  let splitPath = withoutIndex(path).split('/');
+  splitPath.pop();
+  return splitPath.join('/');
+}
+
 export function getParentsFromPath(path: string): string[] {
   let splitPath = withoutIndex(path).split('/');
   splitPath.pop();
