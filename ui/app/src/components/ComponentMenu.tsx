@@ -27,16 +27,14 @@ import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
-import { fetchItemVersions } from '../state/reducers/versions';
+import { fetchItemVersions, resetVersionsState } from '../state/reducers/versions';
 import {
   closeDeleteDialog,
-  showDeleteDialog, showDependenciesDialog,
+  showDeleteDialog,
+  showDependenciesDialog,
   showHistoryDialog,
   showPublishDialog
 } from '../state/actions/dialogs';
-import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
-import { fetchItemVersions, resetVersionsState } from '../state/reducers/versions';
-import { showHistoryDialog } from '../state/actions/dialogs';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {

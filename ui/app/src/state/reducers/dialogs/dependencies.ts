@@ -21,6 +21,7 @@ import {
   dependenciesDialogClosed,
   showDependenciesDialog
 } from '../../actions/dialogs';
+import { DependenciesDialogStateProps } from '../../../modules/Content/Dependencies/DependenciesDialog';
 
 const initialState: DependenciesDialogStateProps = {
   open: false,
