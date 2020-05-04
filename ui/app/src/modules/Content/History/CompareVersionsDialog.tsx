@@ -15,7 +15,7 @@
  */
 
 import StandardAction from '../../../models/StandardAction';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useStateResource } from '../../../utils/hooks';
@@ -26,7 +26,7 @@ import DialogHeader, {
   DialogHeaderAction,
   DialogHeaderStateAction
 } from '../../../components/Dialogs/DialogHeader';
-import { LegacyVersion, VersionsStateProps } from '../../../models/Version';
+import { CompareVersionsBranch, LegacyVersion, VersionsStateProps } from '../../../models/Version';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import { Pagination } from './HistoryDialog';
@@ -96,8 +96,6 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
   onDismiss?: StandardAction;
 }
 
-export const compareVersionsDialogID = 'compareVersionsDialog';
-
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const {
     open,
@@ -120,41 +118,43 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   const compareMode = selectedA && selectedB;
 
   const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
-    shouldResolve: (_versionsBranch) => Boolean(_versionsBranch.versions) && !_versionsBranch.isFetching,
+    shouldResolve: (_versionsBranch) =>
+      Boolean(_versionsBranch.versions) && !_versionsBranch.isFetching,
     shouldReject: (_versionsBranch) => Boolean(_versionsBranch.error),
     shouldRenew: (_versionsBranch, resource) => resource.complete,
     resultSelector: (_versionsBranch) => _versionsBranch.versions,
     errorSelector: (_versionsBranch) => _versionsBranch.error
   });
 
-  ///use memo
-  const compareVersionsResource = useStateResource<CompareVersionsResource, any>(
-    {
+  const compareVersionsData = useMemo(
+    () => ({
       compareVersionsBranch,
       contentTypesBranch
-    },
-    {
-      shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) =>
-        compareVersionsBranch.compareVersions &&
-        contentTypesBranch.byId &&
-        !compareVersionsBranch.isFetching &&
-        !contentTypesBranch.isFetching
-      ,
-      shouldReject: ({ compareVersionsBranch, contentTypesBranch }) =>
-        Boolean(compareVersionsBranch.error || contentTypesBranch.error),
-      shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) =>
-        (compareVersionsBranch.isFetching || contentTypesBranch.isFetching) && resource.complete,
-      resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => (
-        {
-          a: compareVersionsBranch.compareVersions?.[0],
-          b: compareVersionsBranch.compareVersions?.[1],
-          contentTypes: contentTypesBranch.byId
-        }
-      ),
-      errorSelector: ({ compareVersionsBranch, contentTypesBranch }) =>
-        compareVersionsBranch.error || contentTypesBranch.error
-    }
+    }),
+    [compareVersionsBranch, contentTypesBranch]
   );
+
+  const compareVersionsResource = useStateResource<
+    CompareVersionsResource,
+    { compareVersionsBranch: CompareVersionsBranch; contentTypesBranch: EntityState<ContentType> }
+  >(compareVersionsData, {
+    shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) =>
+      compareVersionsBranch.compareVersions &&
+      contentTypesBranch.byId &&
+      !compareVersionsBranch.isFetching &&
+      !contentTypesBranch.isFetching,
+    shouldReject: ({ compareVersionsBranch, contentTypesBranch }) =>
+      Boolean(compareVersionsBranch.error || contentTypesBranch.error),
+    shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) =>
+      (compareVersionsBranch.isFetching || contentTypesBranch.isFetching) && resource.complete,
+    resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => ({
+      a: compareVersionsBranch.compareVersions?.[0],
+      b: compareVersionsBranch.compareVersions?.[1],
+      contentTypes: contentTypesBranch.byId
+    }),
+    errorSelector: ({ compareVersionsBranch, contentTypesBranch }) =>
+      compareVersionsBranch.error || contentTypesBranch.error
+  });
 
   const handleItemClick = (version: LegacyVersion) => {
     if (!selected[0]) {
@@ -205,12 +205,12 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         leftActions={
           compareMode
             ? [
-              {
-                icon: 'BackIcon',
-                onClick: () => dispatch(compareVersion(selected[0])),
-                'aria-label': formatMessage(translations.backToSelectRevision)
-              }
-            ]
+                {
+                  icon: 'BackIcon',
+                  onClick: () => dispatch(compareVersion(selected[0])),
+                  'aria-label': formatMessage(translations.backToSelectRevision)
+                }
+              ]
             : null
         }
         rightActions={rightActions}
@@ -354,21 +354,21 @@ function CompareVersions(props: CompareVersionsProps) {
       </section>
       <section className={classes.compareVersionsContent}>
         {contentTypes &&
-        values.map((field) => (
-          <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>
-                <span className={classes.bold}>{field.id} </span>({field.name})
-              </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada
-                lacus ex, sit amet blandit leo lobortis eget.
-              </Typography>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
-        ))}
+          values.map((field) => (
+            <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
+              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>
+                  <span className={classes.bold}>{field.id} </span>({field.name})
+                </Typography>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                <Typography>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada
+                  lacus ex, sit amet blandit leo lobortis eget.
+                </Typography>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
+          ))}
       </section>
     </>
   );

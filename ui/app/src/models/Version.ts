@@ -35,6 +35,12 @@ export interface FetchContentVersion {
   versionNumber: string;
 }
 
+export interface CompareVersionsBranch {
+  compareVersions: string[];
+  isFetching: Boolean;
+  error: ApiResponse;
+}
+
 export interface VersionsStateProps {
   byId: string;
   path: string;
@@ -50,5 +56,5 @@ export interface VersionsStateProps {
   limit: number;
   selected: string[];
   previous: string;
-  compareVersionsBranch: any;
+  compareVersionsBranch: CompareVersionsBranch;
 }

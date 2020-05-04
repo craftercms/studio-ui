@@ -196,8 +196,6 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
-export const historyDialogID = 'historyDialog';
-
 export default function HistoryDialog(props: HistoryDialogProps) {
   const { open, onClose, onDismiss, versionsBranch, item, rootPath } = props;
   const { count, page, limit, current } = versionsBranch;
