@@ -37,6 +37,7 @@ export default createReducer<GlobalState['dialogs']['edit']>(
   { open: false },
   {
     [showEditDialog.type]: (state, { payload }) => ({
+      onClose: closeEditDialog(),
       onDismiss: closeEditDialog(),
       ...payload,
       open: true

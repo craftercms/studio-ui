@@ -128,7 +128,9 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     showTabs = true,
     itemModel,
     embeddedParentPath,
-    onSaveSuccess
+    onSaveSuccess,
+    onDismiss,
+    onClose,
   } = props;
   const { formatMessage } = useIntl();
   const classes = styles({});
@@ -144,19 +146,6 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   });
 
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
-
-  const handleClose = useCallback(() => {
-    dispatch(
-      closeEditDialog({
-        type: '',
-        payload: {
-          src: null,
-          type: null,
-          inProgress: true
-        }
-      })
-    );
-  }, [dispatch]);
 
   const onErrorClose = () => {
     setError(null);
@@ -207,12 +196,12 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     } else {
       !showTabs && setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
 
-      handleClose();
+      onDismiss();
       if (refresh) {
         getHostToGuestBus().next({ type: RELOAD_REQUEST });
       }
     }
-  }, [handleClose, handleTabChange, setTabsState, tabsState, showTabs]);
+  }, [onDismiss, handleTabChange, setTabsState, tabsState, showTabs]);
 
   useEffect(() => {
     if (open) {
@@ -269,7 +258,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
   ]);
 
   return (
-    <Dialog fullScreen open={open} onClose={handleClose}>
+    <Dialog fullScreen open={open} onClose={onClose}>
       {showTabs && (
         <AppBar position="static" color="default">
           <Tabs

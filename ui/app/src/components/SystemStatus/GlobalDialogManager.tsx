@@ -115,8 +115,8 @@ function GlobalDialogManager() {
         embeddedParentPath={state.edit.embeddedParentPath}
 
         onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
-        onClose={createCallback(state.dependencies.onClose, dispatch)}
-        onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}
+        onClose={createCallback(state.edit.onClose, dispatch)}
+        onDismiss={createCallback(state.edit.onDismiss, dispatch)}
       />
       {/* endregion */}
 
