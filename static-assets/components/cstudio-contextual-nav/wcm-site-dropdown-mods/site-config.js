@@ -41,8 +41,6 @@ CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteC
       parentFolderEl.appendChild(parentFolderLinkEl);
       YDom.addClass(parentFolderLinkEl, 'acn-admin-console');
 
-      parentFolderLinkEl.id = 'admin-console';
-
       var confLabel = moduleConfig.label.toLowerCase().replace(/\s/g, '');
       var label =
         CMgs.format(siteDropdownLangBundle, confLabel) == confLabel
