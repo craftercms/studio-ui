@@ -20,7 +20,7 @@ import GlobalState from '../../../models/GlobalState';
 import { EmbeddedLegacyEditorsStateProps } from '../../../modules/Preview/EmbeddedLegacyEditors';
 
 export const showEditDialog = createAction<Partial<EmbeddedLegacyEditorsStateProps>>(
-  'SHOW_EDIT'
+  'SHOW_EDIT_DIALOG'
 );
 
 export const updateEditConfig = createAction<any>('UPDATE_EDIT_CONFIG');

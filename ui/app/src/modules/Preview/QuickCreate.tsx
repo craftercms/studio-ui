@@ -102,7 +102,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         site: siteId,
         previewItem,
         compact: false,
-        onSaveSuccess: onSaveSuccess?.()
+        onContentTypeSelected: showEditDialog()
       })
     );
   };

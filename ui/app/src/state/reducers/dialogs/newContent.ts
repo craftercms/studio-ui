@@ -42,5 +42,9 @@ export default createReducer<NewContentDialogStateProps>(initialState, {
     onClose: state.onClose,
     open: false
   }),
+  [newContentCreationComplete.type]: (state, { payload }) => ({
+    onClose: state.onClose,
+    open: false
+  }),
   [newContentDialogClosed.type]: () => initialState
 });

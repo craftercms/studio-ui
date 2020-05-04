@@ -3280,7 +3280,7 @@
        * Creates new content. Opens the form to create content
        */
       createContent: function() {
-        const eventIdSuccess = 'newContentDialogSuccess';
+        const contentDialogTypeSelectedId = 'contentDialogTypeSelected';
         const { site, internalName, uri } = oCurrentTextNode.data;
 
         CrafterCMSNext.system.store.dispatch({
@@ -3292,40 +3292,57 @@
               label: internalName,
               path: uri
             },
-            onSaveSuccess: {
+            onContentTypeSelected: {
               type: 'LEGACY_DIALOG_CALLBACK',
-              payload: { id: eventIdSuccess }
+              payload: { id: contentDialogTypeSelectedId }
             }
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        CrafterCMSNext.createLegacyCallbackListener(contentDialogTypeSelectedId, (response) => {
           if (response) {
-            const data = response.output;
-            const acnDraftContent = YDom.getElementsByClassName(
-              'acnDraftContent',
-              null,
-              parent.document
-            )[0];
-            eventYS.data = oCurrentTextNode;
-            eventYS.typeAction = 'createContent';
-            eventYS.oldPath = null;
-            eventYS.parent = oCurrentTextNode.data.path == '/site/website' ? null : false;
-            document.dispatchEvent(eventYS);
+            const eventIdSuccess = 'editDialogSuccess';
 
-            if (data.item.isPage) {
-              CStudioAuthoring.Operations.refreshPreview(data.item);
-              if (
-                CStudioAuthoring.Utils.getQueryParameterURL('page') == data.redirectUrl &&
-                acnDraftContent
-              ) {
-                CStudioAuthoring.SelectedContent.setContent(data.item);
+            CrafterCMSNext.system.store.dispatch({
+              type: 'SHOW_EDIT_DIALOG',
+              payload: {
+                ...response.output,
+                onSaveSuccess: {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                }
               }
-            } else {
-              CStudioAuthoring.Operations.refreshPreview();
-            }
+            });
+
+            CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+              if (response) {
+                const data = response.output;
+                const acnDraftContent = YDom.getElementsByClassName(
+                  'acnDraftContent',
+                  null,
+                  parent.document
+                )[0];
+                eventYS.data = oCurrentTextNode;
+                eventYS.typeAction = 'createContent';
+                eventYS.oldPath = null;
+                eventYS.parent = oCurrentTextNode.data.path == '/site/website' ? null : false;
+                document.dispatchEvent(eventYS);
+
+                if (data.item.isPage) {
+                  CStudioAuthoring.Operations.refreshPreview(data.item);
+                  if (
+                    CStudioAuthoring.Utils.getQueryParameterURL('page') == data.redirectUrl &&
+                    acnDraftContent
+                  ) {
+                    CStudioAuthoring.SelectedContent.setContent(data.item);
+                  }
+                } else {
+                  CStudioAuthoring.Operations.refreshPreview();
+                }
+              }
+              CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
+            });
           }
-          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
         });
 
       },

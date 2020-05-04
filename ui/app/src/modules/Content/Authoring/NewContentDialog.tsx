@@ -42,8 +42,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
-import { useDispatch } from 'react-redux';
-import { newContentCreationComplete, showEditDialog } from '../../../state/reducers/dialogs/edit';
+import { newContentCreationComplete } from '../../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   title: {
@@ -149,17 +148,16 @@ interface NewContentDialogBaseProps {
   site: string;
   previewItem: PreviewItem;
   compact: boolean;
-  onSaveSuccess?: StandardAction;
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
-  // onSaveSuccess?(response?: any): any;
+  onContentTypeSelected?(response?: any): any;
   onClose?(): any;
   onDismiss?(): any;
 }>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
-  // onSaveSuccess?: StandardAction;
+  onContentTypeSelected?: StandardAction;
   onClose?: StandardAction;
   onDismiss?: StandardAction;
 }
@@ -192,7 +190,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     onDismiss,
     site,
     previewItem: previewItemProp,
-    onSaveSuccess,
+    onContentTypeSelected,
     compact
   } = props;
   const defaultFilterType = 'all';
@@ -243,19 +241,15 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       errorSelector: () => 'Error'
     }
   );
-  const dispatch = useDispatch();
 
-  const onTypeOpen = (srcData) => () => {
-
-    dispatch(
-      showEditDialog({
-        src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`,
-        type: 'form',
-        inProgress: false,
-        showTabs: false,
-        onSaveSuccess: onSaveSuccess ?? newContentCreationComplete()
-      })
-    );
+  const onTypeOpen = (contentType: LegacyFormConfig) => () => {
+    onContentTypeSelected({
+      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${path}&type=form`,
+      type: 'form',
+      inProgress: false,
+      showTabs: false,
+      onSaveSuccess: newContentCreationComplete()
+    });
   };
 
   const onCompactCheck = () => setIsCompact(!isCompact);
