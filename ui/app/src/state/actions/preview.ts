@@ -205,12 +205,6 @@ export function changeCurrentUrl(nextValue: string): StandardAction {
   };
 }
 
-export function changeCurrentUrlValidateData(data: any): StandardAction {
-  return {
-    type: CHANGE_CURRENT_URL_VALIDATE_ITEM
-  }
-}
-
 export function setItemBeingDragged(active: boolean): StandardAction {
   return {
     type: SET_ITEM_BEING_DRAGGED,
