@@ -115,8 +115,8 @@ function GlobalDialogManager() {
       {/* region Create Content */}
       <NewContentDialog
         open={state.newContent.open}
-        site={state.newContent.site}
-        previewItem={state.newContent.previewItem}
+        item={state.newContent.item}
+        rootPath={state.newContent.rootPath}
         compact={state.newContent.compact}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onDismiss={createCallback(state.newContent.onDismiss, dispatch)}

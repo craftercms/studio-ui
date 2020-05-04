@@ -172,7 +172,10 @@ const systemPropsList = [
 export function fetchLegacyContentTypes(site, path) {
   return get(
     `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}&path=${path}`
-  ).pipe(pluck('response'));
+  ).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {

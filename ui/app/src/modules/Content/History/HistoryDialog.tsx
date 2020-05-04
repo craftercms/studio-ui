@@ -287,24 +287,24 @@ export default function HistoryDialog(props: HistoryDialogProps) {
 
   const compareTo = (versionNumber: string) => {
     dispatch(fetchContentTypes());
-    dispatch(compareVersion(versionNumber));
+    dispatch(compareVersion({ id: versionNumber }));
     dispatchCompareVersionDialogWithActions();
   };
 
   const compareBoth = (selected: string[]) => {
     dispatch(fetchContentTypes());
-    dispatch(compareBothVersions(selected));
+    dispatch(compareBothVersions({ versions: selected }));
     dispatchCompareVersionDialogWithActions();
   };
 
   const compareToPrevious = (versionNumber: string) => {
     dispatch(fetchContentTypes());
-    dispatch(compareToPreviousVersion(versionNumber));
+    dispatch(compareToPreviousVersion({ id: versionNumber }));
     dispatchCompareVersionDialogWithActions();
   };
 
   const revertToPrevious = (versionNumber: string) => {
-    dispatch(revertToPreviousVersion(versionNumber));
+    dispatch(revertToPreviousVersion({ id: versionNumber }));
   };
 
   const revertTo = (versionNumber: string) => {
@@ -352,7 +352,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   const onPageChanged = (nextPage: number) => {
-    dispatch(versionsChangePage(nextPage));
+    dispatch(versionsChangePage({ page: nextPage }));
   };
 
   return (

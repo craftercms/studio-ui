@@ -249,6 +249,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const [state, _dispatch] = useReducer(reducer, props, init);
   const site = useActiveSiteId();
 
+  console.log(open);
+
   const exec = useCallback(
     (action) => {
       _dispatch(action);

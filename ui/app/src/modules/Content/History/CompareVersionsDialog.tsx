@@ -134,10 +134,8 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
     [compareVersionsBranch, contentTypesBranch]
   );
 
-  const compareVersionsResource = useStateResource<
-    CompareVersionsResource,
-    { compareVersionsBranch: CompareVersionsBranch; contentTypesBranch: EntityState<ContentType> }
-  >(compareVersionsData, {
+  const compareVersionsResource = useStateResource<CompareVersionsResource,
+    { compareVersionsBranch: CompareVersionsBranch; contentTypesBranch: EntityState<ContentType> }>(compareVersionsData, {
     shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) =>
       compareVersionsBranch.compareVersions &&
       contentTypesBranch.byId &&
@@ -158,16 +156,16 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
 
   const handleItemClick = (version: LegacyVersion) => {
     if (!selected[0]) {
-      dispatch(compareVersion(version.versionNumber));
+      dispatch(compareVersion({ id: version.versionNumber }));
     } else if (selected[0] !== version.versionNumber) {
-      dispatch(compareBothVersions([selected[0], version.versionNumber]));
+      dispatch(compareBothVersions({ versions: [selected[0], version.versionNumber]}));
     } else {
       dispatch(compareVersion());
     }
   };
 
   const onPageChanged = (nextPage: number) => {
-    dispatch(versionsChangePage(nextPage));
+    dispatch(versionsChangePage({ page: nextPage }));
   };
 
   return (
@@ -205,12 +203,12 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         leftActions={
           compareMode
             ? [
-                {
-                  icon: 'BackIcon',
-                  onClick: () => dispatch(compareVersion(selected[0])),
-                  'aria-label': formatMessage(translations.backToSelectRevision)
-                }
-              ]
+              {
+                icon: 'BackIcon',
+                onClick: () => dispatch(compareVersion({ id: selected[0] })),
+                'aria-label': formatMessage(translations.backToSelectRevision)
+              }
+            ]
             : null
         }
         rightActions={rightActions}
@@ -354,21 +352,21 @@ function CompareVersions(props: CompareVersionsProps) {
       </section>
       <section className={classes.compareVersionsContent}>
         {contentTypes &&
-          values.map((field) => (
-            <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
-              <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>
-                  <span className={classes.bold}>{field.id} </span>({field.name})
-                </Typography>
-              </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada
-                  lacus ex, sit amet blandit leo lobortis eget.
-                </Typography>
-              </ExpansionPanelDetails>
-            </ExpansionPanel>
-          ))}
+        values.map((field) => (
+          <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography>
+                <span className={classes.bold}>{field.id} </span>({field.name})
+              </Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Typography>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada
+                lacus ex, sit amet blandit leo lobortis eget.
+              </Typography>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+        ))}
       </section>
     </>
   );

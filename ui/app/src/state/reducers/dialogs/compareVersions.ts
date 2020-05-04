@@ -28,7 +28,7 @@ const initialState: CompareVersionsDialogStateProps = {
   open: false,
   isFetching: null,
   error: null,
-  rootPath: null,
+  rootPath: '/site/website',
   item: null
 };
 

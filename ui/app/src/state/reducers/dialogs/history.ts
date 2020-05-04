@@ -29,7 +29,7 @@ import {
 
 const initialState: HistoryDialogStateProps = {
   open: false,
-  rootPath: null,
+  rootPath: '/site/website',
   item: null
 };
 
