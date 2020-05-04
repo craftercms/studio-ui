@@ -76,12 +76,57 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         }
       }
 
+      const eventIdSuccess = 'quickCreateMenuSuccess';
+
       CrafterCMSNext.render(container, 'QuickCreateMenu', {
-        onSaveLegacySuccess: success,
         previewItem,
         anchorEl,
+        onQuickCreateItemSelected: {
+          type: 'LEGACY_DIALOG_CALLBACK',
+          payload: { id: eventIdSuccess }
+        },
         onClose: () => unmount()
-      }).then((done) => (unmount = done.unmount));
+      }).then((done) => (unmount = done.unmount))
+
+      CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        if (response) {
+          const eventIdSuccess = 'editDialogSuccess';
+          const payload = response.payload ?? response.output;
+
+          CrafterCMSNext.system.store.dispatch({
+            type: 'SHOW_EDIT_DIALOG',
+            payload: {
+              ...payload,
+              onSaveSuccess: {
+                type: 'LEGACY_DIALOG_CALLBACK',
+                payload: { id: eventIdSuccess }
+              }
+            }
+          });
+
+          CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, ({ output }) => {
+            if (output) {
+              const page = CStudioAuthoring.Utils.getQueryParameterURL('page');
+              const acnDraftContent = $('.acnDraftContent').get(0);
+              eventYS.data = output.item;
+              eventYS.typeAction = 'createContent';
+              eventYS.oldPath = null;
+              eventYS.parent = output.item.path === '/site/website' ? null : false;
+              document.dispatchEvent(eventYS);
+
+              if (output.item.isPage) {
+                CStudioAuthoring.Operations.refreshPreview(output.item);
+                if (page === output.item.browserUri && acnDraftContent) {
+                  CStudioAuthoring.SelectedContent.setContent(output.item);
+                }
+              } else {
+                CStudioAuthoring.Operations.refreshPreview();
+              }
+            }
+            CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
+          });
+        }
+      });
     }
 
     quickCreateWrapper.click((e) => renderQuickCreate(e.currentTarget));

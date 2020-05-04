@@ -19,7 +19,7 @@ import { QuickCreateMenu } from '../modules/Preview/QuickCreate';
 import { useSelection } from '../utils/hooks';
 
 export default function (props) {
-  const { anchorEl, previewItem, onClose } = props;
+  const { anchorEl, previewItem, onClose, onQuickCreateItemSelected } = props;
   const [menuAnchor, setMenuAnchor] = useState(anchorEl);
   const createNewContentOpen = useSelection((state) => state.dialogs.newContent.open);
   // TODO: Switch when Embedded legacy editors is moved to dialog manager
@@ -39,6 +39,15 @@ export default function (props) {
       anchorEl={menuAnchor}
       previewItem={previewItem}
       onClose={onCloseMenu}
+      onQuickCreateItemSelected={(payload: any) => {
+        return {
+          ...onQuickCreateItemSelected,
+          payload: {
+            ...onQuickCreateItemSelected.payload,
+            payload
+          }
+        };
+      }}
       onItemClicked={onCloseMenu}
     />
   );

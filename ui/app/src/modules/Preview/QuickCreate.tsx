@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
   previewItem: SandboxItem;
-  onSaveSuccess?(response?: any): any;
+  onQuickCreateItemSelected?: any;
   onClose(): void;
   onItemClicked?(): void;
 }
@@ -86,7 +86,7 @@ interface QuickCreateMenuButtonProps {
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const { anchorEl, onClose, previewItem, onSaveSuccess, onItemClicked } = props;
+  const { anchorEl, onClose, previewItem, onQuickCreateItemSelected, onItemClicked } = props;
   const classes = useStyles({});
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
@@ -102,7 +102,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         site: siteId,
         previewItem,
         compact: false,
-        onContentTypeSelected: showEditDialog()
+        // @ts-ignore
+        onContentTypeSelected: onQuickCreateItemSelected ? onQuickCreateItemSelected() : showEditDialog()
       })
     );
   };
@@ -116,14 +117,15 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     onItemClicked?.();
 
     dispatch(
-      showEditDialog({
+      // @ts-ignore
+      onQuickCreateItemSelected({
         src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`,
         type: 'form',
         inProgress: false,
         showTabs: false,
-        onSaveSuccess: onSaveSuccess ? onSaveSuccess() : newContentCreationComplete()
+        onSaveSuccess: newContentCreationComplete()
       })
-    );
+    )
   };
 
   useEffect(() => {
@@ -210,6 +212,7 @@ export default function QuickCreate() {
         onClose={onMenuClose}
         previewItem={currentPreview}
         onItemClicked={onMenuClose}
+        onQuickCreateItemSelected={showEditDialog}
       />
     </>
   );
