@@ -30,13 +30,14 @@ import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
 import { interval } from 'rxjs';
-import { getLogoutInfoURL, me } from '../../services/auth';
+import { getLogoutInfoURL} from '../../services/auth';
 import { pluck } from 'rxjs/operators';
 import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
 import { LogInForm } from './LoginForm';
 import { ClassNameMap } from '@material-ui/styles/withStyles';
+import { me } from '../../services/users';
 
 const translations = defineMessages({
   sessionExpired: {
@@ -85,12 +86,12 @@ export default function AuthMonitor() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
-  const { username, authType } = useSelection((state) => state.user);
+  const { username, authType } = useSelection((state) => state.user) ?? { username: '', authType: 'db' };
   const authoringUrl = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const { active, error, isFetching } = useSelection((state) => state.auth);
   const [password, setPassword] = useState<string>('');
   const [logoutUrl, setLogoutUrl] = useState(authoringUrl);
-  const isSSO = authType.toLowerCase() !== 'db';
+  const isSSO = authType?.toLowerCase() !== 'db';
   const [ssoButtonClicked, setSSOButtonClicked] = useState(false);
   const styles: CSSProperties = isFetching ? { visibility: 'hidden' } : {};
   const firstRender = useRef(true);

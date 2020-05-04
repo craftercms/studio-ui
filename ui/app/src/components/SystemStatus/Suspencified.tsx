@@ -21,14 +21,18 @@ import { Resource } from '../../models/Resource';
 import EmptyState, { EmptyStateProps } from './EmptyState';
 import { FormattedMessage } from 'react-intl';
 
-export type PropsWithResource<ResourceType = unknown, Props = {}> = PropsWithChildren<{
-  resource: Resource<ResourceType>;
-} & Props>;
+export type PropsWithResource<ResourceType = unknown, Props = {}> = PropsWithChildren<
+  {
+    resource: Resource<ResourceType>;
+  } & Props
+>;
 
-type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<PropsWithResource<ResourceType> & {
-  isEmpty?(value: ResourceType): boolean;
-  emptyStateProps?: EmptyStateProps;
-}>;
+type SuspenseWithEmptyStateProps<ResourceType = unknown> = PropsWithChildren<
+  PropsWithResource<ResourceType> & {
+    isEmpty?(value: ResourceType): boolean;
+    emptyStateProps?: EmptyStateProps;
+  }
+>;
 
 type SuspencifiedProps = PropsWithChildren<{
   suspenseProps?: SuspenseProps;
@@ -36,10 +40,12 @@ type SuspencifiedProps = PropsWithChildren<{
   errorBoundaryProps?: ErrorBoundaryProps;
 }>;
 
-export function WithEmptyState<ResourceType = unknown>(props: SuspenseWithEmptyStateProps) {
+export function WithEmptyState<ResourceType = unknown[]>(
+  props: SuspenseWithEmptyStateProps<ResourceType>
+) {
   const {
     children,
-    isEmpty = (value: unknown[]) => value.length === 0,
+    isEmpty = (value: ResourceType) => (value as any).length === 0,
     resource,
     emptyStateProps = {
       title: (
@@ -67,10 +73,10 @@ export function Suspencified(props: SuspencifiedProps) {
   );
 }
 
-export function SuspenseWithEmptyState(
+export function SuspenseWithEmptyState<ResourceType = unknown>(
   props: SuspencifiedProps & {
-    resource: Resource;
-    withEmptyStateProps?: Partial<SuspenseWithEmptyStateProps>;
+    resource: Resource<ResourceType>;
+    withEmptyStateProps?: Partial<SuspenseWithEmptyStateProps<ResourceType>>;
   }
 ) {
   const { children, withEmptyStateProps, resource } = props;

@@ -62,7 +62,7 @@ function createClosedAction(type: string) {
 }
 
 export default [
-  // region Dialogs
+  // region onClose Actions
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(

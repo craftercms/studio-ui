@@ -35,9 +35,12 @@ export const fetchSites = createAction('FETCH_SITES');
 export const fetchSitesComplete = createAction<Site[]>('FETCH_SITES_COMPLETE');
 export const fetchSitesFailed = createAction('FETCH_SITES_FAILED');
 
+export const initialState: GlobalState['sites'] = { byId: {}, active: null, isFetching: false };
+
 const reducer = createReducer<GlobalState['sites']>(
-  { byId: {}, active: null, isFetching: false },
+  initialState,
   {
+    INITIAL_STATE: (state, { payload: { sites } }) => ({ ...state, byId: createLookupTable(sites) }),
     [CHANGE_SITE]: (state, { payload }) =>
       payload.nextSite === state.active
         ? state

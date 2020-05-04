@@ -465,8 +465,6 @@
   })(CStudioAuthoring);
 </script>
 
-<#include "/templates/web/common/page-fragments/footer.ftl" />
-
 </body>
 </html>
 

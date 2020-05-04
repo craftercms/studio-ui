@@ -228,9 +228,11 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
   addResizeEventToNavbar: function() {
     new ResizeSensor($('.navbar-default'), function() {
       var studioBarHeight = $('#studioBar .navbar').height(),
-        // There will be only .studio-preview, .site-dashboard or #admin-console, not more than 1, so this selector won't fail
-        $content = $('.studio-preview, .site-dashboard, #admin-console'),
+        // There will be only .studio-preview, .site-dashboard or #admin-console,
+        // not more than 1, so this selector won't fail
+        $content = $('.studio-preview, .site-dashboard, #admin-console, .cstudio-search'),
         contentTop = $content.css('top').replace('px', '');
+
 
       // sync position of bar and preview/dashboard/site-config
       if (studioBarHeight !== parseInt(contentTop)) {

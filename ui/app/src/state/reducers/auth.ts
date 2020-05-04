@@ -27,7 +27,7 @@ import {
   VALIDATE_SESSION_FAILED
 } from '../actions/auth';
 
-const initialState = {
+export const initialState = {
   error: null,
   active: false,
   isFetching: false

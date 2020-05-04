@@ -24,13 +24,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
 import { cancelPackage, fetchEnvironments, fetchPackages } from '../../../../services/publishing';
 import {
-  BLOCKED,
-  CANCELLED,
-  COMPLETED,
   CurrentFilters,
   Package,
-  PROCESSING,
-  READY_FOR_LIVE,
   Selected
 } from '../../../../models/Publishing';
 import ConfirmDropdown from '../../../../components/Controls/ConfirmDropdown';
@@ -47,6 +42,7 @@ import Button from '@material-ui/core/Button';
 import { useSpreadState } from '../../../../utils/hooks';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { palette } from '../../../../styles/theme';
+import { BLOCKED, CANCELLED, COMPLETED, PROCESSING, READY_FOR_LIVE } from '../constants';
 
 const messages = defineMessages({
   selectAll: {

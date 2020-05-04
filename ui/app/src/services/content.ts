@@ -28,14 +28,14 @@ import {
   ContentType,
   ContentTypeField,
   ContentTypeFieldValidations,
-  LegacyContentTypeDescriptorCamelized,
+  LegacyContentType,
   LegacyDataSource,
   LegacyFormDefinition,
   LegacyFormDefinitionField,
   LegacyFormDefinitionProperty,
   LegacyFormDefinitionSection
 } from '../models/ContentType';
-import { camelizeProps, nnou, nou, pluckProps, reversePluckProps } from '../utils/object';
+import { nnou, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import {
@@ -84,6 +84,12 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
 export function getContentInstanceLookup(site: string, path: string, contentTypesLookup: LookupTable<ContentType>): Observable<LookupTable<ContentInstance>> {
   return getDOM(site, path).pipe(
     map(doc => parseContentXML(doc, path, contentTypesLookup, {}))
+  );
+}
+
+export function getContentInstance(site: string, path: string, contentTypesLookup: LookupTable<ContentType>): Observable<ContentInstance> {
+  return getDOM(site, path).pipe(
+    map(doc => parseContentXML(doc, path, contentTypesLookup, {})[doc.querySelector('objectId').innerHTML])
   );
 }
 
@@ -146,6 +152,21 @@ function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLook
   return instanceLookup;
 }
 
+function parseLegacyContentType(legacy: LegacyContentType): ContentType {
+  return {
+    id: legacy.form,
+    name: legacy.label.replace('Component - ', ''),
+    quickCreate: legacy.quickCreate,
+    quickCreatePath: legacy.quickCreatePath,
+    type: legacy.type,
+    fields: null,
+    sections: null,
+    displayTemplate: null,
+    dataSources: null,
+    mergeStrategy: null
+  };
+}
+
 const systemPropsList = [
   'content-type',
   'display-template',
@@ -163,15 +184,15 @@ const systemPropsList = [
   'lastModifiedDate_dt'
 ];
 
-export function fetchLegacyContentTypes(site, path) {
+export function fetchLegacyContentTypes(site: string, path?: string): Observable<LegacyContentType[]> {
   return get(
-    `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}&path=${path}'`
+    `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}${path ? `&path=${path}` : ''}`
   ).pipe(pluck('response'));
 }
 
 export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
-  return get(`/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`).pipe(
-    map<AjaxResponse, ContentType[]>(({ response }) => (
+  return fetchLegacyContentTypes(site).pipe(
+    map((response) => (
         (query?.type)
           ? response.filter((contentType) => (
             (contentType.type === query.type) &&
@@ -180,34 +201,51 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
           : response.filter((contentType) => (
             contentType.name !== '/component/level-descriptor'
           ))
-      ).map((data) => {
-        const legacy = camelizeProps(data) as LegacyContentTypeDescriptorCamelized;
-        return {
-          id: legacy.form,
-          name: legacy.label.replace('Component - ', ''),
-          quickCreate: legacy.quickCreate,
-          quickCreatePath: legacy.quickCreatePath,
-          type: legacy.type,
-          fields: null,
-          sections: null,
-          displayTemplate: null,
-          dataSources: null,
-          mergeStrategy: null
-        };
-      })
+      ).map(parseLegacyContentType)
     ),
     switchMap((contentTypes) => zip(
       of(contentTypes),
-      forkJoin(
-        contentTypes.reduce((hash, contentType) => (
-          hash[contentType.id] = get(url(contentType.id, 'form-definition.xml')).pipe(map(({ response }) => response))
-        ) && hash, {}) as { [contentTypeId: string]: Observable<LegacyFormDefinition> }
-      ))
-    ),
-    map(([contentTypes, legacyFormDefinitions]) => contentTypes.map((contentType) => ({
+      forkJoin<LookupTable<Observable<Partial<ContentType>>>, 'id'>(
+        contentTypes.reduce((hash, contentType) => {
+          hash[contentType.id] = fetchFormDefinition(site, contentType.id);
+          return hash;
+        }, {})
+      )
+    )),
+    map(([contentTypes, formDefinitions]) => contentTypes.map((contentType) => ({
       ...contentType,
-      ...parseLegacyFormDef(legacyFormDefinitions[contentType.id])
+      ...formDefinitions[contentType.id]
     })))
+  );
+}
+
+export function fetchLegacyFormDefinition(site: string, contentTypeId: string): Observable<LegacyFormDefinition> {
+  return get(`/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types${contentTypeId}/form-definition.xml`).pipe(
+    pluck('response')
+  );
+}
+
+export function fetchFormDefinition(site: string, contentTypeId: string): Observable<Partial<ContentType>> {
+  return fetchLegacyFormDefinition(site, contentTypeId).pipe(
+    map(parseLegacyFormDef)
+  );
+}
+
+export function fetchLegacyContentType(site: string, contentTypeId: string): Observable<LegacyContentType> {
+  return get(`/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`).pipe(
+    pluck('response')
+  )
+}
+
+export function fetchContentType(site: string, contentTypeId: string): Observable<ContentType> {
+  return forkJoin({
+    type: fetchLegacyContentType(site, contentTypeId).pipe(map(parseLegacyContentType)),
+    definition: fetchFormDefinition(site, contentTypeId)
+  }).pipe(
+    map(({ type, definition }) => ({
+      ...type,
+      ...definition
+    }))
   );
 }
 
@@ -342,10 +380,6 @@ const typeMap = {
   'image-picker': 'image'
 };
 
-function url(type, document) {
-  return (`/studio/api/1/services/api/1/site/get-configuration.json?site=editorial&path=/content-types${type}/${document}`);
-}
-
 function asArray<T = any>(object: Array<T> | T): Array<T> {
   return nou(object) ? [] : Array.isArray(object) ? object : [object];
 }
@@ -476,7 +510,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
     sections.push({
       description: legacySection.description,
-      expandByDefault: legacySection.defaultOpen,
+      expandByDefault: legacySection.defaultOpen === 'true',
       title: legacySection.title,
       fields: fieldIds
     });
@@ -1175,6 +1209,7 @@ export default {
   getPages,
   getContentInstanceLookup,
   fetchContentTypes,
+  fetchContentType,
   fetchById,
   updateField,
   insertComponent,

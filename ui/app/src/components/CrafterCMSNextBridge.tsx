@@ -27,9 +27,12 @@ import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
 import { setRequestForgeryToken } from '../utils/auth';
 import { Provider } from 'react-redux';
-import store from '../state/store';
+import { CrafterCMSStore, createStore } from '../state/store';
 import GlobalDialogManager from './SystemStatus/GlobalDialogManager';
 import { SnackbarProvider } from 'notistack';
+import { createResource } from '../utils/hooks';
+import LoadingState from './SystemStatus/LoadingState';
+import { Resource } from '../models/Resource';
 
 const Locales: any = {
   en,
@@ -72,9 +75,16 @@ export function getCurrentLocale(): string {
   return locale ? locale : 'en';
 }
 
-function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) {
-  const [, update] = useState();
+const storeResource = createResource(() =>
+  createStore(Boolean(process.env.REACT_APP_USE_MOCK_INITIAL_STATE)).toPromise()
+);
 
+function Bridge(
+  props: PropsWithChildren<{ isLegacy?: boolean; resource: Resource<CrafterCMSStore> }>
+) {
+  const store = props.resource.read();
+
+  const [, update] = useState();
   useLayoutEffect(setRequestForgeryToken, []);
   useEffect(() => setUpLocaleChangeListener(update, intl), [update]);
 
@@ -90,16 +100,21 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) 
             >
               <>
                 <Suspense fallback="" children={props.children} />
-                {
-                  !props.isLegacy &&
-                  <GlobalDialogManager />
-                }
+                {!props.isLegacy && <GlobalDialogManager />}
               </>
             </SnackbarProvider>
           </StylesProvider>
         </ThemeProvider>
       </RawIntlProvider>
     </Provider>
+  );
+}
+
+function CrafterCMSNextBridge(props: PropsWithChildren<{ isLegacy?: boolean }>) {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <Bridge isLegacy={props.isLegacy} resource={storeResource} children={props.children} />
+    </Suspense>
   );
 }
 
