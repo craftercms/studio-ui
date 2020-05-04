@@ -34,3 +34,12 @@ export function forEach<T = any>(
   }
   return emptyReturnValue;
 }
+
+export function asArray<T = unknown>(value: T): T[] {
+  return Array.isArray(value) ? value : [value];
+}
+
+export default {
+  forEach,
+  asArray
+};

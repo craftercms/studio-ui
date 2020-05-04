@@ -35,6 +35,7 @@ const initialState: CompareVersionsDialogStateProps = {
 export default createReducer<GlobalState['dialogs']['compareVersions']>(initialState, {
   [showCompareVersionsDialog.type]: (state, { payload }) => ({
     ...state,
+    onClose: closeCompareVersionsDialog(),
     onDismiss: closeCompareVersionsDialog(),
     ...payload,
     open: true,

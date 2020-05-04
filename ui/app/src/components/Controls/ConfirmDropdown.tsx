@@ -82,8 +82,6 @@ export default function (props: ConfirmDropdownProps) {
     onConfirm();
   };
 
-  console.log(props.classes?.button)
-
   return (
     <>
       <Button

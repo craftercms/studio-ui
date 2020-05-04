@@ -37,6 +37,7 @@ export default createReducer<GlobalState['dialogs']['history']>(
   initialState,
   {
     [showHistoryDialog.type]: (state, { payload }) => ({
+      onClose: closeHistoryDialog(),
       ...state,
       onDismiss: closeHistoryDialog(),
       ...payload,

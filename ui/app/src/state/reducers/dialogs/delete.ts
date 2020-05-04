@@ -14,23 +14,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import StandardAction from '../../../models/StandardAction';
+import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { DeleteDialogStateProps } from '../../../modules/Content/Delete/DeleteDialog';
-
-export const showDeleteDialog = createAction<Partial<DeleteDialogStateProps>>('SHOW_DELETE_DIALOG');
-
-export const closeDeleteDialog = createAction<StandardAction>('CLOSE_DELETE_DIALOG');
+import { closeDeleteDialog, deleteDialogClosed, showDeleteDialog } from '../../actions/dialogs';
 
 export default createReducer<GlobalState['dialogs']['delete']>(
   { open: false },
   {
     [showDeleteDialog.type]: (state, { payload }) => ({
+      onClose: closeDeleteDialog(),
       onDismiss: closeDeleteDialog(),
       ...payload,
       open: true
     }),
-    [closeDeleteDialog.type]: (state) => ({ open: false, onClose: state.onClose })
+    [closeDeleteDialog.type]: (state) => ({ open: false, onClose: state.onClose }),
+    [deleteDialogClosed.type]: () => ({ open: false })
   }
 );

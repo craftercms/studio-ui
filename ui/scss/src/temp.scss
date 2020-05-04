@@ -243,9 +243,11 @@ div#acn-active-content {
   display: block;
   cursor: pointer;
   padding: 18px 10px 14px;
+
   &:hover {
     background: rgba(0, 0, 0, .04);
   }
+
   &:empty {
     display: none;
   }
@@ -265,6 +267,7 @@ div#acn-active-content {
 }
 
 #acn-persona-image {
+  margin-right: 0;
   font-size: 18px;
   position: relative;
   top: 1.5px;
@@ -322,6 +325,7 @@ div#acn-active-content {
   font-weight: 600;
   line-height: 20px;
   padding: 16px 10px;
+
   &:hover {
     color: var(--craftercms-blue);
     background: rgba(0, 0, 0, .04);
@@ -332,6 +336,7 @@ div#acn-active-content {
   .navbar-items-wrapper {
     display: flex;
   }
+
   @media (max-width: 767px) {
     .navbar-items-wrapper {
       justify-content: flex-end;
@@ -398,15 +403,14 @@ div#acn-active-content {
     position: absolute;
 
     #acn-sites-link {
-      display: inline-block;
-      font-size: 14px;
-      line-height: 15px;
+      padding: 3px 0;
       color: #333333;
       cursor: pointer;
 
       &:hover {
         color: #333333;
         text-decoration: none;
+        background: rgba(0, 0, 0, .04);
       }
     }
   }
@@ -588,6 +592,11 @@ div#acn-active-content {
   margin-top: 15px !important;
   color: #333333;
   cursor: pointer;
+  padding: 3px 0;
+
+  &:hover {
+    background: rgba(0, 0, 0, .04);
+  }
 }
 
 #cstudio-admin-console-workarea {

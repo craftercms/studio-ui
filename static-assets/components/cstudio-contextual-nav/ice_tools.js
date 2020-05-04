@@ -137,7 +137,7 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
           containerEl.appendChild(pencilIcon);
           el.appendChild(containerEl);
 
-          containerEl.onclick = function() {
+          el.onclick = function() {
             var iceOn = !!sessionStorage.getItem('ice-on'); // cast string value to a boolean
 
             if (!iceOn) {

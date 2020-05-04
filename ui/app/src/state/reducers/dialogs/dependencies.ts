@@ -14,14 +14,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import StandardAction from '../../../models/StandardAction';
+import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { DependenciesDialogStateProps } from '../../../modules/Content/Dependencies/DependenciesDialog';
-
-export const showDependenciesDialog = createAction<Partial<DependenciesDialogStateProps>>('SHOW_DEPENDENCIES_DIALOG');
-
-export const closeDependenciesDialog = createAction<StandardAction>('CLOSE_DEPENDENCIES_DIALOG');
+import {
+  closeDependenciesDialog,
+  dependenciesDialogClosed,
+  showDependenciesDialog
+} from '../../actions/dialogs';
 
 const initialState: DependenciesDialogStateProps = {
   open: false,
@@ -33,13 +32,16 @@ export default createReducer<GlobalState['dialogs']['dependencies']>(
   {
     [showDependenciesDialog.type]: (state, { payload }) => ({
       ...state,
+      onClose: closeDependenciesDialog(),
       onDismiss: closeDependenciesDialog(),
       ...payload,
       open: true
     }),
     [closeDependenciesDialog.type]: (state) => ({
-      ...initialState,
+      ...state,
+      open: false,
       onClose: state.onClose
-    })
+    }),
+    [dependenciesDialogClosed.type]: () => (initialState)
   }
 );

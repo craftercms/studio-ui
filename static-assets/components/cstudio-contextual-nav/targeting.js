@@ -93,7 +93,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
           containerEl.appendChild(iconEl);
           el.appendChild(containerEl);
 
-          containerEl.onclick = function() {
+          el.onclick = function() {
             var targetingDialog = $('#cstudioPreviewTargetingOverlay')[0];
 
             if (targetingDialog) {

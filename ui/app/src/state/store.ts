@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore, EnhancedStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import reducer from './reducers/root';
 import { nou } from '../utils/object';
 import Cookies from 'js-cookie';
@@ -22,19 +22,25 @@ import GlobalState from '../models/GlobalState';
 import { createEpicMiddleware } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
+import createMockInitialState, { fetchInitialState } from '../utils/createMockInitialState';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-const epicMiddleware = createEpicMiddleware();
-const middleware = [...getDefaultMiddleware<GlobalState>({ thunk: false }), epicMiddleware];
+export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
 
-const store = configureStore<GlobalState, StandardAction>({
-  reducer,
-  middleware,
-  preloadedState: createInitialState()
-});
+export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
+  const epicMiddleware = createEpicMiddleware();
+  const middleware = [...getDefaultMiddleware<GlobalState>({ thunk: false }), epicMiddleware];
+  const store = configureStore<GlobalState, StandardAction>({
+    reducer,
+    middleware,
+    preloadedState
+  });
+  epicMiddleware.run(epic);
+  return store;
+}
 
-epicMiddleware.run(epic);
-
-function createInitialState(): GlobalState {
+export function retrieveInitialStateScript(): GlobalState {
   let state = {} as GlobalState;
   const script = document.querySelector('#initialState');
   if (script) {
@@ -45,17 +51,32 @@ function createInitialState(): GlobalState {
         cookie && (state.sites.active = Cookies.get(state.env.SITE_COOKIE));
       }
     } catch {
+      // The login screen won't have the preloaded state
+      !window.location.href.includes('/login') &&
       console.error('[GlobalContext] Malformed initial global state.');
+      // TODO: Login view should be built separately from the main app to avoid this hack and specially to avoid the bulky build
     }
   } else {
-    console.error('[GlobalContext] Initial global state not found.');
+    return null;
   }
-  if (process.env.NODE_ENV === 'production') {
-    const writer = document.querySelector('#initialStateWriter');
-    script.parentNode.removeChild(script);
-    writer.parentNode.removeChild(writer);
-  }
+  const writer = document.querySelector('#initialStateWriter');
+  script?.parentNode.removeChild(script);
+  writer?.parentNode.removeChild(writer);
   return state;
 }
 
-export default store;
+export function createStore(useMock = false): Observable<CrafterCMSStore> {
+  const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
+  if (preloadState) {
+    return of(createStoreSync(preloadState));
+  } else {
+    return fetchInitialState().pipe(
+      map((initialState) => createStoreSync(initialState))
+    );
+  }
+}
+
+export default createStore;
+
+
+

@@ -37,10 +37,10 @@ YAHOO.extend(
       var datasources = this.form.datasources;
 
       if (datasources.length) {
-        this.fieldValue = (!value) 
-          ? [] 
-          : typeof value == 'string' 
-            ? value.split(',').filter(name => datasources.some(ds => ds.id === name)) 
+        this.fieldValue = (!value)
+          ? []
+          : typeof value == 'string'
+            ? value.split(',').filter(name => datasources.some(ds => ds.id === name))
             : value;
 
         valuesEl = document.createElement('div');
@@ -76,10 +76,11 @@ YAHOO.extend(
       var labelEl,
         cbEl,
         labelText,
-        _self = this;
+        _self = this,
+        controlId = `${datasource.type}_${datasource.id}`;
 
       labelEl = document.createElement('label');
-      labelEl.setAttribute('for', datasource.id);
+      labelEl.setAttribute('for', controlId);
 
       labelText = document.createTextNode(datasource.title);
 
@@ -111,17 +112,17 @@ YAHOO.extend(
             ) {
               _self.removeAll();
             }
-            _self.addValue(this.id);
+            _self.addValue(this.value);
             updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
           } else {
-            _self.removeValue(this.id);
+            _self.removeValue(this.value);
             updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
           }
         };
       }
 
       cbEl.value = datasource.id;
-      cbEl.id = datasource.id;
+      cbEl.id = controlId;
 
       if (this.fieldValue.indexOf(datasource.id) > -1) {
         cbEl.checked = true;
