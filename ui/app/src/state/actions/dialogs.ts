@@ -20,9 +20,11 @@ import { HistoryDialogStateProps } from '../../modules/Content/History/HistoryDi
 import { ViewVersionDialogStateProps } from '../../modules/Content/History/ViewVersionDialog';
 import { FetchContentVersion } from '../../models/Version';
 import { CompareVersionsDialogStateProps } from '../../modules/Content/History/CompareVersionsDialog';
+import { SandboxItem } from '../../models/Item';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
+export const changeHistoryDialogItem = createAction<SandboxItem>('CHANGE_HISTORY_DIALOG_ITEM');
 export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
 // endregion
 
@@ -36,5 +38,6 @@ export const fetchContentVersionFailed = createAction<any>('FETCH_CONTENT_VERSIO
 
 //region Compare Versions
 export const showCompareVersionsDialog = createAction<Partial<CompareVersionsDialogStateProps>>('SHOW_COMPARE_VERSIONS_DIALOG');
+export const changeCompareVersionsDialogItem = createAction<SandboxItem>('CHANGE_COMPARE_VERSIONS_DIALOG_ITEM');
 export const closeCompareVersionsDialog = createAction<StandardAction>('CLOSE_COMPARE_VERSIONS_DIALOG');
 //endregion

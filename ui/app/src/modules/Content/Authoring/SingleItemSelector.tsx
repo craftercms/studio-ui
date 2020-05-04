@@ -240,7 +240,9 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     onDropdownClick,
     onClose,
     label,
-    open
+    open,
+    selectedItem,
+    rootPath
   } = props;
   const classes = useStyles();
   const anchorEl = useRef();
@@ -259,7 +261,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           );
           break;
         case fetchParentsItems.type:
-          const parentsPath = getParentsFromPath(state.currentPath);
+          const parentsPath = getParentsFromPath(payload);
           const requests: Observable<GetChildrenResponse>[] = [];
           if (parentsPath.length) {
             parentsPath.forEach(parentPath => {
@@ -295,16 +297,16 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     errorSelector: (consumer) => consumer.error
   });
 
-  const handleDropdownClick = () => {
+  const handleDropdownClick = (item: SandboxItem) => {
     onDropdownClick();
-    exec(fetchParentsItems(state.currentPath));
+    exec(fetchParentsItems(item.path ?? rootPath));
   };
 
-  const onPathSelected = (item) => {
+  const onPathSelected = (item: SandboxItem) => {
     exec(fetchChildrenByPath(item.path));
   };
 
-  const onCrumbSelected = (item) => {
+  const onCrumbSelected = (item: SandboxItem) => {
     if (withoutIndex(state.currentPath) === withoutIndex(item.path)) {
       handleItemClicked(item);
     } else {
@@ -312,7 +314,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     }
   };
 
-  const handleItemClicked = (item) => {
+  const handleItemClicked = (item: SandboxItem) => {
     exec(changeSelectedItem(item));
     onItemClicked(item);
   };
@@ -326,16 +328,16 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         {label}
       </Typography>
       {
-        state.selectedItem &&
+        selectedItem &&
         <div className={classes.selectedItem}>
           <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
-          <Typography variant={labelVariant}>{state.selectedItem.label}</Typography>
+          <Typography variant={labelVariant}>{selectedItem.label}</Typography>
         </div>
       }
       <IconButton
         className={classes.changeBtn}
         ref={anchorEl}
-        onClick={handleDropdownClick}
+        onClick={() => handleDropdownClick(selectedItem)}
       >
         <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
       </IconButton>

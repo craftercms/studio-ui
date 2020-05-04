@@ -18,6 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { CompareVersionsDialogStateProps } from '../../../modules/Content/History/CompareVersionsDialog';
 import {
+  changeCompareVersionsDialogItem,
   closeCompareVersionsDialog,
   showCompareVersionsDialog,
   showHistoryDialog
@@ -38,6 +39,10 @@ export default createReducer<GlobalState['dialogs']['compareVersions']>(initialS
     ...payload,
     open: true,
     isFetching: true
+  }),
+  [changeCompareVersionsDialogItem.type]: (state, {payload}) => ({
+    ...state,
+    item: payload
   }),
   [closeCompareVersionsDialog.type]: (state) => ({
     ...initialState,

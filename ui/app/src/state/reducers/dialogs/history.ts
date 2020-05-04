@@ -18,6 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
 import {
+  changeHistoryDialogItem,
   closeCompareVersionsDialog,
   closeHistoryDialog,
   closeViewVersionDialog,
@@ -40,6 +41,10 @@ export default createReducer<GlobalState['dialogs']['history']>(
       onDismiss: closeHistoryDialog(),
       ...payload,
       open: true
+    }),
+    [changeHistoryDialogItem.type]: (state, {payload}) => ({
+      ...state,
+      item: payload
     }),
     [closeHistoryDialog.type]: (state) => ({
       ...initialState,

@@ -77,6 +77,12 @@ export function getLegacyItem(site: string, path: string): Observable<LegacyItem
   );
 }
 
+export function getItem(site: string, path: string): Observable<SandboxItem> {
+  return getLegacyItem(site, path).pipe(
+    map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem)
+  )
+}
+
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(map(fromString));
 }

@@ -36,21 +36,20 @@ import {
   compareBothVersions,
   compareToPreviousVersion,
   compareVersion,
-  fetchItemVersions,
   resetVersionsState,
   revertContent,
   revertToPreviousVersion,
   versionsChangePage
 } from '../../../state/reducers/versions';
 import {
+  changeHistoryDialogItem,
   fetchContentVersion,
   showCompareVersionsDialog,
   showHistoryDialog,
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
-import { LegacyItem } from '../../../models/Item';
+import { SandboxItem } from '../../../models/Item';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { parseLegacyItemToSandBoxItem } from '../../../services/content';
 
 const translations = defineMessages({
   previousPage: {
@@ -182,7 +181,7 @@ interface Menu {
 
 interface HistoryDialogBaseProps {
   open: boolean;
-  item?: LegacyItem;
+  item?: SandboxItem;
   rootPath: string;
 }
 
@@ -253,8 +252,10 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     [count, setMenu]
   );
 
-  function dispatchCompareVersionDialogWithOnClose() {
+  function dispatchCompareVersionDialogWithActions() {
     dispatch(showCompareVersionsDialog({
+      rootPath,
+      item,
       onClose: resetVersionsState(),
       rightActions: [
         {
@@ -289,19 +290,19 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   const compareTo = (versionNumber: string) => {
     dispatch(fetchContentTypes());
     dispatch(compareVersion(versionNumber));
-    dispatchCompareVersionDialogWithOnClose();
+    dispatchCompareVersionDialogWithActions();
   };
 
   const compareBoth = (selected: string[]) => {
     dispatch(fetchContentTypes());
     dispatch(compareBothVersions(selected));
-    dispatchCompareVersionDialogWithOnClose();
+    dispatchCompareVersionDialogWithActions();
   };
 
   const compareToPrevious = (versionNumber: string) => {
     dispatch(fetchContentTypes());
     dispatch(compareToPreviousVersion(versionNumber));
-    dispatchCompareVersionDialogWithOnClose();
+    dispatchCompareVersionDialogWithActions();
   };
 
   const revertToPrevious = (versionNumber: string) => {
@@ -357,7 +358,14 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   return (
-    <Dialog onClose={onClose} open={open} fullWidth maxWidth="md" onEscapeKeyDown={onDismiss}>
+    <Dialog
+      onClose={onClose}
+      open={open}
+      fullWidth
+      maxWidth="md"
+      onEscapeKeyDown={onDismiss}
+      keepMounted
+    >
       <DialogHeader
         title={
           <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Content Item History" />
@@ -365,19 +373,22 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         onDismiss={onDismiss}
       />
       <DialogBody className={classes.dialogBody}>
-        <SingleItemSelector
-          classes={{ root: classes.singleItemSelector }}
-          label="Item"
-          open={openSelector}
-          onClose={() => setOpenSelector(false)}
-          onDropdownClick={() => setOpenSelector(!openSelector)}
-          rootPath={rootPath}
-          selectedItem={item && parseLegacyItemToSandBoxItem(item)}
-          onItemClicked={(item) => {
-            setOpenSelector(false);
-            dispatch(fetchItemVersions({ path: item.path }));
-          }}
-        />
+        {
+          open &&
+          <SingleItemSelector
+            classes={{ root: classes.singleItemSelector }}
+            label="Item"
+            open={openSelector}
+            onClose={() => setOpenSelector(false)}
+            onDropdownClick={() => setOpenSelector(!openSelector)}
+            rootPath={rootPath}
+            selectedItem={item}
+            onItemClicked={(item) => {
+              setOpenSelector(false);
+              dispatch(changeHistoryDialogItem(item));
+            }}
+          />
+        }
         <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
             resource={versionsResource}

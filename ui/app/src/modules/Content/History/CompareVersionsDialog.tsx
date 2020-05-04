@@ -33,7 +33,6 @@ import { Pagination } from './HistoryDialog';
 import {
   compareBothVersions,
   compareVersion,
-  fetchItemVersions,
   versionsChangePage
 } from '../../../state/reducers/versions';
 import { useDispatch } from 'react-redux';
@@ -52,8 +51,8 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { parseLegacyItemToSandBoxItem } from '../../../services/content';
-import { LegacyItem } from '../../../models/Item';
+import { SandboxItem } from '../../../models/Item';
+import { changeCompareVersionsDialogItem } from '../../../state/actions/dialogs';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -77,7 +76,7 @@ interface CompareVersionsDialogBaseProps {
   open: boolean;
   error: ApiResponse;
   isFetching: boolean;
-  item?: LegacyItem;
+  item?: SandboxItem;
   rootPath: string;
 }
 
@@ -121,14 +120,14 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   const compareMode = selectedA && selectedB;
 
   const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
-    shouldResolve: (versionsBranch) =>
-      Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
-    shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
-    shouldRenew: (versionsBranch, resource) => resource.complete,
-    resultSelector: (versionsBranch) => versionsBranch.versions,
-    errorSelector: (versionsBranch) => versionsBranch.error
+    shouldResolve: (_versionsBranch) => Boolean(_versionsBranch.versions) && !_versionsBranch.isFetching,
+    shouldReject: (_versionsBranch) => Boolean(_versionsBranch.error),
+    shouldRenew: (_versionsBranch, resource) => resource.complete,
+    resultSelector: (_versionsBranch) => _versionsBranch.versions,
+    errorSelector: (_versionsBranch) => _versionsBranch.error
   });
 
+  ///use memo
   const compareVersionsResource = useStateResource<CompareVersionsResource, any>(
     {
       compareVersionsBranch,
@@ -145,11 +144,13 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         Boolean(compareVersionsBranch.error || contentTypesBranch.error),
       shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) =>
         (compareVersionsBranch.isFetching || contentTypesBranch.isFetching) && resource.complete,
-      resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => ({
-        a: compareVersionsBranch.compareVersions?.[0],
-        b: compareVersionsBranch.compareVersions?.[1],
-        contentTypes: contentTypesBranch.byId
-      }),
+      resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => (
+        {
+          a: compareVersionsBranch.compareVersions?.[0],
+          b: compareVersionsBranch.compareVersions?.[1],
+          contentTypes: contentTypesBranch.byId
+        }
+      ),
       errorSelector: ({ compareVersionsBranch, contentTypesBranch }) =>
         compareVersionsBranch.error || contentTypesBranch.error
     }
@@ -170,7 +171,14 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
   };
 
   return (
-    <Dialog onClose={onClose} open={open} fullWidth maxWidth="md" onEscapeKeyDown={onDismiss}>
+    <Dialog
+      onClose={onClose}
+      open={open}
+      fullWidth
+      maxWidth="md"
+      onEscapeKeyDown={onDismiss}
+      keepMounted
+    >
       <DialogHeader
         title={
           <FormattedMessage
@@ -209,7 +217,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         onDismiss={onDismiss}
       />
       <DialogBody>
-        {!compareMode && (
+        {!compareMode && rootPath && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
             label="Item"
@@ -217,10 +225,10 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
             onClose={() => setOpenSelector(false)}
             onDropdownClick={() => setOpenSelector(!openSelector)}
             rootPath={rootPath}
-            selectedItem={item && parseLegacyItemToSandBoxItem(item)}
+            selectedItem={item}
             onItemClicked={(item) => {
               setOpenSelector(false);
-              dispatch(fetchItemVersions({ path: item.path }));
+              dispatch(changeCompareVersionsDialogItem(item));
             }}
           />
         )}
@@ -228,7 +236,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
           <SuspenseWithEmptyState resource={compareVersionsResource}>
             <CompareVersions resource={compareVersionsResource} />
           </SuspenseWithEmptyState>
-        ) : path ? (
+        ) : item ? (
           <SuspenseWithEmptyState resource={versionsResource}>
             <VersionList
               selected={selected}

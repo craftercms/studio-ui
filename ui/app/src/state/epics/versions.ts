@@ -38,11 +38,12 @@ import {
   revertToPreviousVersion
 } from '../reducers/versions';
 import { forkJoin } from 'rxjs';
+import { changeCompareVersionsDialogItem, changeHistoryDialogItem } from '../actions/dialogs';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchItemVersions.type),
+      ofType(fetchItemVersions.type, changeHistoryDialogItem.type, changeCompareVersionsDialogItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const service = (payload.config)
