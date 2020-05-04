@@ -39,7 +39,7 @@ YAHOO.extend(
       this.lastValidValue = value;
       valueEl.fieldName = this.fieldName;
 
-      $(valueEl).on('blur', function () {
+      $(valueEl).on('blur', function (e) {
         const currentValue = this.value;
         const isNumber = /^[+-]?\d+(\.\d+)?$/;
         const isValid = (currentValue.match(isNumber) !== null) || currentValue === '';
