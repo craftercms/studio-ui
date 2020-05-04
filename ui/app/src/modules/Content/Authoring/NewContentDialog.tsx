@@ -43,7 +43,7 @@ import { LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
 import { useDispatch } from 'react-redux';
-import { newContentCreationComplete, showEdit } from '../../../state/reducers/dialogs/edit';
+import { newContentCreationComplete, showEditDialog } from '../../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   title: {
@@ -248,7 +248,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const onTypeOpen = (srcData) => () => {
 
     dispatch(
-      showEdit({
+      showEditDialog({
         src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`,
         type: 'form',
         inProgress: false,

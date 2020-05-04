@@ -54,7 +54,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
 import { useDispatch } from 'react-redux';
-import { showEdit } from '../../../state/reducers/dialogs/edit';
+import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 import { ApiResponse } from '../../../models/ApiResponse';
 
 const assetsTypes = {
@@ -583,7 +583,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     let src = `${defaultFormSrc}?site=${siteId}&path=${item.uri}&type=${type}`;
 
     dispatch(
-      showEdit({
+      showEditDialog({
         src,
         type,
         inProgress: true,

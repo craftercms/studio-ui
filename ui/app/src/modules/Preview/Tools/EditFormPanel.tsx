@@ -29,7 +29,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
 import { findParentModelId } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
-import { showEdit } from '../../../state/reducers/dialogs/edit';
+import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -132,7 +132,7 @@ export default function EditFormPanel() {
 
   function openDialog(type: string) {
     dispatch(
-      showEdit({
+      showEditDialog({
         src: getSrc(type),
         type,
         inProgress: true,

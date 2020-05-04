@@ -31,7 +31,7 @@ import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { showDependenciesDialog } from '../state/reducers/dialogs/dependencies';
 import { fetchItemVersions } from '../state/reducers/versions';
 import { showHistoryDialog } from '../state/actions/dialogs';
-import { showEdit } from '../state/reducers/dialogs/edit';
+import { showEditDialog } from '../state/reducers/dialogs/edit';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -141,7 +141,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
 
         dispatch(
-          showEdit({
+          showEditDialog({
             src,
             type,
             inProgress: true,

@@ -31,7 +31,7 @@ import { SandboxItem } from '../../models/Item';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { showNewContentDialog } from '../../state/reducers/dialogs/newContent';
 import { ApiResponse } from '../../models/ApiResponse';
-import { newContentCreationComplete, showEdit } from '../../state/reducers/dialogs/edit';
+import { newContentCreationComplete, showEditDialog } from '../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -116,7 +116,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     onItemClicked?.();
 
     dispatch(
-      showEdit({
+      showEditDialog({
         src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`,
         type: 'form',
         inProgress: false,

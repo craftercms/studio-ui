@@ -19,13 +19,13 @@ import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
 import { EmbeddedLegacyEditorsStateProps } from '../../../modules/Preview/EmbeddedLegacyEditors';
 
-export const showEdit = createAction<Partial<EmbeddedLegacyEditorsStateProps>>(
+export const showEditDialog = createAction<Partial<EmbeddedLegacyEditorsStateProps>>(
   'SHOW_EDIT'
 );
 
 export const updateEditConfig = createAction<any>('UPDATE_EDIT_CONFIG');
 
-export const closeEdit = createAction<StandardAction>(
+export const closeEditDialog = createAction<StandardAction>(
   'CLOSE_EDIT'
 );
 
@@ -36,8 +36,8 @@ export const newContentCreationComplete = createAction<StandardAction>(
 export default createReducer<GlobalState['dialogs']['edit']>(
   { open: false },
   {
-    [showEdit.type]: (state, { payload }) => ({
-      onDismiss: closeEdit(),
+    [showEditDialog.type]: (state, { payload }) => ({
+      onDismiss: closeEditDialog(),
       ...payload,
       open: true
     }),
@@ -45,7 +45,7 @@ export default createReducer<GlobalState['dialogs']['edit']>(
       ...state,
       ...payload
     }),
-    [closeEdit.type]: (state, { payload }) => ({
+    [closeEditDialog.type]: (state, { payload }) => ({
       ...state,
       ...payload,
       open: false,

@@ -41,7 +41,7 @@ import { getHostToGuestBus } from './previewContext';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
-import { closeEdit, updateEditConfig } from '../../state/reducers/dialogs/edit';
+import { closeEditDialog, updateEditConfig } from '../../state/reducers/dialogs/edit';
 import { popPiece } from '../../utils/string';
 import ContentInstance from '../../models/ContentInstance';
 
@@ -147,7 +147,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
 
   const handleClose = useCallback(() => {
     dispatch(
-      closeEdit({
+      closeEditDialog({
         type: '',
         payload: {
           src: null,
