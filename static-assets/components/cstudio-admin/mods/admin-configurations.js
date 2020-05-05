@@ -152,9 +152,15 @@
 
         this.loadConfigFiles();
 
-        amplify.subscribe('HISTORY_REVERT', function () {
+        const cb = () => {
           self.loadSelectedConfig();
-        });
+        }
+
+        amplify.subscribe('TOOL_SELECTED', () => {
+          amplify.unsubscribe('HISTORY_REVERT', cb);
+        })
+
+        amplify.subscribe('HISTORY_REVERT', cb);
 
         // hide display area by default
         editAreaEl.style.display = 'none';
