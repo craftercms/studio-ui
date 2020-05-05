@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function (angular) {
+(function(angular) {
   'use strict';
 
   var app = angular.module('studio', [
@@ -50,15 +50,14 @@
     '$http',
     '$cookies',
     '$location',
-    function ($rootScope, $state, $stateParams, authService, sitesService, Constants) {
+    function($rootScope, $state, $stateParams, authService, sitesService, Constants) {
       $rootScope.$state = $state;
       $rootScope.$stateParams = $stateParams;
 
       $rootScope.imagesDirectory = Constants.PATH_IMG;
 
-      $rootScope.$on('$stateChangeStart', function (event, toState) {
-
-        authService.validateSession().then(function (response) {
+      $rootScope.$on('$stateChangeStart', function(event, toState) {
+        authService.validateSession().then(function(response) {
           if (response.data && response.data.active) {
             var user = authService.getUser() || {};
             if (user.authenticationType === Constants.HEADERS) {
@@ -75,7 +74,7 @@
 
           if (user && user.username) {
             var createSitePermissions = false;
-            sitesService.getPermissions('', '/', user.username || user).success(function (data) {
+            sitesService.getPermissions('', '/', user.username || user).success(function(data) {
               for (var i = 0; i < data.permissions.length; i++) {
                 if (data.permissions[i] == 'create-site') {
                   createSitePermissions = true;
@@ -113,7 +112,7 @@
         if ($rootScope.globalMenuData) {
           setDocTitle($rootScope.globalMenuData, toState);
         } else {
-          sitesService.getGlobalMenu().success(function (data) {
+          sitesService.getGlobalMenu().success(function(data) {
             $rootScope.globalMenuData = data.menuItems;
             setDocTitle(data.menuItems, toState);
           });
@@ -123,7 +122,6 @@
       sitesService.getLanguages($rootScope, true);
 
       CrafterCMSNext.renderBackgroundUI();
-
     }
   ]);
 
@@ -131,7 +129,7 @@
     '$stateProvider',
     '$urlRouterProvider',
     '$translateProvider',
-    function ($stateProvider, $urlRouterProvider, $translateProvider) {
+    function($stateProvider, $urlRouterProvider, $translateProvider) {
       $urlRouterProvider.otherwise('/globalMenu');
 
       $stateProvider
@@ -373,7 +371,7 @@
     '$http',
     '$document',
     'Constants',
-    function ($rootScope, $http, $document, Constants) {
+    function($rootScope, $http, $document, Constants) {
       var user = null;
       var script = $document[0].getElementById('user');
       let unmountAuthMonitor;
@@ -387,63 +385,63 @@
         authLoop();
       }
 
-      this.isAuthenticated = function () {
+      this.isAuthenticated = function() {
         return !!user;
       };
 
-      this.logout = function () {
+      this.logout = function() {
         return $http.post(security('logout'), null).then(() => {
           unmountAuthMonitor && unmountAuthMonitor();
           user = null;
         });
       };
 
-      this.getSSOLogoutInfo = function () {
+      this.getSSOLogoutInfo = function() {
         return $http.get(userActions('/me/logout/sso/url'));
       };
 
-      this.getUser = function () {
+      this.getUser = function() {
         return user;
       };
 
-      this.getCurrentUserData = function (action) {
+      this.getCurrentUserData = function(action) {
         if (this.getUser()) {
           return $http.get(userActions('/' + action));
         }
       };
 
-      this.removeUser = function () {};
+      this.removeUser = function() {};
 
-      this.getStudioInfo = function () {
+      this.getStudioInfo = function() {
         return $http.get(api2('version', Constants.MONITORING_PATH));
       };
 
-      this.forgotPassword = function (username) {
+      this.forgotPassword = function(username) {
         return $http.get(userActions('/forgot_password'), {
           params: { username: username }
         });
       };
 
-      this.recoverPassword = function (data) {
+      this.recoverPassword = function(data) {
         return $http.post(userActions(user + '/reset_password'), data);
       };
 
-      this.setPassword = function (data) {
+      this.setPassword = function(data) {
         return $http.post(userActions('/set_password'), data);
       };
 
-      this.changePassword = function (data) {
+      this.changePassword = function(data) {
         var requestData = { username: data.username, current: data.current, new: data.new };
         return $http.post(userActions('/me/change_password'), requestData);
       };
 
-      this.validateToken = function (data) {
+      this.validateToken = function(data) {
         return $http.get(api('validate-token'), {
           params: { token: data.token }
         });
       };
 
-      this.validateSession = function () {
+      this.validateSession = function() {
         return $http.get(security('validate-session'));
       };
 
@@ -501,35 +499,35 @@
     '$timeout',
     '$window',
     '$translate',
-    function ($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
+    function($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
       var me = this;
 
-      this.getSites = function (params) {
+      this.getSites = function(params) {
         return $http.get(api('get-per-user'), {
           params: params
         });
       };
 
-      this.getSite = function (id) {
+      this.getSite = function(id) {
         return $http.get(json('get-site'), {
           params: { siteId: id }
         });
       };
 
-      this.getSitesPerUser = function (id, params) {
+      this.getSitesPerUser = function(id, params) {
         return $http.get(userActions(id + '/sites'), {
           params: params
         });
       };
 
-      this.setCookie = function (cookieGenName, value) {
+      this.setCookie = function(cookieGenName, value) {
         CrafterCMSNext.util.auth.setSiteCookie(cookieGenName, value);
       };
 
-      this.editSite = function (site) {
+      this.editSite = function(site) {
         me.setCookie('crafterSite', site.siteId);
         $timeout(
-          function () {
+          function() {
             $window.location.href = '/studio/preview';
           },
           0,
@@ -537,10 +535,10 @@
         );
       };
 
-      this.goToDashboard = function (site) {
+      this.goToDashboard = function(site) {
         me.setCookie('crafterSite', site.siteId);
         $timeout(
-          function () {
+          function() {
             $window.location.href = '/studio/site-dashboard';
           },
           0,
@@ -548,37 +546,37 @@
         );
       };
 
-      this.create = function (site) {
+      this.create = function(site) {
         return $http.post(api('create'), site);
       };
 
-      this.exists = function (site) {
+      this.exists = function(site) {
         return $http.get(api('exists'), {
           params: { site: site.site }
         });
       };
 
-      this.removeSite = function (site) {
+      this.removeSite = function(site) {
         return $http.post(api('delete-site'), {
           siteId: site.siteId
         });
       };
 
-      this.getAvailableBlueprints = function () {
+      this.getAvailableBlueprints = function() {
         return $http.get(sitesApi('available_blueprints'));
       };
 
-      this.getPermissions = function (siteId, path, user) {
+      this.getPermissions = function(siteId, path, user) {
         return $http.get(security('get-user-permissions'), {
           params: { site: siteId, path: path, user: user }
         });
       };
 
-      this.getAvailableLanguages = function () {
+      this.getAvailableLanguages = function() {
         return $http.get(server('get-available-languages'));
       };
 
-      this.getDocumentCookie = function (name) {
+      this.getDocumentCookie = function(name) {
         var value = '; ' + document.cookie;
         var parts = value.split('; ' + name + '=');
         if (parts.length == 2)
@@ -588,13 +586,13 @@
             .shift();
       };
 
-      this.getLanguages = function (scope, setLang) {
+      this.getLanguages = function(scope, setLang) {
         var me = this;
         this.getAvailableLanguages()
-          .success(function (data) {
+          .success(function(data) {
             var userCookieLang = scope.user
-                ? localStorage.getItem(scope.user.username + '_crafterStudioLanguage')
-                : null,
+              ? localStorage.getItem(scope.user.username + '_crafterStudioLanguage')
+              : null,
               cookieLang = userCookieLang
                 ? userCookieLang
                 : localStorage.getItem('crafterStudioLanguage');
@@ -616,26 +614,26 @@
               $translate.use(cookieLang);
             }
           })
-          .error(function () {
+          .error(function() {
             scope.languagesAvailable = [];
           });
       };
 
-      this.showLoaderProperty = function () {
+      this.showLoaderProperty = function() {
         var showLoader = false;
 
         return {
-          getProperty: function () {
+          getProperty: function() {
             return showLoader;
           },
-          setProperty: function (value) {
+          setProperty: function(value) {
             showLoader = value;
             $rootScope.$broadcast(Constants.SHOW_LOADER, value);
           }
         };
       };
 
-      this.getGlobalMenu = function () {
+      this.getGlobalMenu = function() {
         return $http.get(uiApi('global_menu'));
       };
 
@@ -676,14 +674,7 @@
   ]);
 
   app.service('passwordRequirements', [
-    '$rootScope',
-    '$http',
-    'Constants',
-    '$cookies',
-    '$timeout',
-    '$window',
-    '$translate',
-    function ($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
+    function () {
       var me = this,
         generalRegExp = passwordRequirementsRegex, // Global declared in entry.ftl, comes from FTL context.
         generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ''),
@@ -693,22 +684,23 @@
         '',
         '',
         ''
-      ])[1].split(',')[0];
+      ])[2];
 
-      const max = ((generalRegExp.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
-        '',
-        ''
-      ])[1].split(',')[1];
+      const min = ((generalRegExp.match(/\(\?<minLength>(.*){(.*?)}\)/) || [''])[0].match(
+        /{(.*?)}/
+      ) || ['', ''])[1].split(',')[0];
 
-      const minLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
-        '',
-        ''
-      ])[1].split(',')[0];
+      const max = ((generalRegExp.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [''])[0].match(
+        /{(.*?)}/
+      ) || ['', ''])[1].split(',')[1];
 
-      const maxLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(/{(.*?)}/) || [
-        '',
-        ''
-      ])[1].split(',')[1];
+      const minLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(
+        /{(.*?)}/
+      ) || ['', ''])[1].split(',')[0];
+
+      const maxLength = ((generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) || [''])[0].match(
+        /{(.*?)}/
+      ) || ['', ''])[1].split(',')[1];
 
       const messages = {
         hasNumbers: formatMessage(passwordRequirementMessages.hasNumbers),
@@ -729,7 +721,7 @@
         invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
       };
 
-      this.init = function (scope, isValid, elt, placement) {
+      this.init = function(scope, isValid, elt, placement) {
         if (generalRegExp) {
           try {
             let isRegExpValid = new RegExp(generalRegExp);
@@ -755,7 +747,7 @@
         }
       };
 
-      this.creatingPassValHTML = function (content, templateType) {
+      this.creatingPassValHTML = function(content, templateType) {
         var html = '<div class="password-popover">';
         var validPass = false;
         var isGeneralRegExpWithoutGroupsValid = content
@@ -787,9 +779,8 @@
                 validPass = true;
               }
             }
-            html += `<span class="password-popover--list-Info">${
-              messages[captureGroupNameClean] || captureGroupNameClean
-            }</span>`;
+            html += `<span class="password-popover--list-Info">${messages[captureGroupNameClean] ||
+            captureGroupNameClean}</span>`;
             html += '</li>';
           });
           html += '</ul>';
@@ -812,12 +803,12 @@
         return { template: html, validPass: validPass };
       };
 
-      this.runValidation = function (scope, isValid, elt, staticTemplate, placement) {
+      this.runValidation = function(scope, isValid, elt, staticTemplate, placement) {
         $('#' + elt)
-          .blur(function () {
+          .blur(function() {
             $(this).popover('destroy');
           })
-          .keyup(function () {
+          .keyup(function() {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
             $('.popover')
               .find('.popover-content')
@@ -825,7 +816,7 @@
             scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           })
-          .focus(function () {
+          .focus(function() {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
             $(this).popover({
               title: messages.passwordValidation,
@@ -840,7 +831,6 @@
           });
       };
 
-      return this;
     }
   ]);
 
@@ -859,7 +849,7 @@
     '$window',
     'passwordRequirements',
     '$element',
-    function (
+    function(
       $rootScope,
       $scope,
       $state,
@@ -899,7 +889,7 @@
         no: formatMessage(words.no)
       };
 
-      $scope.showModal = function (template, size, verticalCentered, styleClass) {
+      $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
           windowClass:
@@ -912,7 +902,7 @@
 
         return modalInstance;
       };
-      $scope.hideModal = function () {
+      $scope.hideModal = function() {
         $scope.confirmationModal.close();
       };
 
@@ -936,7 +926,7 @@
               response.data.authenticatedUser.authenticationType === Constants.SAML
             );
             if (!$scope.showLogoutLink) {
-              authService.getSSOLogoutInfo().success(function (data) {
+              authService.getSSOLogoutInfo().success(function(data) {
                 var result = data.logoutUrl ? true : false;
                 if (result) {
                   $scope.showLogoutLink = true;
@@ -967,7 +957,7 @@
 
         if ($scope.data.new == $scope.data.confirmation) {
           authService.changePassword($scope.data).then(
-            function (data) {
+            function(data) {
               $scope.error = $scope.message = null;
 
               if (data.type === 'error') {
@@ -979,7 +969,7 @@
                 $timeout(logout, 1500, false);
               }
             },
-            function (error) {
+            function(error) {
               var errorResponse = error.data.response;
               $('#current').focus();
 
@@ -1002,12 +992,12 @@
 
       sitesService.getLanguages($scope);
 
-      $scope.selectActionLanguage = function (optSelected) {
+      $scope.selectActionLanguage = function(optSelected) {
         $scope.isModified = true;
         $scope.langSelected = optSelected;
       };
 
-      $scope.setLangCookie = function () {
+      $scope.setLangCookie = function() {
         try {
           $translate.use($scope.langSelected);
           // set max-age of language cookie to one year
@@ -1038,11 +1028,11 @@
         }
       };
 
-      $scope.cancel = function () {
+      $scope.cancel = function() {
         $rootScope.modalInstance.close();
       };
 
-      $scope.loadHomeState = function () {
+      $scope.loadHomeState = function() {
         var currentState = $state.current.name,
           homeState = 'home.globalMenu';
 
@@ -1059,7 +1049,7 @@
       if ($scope.user && $scope.user.username) {
         sitesService
           .getPermissions('', '/', $scope.user.username || $scope.user)
-          .success(function (data) {
+          .success(function(data) {
             for (var i = 0; i < data.permissions.length; i++) {
               if (data.permissions[i] == 'create-site') {
                 $scope.createSites = true;
@@ -1074,13 +1064,13 @@
       $scope.logout = logout;
       $scope.changePassword = changePassword;
 
-      $scope.$on(Constants.AUTH_SUCCESS, function ($event, user) {
+      $scope.$on(Constants.AUTH_SUCCESS, function($event, user) {
         $scope.user = user;
         $scope.data.email = $scope.user.email;
       });
 
       if (authService.getUser()) {
-        authService.getStudioInfo().then(function (response) {
+        authService.getStudioInfo().then(function(response) {
           const packageVersion = response.data.version.packageVersion;
           const simpleVersion = packageVersion.substr(0, 3);
           $scope.aboutStudio = response.data.version;
@@ -1122,7 +1112,7 @@
         $scope.ieWarning = true;
       }
 
-      $scope.spinnerOverlay = function () {
+      $scope.spinnerOverlay = function() {
         return $uibModal.open({
           templateUrl: 'spinnerModal.html',
           backdrop: 'static',
@@ -1132,7 +1122,7 @@
         });
       };
       $scope.validPass = false;
-      $scope.passwordRequirements = function () {
+      $scope.passwordRequirements = function() {
         passwordRequirements.init($scope, 'validPass', 'password', 'top');
       };
 
@@ -1140,7 +1130,7 @@
         if ($scope.isModified) {
           event.preventDefault();
 
-          $scope.confirmationAction = function () {
+          $scope.confirmationAction = function() {
             $scope.isModified = false;
             $state.go(toState.name);
           };
@@ -1170,11 +1160,11 @@
       } else {
         sitesService
           .getGlobalMenu()
-          .success(function (data) {
+          .success(function(data) {
             $rootScope.globalMenuData = data.menuItems;
             initGlobalMenu(data.menuItems);
           })
-          .error(function (er) {
+          .error(function(er) {
             console.log(er);
           });
       }
@@ -1183,7 +1173,7 @@
         i18n = CrafterCMSNext.i18n;
         formatMessage = i18n.intl.formatMessage;
         globalMenuMessages = i18n.messages.globalMenuMessages;
-        $scope.entities.forEach(function (entry, i) {
+        $scope.entities.forEach(function(entry, i) {
           entry.label = globalMenuMessages[entry.id]
             ? formatMessage(globalMenuMessages[entry.id])
             : entry.label;
@@ -1201,7 +1191,7 @@
           let defaultView = $scope.entities[0].id; // default view (first)
           const currentView = $state.current.name;
 
-          $scope.entities.forEach(function (entry, i) {
+          $scope.entities.forEach(function(entry, i) {
             const label = globalMenuMessages[entry.id]
               ? formatMessage(globalMenuMessages[entry.id])
               : entry.label;
@@ -1242,7 +1232,8 @@
     '$cookies',
     '$timeout',
     'Constants',
-    function (
+
+    function(
       $scope,
       $state,
       $location,
@@ -1267,7 +1258,7 @@
 
       $scope.showLoader = sitesService.showLoaderProperty().getProperty();
 
-      $scope.$on(Constants.SHOW_LOADER, function ($event, showLoader) {
+      $scope.$on(Constants.SHOW_LOADER, function($event, showLoader) {
         $scope.showLoader = showLoader;
       });
 
@@ -1280,7 +1271,7 @@
       $scope.totalSites = 0;
       $scope.defaultDelay = 500;
 
-      $scope.pageChanged = function (newPage) {
+      $scope.pageChanged = function(newPage) {
         getResultsPage(newPage);
         sitesService.setCookie('crafterStudioSitesPagination', $scope.sitesPag.sitesPerPage);
       };
@@ -1288,13 +1279,13 @@
       function getSites(params) {
         sitesService
           .getSitesPerUser('me', params)
-          .success(function (data) {
+          .success(function(data) {
             $scope.totalSites = data.total ? data.total : null;
             $scope.sites = data.sites;
             isRemove();
             createSitePermission();
           })
-          .error(function () {
+          .error(function() {
             $scope.sites = null;
           });
       }
@@ -1323,7 +1314,7 @@
 
       getResultsPage(1);
 
-      $scope.removeSiteSites = function (site) {
+      $scope.removeSiteSites = function(site) {
         var modalInstance = $uibModal.open({
           templateUrl: 'removeConfirmation.html',
           controller: 'RemoveSiteCtrl',
@@ -1331,13 +1322,13 @@
           keyboard: true,
           windowClass: 'studioMedium',
           resolve: {
-            siteToRemove: function () {
+            siteToRemove: function() {
               return site;
             }
           }
         });
 
-        modalInstance.result.then(function () {
+        modalInstance.result.then(function() {
           getResultsPage(1);
         });
       };
@@ -1353,14 +1344,14 @@
       function removePermissionPerSite(siteId) {
         sitesService
           .getPermissions(siteId, '/', $scope.user.username || $scope.user)
-          .success(function (data) {
+          .success(function(data) {
             for (var i = 0; i < data.permissions.length; i++) {
               if (data.permissions[i] == 'delete') {
                 addingRemoveProperty(siteId);
               }
             }
           })
-          .error(function () {});
+          .error(function() {});
       }
 
       function isRemove() {
@@ -1372,17 +1363,17 @@
       function createSitePermission() {
         sitesService
           .getPermissions('', '/', $scope.user.username || $scope.user)
-          .success(function (data) {
+          .success(function(data) {
             for (var i = 0; i < data.permissions.length; i++) {
               if (data.permissions[i] == 'create-site') {
                 $scope.createSites = true;
               }
             }
           })
-          .error(function () {});
+          .error(function() {});
       }
 
-      $scope.createSitesDialog = function () {
+      $scope.createSitesDialog = function() {
         const container = document.getElementsByClassName('create-site-dialog-container')[0];
         const onClose = () => {
           CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
@@ -1413,7 +1404,7 @@
     '$timeout',
     '$uibModal',
     '$state',
-    function ($rootScope, $scope, $element, $http, $timeout, $uibModal, $state) {
+    function($rootScope, $scope, $element, $http, $timeout, $uibModal, $state) {
       $scope.globalConfig = {};
       let globalConfig = $scope.globalConfig;
       $scope.messages = {
@@ -1439,7 +1430,7 @@
       let defaultValue = '';
       let sampleValue = '';
 
-      $scope.showModal = function (template, size, verticalCentered, styleClass) {
+      $scope.showModal = function(template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
           windowClass:
@@ -1452,7 +1443,7 @@
 
         return modalInstance;
       };
-      $scope.hideModal = function () {
+      $scope.hideModal = function() {
         $scope.confirmationModal.close();
       };
 
@@ -1465,7 +1456,7 @@
         theme: 'ace/theme/textmate'
       });
 
-      aceEditor.getSession().on('change', function () {
+      aceEditor.getSession().on('change', function() {
         globalConfig.isModified = true;
       });
 
@@ -1501,7 +1492,7 @@
           });
       });
 
-      $scope.save = function () {
+      $scope.save = function() {
         enableUI(false);
         const value = aceEditor.getValue();
         $http
@@ -1529,14 +1520,14 @@
           });
       };
 
-      $scope.reset = function () {
+      $scope.reset = function() {
         aceEditor.setValue(defaultValue, -1); // sets cursor in position 0, avoiding all editor content selection
         aceEditor.focus();
         aceEditor.gotoLine(0, 0, true);
         globalConfig.isModified = false;
       };
 
-      $scope.sample = function () {
+      $scope.sample = function() {
         $uibModal
           .open({
             ariaLabelledBy: 'modal-title',
@@ -1548,14 +1539,14 @@
             size: 'lg',
             resolve: { sample: () => sampleValue }
           })
-          .result.then(function ({ mode, sample }) {
-            const value = aceEditor.getValue();
-            aceEditor.setValue(
-              mode === 'replace' ? sample : `${value}${value.trim() === '' ? '' : '\n\n'}${sample}`,
-              -1
-            );
-            aceEditor.focus();
-          });
+          .result.then(function({ mode, sample }) {
+          const value = aceEditor.getValue();
+          aceEditor.setValue(
+            mode === 'replace' ? sample : `${value}${value.trim() === '' ? '' : '\n\n'}${sample}`,
+            -1
+          );
+          aceEditor.focus();
+        });
       };
 
       function enableUI(enable = true, digest = false) {
@@ -1568,7 +1559,7 @@
         if (globalConfig.isModified) {
           event.preventDefault();
 
-          $scope.confirmationAction = function () {
+          $scope.confirmationAction = function() {
             globalConfig.isModified = false;
             $state.go(toState.name);
           };
@@ -1588,7 +1579,7 @@
 
   app.controller('EncryptionToolCtrl', [
     '$scope',
-    function ($scope) {
+    function($scope) {
       const workarea = document.querySelector('#encryption-tool-view');
       const el = document.createElement('div');
 
@@ -1599,7 +1590,7 @@
     }
   ]);
 
-  app.controller('SampleGlobalConfigCtrl', function ($uibModalInstance, sample) {
+  app.controller('SampleGlobalConfigCtrl', function($uibModalInstance, sample) {
     let editor;
     let $ctrl = this;
 
@@ -1613,10 +1604,10 @@
       });
     });
 
-    $ctrl.use = function (mode) {
+    $ctrl.use = function(mode) {
       $uibModalInstance.close({ mode, sample });
     };
-    $ctrl.cancel = function () {
+    $ctrl.cancel = function() {
       $uibModalInstance.dismiss('cancel');
     };
   });
@@ -1627,29 +1618,29 @@
     'sitesService',
     '$modalInstance',
     'siteToRemove',
-    function ($scope, $state, sitesService, $modalInstance, siteToRemove) {
+    function($scope, $state, sitesService, $modalInstance, siteToRemove) {
       $scope.siteToRemove = siteToRemove.siteId;
       $scope.confirmationSubmitDisabled = false;
 
       function removeSiteSitesModal(site) {
         sitesService
           .removeSite(site)
-          .success(function (data) {
+          .success(function(data) {
             $modalInstance.close();
             sitesService.showLoaderProperty().setProperty(false);
           })
-          .error(function () {
+          .error(function() {
             //$scope.sites = null;
           });
       }
 
-      $scope.ok = function () {
+      $scope.ok = function() {
         sitesService.showLoaderProperty().setProperty(true);
         $scope.confirmationSubmitDisabled = true;
         removeSiteSitesModal(siteToRemove);
       };
 
-      $scope.cancel = function () {
+      $scope.cancel = function() {
         $scope.confirmationSubmitDisabled = false;
         $modalInstance.dismiss('cancel');
       };
@@ -1661,8 +1652,8 @@
     '$state',
     'sitesService',
     '$modalInstance',
-    function ($scope, $state, sitesService, $modalInstance) {
-      $scope.cancel = function () {
+    function($scope, $state, sitesService, $modalInstance) {
+      $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
       };
     }
@@ -1674,10 +1665,10 @@
     'sitesService',
     '$modalInstance',
     'errorToShow',
-    function ($scope, $state, sitesService, $modalInstance, errorToShow) {
+    function($scope, $state, sitesService, $modalInstance, errorToShow) {
       $scope.error = errorToShow;
 
-      $scope.cancel = function () {
+      $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
       };
     }
@@ -1691,7 +1682,7 @@
     '$window',
     '$uibModal',
     '$translate',
-    function ($scope, $state, sitesService, $timeout, $window, $uibModal, $translate) {
+    function($scope, $state, sitesService, $timeout, $window, $uibModal, $translate) {
       // View models
       $scope.site = {};
       $scope.blueprints = [];
@@ -1704,7 +1695,7 @@
       function getBlueprints() {
         sitesService
           .getAvailableBlueprints()
-          .success(function (data) {
+          .success(function(data) {
             $scope.blueprints = data;
             $scope.site = {
               siteId: '',
@@ -1714,7 +1705,7 @@
               search: 'ElasticSearch'
             };
           })
-          .error(function () {
+          .error(function() {
             $scope.blueprints = [];
           });
       }
@@ -1784,7 +1775,7 @@
             .exists({
               site: $scope.site.siteId
             })
-            .success(function (data) {
+            .success(function(data) {
               $scope.isValid = data.exists;
             });
         } else {
@@ -1870,9 +1861,9 @@
 
         sitesService
           .create(params)
-          .success(function (data) {
+          .success(function(data) {
             $timeout(
-              function () {
+              function() {
                 sitesService.editSite($scope.site);
                 $scope.createModalInstance.close();
               },
@@ -1880,7 +1871,7 @@
               false
             );
           })
-          .error(function (data, error) {
+          .error(function(data, error) {
             if (error === 401) {
               $scope.createModalInstance.close();
             } else {
@@ -1893,7 +1884,7 @@
                 size: 'md',
                 controller: 'ErrorCreateSiteCtrl',
                 resolve: {
-                  errorToShow: function () {
+                  errorToShow: function() {
                     return $scope.error;
                   }
                 }
@@ -1936,7 +1927,7 @@
       ];
 
       //Functions
-      $scope.gotoStep = function (newStep, isPreviosBtn) {
+      $scope.gotoStep = function(newStep, isPreviosBtn) {
         for (var i = 0; i <= $scope.previousStep.length; i++) {
           if ($scope.previousStep[i] >= newStep) {
             $scope.previousStep.splice(i, 1);
@@ -1948,13 +1939,13 @@
         }
         $scope.currentStep = newStep;
         if (newStep == 2) {
-          $timeout(function () {
+          $timeout(function() {
             $('#siteId')[0].focus();
           });
         }
       };
 
-      $scope.getStepTemplate = function () {
+      $scope.getStepTemplate = function() {
         for (var i = 0; i < $scope.steps.length; i++) {
           if ($scope.currentStep == $scope.steps[i].step) {
             return $scope.steps[i].template;
@@ -1962,15 +1953,15 @@
         }
       };
 
-      $scope.gotoPreviousStep = function () {
+      $scope.gotoPreviousStep = function() {
         var previousStep = $scope.previousStep.slice(-1);
         $scope.previousStep.pop();
         $scope.gotoStep(previousStep, true);
       };
 
-      $scope.removeHide = function () {
+      $scope.removeHide = function() {
         $timeout(
-          function () {
+          function() {
             $('#wizard-content-container').removeClass('hide');
           },
           300,
@@ -1978,8 +1969,8 @@
         );
       };
 
-      $scope.flexSilderInit = function (flexslider, carousel) {
-        $timeout(function () {
+      $scope.flexSilderInit = function(flexslider, carousel) {
+        $timeout(function() {
           $('#' + flexslider).flexslider({
             animation: 'slide',
             controlNav: true
@@ -1987,12 +1978,12 @@
         });
       };
 
-      $scope.cancelCreateDialog = function (eve) {
+      $scope.cancelCreateDialog = function(eve) {
         $(document).off('keyup');
         $scope.adminModal.close();
       };
 
-      $(document).on('keyup', function (evt) {
+      $(document).on('keyup', function(evt) {
         if (evt.which == 13) {
           var isRemoteGit = $scope.isRemoteGit ? 'remoteGit' : 'BPAvailable',
             elt = $scope.getStepTemplate() + '-' + isRemoteGit + '-key';
@@ -2013,7 +2004,7 @@
     '$state',
     '$window',
     '$sce',
-    function ($scope, $state, $window, $sce) {
+    function($scope, $state, $window, $sce) {
       function getIFrame(getContentWindow) {
         var el = $window.document.getElementById('studioIFrame');
         return getContentWindow ? el.contentWindow : el;
@@ -2035,7 +2026,7 @@
         //var frame = event.source;
         //var message = event.data;
 
-        $scope.$apply(function () {
+        $scope.$apply(function() {
           $scope.status = event.data;
         });
       }
@@ -2058,29 +2049,29 @@
     }
   ]);
 
-  app.directive('compareTo', function () {
+  app.directive('compareTo', function() {
     return {
       require: 'ngModel',
       scope: {
         otherModelValue: '=compareTo'
       },
-      link: function (scope, element, attributes, ngModel) {
-        ngModel.$validators.compareTo = function (modelValue) {
+      link: function(scope, element, attributes, ngModel) {
+        ngModel.$validators.compareTo = function(modelValue) {
           return modelValue == scope.otherModelValue;
         };
 
-        scope.$watch('otherModelValue', function () {
+        scope.$watch('otherModelValue', function() {
           ngModel.$validate();
         });
       }
     };
   });
 
-  app.directive('onlyDigits', function () {
+  app.directive('onlyDigits', function() {
     return {
       require: 'ngModel',
       restrict: 'A',
-      link: function (scope, element, attr, ctrl) {
+      link: function(scope, element, attr, ctrl) {
         function inputValue(val) {
           if (val) {
             if (!val.replace) {
@@ -2102,12 +2093,12 @@
     };
   });
 
-  app.directive('focusMe', function ($timeout) {
+  app.directive('focusMe', function($timeout) {
     return {
-      link: function (scope, element, attr) {
-        attr.$observe('focusMe', function (value) {
+      link: function(scope, element, attr) {
+        attr.$observe('focusMe', function(value) {
           if (value === 'true') {
-            $timeout(function () {
+            $timeout(function() {
               element[0].focus();
             });
           }
@@ -2116,19 +2107,19 @@
     };
   });
 
-  app.filter('nospace', function () {
-    return function (value) {
+  app.filter('nospace', function() {
+    return function(value) {
       return !value ? '' : value.replace(/ /g, '');
     };
   });
 
-  app.directive('stResetSearch', function () {
+  app.directive('stResetSearch', function() {
     return {
       restrict: 'EA',
       require: '^stTable',
-      link: function (scope, element, attrs, ctrl) {
-        return element.bind('click', function () {
-          return scope.$evalAsync(function () {
+      link: function(scope, element, attrs, ctrl) {
+        return element.bind('click', function() {
+          return scope.$evalAsync(function() {
             var tableState;
             tableState = ctrl.tableState();
             tableState.search.predicateObject = {};

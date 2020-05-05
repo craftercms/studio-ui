@@ -24,9 +24,11 @@ import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 import createMockInitialState, { fetchInitialState } from '../utils/createMockInitialState';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
+
+let store: CrafterCMSStore;
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
   const epicMiddleware = createEpicMiddleware();
@@ -66,12 +68,18 @@ export function retrieveInitialStateScript(): GlobalState {
 }
 
 export function createStore(useMock = false): Observable<CrafterCMSStore> {
+  if (store) {
+    return of(store);
+  }
   const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
   if (preloadState) {
-    return of(createStoreSync(preloadState));
+    return of(createStoreSync(preloadState)).pipe(
+      tap((s) => (store = s))
+    );
   } else {
     return fetchInitialState().pipe(
-      map((initialState) => createStoreSync(initialState))
+      map((initialState) => createStoreSync(initialState)),
+      tap((s) => (store = s))
     );
   }
 }
