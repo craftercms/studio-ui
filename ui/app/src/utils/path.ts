@@ -102,9 +102,7 @@ export function getParentPath(path: string): string {
 export function getParentsFromPath(path: string): string[] {
   let splitPath = withoutIndex(path).split('/');
   splitPath.pop();
-  return splitPath.map( function(value, i) {
-    return '/' + splitPath.slice(1, i + 1).join('/');
-  }).splice(2);
+  return splitPath.map((value, i) => '/' + splitPath.slice(1, i + 1).join('/')).splice(2);
 }
 
 export default {
@@ -115,5 +113,6 @@ export default {
   itemsFromPath,
   withoutIndex,
   withIndex,
+  getParentPath,
   getParentsFromPath
 };
