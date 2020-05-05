@@ -14,18 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { LegacyItem, SandboxItem } from '../../../models/Item';
-import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
-import {
-  useActiveSiteId,
-  useSelection,
-  useSpreadState,
-  useStateResource
-} from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { isAsset, isCode, isEditableAsset, isImage } from '../../../utils/content';
-import StandardAction from '../../../models/StandardAction';
+import { isAsset, isCode, isImage } from '../../../utils/content';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
 import { palette } from '../../../styles/theme';
@@ -38,24 +30,11 @@ import Avatar from '@material-ui/core/Avatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
-import Chip from '@material-ui/core/Chip';
-import CreateIcon from '@material-ui/icons/CreateRounded';
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Radio from '@material-ui/core/Radio';
-import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
-import { ApiResponse } from '../../../models/ApiResponse';
 import { useDispatch } from 'react-redux';
+import SingleItemSelector from '../Authoring/SingleItemSelector';
 
 const assetsTypes = {
   'all-deps': {
@@ -282,6 +261,7 @@ interface DependenciesDialogUIProps {
   resource: Resource<LegacyItem[]>
   open: boolean;
   item: SandboxItem;
+  rootPath: string;
   setItem: Function;
   compactView: boolean;
   setCompactView: Function;
@@ -307,6 +287,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     resource,
     open,
     item,
+    rootPath,
     setItem,
     compactView,
     setCompactView,
@@ -346,58 +327,18 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
       />
       <DialogBody>
         <div className={classes.selectionContent}>
-          {/*<SingleItemSelector*/}
-          {/*  //classes={{ root: classes.singleItemSelector }}*/}
-          {/*  label="Item"*/}
-          {/*  consumer={consumers[dependenciesDialogID]}*/}
-          {/*  open={openSelector}*/}
-          {/*  onClose={() => setOpenSelector(false)}*/}
-          {/*  selectedItem={consumers[dependenciesDialogID]?.byId?.[item.path]}*/}
-          {/*  onDropdownClick={() => {*/}
-          {/*    setOpenSelector(!openSelector);*/}
-          {/*  }}*/}
-          {/*  onPathSelected={(item) => {*/}
-          {/*    dispatch(fetchChildrenByPath({ id: dependenciesDialogID, path: item.path }));*/}
-          {/*  }}*/}
-          {/*  onBreadcrumbSelected={(item: SandboxItem) => {*/}
-          {/*    if (withoutIndex(item.path) === withoutIndex(consumers[dependenciesDialogID]?.path)) {*/}
-          {/*      setOpenSelector(false);*/}
-          {/*      dispatch(fetchItemVersions({ path: item.path }));*/}
-          {/*    } else {*/}
-          {/*      dispatch(fetchChildrenByPath({ id: dependenciesDialogID, path: item.path }));*/}
-          {/*    }*/}
-          {/*  }}*/}
-          {/*  onItemClicked={(item) => {*/}
-          {/*    setOpenSelector(false);*/}
-          {/*    dispatch(fetchItemVersions({ path: item.path }));*/}
-          {/*  }}*/}
-          {/*/>*/}
-          {
-            item &&
-            <Chip
-              variant="outlined"
-              deleteIcon={isEditableItem(item.path) ? <CreateIcon /> : null}
-              onDelete={isEditableItem(item.path) ?
-                () => {
-                  handleEditorDisplay(item);
-                } :
-                null
-              }
-              classes={{
-                root: classes.selectedItem,
-                label: classes.selectedItemLabel,
-                deleteIcon: classes.selectedItemEditIcon
-              }}
-              label={
-                <>
-                  <span className='label'>Selected</span>
-                  <InsertDriveFileOutlinedIcon className='item-icon' />
-                  <span className='item-title'>{item.label}</span>
-                </>
-              }
-            />
-          }
-
+          <SingleItemSelector
+            label="Item"
+            open={openSelector}
+            onClose={() => setOpenSelector(false)}
+            onDropdownClick={() => setOpenSelector(!openSelector)}
+            rootPath={rootPath}
+            selectedItem={item}
+            onItemClicked={(item) => {
+              setOpenSelector(false);
+              setItem(item);
+            }}
+          />
           <FormControl className={classes.formControl}>
             <Select
               value={dependenciesShown ?? 'depends-on'}
@@ -592,7 +533,7 @@ const dialogInitialState = {
 };
 
 function DependenciesDialog(props: DependenciesDialogProps) {
-  const { open, item, dependenciesShown = 'depends-on', onClose, onDismiss } = props;
+  const { open, item, dependenciesShown = 'depends-on', onClose, onDismiss, rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
@@ -739,6 +680,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       resource={resource}
       open={open}
       item={dialog.item}
+      rootPath={rootPath}
       setItem={setItem}
       compactView={dialog.compactView}
       setCompactView={setCompactView}
