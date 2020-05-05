@@ -30,8 +30,6 @@ import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { SandboxItem } from '../../models/Item';
-import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
-import { ApiResponse } from '../../models/ApiResponse';
 import { showNewContentDialog } from '../../state/actions/dialogs';
 
 import Card from '@material-ui/core/Card';
@@ -39,6 +37,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -122,7 +121,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [error, setError] = useState<ApiResponse>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
@@ -163,10 +161,16 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     if (siteId) {
       getQuickCreateContentList(siteId).subscribe(
         (data) => setQuickCreateContentList(data.items),
-        (error) => setError(error.response.response)
+        ({ response }) => {
+          dispatch(
+            showErrorDialog({
+              error: response.response
+            })
+          );
+        }
       );
     }
-  }, [siteId]);
+  }, [siteId, dispatch]);
 
   return (
     <>
@@ -216,7 +220,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           onSaveSuccess={onEmbeddedFormSaveSuccess}
         />
       )}
-      <ErrorDialog error={error} onDismiss={() => setError(null)} />
     </>
   );
 }
