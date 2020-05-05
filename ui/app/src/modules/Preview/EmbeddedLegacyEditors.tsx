@@ -41,7 +41,7 @@ import { getHostToGuestBus } from './previewContext';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
-import { closeEditDialog, updateEditConfig } from '../../state/reducers/dialogs/edit';
+import { updateEditConfig } from '../../state/reducers/dialogs/edit';
 import { popPiece } from '../../utils/string';
 import ContentInstance from '../../models/ContentInstance';
 
@@ -152,7 +152,27 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     closeEmbeddedLegacyForm(false);
   };
 
-  const getPath = (type?: string) => {
+  // const getPath = (type?: string) => {
+  //   switch (type) {
+  //     case 'publish':
+  //     case 'form': {
+  //       if (embeddedParentPath) return embeddedParentPath;
+  //       return itemModel.craftercms.path;
+  //     }
+  //     case 'template': {
+  //       return contentTypesBranch.byId[itemModel.craftercms.contentType].displayTemplate;
+  //     }
+  //     case 'controller': {
+  //       let pageName = popPiece(itemModel.craftercms.contentType, '/');
+  //       return `/scripts/pages/${pageName}.groovy`;
+  //     }
+  //     default: {
+  //       return itemModel.craftercms.path;
+  //     }
+  //   }
+  // };
+
+  const getPath = useCallback((type?: string) => {
     switch (type) {
       case 'publish':
       case 'form': {
@@ -170,7 +190,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         return itemModel.craftercms.path;
       }
     }
-  };
+  }, [contentTypesBranch.byId, embeddedParentPath, itemModel]);
 
   const handleTabChange = useCallback((event: React.ChangeEvent<{}>, type: string) => {
     let inProgress = !tabsState[type].loaded;
