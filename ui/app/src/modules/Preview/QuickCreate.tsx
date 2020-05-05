@@ -38,6 +38,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { getStudioInfo } from '../../services/monitoring';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -93,7 +94,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     quickCreateEmptyCardActions: {
       padding: 0,
-      '& button': {
+      '& .MuiButton-root': {
         fontSize: '14px',
         textDecoration: 'underline',
         color: palette.blue.main
@@ -128,6 +129,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     type: 'form',
     inProgress: false
   });
+  const [studioVersion, setStudioVersion] = useState(null);
 
   const onEmbeddedFormSaveSuccess = ({ data }) => {
     data.item?.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
@@ -161,16 +163,31 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     if (siteId) {
       getQuickCreateContentList(siteId).subscribe(
         (data) => setQuickCreateContentList(data.items),
-        ({ response }) => {
+        (error) => {
           dispatch(
             showErrorDialog({
-              error: response.response
+              error
             })
           );
         }
       );
     }
   }, [siteId, dispatch]);
+
+  useEffect(() => {
+    getStudioInfo().subscribe(
+      (info) => {
+        setStudioVersion(info.version.packageVersion.substr(0, 3));
+      },
+      (error) => {
+        dispatch(
+          showErrorDialog({
+            error
+          })
+        );
+      }
+    );
+  }, [dispatch]);
 
   return (
     <>
@@ -201,11 +218,23 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
                 <ErrorOutlineOutlinedIcon fontSize={'small'} />
               </Typography>
               <Typography className={classes.quickCreateEmptyDescription}>
-                Quick create has not been configured. Please contact your system administrator.
+                <FormattedMessage
+                  id="quickCreateMenu.learnMore"
+                  defaultMessage="Quick create has not been configured. Please contact your system administrator."
+                />
               </Typography>
             </CardContent>
             <CardActions className={classes.quickCreateEmptyCardActions}>
-              <Button size="small">Learn More</Button>
+              {
+                studioVersion &&
+                <Button
+                  size="small"
+                  href={`https://docs.craftercms.org/en/${studioVersion}/developers/content-modeling.html#setting-up-quick-create`}
+                  target="_blank"
+                >
+                  <FormattedMessage id="quickCreateMenu.learnMore" defaultMessage="Learn More" />
+                </Button>
+              }
             </CardActions>
           </Card>
         }
