@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
-import { catchError, mapTo, pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { CONTENT_TYPE_JSON, get, post, postJSON } from '../utils/ajax';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 import { Credentials } from '../models/Credentials';
@@ -38,10 +38,7 @@ export function login(credentials: Credentials): Observable<User> {
     '/studio/api/1/services/api/1/security/login.json',
     credentials,
     CONTENT_TYPE_JSON
-  ).pipe(
-    pluck('response'),
-    mapToUser
-  );
+  ).pipe(pluck('response'), mapToUser);
 }
 
 export function validateSession(): Observable<boolean> {
@@ -60,10 +57,35 @@ export function sendPasswordRecovery(username: string): Observable<ApiResponse> 
   );
 }
 
+export function setPassword(
+  token: string,
+  password: string,
+  confirmation: string = password
+): Observable<User> {
+  return password !== confirmation
+    ? of('Password and confirmation mismatch').pipe(
+        map((msg) => {
+          throw new Error(msg);
+        })
+      )
+    : postJSON(`/studio/api/2/users/set_password`, {
+        token,
+        new: password
+      }).pipe(
+        map(({ response }) => {
+          if (response.user == null) {
+            throw new Error('Expired or incorrect token');
+          }
+          return response.user;
+        })
+      );
+}
+
 export default {
   getLogoutInfoURL,
   logout,
   login,
   validateSession,
-  sendPasswordRecovery
+  sendPasswordRecovery,
+  setPassword
 };
