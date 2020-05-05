@@ -29,11 +29,12 @@ import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { fetchItemVersions } from '../state/reducers/versions';
 import {
   closeDeleteDialog,
-  showDeleteDialog, showDependenciesDialog,
+  showDeleteDialog,
+  showDependenciesDialog,
   showHistoryDialog,
   showPublishDialog
 } from '../state/actions/dialogs';
-import { showEditDialog } from '../state/reducers/dialogs/edit';    //TODO: update
+import { showEditDialog } from '../state/reducers/dialogs/edit';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
