@@ -187,10 +187,6 @@ export function useStateResource<ReturnType = unknown, SourceType = unknown, Err
   const ref = useRef<any>();
   ref.current = checkers;
 
-  // Purposely not adding checkers on to the effect dependencies to avoid
-  // consumer re-renders to trigger the effect. `checkers` should be taken
-  // as a "initialValue" sort of param. The functions should not mutate
-  // throughout the component lifecycle.
   useEffect(() => {
     const { shouldRenew, shouldReject, shouldResolve, errorSelector, resultSelector } = ref.current;
     if (shouldRenew(source, resource)) {
