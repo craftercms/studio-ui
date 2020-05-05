@@ -117,7 +117,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       }
       case 'dependencies' : {
         dispatch(showDependenciesDialog({
-          item: item
+          item: parseLegacyItemToSandBoxItem(item)
         }));
         break;
       }

@@ -330,7 +330,6 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const classes = dependenciesDialogStyles({});
   const { formatMessage } = useIntl();
   const [openSelector, setOpenSelector] = useState(false);
-  const dispatch = useDispatch();
 
   return (
     <Dialog
