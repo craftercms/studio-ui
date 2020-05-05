@@ -14,10 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { LegacyItem, SandboxItem } from '../../../models/Item';
+import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
+import {
+  useActiveSiteId,
+  useSelection,
+  useSpreadState,
+  useStateResource
+} from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { isAsset, isCode, isImage } from '../../../utils/content';
+import { isAsset, isCode, isEditableAsset, isImage } from '../../../utils/content';
+import StandardAction from '../../../models/StandardAction';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
 import { palette } from '../../../styles/theme';
@@ -30,9 +38,23 @@ import Avatar from '@material-ui/core/Avatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
+import Chip from '@material-ui/core/Chip';
+import CreateIcon from '@material-ui/icons/CreateRounded';
+import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import DialogFooter from '../../../components/Dialogs/DialogFooter';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Radio from '@material-ui/core/Radio';
+import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
+import { ApiResponse } from '../../../models/ApiResponse';
 import { useDispatch } from 'react-redux';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 
