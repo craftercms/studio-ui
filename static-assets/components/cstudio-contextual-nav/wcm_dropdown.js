@@ -263,8 +263,6 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
               this.setVisible(true);
             }
 
-            //this.setVisible(CStudioAuthoringContext.openSiteDropdown);
-
             return this;
           },
           initializeResizing: function() {

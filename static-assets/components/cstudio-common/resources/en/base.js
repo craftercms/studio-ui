@@ -225,7 +225,7 @@ CStudioAuthoring.Messages.registerBundle('previewTools', 'en', {
 
   //login
   login: 'Login',
-  emailUsername: 'Email/Username',
+  emailUsername: 'Username',
   password: 'Password',
   signIn: 'Sign in',
   signBackIn: 'Sign back in',

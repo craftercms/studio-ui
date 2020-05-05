@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import LoginView from '../components/SystemStatus/LoginView';
+import LoginView, { LoginViewProps } from '../components/SystemStatus/LoginView';
 
 const useStyles = makeStyles(() => createStyles({
   '@global': {
@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => createStyles({
   }
 }));
 
-export default function () {
+export default function (props: LoginViewProps) {
   const classes = useStyles({});
   // **************************************************************************
   // TODO: To be enabled or removed depending on the background video decision.
@@ -71,7 +71,7 @@ export default function () {
         src="/studio/static-assets/images/camera-moving-through-cogs.mp4"
       />
       */}
-      <LoginView />
+      <LoginView {...props} />
     </div>
   );
 }
