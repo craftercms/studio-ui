@@ -1194,7 +1194,7 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     contentTypeId: item.contentType,
     // Assuming folders aren't navigable
     previewUrl: item.uri.includes('index.xml') ? (item.browserUri || '/') : null,
-    systemType: null,
+    systemType: item.asset? 'asset' : item.component? 'component': item.folder? 'folder': item.page? 'page': null,
     mimeType: null,
     state: null,
     lockOwner: null,

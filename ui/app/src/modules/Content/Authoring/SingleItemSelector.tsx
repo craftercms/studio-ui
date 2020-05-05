@@ -261,8 +261,9 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           );
           break;
         case fetchParentsItems.type:
-          const parentsPath = getParentsFromPath(payload);
+          const parentsPath = getParentsFromPath(payload, state.rootPath);
           const requests: Observable<GetChildrenResponse>[] = [];
+
           if (parentsPath.length) {
             parentsPath.forEach(parentPath => {
               if (!state.items[parentPath] && !state.items[withIndex(parentPath)]) {

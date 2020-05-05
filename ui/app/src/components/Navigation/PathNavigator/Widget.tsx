@@ -601,7 +601,9 @@ export default function(props: WidgetProps) {
   const onTranslationDialogClose = () => setTranslationDialog(null);
 
   const onItemClicked = (item: SandboxItem) => {
-    window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
+    if(item.previewUrl) {
+      window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
+    }
   };
 
   const onBreadcrumbSelected = (item: SandboxItem) => {
