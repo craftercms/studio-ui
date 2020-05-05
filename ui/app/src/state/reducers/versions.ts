@@ -77,7 +77,7 @@ const initialState: VersionsStateProps = {
 
 const reducer = createReducer<GlobalState['versions']>(initialState, {
   [fetchItemVersions.type]: (state, { payload }) => ({
-    ...initialState,
+    ...state,
     ...payload,
     isFetching: true
   }),

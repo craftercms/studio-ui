@@ -750,8 +750,7 @@ var nodeOpen = false,
 
       viewContentHistory: function (contentObj, isWrite, rootPath) {
         const item = CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(contentObj);
-
-        const eventIdSuccess = 'showHistoryDialogSuccess'
+        const eventIdOnClose = 'showHistoryDialogOnClose';
 
         CrafterCMSNext.system.store.dispatch({ type: 'FETCH_ITEM_VERSIONS', payload: { path: item.path }})
 
@@ -761,60 +760,61 @@ var nodeOpen = false,
             open: true,
             item,
             ...(rootPath && {rootPath: rootPath}),
-            onSuccess: {
+            onClose: {
               type: 'LEGACY_DIALOG_CALLBACK',
-              payload: { id: eventIdSuccess }
+              payload: {id:eventIdOnClose }
             }
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
-          eventNS.data = contentObj;
-          eventNS.typeAction = '';
-          eventNS.oldPath = null;
-          document.dispatchEvent(eventNS);
-          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_HISTORY_DIALOG' });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdOnClose, () => {
+            CrafterCMSNext.system.store.dispatch({ type: 'RESET_VERSIONS_STATE'})
         });
       },
 
       viewConfigurationHistory: function (contentObj, isWrite) {
-        CSA.Operations._showDialogueView(
+        const eventIdOnClose = 'showHistoryDialogConfigOnClose';
+        const item = {
+          path: contentObj.path
+        };
+
+        CrafterCMSNext.system.store.dispatch(
           {
-            fn: CSA.Service.getHistoryView,
-            controller: 'viewcontroller-history',
-            callback: function (dialogue) {
-              CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
-
-              YDom.get('historyCloseBtn').value = CMgs.format(formsLangBundle, 'close');
-
-              this.loadConfigurationHistory(contentObj, isWrite);
-
-              this.on('submitComplete', function (evt, args) {
-                var reloadFn = function () {
-                  dialogue.destroy();
-                  eventNS.data = contentObj;
-                  eventNS.typeAction = '';
-                  eventNS.oldPath = null;
-                  document.dispatchEvent(eventNS);
-                };
-
-                dialogue.hideEvent.subscribe(reloadFn);
-                dialogue.destroyEvent.subscribe(reloadFn);
-              });
-
-              // Admin version of the view does not have this events
-              // but then the call is ignored
-              this.on('hideRequest', function (evt, args) {
-                dialogue.destroy();
-              });
-
-              this.on('showRequest', function (evt, args) {
-                dialogue.show();
-              });
+            type: 'FETCH_ITEM_VERSIONS',
+            payload: {
+              config: true,
+              revertPath: contentObj.uri,
+              environment: contentObj.environment,
+              module: contentObj.module,
+              path: item.path
             }
-          },
-          true
+          }
         );
+
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_HISTORY_DIALOG',
+          payload: {
+            open: true,
+            item,
+            rootPath: null,
+            onClose: {
+              type: 'LEGACY_DIALOG_CALLBACK',
+              payload: { id: eventIdOnClose }
+            }
+          }
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(eventIdOnClose, () => {
+          // TODO: we need to found a way to know when the dispatch to Revert finished and it is true
+          // to call an OnSuccess Callback
+          eventNS.data = contentObj;
+          eventNS.typeAction = '';
+          eventNS.oldPath = null;
+          document.dispatchEvent(eventNS);
+          amplify.publish('HISTORY_REVERT');
+          // end of TODO
+          CrafterCMSNext.system.store.dispatch({ type: 'RESET_VERSIONS_STATE' });
+        });
       },
 
       approveCommon: function (site, items, approveType) {

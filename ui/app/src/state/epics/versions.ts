@@ -46,7 +46,7 @@ export default [
       ofType(fetchItemVersions.type, changeHistoryDialogItem.type, changeCompareVersionsDialogItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        const service = (payload.config)
+        const service = (state.versions.config)
           ? getConfigurationVersions(
             state.sites.active,
             payload.path ?? state.versions.path,
@@ -89,7 +89,7 @@ export default [
       switchMap(([{ payload }, state]) =>
         revertContentToVersion(
           state.sites.active,
-          payload.path ?? state.versions.path,
+          state.versions.config? state.versions.revertPath : payload.path ?? state.versions.path,
           payload.versionNumber ?? state.versions.previous
         ).pipe(
           map(revertContentComplete),

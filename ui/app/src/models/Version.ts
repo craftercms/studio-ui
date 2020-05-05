@@ -44,6 +44,8 @@ export interface CompareVersionsBranch {
 export interface VersionsStateProps {
   byId: string;
   path: string;
+  config?: boolean;
+  revertPath?: boolean;
   environment?: string;
   module?: string;
   error: ApiResponse;
