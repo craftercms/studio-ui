@@ -212,6 +212,8 @@
             CStudioAdminConsole.CommandBar.hide();
           }
 
+          amplify.publish('TOOL_SELECTED');
+
           params.toolbar.selectedEl = self;
           YDom.addClass(self, 'cstudio-admin-console-item-selected');
           params.tool.renderWorkarea();
