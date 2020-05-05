@@ -39,7 +39,7 @@ YAHOO.extend(
       this.lastValidValue = value;
       valueEl.fieldName = this.fieldName;
 
-      $(valueEl).on('blur', function () {
+      $(valueEl).on('blur', function (e) {
         const currentValue = this.value;
         const isNumber = /^[+-]?\d+(\.\d+)?$/;
         const isValid = (currentValue.match(isNumber) !== null) || currentValue === '';
@@ -48,6 +48,9 @@ YAHOO.extend(
         if (isValid) {
           _self.lastValidValue = currentValue;
           $element.removeClass('invalid');
+          if (updateFieldFn) {
+            updateFieldFn(e, this);
+          }
         } else {
           $element.addClass('invalid');
           this.value = _self.lastValidValue;
@@ -67,8 +70,6 @@ YAHOO.extend(
           updateFn(event, el);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
         };
-
-        YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
       }
 
       this.valueEl = valueEl;
