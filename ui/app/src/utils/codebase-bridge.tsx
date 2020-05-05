@@ -35,10 +35,11 @@ import { nou } from './object';
 import babel from './babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
-import { jssPreset, makeStyles } from '@material-ui/core/styles';
+import { jssPreset, makeStyles, Theme } from '@material-ui/core/styles';
 import { generateClassName, palette, theme } from '../styles/theme';
-import store from '../state/store';
+import createStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
+import { GenerateId } from 'jss';
 
 const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 
@@ -78,7 +79,12 @@ interface CodebaseBridge {
   };
   services: object;
   mui: object;
-  system: object;
+  system: {
+    generateClassName: GenerateId;
+    theme: Theme;
+    palette: any;
+    store: CrafterCMSStore;
+  };
 }
 
 export function updateIntl(nextIntl: IntlShape) {
@@ -90,6 +96,7 @@ export function updateIntl(nextIntl: IntlShape) {
 }
 
 export function createCodebaseBridge() {
+
   const Bridge: CodebaseBridge = {
     // React
     React,
@@ -135,7 +142,7 @@ export function createCodebaseBridge() {
       NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog'))
     },
 
-    system: { generateClassName, theme, palette, store },
+    system: { generateClassName, theme, palette, store: null },
 
     mui: {
       core: {
@@ -290,4 +297,9 @@ export function createCodebaseBridge() {
 
  // @ts-ignore
   window.CrafterCMSNext = Bridge;
+
+  createStore().subscribe((store) => {
+    Bridge.system.store = store;
+  });
+
 }
