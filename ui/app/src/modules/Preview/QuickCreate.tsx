@@ -79,17 +79,28 @@ const useStyles = makeStyles((theme: Theme) =>
       }
     },
     quickCreateEmptyRoot: {
-      width: '155px',
+      width: '149px',
       justifyContent: 'center',
       display: 'flex',
       flexDirection: 'column',
       textAlign: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      boxShadow: 'none'
+    },
+    quickCreateEmptyCardContent: {
+      padding: '5px 10px'
     },
     quickCreateEmptyDescription: {
       fontSize: '12px'
+    },
+    quickCreateEmptyCardActions: {
+      padding: 0,
+      '& button': {
+        fontSize: '14px',
+        textDecoration: 'underline',
+        color: palette.blue.main
+      }
     }
-
   })
 );
 
@@ -182,15 +193,15 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         {
           quickCreateContentList && quickCreateContentList.length === 0 &&
           <Card className={classes.quickCreateEmptyRoot}>
-            <CardContent>
+            <CardContent className={classes.quickCreateEmptyCardContent}>
               <Typography color="textSecondary" gutterBottom>
-                <ErrorOutlineOutlinedIcon />
+                <ErrorOutlineOutlinedIcon fontSize={'small'}/>
               </Typography>
               <Typography className={classes.quickCreateEmptyDescription}>
                 Quick create has not been configured. Please contact your system administrator.
               </Typography>
             </CardContent>
-            <CardActions>
+            <CardActions className={classes.quickCreateEmptyCardActions}>
               <Button size="small">Learn More</Button>
             </CardActions>
           </Card>
