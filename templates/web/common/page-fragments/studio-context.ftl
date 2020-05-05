@@ -36,7 +36,6 @@
     homeUri: `${'$'}{origin}/site-dashboard`,
     navContext: 'default',
     cookieDomain: "${cookieDomain!'UNSET'}",
-    openSiteDropdown: ${envConfig.openSiteDropdown!'false'},
     isPreview: false,
     liveAppBaseUri: '',
     graphQLBaseURI: `${'$'}{origin}/api/1/site/graphql`,

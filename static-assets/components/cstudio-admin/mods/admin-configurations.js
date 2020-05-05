@@ -148,9 +148,18 @@
 
         this.loadConfigFiles();
 
-        amplify.subscribe('HISTORY_REVERT', function() {
+        const cb = () => {
           self.loadSelectedConfig();
-        });
+        }
+
+        const handler = () => {
+          amplify.unsubscribe('HISTORY_REVERT', cb);
+          amplify.unsubscribe('TOOL_SELECTED', handler);
+        };
+
+        amplify.subscribe('TOOL_SELECTED', handler);
+
+        amplify.subscribe('HISTORY_REVERT', cb);
 
         // hide display area by default
         editAreaEl.style.display = 'none';
@@ -699,6 +708,7 @@
       'cstudio-console-tools-admin-configurations',
       CStudioAdminConsole.Tool.AdminConfig
     );
+
   }
 
   function parseValidateDocument(editorText) {
