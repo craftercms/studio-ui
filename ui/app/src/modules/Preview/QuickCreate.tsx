@@ -34,12 +34,11 @@ import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { ApiResponse } from '../../models/ApiResponse';
 import { showNewContentDialog } from '../../state/actions/dialogs';
 
-import Card from '@material-ui/core/Card'
+import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
-
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -191,11 +190,11 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           </MenuItem>
         ))}
         {
-          quickCreateContentList && quickCreateContentList.length === 0 &&
+          quickCreateContentList?.length === 0 &&
           <Card className={classes.quickCreateEmptyRoot}>
             <CardContent className={classes.quickCreateEmptyCardContent}>
               <Typography color="textSecondary" gutterBottom>
-                <ErrorOutlineOutlinedIcon fontSize={'small'}/>
+                <ErrorOutlineOutlinedIcon fontSize={'small'} />
               </Typography>
               <Typography className={classes.quickCreateEmptyDescription}>
                 Quick create has not been configured. Please contact your system administrator.
