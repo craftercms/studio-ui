@@ -32,8 +32,6 @@ import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { ApiResponse } from '../../models/ApiResponse';
 import { showNewContentDialog } from '../../state/actions/dialogs';
 import { newContentCreationComplete, showEditDialog } from '../../state/reducers/dialogs/edit';
-import { ActionCreator } from '@reduxjs/toolkit';
-import StandardAction from '../../models/StandardAction';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -78,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
   previewItem: SandboxItem;
-  onQuickCreateItemSelected?: ActionCreator<StandardAction>;
+  onQuickCreateItemSelected?(response?: any): any;
   onClose(): void;
   onItemClicked?(): void;
 }
