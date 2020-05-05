@@ -398,7 +398,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
       </DialogBody>
       <DialogFooter classes={{ root: classes.dialogFooter }}>
         {
-          count &&
+          count > 0 &&
           <Pagination
             count={count}
             page={page}
