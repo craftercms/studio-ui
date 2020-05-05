@@ -152,26 +152,6 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     closeEmbeddedLegacyForm(false);
   };
 
-  // const getPath = (type?: string) => {
-  //   switch (type) {
-  //     case 'publish':
-  //     case 'form': {
-  //       if (embeddedParentPath) return embeddedParentPath;
-  //       return itemModel.craftercms.path;
-  //     }
-  //     case 'template': {
-  //       return contentTypesBranch.byId[itemModel.craftercms.contentType].displayTemplate;
-  //     }
-  //     case 'controller': {
-  //       let pageName = popPiece(itemModel.craftercms.contentType, '/');
-  //       return `/scripts/pages/${pageName}.groovy`;
-  //     }
-  //     default: {
-  //       return itemModel.craftercms.path;
-  //     }
-  //   }
-  // };
-
   const getPath = useCallback((type?: string) => {
     switch (type) {
       case 'publish':
