@@ -52,7 +52,7 @@ import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import { fetchItemVersions, resetVersionsState } from '../../../state/reducers/versions';
-import { showHistoryDialog } from '../../../state/actions/dialogs';
+import { showDependenciesDialog, showHistoryDialog } from '../../../state/actions/dialogs';
 
 const menuOptions = {
   edit: {
@@ -485,9 +485,22 @@ export default function(props: WidgetProps) {
         });
         break;
       }
+      case 'dependencies': {
+        dispatch(showDependenciesDialog({
+          item: menu.activeItem,
+          rootPath: path
+        }));
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
+        break;
+      }
       case 'history': {
         dispatch(fetchItemVersions({ path: menu.activeItem.path  }));
         dispatch(showHistoryDialog({
+          item: menu.activeItem,
+          rootPath: path,
           onClose: resetVersionsState()
         }));
         setMenu({

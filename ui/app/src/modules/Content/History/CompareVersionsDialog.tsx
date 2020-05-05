@@ -215,7 +215,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         onDismiss={onDismiss}
       />
       <DialogBody>
-        {!compareMode && rootPath && (
+        {!compareMode && rootPath && open && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
             label="Item"

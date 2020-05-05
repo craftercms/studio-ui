@@ -73,7 +73,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   // Effect used to open the publish Dialog
   useEffect(() => {
-    if (models && modelId && item === null) {
+    if (modelId && models && anchorEl && item === null) {
       let path = models[modelId].craftercms.path;
       if (embeddedParentPath) path = models[parentId].craftercms.path;
       getLegacyItem(site, path).subscribe(
@@ -87,7 +87,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, site, embeddedParentPath, parentId, dispatch]);
+  }, [models, modelId, site, embeddedParentPath, parentId, dispatch, item, anchorEl]);
 
   const handleEdit = (type: string) => {
     handleClose();

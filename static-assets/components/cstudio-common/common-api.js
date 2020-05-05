@@ -748,44 +748,33 @@ var nodeOpen = false,
         });
       },
 
-      viewContentHistory: function (contentObj, isWrite) {
-        CSA.Operations._showDialogueView(
-          {
-            fn: CSA.Service.getHistoryView,
-            controller: 'viewcontroller-history',
-            callback: function (dialogue) {
-              CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
+      viewContentHistory: function (contentObj, isWrite, rootPath) {
+        const item = CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(contentObj);
 
-              YDom.get('historyCloseBtn').value = CMgs.format(formsLangBundle, 'close');
+        const eventIdSuccess = 'showHistoryDialogSuccess'
 
-              this.loadHistory(contentObj, isWrite);
+        CrafterCMSNext.system.store.dispatch({ type: 'FETCH_ITEM_VERSIONS', payload: { path: item.path }})
 
-              this.on('submitComplete', function (evt, args) {
-                var reloadFn = function () {
-                  dialogue.destroy();
-                  eventNS.data = contentObj;
-                  eventNS.typeAction = '';
-                  eventNS.oldPath = null;
-                  document.dispatchEvent(eventNS);
-                };
-
-                dialogue.hideEvent.subscribe(reloadFn);
-                dialogue.destroyEvent.subscribe(reloadFn);
-              });
-
-              // Admin version of the view does not have this events
-              // but then the call is ignored
-              this.on('hideRequest', function (evt, args) {
-                dialogue.destroy();
-              });
-
-              this.on('showRequest', function (evt, args) {
-                dialogue.show();
-              });
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_HISTORY_DIALOG',
+          payload: {
+            open: true,
+            item,
+            ...(rootPath && {rootPath: rootPath}),
+            onSuccess: {
+              type: 'LEGACY_DIALOG_CALLBACK',
+              payload: { id: eventIdSuccess }
             }
-          },
-          true
-        );
+          }
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+          eventNS.data = contentObj;
+          eventNS.typeAction = '';
+          eventNS.oldPath = null;
+          document.dispatchEvent(eventNS);
+          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_HISTORY_DIALOG' });
+        });
       },
 
       viewConfigurationHistory: function (contentObj, isWrite) {

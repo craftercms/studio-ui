@@ -349,18 +349,21 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
       />
       <DialogBody>
         <div className={classes.selectionContent}>
-          <SingleItemSelector
-            label="Item"
-            open={openSelector}
-            onClose={() => setOpenSelector(false)}
-            onDropdownClick={() => setOpenSelector(!openSelector)}
-            rootPath={rootPath}
-            selectedItem={item}
-            onItemClicked={(item) => {
-              setOpenSelector(false);
-              setItem(item);
-            }}
-          />
+          {
+            open && rootPath &&
+            <SingleItemSelector
+              label="Item"
+              open={openSelector}
+              onClose={() => setOpenSelector(false)}
+              onDropdownClick={() => setOpenSelector(!openSelector)}
+              rootPath={rootPath}
+              selectedItem={item}
+              onItemClicked={(item) => {
+                setOpenSelector(false);
+                setItem(item);
+              }}
+            />
+          }
           <FormControl className={classes.formControl}>
             <Select
               value={dependenciesShown ?? 'depends-on'}
@@ -561,6 +564,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     item,
     dependenciesShown
   });
+
   const [deps, setDeps] = useState(null);
   const [error, setError] = useState<ApiResponse>(null);
   const siteId = useActiveSiteId();

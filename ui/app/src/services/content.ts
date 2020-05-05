@@ -1239,5 +1239,6 @@ export default {
   fetchLegacyContentTypes,
   getItemVersions,
   getConfigurationVersions,
-  revertContentToVersion
+  revertContentToVersion,
+  parseLegacyItemToSandBoxItem
 };

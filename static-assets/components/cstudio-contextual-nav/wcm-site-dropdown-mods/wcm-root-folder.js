@@ -3523,7 +3523,11 @@
        * Revert the content item
        */
       revertContent: function(p_sType, p_aArgs, tree) {
-        CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data, Self.IS_WRITE);
+        CStudioAuthoring.Operations.viewContentHistory(
+          oCurrentTextNode.data,
+          Self.IS_WRITE,
+          oCurrentTextNode.instance.config.params.path
+        );
       },
 
       /**

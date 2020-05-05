@@ -372,7 +372,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
       />
       <DialogBody className={classes.dialogBody}>
         {
-          open &&
+          open && rootPath &&
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
             label="Item"
