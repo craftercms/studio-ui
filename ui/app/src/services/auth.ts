@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
+import { CONTENT_TYPE_JSON, get, post, postJSON } from '../utils/ajax';
 import { catchError, map, mapTo, pluck } from 'rxjs/operators';
-import { Observable, OperatorFunction } from 'rxjs';
+import { Observable, of, OperatorFunction } from 'rxjs';
 import { Credentials, LegacyUser, User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 
@@ -40,10 +40,7 @@ export function login(credentials: Credentials): Observable<User> {
     '/studio/api/1/services/api/1/security/login.json',
     credentials,
     CONTENT_TYPE_JSON
-  ).pipe(
-    pluck('response'),
-    mapToUser
-  );
+  ).pipe(pluck('response'), mapToUser);
 }
 
 export function validateSession(): Observable<boolean> {
@@ -53,17 +50,14 @@ export function validateSession(): Observable<boolean> {
 }
 
 export function me(): Observable<User> {
-  return get('/studio/api/2/users/me.json').pipe(
-    pluck('response', 'authenticatedUser'),
-    mapToUser
-  );
+  return get('/studio/api/2/users/me.json').pipe(pluck('response', 'authenticatedUser'), mapToUser);
 }
 
 interface ApiResponse {
-  code: number
-  message: string
-  remedialAction: string
-  documentationUrl: string
+  code: number;
+  message: string;
+  remedialAction: string;
+  documentationUrl: string;
 }
 
 export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
@@ -76,11 +70,36 @@ export function sendPasswordRecovery(username: string): Observable<ApiResponse> 
   );
 }
 
+export function setPassword(
+  token: string,
+  password: string,
+  confirmation: string = password
+): Observable<User> {
+  return password !== confirmation
+    ? of('Password and confirmation mismatch').pipe(
+        map((msg) => {
+          throw new Error(msg);
+        })
+      )
+    : postJSON(`/studio/api/2/users/set_password`, {
+        token,
+        new: password
+      }).pipe(
+        map(({ response }) => {
+          if (response.user == null) {
+            throw new Error('Expired or incorrect token');
+          }
+          return response.user;
+        })
+      );
+}
+
 export default {
   getLogoutInfoURL,
   logout,
   login,
   validateSession,
   sendPasswordRecovery,
-  me
+  me,
+  setPassword
 };

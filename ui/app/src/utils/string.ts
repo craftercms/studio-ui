@@ -14,16 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Converts a string separated by dashes into a
+ * camelCase equivalent. For instance, 'foo-bar'
+ * would be converted to 'fooBar'.
+ **/
 export function camelize(str: string) {
-  return str.replace(/-+(.)?/g, function(match, chr) {
+  return str.replace(/-+(.)?/g, function (match, chr) {
     return chr ? chr.toUpperCase() : '';
   });
 }
 
+/**
+ * Capitalizes the first letter of a string and down-cases all the others.
+ **/
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
 }
 
+/**
+ * Converts a camelized string into a series of words separated by an underscore (_).
+ **/
 export function underscore(str: string) {
   return str.replace(/::/g, '/')
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
@@ -32,6 +43,9 @@ export function underscore(str: string) {
     .toLowerCase();
 }
 
+/**
+ * Replaces every instance of the underscore character "_" by a dash "-".
+ **/
 export function dasherize(str: string) {
   return str.replace(/_/g, '-');
 }
@@ -51,7 +65,17 @@ export function bytesToSize(bytes: number, separator: string = '') {
   if (bytes === 0) return 'n/a';
   const i = parseInt(`${Math.floor(Math.log(bytes) / Math.log(1024))}`, 10);
   if (i === 0) return `${bytes}${separator}${sizes[i]}`;
-  return `${(bytes / (1024 ** i)).toFixed(1)}${separator}${sizes[i]}`
+  return `${(bytes / (1024 ** i)).toFixed(1)}${separator}${sizes[i]}`;
+}
+
+/**
+ * Removes double slashes from urls
+ * @param url {string} The URL to clean up
+ */
+export function insureSingleSlash(url: string): string {
+  return /^(http|https):\/\//g.test(url)
+    ? url.replace(/([^:]\/)\/+/g, '$1')
+    : url.replace(/\/+/g, '/');
 }
 
 export default {

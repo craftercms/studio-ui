@@ -204,7 +204,7 @@ export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const [play, setPlay] = useState(false);
   const { blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex, marketplace } = props;
   const [index, setIndex] = useState(selectedIndex || 0);
-  const { media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine, compatible } = blueprint;
+  const { media, name, description, version, license, developer, website, searchEngine, compatible } = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
 
   const {formatMessage} = useIntl();

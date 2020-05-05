@@ -31,7 +31,8 @@
     'ngSanitize'
   ]);
 
-  let i18n = CrafterCMSNext.i18n,
+  let //
+    i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
     passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
     globalConfigMessages = i18n.messages.globalConfigMessages,
@@ -46,47 +47,25 @@
     'authService',
     'sitesService',
     'Constants',
-    '$http',
-    '$cookies',
-    '$location',
-    function (
-      $rootScope,
-      $state,
-      $stateParams,
-      authService,
-      sitesService,
-      Constants,
-      $http,
-      $cookies,
-      $location
-    ) {
+    function ($rootScope, $state, $stateParams, authService, sitesService, Constants) {
       $rootScope.$state = $state;
       $rootScope.$stateParams = $stateParams;
 
       $rootScope.imagesDirectory = Constants.PATH_IMG;
 
       $rootScope.$on('$stateChangeStart', function (event, toState) {
-        // No need to re-check session if heading to the login page
-        // 1. Is "public"
-        // 2. Is where people authenticate
-        if (toState.name !== 'login') {
-          authService.validateSession().then(function (response) {
-            if (response.data && response.data.active) {
-              var user = authService.getUser() || {};
-              if (user.authenticationType === Constants.HEADERS) {
-                $state.go('home.globalMenu');
-              }
-            } else {
-              authService.removeUser();
-              if (toState.name.indexOf('login')) {
-                if (toState.name.indexOf('reset') === -1) {
-                  event.preventDefault();
-                  $state.go('login');
-                }
-              }
+
+        authService.validateSession().then(function (response) {
+          if (response.data && response.data.active) {
+            var user = authService.getUser() || {};
+            if (user.authenticationType === Constants.HEADERS) {
+              $state.go('home.globalMenu');
             }
-          });
-        }
+          } else {
+            authService.removeUser();
+            window.location.reload();
+          }
+        });
 
         if (toState.name.indexOf('users') !== -1) {
           var user = authService.getUser();
@@ -346,92 +325,6 @@
             }
           }
         })
-        .state('login', {
-          url: '/login',
-          onEnter: [
-            '$rootScope',
-            '$state',
-            '$uibModal',
-            function ($rootScope, $state, $uibModal) {
-              $rootScope.loginModal = $uibModal.open({
-                templateUrl: '/studio/static-assets/ng-views/login.html',
-                controller: 'LoginCtrl',
-                backdrop: 'static',
-                keyboard: false,
-                size: 'sm'
-              });
-
-              $rootScope.loginModal.result.finally(function () {
-                CrafterCMSNext.util.auth.setRequestForgeryToken();
-                $rootScope.loginModal = null;
-              });
-            }
-          ],
-          onExit: [
-            '$rootScope',
-            function ($rootScope) {
-              if ($rootScope.loginModal) {
-                $rootScope.loginModal.close();
-              }
-            }
-          ]
-        })
-        .state('login.recover', {
-          url: '/recover',
-          onEnter: [
-            '$rootScope',
-            '$state',
-            '$uibModal',
-            function ($rootScope, $state, $uibModal) {
-              $rootScope.recoverModal = $uibModal.open({
-                templateUrl: '/studio/static-assets/ng-views/recover.html',
-                controller: 'RecoverCtrl',
-                backdrop: 'static',
-                keyboard: false,
-                size: 'sm'
-              });
-
-              $rootScope.recoverModal.result.finally(function () {
-                $rootScope.recoverModal = null;
-                // $state.go('login');
-              });
-            }
-          ],
-          onExit: [
-            '$rootScope',
-            function ($rootScope) {
-              if ($rootScope.recoverModal) {
-                $rootScope.recoverModal.close();
-              }
-            }
-          ]
-        })
-        .state('home.reset', {
-          url: 'reset-password',
-          onEnter: [
-            '$rootScope',
-            '$state',
-            '$uibModal',
-            function ($rootScope, $state, $uibModal) {
-              $rootScope.resetModal = $uibModal.open({
-                templateUrl: '/studio/static-assets/ng-views/reset-password.html',
-                controller: 'ResetCtrl',
-                backdrop: 'static',
-                keyboard: false,
-                size: 'sm',
-                windowTopClass: 'modal-top-override'
-              });
-            }
-          ],
-          onExit: [
-            '$rootScope',
-            function ($rootScope) {
-              if ($rootScope.resetModal) {
-                $rootScope.resetModal.close();
-              }
-            }
-          ]
-        })
         .state('logout', {
           url: 'logout',
           controller: 'AppCtrl'
@@ -474,8 +367,7 @@
     '$http',
     '$document',
     'Constants',
-    '$cookies',
-    function ($rootScope, $http, $document, Constants, $cookies) {
+    function ($rootScope, $http, $document, Constants) {
       var user = null;
       var script = $document[0].getElementById('user');
       let unmountAuthMonitor;
@@ -491,17 +383,6 @@
 
       this.isAuthenticated = function () {
         return !!user;
-      };
-
-      this.login = function (data) {
-        return $http.post(security('login'), data).then(function (data) {
-          if (data.status == 200) {
-            user = data.data;
-            authLoop();
-            $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
-          }
-          return data.data;
-        });
       };
 
       this.logout = function () {
@@ -710,7 +591,11 @@
       this.getDocumentCookie = function (name) {
         var value = '; ' + document.cookie;
         var parts = value.split('; ' + name + '=');
-        if (parts.length == 2) return parts.pop().split(';').shift();
+        if (parts.length == 2)
+          return parts
+            .pop()
+            .split(';')
+            .shift();
       };
 
       this.getLanguages = function (scope, setLang) {
@@ -945,7 +830,9 @@
           })
           .keyup(function () {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
-            $('.popover').find('.popover-content').html(creatingPassValHTML.template);
+            $('.popover')
+              .find('.popover-content')
+              .html(creatingPassValHTML.template);
             scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           })
@@ -1072,7 +959,7 @@
             if ($scope.logoutInfo.url) {
               $window.location.href = $scope.logoutInfo.url;
             } else {
-              $state.go('login');
+              window.location.reload();
             }
           });
         }
@@ -1093,25 +980,7 @@
                 $scope.error = data.error;
               } else {
                 $scope.message = data.message;
-
-                $rootScope.modalInstance = $uibModal.open({
-                  templateUrl: 'passwordUpdated.html',
-                  windowClass: 'centered-dialog',
-                  controller: 'AppCtrl',
-                  backdrop: 'static',
-                  backdropClass: 'hidden',
-                  keyboard: false,
-                  size: 'sm'
-                });
-                $timeout(
-                  function () {
-                    $rootScope.modalInstance.close();
-                    $scope.data = {};
-                    logout();
-                  },
-                  1500,
-                  false
-                );
+                $timeout(logout, 1500, false);
               }
             },
             function (error) {
@@ -1129,7 +998,7 @@
             }
           );
         } else {
-          $scope.error = "Passwords don't match.";
+          $scope.error = 'Passwords don\'t match.';
         }
       }
 
@@ -1271,14 +1140,7 @@
         passwordRequirements.init($scope, 'validPass', 'password', 'top');
       };
 
-      $rootScope.$on('$stateChangeStart', function (
-        event,
-        toState,
-        toParams,
-        fromState,
-        fromParams,
-        options
-      ) {
+      $rootScope.$on('$stateChangeStart', function (event, toState) {
         if ($scope.isModified) {
           event.preventDefault();
 
@@ -1306,8 +1168,7 @@
     '$state',
     '$location',
     'sitesService',
-    '$window',
-    function ($rootScope, $scope, $state, $location, sitesService, $window) {
+    function ($rootScope, $scope, $state, $location, sitesService) {
       if ($rootScope.globalMenuData) {
         initGlobalMenu($rootScope.globalMenuData);
       } else {
@@ -1385,7 +1246,6 @@
     '$cookies',
     '$timeout',
     'Constants',
-
     function (
       $scope,
       $state,
@@ -1708,14 +1568,7 @@
         digest && $scope.$apply();
       }
 
-      $rootScope.$on('$stateChangeStart', function (
-        event,
-        toState,
-        toParams,
-        fromState,
-        fromParams,
-        options
-      ) {
+      $rootScope.$on('$stateChangeStart', function (event, toState) {
         if (globalConfig.isModified) {
           event.preventDefault();
 
@@ -2032,8 +1885,7 @@
             );
           })
           .error(function (data, error) {
-            if (error == 401) {
-              $state.go('login');
+            if (error === 401) {
               $scope.createModalInstance.close();
             } else {
               $scope.createModalInstance.close();
@@ -2157,243 +2009,6 @@
       });
 
       // END NEW Create Site
-    }
-  ]);
-
-  app.controller('LoginCtrl', [
-    '$rootScope',
-    '$scope',
-    '$state',
-    'authService',
-    '$timeout',
-    '$cookies',
-    'sitesService',
-    '$translate',
-    'Constants',
-    function (
-      $rootScope,
-      $scope,
-      $state,
-      authService,
-      $timeout,
-      $cookies,
-      sitesService,
-      $translate,
-      Constants
-    ) {
-      var credentials = {};
-      $scope.credentials = credentials;
-      $scope.langSelected = '';
-      $rootScope.isFooter = false;
-      $scope.crafterLogo = Constants.CRAFTER_LOGO;
-
-      $scope.userInputChange = function () {
-        var lang = localStorage.getItem(credentials.username + '_crafterStudioLanguage');
-
-        if (lang) {
-          $scope.langSelect = lang;
-          $scope.selectAction(lang);
-        }
-      };
-
-      function login() {
-        authService.login(credentials).then(
-          function success(data) {
-            if (data.type === 'failure') {
-              $scope.error = data;
-            } else if (data.error) {
-              $scope.error = data.error;
-            } else {
-              // set selected language in localStorage
-              let userCookie = data.username + '_crafterStudioLanguage';
-              localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-              localStorage.setItem('userName', data.username);
-              localStorage.setItem(userCookie, $scope.langSelected);
-              let loginSuccess = new CustomEvent('setlocale', { detail: $scope.langSelected });
-              document.dispatchEvent(loginSuccess);
-              window.location.href = '/studio';
-            }
-          },
-          function error(response) {
-            $scope.error = {};
-            if (response.status == 401) {
-              $scope.error.message = $translate.instant('dashboard.login.USER_PASSWORD_INVALID');
-            } else {
-              $scope.error.message = $translate.instant('dashboard.login.LOGIN_ERROR');
-            }
-          }
-        );
-      }
-
-      function getModalEl() {
-        return document.getElementById('loginView').parentNode.parentNode.parentNode;
-      }
-
-      function getModalBackdrop() {
-        return document.getElementsByClassName('modal-backdrop')[0];
-      }
-
-      function showModal() {
-        var loginViewEl = getModalEl();
-        angular.element(loginViewEl).addClass('in');
-      }
-
-      function hideModal() {
-        var loginViewEl = getModalEl();
-        angular.element(loginViewEl).removeClass('in');
-      }
-
-      function hideModalForm() {
-        var loginViewEl = getModalEl();
-        angular.element(loginViewEl).css('opacity', 0);
-      }
-
-      function removeHiddenClass() {
-        var modalBackdrop = getModalBackdrop();
-        angular.element(modalBackdrop).removeClass('hidden');
-      }
-
-      $scope.error = null;
-
-      $scope.login = login;
-
-      $scope.$on('$stateChangeSuccess', function () {
-        if ($state.current.name === 'login') {
-          showModal();
-        } else if ($state.current.name === 'login.recover') {
-          hideModal();
-        }
-      });
-
-      $scope.$on('$viewContentLoaded', function () {
-        if ($state.current.name === 'login.recover') {
-          $timeout(hideModal, 50);
-        }
-        removeHiddenClass();
-        //console.log(angular.element(document.querySelector('#language')));
-      });
-
-      $scope.languagesAvailable = [];
-
-      sitesService.getLanguages($scope);
-
-      $scope.selectAction = function (optSelected) {
-        $scope.langSelected = optSelected;
-        $translate.use($scope.langSelected);
-      };
-    }
-  ]);
-
-  app.controller('RecoverCtrl', [
-    '$scope',
-    '$state',
-    'authService',
-    '$translate',
-    function ($scope, $state, authService, $translate) {
-      var credentials = ($scope.credentials = {});
-
-      $scope.forgotPassword = function recover() {
-        //disable submit button and add spinner
-        $scope.recoverProcessing = true;
-
-        authService
-          .forgotPassword(credentials.username)
-          .success(function (data) {
-            if (data.response.message === 'OK') {
-              $scope.successMessage = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
-              $scope.recoverSuccess = true;
-            }
-
-            $scope.recoverProcessing = false;
-          })
-          .error(function (error, status) {
-            if (status == 500) {
-              var errorMessage =
-                error.message + ' - ' + $translate.instant('dashboard.login.RECOVER_ERROR');
-              $scope.error = errorMessage;
-            } else {
-              $scope.error = error.message;
-            }
-
-            $scope.recoverProcessing = false;
-          });
-      };
-    }
-  ]);
-
-  app.controller('ResetCtrl', [
-    '$scope',
-    '$state',
-    '$location',
-    'authService',
-    '$timeout',
-    '$translate',
-    'Constants',
-    'passwordRequirements',
-    function (
-      $scope,
-      $state,
-      $location,
-      authService,
-      $timeout,
-      $translate,
-      Constants,
-      passwordRequirements
-    ) {
-      var successDelay = 2500;
-      $scope.user = {};
-      $scope.passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
-      $scope.crafterLogo = Constants.CRAFTER_LOGO;
-      $scope.validPass = false;
-      $scope.messages = {
-        fulfillAllReqErrorMessage: formatMessage(
-          passwordRequirementMessages.fulfillAllReqErrorMessage
-        )
-      };
-
-      $scope.passwordRequirements = function () {
-        passwordRequirements.init($scope, 'validPass', 'password', 'top');
-      };
-
-      authService
-        .validateToken({
-          token: $location.search().token
-        })
-        .then(
-          function (data) {
-            $scope.validToken = true;
-
-            $scope.setPassword = function () {
-              authService
-                .setPassword({
-                  token: $location.search().token,
-                  new: $scope.user.password
-                })
-                .success(function (data) {
-                  $scope.error = null;
-                  $scope.successMessage = $translate.instant('dashboard.login.PASSWORD_UPDATED');
-
-                  $timeout(function () {
-                    $state.go('login');
-                  }, successDelay);
-                })
-                .error(function (error) {
-                  if (error.response.code === 6003) {
-                    $scope.error =
-                      $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') +
-                      '. ' +
-                      $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL');
-                  } else {
-                    $scope.error = error.reponse.message + '. ' + error.response.remedialAction;
-                  }
-                });
-            };
-          },
-          function (error) {
-            $scope.validToken = false;
-            //console.log(error.message);
-          }
-        );
     }
   ]);
 
@@ -2529,4 +2144,5 @@
       }
     };
   });
+
 })(angular);

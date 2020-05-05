@@ -59,7 +59,7 @@ export function LogInForm(props: LogInFormProps) {
         label={
           <FormattedMessage
             id="loginView.usernameTextFieldLabel"
-            defaultMessage="Email/Username"
+            defaultMessage="Username"
           />
         }
       />
