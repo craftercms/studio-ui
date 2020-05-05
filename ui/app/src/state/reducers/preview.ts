@@ -18,7 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   BROWSE_COMPONENT_INSTANCES,
-  CHANGE_CURRENT_URL, CHANGE_CURRENT_URL_VALIDATE_ITEM,
+  CHANGE_CURRENT_URL,
   CHILDREN_MAP_UPDATE,
   CLEAR_RECEPTACLES,
   CLEAR_SELECT_FOR_EDIT,
@@ -278,14 +278,6 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state,
         currentUrl: payload
       }
-  ),
-  [CHANGE_CURRENT_URL_VALIDATE_ITEM]: (state, { payload }) => (
-    (state.currentUrl !== payload)
-      ? {
-        ...state,
-        currentUrl: payload
-      }
-      : state
   ),
   [changeSite.type]: (state, { payload }) => {
 
