@@ -22,17 +22,13 @@ export default createReducer<GlobalState['dialogs']['confirm']>(
   { open: false },
   {
     [showConfirmDialog.type]: (state, { payload }) => ({
-      // By default, if no callback is specified, assume an ok button.
-      // To not have a "Ok" button, action creator must be called with onOk: null.
-      // This allows easily sending information dialogs with a ok button.
+      onClose: closeConfirmDialog(),
+      onClosed: confirmDialogClosed(),
       onOk: closeConfirmDialog(),
       ...payload,
       open: true
     }),
-    // Leaving/carrying the onClose as otherwise, it would never get executed since,
-    // the callback would be gone by the time the dialog animation is done (react would have
-    // already updated the props. Every time the dialog is opened, the onClose is cleansed anyway.
-    [closeConfirmDialog.type]: (state) => ({ open: false, onClose: state.onClose }),
+    [closeConfirmDialog.type]: (state) => ({ ...state, open: false }),
     [confirmDialogClosed.type]: () => ({ open: false })
   }
 );

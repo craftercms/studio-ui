@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
 import React, { PropsWithChildren } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/CloseRounded';
@@ -22,6 +21,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import ErrorState from './ErrorState';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
+import { DialogBase } from '../Dialogs/DialogBase';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   closeButton: {
@@ -31,32 +31,41 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-
 interface ErrorDialogBaseProps {
+  open: boolean;
   error: ApiResponse;
 }
 
-export type  ErrorDialogProps = PropsWithChildren<
-  ErrorDialogBaseProps & {
-    onClose?(): any;
-    onDismiss?(): any;
-  }
->;
+export type  ErrorDialogProps = PropsWithChildren<ErrorDialogBaseProps & {
+  onClose?(): any;
+  onClosed?(): any;
+  onDismiss?(): any;
+}>;
 
 export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
 export default function ErrorDialog(props: ErrorDialogProps) {
-  const { onClose, onDismiss, error } = props;
+  return (
+    <DialogBase
+      open={props.open}
+      onClose={props.onClose}
+      onClosed={props.onClosed}
+    >
+      <ErrorDialogWrapper {...props} />
+    </DialogBase>
+  );
+}
+
+function ErrorDialogWrapper(props: ErrorDialogProps) {
+  const { onDismiss, error } = props;
   const classes = useStyles({});
 
   return (
-    <Dialog
-      open={Boolean(error)}
-      onClose={onClose}
-    >
+    <>
       <IconButton
         aria-label="close"
         className={classes.closeButton}
@@ -68,6 +77,6 @@ export default function ErrorDialog(props: ErrorDialogProps) {
         error &&
         <ErrorState error={error} />
       }
-    </Dialog>
+    </>
   );
 }

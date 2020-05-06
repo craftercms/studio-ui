@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
@@ -24,6 +23,7 @@ import Button from '@material-ui/core/Button';
 import React, { PropsWithChildren } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
+import { DialogBase } from './DialogBase';
 
 const messages = defineMessages({
   ok: {
@@ -49,6 +49,7 @@ export type ConfirmDialogProps = PropsWithChildren<ConfirmDialogBaseProps & {
   onOk?(): any;
   onCancel?(): any;
   onClose?(): any;
+  onClosed?(): any;
   onDismiss?(): any;
 }>;
 
@@ -57,33 +58,37 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
   onCancel?: StandardAction;
   onDismiss?: StandardAction;
   onClose?: StandardAction;
+  onClosed?: StandardAction;
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
+  return (
+    <DialogBase
+      open={props.open}
+      onClose={props.onClose}
+      onClosed={props.onClosed}
+      aria-labelledby="confirmDialogTitle"
+      aria-describedby="confirmDialogBody"
+      disableEscapeKeyDown={props.disableEscapeKeyDown}
+      disableBackdropClick={props.disableBackdropClick}
+      disableEnforceFocus={props.disableEnforceFocus}
+    >
+      <ConfirmDialogWrapper {...props} />
+    </DialogBase>
+  );
+}
+function ConfirmDialogWrapper(props: ConfirmDialogProps) {
   const {
-    open,
     onOk,
-    onClose,
     onCancel,
     onDismiss,
     body,
     title,
-    children,
-    disableEscapeKeyDown = true,
-    disableBackdropClick = true,
-    disableEnforceFocus = false
+    children
   } = props;
   const { formatMessage } = useIntl();
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      aria-labelledby="confirmDialogTitle"
-      aria-describedby="confirmDialogBody"
-      disableEscapeKeyDown={disableEscapeKeyDown}
-      disableBackdropClick={disableBackdropClick}
-      disableEnforceFocus={disableEnforceFocus}
-    >
+    <>
       {title && <DialogHeader id="confirmDialogTitle" title={title} onDismiss={onDismiss} />}
       <DialogBody id="confirmDialogBody">
         {body && <DialogContentText color="textPrimary">{body}</DialogContentText>}
@@ -103,6 +108,6 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
           )}
         </DialogActions>
       </DialogFooter>
-    </Dialog>
+    </>
   );
 }

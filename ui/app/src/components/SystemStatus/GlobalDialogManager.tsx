@@ -91,14 +91,17 @@ function GlobalDialogManager() {
         onOk={createCallback(state.confirm.onOk, dispatch)}
         onCancel={createCallback(state.confirm.onCancel, dispatch)}
         onClose={createCallback(state.confirm.onClose, dispatch)}
+        onClosed={createCallback(state.confirm.onClosed, dispatch)}
         onDismiss={createCallback(state.confirm.onDismiss, dispatch)}
       />
       {/* endregion */}
 
       {/* region Error */}
       <ErrorDialog
+        open={state.error.open}
         error={state.error.error}
         onClose={createCallback(state.error.onClose, dispatch)}
+        onClosed={createCallback(state.error.onClosed, dispatch)}
         onDismiss={createCallback(state.error.onDismiss, dispatch)}
       />
       {/* endregion */}
