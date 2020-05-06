@@ -591,11 +591,7 @@
       this.getDocumentCookie = function (name) {
         var value = '; ' + document.cookie;
         var parts = value.split('; ' + name + '=');
-        if (parts.length == 2)
-          return parts
-            .pop()
-            .split(';')
-            .shift();
+        if (parts.length == 2) return parts.pop().split(';').shift();
       };
 
       this.getLanguages = function (scope, setLang) {
@@ -686,14 +682,7 @@
   ]);
 
   app.service('passwordRequirements', [
-    '$rootScope',
-    '$http',
-    'Constants',
-    '$cookies',
-    '$timeout',
-    '$window',
-    '$translate',
-    function ($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
+    function () {
       var me = this,
         generalRegExp = passwordRequirementsRegex, // Global declared in entry.ftl, comes from FTL context.
         generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ''),
@@ -758,7 +747,7 @@
                 this.runValidation(scope, isValid, elt, 'noGroups', placement);
               }
             } catch (error) {
-              console.warning(
+              console.warn(
                 'Defaulting password validation to server due to issues in RegExp compilation.'
               );
             }
@@ -830,9 +819,7 @@
           })
           .keyup(function () {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
-            $('.popover')
-              .find('.popover-content')
-              .html(creatingPassValHTML.template);
+            $('.popover').find('.popover-content').html(creatingPassValHTML.template);
             scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           })
@@ -850,8 +837,6 @@
             scope.$apply();
           });
       };
-
-      return this;
     }
   ]);
 
@@ -998,7 +983,7 @@
             }
           );
         } else {
-          $scope.error = 'Passwords don\'t match.';
+          $scope.error = "Passwords don't match.";
         }
       }
 
