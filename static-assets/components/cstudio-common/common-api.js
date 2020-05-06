@@ -750,26 +750,16 @@ var nodeOpen = false,
 
       viewContentHistory: function (contentObj, isWrite, rootPath) {
         const item = CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(contentObj);
-        const eventIdOnClose = 'showHistoryDialogOnClose';
-
-        CrafterCMSNext.system.store.dispatch({ type: 'FETCH_ITEM_VERSIONS', payload: { path: item.path }})
 
         CrafterCMSNext.system.store.dispatch({
-          type: 'SHOW_HISTORY_DIALOG',
+          type: 'FETCH_ITEM_VERSIONS',
           payload: {
-            open: true,
             item,
-            ...(rootPath && {rootPath: rootPath}),
-            onClose: {
-              type: 'LEGACY_DIALOG_CALLBACK',
-              payload: {id:eventIdOnClose }
-            }
+            ...(rootPath && { rootPath: rootPath })
           }
-        });
+        })
 
-        CrafterCMSNext.createLegacyCallbackListener(eventIdOnClose, () => {
-            CrafterCMSNext.system.store.dispatch({ type: 'RESET_VERSIONS_STATE'})
-        });
+        CrafterCMSNext.system.store.dispatch({ type: 'SHOW_HISTORY_DIALOG' });
       },
 
       viewConfigurationHistory: function (contentObj, isWrite) {
@@ -786,7 +776,8 @@ var nodeOpen = false,
               revertPath: contentObj.uri,
               environment: contentObj.environment,
               module: contentObj.module,
-              path: item.path
+              item,
+              rootPath: null
             }
           }
         );
@@ -794,9 +785,6 @@ var nodeOpen = false,
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_HISTORY_DIALOG',
           payload: {
-            open: true,
-            item,
-            rootPath: null,
             onClose: {
               type: 'LEGACY_DIALOG_CALLBACK',
               payload: { id: eventIdOnClose }

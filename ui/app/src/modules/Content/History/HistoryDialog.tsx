@@ -275,8 +275,6 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
   }
 
   const handleViewItem = (version: LegacyVersion) => {
-    dispatch(fetchContentTypes());
-    dispatch(fetchContentVersion({ path, versionNumber: version.versionNumber }));
     dispatch(
       showViewVersionDialog({
         rightActions: [
@@ -288,12 +286,14 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
         ]
       })
     );
+    dispatch(fetchContentTypes());
+    dispatch(fetchContentVersion({ path, versionNumber: version.versionNumber }));
   };
 
   const compareTo = (versionNumber: string) => {
+    dispatchCompareVersionDialogWithActions();
     dispatch(fetchContentTypes());
     dispatch(compareVersion({ id: versionNumber }));
-    dispatchCompareVersionDialogWithActions();
   };
 
   const compareBoth = (selected: string[]) => {

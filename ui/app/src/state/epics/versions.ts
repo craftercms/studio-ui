@@ -107,6 +107,13 @@ export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(historyDialogClosed.type),
-      map(resetVersionsState)
+      withLatestFrom(state$),
+      map(([, { dialogs }]) => {
+        if (!dialogs.viewVersion.open && !dialogs.compareVersions.open) {
+          return resetVersionsState();
+        } else {
+          return { type: 'nadita' };
+        }
+      })
     )
 ] as Epic[];

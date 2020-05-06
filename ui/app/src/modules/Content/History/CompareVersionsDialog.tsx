@@ -16,7 +16,6 @@
 
 import StandardAction from '../../../models/StandardAction';
 import React, { useMemo, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useStateResource } from '../../../utils/hooks';
 import { FancyFormattedDate, VersionList } from './VersionList';
@@ -182,14 +181,7 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
   };
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      fullWidth
-      maxWidth="md"
-      onEscapeKeyDown={onDismiss}
-      keepMounted
-    >
+    <>
       <DialogHeader
         title={
           <FormattedMessage
@@ -281,7 +273,7 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
           <Pagination count={count} page={page} rowsPerPage={limit} onPageChanged={onPageChanged} />
         </DialogFooter>
       )}
-    </Dialog>
+    </>
   );
 }
 
