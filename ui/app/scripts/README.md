@@ -1,3 +1,5 @@
+![npm (scoped)](https://img.shields.io/npm/v/@craftercms/studio-ui?style=plastic)
+
 # studio-ui
 Studio UI is the authoring interface for Crafter CMS. 
 
