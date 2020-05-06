@@ -73,60 +73,97 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         previewItem = {
           label: 'Home',
           path: '/site/website/index.xml'
-        }
+        };
       }
 
-      const eventIdSuccess = 'quickCreateMenuSuccess';
+      const quickCreateItemSelected = 'quickCreateItemSelected';
+      const newContentSelected = 'newContentSelected';
+      const editDialogSuccess = 'editDialogSuccess';
 
+      const showEditDialog = function (payload) {
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_EDIT_DIALOG',
+          payload: {
+            ...payload,
+            onSaveSuccess: {
+              type: 'LEGACY_DIALOG_CALLBACK',
+              payload: { id: editDialogSuccess }
+            }
+          }
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, ({ output }) => {
+          if (output) {
+            const page = CStudioAuthoring.Utils.getQueryParameterURL('page');
+            const acnDraftContent = $('.acnDraftContent').get(0);
+            eventYS.data = output.item;
+            eventYS.typeAction = 'createContent';
+            eventYS.oldPath = null;
+            eventYS.parent = output.item.path === '/site/website' ? null : false;
+            document.dispatchEvent(eventYS);
+
+            if (output.item.isPage) {
+              CStudioAuthoring.Operations.refreshPreview(output.item);
+              if (page === output.item.browserUri && acnDraftContent) {
+                CStudioAuthoring.SelectedContent.setContent(output.item);
+              }
+            } else {
+              CStudioAuthoring.Operations.refreshPreview();
+            }
+          }
+          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
+        });
+      };
+
+      // Render quick create menu
       CrafterCMSNext.render(container, 'QuickCreateMenu', {
         previewItem,
         anchorEl,
+        onNewContentSelected: {
+          type: 'LEGACY_DIALOG_CALLBACK',
+          payload: { id: newContentSelected }
+        },
         onQuickCreateItemSelected: {
           type: 'LEGACY_DIALOG_CALLBACK',
-          payload: { id: eventIdSuccess }
+          payload: { id: quickCreateItemSelected }
         },
         onClose: () => unmount()
-      }).then((done) => (unmount = done.unmount))
+      }).then((done) => (unmount = done.unmount));
 
-      CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+      // on New Content selected - Render new content dialog
+      CrafterCMSNext.createLegacyCallbackListener(newContentSelected, (response) => {
         if (response) {
-          const eventIdSuccess = 'editDialogSuccess';
+          const contentTypeSelected = 'itemSelected';
           const payload = response.payload ?? response.output;
 
           CrafterCMSNext.system.store.dispatch({
-            type: 'SHOW_EDIT_DIALOG',
+            type: 'SHOW_NEW_CONTENT_DIALOG',
             payload: {
               ...payload,
-              onSaveSuccess: {
+              onContentTypeSelected: {
                 type: 'LEGACY_DIALOG_CALLBACK',
-                payload: { id: eventIdSuccess }
+                payload: { id: contentTypeSelected }
               }
             }
           });
 
-          CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, ({ output }) => {
-            if (output) {
-              const page = CStudioAuthoring.Utils.getQueryParameterURL('page');
-              const acnDraftContent = $('.acnDraftContent').get(0);
-              eventYS.data = output.item;
-              eventYS.typeAction = 'createContent';
-              eventYS.oldPath = null;
-              eventYS.parent = output.item.path === '/site/website' ? null : false;
-              document.dispatchEvent(eventYS);
-
-              if (output.item.isPage) {
-                CStudioAuthoring.Operations.refreshPreview(output.item);
-                if (page === output.item.browserUri && acnDraftContent) {
-                  CStudioAuthoring.SelectedContent.setContent(output.item);
-                }
-              } else {
-                CStudioAuthoring.Operations.refreshPreview();
-              }
+          CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, (response) => {
+            if (response) {
+              const payload = response.payload ?? response.output;
+              showEditDialog(payload);
             }
-            CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
           });
         }
       });
+
+      // on Quick Create Item selected - Render edit dialog
+      CrafterCMSNext.createLegacyCallbackListener(quickCreateItemSelected, (response) => {
+        if (response) {
+          const payload = response.payload ?? response.output;
+          showEditDialog(payload);
+        }
+      });
+
     }
 
     quickCreateWrapper.click((e) => renderQuickCreate(e.currentTarget));

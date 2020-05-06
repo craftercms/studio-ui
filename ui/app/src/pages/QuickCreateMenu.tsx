@@ -17,9 +17,17 @@
 import React, { useEffect, useState } from 'react';
 import { QuickCreateMenu } from '../modules/Preview/QuickCreate';
 import { useSelection } from '../utils/hooks';
+import { NewContentDialogProps } from '../modules/Content/Authoring/NewContentDialog';
+import { EmbeddedLegacyEditorsProps } from '../modules/Preview/EmbeddedLegacyEditors';
 
 export default function (props) {
-  const { anchorEl, previewItem, onClose, onQuickCreateItemSelected } = props;
+  const {
+    anchorEl,
+    previewItem,
+    onClose,
+    onQuickCreateItemSelected,
+    onNewContentSelected
+  } = props;
   const [menuAnchor, setMenuAnchor] = useState(anchorEl);
   const createNewContentOpen = useSelection((state) => state.dialogs.newContent.open);
   // TODO: Switch when Embedded legacy editors is moved to dialog manager
@@ -39,7 +47,16 @@ export default function (props) {
       anchorEl={menuAnchor}
       previewItem={previewItem}
       onClose={onCloseMenu}
-      onQuickCreateItemSelected={(payload: any) => {
+      onNewContentSelected={(payload: NewContentDialogProps) => {
+        return {
+          ...onNewContentSelected,
+          payload: {
+            ...onNewContentSelected.payload,
+            payload
+          }
+        };
+      }}
+      onQuickCreateItemSelected={(payload: EmbeddedLegacyEditorsProps) => {
         return {
           ...onQuickCreateItemSelected,
           payload: {

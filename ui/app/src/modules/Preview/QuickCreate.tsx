@@ -32,6 +32,8 @@ import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { ApiResponse } from '../../models/ApiResponse';
 import { showNewContentDialog } from '../../state/actions/dialogs';
 import { newContentCreationComplete, showEditDialog } from '../../state/reducers/dialogs/edit';
+import StandardAction from '../../models/StandardAction';
+import { ActionCreator } from 'redux';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -76,7 +78,8 @@ const useStyles = makeStyles((theme: Theme) =>
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
   previewItem: SandboxItem;
-  onQuickCreateItemSelected?(response?: any): any;
+  onNewContentSelected?: ActionCreator<StandardAction>;
+  onQuickCreateItemSelected?: ActionCreator<StandardAction>;
   onClose(): void;
   onItemClicked?(): void;
 }
@@ -86,7 +89,14 @@ interface QuickCreateMenuButtonProps {
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const { anchorEl, onClose, previewItem, onQuickCreateItemSelected, onItemClicked } = props;
+  const {
+    anchorEl,
+    onClose,
+    previewItem,
+    onNewContentSelected,
+    onQuickCreateItemSelected,
+    onItemClicked
+  } = props;
   const classes = useStyles({});
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
@@ -98,11 +108,11 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const onNewContentClick = () => {
     onItemClicked?.();
     dispatch(
-      showNewContentDialog({
+      onNewContentSelected({
         site: siteId,
         previewItem,
         compact: false,
-        onContentTypeSelected: onQuickCreateItemSelected ? onQuickCreateItemSelected() : showEditDialog()
+        onContentTypeSelected: showEditDialog()
       })
     );
   };
@@ -210,6 +220,7 @@ export default function QuickCreate() {
         onClose={onMenuClose}
         previewItem={currentPreview}
         onItemClicked={onMenuClose}
+        onNewContentSelected={showNewContentDialog}
         onQuickCreateItemSelected={showEditDialog}
       />
     </>
