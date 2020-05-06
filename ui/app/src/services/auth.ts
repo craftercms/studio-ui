@@ -81,11 +81,24 @@ export function setPassword(
       );
 }
 
+export function validatePasswordResetToken(token: string): Observable<boolean> {
+  return get(`/studio/api/1/services/api/1/user/validate-token.json?token=${token}`).pipe(
+    mapTo(true),
+    catchError((error) => {
+      if (error.status === 401)
+        return of(false);
+      else
+        throw new Error(error.response)
+    })
+  );
+}
+
 export default {
   getLogoutInfoURL,
   logout,
   login,
   validateSession,
   sendPasswordRecovery,
-  setPassword
+  setPassword,
+  validatePasswordResetToken
 };
