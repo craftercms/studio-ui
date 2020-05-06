@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LegacyItem } from './Item';
+import { LegacyItem, SandboxItem } from './Item';
 import ApiResponse from './ApiResponse';
 
 export interface LegacyVersion {
@@ -43,7 +43,8 @@ export interface CompareVersionsBranch {
 
 export interface VersionsStateProps {
   byId: string;
-  path: string;
+  item: SandboxItem;
+  rootPath?: string;
   config?: boolean;
   revertPath?: boolean;
   environment?: string;

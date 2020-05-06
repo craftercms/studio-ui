@@ -179,7 +179,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
       const { currentPath, rootPath, byId } = state;
       let nextItems = { ...byId };
       let items = [];
-      let parentPath = getParentPath(currentPath);
+      let parentPath = withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
 
       payload.forEach((response: GetChildrenResponse, i: number) => {
         if (i === payload.length - 1) {
@@ -300,7 +300,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
 
   const handleDropdownClick = (item: SandboxItem) => {
     onDropdownClick();
-    exec(fetchParentsItems(item.path ?? rootPath));
+    exec(fetchParentsItems(item?.path ?? rootPath));
   };
 
   const onPathSelected = (item: SandboxItem) => {
