@@ -556,26 +556,27 @@ function LanguageDropDown(props: LanguageDropDownProps) {
 function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
   const { passwordRequirementsRegex, formatMessage } = props;
   let regEx = null;
-  let captureGroups;
+  let captureGroups = passwordRequirementsRegex.match(/\(\?<.*?>.*?\)/g);
   let fallback;
+  let namedCaptureGroupSupport = false;
+  if (!captureGroups) {
+    // RegExp may be valid and have no capture groups
+    fallback = {
+      regEx,
+      description: formatMessage(passwordRequirementMessages.validationPassing)
+    };
+  }
   try {
     regEx = new RegExp(passwordRequirementsRegex);
     captureGroups = passwordRequirementsRegex.match(/\(\?<.*?>.*?\)/g);
-    if (!captureGroups) {
-      // RegExp may be valid and have no capture groups
-      fallback = {
-        regEx,
-        description: formatMessage(passwordRequirementMessages.validationPassing)
-      };
-    }
+    namedCaptureGroupSupport = true;
   } catch (error) {
     console.warn(error);
     try {
+      // If the reg ex is parsable without the capture groups, we can use the
+      // reg ex without the capture groups and just need to remove the capture
+      // group from the individual pieces later on the mapping.
       regEx = new RegExp(passwordRequirementsRegex.replace(/\?<(.*?)>/g, ''));
-      fallback = {
-        regEx,
-        description: formatMessage(passwordRequirementMessages.validationPassing)
-      };
     } catch (error) {
       // Allow everything and default to backend as regex wasn't
       // parsable/valid for current navigator
@@ -591,8 +592,10 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
     regEx,
     conditions: captureGroups ? captureGroups.map((captureGroup) => {
       let description;
-      let captureGroupKey =
-        captureGroup.match(/\?<(.*?)>/g)?.[0].replace(/\?<|>/g, '') ?? 'Unnamed condition';
+      let captureGroupKey = captureGroup.match(/\?<(.*?)>/g)?.[0].replace(/\?<|>/g, '') ?? 'Unnamed condition';
+      if (!namedCaptureGroupSupport) {
+        captureGroup = captureGroup.replace(/\?<(.*?)>/g, '');
+      }
       switch (captureGroupKey) {
         case 'hasSpecialChars':
           const allowedChars = (passwordRequirementsRegex.match(
