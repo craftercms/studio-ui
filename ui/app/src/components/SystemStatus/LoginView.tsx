@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -26,6 +26,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   login,
   sendPasswordRecovery,
+  validatePasswordResetToken,
   setPassword as setPasswordService
 } from '../../services/auth';
 import { insureSingleSlash, isBlank } from '../../utils/string';
@@ -42,6 +43,13 @@ import { getCurrentLocale } from '../CrafterCMSNextBridge';
 import TextField from '@material-ui/core/TextField';
 import { Snackbar } from '@material-ui/core';
 import PasswordTextField from '../Controls/PasswordTextField';
+import { passwordRequirementMessages } from '../../utils/i18n-legacy';
+import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
+import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
+import clsx from 'clsx';
+import { filter } from 'rxjs/operators';
+
+setRequestForgeryToken();
 
 interface SystemLang {
   id: string;
@@ -68,6 +76,7 @@ type SubViewProps = React.PropsWithChildren<{
   token?: string;
   language?: string;
   setMode?: React.Dispatch<React.SetStateAction<Modes>>;
+  passwordRequirementsRegex?: string;
   children: React.ReactNode;
   isFetching: boolean;
   onSubmit: React.Dispatch<React.SetStateAction<boolean>>;
@@ -75,6 +84,14 @@ type SubViewProps = React.PropsWithChildren<{
   formatMessage: Function;
   onSnack: React.Dispatch<React.SetStateAction<{ open: boolean; message: string }>>;
 }>;
+
+interface PasswordRequirementsDisplayProps {
+  value: string;
+  formatMessage: Function;
+  onValidStateChanged: (isValid: boolean) => void;
+  passwordRequirementsRegex: string;
+  classes: { [props: string]: string };
+}
 
 const translations = defineMessages({
   loginDialogTitle: {
@@ -113,6 +130,10 @@ const translations = defineMessages({
   resetPasswordError: {
     id: 'resetView.resetPasswordError',
     defaultMessage: 'Error resetting password. Token may be invalid or expired.'
+  },
+  resetPasswordInvalidToken: {
+    id: 'resetView.resetPasswordError',
+    defaultMessage: 'Invalid or expired token.'
   }
 });
 
@@ -176,6 +197,25 @@ const useStyles = makeStyles((theme) =>
     },
     resetPassword: {
       marginBottom: 10
+    },
+    // Password requirements
+    listOfConditions: {
+      listStyle: 'none',
+      padding: 0,
+      margin: `${theme.spacing(1.5)}px 0`
+    },
+    conditionItem: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    conditionItemIcon: {
+      marginRight: theme.spacing(1)
+    },
+    conditionItemNotMet: {
+      color: palette.yellow.shade
+    },
+    conditionItemMet: {
+      color: palette.green.shade
     }
   })
 );
@@ -195,7 +235,6 @@ function LoginView(props: SubViewProps) {
     e.stopPropagation();
     if (!(isBlank(password) || isBlank(username))) {
       onSubmit(true);
-      setRequestForgeryToken();
       login({ username, password }).subscribe(
         () => {
           setError('');
@@ -263,7 +302,6 @@ function RecoverView(props: SubViewProps) {
     e.stopPropagation();
     setError('');
     onSubmit(true);
-    setRequestForgeryToken();
     !isBlank(username) &&
       sendPasswordRecovery(username).subscribe(
         () => {
@@ -346,9 +384,20 @@ function RecoverView(props: SubViewProps) {
 }
 
 function ResetView(props: SubViewProps) {
-  const { children, isFetching, onSubmit, classes, formatMessage, onSnack, setMode, token } = props;
+  const {
+    children,
+    isFetching,
+    onSubmit,
+    classes,
+    formatMessage,
+    onSnack,
+    setMode,
+    token,
+    passwordRequirementsRegex
+  } = props;
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [isValid, setValid] = useState<boolean>(null);
   const [passwordsMismatch, setPasswordMismatch] = useState(false);
   const [error, setError] = useState('');
   useEffect(() => {
@@ -358,12 +407,18 @@ function ResetView(props: SubViewProps) {
       setPasswordMismatch(true);
     }
   }, [newPassword, newPasswordConfirm]);
+  useEffect(() => {
+    validatePasswordResetToken(token).pipe(
+      filter((isValid) => !isValid)
+    ).subscribe(() => {
+      setError(formatMessage(translations.resetPasswordInvalidToken))
+    });
+  }, [formatMessage, token]);
   const submit = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isBlank(newPassword) && !isBlank(newPasswordConfirm)) {
       onSubmit(true);
-      setRequestForgeryToken();
       setPasswordService(token, newPassword, newPasswordConfirm).subscribe(
         () => {
           onSubmit(false);
@@ -390,10 +445,18 @@ function ResetView(props: SubViewProps) {
             />
           }
         />
+        <PasswordRequirementsDisplay
+          classes={classes}
+          value={newPassword}
+          onValidStateChanged={setValid}
+          formatMessage={formatMessage}
+          passwordRequirementsRegex={passwordRequirementsRegex}
+        />
         <form onSubmit={submit}>
           <PasswordTextField
             id="resetFormPasswordField"
             fullWidth
+            error={isValid !== null && !isValid}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             className={classes.resetPassword}
@@ -402,6 +465,11 @@ function ResetView(props: SubViewProps) {
           <PasswordTextField
             id="resetFormPasswordConfirmField"
             fullWidth
+            helperText={
+              passwordsMismatch
+                ? formatMessage(passwordRequirementMessages.passwordConfirmationMismatch)
+                : null
+            }
             error={passwordsMismatch}
             value={newPasswordConfirm}
             onChange={(e) => setNewPasswordConfirm(e.target.value)}
@@ -456,7 +524,7 @@ function UnrecognizedView({ classes }: any) {
         Unrecognized mode.
       </Typography>
     </DialogContent>
-  )
+  );
 }
 
 function LanguageDropDown(props: LanguageDropDownProps) {
@@ -485,10 +553,137 @@ function LanguageDropDown(props: LanguageDropDownProps) {
   );
 }
 
+function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
+  const { passwordRequirementsRegex, formatMessage } = props;
+  let regEx = null;
+  let captureGroups;
+  let fallback;
+  try {
+    regEx = new RegExp(passwordRequirementsRegex);
+    captureGroups = passwordRequirementsRegex.match(/\(\?<.*?>.*?\)/g);
+    if (!captureGroups) {
+      // RegExp may be valid and have no capture groups
+      fallback = {
+        regEx,
+        description: formatMessage(passwordRequirementMessages.validationPassing)
+      };
+    }
+  } catch (error) {
+    console.warn(error);
+    try {
+      regEx = new RegExp(passwordRequirementsRegex.replace(/\?<(.*?)>/g, ''));
+      fallback = {
+        regEx,
+        description: formatMessage(passwordRequirementMessages.validationPassing)
+      };
+    } catch (error) {
+      // Allow everything and default to backend as regex wasn't
+      // parsable/valid for current navigator
+      regEx = /(.|\s)*\S(.|\s)*/;
+      fallback = {
+        regEx,
+        description: formatMessage(passwordRequirementMessages.notBlank)
+      };
+      console.warn('Defaulting password validation to server due to issues in RegExp compilation.');
+    }
+  }
+  return {
+    regEx,
+    conditions: captureGroups ? captureGroups.map((captureGroup) => {
+      let description;
+      let captureGroupKey =
+        captureGroup.match(/\?<(.*?)>/g)?.[0].replace(/\?<|>/g, '') ?? 'Unnamed condition';
+      switch (captureGroupKey) {
+        case 'hasSpecialChars':
+          const allowedChars = (passwordRequirementsRegex.match(
+            /\(\?<hasSpecialChars>(.*)\[(.*?)]\)/
+          ) || ['', '', ''])[2];
+          description = formatMessage(passwordRequirementMessages.hasSpecialChars, {
+            chars: allowedChars ? `(${allowedChars})` : ''
+          });
+          break;
+        case 'minLength':
+          const min = ((passwordRequirementsRegex.match(/\(\?<minLength>(.*){(.*?)}\)/) || [
+            ''
+          ])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[0];
+          description = formatMessage(passwordRequirementMessages.minLength, { min });
+          break;
+        case 'maxLength':
+          const max = ((passwordRequirementsRegex.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [
+            ''
+          ])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[1];
+          description = formatMessage(passwordRequirementMessages.maxLength, { max });
+          break;
+        case 'minMaxLength':
+          const minLength = ((passwordRequirementsRegex.match(
+            /\(\?<minMaxLength>(.*){(.*?)}\)/
+          ) || [''])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[0];
+          const maxLength = ((passwordRequirementsRegex.match(
+            /\(\?<minMaxLength>(.*){(.*?)}\)/
+          ) || [''])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[1];
+          description = formatMessage(passwordRequirementMessages.minMaxLength, {
+            minLength,
+            maxLength
+          });
+          break;
+        default:
+          description = formatMessage(
+            passwordRequirementMessages[captureGroupKey] ?? passwordRequirementMessages.unnamedGroup
+          );
+          break;
+      }
+      return {
+        regEx: new RegExp(captureGroup),
+        description
+      };
+    }): [fallback]
+  };
+}
+
+function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
+  const { passwordRequirementsRegex, formatMessage, value, classes, onValidStateChanged } = props;
+  const { regEx, conditions } = useMemo(
+    () => getPrimeMatter({ passwordRequirementsRegex, formatMessage }),
+    [passwordRequirementsRegex, formatMessage]
+  );
+  useEffect(() => {
+    onValidStateChanged(isBlank(value) ? null : regEx.test(value));
+  }, [onValidStateChanged, regEx, value]);
+  return (
+    <ul className={classes.listOfConditions}>
+      {conditions.map(({ description, regEx: condition }, key) => {
+        const blank = isBlank(value);
+        const valid = condition.test(value);
+        return (
+          <Typography
+            key={key}
+            component="li"
+            className={clsx(
+              classes.conditionItem,
+              !blank && {
+                [classes.conditionItemNotMet]: !valid,
+                [classes.conditionItemMet]: valid
+              }
+            )}
+          >
+            {valid && !blank ? (
+              <CheckCircleOutlineRoundedIcon className={classes.conditionItemIcon} />
+            ) : (
+              <ErrorOutlineRoundedIcon className={classes.conditionItemIcon} />
+            )}
+            {description}
+          </Typography>
+        );
+      })}
+    </ul>
+  );
+}
+
 export default function(props: LoginViewProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const token = parse(window.location.search).token as string;
+  const passwordRequirementsRegex = props.passwordRequirementsRegex;
 
   const [mode, setMode] = useState<Modes>(token ? 'reset' : 'login');
   const [language, setLanguage] = useState(() => getCurrentLocale());
@@ -506,6 +701,7 @@ export default function(props: LoginViewProps) {
     classes,
     onSubmit,
     onSnack,
+    passwordRequirementsRegex,
     children: (
       <LanguageDropDown
         language={language}
@@ -572,21 +768,23 @@ export default function(props: LoginViewProps) {
           />
         </DialogTitle>
         <CurrentView {...currentViewProps} />
-        {mode !== 'reset' && <DialogActions>
-          <Button
-            type="button"
-            color="primary"
-            disabled={isFetching}
-            variant="text"
-            fullWidth
-            onClick={() => setMode('recover')}
-          >
-            <FormattedMessage
-              id="loginView.forgotPasswordButtonLabel"
-              defaultMessage="Forgot your password?"
-            />
-          </Button>
-        </DialogActions>}
+        {mode !== 'reset' && (
+          <DialogActions>
+            <Button
+              type="button"
+              color="primary"
+              disabled={isFetching}
+              variant="text"
+              fullWidth
+              onClick={() => setMode('recover')}
+            >
+              <FormattedMessage
+                id="loginView.forgotPasswordButtonLabel"
+                defaultMessage="Forgot your password?"
+              />
+            </Button>
+          </DialogActions>
+        )}
       </Dialog>
       <Snackbar
         open={snack.open}
