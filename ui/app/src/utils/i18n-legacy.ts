@@ -91,7 +91,7 @@ const usersAdminMessages = defineMessages({
 
 });
 
-const passwordRequirementMessages = defineMessages({
+export const passwordRequirementMessages = defineMessages({
   hasNumbers: {
     id: 'passwordRequirement.hasNumbers',
     defaultMessage: 'Must contain at least one number'
@@ -136,9 +136,25 @@ const passwordRequirementMessages = defineMessages({
     id: 'passwordRequirement.invalidPassword',
     defaultMessage: 'Requirements are not met'
   },
+  notBlank: {
+    id: 'passwordRequirement.noBlank',
+    defaultMessage: 'Must not be blank'
+  },
+  validationPassing: {
+    id: 'passwordRequirement.noBlank',
+    defaultMessage: 'Validation passing'
+  },
   fulfillAllReqErrorMessage: {
     id: 'passwordRequirement.fulfillAllReqErrorMessage',
     defaultMessage: 'Please fulfill all password requirements.'
+  },
+  unnamedGroup: {
+    id: 'passwordRequirement.unnamedGroup',
+    defaultMessage: 'Condition not described'
+  },
+  passwordConfirmationMismatch: {
+    id: 'passwordRequirement.passwordConfirmationMismatch',
+    defaultMessage: 'Passwords don\'t match'
   }
 });
 
