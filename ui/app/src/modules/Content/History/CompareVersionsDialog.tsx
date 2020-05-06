@@ -33,6 +33,7 @@ import { Pagination } from './HistoryDialog';
 import {
   compareBothVersions,
   compareVersion,
+  versionsChangeItem,
   versionsChangePage
 } from '../../../state/reducers/versions';
 import { useDispatch } from 'react-redux';
@@ -51,8 +52,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { SandboxItem } from '../../../models/Item';
-import { changeCompareVersionsDialogItem } from '../../../state/actions/dialogs';
+import { DialogBase } from '../../../components/Dialogs/DialogBase';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -76,8 +76,6 @@ interface CompareVersionsDialogBaseProps {
   open: boolean;
   error: ApiResponse;
   isFetching: boolean;
-  item?: SandboxItem;
-  rootPath: string;
 }
 
 interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
@@ -87,16 +85,32 @@ interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
   contentTypesBranch?: EntityState<ContentType>;
   rightActions?: DialogHeaderAction[];
   onClose(): void;
+  onClosed(): void;
   onDismiss(): void;
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps {
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
+  return (
+    <DialogBase
+      open={props.open}
+      onClose={props.onClose}
+      onClosed={props.onClosed}
+      fullWidth={true}
+      maxWidth="md"
+    >
+      <CompareVersionsDialogWrapper {...props} />
+    </DialogBase>
+  );
+}
+
+function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
   const {
     open,
     rightActions,
@@ -105,17 +119,16 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
     onDismiss,
     onClose,
     versionsBranch,
-    contentTypesBranch,
-    rootPath,
-    item
+    contentTypesBranch
   } = props;
-  const { count, page, limit, selected, compareVersionsBranch, current, path } = versionsBranch;
+  const { count, page, limit, selected, compareVersionsBranch, current, item, rootPath } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
+  const path = '';
 
   const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (_versionsBranch) =>
@@ -158,7 +171,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
     if (!selected[0]) {
       dispatch(compareVersion({ id: version.versionNumber }));
     } else if (selected[0] !== version.versionNumber) {
-      dispatch(compareBothVersions({ versions: [selected[0], version.versionNumber]}));
+      dispatch(compareBothVersions({ versions: [selected[0], version.versionNumber] }));
     } else {
       dispatch(compareVersion());
     }
@@ -215,7 +228,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
         onDismiss={onDismiss}
       />
       <DialogBody>
-        {!compareMode && rootPath && open && (
+        {!compareMode && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
             label="Item"
@@ -226,7 +239,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
             selectedItem={item}
             onItemClicked={(item) => {
               setOpenSelector(false);
-              dispatch(changeCompareVersionsDialogItem(item));
+              dispatch(versionsChangeItem({ item }));
             }}
           />
         )}

@@ -27,7 +27,7 @@ import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../state/reducers/dialogs/error';
-import { fetchItemVersions, resetVersionsState } from '../state/reducers/versions';
+import { fetchItemVersions } from '../state/reducers/versions';
 import {
   closeDeleteDialog,
   showDeleteDialog,
@@ -107,12 +107,8 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         break;
       }
       case 'history': {
-        const path = models[modelId].craftercms.path || models[parentId].craftercms.path;
-        dispatch(fetchItemVersions({ path }));
-        dispatch(showHistoryDialog({
-          item: parseLegacyItemToSandBoxItem(item),
-          onClose: resetVersionsState()
-        }));
+        dispatch(fetchItemVersions({ item: parseLegacyItemToSandBoxItem(item) }));
+        dispatch(showHistoryDialog());
         break;
       }
       case 'dependencies' : {

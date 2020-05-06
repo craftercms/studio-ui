@@ -154,9 +154,8 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         versionsBranch={versionsBranch}
-        item={state.history.item}
-        rootPath={state.history.rootPath}
         onClose={createCallback(state.history.onClose, dispatch)}
+        onClosed={createCallback(state.history.onClosed, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
       {/* endregion */}
@@ -173,6 +172,7 @@ function GlobalDialogManager() {
         version={state.viewVersion.version}
         contentTypesBranch={contentTypesBranch}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
+        onClosed={createCallback(state.viewVersion.onClosed, dispatch)}
         onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
       />
       {/* endregion */}
@@ -186,13 +186,12 @@ function GlobalDialogManager() {
           ...action,
           onClick: createCallback(action.onClick, dispatch)
         }))}
-        item={state.compareVersions.item}
-        rootPath={state.compareVersions.rootPath}
         contentTypesBranch={contentTypesBranch}
         selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
         selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
         versionsBranch={versionsBranch}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
+        onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
         onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}
       />
       {/* endregion */}

@@ -18,7 +18,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import ListItemText from '@material-ui/core/ListItemText';
-import Dialog from '@material-ui/core/Dialog';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { useStateResource } from '../../../utils/hooks';
 import { FancyFormattedDate } from './VersionList';
@@ -39,6 +38,7 @@ import DialogHeader, {
 } from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { Resource } from '../../../models/Resource';
+import { DialogBase } from '../../../components/Dialogs/DialogBase';
 
 const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
@@ -62,7 +62,7 @@ const versionViewStyles = makeStyles(() => ({
   },
   singleItemSelector: {
     marginBottom: '10px'
-  },
+  }
 }));
 
 interface VersionViewProps {
@@ -126,6 +126,7 @@ interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
   onClose(): void;
+  onClosed(): void;
   onDismiss(): void;
 }
 
@@ -133,6 +134,7 @@ export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps 
   leftActions?: DialogHeaderStateAction[];
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
@@ -142,7 +144,21 @@ interface VersionResource {
 }
 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
-  const { open, onClose, onDismiss, rightActions } = props;
+  return (
+    <DialogBase
+      open={props.open}
+      onClose={props.onClose}
+      onClosed={props.onClosed}
+      fullWidth={true}
+      maxWidth="md"
+    >
+      <ViewVersionDialogWrapper {...props} />
+    </DialogBase>
+  );
+}
+
+function ViewVersionDialogWrapper(props: ViewVersionDialogProps) {
+  const { onDismiss, rightActions } = props;
   const resource = useStateResource<VersionResource, ViewVersionDialogProps>(props, {
     shouldResolve: (source) => (
       source.version &&
@@ -160,13 +176,7 @@ export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   });
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      fullWidth
-      maxWidth="md"
-      onEscapeKeyDown={onDismiss}
-    >
+    <>
       <DialogHeader
         title={
           <FormattedMessage
@@ -182,6 +192,6 @@ export default function ViewVersionDialog(props: ViewVersionDialogProps) {
           <VersionView resource={resource} />
         </SuspenseWithEmptyState>
       </DialogBody>
-    </Dialog>
+    </>
   );
 }

@@ -51,7 +51,7 @@ import { translations } from './translations';
 import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
-import { fetchItemVersions, resetVersionsState } from '../../../state/reducers/versions';
+import { fetchItemVersions } from '../../../state/reducers/versions';
 import { showDependenciesDialog, showHistoryDialog } from '../../../state/actions/dialogs';
 
 const menuOptions = {
@@ -306,7 +306,7 @@ const setKeyword = createAction<string>('SET_KEYWORD');
 // }
 
 // PathNavigator
-export default function(props: WidgetProps) {
+export default function (props: WidgetProps) {
   const { title, icon, path } = props;
   const [state, _dispatch] = useReducer(reducer, props, init);
 
@@ -497,12 +497,8 @@ export default function(props: WidgetProps) {
         break;
       }
       case 'history': {
-        dispatch(fetchItemVersions({ path: menu.activeItem.path  }));
-        dispatch(showHistoryDialog({
-          item: menu.activeItem,
-          rootPath: path,
-          onClose: resetVersionsState()
-        }));
+        dispatch(fetchItemVersions({ rootPath: path, item: menu.activeItem }));
+        dispatch(showHistoryDialog());
         setMenu({
           activeItem: null,
           anchorEl: null
@@ -601,7 +597,7 @@ export default function(props: WidgetProps) {
   const onTranslationDialogClose = () => setTranslationDialog(null);
 
   const onItemClicked = (item: SandboxItem) => {
-    if(item.previewUrl) {
+    if (item.previewUrl) {
       window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
     }
   };

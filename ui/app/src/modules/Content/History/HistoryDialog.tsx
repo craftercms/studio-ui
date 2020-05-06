@@ -15,7 +15,6 @@
  */
 
 import React, { PropsWithChildren, useCallback, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
@@ -36,20 +35,19 @@ import {
   compareBothVersions,
   compareToPreviousVersion,
   compareVersion,
-  resetVersionsState,
   revertContent,
   revertToPreviousVersion,
+  versionsChangeItem,
   versionsChangePage
 } from '../../../state/reducers/versions';
 import {
-  changeHistoryDialogItem,
   fetchContentVersion,
   showCompareVersionsDialog,
   showHistoryDialog,
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
-import { SandboxItem } from '../../../models/Item';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
+import { DialogBase } from '../../../components/Dialogs/DialogBase';
 
 const translations = defineMessages({
   previousPage: {
@@ -181,24 +179,38 @@ interface Menu {
 
 interface HistoryDialogBaseProps {
   open: boolean;
-  item?: SandboxItem;
-  rootPath: string;
 }
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   versionsBranch: VersionsStateProps;
   onClose?(): any;
+  onClosed?(): any;
   onDismiss?(): any;
 }>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, versionsBranch, item, rootPath } = props;
-  const { count, page, limit, current } = versionsBranch;
+  return (
+    <DialogBase
+      open={props.open}
+      onClose={props.onClose}
+      onClosed={props.onClosed}
+      fullWidth={true}
+      maxWidth="md"
+    >
+      <HistoryDialogWrapper {...props} />
+    </DialogBase>
+  );
+}
+
+function HistoryDialogWrapper(props: HistoryDialogProps) {
+  const { onDismiss, versionsBranch } = props;
+  const { count, page, limit, current, item, rootPath } = versionsBranch;
   const path = item ? item.path : '';
   const [openSelector, setOpenSelector] = useState(false);
   const { formatMessage } = useIntl();
@@ -252,15 +264,10 @@ export default function HistoryDialog(props: HistoryDialogProps) {
 
   function dispatchCompareVersionDialogWithActions() {
     dispatch(showCompareVersionsDialog({
-      rootPath,
-      item,
-      onClose: resetVersionsState(),
       rightActions: [
         {
           icon: 'HistoryIcon',
-          onClick: showHistoryDialog({
-            onClose: resetVersionsState()
-          }),
+          onClick: showHistoryDialog(),
           'aria-label': formatMessage(translations.backToHistoryList)
         }
       ]
@@ -275,9 +282,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         rightActions: [
           {
             icon: 'HistoryIcon',
-            onClick: showHistoryDialog({
-              onClose: resetVersionsState()
-            }),
+            onClick: showHistoryDialog(),
             'aria-label': formatMessage(translations.backToHistoryList)
           }
         ]
@@ -356,14 +361,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      fullWidth
-      maxWidth="md"
-      onEscapeKeyDown={onDismiss}
-      keepMounted
-    >
+    <>
       <DialogHeader
         title={
           <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Content Item History" />
@@ -371,22 +369,19 @@ export default function HistoryDialog(props: HistoryDialogProps) {
         onDismiss={onDismiss}
       />
       <DialogBody className={classes.dialogBody}>
-        {
-          open && rootPath &&
-          <SingleItemSelector
-            classes={{ root: classes.singleItemSelector }}
-            label="Item"
-            open={openSelector}
-            onClose={() => setOpenSelector(false)}
-            onDropdownClick={() => setOpenSelector(!openSelector)}
-            rootPath={rootPath}
-            selectedItem={item}
-            onItemClicked={(item) => {
-              setOpenSelector(false);
-              dispatch(changeHistoryDialogItem(item));
-            }}
-          />
-        }
+        <SingleItemSelector
+          classes={{ root: classes.singleItemSelector }}
+          label="Item"
+          open={openSelector}
+          onClose={() => setOpenSelector(false)}
+          onDropdownClick={() => setOpenSelector(!openSelector)}
+          rootPath={rootPath}
+          selectedItem={item}
+          onItemClicked={(item) => {
+            setOpenSelector(false);
+            dispatch(versionsChangeItem({ item }));
+          }}
+        />
         <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
             resource={versionsResource}
@@ -418,7 +413,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
           classes={{ menuList: classes.menuList }}
         />
       )}
-    </Dialog>
+    </>
   );
 }
 

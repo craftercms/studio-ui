@@ -19,9 +19,11 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 import { FetchContentVersion, VersionsResponse, VersionsStateProps } from '../../models/Version';
 import { createLookupTable } from '../../utils/object';
+import { SandboxItem } from '../../models/Item';
 
 interface HistoryConfigProps {
-  path: string;
+  item: SandboxItem;
+  rootPath?: string;
   environment?: string;
   module?: string;
   config?: boolean;
@@ -34,6 +36,8 @@ export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_I
 export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 
 export const versionsChangePage = createAction<{ page: number }>('VERSIONS_CHANGE_PAGE');
+
+export const versionsChangeItem = createAction<{ item: SandboxItem }>('VERSIONS_CHANGE_ITEM');
 
 export const compareVersion = createAction<{ id: string }>('COMPARE_VERSIONS');
 
@@ -57,7 +61,8 @@ export const revertToPreviousVersion = createAction<{ id: string }>('REVERT_TO_P
 
 const initialState: VersionsStateProps = {
   byId: null,
-  path: null,
+  item: null,
+  rootPath: '/site/website',
   error: null,
   isFetching: null,
   current: null,
@@ -100,6 +105,10 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     ...state,
     page: payload.page,
     versions: state.allVersions.slice(payload.page * state.limit, (payload.page + 1) * state.limit)
+  }),
+  [versionsChangeItem.type]: (state, { payload }) => ({
+    ...state,
+    item: payload.item
   }),
   [compareVersion.type]: (state, { payload }) => ({
     ...state,

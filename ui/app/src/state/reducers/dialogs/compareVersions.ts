@@ -18,8 +18,8 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { CompareVersionsDialogStateProps } from '../../../modules/Content/History/CompareVersionsDialog';
 import {
-  changeCompareVersionsDialogItem,
   closeCompareVersionsDialog,
+  compareVersionsDialogClosed,
   showCompareVersionsDialog,
   showHistoryDialog
 } from '../../actions/dialogs';
@@ -27,27 +27,26 @@ import {
 const initialState: CompareVersionsDialogStateProps = {
   open: false,
   isFetching: null,
-  error: null,
-  rootPath: '/site/website',
-  item: null
+  error: null
 };
 
 export default createReducer<GlobalState['dialogs']['compareVersions']>(initialState, {
   [showCompareVersionsDialog.type]: (state, { payload }) => ({
     ...state,
     onClose: closeCompareVersionsDialog(),
+    onClosed: compareVersionsDialogClosed(),
     onDismiss: closeCompareVersionsDialog(),
     ...payload,
     open: true,
     isFetching: true
   }),
-  [changeCompareVersionsDialogItem.type]: (state, {payload}) => ({
-    ...state,
-    item: payload
-  }),
   [closeCompareVersionsDialog.type]: (state) => ({
-    ...initialState,
-    onClose: state.onClose
+    ...state,
+    open: false
   }),
-  [showHistoryDialog.type]: () => initialState
+  [compareVersionsDialogClosed.type]: () => initialState,
+  [showHistoryDialog.type]: (state) => ({
+    ...state,
+    open: false
+  })
 });

@@ -18,41 +18,33 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { HistoryDialogStateProps } from '../../../modules/Content/History/HistoryDialog';
 import {
-  changeHistoryDialogItem,
-  closeCompareVersionsDialog,
   closeHistoryDialog,
-  closeViewVersionDialog,
+  historyDialogClosed,
   showCompareVersionsDialog,
   showHistoryDialog,
   showViewVersionDialog
 } from '../../actions/dialogs';
 
 const initialState: HistoryDialogStateProps = {
-  open: false,
-  rootPath: '/site/website',
-  item: null
+  open: false
 };
 
 export default createReducer<GlobalState['dialogs']['history']>(
   initialState,
   {
     [showHistoryDialog.type]: (state, { payload }) => ({
-      onClose: closeHistoryDialog(),
       ...state,
+      onClose: closeHistoryDialog(),
+      onClosed: historyDialogClosed(),
       onDismiss: closeHistoryDialog(),
       ...payload,
       open: true
     }),
-    [changeHistoryDialogItem.type]: (state, {payload}) => ({
-      ...state,
-      item: payload
-    }),
     [closeHistoryDialog.type]: (state) => ({
-      ...initialState,
-      onClose: state.onClose
+      ...state,
+      open: false
     }),
-    [closeViewVersionDialog.type]: () => initialState,
-    [closeCompareVersionsDialog.type]: () => initialState,
+    [historyDialogClosed.type]: () => initialState,
     [showViewVersionDialog.type]: (state) => ({
       ...state,
       open: false
