@@ -32,6 +32,7 @@ import {
   fetchItemVersions,
   fetchItemVersionsComplete,
   fetchItemVersionsFailed,
+  resetVersionsState,
   revertContent,
   revertContentComplete,
   revertContentFailed,
@@ -39,6 +40,7 @@ import {
   versionsChangeItem
 } from '../reducers/versions';
 import { forkJoin } from 'rxjs';
+import { historyDialogClosed } from '../actions/dialogs';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
@@ -101,5 +103,10 @@ export default [
     action$.pipe(
       ofType(revertContentComplete.type),
       map(fetchItemVersions)
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(historyDialogClosed.type),
+      map(resetVersionsState)
     )
 ] as Epic[];
