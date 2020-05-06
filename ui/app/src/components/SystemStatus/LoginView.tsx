@@ -557,8 +557,8 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
   const { passwordRequirementsRegex, formatMessage } = props;
   let regEx = null;
   let captureGroups = passwordRequirementsRegex.match(/\(\?<.*?>.*?\)/g);
+  let namedCaptureGroupSupport = true;
   let fallback;
-  let namedCaptureGroupSupport = false;
   if (!captureGroups) {
     // RegExp may be valid and have no capture groups
     fallback = {
@@ -569,13 +569,13 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
   try {
     regEx = new RegExp(passwordRequirementsRegex);
     captureGroups = passwordRequirementsRegex.match(/\(\?<.*?>.*?\)/g);
-    namedCaptureGroupSupport = true;
   } catch (error) {
     console.warn(error);
     try {
-      // If the reg ex is parsable without the capture groups, we can use the
       // reg ex without the capture groups and just need to remove the capture
+      // If the reg ex is parsable without the capture groups, we can use the
       // group from the individual pieces later on the mapping.
+      namedCaptureGroupSupport = false;
       regEx = new RegExp(passwordRequirementsRegex.replace(/\?<(.*?)>/g, ''));
     } catch (error) {
       // Allow everything and default to backend as regex wasn't
