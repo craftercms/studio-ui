@@ -1110,32 +1110,9 @@ var nodeOpen = false,
           searchUrl += '&query=' + searchContext.query;
         }
 
-        // Add search filters to url
-        // csf = crafter studio filter
-        // csr = crafter studio range
-        // csrTO = crafter studio range separator in URL
+        const filters = searchContext.filters;
         if (!jQuery.isEmptyObject(searchContext.filters)) {
-          $.each(searchContext.filters, function (key, value) {
-            if (typeof value === 'string') {
-              searchUrl += '&csf_' + key + '=' + value;
-            } else if ($.isArray(value)) {
-              $.each(value, function () {
-                searchUrl += '&csf_' + key + '=' + this;
-              });
-            } else {
-              //is a range
-              if (value.date) {
-                var min = value.min,
-                  max = value.max,
-                  id = value.id;
-                searchUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max + 'csrID' + id;
-              } else {
-                var min = isNaN(value.min) ? 'null' : value.min,
-                  max = isNaN(value.max) ? 'null' : value.max;
-                searchUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max;
-              }
-            }
-          });
+          searchUrl += `#/?filters=${encodeURIComponent(JSON.stringify(filters))}`;
         }
 
         var childSearch = null;
@@ -1149,7 +1126,6 @@ var nodeOpen = false,
           childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
           childSearch.openInSameWindow = openInSameWindow;
           searchId = CStudioAuthoring.Utils.generateUUID();
-          searchUrl += '&searchId=' + searchId;
 
           childSearch.searchId = searchId;
           childSearch.searchUrl = searchUrl;
