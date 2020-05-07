@@ -19,7 +19,7 @@ import { LegacyItem, SandboxItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import {
   useActiveSiteId,
-  useDialogOnClosed,
+  useOnClosed,
   useSelection,
   useSpreadState,
   useStateResource
@@ -552,7 +552,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     item,
     dependenciesShown
   });
-  useDialogOnClosed(props.onClosed);
+  useOnClosed(props.onClosed);
   const [deps, setDeps] = useState(null);
   const [error, setError] = useState<ApiResponse>(null);
   const siteId = useActiveSiteId();

@@ -18,7 +18,7 @@ import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { useDialogOnClosed, useSpreadState, useStateResource } from '../../../utils/hooks';
+import { useOnClosed, useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
@@ -217,7 +217,7 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
   const classes = historyStyles({});
   const dispatch = useDispatch();
 
-  useDialogOnClosed(props.onClosed);
+  useOnClosed(props.onClosed);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 

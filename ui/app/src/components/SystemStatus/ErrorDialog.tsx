@@ -21,7 +21,7 @@ import { createStyles, Dialog, makeStyles, Theme } from '@material-ui/core';
 import ErrorState from './ErrorState';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
-import { useDialogOnClosed } from '../../utils/hooks';
+import { useOnClosed } from '../../utils/hooks';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   closeButton: {
@@ -62,7 +62,7 @@ export default function ErrorDialog(props: ErrorDialogProps) {
 function ErrorDialogWrapper(props: ErrorDialogProps) {
   const { onDismiss, error } = props;
   const classes = useStyles({});
-  useDialogOnClosed(props.onClosed);
+  useOnClosed(props.onClosed);
 
   return (
     <>

@@ -20,7 +20,7 @@ import { deleteItems } from '../../../services/content';
 import {
   useActiveSiteId,
   useActiveUser,
-  useDialogOnClosed,
+  useOnClosed,
   useSpreadState,
   useStateResource
 } from '../../../utils/hooks';
@@ -240,7 +240,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     deleteDependencies,
     apiState
   ]);
-  useDialogOnClosed(props.onClosed);
+  useOnClosed(props.onClosed);
 
   const resource = useStateResource<any, any>(depsSource, {
     shouldResolve: (source) => Boolean(source.deleteDependencies),
