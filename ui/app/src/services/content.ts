@@ -1086,7 +1086,7 @@ export function getBulkUploadUrl(site: string, path: string): string {
 }
 
 export function getQuickCreateContentList(siteId: string) {
-  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}a`).pipe(
+  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
     pluck('response')
   );
 }
