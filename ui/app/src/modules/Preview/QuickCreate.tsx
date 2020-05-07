@@ -179,10 +179,10 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
       (info) => {
         setStudioVersion(info.version.packageVersion.substr(0, 3));
       },
-      (error) => {
+      ({ response }) => {
         dispatch(
           showErrorDialog({
-            error
+            error: response.response
           })
         );
       }

@@ -15,15 +15,11 @@
  */
 
 import { get } from '../utils/ajax';
-import { catchError, pluck } from 'rxjs/operators';
+import { pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { AjaxError } from 'rxjs/ajax';
 
 export function getStudioInfo(): Observable<any> {
   return get('/studio/api/2/monitoring/version').pipe(
-    pluck('response'),
-    catchError((error: AjaxError) => {
-      throw error.response?.response ?? error;
-    })
+    pluck('response')
   );
 }
