@@ -163,10 +163,10 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     if (siteId) {
       getQuickCreateContentList(siteId).subscribe(
         (data) => setQuickCreateContentList(data.items),
-        (error) => {
+        ({ response }) => {
           dispatch(
             showErrorDialog({
-              error
+              error: response.response
             })
           );
         }
