@@ -30,7 +30,7 @@ import ContentTypesFilter from './ContentTypesFilter';
 import {
   useActiveSiteId,
   useDebouncedInput,
-  useOnClosed,
+  useOnUnmount,
   useSelection,
   useSpreadState,
   useStateResource
@@ -225,7 +225,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   const [resetFilterType, setResetFilterType] = useState(defaultFilterType);
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  useOnClosed(props.onClosed);
+  useOnUnmount(props.onClosed);
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
     src: defaultFormSrc,

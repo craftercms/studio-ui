@@ -19,7 +19,7 @@ import { FormattedMessage } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import ListItemText from '@material-ui/core/ListItemText';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { useOnClosed, useStateResource } from '../../../utils/hooks';
+import { useOnUnmount, useStateResource } from '../../../utils/hooks';
 import { FancyFormattedDate } from './VersionList';
 import { palette } from '../../../styles/theme';
 import StandardAction from '../../../models/StandardAction';
@@ -158,7 +158,7 @@ export default function ViewVersionDialog(props: ViewVersionDialogProps) {
 
 function ViewVersionDialogWrapper(props: ViewVersionDialogProps) {
   const { onDismiss, rightActions } = props;
-  useOnClosed(props.onClosed);
+  useOnUnmount(props.onClosed);
   const resource = useStateResource<VersionResource, ViewVersionDialogProps>(props, {
     shouldResolve: (source) => (
       source.version &&

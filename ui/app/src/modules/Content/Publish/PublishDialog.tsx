@@ -25,7 +25,7 @@ import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import {
   useActiveSiteId,
-  useOnClosed,
+  useOnUnmount,
   useSpreadState,
   useStateResource
 } from '../../../utils/hooks';
@@ -446,7 +446,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
 
   const siteId = useActiveSiteId();
 
-  useOnClosed(props.onClosed);
+  useOnUnmount(props.onClosed);
 
   const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
   const userSitesRoles: String[] = user?.rolesBySite[siteId];

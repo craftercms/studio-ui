@@ -17,7 +17,7 @@
 import StandardAction from '../../../models/StandardAction';
 import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { useOnClosed, useStateResource } from '../../../utils/hooks';
+import { useOnUnmount, useStateResource } from '../../../utils/hooks';
 import { FancyFormattedDate, VersionList } from './VersionList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import ApiResponse from '../../../models/ApiResponse';
@@ -124,7 +124,7 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
   const dispatch = useDispatch();
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
-  useOnClosed(props.onClosed);
+  useOnUnmount(props.onClosed);
 
   const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (_versionsBranch) =>

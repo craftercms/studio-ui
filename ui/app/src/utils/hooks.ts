@@ -245,7 +245,7 @@ export function useMinimizeDialog(initialTab: MinimizedDialog) {
 
   return state?.minimized ?? initialTab.minimized;
 }
-export const useOnClosed = (onClosed) => {
+export const useOnUnmount = (onClosed) => {
   useEffect(() => {
     return () => {
       onClosed();

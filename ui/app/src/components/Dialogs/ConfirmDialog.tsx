@@ -24,7 +24,7 @@ import React, { PropsWithChildren } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import { Dialog } from '@material-ui/core';
-import { useOnClosed } from '../../utils/hooks';
+import { useOnUnmount } from '../../utils/hooks';
 
 const messages = defineMessages({
   ok: {
@@ -87,7 +87,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
     children
   } = props;
   const { formatMessage } = useIntl();
-  useOnClosed(props.onClosed);
+  useOnUnmount(props.onClosed);
   return (
     <>
       {title && <DialogHeader id="confirmDialogTitle" title={title} onDismiss={onDismiss} />}
