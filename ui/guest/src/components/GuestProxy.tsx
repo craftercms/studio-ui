@@ -101,6 +101,7 @@ export function GuestProxy(props) {
         let from;
         let to;
         let index;
+        let indexToAnimate;
         if (oldIndex < newIndex) {
           from = oldIndex;
           to = newIndex + 1;
@@ -113,7 +114,7 @@ export function GuestProxy(props) {
         collection.slice(from, to).forEach((el, i) => {
           const elementNewIndex = appendIndex(index, i);
           $(el).attr('data-craftercms-index', elementNewIndex);
-          if (index === elementNewIndex) {
+          if (originalOldIndex === elementNewIndex) {
             addAnimation($(el), 'craftercms-contentTree-pulse');
           }
           const pr = ElementRegistry.fromElement(el);
