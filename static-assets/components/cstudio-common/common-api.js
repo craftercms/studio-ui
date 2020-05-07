@@ -721,7 +721,7 @@ var nodeOpen = false,
           type: 'SHOW_DELETE_DIALOG',
           payload: {
             open: true,
-            items,
+            items: items.map(item => CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
               type: 'LEGACY_DIALOG_CALLBACK',
               payload: { id: eventIdSuccess }
@@ -814,7 +814,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items,
+            items: items.map(item => CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(item)),
             scheduling,
             onSuccess: {
               type: 'LEGACY_DIALOG_CALLBACK',
@@ -836,7 +836,7 @@ var nodeOpen = false,
           type: 'SHOW_DEPENDENCIES_DIALOG',
           payload: {
             open: true,
-            item: items[0],
+            item: CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(items[0]),
             dependenciesShown
           }
         });
@@ -850,7 +850,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items,
+            items: items.map(item => CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
               type: 'LEGACY_DIALOG_CALLBACK',
               payload: { id: eventIdSuccess }

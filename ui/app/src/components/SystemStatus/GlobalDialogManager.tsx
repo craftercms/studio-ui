@@ -116,6 +116,7 @@ function GlobalDialogManager() {
         items={state.publish.items}
         scheduling={state.publish.scheduling}
         onClose={createCallback(state.publish.onClose, dispatch)}
+        onClosed={createCallback(state.publish.onClosed, dispatch)}
         onDismiss={createCallback(state.publish.onDismiss, dispatch)}
         onSuccess={createCallback(state.publish.onSuccess, dispatch)}
       />
@@ -128,6 +129,7 @@ function GlobalDialogManager() {
         rootPath={state.newContent.rootPath}
         compact={state.newContent.compact}
         onClose={createCallback(state.newContent.onClose, dispatch)}
+        onClosed={createCallback(state.newContent.onClosed, dispatch)}
         onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />
       {/* endregion */}
@@ -139,6 +141,7 @@ function GlobalDialogManager() {
         rootPath={state.dependencies.rootPath}
         dependenciesShown={state.dependencies.dependenciesShown}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
+        onClosed={createCallback(state.publish.onClosed, dispatch)}
         onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}
       />
       {/* endregion */}
@@ -148,6 +151,7 @@ function GlobalDialogManager() {
         open={state.delete.open}
         items={state.delete.items}
         onClose={createCallback(state.delete.onClose, dispatch)}
+        onClosed={createCallback(state.delete.onClosed, dispatch)}
         onDismiss={createCallback(state.delete.onDismiss, dispatch)}
         onSuccess={createCallback(state.delete.onSuccess, dispatch)}
       />

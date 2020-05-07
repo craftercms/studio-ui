@@ -16,7 +16,6 @@
 
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -47,6 +46,7 @@ import { useDispatch } from 'react-redux';
 import SingleItemSelector from './SingleItemSelector';
 import { SandboxItem } from '../../../models/Item';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
+import { DialogBase } from '../../../components/Dialogs/DialogBase';
 
 const translations = defineMessages({
   title: {
@@ -155,11 +155,13 @@ interface NewContentDialogBaseProps {
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
   onClose?(): any;
+  onClosed?(): any;
   onDismiss?(): any;
 }>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
@@ -185,9 +187,22 @@ function ContentTypesGrid(props: ContentTypesGridProps) {
 }
 
 export default function NewContentDialog(props: NewContentDialogProps) {
+  return (
+    <DialogBase
+      open={props.open}
+      onClose={props.onClose}
+      onClosed={props.onClosed}
+      fullWidth={true}
+      maxWidth="md"
+      scroll="paper"
+    >
+      <NewContentDialogWrapper {...props} />
+    </DialogBase>
+  );
+}
+
+function NewContentDialogWrapper(props: NewContentDialogProps) {
   const {
-    open,
-    onClose,
     onDismiss,
     item,
     onSaveLegacySuccess,
@@ -318,7 +333,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   }, [item]);
 
   useEffect(() => {
-    if (open && path) {
+    if (path) {
       fetchLegacyContentTypes(site, path).subscribe(
         (response) => {
           setFilterContentTypes(response);
@@ -331,11 +346,11 @@ export default function NewContentDialog(props: NewContentDialogProps) {
         }
       );
     }
-  }, [open, path, site]);
+  }, [path, site]);
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" scroll="paper">
+      <>
         <DialogHeader
           title={formatMessage(translations.title)}
           subtitle={formatMessage(translations.subtitle)}
@@ -431,7 +446,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
             resetType={resetFilterType}
           />
         </DialogFooter>
-      </Dialog>
+      </>
       {dialogConfig.open && (
         <EmbeddedLegacyEditors
           showTabs={false}

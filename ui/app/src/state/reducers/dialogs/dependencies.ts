@@ -26,7 +26,7 @@ import { DependenciesDialogStateProps } from '../../../modules/Content/Dependenc
 const initialState: DependenciesDialogStateProps = {
   open: false,
   rootPath: '/site/website'
-}
+};
 
 export default createReducer<GlobalState['dialogs']['dependencies']>(
   initialState,
@@ -34,15 +34,12 @@ export default createReducer<GlobalState['dialogs']['dependencies']>(
     [showDependenciesDialog.type]: (state, { payload }) => ({
       ...state,
       onClose: closeDependenciesDialog(),
+      onClosed: dependenciesDialogClosed(),
       onDismiss: closeDependenciesDialog(),
       ...payload,
       open: true
     }),
-    [closeDependenciesDialog.type]: (state) => ({
-      ...state,
-      open: false,
-      onClose: state.onClose
-    }),
-    [dependenciesDialogClosed.type]: () => (initialState)
+    [closeDependenciesDialog.type]: (state) => ({ ...state, open: false }),
+    [dependenciesDialogClosed.type]: () => initialState
   }
 );

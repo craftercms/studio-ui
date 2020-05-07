@@ -21,7 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import EmbeddedLegacyEditors from '../modules/Preview/EmbeddedLegacyEditors';
 import { palette } from '../styles/theme';
 import { useSelection, useSpreadState } from '../utils/hooks';
-import { getLegacyItem, parseLegacyItemToSandBoxItem } from '../services/content';
+import { getSandboxItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
@@ -76,7 +76,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     if (modelId && models && anchorEl && item === null) {
       let path = models[modelId].craftercms.path;
       if (embeddedParentPath) path = models[parentId].craftercms.path;
-      getLegacyItem(site, path).subscribe(
+      getSandboxItem(site, path).subscribe(
         (item) => {
           setItem(item);
         },
@@ -107,13 +107,13 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         break;
       }
       case 'history': {
-        dispatch(fetchItemVersions({ item: parseLegacyItemToSandBoxItem(item) }));
+        dispatch(fetchItemVersions({ item: item }));
         dispatch(showHistoryDialog());
         break;
       }
       case 'dependencies' : {
         dispatch(showDependenciesDialog({
-          item: parseLegacyItemToSandBoxItem(item)
+          item: item
         }));
         break;
       }

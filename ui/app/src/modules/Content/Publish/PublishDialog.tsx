@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { memo, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchPublishingChannels } from '../../../services/content';
 import { goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
-import { LegacyItem } from '../../../models/Item';
+import { SandboxItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
@@ -30,7 +30,6 @@ import Grid from '@material-ui/core/Grid';
 import DependencySelection from '../Dependencies/DependencySelection';
 import PublishForm from './PublishForm';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
@@ -39,11 +38,12 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { palette } from '../../../styles/theme';
 import { ApiResponse } from '../../../models/ApiResponse';
+import { DialogBase } from '../../../components/Dialogs/DialogBase';
 
 // region Typings
 
 type ApiState = { error: ApiResponse, submitting: boolean };
-type Source = { items: LegacyItem[]; publishingChannels: any[]; apiState: ApiState; };
+type Source = { items: SandboxItem[]; publishingChannels: any[]; apiState: ApiState; };
 type Return = Omit<Source, 'apiState'>;
 
 export interface DependenciesResultObject {
@@ -53,7 +53,7 @@ export interface DependenciesResultObject {
 
 interface PublishDialogContentUIProps {
   resource: Resource<any>;
-  checkedItems: LegacyItem[];
+  checkedItems: SandboxItem[];
   setCheckedItems: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
@@ -75,7 +75,6 @@ interface PublishDialogUIProps {
   resource: Resource<Return>;
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
-  onClose(): void;
   onDismiss(): void;
   handleSubmit: any;
   submitDisabled: boolean;
@@ -83,10 +82,9 @@ interface PublishDialogUIProps {
   showDepsDisabled: boolean;
   dialog: any;
   setDialog: any;
-  open: boolean;
   title: string;
   subtitle?: string;
-  checkedItems: LegacyItem[];
+  checkedItems: SandboxItem[];
   setCheckedItems: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
@@ -103,18 +101,20 @@ interface PublishDialogUIProps {
 
 interface PublishDialogBaseProps {
   open: boolean;
-  items?: LegacyItem[];
+  items?: SandboxItem[];
   scheduling?: string;
 }
 
 export type PublishDialogProps = PropsWithChildren<PublishDialogBaseProps & {
   onClose?(response?: any): any;
+  onClosed?(response?: any): any;
   onDismiss?(response?: any): any;
   onSuccess?(response?: any): any;
 }>;
 
 export interface PublishDialogStateProps extends PublishDialogBaseProps {
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
   onSuccess?: StandardAction;
 }
@@ -140,10 +140,10 @@ const submitMessages = defineMessages({
   }
 });
 
-export const checkState = (items: LegacyItem[]) => {
+export const checkState = (items: SandboxItem[]) => {
   return (items || []).reduce(
     (table: any, item) => {
-      table[item.uri] = true;
+      table[item.path] = true;
       return table;
     },
     {}
@@ -153,19 +153,19 @@ export const checkState = (items: LegacyItem[]) => {
 export const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any) => {
   e.stopPropagation();
   e.preventDefault();
-  setChecked([item.uri], !checked[item.uri]);
+  setChecked([item.path], !checked[item.path]);
 };
 
-export const updateCheckedList = (uri: string[], isChecked: boolean, checked: any) => {
+export const updateCheckedList = (path: string[], isChecked: boolean, checked: any) => {
   const nextChecked = { ...checked };
-  (Array.isArray(uri) ? uri : [uri]).forEach((u) => {
+  (Array.isArray(path) ? path : [path]).forEach((u) => {
     nextChecked[u] = isChecked;
   });
   return nextChecked;
 };
 
-export const selectAllDeps = (setChecked: Function, items: LegacyItem[]) => {
-  setChecked(items.map(i => i.uri), true);
+export const selectAllDeps = (setChecked: Function, items: SandboxItem[]) => {
+  setChecked(items.map(i => i.path), true);
 };
 
 export const paths = (checked: any) => (
@@ -216,7 +216,7 @@ const useStyles = makeStyles(() =>
       padding: 0
     },
     loadingStateRoot: {
-      height: '100%',
+      height: '100%'
     },
     loadingStateGraphic: {
       flexGrow: 1,
@@ -251,7 +251,7 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     apiState
   } = props;
 
-  const { items, publishingChannels }: { items: LegacyItem[], publishingChannels: any } = resource.read();
+  const { items, publishingChannels }: { items: SandboxItem[], publishingChannels: any } = resource.read();
 
   return (
     <>
@@ -294,7 +294,6 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     resource,
     publishingChannelsStatus,
     onPublishingChannelsFailRetry,
-    onClose,
     onDismiss,
     handleSubmit,
     submitDisabled,
@@ -302,7 +301,6 @@ function PublishDialogUI(props: PublishDialogUIProps) {
     showDepsDisabled,
     dialog,
     setDialog,
-    open,
     title,
     subtitle,
     checkedItems,
@@ -321,13 +319,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
   } = props;
 
   return (
-    <Dialog
-      onClose={onClose}
-      aria-labelledby="requestPublishDialogTitle"
-      open={open}
-      fullWidth
-      maxWidth="md"
-    >
+    <>
       <DialogHeader
         title={title}
         subtitle={subtitle}
@@ -372,7 +364,7 @@ function PublishDialogUI(props: PublishDialogUIProps) {
       <DialogFooter>
         <Button
           color="primary"
-          onClick={ onClickShowAllDeps }
+          onClick={onClickShowAllDeps}
           className={classes.leftAlignedAction}
           disabled={showDepsDisabled || apiState.submitting}
         >
@@ -388,7 +380,10 @@ function PublishDialogUI(props: PublishDialogUIProps) {
             defaultMessage="Cancel"
           />
         </Button>
-        <Button variant="contained" autoFocus onClick={handleSubmit} color="primary" disabled={submitDisabled || apiState.submitting}>
+        <Button
+          variant="contained" autoFocus onClick={handleSubmit} color="primary"
+          disabled={submitDisabled || apiState.submitting}
+        >
           {
             apiState.submitting ?
               (
@@ -405,17 +400,30 @@ function PublishDialogUI(props: PublishDialogUIProps) {
           }
         </Button>
       </DialogFooter>
-    </Dialog>
+    </>
   );
 }
 
-function PublishDialog(props: PublishDialogProps) {
+export default function PublishDialog(props: PublishDialogProps) {
+  return (
+    <DialogBase
+      open={props.open}
+      onClose={props.onClose}
+      onClosed={props.onClosed}
+      aria-labelledby="requestPublishDialogTitle"
+      fullWidth={true}
+      maxWidth="md"
+    >
+      <PublishDialogWrapper {...props} />
+    </DialogBase>
+  );
+}
+
+function PublishDialogWrapper(props: PublishDialogProps) {
 
   const {
-    open,
     items,
     scheduling = 'now',
-    onClose,
     onDismiss,
     onSuccess
   } = props;
@@ -441,10 +449,8 @@ function PublishDialog(props: PublishDialogProps) {
   let userRole = null;
   let submit = null;
 
-  if (open) {
-    userRole = (userSitesRoles && userSitesRoles.includes('admin')) ? 'admin' : 'author';
-    submit = submitMap[userRole];
-  }
+  userRole = (userSitesRoles && userSitesRoles.includes('admin')) ? 'admin' : 'author';
+  submit = submitMap[userRole];
 
   const { formatMessage } = useIntl();
 
@@ -493,8 +499,8 @@ function PublishDialog(props: PublishDialogProps) {
   });
 
   useEffect(() => {
-    open && getPublishingChannels();
-  }, [getPublishingChannels, open]);
+    getPublishingChannels();
+  }, [getPublishingChannels]);
 
   useEffect(() => {
     const result = (
@@ -511,7 +517,7 @@ function PublishDialog(props: PublishDialogProps) {
 
   useEffect(() => {
     setCheckedItems(checkState(items));
-  }, [items, setCheckedItems])
+  }, [items, setCheckedItems]);
 
   const handleSubmit = () => {
     const data = {
@@ -541,8 +547,8 @@ function PublishDialog(props: PublishDialogProps) {
 
   };
 
-  const setChecked = (uri: string[], isChecked: boolean) => {
-    setCheckedItems(updateCheckedList(uri, isChecked, checkedItems));
+  const setChecked = (path: string[], isChecked: boolean) => {
+    setCheckedItems(updateCheckedList(path, isChecked, checkedItems));
     setShowDepsButton(true);
     setDeps(null);
     cleanCheckedSoftDep();
@@ -553,9 +559,9 @@ function PublishDialog(props: PublishDialogProps) {
     _setCheckedSoftDep(nextCheckedSoftDep);
   };
 
-  const setCheckedSoftDep = (uri: string[], isChecked: boolean) => {
+  const setCheckedSoftDep = (path: string[], isChecked: boolean) => {
     const nextCheckedSoftDep = { ...checkedSoftDep };
-    (Array.isArray(uri) ? uri : [uri]).forEach((u) => {
+    (Array.isArray(path) ? path : [path]).forEach((u) => {
       nextCheckedSoftDep[u] = isChecked;
     });
     _setCheckedSoftDep(nextCheckedSoftDep);
@@ -588,7 +594,6 @@ function PublishDialog(props: PublishDialogProps) {
       resource={resource}
       publishingChannelsStatus={publishingChannelsStatus}
       onPublishingChannelsFailRetry={getPublishingChannels}
-      onClose={onClose}
       onDismiss={onDismiss}
       handleSubmit={handleSubmit}
       submitDisabled={submitDisabled}
@@ -596,7 +601,6 @@ function PublishDialog(props: PublishDialogProps) {
       showDepsDisabled={showDepsDisabled}
       dialog={dialog}
       setDialog={setDialog}
-      open={open}
       title={formatMessage(userRole === 'admin' ? goLiveMessages.title : submitMessages.title)}
       subtitle={userRole === 'admin' ? formatMessage(goLiveMessages.subtitle) : null}
       checkedItems={checkedItems}
@@ -615,5 +619,3 @@ function PublishDialog(props: PublishDialogProps) {
     />
   );
 }
-
-export default memo(PublishDialog);

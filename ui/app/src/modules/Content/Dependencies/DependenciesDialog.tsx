@@ -40,12 +40,8 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
-import Chip from '@material-ui/core/Chip';
-import CreateIcon from '@material-ui/icons/CreateRounded';
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
@@ -55,8 +51,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 import { ApiResponse } from '../../../models/ApiResponse';
-import { useDispatch } from 'react-redux';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
+import { DialogBase } from '../../../components/Dialogs/DialogBase';
 
 const assetsTypes = {
   'all-deps': {
@@ -89,13 +85,6 @@ const translations = defineMessages({
 });
 
 const dependenciesDialogStyles = makeStyles((theme) => createStyles({
-  root: {
-    textAlign: 'left'
-  },
-  dialogPaper: {
-    height: '540px',
-    maxWidth: '725px'
-  },
   titleRoot: {
     margin: 0,
     padding: '13px 20px 11px',
@@ -281,7 +270,6 @@ function DependenciesList(props: DependenciesListProps) {
 
 interface DependenciesDialogUIProps {
   resource: Resource<LegacyItem[]>
-  open: boolean;
   item: SandboxItem;
   rootPath: string;
   setItem: Function;
@@ -291,7 +279,6 @@ interface DependenciesDialogUIProps {
   setShowTypes: Function;
   dependenciesShown: string;
   setDependenciesShown: Function;
-  onClose(): any;
   onDismiss(): any;
   isEditableItem: Function;
   editDialogConfig: any;
@@ -307,7 +294,6 @@ interface DependenciesDialogUIProps {
 function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const {
     resource,
-    open,
     item,
     rootPath,
     setItem,
@@ -317,7 +303,6 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     setShowTypes,
     dependenciesShown,
     setDependenciesShown,
-    onClose,
     onDismiss,
     isEditableItem,
     editDialogConfig,
@@ -332,37 +317,25 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const [openSelector, setOpenSelector] = useState(false);
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      fullWidth={true}
-      maxWidth={'md'}
-      classes={{
-        root: classes.root,
-        paper: classes.dialogPaper
-      }}
-    >
+    <>
       <DialogHeader
         title={formatMessage(translations.headerTitle)}
         onDismiss={onDismiss}
       />
       <DialogBody>
         <div className={classes.selectionContent}>
-          {
-            open && rootPath &&
-            <SingleItemSelector
-              label="Item"
-              open={openSelector}
-              onClose={() => setOpenSelector(false)}
-              onDropdownClick={() => setOpenSelector(!openSelector)}
-              rootPath={rootPath}
-              selectedItem={item}
-              onItemClicked={(item) => {
-                setOpenSelector(false);
-                setItem(item);
-              }}
-            />
-          }
+          <SingleItemSelector
+            label="Item"
+            open={openSelector}
+            onClose={() => setOpenSelector(false)}
+            onDropdownClick={() => setOpenSelector(!openSelector)}
+            rootPath={rootPath}
+            selectedItem={item}
+            onItemClicked={(item) => {
+              setOpenSelector(false);
+              setItem(item);
+            }}
+          />
           <FormControl className={classes.formControl}>
             <Select
               value={dependenciesShown ?? 'depends-on'}
@@ -528,7 +501,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         dialogConfig={editDialogConfig}
         setDialogConfig={setEditDialogConfig}
       />
-    </Dialog>
+    </>
   );
 }
 
@@ -541,11 +514,13 @@ interface DependenciesDialogBaseProps {
 
 export type DependenciesDialogProps = PropsWithChildren<DependenciesDialogBaseProps & {
   onClose(): any;
+  onClosed(): any;
   onDismiss(): any;
 }>;
 
 export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps {
   onClose?: StandardAction
+  onClosed?: StandardAction
   onDismiss?: StandardAction
 }
 
@@ -556,8 +531,22 @@ const dialogInitialState = {
   showTypes: 'all-deps'
 };
 
-function DependenciesDialog(props: DependenciesDialogProps) {
-  const { open, item, dependenciesShown = 'depends-on', onClose, onDismiss, rootPath } = props;
+export default function DependenciesDialog(props: DependenciesDialogProps) {
+  return (
+    <DialogBase
+      open={props.open}
+      onClose={props.onClose}
+      onClosed={props.onClosed}
+      fullWidth={true}
+      maxWidth="md"
+    >
+      <DependenciesDialogWrapper {...props} />
+    </DialogBase>
+  );
+}
+
+function DependenciesDialogWrapper(props: DependenciesDialogProps) {
+  const { item, dependenciesShown = 'depends-on', onDismiss, rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
@@ -703,7 +692,6 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   return (
     <DependenciesDialogUI
       resource={resource}
-      open={open}
       item={dialog.item}
       rootPath={rootPath}
       setItem={setItem}
@@ -713,7 +701,6 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       setShowTypes={setShowTypes}
       dependenciesShown={dialog.dependenciesShown}
       setDependenciesShown={setDependenciesShow}
-      onClose={onClose}
       onDismiss={onDismiss}
       isEditableItem={isEditableAsset}
       editDialogConfig={editDialogConfig}
@@ -725,5 +712,3 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     />
   );
 }
-
-export default DependenciesDialog;
