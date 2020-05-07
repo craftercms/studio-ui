@@ -169,12 +169,16 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       mode: 'select' // open search not in default but in select mode
     };
 
+    if (this.type && this.type !== '') {
+      searchContext.filters['content-type'] = [this.type];
+    }
+
     CStudioAuthoring.Operations.openSearch(
       searchContext,
       true,
       {
         success(searchId, selectedTOs) {
-          selectedTOs.forEach(function(item) {
+          selectedTOs.forEach(function (item) {
             var value = item.internalName && item.internalName !== '' ? item.internalName : item.uri;
             control.insertItem(item.uri, value, null, null, _self.id);
             control._renderItems();
