@@ -39,6 +39,7 @@ import Button from '@material-ui/core/Button';
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { getStudioInfo } from '../../services/monitoring';
+import { StudioVersion } from '../../models/Version';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -176,8 +177,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
   useEffect(() => {
     getStudioInfo().subscribe(
-      (info) => {
-        setStudioVersion(info.version.packageVersion.substr(0, 3));
+      (version: StudioVersion) => {
+        setStudioVersion(version.packageVersion.substr(0, 3));
       },
       ({ response }) => {
         dispatch(

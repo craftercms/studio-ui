@@ -17,9 +17,10 @@
 import { get } from '../utils/ajax';
 import { pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { StudioVersion } from '../models/Version';
 
-export function getStudioInfo(): Observable<any> {
+export function getStudioInfo(): Observable<StudioVersion> {
   return get('/studio/api/2/monitoring/version').pipe(
-    pluck('response')
+    pluck('response', 'version')
   );
 }
