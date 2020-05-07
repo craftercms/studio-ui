@@ -721,7 +721,7 @@ var nodeOpen = false,
           type: 'SHOW_DELETE_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(item)),
+            items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
               type: 'LEGACY_DIALOG_CALLBACK',
               payload: { id: eventIdSuccess }
@@ -749,7 +749,7 @@ var nodeOpen = false,
       },
 
       viewContentHistory: function (contentObj, isWrite, rootPath) {
-        const item = CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(contentObj);
+        const item = CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(contentObj);
 
         CrafterCMSNext.system.store.dispatch({
           type: 'FETCH_ITEM_VERSIONS',
@@ -814,7 +814,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(item)),
+            items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
             scheduling,
             onSuccess: {
               type: 'LEGACY_DIALOG_CALLBACK',
@@ -836,7 +836,7 @@ var nodeOpen = false,
           type: 'SHOW_DEPENDENCIES_DIALOG',
           payload: {
             open: true,
-            item: CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(items[0]),
+            item: CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(items[0]),
             dependenciesShown
           }
         });
@@ -850,7 +850,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.services.content.parseLegacyItemToSandBoxItem(item)),
+            items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
               type: 'LEGACY_DIALOG_CALLBACK',
               payload: { id: eventIdSuccess }

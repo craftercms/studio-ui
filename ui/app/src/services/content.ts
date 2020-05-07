@@ -57,6 +57,7 @@ import { LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
+import { parseLegacyItemToSandBoxItem } from '../utils/content';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -1178,36 +1179,6 @@ export function deleteItems(siteId: string, user: string, submissionComment: str
   );
 }
 
-
-export function parseLegacyItemToSandBoxItem(item: LegacyItem): SandboxItem;
-export function parseLegacyItemToSandBoxItem(item: LegacyItem[]): SandboxItem[];
-export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
-  if (Array.isArray(item)) {
-    // If no internalName then skipping (e.g. level descriptors)
-    return item.flatMap(i => i.internalName ? [parseLegacyItemToSandBoxItem(i)] : []);
-  }
-  return {
-    id: item.uri,
-    label: item.internalName,
-    path: item.uri,
-    localeCode: 'en',
-    contentTypeId: item.contentType,
-    // Assuming folders aren't navigable
-    previewUrl: item.uri.includes('index.xml') ? (item.browserUri || '/') : null,
-    systemType: item.asset? 'asset' : item.component? 'component': item.folder? 'folder': item.page? 'page': null,
-    mimeType: null,
-    state: null,
-    lockOwner: null,
-    disabled: null,
-    translationSourceId: null,
-    creator: null,
-    createdDate: null,
-    modifier: null,
-    lastModifiedDate: null,
-    commitId: null,
-    sizeInBytes: null
-  };
-}
 
 export default {
   getComponentInstanceHTML,
