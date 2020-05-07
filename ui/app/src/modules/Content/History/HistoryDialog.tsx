@@ -48,6 +48,7 @@ import {
 } from '../../../state/actions/dialogs';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import { Dialog } from '@material-ui/core';
+import { batchActions } from '../../../state/actions/misc';
 
 const translations = defineMessages({
   previousPage: {
@@ -263,8 +264,8 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
     [count, setMenu]
   );
 
-  function dispatchCompareVersionDialogWithActions() {
-    dispatch(showCompareVersionsDialog({
+  function CompareVersionDialogWithActions() {
+    return showCompareVersionsDialog({
       rightActions: [
         {
           icon: 'HistoryIcon',
@@ -272,7 +273,7 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
           'aria-label': formatMessage(translations.backToHistoryList)
         }
       ]
-    }));
+    });
   }
 
   const handleViewItem = (version: LegacyVersion) => {
@@ -292,21 +293,27 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
   };
 
   const compareTo = (versionNumber: string) => {
-    dispatchCompareVersionDialogWithActions();
-    dispatch(fetchContentTypes());
-    dispatch(compareVersion({ id: versionNumber }));
+    dispatch(batchActions([
+      fetchContentTypes(),
+      compareVersion({ id: versionNumber }),
+      CompareVersionDialogWithActions()
+    ]));
   };
 
   const compareBoth = (selected: string[]) => {
-    dispatch(fetchContentTypes());
-    dispatch(compareBothVersions({ versions: selected }));
-    dispatchCompareVersionDialogWithActions();
+    dispatch(batchActions([
+      fetchContentTypes(),
+      compareBothVersions({ versions: selected }),
+      CompareVersionDialogWithActions()
+    ]));
   };
 
   const compareToPrevious = (versionNumber: string) => {
-    dispatch(fetchContentTypes());
-    dispatch(compareToPreviousVersion({ id: versionNumber }));
-    dispatchCompareVersionDialogWithActions();
+    dispatch(batchActions([
+      fetchContentTypes(),
+      compareToPreviousVersion({ id: versionNumber }),
+      CompareVersionDialogWithActions()
+    ]));
   };
 
   const revertToPrevious = (versionNumber: string) => {
