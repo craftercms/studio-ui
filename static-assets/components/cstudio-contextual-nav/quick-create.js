@@ -75,9 +75,6 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           path: '/site/website/index.xml'
         };
       }
-
-      const quickCreateItemSelected = 'quickCreateItemSelected';
-      const newContentSelected = 'newContentSelected';
       const editDialogSuccess = 'editDialogSuccess';
 
       const showEditDialog = function (payload) {
@@ -115,54 +112,47 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         });
       };
 
+      const onNewContentSelected = function () {
+        const contentTypeSelected = 'contentTypeSelected';
+
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_NEW_CONTENT_DIALOG',
+          payload: {
+            site: CStudioAuthoringContext.site,
+            previewItem: previewItem,
+            compact: false,
+            onContentTypeSelected: {
+              type: 'LEGACY_DIALOG_CALLBACK',
+              payload: { id: contentTypeSelected }
+            }
+          }
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, (response) => {
+          if (response) {
+            const payload = response.payload ?? response.output;
+            showEditDialog(payload);
+          }
+        });
+      };
+
+      const onQuickCreateItemSelected = (src) => {
+        showEditDialog({
+          src,
+          type: 'form',
+          inProgress: false,
+          showTabs: false
+        });
+      };
+
       // Render quick create menu
       CrafterCMSNext.render(container, 'QuickCreateMenu', {
         previewItem,
         anchorEl,
-        onNewContentSelected: {
-          type: 'LEGACY_DIALOG_CALLBACK',
-          payload: { id: newContentSelected }
-        },
-        onQuickCreateItemSelected: {
-          type: 'LEGACY_DIALOG_CALLBACK',
-          payload: { id: quickCreateItemSelected }
-        },
+        onNewContentSelected,
+        onQuickCreateItemSelected,
         onClose: () => unmount()
       }).then((done) => (unmount = done.unmount));
-
-      // on New Content selected - Render new content dialog
-      CrafterCMSNext.createLegacyCallbackListener(newContentSelected, (response) => {
-        if (response) {
-          const contentTypeSelected = 'itemSelected';
-          const payload = response.payload ?? response.output;
-
-          CrafterCMSNext.system.store.dispatch({
-            type: 'SHOW_NEW_CONTENT_DIALOG',
-            payload: {
-              ...payload,
-              onContentTypeSelected: {
-                type: 'LEGACY_DIALOG_CALLBACK',
-                payload: { id: contentTypeSelected }
-              }
-            }
-          });
-
-          CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, (response) => {
-            if (response) {
-              const payload = response.payload ?? response.output;
-              showEditDialog(payload);
-            }
-          });
-        }
-      });
-
-      // on Quick Create Item selected - Render edit dialog
-      CrafterCMSNext.createLegacyCallbackListener(quickCreateItemSelected, (response) => {
-        if (response) {
-          const payload = response.payload ?? response.output;
-          showEditDialog(payload);
-        }
-      });
 
     }
 

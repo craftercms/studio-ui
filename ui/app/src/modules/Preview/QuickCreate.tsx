@@ -27,13 +27,10 @@ import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { SandboxItem } from '../../models/Item';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { ApiResponse } from '../../models/ApiResponse';
 import { showNewContentDialog } from '../../state/actions/dialogs';
 import { newContentCreationComplete, showEditDialog } from '../../state/reducers/dialogs/edit';
-import StandardAction from '../../models/StandardAction';
-import { ActionCreator } from 'redux';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -77,11 +74,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
-  previewItem: SandboxItem;
-  onNewContentSelected?: ActionCreator<StandardAction>;
-  onQuickCreateItemSelected?: ActionCreator<StandardAction>;
+  onNewContentSelected?(): void;
+  onQuickCreateItemSelected?(src: string): void;
   onClose(): void;
-  onItemClicked?(): void;
 }
 
 interface QuickCreateMenuButtonProps {
@@ -92,13 +87,10 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const {
     anchorEl,
     onClose,
-    previewItem,
     onNewContentSelected,
-    onQuickCreateItemSelected,
-    onItemClicked
+    onQuickCreateItemSelected
   } = props;
   const classes = useStyles({});
-  const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
@@ -106,15 +98,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
 
   const onNewContentClick = () => {
-    onItemClicked?.();
-    dispatch(
-      onNewContentSelected({
-        site: siteId,
-        previewItem,
-        compact: false,
-        onContentTypeSelected: showEditDialog()
-      })
-    );
+    onClose();
+    onNewContentSelected?.();
   };
 
   const onFormDisplay = (srcData) => () => {
@@ -123,17 +108,10 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     const formatPath = _path
       .replace('{year}', today.getFullYear())
       .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
-    onItemClicked?.();
 
-    dispatch(
-      onQuickCreateItemSelected({
-        src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`,
-        type: 'form',
-        inProgress: false,
-        showTabs: false,
-        onSaveSuccess: newContentCreationComplete()
-      })
-    )
+    onClose();
+    const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
+    onQuickCreateItemSelected?.(src);
   };
 
   useEffect(() => {
@@ -192,6 +170,8 @@ export default function QuickCreate() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentPreview, setCurrentPreview] = useState(null);
   const { guest } = usePreviewState();
+  const dispatch = useDispatch();
+  const siteId = useActiveSiteId();
 
   const onMenuBtnClick = (e) => {
     setAnchorEl(e.currentTarget);
@@ -212,16 +192,37 @@ export default function QuickCreate() {
 
   const onMenuClose = () => setAnchorEl(null);
 
+  const onNewContentSelected = () => {
+    dispatch(
+      showNewContentDialog({
+        site: siteId,
+        previewItem: currentPreview,
+        compact: false,
+        onContentTypeSelected: showEditDialog()
+      })
+    );
+  };
+
+  const onQuickCreateItemSelected = (src: string) => {
+    dispatch(
+      showEditDialog({
+        src,
+        type: 'form',
+        inProgress: false,
+        showTabs: false,
+        onSaveSuccess: newContentCreationComplete()
+      })
+    );
+  };
+
   return (
     <>
       <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
       <QuickCreateMenu
         anchorEl={anchorEl}
         onClose={onMenuClose}
-        previewItem={currentPreview}
-        onItemClicked={onMenuClose}
-        onNewContentSelected={showNewContentDialog}
-        onQuickCreateItemSelected={showEditDialog}
+        onNewContentSelected={onNewContentSelected}
+        onQuickCreateItemSelected={onQuickCreateItemSelected}
       />
     </>
   );

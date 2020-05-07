@@ -17,13 +17,17 @@
 import React, { useEffect, useState } from 'react';
 import { QuickCreateMenu } from '../modules/Preview/QuickCreate';
 import { useSelection } from '../utils/hooks';
-import { NewContentDialogProps } from '../modules/Content/Authoring/NewContentDialog';
-import { EmbeddedLegacyEditorsProps } from '../modules/Preview/EmbeddedLegacyEditors';
 
-export default function (props) {
+interface QuickCreateMenuProps {
+  anchorEl: HTMLElement;
+  onNewContentSelected?(): void;
+  onQuickCreateItemSelected?(src: string): void;
+  onClose(): void;
+}
+
+export default function (props: QuickCreateMenuProps) {
   const {
     anchorEl,
-    previewItem,
     onClose,
     onQuickCreateItemSelected,
     onNewContentSelected
@@ -45,27 +49,9 @@ export default function (props) {
   return (
     <QuickCreateMenu
       anchorEl={menuAnchor}
-      previewItem={previewItem}
       onClose={onCloseMenu}
-      onNewContentSelected={(payload: NewContentDialogProps) => {
-        return {
-          ...onNewContentSelected,
-          payload: {
-            ...onNewContentSelected.payload,
-            payload
-          }
-        };
-      }}
-      onQuickCreateItemSelected={(payload: EmbeddedLegacyEditorsProps) => {
-        return {
-          ...onQuickCreateItemSelected,
-          payload: {
-            ...onQuickCreateItemSelected.payload,
-            payload
-          }
-        };
-      }}
-      onItemClicked={onCloseMenu}
+      onNewContentSelected={onNewContentSelected}
+      onQuickCreateItemSelected={onQuickCreateItemSelected}
     />
   );
 }
