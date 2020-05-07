@@ -723,8 +723,14 @@ var nodeOpen = false,
             open: true,
             items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
-              type: 'LEGACY_DIALOG_CALLBACK',
-              payload: { id: eventIdSuccess }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_DELETE_DIALOG' }
+              ]
             }
           }
         });
@@ -737,7 +743,6 @@ var nodeOpen = false,
             document.dispatchEvent(eventNS);
             callback && callback();
           }
-          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_DELETE_DIALOG' });
         });
 
       },
@@ -827,14 +832,19 @@ var nodeOpen = false,
             items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
             scheduling,
             onSuccess: {
-              type: 'LEGACY_DIALOG_CALLBACK',
-              payload: { id: eventIdSuccess }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_PUBLISH_DIALOG' }
+              ]
             }
           }
         });
         CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
-          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_PUBLISH_DIALOG' });
         });
       },
 
@@ -862,14 +872,19 @@ var nodeOpen = false,
             open: true,
             items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
-              type: 'LEGACY_DIALOG_CALLBACK',
-              payload: { id: eventIdSuccess }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_PUBLISH_DIALOG' }
+              ]
             }
           }
         });
         CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
-          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_PUBLISH_DIALOG' });
         });
       },
 
