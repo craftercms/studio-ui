@@ -68,6 +68,7 @@ async function createPackageFile() {
     devDependencies,
     eslintConfig,
     browserslist,
+    proxy,
     ...packageDataOther
   } = JSON.parse(packageData);
 

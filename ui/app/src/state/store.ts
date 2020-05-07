@@ -16,19 +16,40 @@
 
 import { configureStore, EnhancedStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import reducer from './reducers/root';
-import { nou } from '../utils/object';
+import { createLookupTable, nou } from '../utils/object';
 import Cookies from 'js-cookie';
 import GlobalState from '../models/GlobalState';
 import { createEpicMiddleware } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
-import createMockInitialState, { fetchInitialState } from '../utils/createMockInitialState';
-import { Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
+import { fetchRolesInSite, me } from '../services/users';
+import { fetchSites } from '../services/sites';
+import LookupTable from '../models/LookupTable';
+import { initialState as sitesInitialState } from './reducers/sites';
+import { initialState as authInitialState } from './reducers/auth';
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
 
 let store: CrafterCMSStore;
+
+export function createStore(useMock = false): Observable<CrafterCMSStore> {
+  if (store) {
+    return of(store);
+  }
+  const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
+  if (preloadState) {
+    return of(createStoreSync(preloadState)).pipe(
+      tap((s) => (store = s))
+    );
+  } else {
+    return fetchInitialState().pipe(
+      map((initialState) => createStoreSync(initialState)),
+      tap((s) => (store = s))
+    );
+  }
+}
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
   const epicMiddleware = createEpicMiddleware();
@@ -67,21 +88,74 @@ export function retrieveInitialStateScript(): GlobalState {
   return state;
 }
 
-export function createStore(useMock = false): Observable<CrafterCMSStore> {
-  if (store) {
-    return of(store);
-  }
-  const preloadState = useMock ? createMockInitialState() : retrieveInitialStateScript();
-  if (preloadState) {
-    return of(createStoreSync(preloadState)).pipe(
-      tap((s) => (store = s))
-    );
-  } else {
-    return fetchInitialState().pipe(
-      map((initialState) => createStoreSync(initialState)),
-      tap((s) => (store = s))
-    );
-  }
+export function createMockInitialState(): Partial<GlobalState> {
+  return {
+    auth: { ...authInitialState, active: true },
+    user: {
+      firstName: 'Mr.',
+      lastName: 'Admin',
+      email: 'admin@craftercms.org',
+      username: 'admin',
+      authType: 'DB',
+      rolesBySite: {
+        editorial: ['author', 'admin', 'developer', 'reviewer', 'publisher'],
+        headless: ['author', 'admin', 'developer', 'reviewer', 'publisher'],
+        empty: ['author', 'admin', 'developer', 'reviewer', 'publisher']
+      },
+      sites: ['editorial', 'headless', 'empty'],
+      preferences: {
+        'global.lang': 'en',
+        'global.theme': 'light',
+        'preview.theme': 'dark'
+      }
+    },
+    sites: {
+      ...sitesInitialState,
+      byId: {
+        editorial: {
+          id: 'editorial',
+          name: 'editorial',
+          description: ''
+        },
+        headless: {
+          id: 'headless',
+          name: 'headless',
+          description: ''
+        },
+        empty: {
+          id: 'empty',
+          name: 'empty',
+          description: ''
+        }
+      }
+    }
+  };
+}
+
+export function fetchInitialState(): Observable<Partial<GlobalState>> {
+  return forkJoin({
+    user: me(),
+    sites: fetchSites()
+  }).pipe(
+    switchMap(({ user, sites }) =>
+      forkJoin<LookupTable<Observable<string[]>>, ''>(
+        sites.reduce((lookup, site) => {
+          lookup[site.id] = fetchRolesInSite(user.username, site.id);
+          return lookup;
+        }, {})
+      ).pipe(
+        map((rolesBySite) => {
+          user.rolesBySite = rolesBySite;
+          user.sites = sites.map(({ id }) => id);
+          return {
+            user,
+            sites: { ...sitesInitialState, byId: createLookupTable(sites) },
+            auth: { ...authInitialState, active: true }
+          };
+        })
+      )
+    )
+  );
 }
 
 export default createStore;

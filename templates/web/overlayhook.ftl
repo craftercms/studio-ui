@@ -32,6 +32,13 @@ ${"(function (crafterRequire, origin) {
     }
   });
 
+  /* guest.js does `$.noConflict` but found cases where that
+  was not fast enough to prevent the guest page to get jQuery
+  conflicts */
+  crafterRequire(['jquery'], function (jQ) {
+    jQ.noConflict(true);
+  });
+
   crafterRequire(['guest'], function (guest) {
     guest.init({
       hostOrigin: origin,

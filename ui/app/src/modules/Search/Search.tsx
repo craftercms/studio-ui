@@ -17,7 +17,6 @@ import React, { ElementType, useEffect, useMemo, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Avatar, Theme } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
 import AppsIcon from '@material-ui/icons/Apps';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
@@ -54,6 +53,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { isEditableAsset } from '../../utils/content';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import DialogHeader from '../../components/Dialogs/DialogHeader';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -699,12 +699,7 @@ function Search(props: SearchProps) {
         }
       </section>
       <Dialog onClose={handleClosePreview} aria-labelledby="preview" open={preview.open} maxWidth='md'>
-        <div className={classes.dialogTitle}>
-          <Typography variant="h6">{preview.name}</Typography>
-          <IconButton aria-label="close" className={classes.dialogCloseButton} onClick={handleClosePreview}>
-            <CloseIcon />
-          </IconButton>
-        </div>
+        <DialogHeader title={preview.name} onDismiss={handleClosePreview}/>
         <div className={classes.mediaPreview}>
           {renderPreview(preview)}
         </div>
