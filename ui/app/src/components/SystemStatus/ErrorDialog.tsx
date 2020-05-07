@@ -17,11 +17,11 @@
 import React, { PropsWithChildren } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/CloseRounded';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { createStyles, Dialog, makeStyles, Theme } from '@material-ui/core';
 import ErrorState from './ErrorState';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
-import { DialogBase } from '../Dialogs/DialogBase';
+import { useDialogOnClosed } from '../../utils/hooks';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   closeButton: {
@@ -50,19 +50,20 @@ export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
 
 export default function ErrorDialog(props: ErrorDialogProps) {
   return (
-    <DialogBase
+    <Dialog
       open={props.open}
       onClose={props.onClose}
-      onClosed={props.onClosed}
+
     >
       <ErrorDialogWrapper {...props} />
-    </DialogBase>
+    </Dialog>
   );
 }
 
 function ErrorDialogWrapper(props: ErrorDialogProps) {
   const { onDismiss, error } = props;
   const classes = useStyles({});
+  useDialogOnClosed(props.onClosed);
 
   return (
     <>

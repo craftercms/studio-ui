@@ -23,7 +23,12 @@ import { SandboxItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
-import { useActiveSiteId, useSpreadState, useStateResource } from '../../../utils/hooks';
+import {
+  useActiveSiteId,
+  useDialogOnClosed,
+  useSpreadState,
+  useStateResource
+} from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 import { Resource } from '../../../models/Resource';
 import Grid from '@material-ui/core/Grid';
@@ -38,7 +43,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { palette } from '../../../styles/theme';
 import { ApiResponse } from '../../../models/ApiResponse';
-import { DialogBase } from '../../../components/Dialogs/DialogBase';
+import { Dialog } from '@material-ui/core';
 
 // region Typings
 
@@ -406,28 +411,26 @@ function PublishDialogUI(props: PublishDialogUIProps) {
 
 export default function PublishDialog(props: PublishDialogProps) {
   return (
-    <DialogBase
+    <Dialog
       open={props.open}
       onClose={props.onClose}
-      onClosed={props.onClosed}
+
       aria-labelledby="requestPublishDialogTitle"
       fullWidth={true}
       maxWidth="md"
     >
       <PublishDialogWrapper {...props} />
-    </DialogBase>
+    </Dialog>
   );
 }
 
 function PublishDialogWrapper(props: PublishDialogProps) {
-
   const {
     items,
     scheduling = 'now',
     onDismiss,
     onSuccess
   } = props;
-
   const [dialog, setDialog] = useSpreadState({ ...dialogInitialState, scheduling });
   const [publishingChannels, setPublishingChannels] = useState(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
@@ -443,6 +446,8 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   });
 
   const siteId = useActiveSiteId();
+
+  useDialogOnClosed(props.onClosed);
 
   const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
   const userSitesRoles: String[] = user?.rolesBySite[siteId];

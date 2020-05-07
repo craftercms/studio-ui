@@ -99,7 +99,7 @@ export default [
         )
       )
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$) =>
     action$.pipe(
       ofType(revertContentComplete.type),
       map(fetchItemVersions)

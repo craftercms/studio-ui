@@ -20,6 +20,7 @@ import { deleteItems } from '../../../services/content';
 import {
   useActiveSiteId,
   useActiveUser,
+  useDialogOnClosed,
   useSpreadState,
   useStateResource
 } from '../../../utils/hooks';
@@ -38,7 +39,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { DialogBase } from '../../../components/Dialogs/DialogBase';
+import { Dialog } from '@material-ui/core';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -211,15 +212,14 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
 
 export default function DeleteDialog(props: DeleteDialogProps) {
   return (
-    <DialogBase
+    <Dialog
       open={props.open}
       onClose={props.onClose}
-      onClosed={props.onClosed}
       fullWidth={true}
       maxWidth="md"
     >
       <DeleteDialogWrapper {...props} />
-    </DialogBase>
+    </Dialog>
   );
 }
 
@@ -240,6 +240,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     deleteDependencies,
     apiState
   ]);
+  useDialogOnClosed(props.onClosed);
 
   const resource = useStateResource<any, any>(depsSource, {
     shouldResolve: (source) => Boolean(source.deleteDependencies),

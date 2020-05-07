@@ -19,6 +19,7 @@ import { LegacyItem, SandboxItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import {
   useActiveSiteId,
+  useDialogOnClosed,
   useSelection,
   useSpreadState,
   useStateResource
@@ -52,7 +53,7 @@ import Radio from '@material-ui/core/Radio';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 import { ApiResponse } from '../../../models/ApiResponse';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { DialogBase } from '../../../components/Dialogs/DialogBase';
+import { Dialog } from '@material-ui/core';
 
 const assetsTypes = {
   'all-deps': {
@@ -533,15 +534,15 @@ const dialogInitialState = {
 
 export default function DependenciesDialog(props: DependenciesDialogProps) {
   return (
-    <DialogBase
+    <Dialog
       open={props.open}
       onClose={props.onClose}
-      onClosed={props.onClosed}
+
       fullWidth={true}
       maxWidth="md"
     >
       <DependenciesDialogWrapper {...props} />
-    </DialogBase>
+    </Dialog>
   );
 }
 
@@ -552,7 +553,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     item,
     dependenciesShown
   });
-
+  useDialogOnClosed(props.onClosed);
   const [deps, setDeps] = useState(null);
   const [error, setError] = useState<ApiResponse>(null);
   const siteId = useActiveSiteId();

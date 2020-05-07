@@ -108,7 +108,9 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       }
       case 'history': {
         dispatch(fetchItemVersions({ item: item }));
-        dispatch(showHistoryDialog());
+        dispatch(showHistoryDialog({
+          //onRevert
+        }));
         break;
       }
       case 'dependencies' : {

@@ -23,7 +23,8 @@ import Button from '@material-ui/core/Button';
 import React, { PropsWithChildren } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import { DialogBase } from './DialogBase';
+import { Dialog } from '@material-ui/core';
+import { useDialogOnClosed } from '../../utils/hooks';
 
 const messages = defineMessages({
   ok: {
@@ -63,10 +64,10 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
   return (
-    <DialogBase
+    <Dialog
       open={props.open}
       onClose={props.onClose}
-      onClosed={props.onClosed}
+
       aria-labelledby="confirmDialogTitle"
       aria-describedby="confirmDialogBody"
       disableEscapeKeyDown={props.disableEscapeKeyDown}
@@ -74,7 +75,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       disableEnforceFocus={props.disableEnforceFocus}
     >
       <ConfirmDialogWrapper {...props} />
-    </DialogBase>
+    </Dialog>
   );
 }
 function ConfirmDialogWrapper(props: ConfirmDialogProps) {
@@ -87,6 +88,7 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
     children
   } = props;
   const { formatMessage } = useIntl();
+  useDialogOnClosed(props.onClosed);
   return (
     <>
       {title && <DialogHeader id="confirmDialogTitle" title={title} onDismiss={onDismiss} />}

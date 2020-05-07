@@ -18,7 +18,7 @@ import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { useSpreadState, useStateResource } from '../../../utils/hooks';
+import { useDialogOnClosed, useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
@@ -47,7 +47,7 @@ import {
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { DialogBase } from '../../../components/Dialogs/DialogBase';
+import { Dialog } from '@material-ui/core';
 
 const translations = defineMessages({
   previousPage: {
@@ -196,15 +196,14 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 
 export default function HistoryDialog(props: HistoryDialogProps) {
   return (
-    <DialogBase
+    <Dialog
       open={props.open}
       onClose={props.onClose}
-      onClosed={props.onClosed}
       fullWidth={true}
       maxWidth="md"
     >
       <HistoryDialogWrapper {...props} />
-    </DialogBase>
+    </Dialog>
   );
 }
 
@@ -216,6 +215,8 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
+
+  useDialogOnClosed(props.onClosed);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 

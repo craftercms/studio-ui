@@ -30,6 +30,7 @@ import ContentTypesFilter from './ContentTypesFilter';
 import {
   useActiveSiteId,
   useDebouncedInput,
+  useDialogOnClosed,
   useSelection,
   useSpreadState,
   useStateResource
@@ -46,7 +47,7 @@ import { useDispatch } from 'react-redux';
 import SingleItemSelector from './SingleItemSelector';
 import { SandboxItem } from '../../../models/Item';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
-import { DialogBase } from '../../../components/Dialogs/DialogBase';
+import { Dialog } from '@material-ui/core';
 
 const translations = defineMessages({
   title: {
@@ -188,16 +189,16 @@ function ContentTypesGrid(props: ContentTypesGridProps) {
 
 export default function NewContentDialog(props: NewContentDialogProps) {
   return (
-    <DialogBase
+    <Dialog
       open={props.open}
       onClose={props.onClose}
-      onClosed={props.onClosed}
+
       fullWidth={true}
       maxWidth="md"
       scroll="paper"
     >
       <NewContentDialogWrapper {...props} />
-    </DialogBase>
+    </Dialog>
   );
 }
 
@@ -225,6 +226,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   const [resetFilterType, setResetFilterType] = useState(defaultFilterType);
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
+  useDialogOnClosed(props.onClosed);
   const [dialogConfig, setDialogConfig] = useSpreadState({
     open: false,
     src: defaultFormSrc,

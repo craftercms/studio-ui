@@ -17,7 +17,7 @@
 import StandardAction from '../../../models/StandardAction';
 import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { useStateResource } from '../../../utils/hooks';
+import { useDialogOnClosed, useStateResource } from '../../../utils/hooks';
 import { FancyFormattedDate, VersionList } from './VersionList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import ApiResponse from '../../../models/ApiResponse';
@@ -51,7 +51,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { DialogBase } from '../../../components/Dialogs/DialogBase';
+import { Dialog } from '@material-ui/core';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -97,26 +97,24 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
 
 export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   return (
-    <DialogBase
+    <Dialog
       open={props.open}
       onClose={props.onClose}
-      onClosed={props.onClosed}
+
       fullWidth={true}
       maxWidth="md"
     >
       <CompareVersionsDialogWrapper {...props} />
-    </DialogBase>
+    </Dialog>
   );
 }
 
 function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
   const {
-    open,
     rightActions,
     selectedA,
     selectedB,
     onDismiss,
-    onClose,
     versionsBranch,
     contentTypesBranch
   } = props;
@@ -127,7 +125,7 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
   const dispatch = useDispatch();
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
-  const path = '';
+  useDialogOnClosed(props.onClosed);
 
   const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (_versionsBranch) =>
@@ -268,7 +266,7 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
           </EmptyState>
         )}
       </DialogBody>
-      {!compareMode && path && (
+      {!compareMode && item?.path && (
         <DialogFooter>
           <Pagination count={count} page={page} rowsPerPage={limit} onPageChanged={onPageChanged} />
         </DialogFooter>

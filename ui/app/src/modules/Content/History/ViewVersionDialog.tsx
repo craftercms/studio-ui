@@ -19,7 +19,7 @@ import { FormattedMessage } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import ListItemText from '@material-ui/core/ListItemText';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { useStateResource } from '../../../utils/hooks';
+import { useDialogOnClosed, useStateResource } from '../../../utils/hooks';
 import { FancyFormattedDate } from './VersionList';
 import { palette } from '../../../styles/theme';
 import StandardAction from '../../../models/StandardAction';
@@ -38,7 +38,7 @@ import DialogHeader, {
 } from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { Resource } from '../../../models/Resource';
-import { DialogBase } from '../../../components/Dialogs/DialogBase';
+import { Dialog } from '@material-ui/core';
 
 const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
@@ -145,20 +145,21 @@ interface VersionResource {
 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   return (
-    <DialogBase
+    <Dialog
       open={props.open}
       onClose={props.onClose}
-      onClosed={props.onClosed}
+
       fullWidth={true}
       maxWidth="md"
     >
       <ViewVersionDialogWrapper {...props} />
-    </DialogBase>
+    </Dialog>
   );
 }
 
 function ViewVersionDialogWrapper(props: ViewVersionDialogProps) {
   const { onDismiss, rightActions } = props;
+  useDialogOnClosed(props.onClosed);
   const resource = useStateResource<VersionResource, ViewVersionDialogProps>(props, {
     shouldResolve: (source) => (
       source.version &&
