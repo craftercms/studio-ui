@@ -43,9 +43,14 @@ export function setSiteCookie(name: string, value: string): void {
   });
 }
 
+export function getSiteCookie(cookieName: string = 'crafterSite'): string {
+  return Cookies.get('crafterSite') || null;
+}
+
 export default {
   getCookieDomain,
   getRequestForgeryToken,
   setRequestForgeryToken,
-  setSiteCookie
+  setSiteCookie,
+  getSiteCookie
 };

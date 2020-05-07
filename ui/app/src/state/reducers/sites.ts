@@ -19,6 +19,7 @@ import { GlobalState } from '../../models/GlobalState';
 import { StandardAction } from '../../models/StandardAction';
 import { Site } from '../../models/Site';
 import { createLookupTable } from '../../utils/object';
+import { getSiteCookie } from '../../utils/auth';
 
 const CHANGE_SITE = 'CHANGE_SITE';
 
@@ -35,7 +36,11 @@ export const fetchSites = createAction('FETCH_SITES');
 export const fetchSitesComplete = createAction<Site[]>('FETCH_SITES_COMPLETE');
 export const fetchSitesFailed = createAction('FETCH_SITES_FAILED');
 
-export const initialState: GlobalState['sites'] = { byId: {}, active: null, isFetching: false };
+export const initialState: GlobalState['sites'] = {
+  byId: {},
+  active: getSiteCookie(),
+  isFetching: false
+};
 
 const reducer = createReducer<GlobalState['sites']>(
   initialState,
