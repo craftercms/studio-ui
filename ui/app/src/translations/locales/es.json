@@ -52,7 +52,7 @@
   "browseCMIS.cmis": "CMIS",
   "bulkUpload.dropHere": "Arrastre archivos aquí o <span>seleccione</span>",
   "bulkUpload.filesProgression": "{start}/{end}",
-  "bulkUpload.subtitle": "Arrastre los archivos deseados desde su escritorio a la ventana del navegador.",
+  "bulkUpload.subtitle": "Arrastre los archivos deseados desde su escritorio hasta el espacio a continuación.",
   "bulkUpload.title": "Subida de Archivos",
   "bulkUpload.uploadInProgress": "Aún hay archivos subiendo. Navegar cancelaría la carga de archivos pendientes. Está seguro que desea partir?",
   "bulkUploadConfirmDialogMessages.description": "Hay un dialogo de subida de archivos",
