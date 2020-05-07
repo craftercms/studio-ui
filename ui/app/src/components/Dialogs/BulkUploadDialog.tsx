@@ -22,7 +22,6 @@ import createStyles from '@material-ui/styles/createStyles';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/ReplayRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
-import { Theme } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -44,7 +43,7 @@ import { getBulkUploadUrl } from '../../services/content';
 import { LookupTable } from '../../models/LookupTable';
 import { palette } from '../../styles/theme';
 import { bytesToSize } from '../../utils/string';
-import { useActiveSiteId, useMinimizeDialog, useSpreadState, useSubject } from '../../utils/hooks';
+import { useMinimizeDialog, useSpreadState, useSubject } from '../../utils/hooks';
 import clsx from 'clsx';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import RemoveRoundedIcon from '@material-ui/icons/RemoveRounded';
@@ -62,7 +61,7 @@ const translations = defineMessages({
   },
   subtitle: {
     id: 'bulkUpload.subtitle',
-    defaultMessage: 'Drop the desired files from your desktop into the browser window.'
+    defaultMessage: 'Drop the desired files from your desktop into space below.'
   },
   close: {
     id: 'words.close',
@@ -94,7 +93,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   dialogContent: {
     backgroundColor: palette.gray.light0,
     flexDirection: 'row'
@@ -170,7 +169,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-const UppyItemStyles = makeStyles((theme: Theme) => createStyles({
+const UppyItemStyles = makeStyles(() => createStyles({
   cardRoot: {
     display: 'flex',
     backgroundColor: palette.gray.light0,
@@ -595,9 +594,8 @@ const initialDropZoneStatus: DropZoneStatus = {
 interface BulkUploadProps {
   open: boolean;
   path: string;
-  site?: string;
+  site: string;
   maxSimultaneousUploads?: number;
-
   onClose?(dropZoneStatus: DropZoneStatus): void;
   onDismiss?(dropZoneStatus: DropZoneStatus): void;
 }
@@ -609,13 +607,13 @@ export default function (props: BulkUploadProps) {
   const id = 'bulkUpload';
   const classes = useStyles({});
   const {
+    open,
+    site,
+    path,
     onClose,
     onDismiss,
-    path,
-    maxSimultaneousUploads = 1,
-    open
+    maxSimultaneousUploads = 1
   } = props;
-  const site = useActiveSiteId();
   const [dropZoneStatus, setDropZoneStatus] = useSpreadState<DropZoneStatus>(initialDropZoneStatus);
   const inputRef = useRef(null);
   const cancelRef = useRef(null);
@@ -692,7 +690,6 @@ export default function (props: BulkUploadProps) {
           cancelRequestObservable$={cancelRequestObservable$}
         />
       </DialogBody>
-
       {
         dropZoneStatus.status !== 'idle' &&
         <DialogFooter>
