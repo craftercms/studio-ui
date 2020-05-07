@@ -786,8 +786,14 @@ var nodeOpen = false,
           type: 'SHOW_HISTORY_DIALOG',
           payload: {
             onClose: {
-              type: 'LEGACY_DIALOG_CALLBACK',
-              payload: { id: eventIdOnClose }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdOnClose }
+                },
+                { type: 'CLOSE_HISTORY_DIALOG' }
+              ]
             }
           }
         });
@@ -801,7 +807,6 @@ var nodeOpen = false,
           document.dispatchEvent(eventNS);
           amplify.publish('HISTORY_REVERT');
           // end of TODO
-          CrafterCMSNext.system.store.dispatch({ type: 'RESET_VERSIONS_STATE' });
         });
       },
 
