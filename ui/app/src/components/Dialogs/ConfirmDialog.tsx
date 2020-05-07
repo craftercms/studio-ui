@@ -67,7 +67,6 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-
       aria-labelledby="confirmDialogTitle"
       aria-describedby="confirmDialogBody"
       disableEscapeKeyDown={props.disableEscapeKeyDown}

@@ -537,7 +537,6 @@ export default function DependenciesDialog(props: DependenciesDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-
       fullWidth={true}
       maxWidth="md"
     >

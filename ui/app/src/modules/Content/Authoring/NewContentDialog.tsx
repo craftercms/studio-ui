@@ -192,7 +192,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-
       fullWidth={true}
       maxWidth="md"
       scroll="paper"

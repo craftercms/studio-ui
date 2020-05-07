@@ -100,7 +100,6 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
     <Dialog
       open={props.open}
       onClose={props.onClose}
-
       fullWidth={true}
       maxWidth="md"
     >

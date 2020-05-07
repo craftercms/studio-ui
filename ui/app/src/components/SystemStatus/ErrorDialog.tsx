@@ -53,7 +53,6 @@ export default function ErrorDialog(props: ErrorDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-
     >
       <ErrorDialogWrapper {...props} />
     </Dialog>

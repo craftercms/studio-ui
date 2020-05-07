@@ -148,7 +148,6 @@ export default function ViewVersionDialog(props: ViewVersionDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-
       fullWidth={true}
       maxWidth="md"
     >
