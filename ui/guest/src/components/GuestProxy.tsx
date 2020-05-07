@@ -101,7 +101,6 @@ export function GuestProxy(props) {
         let from;
         let to;
         let index;
-        let indexToAnimate;
         if (oldIndex < newIndex) {
           from = oldIndex;
           to = newIndex + 1;
