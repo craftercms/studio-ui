@@ -39,7 +39,7 @@ import {
   revertToPreviousVersion,
   versionsChangeItem
 } from '../reducers/versions';
-import { forkJoin } from 'rxjs';
+import { forkJoin, NEVER, of } from 'rxjs';
 import { historyDialogClosed } from '../actions/dialogs';
 
 export default [
@@ -108,11 +108,11 @@ export default [
     action$.pipe(
       ofType(historyDialogClosed.type),
       withLatestFrom(state$),
-      map(([, { dialogs }]) => {
+      switchMap(([, { dialogs }]) => {
         if (!dialogs.viewVersion.open && !dialogs.compareVersions.open) {
-          return resetVersionsState();
+          return of(resetVersionsState());
         } else {
-          return { type: 'nadita' };
+          return NEVER;
         }
       })
     )
