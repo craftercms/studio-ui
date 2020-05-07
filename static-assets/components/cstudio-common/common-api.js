@@ -752,14 +752,18 @@ var nodeOpen = false,
         const item = CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(contentObj);
 
         CrafterCMSNext.system.store.dispatch({
-          type: 'FETCH_ITEM_VERSIONS',
-          payload: {
-            item,
-            ...(rootPath && { rootPath: rootPath })
-          }
-        })
-
-        CrafterCMSNext.system.store.dispatch({ type: 'SHOW_HISTORY_DIALOG' });
+          type: 'BATCH_ACTIONS',
+          payload: [
+            {
+              type: 'FETCH_ITEM_VERSIONS',
+              payload: {
+                item,
+                ...(rootPath && { rootPath: rootPath })
+              }
+            },
+            { type: 'SHOW_HISTORY_DIALOG' }
+          ]
+        });
       },
 
       viewConfigurationHistory: function (contentObj, isWrite) {
@@ -768,34 +772,36 @@ var nodeOpen = false,
           path: contentObj.path
         };
 
-        CrafterCMSNext.system.store.dispatch(
-          {
-            type: 'FETCH_ITEM_VERSIONS',
-            payload: {
-              config: true,
-              revertPath: contentObj.uri,
-              environment: contentObj.environment,
-              module: contentObj.module,
-              item,
-              rootPath: null
-            }
-          }
-        );
-
         CrafterCMSNext.system.store.dispatch({
-          type: 'SHOW_HISTORY_DIALOG',
-          payload: {
-            onClose: {
-              type: 'BATCH_ACTIONS',
-              payload: [
-                {
-                  type: 'LEGACY_DIALOG_CALLBACK',
-                  payload: { id: eventIdOnClose }
-                },
-                { type: 'CLOSE_HISTORY_DIALOG' }
-              ]
+          type: 'BATCH_ACTIONS',
+          payload: [
+            {
+              type: 'FETCH_ITEM_VERSIONS',
+              payload: {
+                config: true,
+                revertPath: contentObj.uri,
+                environment: contentObj.environment,
+                module: contentObj.module,
+                item,
+                rootPath: null
+              }
+            },
+            {
+              type: 'SHOW_HISTORY_DIALOG',
+              payload: {
+                onClose: {
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'LEGACY_DIALOG_CALLBACK',
+                      payload: { id: eventIdOnClose }
+                    },
+                    { type: 'CLOSE_HISTORY_DIALOG' }
+                  ]
+                }
+              }
             }
-          }
+          ]
         });
 
         CrafterCMSNext.createLegacyCallbackListener(eventIdOnClose, () => {
@@ -806,7 +812,6 @@ var nodeOpen = false,
           eventNS.oldPath = null;
           document.dispatchEvent(eventNS);
           amplify.publish('HISTORY_REVERT');
-          // end of TODO
         });
       },
 
