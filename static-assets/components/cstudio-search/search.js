@@ -104,14 +104,12 @@
       // If is enter -> immediate search
       if (event.keyCode === 13) {
         CStudioSearch.searchContext.keywords = e.target.value;
-        CStudioSearch.clearFilters();
         CStudioSearch.performSearch();
         CStudioSearch.updateUrl();
       } else {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(function () {
           CStudioSearch.searchContext.keywords = e.target.value;
-          CStudioSearch.clearFilters();
           CStudioSearch.performSearch();
           CStudioSearch.updateUrl();
         }, 700);
@@ -121,7 +119,6 @@
     $('#searchButton').on('click', function (e) {
       var $searchInput = $('#searchInput');
       CStudioSearch.searchContext.keywords = $searchInput.val();
-      CStudioSearch.clearFilters();
       CStudioSearch.performSearch(true);
       CStudioSearch.updateUrl();
       $searchInput.focus().select();
@@ -767,7 +764,7 @@
       } else {
         // otherwise, single value
         var escapedValue = value.replace ? value.replace(/\//g, '_') : value;
-        $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop('checked', true);
+        $('input[name="' + key + '"]#' + key + escapedValue).prop('checked', true);
         $filterHeader.removeClass('hide');
       }
 
@@ -780,11 +777,6 @@
     }
 
     this.updateNumFilters();
-  };
-
-  // clear the filters applied into the searchContext
-  CStudioSearch.clearFilters = function () {
-    CStudioSearch.searchContext.filters = {};
   };
 
   // Enables/disables action buttons in filters, like apply and clear, depending on the
