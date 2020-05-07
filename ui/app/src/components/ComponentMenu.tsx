@@ -35,6 +35,7 @@ import {
   showHistoryDialog,
   showPublishDialog
 } from '../state/actions/dialogs';
+import { batchActions } from '../state/actions/misc';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -107,10 +108,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         break;
       }
       case 'history': {
-        dispatch(fetchItemVersions({ item: item }));
-        dispatch(showHistoryDialog({
-          //onRevert
-        }));
+        dispatch(batchActions([
+          fetchItemVersions({ item: item }),
+          showHistoryDialog()
+        ]));
         break;
       }
       case 'dependencies' : {

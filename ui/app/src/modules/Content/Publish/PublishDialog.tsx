@@ -414,7 +414,6 @@ export default function PublishDialog(props: PublishDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-
       aria-labelledby="requestPublishDialogTitle"
       fullWidth={true}
       maxWidth="md"
