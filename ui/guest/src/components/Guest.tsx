@@ -1301,7 +1301,7 @@ export function Guest(props: GuestProps) {
               fieldId: item.fieldId,
               label: highlight.label,
               id: item.id,
-              contentType: payload
+              contentTypeId: payload
             };
           });
           setState({
@@ -1318,7 +1318,7 @@ export function Guest(props: GuestProps) {
 
           post({
             type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
-            payload: { contentType: payload, receptacles }
+            payload: { contentTypeId: payload, receptacles }
           });
           break;
         }
