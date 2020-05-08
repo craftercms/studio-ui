@@ -117,7 +117,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       case 'delete': {
         dispatch(showDeleteDialog({
           items: [item],
-          onSuccess: closeDeleteDialog
+          onSuccess: closeDeleteDialog()
         }));
         break;
       }
