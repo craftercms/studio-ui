@@ -100,7 +100,7 @@ export default function EditFormPanel() {
   }
 
   const path = ModelHelper.prop(models[selectedId], 'path');
-  const selectedContentType = ModelHelper.prop(models[selectedId], 'contentType');
+  const selectedContentType = ModelHelper.prop(models[selectedId], 'contentTypeId');
 
   const getSrc = useCallback((type: string) => {
     switch (type) {

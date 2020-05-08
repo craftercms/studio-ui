@@ -134,7 +134,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             src,
             type,
             inProgress: true,
-            showController: !embeddedParentPath && contentTypesBranch.byId?.[item.contentType]?.type === 'page',
+            showController: !embeddedParentPath && contentTypesBranch.byId?.[item.contentTypeId]?.type === 'page',
             itemModel: models[modelId],
             embeddedParentPath
           })
@@ -227,7 +227,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          item && !embeddedParentPath && contentTypesBranch.byId?.[item.contentType]?.type === 'page' &&
+          item && !embeddedParentPath && contentTypesBranch.byId?.[item.contentTypeId]?.type === 'page' &&
           <MenuItem onClick={() => handleEdit('controller')}>
             <FormattedMessage
               id="previewToolBar.menu.editController"
