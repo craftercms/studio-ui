@@ -16,12 +16,14 @@
 
 import GlobalState from '../../models/GlobalState';
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { AjaxError } from 'rxjs/ajax';
+import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 import { FetchContentVersion, VersionsResponse, VersionsStateProps } from '../../models/Version';
 import { createLookupTable } from '../../utils/object';
+import { SandboxItem } from '../../models/Item';
 
 interface HistoryConfigProps {
-  path: string;
+  item: SandboxItem;
+  rootPath?: string;
   environment?: string;
   module?: string;
   config?: boolean;
@@ -33,15 +35,17 @@ export const fetchItemVersionsComplete = createAction<VersionsResponse>('FETCH_I
 
 export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 
-export const versionsChangePage = createAction<number>('VERSIONS_CHANGE_PAGE');
+export const versionsChangePage = createAction<{ page: number }>('VERSIONS_CHANGE_PAGE');
 
-export const compareVersion = createAction<string>('COMPARE_VERSIONS');
+export const versionsChangeItem = createAction<{ item: SandboxItem }>('VERSIONS_CHANGE_ITEM');
 
-export const compareToPreviousVersion = createAction<string>('COMPARE_TO_PREVIOUS_VERSION');
+export const compareVersion = createAction<{ id: string }>('COMPARE_VERSIONS');
+
+export const compareToPreviousVersion = createAction<{ id: string }>('COMPARE_TO_PREVIOUS_VERSION');
 
 export const resetVersionsState = createAction('RESET_VERSIONS_STATE');
 
-export const compareBothVersions = createAction<string[]>('COMPARE_BOTH_VERSIONS');
+export const compareBothVersions = createAction<{ versions: string[] }>('COMPARE_BOTH_VERSIONS');
 
 export const compareBothVersionsComplete = createAction<any>('COMPARE_BOTH_VERSIONS_COMPLETE');
 
@@ -51,13 +55,14 @@ export const revertContent = createAction<FetchContentVersion>('REVERT_CONTENT')
 
 export const revertContentComplete = createAction<Boolean>('REVERT_CONTENT_COMPLETE');
 
-export const revertContentFailed = createAction<AjaxError>('REVERT_CONTENT_FAILED');
+export const revertContentFailed = createAction<AjaxResponse>('REVERT_CONTENT_FAILED');
 
-export const revertToPreviousVersion = createAction<string>('REVERT_TO_PREVIOUS_VERSION');
+export const revertToPreviousVersion = createAction<{ id: string }>('REVERT_TO_PREVIOUS_VERSION');
 
 const initialState: VersionsStateProps = {
   byId: null,
-  path: null,
+  item: null,
+  rootPath: '/site/website',
   error: null,
   isFetching: null,
   current: null,
@@ -85,7 +90,7 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     ...state,
     byId: createLookupTable(versions, 'versionNumber'),
     count: versions.length,
-    current: versions[0].versionNumber,
+    current: versions.length ? versions[0].versionNumber : null,
     allVersions: versions,
     versions: versions.slice(state.page * state.limit, (state.page + 1) * state.limit),
     isFetching: false,
@@ -98,24 +103,28 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
   }),
   [versionsChangePage.type]: (state, { payload }) => ({
     ...state,
-    page: payload,
-    versions: state.allVersions.slice(payload * state.limit, (payload + 1) * state.limit)
+    page: payload.page,
+    versions: state.allVersions.slice(payload.page * state.limit, (payload.page + 1) * state.limit)
+  }),
+  [versionsChangeItem.type]: (state, { payload }) => ({
+    ...state,
+    item: payload.item
   }),
   [compareVersion.type]: (state, { payload }) => ({
     ...state,
-    selected: payload ? [payload] : []
+    selected: payload ? [payload.id] : []
   }),
   [compareToPreviousVersion.type]: (state, { payload }) => {
-    let i = state.allVersions.findIndex(version => version.versionNumber === payload);
+    let i = state.allVersions.findIndex(version => version.versionNumber === payload.id);
     let previous = state.allVersions?.[i + 1].versionNumber;
     return {
       ...state,
-      selected: [payload, previous]
+      selected: [payload.id, previous]
     };
   },
   [compareBothVersions.type]: (state, { payload }) => ({
     ...state,
-    selected: payload,
+    selected: payload.versions,
     compareVersionsBranch: {
       ...state.compareVersionsBranch,
       isFetching: true
@@ -138,7 +147,7 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     }
   }),
   [revertToPreviousVersion.type]: (state, { payload }) => {
-    let i = state.allVersions.findIndex(version => version.versionNumber === payload);
+    let i = state.allVersions.findIndex(version => version.versionNumber === payload.id);
     let previous = state.allVersions?.[i + 1].versionNumber;
     return {
       ...state,
@@ -152,8 +161,6 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
   }),
   [revertContentComplete.type]: (state) => ({
     ...state
-    // epic revertContentComplete is handling the isFetching true
-    //isFetching: false
   }),
   [revertContentFailed.type]: (state, { payload }) => ({
     ...state,

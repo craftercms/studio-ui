@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { LegacyItem, SandboxItem } from '../models/Item';
+
 export function isEditableAsset(path: string) {
   return (
     path.endsWith('.ftl')
@@ -73,6 +75,37 @@ export function isImage(path: string) {
   );
 }
 
+export function parseLegacyItemToSandBoxItem(item: LegacyItem): SandboxItem;
+export function parseLegacyItemToSandBoxItem(item: LegacyItem[]): SandboxItem[];
+export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
+  if (Array.isArray(item)) {
+    // If no internalName then skipping (e.g. level descriptors)
+    return item.flatMap(i => i.internalName ? [parseLegacyItemToSandBoxItem(i)] : []);
+  }
+  return {
+    id: item.uri,
+    label: item.internalName,
+    path: item.uri,
+    localeCode: 'en',
+    contentTypeId: item.contentType,
+    // Assuming folders aren't navigable
+    previewUrl: item.uri.includes('index.xml') ? (item.browserUri || '/') : null,
+    systemType: item.asset ? 'asset' : item.component ? 'component' : item.folder ? 'folder' : item.page ? 'page' : null,
+    mimeType: null,
+    state: null,
+    lockOwner: null,
+    disabled: null,
+    translationSourceId: null,
+    creator: null,
+    createdDate: null,
+    modifier: null,
+    lastModifiedDate: null,
+    commitId: null,
+    sizeInBytes: null
+  };
+}
+
 export default {
-  isEditableAsset
+  isEditableAsset,
+  parseLegacyItemToSandBoxItem
 };

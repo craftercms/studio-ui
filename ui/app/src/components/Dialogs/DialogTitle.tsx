@@ -46,7 +46,7 @@ export interface DialogTitleProps {
   title: string;
   subtitle?: string;
 
-  onClose(): void;
+  onClose?(): void;
 }
 
 export default function DialogTitle(props: DialogTitleProps) {

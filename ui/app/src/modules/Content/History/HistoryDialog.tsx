@@ -14,12 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback } from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { useSpreadState, useStateResource } from '../../../utils/hooks';
+import { useOnUnmount, useSpreadState, useStateResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
@@ -36,9 +35,9 @@ import {
   compareBothVersions,
   compareToPreviousVersion,
   compareVersion,
-  resetVersionsState,
   revertContent,
   revertToPreviousVersion,
+  versionsChangeItem,
   versionsChangePage
 } from '../../../state/reducers/versions';
 import {
@@ -47,6 +46,9 @@ import {
   showHistoryDialog,
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
+import SingleItemSelector from '../Authoring/SingleItemSelector';
+import Dialog from '@material-ui/core/Dialog';
+import { batchActions } from '../../../state/actions/misc';
 
 const translations = defineMessages({
   previousPage: {
@@ -97,6 +99,9 @@ const historyStyles = makeStyles(() =>
     },
     menuList: {
       padding: 0
+    },
+    singleItemSelector: {
+      marginBottom: '10px'
     }
   })
 );
@@ -179,21 +184,40 @@ interface HistoryDialogBaseProps {
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   versionsBranch: VersionsStateProps;
-  onClose?(): any;
-  onDismiss?(): any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
 export default function HistoryDialog(props: HistoryDialogProps) {
-  const { open, onClose, onDismiss, versionsBranch } = props;
-  const { count, page, limit, current, path } = versionsBranch;
+  return (
+    <Dialog
+      open={props.open}
+      onClose={props.onClose}
+      fullWidth
+      maxWidth="md"
+    >
+      <HistoryDialogWrapper {...props} />
+    </Dialog>
+  );
+}
+
+function HistoryDialogWrapper(props: HistoryDialogProps) {
+  const { onDismiss, versionsBranch } = props;
+  const { count, page, limit, current, item, rootPath } = versionsBranch;
+  const path = item ? item.path : '';
+  const [openSelector, setOpenSelector] = useState(false);
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
+
+  useOnUnmount(props.onClosed);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
@@ -210,7 +234,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false) => {
       if (isCurrent) {
-        let sections = count > 0 ? [
+        let sections = count > 1 ? [
           [menuOptions.view],
           [menuOptions.compareTo, menuOptions.compareToPrevious],
           [menuOptions.revertToPrevious]
@@ -223,7 +247,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
           activeItem: version
         });
       } else {
-        let sections = count > 0 ? [
+        let sections = count > 1 ? [
           [menuOptions.view],
           [menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious],
           [menuOptions.revertToThisVersion]
@@ -240,70 +264,60 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     [count, setMenu]
   );
 
-  function dispatchCompareVersionDialogWithOnClose() {
-    dispatch(showCompareVersionsDialog({
-      onClose: resetVersionsState(),
+  function CompareVersionDialogWithActions() {
+    return showCompareVersionsDialog({
       rightActions: [
         {
           icon: 'HistoryIcon',
-          onClick: showHistoryDialog({
-            onClose: resetVersionsState()
-          }),
+          onClick: showHistoryDialog(),
           'aria-label': formatMessage(translations.backToHistoryList)
         }
       ]
-    }));
+    });
   }
 
   const handleViewItem = (version: LegacyVersion) => {
-    dispatch(fetchContentTypes());
-    dispatch(fetchContentVersion({ path, versionNumber: version.versionNumber }));
-    dispatch(
+    dispatch(batchActions([
+      fetchContentTypes(),
+      fetchContentVersion({ path, versionNumber: version.versionNumber }),
       showViewVersionDialog({
         rightActions: [
           {
             icon: 'HistoryIcon',
-            onClick: showHistoryDialog({
-              onClose: resetVersionsState()
-            }),
+            onClick: showHistoryDialog(),
             'aria-label': formatMessage(translations.backToHistoryList)
           }
         ]
       })
-    );
+    ]));
   };
 
   const compareTo = (versionNumber: string) => {
-    dispatch(fetchContentTypes());
-    dispatch(compareVersion(versionNumber));
-    dispatch(showCompareVersionsDialog({
-      onClose: resetVersionsState(),
-      rightActions: [
-        {
-          icon: 'HistoryIcon',
-          onClick: showHistoryDialog({
-            onClose: resetVersionsState()
-          }),
-          'aria-label': formatMessage(translations.backToHistoryList)
-        }
-      ]
-    }));
+    dispatch(batchActions([
+      fetchContentTypes(),
+      compareVersion({ id: versionNumber }),
+      CompareVersionDialogWithActions()
+    ]));
   };
 
   const compareBoth = (selected: string[]) => {
-    dispatch(fetchContentTypes());
-    dispatch(compareBothVersions(selected));
-    dispatchCompareVersionDialogWithOnClose();
+    dispatch(batchActions([
+      fetchContentTypes(),
+      compareBothVersions({ versions: selected }),
+      CompareVersionDialogWithActions()
+    ]));
   };
 
   const compareToPrevious = (versionNumber: string) => {
-    dispatch(fetchContentTypes());
-    dispatch(compareToPreviousVersion(versionNumber));
-    dispatchCompareVersionDialogWithOnClose();
+    dispatch(batchActions([
+      fetchContentTypes(),
+      compareToPreviousVersion({ id: versionNumber }),
+      CompareVersionDialogWithActions()
+    ]));
   };
 
   const revertToPrevious = (versionNumber: string) => {
-    dispatch(revertToPreviousVersion(versionNumber));
+    dispatch(revertToPreviousVersion({ id: versionNumber }));
   };
 
   const revertTo = (versionNumber: string) => {
@@ -351,35 +365,51 @@ export default function HistoryDialog(props: HistoryDialogProps) {
   };
 
   const onPageChanged = (nextPage: number) => {
-    dispatch(versionsChangePage(nextPage));
+    dispatch(versionsChangePage({ page: nextPage }));
   };
 
   return (
-    <Dialog onClose={onClose} open={open} fullWidth maxWidth="md" onEscapeKeyDown={onDismiss}>
+    <>
       <DialogHeader
         title={
           <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Content Item History" />
         }
         onDismiss={onDismiss}
       />
-      <SuspenseWithEmptyState resource={versionsResource}>
-        <DialogBody className={classes.dialogBody}>
+      <DialogBody className={classes.dialogBody}>
+        <SingleItemSelector
+          classes={{ root: classes.singleItemSelector }}
+          label="Item"
+          open={openSelector}
+          onClose={() => setOpenSelector(false)}
+          onDropdownClick={() => setOpenSelector(!openSelector)}
+          rootPath={rootPath}
+          selectedItem={item}
+          onItemClicked={(item) => {
+            setOpenSelector(false);
+            dispatch(versionsChangeItem({ item }));
+          }}
+        />
+        <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
             resource={versionsResource}
             onOpenMenu={handleOpenMenu}
             onItemClick={handleViewItem}
             current={current}
           />
-        </DialogBody>
-        <DialogFooter classes={{ root: classes.dialogFooter }}>
+        </SuspenseWithEmptyState>
+      </DialogBody>
+      <DialogFooter classes={{ root: classes.dialogFooter }}>
+        {
+          count > 0 &&
           <Pagination
             count={count}
             page={page}
             rowsPerPage={limit}
             onPageChanged={onPageChanged}
           />
-        </DialogFooter>
-      </SuspenseWithEmptyState>
+        }
+      </DialogFooter>
 
       {Boolean(menu.anchorEl) && (
         <ContextMenu
@@ -391,7 +421,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
           classes={{ menuList: classes.menuList }}
         />
       )}
-    </Dialog>
+    </>
   );
 }
 

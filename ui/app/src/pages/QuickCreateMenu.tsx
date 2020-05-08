@@ -20,8 +20,20 @@ import { useSelection } from '../utils/hooks';
 import { fetchSystemInformation } from '../state/actions/env';
 import { useDispatch } from 'react-redux';
 
-export default function (props) {
-  const { anchorEl, previewItem, onClose } = props;
+interface QuickCreateMenuProps {
+  anchorEl: HTMLElement;
+  onNewContentSelected?(): void;
+  onQuickCreateItemSelected?(src: string): void;
+  onClose?(): void;
+}
+
+export default function (props: QuickCreateMenuProps) {
+  const {
+    anchorEl,
+    onClose,
+    onQuickCreateItemSelected,
+    onNewContentSelected
+  } = props;
   const [menuAnchor, setMenuAnchor] = useState(anchorEl);
   const createNewContentOpen = useSelection((state) => state.dialogs.newContent.open);
   // TODO: Switch when Embedded legacy editors is moved to dialog manager
@@ -44,9 +56,9 @@ export default function (props) {
   return (
     <QuickCreateMenu
       anchorEl={menuAnchor}
-      previewItem={previewItem}
       onClose={onCloseMenu}
-      onItemClicked={onCloseMenu}
+      onNewContentSelected={onNewContentSelected}
+      onQuickCreateItemSelected={onQuickCreateItemSelected}
     />
   );
 }

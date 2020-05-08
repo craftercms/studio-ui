@@ -15,10 +15,11 @@
  */
 
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { LegacyItem } from '../../../models/Item';
+import { LegacyItem, SandboxItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import {
   useActiveSiteId,
+  useOnUnmount,
   useSelection,
   useSpreadState,
   useStateResource
@@ -40,12 +41,8 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
-import Chip from '@material-ui/core/Chip';
-import CreateIcon from '@material-ui/icons/CreateRounded';
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
@@ -53,8 +50,11 @@ import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
-import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
+import { useDispatch } from 'react-redux';
+import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 import { ApiResponse } from '../../../models/ApiResponse';
+import SingleItemSelector from '../Authoring/SingleItemSelector';
+import Dialog from '@material-ui/core/Dialog';
 
 const assetsTypes = {
   'all-deps': {
@@ -87,13 +87,6 @@ const translations = defineMessages({
 });
 
 const dependenciesDialogStyles = makeStyles((theme) => createStyles({
-  root: {
-    textAlign: 'left'
-  },
-  dialogPaper: {
-    height: '540px',
-    maxWidth: '725px'
-  },
   titleRoot: {
     margin: 0,
     padding: '13px 20px 11px',
@@ -279,8 +272,8 @@ function DependenciesList(props: DependenciesListProps) {
 
 interface DependenciesDialogUIProps {
   resource: Resource<LegacyItem[]>
-  open: boolean;
-  item: LegacyItem;
+  item: SandboxItem;
+  rootPath: string;
   setItem: Function;
   compactView: boolean;
   setCompactView: Function;
@@ -288,11 +281,8 @@ interface DependenciesDialogUIProps {
   setShowTypes: Function;
   dependenciesShown: string;
   setDependenciesShown: Function;
-  onClose(): any;
-  onDismiss(): any;
+  onDismiss?(): void;
   isEditableItem: Function;
-  editDialogConfig: any;
-  setEditDialogConfig: Function;
   handleEditorDisplay: Function;
   contextMenu: any;
 
@@ -304,8 +294,8 @@ interface DependenciesDialogUIProps {
 function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const {
     resource,
-    open,
     item,
+    rootPath,
     setItem,
     compactView,
     setCompactView,
@@ -313,11 +303,8 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     setShowTypes,
     dependenciesShown,
     setDependenciesShown,
-    onClose,
     onDismiss,
     isEditableItem,
-    editDialogConfig,
-    setEditDialogConfig,
     handleEditorDisplay,
     contextMenu,
     handleContextMenuClick,
@@ -325,50 +312,28 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   } = props;
   const classes = dependenciesDialogStyles({});
   const { formatMessage } = useIntl();
+  const [openSelector, setOpenSelector] = useState(false);
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      fullWidth={true}
-      maxWidth={'md'}
-      classes={{
-        root: classes.root,
-        paper: classes.dialogPaper
-      }}
-    >
+    <>
       <DialogHeader
         title={formatMessage(translations.headerTitle)}
         onDismiss={onDismiss}
       />
       <DialogBody>
         <div className={classes.selectionContent}>
-          {
-            item &&
-            <Chip
-              variant="outlined"
-              deleteIcon={isEditableItem(item.uri) ? <CreateIcon /> : null}
-              onDelete={isEditableItem(item.uri) ?
-                () => {
-                  handleEditorDisplay(item);
-                } :
-                null
-              }
-              classes={{
-                root: classes.selectedItem,
-                label: classes.selectedItemLabel,
-                deleteIcon: classes.selectedItemEditIcon
-              }}
-              label={
-                <>
-                  <span className='label'>Selected</span>
-                  <InsertDriveFileOutlinedIcon className='item-icon' />
-                  <span className='item-title'>{item.internalName}</span>
-                </>
-              }
-            />
-          }
-
+          <SingleItemSelector
+            label="Item"
+            open={openSelector}
+            onClose={() => setOpenSelector(false)}
+            onDropdownClick={() => setOpenSelector(!openSelector)}
+            rootPath={rootPath}
+            selectedItem={item}
+            onItemClicked={(item) => {
+              setOpenSelector(false);
+              setItem(item);
+            }}
+          />
           <FormControl className={classes.formControl}>
             <Select
               value={dependenciesShown ?? 'depends-on'}
@@ -529,61 +494,67 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           </Select>
         </FormControl>
       </DialogFooter>
-      <EmbeddedLegacyEditors
-        showTabs={false}
-        dialogConfig={editDialogConfig}
-        setDialogConfig={setEditDialogConfig}
-      />
-    </Dialog>
+    </>
   );
 }
 
 interface DependenciesDialogBaseProps {
   open: boolean;
-  item?: LegacyItem;
+  item?: SandboxItem;
+  rootPath: string;
   dependenciesShown?: string;
 }
 
 export type DependenciesDialogProps = PropsWithChildren<DependenciesDialogBaseProps & {
-  onClose(): any;
-  onDismiss(): any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }>;
 
 export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps {
   onClose?: StandardAction
+  onClosed?: StandardAction
   onDismiss?: StandardAction
 }
 
 const dialogInitialState = {
-  dependenciesShown: 'depends-on',
   dependantItems: null,
   dependencies: null,
   compactView: false,
   showTypes: 'all-deps'
 };
 
-function DependenciesDialog(props: DependenciesDialogProps) {
-  const { open, item, dependenciesShown, onClose, onDismiss } = props;
+export default function DependenciesDialog(props: DependenciesDialogProps) {
+  return (
+    <Dialog
+      open={props.open}
+      onClose={props.onClose}
+      fullWidth
+      maxWidth="md"
+    >
+      <DependenciesDialogWrapper {...props} />
+    </Dialog>
+  );
+}
+
+function DependenciesDialogWrapper(props: DependenciesDialogProps) {
+  const { item, dependenciesShown = 'depends-on', onDismiss, rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
     dependenciesShown
   });
+  useOnUnmount(props.onClosed);
   const [deps, setDeps] = useState(null);
   const [error, setError] = useState<ApiResponse>(null);
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [editDialogConfig, setEditDialogConfig] = useSpreadState({
-    open: false,
-    src: defaultFormSrc,
-    type: 'form',
-    inProgress: false
-  });
   const [contextMenu, setContextMenu] = useSpreadState({
     el: null,
     dependency: null
   });
+  const dispatch = useDispatch();
 
   const handleEditorDisplay = item => {
     let type = 'controller';
@@ -595,12 +566,14 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     }
     let src = `${defaultFormSrc}?site=${siteId}&path=${item.uri}&type=${type}`;
 
-    setEditDialogConfig(
-      {
-        open: true,
+    dispatch(
+      showEditDialog({
         src,
-        type: 'form'
-      });
+        type,
+        inProgress: true,
+        showTabs: false
+      })
+    );
   };
 
   const depsSource = useMemo(() => {
@@ -665,13 +638,13 @@ function DependenciesDialog(props: DependenciesDialogProps) {
 
   useEffect(() => {
     if (dialog.item) {
-      getDepsItems(siteId, dialog.item.uri, true);
+      getDepsItems(siteId, dialog.item.path, true);
     }
   }, [dialog.item, siteId, getDepsItems]);
 
   useEffect(() => {
     if (dialog.item) {
-      getDepsItems(siteId, dialog.item.uri);
+      getDepsItems(siteId, dialog.item.path);
     }
   }, [dialog.dependenciesShown, dialog.item, getDepsItems, siteId]);
 
@@ -683,7 +656,7 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     setDialog({ showTypes });
   };
 
-  const setItem = (item: LegacyItem) => {
+  const setItem = (item: SandboxItem) => {
     setDialog({ item });
   };
 
@@ -708,8 +681,8 @@ function DependenciesDialog(props: DependenciesDialogProps) {
   return (
     <DependenciesDialogUI
       resource={resource}
-      open={open}
       item={dialog.item}
+      rootPath={rootPath}
       setItem={setItem}
       compactView={dialog.compactView}
       setCompactView={setCompactView}
@@ -717,11 +690,8 @@ function DependenciesDialog(props: DependenciesDialogProps) {
       setShowTypes={setShowTypes}
       dependenciesShown={dialog.dependenciesShown}
       setDependenciesShown={setDependenciesShow}
-      onClose={onClose}
       onDismiss={onDismiss}
       isEditableItem={isEditableAsset}
-      editDialogConfig={editDialogConfig}
-      setEditDialogConfig={setEditDialogConfig}
       handleEditorDisplay={handleEditorDisplay}
       contextMenu={contextMenu}
       handleContextMenuClick={handleContextMenuClick}
@@ -729,5 +699,3 @@ function DependenciesDialog(props: DependenciesDialogProps) {
     />
   );
 }
-
-export default DependenciesDialog;

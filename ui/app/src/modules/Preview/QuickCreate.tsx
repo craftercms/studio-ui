@@ -25,12 +25,11 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
-import { useActiveSiteId, usePreviewState, useSelection, useSpreadState } from '../../utils/hooks';
-import EmbeddedLegacyEditors from './EmbeddedLegacyEditors';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
-import { SandboxItem } from '../../models/Item';
 import { showNewContentDialog } from '../../state/actions/dialogs';
+import { newContentCreationComplete, showEditDialog } from '../../state/reducers/dialogs/edit';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -106,10 +105,9 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
-  previewItem: SandboxItem;
-  onSaveLegacySuccess?(response): void;
-  onClose(): void;
-  onItemClicked?(): void;
+  onNewContentSelected?(): void;
+  onQuickCreateItemSelected?(src: string): void;
+  onClose?(): void;
 }
 
 interface QuickCreateMenuButtonProps {
@@ -120,9 +118,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const {
     anchorEl,
     onClose,
-    previewItem,
-    onSaveLegacySuccess,
-    onItemClicked
+    onNewContentSelected,
+    onQuickCreateItemSelected
   } = props;
   const classes = useStyles({});
   const dispatch = useDispatch();
@@ -130,12 +127,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: defaultFormSrc,
-    type: 'form',
-    inProgress: false
-  });
+
   const systemInformation = useSelection<GlobalState['env']['SYSTEM_INFORMATION']['version']>(
     (state) => state.env.SYSTEM_INFORMATION.version
   );
@@ -146,14 +138,8 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   };
 
   const onNewContentClick = () => {
-    onItemClicked?.();
-    dispatch(
-      showNewContentDialog({
-        site: siteId,
-        previewItem,
-        compact: false
-      })
-    );
+    onClose();
+    onNewContentSelected?.();
   };
 
   const onFormDisplay = (srcData) => () => {
@@ -162,11 +148,10 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     const formatPath = _path
       .replace('{year}', today.getFullYear())
       .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
-    onItemClicked?.();
-    setDialogConfig({
-      open: true,
-      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`
-    });
+
+    onClose();
+    const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
+    onQuickCreateItemSelected?.(src);
   };
 
   useEffect(() => {
@@ -240,16 +225,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           </Card>
         }
       </Menu>
-      {dialogConfig.open && (
-        <EmbeddedLegacyEditors
-          showTabs={false}
-          showController={false}
-          dialogConfig={dialogConfig}
-          setDialogConfig={setDialogConfig}
-          onSaveLegacySuccess={onSaveLegacySuccess}
-          onSaveSuccess={onEmbeddedFormSaveSuccess}
-        />
-      )}
     </>
   );
 }
@@ -275,6 +250,7 @@ export default function QuickCreate() {
   const [currentPreview, setCurrentPreview] = useState(null);
   const { guest } = usePreviewState();
   const dispatch = useDispatch();
+  const siteId = useActiveSiteId();
 
   useEffect(() => {
     dispatch(fetchSystemInformation());
@@ -299,14 +275,37 @@ export default function QuickCreate() {
 
   const onMenuClose = () => setAnchorEl(null);
 
+  const onNewContentSelected = () => {
+    dispatch(
+      showNewContentDialog({
+        site: siteId,
+        previewItem: currentPreview,
+        compact: false,
+        onContentTypeSelected: showEditDialog()
+      })
+    );
+  };
+
+  const onQuickCreateItemSelected = (src: string) => {
+    dispatch(
+      showEditDialog({
+        src,
+        type: 'form',
+        inProgress: false,
+        showTabs: false,
+        onSaveSuccess: newContentCreationComplete()
+      })
+    );
+  };
+
   return (
     <>
       <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
       <QuickCreateMenu
         anchorEl={anchorEl}
         onClose={onMenuClose}
-        previewItem={currentPreview}
-        onItemClicked={onMenuClose}
+        onNewContentSelected={onNewContentSelected}
+        onQuickCreateItemSelected={onQuickCreateItemSelected}
       />
     </>
   );

@@ -31,7 +31,7 @@ import { isNavigable } from './utils';
 interface BreadcrumbsProps {
   keyword: string;
   breadcrumb: SandboxItem[];
-  onMenu(element: Element): void;
+  onMenu?(element: Element): void;
   onSearch(keyword: string): void;
   onCrumbSelected(breadcrumb: SandboxItem): void;
 }
@@ -101,13 +101,16 @@ export default function (props: BreadcrumbsProps) {
             )}
           </MuiBreadcrumbs>
           <div className={clsx(classes.optionsWrapper, classes.optionsWrapperOver)}>
-            <IconButton
-              aria-label="options"
-              className={clsx(classes.iconButton)}
-              onClick={(event) => onMenu(event.currentTarget)}
-            >
-              <MoreVertIcon />
-            </IconButton>
+            {
+              onMenu &&
+              <IconButton
+                aria-label="options"
+                className={clsx(classes.iconButton)}
+                onClick={(event) => onMenu(event.currentTarget)}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            }
             <IconButton
               aria-label="search"
               className={clsx(classes.iconButton)}

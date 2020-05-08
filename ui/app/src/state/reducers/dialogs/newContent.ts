@@ -21,23 +21,29 @@ import {
   showNewContentDialog
 } from '../../actions/dialogs';
 import { NewContentDialogStateProps } from '../../../modules/Content/Authoring/NewContentDialog';
+import { newContentCreationComplete } from './edit';
 
 const initialState: NewContentDialogStateProps = {
   open: false,
-  site: null,
   compact: false,
-  previewItem: null
+  item: null,
+  rootPath: '/site/website'
 };
 
 export default createReducer<NewContentDialogStateProps>(initialState, {
   [showNewContentDialog.type]: (state, { payload }) => ({
+    ...state,
     onClose: closeNewContentDialog(),
+    onClosed: newContentDialogClosed(),
     onDismiss: closeNewContentDialog(),
     ...payload,
     open: true
   }),
   [closeNewContentDialog.type]: (state) => ({
     ...state,
+    open: false
+  }),
+  [newContentCreationComplete.type]: (state, { payload }) => ({
     onClose: state.onClose,
     open: false
   }),

@@ -721,10 +721,16 @@ var nodeOpen = false,
           type: 'SHOW_DELETE_DIALOG',
           payload: {
             open: true,
-            items,
+            items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
-              type: 'LEGACY_DIALOG_CALLBACK',
-              payload: { id: eventIdSuccess }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_DELETE_DIALOG' }
+              ]
             }
           }
         });
@@ -737,7 +743,6 @@ var nodeOpen = false,
             document.dispatchEvent(eventNS);
             callback && callback();
           }
-          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_DELETE_DIALOG' });
         });
 
       },
@@ -748,84 +753,71 @@ var nodeOpen = false,
         });
       },
 
-      viewContentHistory: function (contentObj, isWrite) {
-        CSA.Operations._showDialogueView(
-          {
-            fn: CSA.Service.getHistoryView,
-            controller: 'viewcontroller-history',
-            callback: function (dialogue) {
-              CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
+      viewContentHistory: function (contentObj, isWrite, rootPath) {
+        const item = CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(contentObj);
 
-              YDom.get('historyCloseBtn').value = CMgs.format(formsLangBundle, 'close');
-
-              this.loadHistory(contentObj, isWrite);
-
-              this.on('submitComplete', function (evt, args) {
-                var reloadFn = function () {
-                  dialogue.destroy();
-                  eventNS.data = contentObj;
-                  eventNS.typeAction = '';
-                  eventNS.oldPath = null;
-                  document.dispatchEvent(eventNS);
-                };
-
-                dialogue.hideEvent.subscribe(reloadFn);
-                dialogue.destroyEvent.subscribe(reloadFn);
-              });
-
-              // Admin version of the view does not have this events
-              // but then the call is ignored
-              this.on('hideRequest', function (evt, args) {
-                dialogue.destroy();
-              });
-
-              this.on('showRequest', function (evt, args) {
-                dialogue.show();
-              });
-            }
-          },
-          true
-        );
+        CrafterCMSNext.system.store.dispatch({
+          type: 'BATCH_ACTIONS',
+          payload: [
+            {
+              type: 'FETCH_ITEM_VERSIONS',
+              payload: {
+                item,
+                ...(rootPath && { rootPath })
+              }
+            },
+            { type: 'SHOW_HISTORY_DIALOG' }
+          ]
+        });
       },
 
       viewConfigurationHistory: function (contentObj, isWrite) {
-        CSA.Operations._showDialogueView(
-          {
-            fn: CSA.Service.getHistoryView,
-            controller: 'viewcontroller-history',
-            callback: function (dialogue) {
-              CSA.Operations.translateContent(formsLangBundle, '.cstudio-dialogue');
+        const eventIdOnClose = 'showHistoryDialogConfigOnClose';
+        const item = {
+          path: contentObj.path
+        };
 
-              YDom.get('historyCloseBtn').value = CMgs.format(formsLangBundle, 'close');
-
-              this.loadConfigurationHistory(contentObj, isWrite);
-
-              this.on('submitComplete', function (evt, args) {
-                var reloadFn = function () {
-                  dialogue.destroy();
-                  eventNS.data = contentObj;
-                  eventNS.typeAction = '';
-                  eventNS.oldPath = null;
-                  document.dispatchEvent(eventNS);
-                };
-
-                dialogue.hideEvent.subscribe(reloadFn);
-                dialogue.destroyEvent.subscribe(reloadFn);
-              });
-
-              // Admin version of the view does not have this events
-              // but then the call is ignored
-              this.on('hideRequest', function (evt, args) {
-                dialogue.destroy();
-              });
-
-              this.on('showRequest', function (evt, args) {
-                dialogue.show();
-              });
+        CrafterCMSNext.system.store.dispatch({
+          type: 'BATCH_ACTIONS',
+          payload: [
+            {
+              type: 'FETCH_ITEM_VERSIONS',
+              payload: {
+                config: true,
+                revertPath: contentObj.uri,
+                environment: contentObj.environment,
+                module: contentObj.module,
+                item,
+                rootPath: null
+              }
+            },
+            {
+              type: 'SHOW_HISTORY_DIALOG',
+              payload: {
+                onClose: {
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'LEGACY_DIALOG_CALLBACK',
+                      payload: { id: eventIdOnClose }
+                    },
+                    { type: 'CLOSE_HISTORY_DIALOG' }
+                  ]
+                }
+              }
             }
-          },
-          true
-        );
+          ]
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(eventIdOnClose, () => {
+          // TODO: we need to found a way to know when the dispatch to Revert finished and it is true
+          // to call an OnSuccess Callback
+          eventNS.data = contentObj;
+          eventNS.typeAction = '';
+          eventNS.oldPath = null;
+          document.dispatchEvent(eventNS);
+          amplify.publish('HISTORY_REVERT');
+        });
       },
 
       approveCommon: function (site, items, approveType) {
@@ -837,17 +829,22 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items,
+            items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
             scheduling,
             onSuccess: {
-              type: 'LEGACY_DIALOG_CALLBACK',
-              payload: { id: eventIdSuccess }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_PUBLISH_DIALOG' }
+              ]
             }
           }
         });
         CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
-          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_PUBLISH_DIALOG' });
         });
       },
 
@@ -859,7 +856,7 @@ var nodeOpen = false,
           type: 'SHOW_DEPENDENCIES_DIALOG',
           payload: {
             open: true,
-            item: items[0],
+            item: CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(items[0]),
             dependenciesShown
           }
         });
@@ -873,16 +870,21 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items,
+            items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
-              type: 'LEGACY_DIALOG_CALLBACK',
-              payload: { id: eventIdSuccess }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_PUBLISH_DIALOG' }
+              ]
             }
           }
         });
         CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
-          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_PUBLISH_DIALOG' });
         });
       },
 
@@ -1110,32 +1112,9 @@ var nodeOpen = false,
           searchUrl += '&query=' + searchContext.query;
         }
 
-        // Add search filters to url
-        // csf = crafter studio filter
-        // csr = crafter studio range
-        // csrTO = crafter studio range separator in URL
+        const filters = searchContext.filters;
         if (!jQuery.isEmptyObject(searchContext.filters)) {
-          $.each(searchContext.filters, function (key, value) {
-            if (typeof value === 'string') {
-              searchUrl += '&csf_' + key + '=' + value;
-            } else if ($.isArray(value)) {
-              $.each(value, function () {
-                searchUrl += '&csf_' + key + '=' + this;
-              });
-            } else {
-              //is a range
-              if (value.date) {
-                var min = value.min,
-                  max = value.max,
-                  id = value.id;
-                searchUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max + 'csrID' + id;
-              } else {
-                var min = isNaN(value.min) ? 'null' : value.min,
-                  max = isNaN(value.max) ? 'null' : value.max;
-                searchUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max;
-              }
-            }
-          });
+          searchUrl += `#/?filters=${encodeURIComponent(JSON.stringify(filters))}`;
         }
 
         var childSearch = null;
@@ -1149,7 +1128,6 @@ var nodeOpen = false,
           childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
           childSearch.openInSameWindow = openInSameWindow;
           searchId = CStudioAuthoring.Utils.generateUUID();
-          searchUrl += '&searchId=' + searchId;
 
           childSearch.searchId = searchId;
           childSearch.searchUrl = searchUrl;

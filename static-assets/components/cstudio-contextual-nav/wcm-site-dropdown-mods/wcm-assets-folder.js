@@ -2040,7 +2040,11 @@ var storage = CStudioAuthoring.Storage;
      *
      */
     revertContent: function(p_sType, p_aArgs, tree) {
-      CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data, RootFolder().IS_WRITE);
+      CStudioAuthoring.Operations.viewContentHistory(
+        oCurrentTextNode.data,
+        RootFolder().IS_WRITE,
+        oCurrentTextNode.instance.config.params.path
+      );
     },
 
     /**

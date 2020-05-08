@@ -3280,48 +3280,71 @@
        * Creates new content. Opens the form to create content
        */
       createContent: function() {
-        const container = document.createElement('div');
-        const createSuccess = (currentTextNode) => ({ data }) => {
-          const acnDraftContent = YDom.getElementsByClassName(
-            'acnDraftContent',
-            null,
-            parent.document
-          )[0];
-          eventYS.data = currentTextNode;
-          eventYS.typeAction = 'createContent';
-          eventYS.oldPath = null;
-          eventYS.parent = currentTextNode.data.path == '/site/website' ? null : false;
-          document.dispatchEvent(eventYS);
+        const contentDialogTypeSelectedId = 'contentDialogTypeSelected';
+        const { site, internalName, uri } = oCurrentTextNode.data;
 
-          if (data.item.isPage) {
-            CStudioAuthoring.Operations.refreshPreview(data.item);
-            if (
-              CStudioAuthoring.Utils.getQueryParameterURL('page') == data.redirectUrl &&
-              acnDraftContent
-            ) {
-              CStudioAuthoring.SelectedContent.setContent(data.item);
-            }
-          } else {
-            CStudioAuthoring.Operations.refreshPreview();
-          }
-        };
-
-        function renderNewContentDialog(open) {
-          const { site, internalName, uri } = oCurrentTextNode.data;
-          let unmount;
-          CrafterCMSNext.render(container, 'NewContentDialog', {
-            onSaveLegacySuccess: createSuccess(oCurrentTextNode),
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_NEW_CONTENT_DIALOG',
+          payload: {
+            open: true,
+            site,
             previewItem: {
               label: internalName,
               path: uri
             },
-            open,
-            onClose: () => renderNewContentDialog(false),
-            onDismiss: () => unmount(),
-            site
-          }).then((done) => (unmount = done.unmount));
-        }
-        renderNewContentDialog(true);
+            onContentTypeSelected: {
+              type: 'LEGACY_DIALOG_CALLBACK',
+              payload: { id: contentDialogTypeSelectedId }
+            }
+          }
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(contentDialogTypeSelectedId, (response) => {
+          if (response) {
+            const eventIdSuccess = 'editDialogSuccess';
+
+            CrafterCMSNext.system.store.dispatch({
+              type: 'SHOW_EDIT_DIALOG',
+              payload: {
+                ...response.output,
+                onSaveSuccess: {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                }
+              }
+            });
+
+            CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+              if (response) {
+                const data = response.output;
+                const acnDraftContent = YDom.getElementsByClassName(
+                  'acnDraftContent',
+                  null,
+                  parent.document
+                )[0];
+                eventYS.data = oCurrentTextNode;
+                eventYS.typeAction = 'createContent';
+                eventYS.oldPath = null;
+                eventYS.parent = oCurrentTextNode.data.path == '/site/website' ? null : false;
+                document.dispatchEvent(eventYS);
+
+                if (data.item.isPage) {
+                  CStudioAuthoring.Operations.refreshPreview(data.item);
+                  if (
+                    CStudioAuthoring.Utils.getQueryParameterURL('page') == data.redirectUrl &&
+                    acnDraftContent
+                  ) {
+                    CStudioAuthoring.SelectedContent.setContent(data.item);
+                  }
+                } else {
+                  CStudioAuthoring.Operations.refreshPreview();
+                }
+              }
+              CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
+            });
+          }
+        });
+
       },
       /**
        * Edits the label of the TextNode that was the target of the
@@ -3523,7 +3546,11 @@
        * Revert the content item
        */
       revertContent: function(p_sType, p_aArgs, tree) {
-        CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data, Self.IS_WRITE);
+        CStudioAuthoring.Operations.viewContentHistory(
+          oCurrentTextNode.data,
+          Self.IS_WRITE,
+          oCurrentTextNode.instance.config.params.path
+        );
       },
 
       /**

@@ -22,12 +22,14 @@ export default createReducer<GlobalState['dialogs']['publish']>(
   { open: false },
   {
     [showPublishDialog.type]: (state, { payload }) => ({
+      ...state,
       onClose: closePublishDialog(),
+      onClosed: publishDialogClosed(),
       onDismiss: closePublishDialog(),
       ...payload,
       open: true
     }),
-    [closePublishDialog.type]: (state) => ({ open: false, onClose: state.onClose }),
+    [closePublishDialog.type]: (state) => ({ ...state, open: false }),
     [publishDialogClosed.type]: () => ({ open: false })
   }
 );

@@ -22,28 +22,31 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import { palette } from '../../../styles/theme';
 import { fetchLegacyContentTypes } from '../../../services/content';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import NewContentCard from './NewContentCard';
-import SingleItemSelector from './SingleItemSelector';
 import SearchBar from '../../../components/Controls/SearchBar';
 import ContentTypesFilter from './ContentTypesFilter';
 import {
+  useActiveSiteId,
   useDebouncedInput,
+  useOnUnmount,
   useSelection,
-  useSpreadState,
   useStateResource
 } from '../../../utils/hooks';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 import Typography from '@material-ui/core/Typography';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
+import { useDispatch } from 'react-redux';
+import SingleItemSelector from './SingleItemSelector';
+import { SandboxItem } from '../../../models/Item';
+import { showErrorDialog } from '../../../state/reducers/dialogs/error';
+import { newContentCreationComplete } from '../../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   title: {
@@ -139,29 +142,24 @@ interface ContentTypesGridProps {
   getPrevImg(data: LegacyFormConfig): string;
 }
 
-interface PreviewItem {
-  label: string;
-  path: string;
-}
-
 interface NewContentDialogBaseProps {
   open: boolean;
-  site: string;
-  previewItem: PreviewItem;
+  item: SandboxItem;
+  rootPath: string;
   compact: boolean;
-
-  onSaveLegacySuccess?(response): any;
-
-  onSaveSuccess?(response): any;
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
-  onClose?(): any;
-  onDismiss?(): any;
+  onContentTypeSelected?(response?: any): any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
+  onContentTypeSelected?: StandardAction;
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
@@ -187,20 +185,34 @@ function ContentTypesGrid(props: ContentTypesGridProps) {
 }
 
 export default function NewContentDialog(props: NewContentDialogProps) {
+  return (
+    <Dialog
+      open={props.open}
+      onClose={props.onClose}
+      fullWidth
+      maxWidth="md"
+      scroll="paper"
+    >
+      <NewContentDialogWrapper {...props} />
+    </Dialog>
+  );
+}
+
+function NewContentDialogWrapper(props: NewContentDialogProps) {
   const {
-    open,
-    onClose,
     onDismiss,
-    site,
-    previewItem: previewItemProp,
-    onSaveLegacySuccess,
-    onSaveSuccess,
-    compact
+    item,
+    onContentTypeSelected,
+    compact,
+    rootPath
   } = props;
+  const [openSelector, setOpenSelector] = useState(false);
   const defaultFilterType = 'all';
   const { formatMessage } = useIntl();
+  const site = useActiveSiteId();
   const classes = useStyles({});
   const contentTypes = useRef(null);
+  const dispatch = useDispatch();
   const [filterContentTypes, setFilterContentTypes] = useState([]);
   const [isCompact, setIsCompact] = useState(compact);
   const [search, setSearch] = useState('');
@@ -209,12 +221,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [resetFilterType, setResetFilterType] = useState(defaultFilterType);
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: defaultFormSrc,
-    type: 'form',
-    inProgress: false
-  });
+  useOnUnmount(props.onClosed);
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl =
     '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
@@ -252,11 +259,13 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     }
   );
 
-  const onTypeOpen = (srcData) => () => {
-    // TODO: Move edit dialog to dialog manager
-    setDialogConfig({
-      open: true,
-      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`
+  const onTypeOpen = (contentType: LegacyFormConfig) => () => {
+    onContentTypeSelected({
+      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${path}&type=form`,
+      type: 'form',
+      inProgress: false,
+      showTabs: false,
+      onSaveSuccess: newContentCreationComplete()
     });
   };
 
@@ -309,129 +318,126 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       : defaultPrevImgUrl;
 
   useEffect(() => {
-    setIsCompact(compact)
+    setIsCompact(compact);
   }, [compact]);
 
   useEffect(() => {
-    if (previewItemProp) setPreviewItem(previewItemProp);
-  }, [previewItemProp]);
+    if (item) setPreviewItem(item);
+  }, [item]);
 
   useEffect(() => {
-    open &&
-    fetchLegacyContentTypes(site, path).subscribe(
-      (response) => {
-        setFilterContentTypes(response);
-        contentTypes.current = response;
-        setLoading(false);
-      },
-      (error) => setFilterContentTypes(null)
-    );
-  }, [open, path, site]);
+    if (path) {
+      fetchLegacyContentTypes(site, path).subscribe(
+        (response) => {
+          setFilterContentTypes(response);
+          contentTypes.current = response;
+          setLoading(false);
+        },
+        (response) => {
+          dispatch(showErrorDialog({ error: response }));
+          setFilterContentTypes(null);
+        }
+      );
+    }
+  }, [path, site]);
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" scroll="paper">
-        <DialogHeader
-          title={formatMessage(translations.title)}
-          subtitle={formatMessage(translations.subtitle)}
-          onDismiss={onDismiss}
-        />
-        <DialogBody dividers classes={{ root: classes.dialogContent }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box>
-              <SingleItemSelector
-                label="Parent"
-                selectItem={previewItem}
-                LabelIcon={InsertDriveFileOutlinedIcon}
-                onEditClick={() => null}
-                onMenuItemClick={onParentItemClick}
-              />
-            </Box>
-            <Box className={classes.searchBox}>
-              <SearchBar onChange={onSearchChange} keyword={search} autoFocus />
-            </Box>
-          </Box>
-
-          <SuspenseWithEmptyState
-            resource={resource}
-            withEmptyStateProps={{
-              emptyStateProps: {
-                classes: {
-                  root: classes.emptyStateRoot,
-                  image: classes.emptyStateImg,
-                  title: classes.emptyStateTitle
-                },
-                title: (
-                  <FormattedMessage
-                    id="newContentDialog.emptyStateMessage"
-                    defaultMessage="No Content Types Found"
-                  />
-                ),
-                subtitle: (
-                  <FormattedMessage
-                    id="newContentDialog.emptyStateMessageSubtitle"
-                    defaultMessage="Try changing your query or browse the <catalog>full catalog</catalog>."
-                    values={{
-                      catalog: (msg) =>
-                        <Typography
-                          variant="subtitle1"
-                          component="a"
-                          className={classes.emptyStateLink}
-                          color="textSecondary"
-                          onClick={onResetFilter}
-                        >
-                          {msg}
-                        </Typography>
-                    }}
-                  />
-                )
-              }
-            }}
-            loadingStateProps={{
-              classes: {
-                graphic: classes.loadingGraphic,
-                root: classes.loadingRoot
-              }
-            }}
-          >
-            <ContentTypesGrid
-              resource={resource}
-              isCompact={isCompact}
-              onTypeOpen={onTypeOpen}
-              getPrevImg={getPrevImg}
+      <DialogHeader
+        title={formatMessage(translations.title)}
+        subtitle={formatMessage(translations.subtitle)}
+        onDismiss={onDismiss}
+      />
+      <DialogBody dividers classes={{ root: classes.dialogContent }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box>
+            <SingleItemSelector
+              label="Item"
+              open={openSelector}
+              onClose={() => setOpenSelector(false)}
+              onDropdownClick={() => setOpenSelector(!openSelector)}
+              rootPath={rootPath}
+              selectedItem={previewItem}
+              onItemClicked={(item) => {
+                setOpenSelector(false);
+                onParentItemClick(item);
+              }}
             />
-          </SuspenseWithEmptyState>
-        </DialogBody>
-        <DialogFooter classes={{ root: classes.dialogActions }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={isCompact || false}
-                onChange={onCompactCheck}
-                color="primary"
-                disabled={loading}
-              />
+          </Box>
+          <Box className={classes.searchBox}>
+            <SearchBar onChange={onSearchChange} keyword={search} autoFocus />
+          </Box>
+        </Box>
+
+        <SuspenseWithEmptyState
+          resource={resource}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              classes: {
+                root: classes.emptyStateRoot,
+                image: classes.emptyStateImg,
+                title: classes.emptyStateTitle
+              },
+              title: (
+                <FormattedMessage
+                  id="newContentDialog.emptyStateMessage"
+                  defaultMessage="No Content Types Found"
+                />
+              ),
+              subtitle: (
+                <FormattedMessage
+                  id="newContentDialog.emptyStateMessageSubtitle"
+                  defaultMessage="Try changing your query or browse the <catalog>full catalog</catalog>."
+                  values={{
+                    catalog: (msg) =>
+                      <Typography
+                        variant="subtitle1"
+                        component="a"
+                        className={classes.emptyStateLink}
+                        color="textSecondary"
+                        onClick={onResetFilter}
+                      >
+                        {msg}
+                      </Typography>
+                  }}
+                />
+              )
             }
-            label={formatMessage(translations.compactInput)}
+          }}
+          loadingStateProps={{
+            classes: {
+              graphic: classes.loadingGraphic,
+              root: classes.loadingRoot
+            }
+          }}
+        >
+          <ContentTypesGrid
+            resource={resource}
+            isCompact={isCompact}
+            onTypeOpen={onTypeOpen}
+            getPrevImg={getPrevImg}
           />
-          <ContentTypesFilter
-            filters={contentTypesFilters}
-            onTypeChange={onTypeChange}
-            disabled={loading}
-            resetType={resetFilterType}
-          />
-        </DialogFooter>
-      </Dialog>
-      {dialogConfig.open && (
-        <EmbeddedLegacyEditors
-          showTabs={false}
-          showController={false}
-          dialogConfig={dialogConfig}
-          setDialogConfig={setDialogConfig}
-          onSaveLegacySuccess={onSaveLegacySuccess}
-          onSaveSuccess={onSaveSuccess}
+        </SuspenseWithEmptyState>
+      </DialogBody>
+      <DialogFooter classes={{ root: classes.dialogActions }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isCompact || false}
+              onChange={onCompactCheck}
+              color="primary"
+              disabled={loading}
+            />
+          }
+          label={formatMessage(translations.compactInput)}
         />
-      )}
+        <ContentTypesFilter
+          filters={contentTypesFilters}
+          onTypeChange={onTypeChange}
+          disabled={loading}
+          resetType={resetFilterType}
+        />
+      </DialogFooter>
     </>
   );
 }
