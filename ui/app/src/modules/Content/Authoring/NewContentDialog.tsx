@@ -16,6 +16,7 @@
 
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import Dialog from '@material-ui/core/Dialog';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -32,12 +33,10 @@ import {
   useDebouncedInput,
   useOnUnmount,
   useSelection,
-  useSpreadState,
   useStateResource
 } from '../../../utils/hooks';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 import Typography from '@material-ui/core/Typography';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LegacyFormConfig } from '../../../models/ContentType';
@@ -47,7 +46,7 @@ import { useDispatch } from 'react-redux';
 import SingleItemSelector from './SingleItemSelector';
 import { SandboxItem } from '../../../models/Item';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
-import Dialog from '@material-ui/core/Dialog';
+import { newContentCreationComplete } from '../../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   title: {
@@ -148,19 +147,17 @@ interface NewContentDialogBaseProps {
   item: SandboxItem;
   rootPath: string;
   compact: boolean;
-
-  onSaveLegacySuccess?(response): any;
-
-  onSaveSuccess?(response): any;
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
+  onContentTypeSelected?(response?: any): any;
   onClose?(): any;
   onClosed?(): any;
   onDismiss?(): any;
 }>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
+  onContentTypeSelected?: StandardAction;
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onDismiss?: StandardAction;
@@ -205,8 +202,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   const {
     onDismiss,
     item,
-    onSaveLegacySuccess,
-    onSaveSuccess,
+    onContentTypeSelected,
     compact,
     rootPath
   } = props;
@@ -269,11 +265,13 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
     }
   );
 
-  const onTypeOpen = (srcData) => () => {
-    // TODO: Move edit dialog to dialog manager
-    setDialogConfig({
-      open: true,
-      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`
+  const onTypeOpen = (contentType: LegacyFormConfig) => () => {
+    onContentTypeSelected({
+      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${path}&type=form`,
+      type: 'form',
+      inProgress: false,
+      showTabs: false,
+      onSaveSuccess: newContentCreationComplete()
     });
   };
 
@@ -447,17 +445,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
             resetType={resetFilterType}
           />
         </DialogFooter>
-      </>
-      {dialogConfig.open && (
-        <EmbeddedLegacyEditors
-          showTabs={false}
-          showController={false}
-          dialogConfig={dialogConfig}
-          setDialogConfig={setDialogConfig}
-          onSaveLegacySuccess={onSaveLegacySuccess}
-          onSaveSuccess={onSaveSuccess}
-        />
-      )}
+      </Dialog>
     </>
   );
 }

@@ -25,6 +25,7 @@ import compareVersions from './compareVersions';
 import publish from './publish';
 import dependencies from './dependencies';
 import deleteDialog from './delete';
+import edit from './edit';
 
 export default combineReducers({
   confirm,
@@ -36,5 +37,6 @@ export default combineReducers({
   compareVersions,
   publish,
   dependencies,
-  delete: deleteDialog
+  delete: deleteDialog,
+  edit
 });

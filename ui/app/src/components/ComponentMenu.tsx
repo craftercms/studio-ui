@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
-import EmbeddedLegacyEditors from '../modules/Preview/EmbeddedLegacyEditors';
 import { palette } from '../styles/theme';
 import { useSelection, useSpreadState } from '../utils/hooks';
 import { getSandboxItem } from '../services/content';
@@ -35,6 +34,7 @@ import {
   showHistoryDialog,
   showPublishDialog
 } from '../state/actions/dialogs';
+import { showEditDialog } from '../state/reducers/dialogs/edit';
 import { batchActions } from '../state/actions/misc';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -63,12 +63,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
   const dispatch = useDispatch();
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: null,
-    type: null,
-    inProgress: true
-  });
 
   const [item, setItem] = useState(null);
 
@@ -134,12 +128,17 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         if (embeddedParentPath && type === 'form') {
           src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
         }
-        setDialogConfig(
-          {
-            open: true,
+
+        dispatch(
+          showEditDialog({
             src,
-            type
-          });
+            type,
+            inProgress: true,
+            showController: !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page',
+            itemModel: models[modelId],
+            embeddedParentPath
+          })
+        );
         break;
       }
     }
@@ -237,15 +236,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           </MenuItem>
         }
       </Menu>
-      {
-        dialogConfig.open &&
-        <EmbeddedLegacyEditors
-          dialogConfig={dialogConfig}
-          setDialogConfig={setDialogConfig}
-          getPath={getPath}
-          showController={!embeddedParentPath && contentTypesBranch.byId?.[item.contentType]?.type === 'page'}
-        />
-      }
     </>
   );
 }

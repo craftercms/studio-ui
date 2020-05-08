@@ -286,8 +286,8 @@ export function createCodebaseBridge() {
       });
     },
     createLegacyCallbackListener(id: string, listener: EventListener) {
-      const callback = () => {
-        listener(null);
+      const callback = (e) => {
+        listener(e.detail);
         document.removeEventListener(id, listener, false);
       };
       document.addEventListener(id, callback, true);
