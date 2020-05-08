@@ -23,7 +23,7 @@ import Button from '@material-ui/core/Button';
 import React, { PropsWithChildren } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
-import { Dialog } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
 import { useOnUnmount } from '../../utils/hooks';
 
 const messages = defineMessages({

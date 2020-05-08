@@ -53,7 +53,7 @@ import Radio from '@material-ui/core/Radio';
 import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 import { ApiResponse } from '../../../models/ApiResponse';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { Dialog } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
 
 const assetsTypes = {
   'all-deps': {
@@ -537,7 +537,7 @@ export default function DependenciesDialog(props: DependenciesDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-      fullWidth={true}
+      fullWidth
       maxWidth="md"
     >
       <DependenciesDialogWrapper {...props} />

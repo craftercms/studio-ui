@@ -43,7 +43,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { palette } from '../../../styles/theme';
 import { ApiResponse } from '../../../models/ApiResponse';
-import { Dialog } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
 
 // region Typings
 
@@ -415,7 +415,7 @@ export default function PublishDialog(props: PublishDialogProps) {
       open={props.open}
       onClose={props.onClose}
       aria-labelledby="requestPublishDialogTitle"
-      fullWidth={true}
+      fullWidth
       maxWidth="md"
     >
       <PublishDialogWrapper {...props} />

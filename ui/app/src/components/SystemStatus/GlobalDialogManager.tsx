@@ -161,7 +161,6 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         versionsBranch={versionsBranch}
-        //onRevert={createCallback(state.history.onRevert, dispatch)}
         onClose={createCallback(state.history.onClose, dispatch)}
         onClosed={createCallback(state.history.onClosed, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}

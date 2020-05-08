@@ -39,7 +39,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Dialog } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -55,7 +55,6 @@ interface DeleteDialogUIProps {
   selectedItems: SandboxItem[];
   submissionComment: string;
   setSubmissionComment: Function;
-  open: boolean;
   apiState: any;
   handleSubmit: any;
   onSelectionChange?(selection?: any): any;
@@ -70,9 +69,9 @@ interface DeleteDialogBaseProps {
 
 export type DeleteDialogProps = PropsWithChildren<
   DeleteDialogBaseProps & {
-  onClose(): any;
-  onClosed(): any;
-  onDismiss(): any;
+  onClose?(): any;
+  onClosed?(): any;
+  onDismiss?(): any;
   onSuccess?(response?: any): any;
 }
 >;
@@ -215,7 +214,7 @@ export default function DeleteDialog(props: DeleteDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-      fullWidth={true}
+      fullWidth
       maxWidth="md"
     >
       <DeleteDialogWrapper {...props} />
@@ -224,7 +223,7 @@ export default function DeleteDialog(props: DeleteDialogProps) {
 }
 
 function DeleteDialogWrapper(props: DeleteDialogProps) {
-  const { open, items, onClose, onDismiss, onSuccess } = props;
+  const { items, onClose, onDismiss, onSuccess } = props;
   const [submissionComment, setSubmissionComment] = useState('');
   const [apiState, setApiState] = useSpreadState({
     error: null,
@@ -251,7 +250,6 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
   });
 
   useEffect(() => {
-    open &&
     fetchDeleteDependencies(siteId, selectedItems).subscribe(
       (response: any) => {
         setDeleteDependencies({
@@ -263,7 +261,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
         setApiState({ error });
       }
     );
-  }, [open, selectedItems, setApiState, siteId]);
+  }, [selectedItems, setApiState, siteId]);
 
   const handleSubmit = () => {
     const data = {
@@ -290,7 +288,6 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
       selectedItems={selectedItems}
       submissionComment={submissionComment}
       setSubmissionComment={setSubmissionComment}
-      open={open}
       apiState={apiState}
       handleSubmit={handleSubmit}
       onSelectionChange={setSelectedItems}

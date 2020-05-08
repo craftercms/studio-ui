@@ -51,7 +51,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { Dialog } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -100,7 +100,7 @@ export default function CompareVersionsDialog(props: CompareVersionsDialogProps)
     <Dialog
       open={props.open}
       onClose={props.onClose}
-      fullWidth={true}
+      fullWidth
       maxWidth="md"
     >
       <CompareVersionsDialogWrapper {...props} />

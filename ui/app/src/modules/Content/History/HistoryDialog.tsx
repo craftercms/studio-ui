@@ -47,7 +47,7 @@ import {
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
-import { Dialog } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
 
 const translations = defineMessages({
@@ -200,7 +200,7 @@ export default function HistoryDialog(props: HistoryDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-      fullWidth={true}
+      fullWidth
       maxWidth="md"
     >
       <HistoryDialogWrapper {...props} />
@@ -277,7 +277,9 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
   }
 
   const handleViewItem = (version: LegacyVersion) => {
-    dispatch(
+    dispatch(batchActions([
+      fetchContentTypes(),
+      fetchContentVersion({ path, versionNumber: version.versionNumber }),
       showViewVersionDialog({
         rightActions: [
           {
@@ -287,9 +289,7 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
           }
         ]
       })
-    );
-    dispatch(fetchContentTypes());
-    dispatch(fetchContentVersion({ path, versionNumber: version.versionNumber }));
+    ]));
   };
 
   const compareTo = (versionNumber: string) => {

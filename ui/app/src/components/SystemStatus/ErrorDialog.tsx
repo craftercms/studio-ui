@@ -17,7 +17,8 @@
 import React, { PropsWithChildren } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/CloseRounded';
-import { createStyles, Dialog, makeStyles, Theme } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import ErrorState from './ErrorState';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';

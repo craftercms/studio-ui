@@ -84,7 +84,7 @@ export default function FormBuilder(props: FormBuilderProps) {
             ) : (
               <PasswordTextField
                 id={parameter.name}
-                fullWidth={true}
+                fullWidth
                 name={parameter.name}
                 label={parameter.label}
                 required={parameter.required}

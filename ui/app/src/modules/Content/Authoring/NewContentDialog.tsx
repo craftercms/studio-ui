@@ -47,7 +47,7 @@ import { useDispatch } from 'react-redux';
 import SingleItemSelector from './SingleItemSelector';
 import { SandboxItem } from '../../../models/Item';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
-import { Dialog } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
 
 const translations = defineMessages({
   title: {
@@ -192,7 +192,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-      fullWidth={true}
+      fullWidth
       maxWidth="md"
       scroll="paper"
     >
