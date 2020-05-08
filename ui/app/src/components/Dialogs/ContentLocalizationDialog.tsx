@@ -320,7 +320,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
   };
 
   return (
-    <Dialog open={open} onClose={onClose} disableBackdropClick={true} fullWidth>
+    <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle
         title={formatMessage(translations.title)}
         subtitle={'breadcrumb'}
