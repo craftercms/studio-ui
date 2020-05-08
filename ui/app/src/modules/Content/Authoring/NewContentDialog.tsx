@@ -222,12 +222,6 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
   useOnUnmount(props.onClosed);
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: defaultFormSrc,
-    type: 'form',
-    inProgress: false
-  });
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl =
     '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
@@ -349,103 +343,101 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
 
   return (
     <>
-      <>
-        <DialogHeader
-          title={formatMessage(translations.title)}
-          subtitle={formatMessage(translations.subtitle)}
-          onDismiss={onDismiss}
-        />
-        <DialogBody dividers classes={{ root: classes.dialogContent }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box>
-              <SingleItemSelector
-                label="Item"
-                open={openSelector}
-                onClose={() => setOpenSelector(false)}
-                onDropdownClick={() => setOpenSelector(!openSelector)}
-                rootPath={rootPath}
-                selectedItem={previewItem}
-                onItemClicked={(item) => {
-                  setOpenSelector(false);
-                  onParentItemClick(item);
-                }}
-              />
-            </Box>
-            <Box className={classes.searchBox}>
-              <SearchBar onChange={onSearchChange} keyword={search} autoFocus />
-            </Box>
-          </Box>
-
-          <SuspenseWithEmptyState
-            resource={resource}
-            withEmptyStateProps={{
-              emptyStateProps: {
-                classes: {
-                  root: classes.emptyStateRoot,
-                  image: classes.emptyStateImg,
-                  title: classes.emptyStateTitle
-                },
-                title: (
-                  <FormattedMessage
-                    id="newContentDialog.emptyStateMessage"
-                    defaultMessage="No Content Types Found"
-                  />
-                ),
-                subtitle: (
-                  <FormattedMessage
-                    id="newContentDialog.emptyStateMessageSubtitle"
-                    defaultMessage="Try changing your query or browse the <catalog>full catalog</catalog>."
-                    values={{
-                      catalog: (msg) =>
-                        <Typography
-                          variant="subtitle1"
-                          component="a"
-                          className={classes.emptyStateLink}
-                          color="textSecondary"
-                          onClick={onResetFilter}
-                        >
-                          {msg}
-                        </Typography>
-                    }}
-                  />
-                )
-              }
-            }}
-            loadingStateProps={{
-              classes: {
-                graphic: classes.loadingGraphic,
-                root: classes.loadingRoot
-              }
-            }}
-          >
-            <ContentTypesGrid
-              resource={resource}
-              isCompact={isCompact}
-              onTypeOpen={onTypeOpen}
-              getPrevImg={getPrevImg}
+      <DialogHeader
+        title={formatMessage(translations.title)}
+        subtitle={formatMessage(translations.subtitle)}
+        onDismiss={onDismiss}
+      />
+      <DialogBody dividers classes={{ root: classes.dialogContent }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box>
+            <SingleItemSelector
+              label="Item"
+              open={openSelector}
+              onClose={() => setOpenSelector(false)}
+              onDropdownClick={() => setOpenSelector(!openSelector)}
+              rootPath={rootPath}
+              selectedItem={previewItem}
+              onItemClicked={(item) => {
+                setOpenSelector(false);
+                onParentItemClick(item);
+              }}
             />
-          </SuspenseWithEmptyState>
-        </DialogBody>
-        <DialogFooter classes={{ root: classes.dialogActions }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={isCompact || false}
-                onChange={onCompactCheck}
-                color="primary"
-                disabled={loading}
-              />
+          </Box>
+          <Box className={classes.searchBox}>
+            <SearchBar onChange={onSearchChange} keyword={search} autoFocus />
+          </Box>
+        </Box>
+
+        <SuspenseWithEmptyState
+          resource={resource}
+          withEmptyStateProps={{
+            emptyStateProps: {
+              classes: {
+                root: classes.emptyStateRoot,
+                image: classes.emptyStateImg,
+                title: classes.emptyStateTitle
+              },
+              title: (
+                <FormattedMessage
+                  id="newContentDialog.emptyStateMessage"
+                  defaultMessage="No Content Types Found"
+                />
+              ),
+              subtitle: (
+                <FormattedMessage
+                  id="newContentDialog.emptyStateMessageSubtitle"
+                  defaultMessage="Try changing your query or browse the <catalog>full catalog</catalog>."
+                  values={{
+                    catalog: (msg) =>
+                      <Typography
+                        variant="subtitle1"
+                        component="a"
+                        className={classes.emptyStateLink}
+                        color="textSecondary"
+                        onClick={onResetFilter}
+                      >
+                        {msg}
+                      </Typography>
+                  }}
+                />
+              )
             }
-            label={formatMessage(translations.compactInput)}
+          }}
+          loadingStateProps={{
+            classes: {
+              graphic: classes.loadingGraphic,
+              root: classes.loadingRoot
+            }
+          }}
+        >
+          <ContentTypesGrid
+            resource={resource}
+            isCompact={isCompact}
+            onTypeOpen={onTypeOpen}
+            getPrevImg={getPrevImg}
           />
-          <ContentTypesFilter
-            filters={contentTypesFilters}
-            onTypeChange={onTypeChange}
-            disabled={loading}
-            resetType={resetFilterType}
-          />
-        </DialogFooter>
-      </Dialog>
+        </SuspenseWithEmptyState>
+      </DialogBody>
+      <DialogFooter classes={{ root: classes.dialogActions }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isCompact || false}
+              onChange={onCompactCheck}
+              color="primary"
+              disabled={loading}
+            />
+          }
+          label={formatMessage(translations.compactInput)}
+        />
+        <ContentTypesFilter
+          filters={contentTypesFilters}
+          onTypeChange={onTypeChange}
+          disabled={loading}
+          resetType={resetFilterType}
+        />
+      </DialogFooter>
     </>
   );
 }

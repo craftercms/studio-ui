@@ -494,7 +494,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           </Select>
         </FormControl>
       </DialogFooter>
-    </Dialog>
+    </>
   );
 }
 
