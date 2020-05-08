@@ -14,13 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get } from '../utils/ajax';
-import { pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { SystemInformation } from '../models/SystemInformation';
-
-export function getSystemInformation(): Observable<SystemInformation> {
-  return get('/studio/api/2/monitoring/version').pipe(
-    pluck('response', 'version')
-  );
+export interface SystemInformation {
+  javaVendor: string;
+  javaVersion: string;
+  javaVm: string;
+  osArch: string;
+  osName: string;
+  osVersion: string;
+  packageBuild: string;
+  packageBuildDate: string;
+  packageName: string;
+  packageVersion: string;
 }

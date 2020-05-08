@@ -24,6 +24,7 @@ import dialogs from './dialogs';
 import preview from './preview';
 import legacy from './legacy';
 import versions from './versions';
+import env from './env';
 import { switchMap } from 'rxjs/operators';
 import { batchActions } from '../actions/misc';
 
@@ -41,7 +42,8 @@ const epic: any[] = combineEpics.apply(this, [
   ...preview,
   ...dialogs,
   ...legacy,
-  ...versions
+  ...versions,
+  ...env
 ]);
 
 export default epic as any;

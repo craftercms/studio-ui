@@ -52,16 +52,3 @@ export interface VersionsStateProps {
   previous: string;
   compareVersionsBranch: any;
 }
-
-export interface StudioVersion {
-  javaVendor: string;
-  javaVersion: string;
-  javaVm: string;
-  osArch: string;
-  osName: string;
-  osVersion: string;
-  packageBuild: string;
-  packageBuildDate: string;
-  packageName: string;
-  packageVersion: string;
-}

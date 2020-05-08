@@ -38,8 +38,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { getStudioInfo } from '../../services/monitoring';
-import { StudioVersion } from '../../models/Version';
+import { fetchSystemInformation } from '../../state/actions/env';
+import GlobalState from '../../models/GlobalState';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -117,7 +117,13 @@ interface QuickCreateMenuButtonProps {
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const { anchorEl, onClose, previewItem, onSaveLegacySuccess, onItemClicked } = props;
+  const {
+    anchorEl,
+    onClose,
+    previewItem,
+    onSaveLegacySuccess,
+    onItemClicked
+  } = props;
   const classes = useStyles({});
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
@@ -130,6 +136,9 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     type: 'form',
     inProgress: false
   });
+  const systemInformation = useSelection<GlobalState['env']['SYSTEM_INFORMATION']['version']>(
+    (state) => state.env.SYSTEM_INFORMATION.version
+  );
   const [studioVersion, setStudioVersion] = useState(null);
 
   const onEmbeddedFormSaveSuccess = ({ data }) => {
@@ -161,6 +170,12 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   };
 
   useEffect(() => {
+    if (systemInformation) {
+      setStudioVersion(systemInformation.packageVersion.substr(0, 3));
+    }
+  }, [systemInformation]);
+
+  useEffect(() => {
     if (siteId) {
       getQuickCreateContentList(siteId).subscribe(
         (data) => setQuickCreateContentList(data.items),
@@ -174,21 +189,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
       );
     }
   }, [siteId, dispatch]);
-
-  useEffect(() => {
-    getStudioInfo().subscribe(
-      (version: StudioVersion) => {
-        setStudioVersion(version.packageVersion.substr(0, 3));
-      },
-      ({ response }) => {
-        dispatch(
-          showErrorDialog({
-            error: response.response
-          })
-        );
-      }
-    );
-  }, [dispatch]);
 
   return (
     <>
@@ -274,6 +274,11 @@ export default function QuickCreate() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentPreview, setCurrentPreview] = useState(null);
   const { guest } = usePreviewState();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchSystemInformation());
+  }, [dispatch]);
 
   const onMenuBtnClick = (e) => {
     setAnchorEl(e.currentTarget);

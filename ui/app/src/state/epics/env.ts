@@ -14,13 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get } from '../utils/ajax';
-import { pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { SystemInformation } from '../models/SystemInformation';
+import { Epic, ofType } from 'redux-observable';
+import { map, switchMap } from 'rxjs/operators';
+import { getSystemInformation } from '../../services/monitoring';
+import { catchAjaxError } from '../../utils/ajax';
+import {
+  fetchSystemInformation,
+  fetchSystemInformationComplete,
+  fetchSystemInformationFailed
+} from '../actions/env';
 
-export function getSystemInformation(): Observable<SystemInformation> {
-  return get('/studio/api/2/monitoring/version').pipe(
-    pluck('response', 'version')
-  );
-}
+export default [
+  (action$) =>
+    action$.pipe(
+      ofType(fetchSystemInformation.type),
+      switchMap(() =>
+        getSystemInformation().pipe(
+          map((version) => fetchSystemInformationComplete(version)),
+          catchAjaxError(fetchSystemInformationFailed)
+        )
+      )
+    )
+] as Epic[];

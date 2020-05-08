@@ -14,13 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get } from '../utils/ajax';
-import { pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { SystemInformation } from '../models/SystemInformation';
+import { createAction } from '@reduxjs/toolkit';
+import { SystemInformation } from '../../models/SystemInformation';
+import { AjaxError } from 'rxjs/ajax';
+import StandardAction from '../../models/StandardAction';
 
-export function getSystemInformation(): Observable<SystemInformation> {
-  return get('/studio/api/2/monitoring/version').pipe(
-    pluck('response', 'version')
-  );
-}
+export const fetchSystemInformation = createAction<StandardAction>('FETCH_SYSTEM_INFORMATION');
+export const fetchSystemInformationComplete = createAction<SystemInformation>('FETCH_SYSTEM_INFORMATION_COMPLETE');
+export const fetchSystemInformationFailed = createAction<AjaxError>('FETCH_SYSTEM_INFORMATION_FAILED');
