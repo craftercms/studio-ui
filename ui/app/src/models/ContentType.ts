@@ -26,6 +26,10 @@ export interface ContentTypeSection {
 export interface ContentTypeFieldValidations {
   tags: string[];
   contentTypes: string[];
+  limit: {
+    min: number,
+    max: number
+  }
 }
 
 export interface ContentTypeField {

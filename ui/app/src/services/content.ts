@@ -495,7 +495,6 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
         });
       } else if (legacyField.type === 'node-selector') {
         field.validations = getFieldValidations(legacyField.properties.property, receptaclesLookup);
-
         // field.validations = {
         //   limit: { min: null, max: null, message: null },
         //   contentTypes: map.itemManager?.value,
@@ -539,7 +538,11 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
 
   let validations = {
     tags: [],
-    contentTypes: []
+    contentTypes: [],
+    limit: {
+      max: map.maxSize.value ? null : parseInt(map.maxSize.value),
+      min: map.minSize.value ? null : parseInt(map.minSize.value)
+    }
   };
 
   map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
