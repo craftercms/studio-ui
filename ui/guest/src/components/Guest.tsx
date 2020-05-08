@@ -597,7 +597,6 @@ export function Guest(props: GuestProps) {
       console.log(receptacles);
       const validatedReceptacles = receptacles.filter((record) => {
         const { field: { validations } } = iceRegistry.getReferentialEntries(record);
-        console.log(validations);
         // TODO: min/max count validations
         return true;
       });
