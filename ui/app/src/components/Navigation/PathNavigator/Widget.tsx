@@ -45,14 +45,14 @@ import StandardAction from '../../../models/StandardAction';
 import { createAction } from '@reduxjs/toolkit';
 import { createLookupTable, nou } from '../../../utils/object';
 import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
-import { withIndex, withoutIndex } from '../../../utils/path';
+import { itemsFromPath, withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import { fetchItemVersions } from '../../../state/reducers/versions';
-import { showHistoryDialog } from '../../../state/actions/dialogs';
+import { showDependenciesDialog, showHistoryDialog } from '../../../state/actions/dialogs';
 
 const menuOptions = {
   edit: {
@@ -198,29 +198,6 @@ interface WidgetState {
   offset: number;
 }
 
-// TODO: an initial path with trailing `/` breaks
-function itemsFromPath(path: string, root: string, items: LookupTable<SandboxItem>): SandboxItem[] {
-  const rootWithIndex = withIndex(root);
-  const rootWithoutIndex = withoutIndex(root);
-  const rootItem = items[rootWithIndex] ?? items[root];
-  if (path === rootWithIndex || path === root) {
-    return [rootItem];
-  }
-  const regExp = new RegExp(`${rootWithIndex}|${rootWithoutIndex}|\\/index\\.xml|/$`, 'g');
-  const pathWithoutRoot = path.replace(regExp, '');
-  let accum = rootWithoutIndex;
-  return [
-    rootItem,
-    ...pathWithoutRoot
-      .split('/')
-      .slice(1)
-      .map((folder) => {
-        accum += `/${folder}`;
-        return items[accum] ?? items[withIndex(accum)];
-      })
-  ];
-}
-
 const init: (props: WidgetProps) => WidgetState = (props: WidgetProps) => ({
   rootPath: props.path,
   currentPath: props.path,
@@ -329,7 +306,7 @@ const setKeyword = createAction<string>('SET_KEYWORD');
 // }
 
 // PathNavigator
-export default function(props: WidgetProps) {
+export default function (props: WidgetProps) {
   const { title, icon, path } = props;
   const [state, _dispatch] = useReducer(reducer, props, init);
 
@@ -508,8 +485,19 @@ export default function(props: WidgetProps) {
         });
         break;
       }
+      case 'dependencies': {
+        dispatch(showDependenciesDialog({
+          item: menu.activeItem,
+          rootPath: path
+        }));
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
+        break;
+      }
       case 'history': {
-        dispatch(fetchItemVersions({ path: menu.activeItem.path  }));
+        dispatch(fetchItemVersions({ rootPath: path, item: menu.activeItem }));
         dispatch(showHistoryDialog());
         setMenu({
           activeItem: null,
@@ -609,7 +597,9 @@ export default function(props: WidgetProps) {
   const onTranslationDialogClose = () => setTranslationDialog(null);
 
   const onItemClicked = (item: SandboxItem) => {
-    window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
+    if (item.previewUrl) {
+      window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
+    }
   };
 
   const onBreadcrumbSelected = (item: SandboxItem) => {

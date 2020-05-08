@@ -317,7 +317,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         title="Embedded Legacy Form"
         className={clsx(classes.iframe, !inProgress && 'complete')}
       />
-      <ErrorDialog error={error} onDismiss={onErrorClose} />
+      <ErrorDialog open={Boolean(error)} error={error} onDismiss={onErrorClose} />
     </Dialog>
   );
 }

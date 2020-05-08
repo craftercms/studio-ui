@@ -14,142 +14,365 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useCallback, useReducer, useRef } from 'react';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
-import { OverridableComponent } from '@material-ui/core/OverridableComponent';
-import { SvgIconTypeMap } from '@material-ui/core/SvgIcon';
-import Paper from '@material-ui/core/Paper';
-import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
 import { palette } from '../../../styles/theme';
 import { Variant } from '@material-ui/core/styles/createTypography';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import { SandboxItem } from '../../../models/Item';
-
-// TODO remove mockup data as component menu is implemented
-const MENU_ITEMS = [
-  {
-    label: 'Style',
-    path: '/site/website/style/index.xml'
-  },
-  {
-    label: 'Health',
-    path: '/site/website/health/index.xml'
-  },
-  {
-    label: 'Technology',
-    path: '/site/website/technology/index.xml'
-  },
-  {
-    label: 'Root path',
-    path: '/'
-  }
-];
+import InsertDriveFileRoundedIcon from '@material-ui/icons/InsertDriveFileRounded';
+import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
+import Popover from '@material-ui/core/Popover';
+import Paper from '@material-ui/core/Paper';
+import StandardAction from '../../../models/StandardAction';
+import PaginationOptions from '../../../models/PaginationOptions';
+import { LookupTable } from '../../../models/LookupTable';
+import ApiResponse from '../../../models/ApiResponse';
+import { createAction } from '@reduxjs/toolkit';
+import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
+import { useActiveSiteId, useStateResource } from '../../../utils/hooks';
+import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
+import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
+import { getChildrenByPath } from '../../../services/content';
+import {
+  getParentPath,
+  getParentsFromPath,
+  itemsFromPath,
+  withIndex,
+  withoutIndex
+} from '../../../utils/path';
+import { createLookupTable, nou } from '../../../utils/object';
+import { forkJoin, Observable } from 'rxjs';
 
 const useStyles = makeStyles((theme) => ({
+  popoverRoot: {
+    minWidth: '245px',
+    marginTop: '5px',
+    padding: '0px 5px 5px 5px'
+  },
   root: {
     'backgroundColor': palette.white,
     'display': 'flex',
-    'justifyContent': 'space-between',
-    'padding': '10px 15px',
+    'padding-left': '15px',
+    'align-items': 'center',
+    'justify-content': 'space-between',
+    'align-self': 'flex-start',
+    'min-width': '245px',
     '& p': {
       padding: 0
     }
   },
-  textWrapper: {
-    'display': 'flex',
-    '& > *': {
-      marginRight: 15
-    },
-    '& > p': {
-      color: palette.black
-    }
+  selectedItem: {
+    marginLeft: 'auto',
+    display: 'flex',
+    marginRight: '15px'
   },
   title: {
-    fontWeight: 600
+    fontWeight: 600,
+    marginRight: '15px'
   },
-  changeBtn: {
-    padding: 0
-  },
-  labelIcon: {
+  changeBtn: {},
+  itemIcon: {
     fill: palette.teal.main,
     marginRight: 10
   },
-  editIcon: {
-    fontSize: 17
-  }
+  selectIcon: {}
 }));
 
 interface SingleItemSelectorProps {
-  LabelIcon: OverridableComponent<SvgIconTypeMap>;
+  itemIcon?: React.ElementType;
+  selectIcon?: React.ElementType;
   classes?: {
     root?: string;
     title?: string;
-    editIcon?: string;
-    labelIcon?: string;
+    selectIcon?: string;
+    itemIcon?: string;
   };
-  selectItem: SandboxItem;
+  selectedItem?: SandboxItem;
+  rootPath: string;
   label: string;
   titleVariant?: Variant;
   labelVariant?: Variant;
-
-  onMenuItemClick(item: SandboxItem): any;
-
-  onEditClick(): void;
+  open: boolean;
+  onClose?(): void;
+  onItemClicked(item: SandboxItem): void;
+  onDropdownClick(): void;
 }
+
+interface SingleItemSelectorState extends PaginationOptions {
+  byId: LookupTable<SandboxItem>;
+  isFetching: boolean;
+  error: ApiResponse;
+  items: string[];
+  leafs: string[];
+  rootPath: string;
+  currentPath: string;
+  keywords: string;
+  pageNumber: number;
+  breadcrumb: SandboxItem[];
+  selectedItem: SandboxItem;
+}
+
+const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props: SingleItemSelectorProps) => ({
+  byId: null,
+  isFetching: null,
+  error: null,
+  items: [],
+  leafs: [],
+  keywords: 'string',
+  pageNumber: 0,
+  breadcrumb: [],
+  offset: null,
+  limit: null,
+  rootPath: props.rootPath,
+  currentPath: props.selectedItem?.path ?? props.rootPath,
+  selectedItem: props.selectedItem ?? null
+});
+
+type SingleItemSelectorReducer = React.Reducer<SingleItemSelectorState, StandardAction>;
+
+const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
+  switch (type) {
+    case changeSelectedItem.type: {
+      return {
+        ...state,
+        currentPath: payload.path,
+        selectedItem: payload
+      };
+    }
+    case fetchParentsItems.type:
+    case fetchChildrenByPath.type: {
+      return {
+        ...state,
+        currentPath: payload,
+        isFetching: true
+      };
+    }
+    case fetchChildrenByPathComplete.type: {
+      const { currentPath, rootPath, leafs, byId } = state;
+      if (payload.length === 0 && withoutIndex(currentPath) !== withoutIndex(rootPath)) {
+        return {
+          ...state,
+          currentPath: getNextPath(currentPath, byId),
+          leafs: leafs.concat(currentPath),
+          isFetching: false
+        };
+      } else {
+        const nextItems = {
+          ...{ ...state.byId, ...createLookupTable(payload) },
+          [payload.parent.id]: payload.parent
+        };
+
+        return {
+          ...state,
+          byId: nextItems,
+          items: payload.map((item) => item.id),
+          isFetching: false,
+          breadcrumb: itemsFromPath(currentPath, rootPath, nextItems)
+        };
+      }
+    }
+    case fetchParentsItemsComplete.type: {
+      const { currentPath, rootPath, byId } = state;
+      let nextItems = { ...byId };
+      let items = [];
+      let parentPath = withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
+
+      payload.forEach((response: GetChildrenResponse, i: number) => {
+        if (i === payload.length - 1) {
+          items = response.map((item) => item.id);
+        }
+        nextItems = {
+          ...nextItems, ...createLookupTable(response),
+          [response.parent.id]: response.parent
+        };
+      });
+
+      return {
+        ...state,
+        byId: nextItems,
+        items: items,
+        isFetching: false,
+        breadcrumb: itemsFromPath(parentPath, rootPath, nextItems)
+      };
+    }
+    default:
+      throw new Error(`Unknown action "${type}"`);
+  }
+};
+
+function getNextPath(currentPath: string, byId: LookupTable<SandboxItem>): string {
+  let pieces = currentPath.split('/').slice(0);
+  pieces.pop();
+  if (currentPath.includes('index.xml')) {
+    pieces.pop();
+  }
+  let nextPath = pieces.join('/');
+  if (nou(byId[nextPath])) {
+    nextPath = withIndex(nextPath);
+  }
+  return nextPath;
+}
+
+export const changeSelectedItem = createAction<SandboxItem>('CHANGE_SELECTED_ITEM');
+
+export const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
+
+export const fetchParentsItems = createAction<string>('FETCH_PARENTS_ITEMS');
+
+export const fetchParentsItemsComplete = createAction<GetChildrenResponse[]>('FETCH_PARENTS_ITEMS_COMPLETE');
+
+export const fetchChildrenByPathComplete = createAction<GetChildrenResponse>('FETCH_CHILDREN_BY_PATH_COMPLETE');
+
+export const fetchChildrenByPathFailed = createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
 export default function SingleItemSelector(props: SingleItemSelectorProps) {
   const {
-    LabelIcon,
+    itemIcon: ItemIcon = InsertDriveFileRoundedIcon,
+    selectIcon: SelectIcon = ExpandMoreRoundedIcon,
     classes: propClasses,
-    titleVariant,
-    labelVariant,
-    onEditClick,
-    selectItem,
+    titleVariant = 'body1',
+    labelVariant = 'body1',
+    onItemClicked,
+    onDropdownClick,
+    onClose,
     label,
-    onMenuItemClick: onMenuItemClickProp
+    open,
+    selectedItem,
+    rootPath
   } = props;
   const classes = useStyles();
-  const [anchorEl, setanchorEl] = useState(null);
+  const anchorEl = useRef();
+  const [state, _dispatch] = useReducer(reducer, props, init);
+  const site = useActiveSiteId();
 
-  const onMenuClose = () => setanchorEl(null);
+  const exec = useCallback(
+    (action) => {
+      _dispatch(action);
+      const { type, payload } = action;
+      switch (type) {
+        case fetchChildrenByPath.type:
+          getChildrenByPath(site, payload).subscribe(
+            (response) => exec(fetchChildrenByPathComplete(response)),
+            (response) => exec(fetchChildrenByPathFailed(response))
+          );
+          break;
+        case fetchParentsItems.type:
+          const parentsPath = getParentsFromPath(payload, state.rootPath);
+          const requests: Observable<GetChildrenResponse>[] = [];
 
-  const onMenuItemClick = (item) => () => {
-    onMenuItemClickProp(item);
-    onMenuClose();
+          if (parentsPath.length) {
+            parentsPath.forEach(parentPath => {
+              if (!state.items[parentPath] && !state.items[withIndex(parentPath)]) {
+                requests.push(getChildrenByPath(site, parentPath));
+              }
+            });
+            forkJoin(requests).subscribe(
+              (response) => exec(fetchParentsItemsComplete(response)),
+              (response) => exec(fetchChildrenByPathFailed(response))
+            );
+          } else {
+            getChildrenByPath(site, payload).subscribe(
+              (response) => exec(fetchChildrenByPathComplete(response)),
+              (response) => exec(fetchChildrenByPathFailed(response))
+            );
+          }
+          break;
+      }
+    },
+    [state, site]
+  );
+
+  const itemsResource = useStateResource<SandboxItem[], SingleItemSelectorState>(state, {
+    shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
+    shouldReject: (consumer) => Boolean(consumer.error),
+    shouldRenew: (consumer, resource) => (
+      consumer.isFetching && resource.complete
+    ),
+    resultSelector: (consumer) => {
+      return consumer.items.map(id => consumer.byId[id]);
+    },
+    errorSelector: (consumer) => consumer.error
+  });
+
+  const handleDropdownClick = (item: SandboxItem) => {
+    onDropdownClick();
+    exec(fetchParentsItems(item?.path ?? rootPath));
+  };
+
+  const onPathSelected = (item: SandboxItem) => {
+    exec(fetchChildrenByPath(item.path));
+  };
+
+  const onCrumbSelected = (item: SandboxItem) => {
+    if (withoutIndex(state.currentPath) === withoutIndex(item.path)) {
+      handleItemClicked(item);
+    } else {
+      exec(fetchChildrenByPath(item.path));
+    }
+  };
+
+  const handleItemClicked = (item: SandboxItem) => {
+    exec(changeSelectedItem(item));
+    onItemClicked(item);
   };
 
   return (
     <Paper className={clsx(classes.root, propClasses?.root)} elevation={0}>
-      <div className={classes.textWrapper}>
-        <Typography
-          variant={titleVariant || 'body1'}
-          className={clsx(classes.title, propClasses?.title)}
-        >
-          {label}
-        </Typography>
-        <LabelIcon className={clsx(classes.labelIcon, propClasses?.labelIcon)} />
-        <Typography variant={labelVariant || 'body1'}>{selectItem.label}</Typography>
-      </div>
+      <Typography
+        variant={titleVariant}
+        className={clsx(classes.title, propClasses?.title)}
+      >
+        {label}
+      </Typography>
+      {
+        selectedItem &&
+        <div className={classes.selectedItem}>
+          <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
+          <Typography variant={labelVariant}>{selectedItem.label}</Typography>
+        </div>
+      }
       <IconButton
         className={classes.changeBtn}
-        onClick={(e) => {
-          setanchorEl(e.currentTarget);
-          onEditClick();
+        ref={anchorEl}
+        onClick={() => handleDropdownClick(selectedItem)}
+      >
+        <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
+      </IconButton>
+      <Popover
+        anchorEl={anchorEl.current}
+        open={open}
+        classes={{ paper: classes.popoverRoot }}
+        onClose={onClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
         }}
       >
-        <EditIcon className={clsx(classes.editIcon, propClasses?.editIcon)} />
-      </IconButton>
-      <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={onMenuClose}>
-        {MENU_ITEMS.map((item) => (
-          <MenuItem key={item.label} onClick={onMenuItemClick(item)}>
-            {item.label}
-          </MenuItem>
-        ))}
-      </Menu>
+        <Breadcrumbs
+          keyword={state?.keywords}
+          breadcrumb={state?.breadcrumb ?? []}
+          onSearch={() => {
+          }}
+          onCrumbSelected={onCrumbSelected}
+        />
+        <SuspenseWithEmptyState resource={itemsResource}>
+          <PathNavigatorList
+            leafs={state?.leafs ?? []}
+            locale={'en'}
+            resource={itemsResource}
+            onPathSelected={onPathSelected}
+            onItemClicked={handleItemClicked}
+          />
+        </SuspenseWithEmptyState>
+      </Popover>
     </Paper>
   );
 }

@@ -303,14 +303,7 @@
                   module: itemSelectEl[selectedIndex].getAttribute('module'),
                   path: itemSelectEl[selectedIndex].value,
                   environment: environment,
-                  uri:
-                    configFilesPath +
-                    '/' +
-                    itemSelectEl[selectedIndex].getAttribute('module') +
-                    '/' +
-                    environment +
-                    '/' +
-                    itemSelectEl[selectedIndex].value,
+                  uri:`${configFilesPath}/${itemSelectEl[selectedIndex].getAttribute('module')}/${itemSelectEl[selectedIndex].value}`,
                   escaped: true
                 };
                 CStudioAuthoring.Operations.viewConfigurationHistory(content, true);

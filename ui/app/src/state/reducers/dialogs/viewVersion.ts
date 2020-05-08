@@ -23,7 +23,8 @@ import {
   fetchContentVersionComplete,
   fetchContentVersionFailed,
   showHistoryDialog,
-  showViewVersionDialog
+  showViewVersionDialog,
+  viewVersionDialogClosed
 } from '../../actions/dialogs';
 
 const initialState: ViewVersionDialogStateProps = {
@@ -31,24 +32,22 @@ const initialState: ViewVersionDialogStateProps = {
   isFetching: null,
   error: null,
   version: null,
-  rightActions: null,
-  leftActions: null,
-  onClose: null,
-  onDismiss: null
 };
 
 export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState, {
   [showViewVersionDialog.type]: (state, { payload }) => ({
-    onClose: closeViewVersionDialog(),
     ...state,
+    onClose: closeViewVersionDialog(),
+    onClosed: viewVersionDialogClosed(),
     onDismiss: closeViewVersionDialog(),
     ...payload,
     open: true
   }),
   [closeViewVersionDialog.type]: (state) => ({
-    ...initialState,
-    onClose: state.onClose
+    ...state,
+    open: false
   }),
+  [viewVersionDialogClosed.type]: () => initialState,
   [fetchContentVersion.type]: (state) => ({
     ...state,
     isFetching: true
@@ -62,5 +61,8 @@ export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState
     ...state,
     isFetching: false
   }),
-  [showHistoryDialog.type]: (state) => initialState
+  [showHistoryDialog.type]: (state) => ({
+    ...state,
+    open: false
+  })
 });

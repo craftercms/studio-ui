@@ -29,12 +29,13 @@ import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
 export const closeHistoryDialog = createAction<StandardAction>('CLOSE_HISTORY_DIALOG');
-export const historyDialogClosed = createAction('_DIALOG_CLOSED');
+export const historyDialogClosed = createAction('HISTORY_DIALOG_CLOSED');
 // endregion
 
 //region View Versions
 export const showViewVersionDialog = createAction<Partial<ViewVersionDialogStateProps>>('SHOW_VIEW_VERSION_DIALOG');
 export const closeViewVersionDialog = createAction<StandardAction>('CLOSE_VIEW_VERSION_DIALOG');
+export const viewVersionDialogClosed = createAction<StandardAction>('VERSION_DIALOG_CLOSED');
 // endregion
 
 // region Fetch content

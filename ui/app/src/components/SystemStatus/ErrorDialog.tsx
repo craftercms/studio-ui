@@ -14,14 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
 import React, { PropsWithChildren } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/CloseRounded';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import ErrorState from './ErrorState';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
+import { useOnUnmount } from '../../utils/hooks';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   closeButton: {
@@ -31,32 +32,41 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-
 interface ErrorDialogBaseProps {
+  open: boolean;
   error: ApiResponse;
 }
 
-export type  ErrorDialogProps = PropsWithChildren<
-  ErrorDialogBaseProps & {
-    onClose?(): any;
-    onDismiss?(): any;
-  }
->;
+export type  ErrorDialogProps = PropsWithChildren<ErrorDialogBaseProps & {
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
+}>;
 
 export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
 export default function ErrorDialog(props: ErrorDialogProps) {
-  const { onClose, onDismiss, error } = props;
-  const classes = useStyles({});
-
   return (
     <Dialog
-      open={Boolean(error)}
-      onClose={onClose}
+      open={props.open}
+      onClose={props.onClose}
     >
+      <ErrorDialogWrapper {...props} />
+    </Dialog>
+  );
+}
+
+function ErrorDialogWrapper(props: ErrorDialogProps) {
+  const { onDismiss, error } = props;
+  const classes = useStyles({});
+  useOnUnmount(props.onClosed);
+
+  return (
+    <>
       <IconButton
         aria-label="close"
         className={classes.closeButton}
@@ -68,6 +78,6 @@ export default function ErrorDialog(props: ErrorDialogProps) {
         error &&
         <ErrorState error={error} />
       }
-    </Dialog>
+    </>
   );
 }

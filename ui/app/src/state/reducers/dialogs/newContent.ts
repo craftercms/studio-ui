@@ -25,21 +25,22 @@ import { newContentCreationComplete } from './edit';
 
 const initialState: NewContentDialogStateProps = {
   open: false,
-  site: null,
   compact: false,
-  previewItem: null
+  item: null,
+  rootPath: '/site/website'
 };
 
 export default createReducer<NewContentDialogStateProps>(initialState, {
   [showNewContentDialog.type]: (state, { payload }) => ({
+    ...state,
     onClose: closeNewContentDialog(),
+    onClosed: newContentDialogClosed(),
     onDismiss: closeNewContentDialog(),
     ...payload,
     open: true
   }),
   [closeNewContentDialog.type]: (state) => ({
     ...state,
-    onClose: state.onClose,
     open: false
   }),
   [newContentCreationComplete.type]: (state, { payload }) => ({

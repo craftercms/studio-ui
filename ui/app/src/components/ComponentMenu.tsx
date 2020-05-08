@@ -19,8 +19,8 @@ import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import { palette } from '../styles/theme';
-import { useSelection, useSpreadState } from '../utils/hooks';
-import { getLegacyItem } from '../services/content';
+import { useSelection } from '../utils/hooks';
+import { getSandboxItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
@@ -35,6 +35,7 @@ import {
   showPublishDialog
 } from '../state/actions/dialogs';
 import { showEditDialog } from '../state/reducers/dialogs/edit';
+import { batchActions } from '../state/actions/misc';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   separator: {
@@ -63,29 +64,16 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
   const dispatch = useDispatch();
 
-  const [publishDialog, setPublishDialog] = useState({
-    items: null
-  });
-
-  const [dependenciesDialog, setDependenciesDialog] = useSpreadState({
-    item: null,
-    dependenciesShown: 'depends-on'
-  });
-
-  const [deleteDialog, setDeleteDialog] = useState({
-    items: []
-  });
+  const [item, setItem] = useState(null);
 
   // Effect used to open the publish Dialog
   useEffect(() => {
-    if (models && modelId && publishDialog.items === null) {
+    if (modelId && models && anchorEl && item === null) {
       let path = models[modelId].craftercms.path;
       if (embeddedParentPath) path = models[parentId].craftercms.path;
-      getLegacyItem(site, path).subscribe(
+      getSandboxItem(site, path).subscribe(
         (item) => {
-          setPublishDialog({ items: [item] });
-          setDependenciesDialog({ item });
-          setDeleteDialog({ items: [item] });
+          setItem(item);
         },
         (response) => {
           dispatch(showErrorDialog({
@@ -94,44 +82,42 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, setPublishDialog, setDependenciesDialog, setDeleteDialog, site, embeddedParentPath, parentId, publishDialog.items, dispatch]);
+  }, [models, modelId, site, embeddedParentPath, parentId, dispatch, item, anchorEl]);
 
   const handleEdit = (type: string) => {
     handleClose();
     switch (type) {
       case 'schedule': {
         dispatch(showPublishDialog({
-          items: publishDialog.items,
+          items: [item],
           scheduling: 'custom'
         }));
         break;
       }
       case 'publish': {
         dispatch(showPublishDialog({
-          items: publishDialog.items,
+          items: [item],
           scheduling: 'now'
         }));
         break;
       }
       case 'history': {
-        dispatch(fetchItemVersions({
-          path: models[modelId].craftercms.path || models[parentId].craftercms.path
-        }));
-        dispatch(showHistoryDialog());
+        dispatch(batchActions([
+          fetchItemVersions({ item: item }),
+          showHistoryDialog()
+        ]));
         break;
       }
       case 'dependencies' : {
         dispatch(showDependenciesDialog({
-          item: dependenciesDialog.item,
-          dependenciesShown: dependenciesDialog.dependenciesShown
+          item: item
         }));
-
         break;
       }
       case 'delete': {
         dispatch(showDeleteDialog({
-          items: deleteDialog.items,
-          onSuccess: closeDeleteDialog
+          items: [item],
+          onSuccess: closeDeleteDialog()
         }));
         break;
       }
@@ -148,7 +134,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             src,
             type,
             inProgress: true,
-            showController: !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page',
+            showController: !embeddedParentPath && contentTypesBranch.byId?.[item.contentType]?.type === 'page',
             itemModel: models[modelId],
             embeddedParentPath
           })
@@ -193,7 +179,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          (publishDialog.items && !publishDialog.items?.lockOwner && !publishDialog.items?.isLive) &&
+          (item && !item?.lockOwner && !item?.isLive) &&
           <MenuItem onClick={() => handleEdit('schedule')}>
             <FormattedMessage
               id="previewToolBar.menu.schedule"
@@ -202,7 +188,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           </MenuItem>
         }
         {
-          (publishDialog.items && !publishDialog.items?.lockOwner && !publishDialog.items?.isLive) &&
+          (item && !item?.lockOwner && !item?.isLive) &&
           <MenuItem onClick={() => handleEdit('publish')}>
             <FormattedMessage
               id="previewToolBar.menu.publish"
@@ -241,7 +227,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          publishDialog.items && !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page' &&
+          item && !embeddedParentPath && contentTypesBranch.byId?.[item.contentType]?.type === 'page' &&
           <MenuItem onClick={() => handleEdit('controller')}>
             <FormattedMessage
               id="previewToolBar.menu.editController"

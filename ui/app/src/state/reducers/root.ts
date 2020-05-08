@@ -34,7 +34,7 @@ const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   preview,
   contentTypes,
   dialogs,
-  versions
+  versions,
 };
 
 export default reducer;

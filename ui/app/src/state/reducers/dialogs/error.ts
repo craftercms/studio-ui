@@ -24,15 +24,24 @@ export const showErrorDialog = createAction<Partial<ErrorDialogStateProps>>(
 );
 
 export const closeErrorDialog = createAction<StandardAction>('CLOSE_ERROR_DIALOG');
+export const errorDialogClosed = createAction<StandardAction>('ERROR_DIALOG_CLOSED');
+
+const initialState: ErrorDialogStateProps = {
+  open: false,
+  error: null
+};
 
 export default createReducer<GlobalState['dialogs']['error']>(
-  { error: null },
+  initialState,
   {
     [showErrorDialog.type]: (state, { payload }) => ({
       onClose: closeErrorDialog(),
+      onClosed: errorDialogClosed(),
       onDismiss: closeErrorDialog(),
-      ...payload
+      ...payload,
+      open: true
     }),
-    [closeErrorDialog.type]: (state) => ({ error: null, onClose: state.onClose })
+    [closeErrorDialog.type]: (state) => ({ ...state, open: false }),
+    [errorDialogClosed.type]: () => initialState
   }
 );

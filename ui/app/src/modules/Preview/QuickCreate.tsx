@@ -76,7 +76,7 @@ interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
   onNewContentSelected?(): void;
   onQuickCreateItemSelected?(src: string): void;
-  onClose(): void;
+  onClose?(): void;
 }
 
 interface QuickCreateMenuButtonProps {
@@ -145,7 +145,7 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
           </MenuItem>
         ))}
       </Menu>
-      <ErrorDialog error={error} onDismiss={() => setError(null)} />
+      <ErrorDialog open={Boolean(error)} error={error} onDismiss={() => setError(null)} />
     </>
   );
 }

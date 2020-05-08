@@ -183,6 +183,10 @@
         mode: 'select'              // open search not in default but in select mode
       };
 
+      if (this.contentTypes) {
+        searchContext.filters['content-type'] = this.contentTypes.split(',');
+      }
+
       CStudioAuthoring.Operations.openSearch(searchContext, true, {
         success(searchId, selectedTOs) {
           selectedTOs.forEach(function (item) {
