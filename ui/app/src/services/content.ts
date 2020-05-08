@@ -540,8 +540,8 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
     tags: [],
     contentTypes: [],
     limit: {
-      max: map.maxSize.value ? null : parseInt(map.maxSize.value),
-      min: map.minSize.value ? null : parseInt(map.minSize.value)
+      max: isBlank(map.maxSize.value) ? null : parseInt(map.maxSize.value),
+      min: isBlank(map.minSize.value) ? null : parseInt(map.minSize.value)
     }
   };
 

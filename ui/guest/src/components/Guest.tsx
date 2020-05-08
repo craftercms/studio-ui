@@ -594,13 +594,17 @@ export function Guest(props: GuestProps) {
         // TODO: If there are no receptacles, the component should it even be listed as an option (?)
         return;
       }
-
-      const validatedReceptacles = receptacles.filter((id) => {
+      console.log(receptacles);
+      const validatedReceptacles = receptacles.filter((record) => {
+        const { field: { validations } } = iceRegistry.getReferentialEntries(record);
+        console.log(validations);
         // TODO: min/max count validations
         return true;
       });
 
       // scrollToReceptacle(validatedReceptacles);
+
+      console.log(validatedReceptacles);
 
       validatedReceptacles.forEach(({ id }) => {
 
