@@ -80,6 +80,7 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const versionsBranch = useSelection(state => state.versions);
+
   const dispatch = useDispatch();
   return (
     <Suspense fallback="">
@@ -91,14 +92,17 @@ function GlobalDialogManager() {
         onOk={createCallback(state.confirm.onOk, dispatch)}
         onCancel={createCallback(state.confirm.onCancel, dispatch)}
         onClose={createCallback(state.confirm.onClose, dispatch)}
+        onClosed={createCallback(state.confirm.onClosed, dispatch)}
         onDismiss={createCallback(state.confirm.onDismiss, dispatch)}
       />
       {/* endregion */}
 
       {/* region Error */}
       <ErrorDialog
+        open={state.error.open}
         error={state.error.error}
         onClose={createCallback(state.error.onClose, dispatch)}
+        onClosed={createCallback(state.error.onClosed, dispatch)}
         onDismiss={createCallback(state.error.onDismiss, dispatch)}
       />
       {/* endregion */}
@@ -126,6 +130,7 @@ function GlobalDialogManager() {
         items={state.publish.items}
         scheduling={state.publish.scheduling}
         onClose={createCallback(state.publish.onClose, dispatch)}
+        onClosed={createCallback(state.publish.onClosed, dispatch)}
         onDismiss={createCallback(state.publish.onDismiss, dispatch)}
         onSuccess={createCallback(state.publish.onSuccess, dispatch)}
       />
@@ -134,11 +139,12 @@ function GlobalDialogManager() {
       {/* region Create Content */}
       <NewContentDialog
         open={state.newContent.open}
-        site={state.newContent.site}
-        previewItem={state.newContent.previewItem}
+        item={state.newContent.item}
+        rootPath={state.newContent.rootPath}
         compact={state.newContent.compact}
         onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.newContent.onClose, dispatch)}
+        onClosed={createCallback(state.newContent.onClosed, dispatch)}
         onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />
       {/* endregion */}
@@ -147,8 +153,10 @@ function GlobalDialogManager() {
       <DependenciesDialog
         open={state.dependencies.open}
         item={state.dependencies.item}
+        rootPath={state.dependencies.rootPath}
         dependenciesShown={state.dependencies.dependenciesShown}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
+        onClosed={createCallback(state.publish.onClosed, dispatch)}
         onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}
       />
       {/* endregion */}
@@ -158,6 +166,7 @@ function GlobalDialogManager() {
         open={state.delete.open}
         items={state.delete.items}
         onClose={createCallback(state.delete.onClose, dispatch)}
+        onClosed={createCallback(state.delete.onClosed, dispatch)}
         onDismiss={createCallback(state.delete.onDismiss, dispatch)}
         onSuccess={createCallback(state.delete.onSuccess, dispatch)}
       />
@@ -168,6 +177,7 @@ function GlobalDialogManager() {
         open={state.history.open}
         versionsBranch={versionsBranch}
         onClose={createCallback(state.history.onClose, dispatch)}
+        onClosed={createCallback(state.history.onClosed, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
       />
       {/* endregion */}
@@ -184,6 +194,7 @@ function GlobalDialogManager() {
         version={state.viewVersion.version}
         contentTypesBranch={contentTypesBranch}
         onClose={createCallback(state.viewVersion.onClose, dispatch)}
+        onClosed={createCallback(state.viewVersion.onClosed, dispatch)}
         onDismiss={createCallback(state.viewVersion.onDismiss, dispatch)}
       />
       {/* endregion */}
@@ -202,6 +213,7 @@ function GlobalDialogManager() {
         selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
         versionsBranch={versionsBranch}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
+        onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
         onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}
       />
       {/* endregion */}

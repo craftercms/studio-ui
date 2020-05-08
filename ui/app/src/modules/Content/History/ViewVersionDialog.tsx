@@ -18,9 +18,8 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import ListItemText from '@material-ui/core/ListItemText';
-import Dialog from '@material-ui/core/Dialog';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { useStateResource } from '../../../utils/hooks';
+import { useOnUnmount, useStateResource } from '../../../utils/hooks';
 import { FancyFormattedDate } from './VersionList';
 import { palette } from '../../../styles/theme';
 import StandardAction from '../../../models/StandardAction';
@@ -38,8 +37,10 @@ import DialogHeader, {
   DialogHeaderStateAction
 } from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
+import { Resource } from '../../../models/Resource';
+import Dialog from '@material-ui/core/Dialog';
 
-const useStyles = makeStyles(() => ({
+const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
     margin: '0 10px 10px 10px',
     '& .blackText': {
@@ -58,16 +59,19 @@ const useStyles = makeStyles(() => ({
   },
   bold: {
     fontWeight: 600
+  },
+  singleItemSelector: {
+    marginBottom: '10px'
   }
 }));
 
 interface VersionViewProps {
-  resource: any;
+  resource: Resource<VersionResource>;
 }
 
 function VersionView(props: VersionViewProps) {
   const { version, contentTypes } = props.resource.read();
-  const classes = useStyles({});
+  const classes = versionViewStyles({});
   const values = Object.values(contentTypes[version.contentType].fields) as ContentTypeField[];
   return (
     <>
@@ -121,26 +125,41 @@ interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
   contentTypesBranch: EntityState<ContentType>;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
-  onClose(): void;
-  onDismiss(): void;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }
 
 export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps {
   leftActions?: DialogHeaderStateAction[];
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
-interface Resource {
+interface VersionResource {
   version: any;
   contentTypes: LookupTable<ContentType>;
 }
 
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
-  const { open, onClose, onDismiss, rightActions } = props;
+  return (
+    <Dialog
+      open={props.open}
+      onClose={props.onClose}
+      fullWidth
+      maxWidth="md"
+    >
+      <ViewVersionDialogWrapper {...props} />
+    </Dialog>
+  );
+}
 
-  const resource = useStateResource<Resource, ViewVersionDialogProps>(props, {
+function ViewVersionDialogWrapper(props: ViewVersionDialogProps) {
+  const { onDismiss, rightActions } = props;
+  useOnUnmount(props.onClosed);
+  const resource = useStateResource<VersionResource, ViewVersionDialogProps>(props, {
     shouldResolve: (source) => (
       source.version &&
       source.contentTypesBranch.byId &&
@@ -157,13 +176,7 @@ export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   });
 
   return (
-    <Dialog
-      onClose={onClose}
-      open={open}
-      fullWidth
-      maxWidth="md"
-      onEscapeKeyDown={onDismiss}
-    >
+    <>
       <DialogHeader
         title={
           <FormattedMessage
@@ -179,6 +192,6 @@ export default function ViewVersionDialog(props: ViewVersionDialogProps) {
           <VersionView resource={resource} />
         </SuspenseWithEmptyState>
       </DialogBody>
-    </Dialog>
+    </>
   );
 }

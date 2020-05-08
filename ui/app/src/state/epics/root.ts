@@ -41,7 +41,7 @@ const epic: any[] = combineEpics.apply(this, [
   ...preview,
   ...dialogs,
   ...legacy,
-  ...versions
+  ...versions,
 ]);
 
 export default epic as any;

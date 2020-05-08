@@ -42,7 +42,7 @@ interface CustomMenuProps {
   }
   sections: SectionItem[][];
 
-  onClose(): void;
+  onClose?(): void;
 
   onMenuItemClicked(section: SectionItem): void;
 }

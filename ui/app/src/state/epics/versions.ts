@@ -32,27 +32,30 @@ import {
   fetchItemVersions,
   fetchItemVersionsComplete,
   fetchItemVersionsFailed,
+  resetVersionsState,
   revertContent,
   revertContentComplete,
   revertContentFailed,
-  revertToPreviousVersion
+  revertToPreviousVersion,
+  versionsChangeItem
 } from '../reducers/versions';
-import { forkJoin } from 'rxjs';
+import { forkJoin, NEVER, of } from 'rxjs';
+import { historyDialogClosed } from '../actions/dialogs';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchItemVersions.type),
+      ofType(fetchItemVersions.type, versionsChangeItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        const service = (payload.config)
+        const service = (state.versions.config)
           ? getConfigurationVersions(
             state.sites.active,
-            payload.path ?? state.versions.path,
+            payload.path ?? state.versions.item.path,
             payload.environment ?? state.versions.environment,
             payload.module ?? state.versions.module
           )
-          : getItemVersions(state.sites.active, payload.path ?? state.versions.path);
+          : getItemVersions(state.sites.active, payload.path ?? state.versions.item.path);
         return service.pipe(
           map(fetchItemVersionsComplete),
           catchAjaxError(fetchItemVersionsFailed)
@@ -67,12 +70,12 @@ export default [
         forkJoin(
           getContentVersion(
             state.sites.active,
-            state.versions.path,
+            state.versions.item.path,
             state.versions.selected[0]
           ),
           getContentVersion(
             state.sites.active,
-            state.versions.path,
+            state.versions.item.path,
             state.versions.selected[1]
           )
         ).pipe(
@@ -88,7 +91,7 @@ export default [
       switchMap(([{ payload }, state]) =>
         revertContentToVersion(
           state.sites.active,
-          payload.path ?? state.versions.path,
+          state.versions.config ? state.versions.revertPath : payload.path ?? state.versions.item.path,
           payload.versionNumber ?? state.versions.previous
         ).pipe(
           map(revertContentComplete),
@@ -96,9 +99,21 @@ export default [
         )
       )
     ),
-  (action$, state$: StateObservable<GlobalState>) =>
+  (action$) =>
     action$.pipe(
       ofType(revertContentComplete.type),
       map(fetchItemVersions)
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(historyDialogClosed.type),
+      withLatestFrom(state$),
+      switchMap(([, { dialogs }]) => {
+        if (!dialogs.viewVersion.open && !dialogs.compareVersions.open) {
+          return of(resetVersionsState());
+        } else {
+          return NEVER;
+        }
+      })
     )
 ] as Epic[];

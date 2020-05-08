@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { LegacyItem } from '../../../models/Item';
+import { SandboxItem } from '../../../models/Item';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
@@ -37,10 +37,10 @@ import { palette } from '../../../styles/theme';
 import clsx from 'clsx';
 
 interface DependencySelectionProps {
-  items: LegacyItem[];
+  items: SandboxItem[];
   siteId?: string;      // for dependencySelectionDelete
   onChange?: Function;  // for dependencySelectionDelete
-  checked: LegacyItem[];
+  checked: SandboxItem[];
   setChecked: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
@@ -56,7 +56,7 @@ interface DependencySelectionProps {
 interface SelectionListProps {
   title: any;
   subtitle?: any;
-  items?: LegacyItem[];
+  items?: SandboxItem[];
   uris?: [];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
@@ -268,7 +268,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 }
 
 interface DependencySelectionDeleteProps {
-  items: LegacyItem[],
+  items: SandboxItem[],
   resultItems: DeleteDependencies;
   onChange: Function;
 }
@@ -410,13 +410,13 @@ function SelectionList(props: SelectionListProps) {
         items &&
         <List className={classes.selectionList}>
           {
-            items.map((item: LegacyItem) => {
-              const labelId = `checkbox-list-label-${item.uri}`;
+            items.map((item: SandboxItem) => {
+              const labelId = `checkbox-list-label-${item.path}`;
 
               return (
                 <ListItem
                   className={classes.listItem}
-                  key={item.uri}
+                  key={item.path}
                   role={undefined}
                   {...(onItemClicked ? {
                     button: true,
@@ -429,23 +429,23 @@ function SelectionList(props: SelectionListProps) {
                       <Checkbox
                         color="primary"
                         edge="start"
-                        checked={!!checked[item.uri]}
+                        checked={!!checked[item.path]}
                         tabIndex={-1}
                         disableRipple
-                        inputProps={{ 'aria-labelledby': item.uri }}
+                        inputProps={{ 'aria-labelledby': item.path }}
                         disabled={disabled}
                       />
                     </ListItemIcon>
                   }
                   <ListItemText
                     id={labelId}
-                    primary={<h4>{item.internalName}</h4>}
+                    primary={<h4>{item.label}</h4>}
                     primaryTypographyProps={{
                       className: classes.listItemTitle
                     }}
                     secondary={
                       <React.Fragment>
-                        {item.uri}
+                        {item.path}
                       </React.Fragment>
                     }
                     secondaryTypographyProps={{
