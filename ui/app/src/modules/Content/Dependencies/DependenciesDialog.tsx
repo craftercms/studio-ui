@@ -281,7 +281,7 @@ interface DependenciesDialogUIProps {
   setShowTypes: Function;
   dependenciesShown: string;
   setDependenciesShown: Function;
-  onDismiss(): any;
+  onDismiss?(): void;
   isEditableItem: Function;
   handleEditorDisplay: Function;
   contextMenu: any;
@@ -506,9 +506,9 @@ interface DependenciesDialogBaseProps {
 }
 
 export type DependenciesDialogProps = PropsWithChildren<DependenciesDialogBaseProps & {
-  onClose(): any;
-  onClosed(): any;
-  onDismiss(): any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }>;
 
 export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps {

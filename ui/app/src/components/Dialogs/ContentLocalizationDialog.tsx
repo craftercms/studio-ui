@@ -239,7 +239,7 @@ interface ContentLocalizationDialogProps {
   locales: any;
   site: string;
 
-  onClose(): void;
+  onClose?(): void;
 }
 
 export default function ContentLocalizationDialog(props: ContentLocalizationDialogProps) {

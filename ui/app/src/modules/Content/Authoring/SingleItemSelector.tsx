@@ -97,7 +97,7 @@ interface SingleItemSelectorProps {
   titleVariant?: Variant;
   labelVariant?: Variant;
   open: boolean;
-  onClose(): void;
+  onClose?(): void;
   onItemClicked(item: SandboxItem): void;
   onDropdownClick(): void;
 }

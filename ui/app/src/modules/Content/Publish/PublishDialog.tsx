@@ -80,7 +80,7 @@ interface PublishDialogUIProps {
   resource: Resource<Return>;
   publishingChannelsStatus: string;
   onPublishingChannelsFailRetry: Function;
-  onDismiss(): void;
+  onDismiss?(): void;
   handleSubmit: any;
   submitDisabled: boolean;
   setSubmitDisabled: Function;

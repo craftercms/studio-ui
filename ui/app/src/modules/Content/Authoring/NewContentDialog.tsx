@@ -151,9 +151,9 @@ interface NewContentDialogBaseProps {
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
   onContentTypeSelected?(response?: any): any;
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {

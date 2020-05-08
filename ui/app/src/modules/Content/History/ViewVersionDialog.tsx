@@ -125,9 +125,9 @@ interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
   contentTypesBranch: EntityState<ContentType>;
   leftActions?: DialogHeaderAction[];
   rightActions?: DialogHeaderAction[];
-  onClose(): void;
-  onClosed(): void;
-  onDismiss(): void;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }
 
 export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps {

@@ -38,9 +38,9 @@ interface ErrorDialogBaseProps {
 }
 
 export type  ErrorDialogProps = PropsWithChildren<ErrorDialogBaseProps & {
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }>;
 
 export interface ErrorDialogStateProps extends ErrorDialogBaseProps {

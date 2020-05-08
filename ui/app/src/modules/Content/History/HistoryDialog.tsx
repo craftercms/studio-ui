@@ -184,9 +184,9 @@ interface HistoryDialogBaseProps {
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   versionsBranch: VersionsStateProps;
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {

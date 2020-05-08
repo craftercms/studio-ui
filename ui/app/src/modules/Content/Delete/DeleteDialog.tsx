@@ -58,8 +58,8 @@ interface DeleteDialogUIProps {
   apiState: any;
   handleSubmit: any;
   onSelectionChange?(selection?: any): any;
-  onClose?(): any;
-  onDismiss?(): any;
+  onClose?(): void;
+  onDismiss?(): void;
 }
 
 interface DeleteDialogBaseProps {

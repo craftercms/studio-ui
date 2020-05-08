@@ -76,7 +76,7 @@ interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
   onNewContentSelected?(): void;
   onQuickCreateItemSelected?(src: string): void;
-  onClose(): void;
+  onClose?(): void;
 }
 
 interface QuickCreateMenuButtonProps {

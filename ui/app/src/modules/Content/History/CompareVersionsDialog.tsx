@@ -83,9 +83,9 @@ interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
   selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
   rightActions?: DialogHeaderAction[];
-  onClose(): void;
-  onClosed(): void;
-  onDismiss(): void;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps {

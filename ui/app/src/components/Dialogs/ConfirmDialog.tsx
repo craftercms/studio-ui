@@ -47,11 +47,11 @@ interface ConfirmDialogBaseProps {
 }
 
 export type ConfirmDialogProps = PropsWithChildren<ConfirmDialogBaseProps & {
-  onOk?(): any;
-  onCancel?(): any;
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
+  onOk(): any;
+  onCancel(): any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
 }>;
 
 export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps {
