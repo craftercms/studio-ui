@@ -16,7 +16,7 @@
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { NEVER } from 'rxjs';
+import { NEVER, Observable, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
 import {
@@ -37,6 +37,8 @@ import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
+import { newContentCreationComplete } from '../reducers/dialogs/edit';
+import { changeCurrentUrl } from '../actions/preview';    // TODO: update to actions/dialogs
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -106,6 +108,10 @@ export default [
           catchAjaxError(fetchContentVersionFailed)
         )
       )
-    )
+    ),
   // endregion
+  (action$, state$: Observable<GlobalState>) => action$.pipe(
+    ofType(newContentCreationComplete.type),
+    switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
+  )
 ] as Epic[];

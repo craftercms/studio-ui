@@ -36,6 +36,7 @@ const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDi
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
+const EmbeddedLegacyEditors = lazy(() =>  import('../../modules/Preview/EmbeddedLegacyEditors'));
 
 function createCallback(
   action: StandardAction,
@@ -103,7 +104,20 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Edit (Embedded Legacy Editor) */}
+      <EmbeddedLegacyEditors
+        open={state.edit.open}
+        src={state.edit.src}
+        type={state.edit.type}
+        inProgress={state.edit.inProgress}
+        showTabs={state.edit.showTabs}
+        showController={state.edit.showController}
+        itemModel={state.edit.itemModel}
+        embeddedParentPath={state.edit.embeddedParentPath}
 
+        onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
+        onClose={createCallback(state.edit.onClose, dispatch)}
+        onDismiss={createCallback(state.edit.onDismiss, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Publish */}
@@ -123,6 +137,7 @@ function GlobalDialogManager() {
         site={state.newContent.site}
         previewItem={state.newContent.previewItem}
         compact={state.newContent.compact}
+        onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onDismiss={createCallback(state.newContent.onDismiss, dispatch)}
       />

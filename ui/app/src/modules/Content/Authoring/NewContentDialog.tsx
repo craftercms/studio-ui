@@ -33,17 +33,16 @@ import ContentTypesFilter from './ContentTypesFilter';
 import {
   useDebouncedInput,
   useSelection,
-  useSpreadState,
   useStateResource
 } from '../../../utils/hooks';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
-import EmbeddedLegacyEditors from '../../Preview/EmbeddedLegacyEditors';
 import Typography from '@material-ui/core/Typography';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LegacyFormConfig } from '../../../models/ContentType';
 import { Resource } from '../../../models/Resource';
 import StandardAction from '../../../models/StandardAction';
+import { newContentCreationComplete } from '../../../state/reducers/dialogs/edit';
 
 const translations = defineMessages({
   title: {
@@ -149,18 +148,16 @@ interface NewContentDialogBaseProps {
   site: string;
   previewItem: PreviewItem;
   compact: boolean;
-
-  onSaveLegacySuccess?(response): any;
-
-  onSaveSuccess?(response): any;
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
+  onContentTypeSelected?(response?: any): any;
   onClose?(): any;
   onDismiss?(): any;
 }>;
 
 export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
+  onContentTypeSelected?: StandardAction;
   onClose?: StandardAction;
   onDismiss?: StandardAction;
 }
@@ -193,8 +190,7 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     onDismiss,
     site,
     previewItem: previewItemProp,
-    onSaveLegacySuccess,
-    onSaveSuccess,
+    onContentTypeSelected,
     compact
   } = props;
   const defaultFilterType = 'all';
@@ -209,12 +205,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
   const [resetFilterType, setResetFilterType] = useState(defaultFilterType);
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [dialogConfig, setDialogConfig] = useSpreadState({
-    open: false,
-    src: defaultFormSrc,
-    type: 'form',
-    inProgress: false
-  });
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl =
     '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
@@ -252,11 +242,13 @@ export default function NewContentDialog(props: NewContentDialogProps) {
     }
   );
 
-  const onTypeOpen = (srcData) => () => {
-    // TODO: Move edit dialog to dialog manager
-    setDialogConfig({
-      open: true,
-      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${srcData.form}&path=${path}&type=form`
+  const onTypeOpen = (contentType: LegacyFormConfig) => () => {
+    onContentTypeSelected({
+      src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${path}&type=form`,
+      type: 'form',
+      inProgress: false,
+      showTabs: false,
+      onSaveSuccess: newContentCreationComplete()
     });
   };
 
@@ -422,16 +414,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
           />
         </DialogFooter>
       </Dialog>
-      {dialogConfig.open && (
-        <EmbeddedLegacyEditors
-          showTabs={false}
-          showController={false}
-          dialogConfig={dialogConfig}
-          setDialogConfig={setDialogConfig}
-          onSaveLegacySuccess={onSaveLegacySuccess}
-          onSaveSuccess={onSaveSuccess}
-        />
-      )}
     </>
   );
 }
