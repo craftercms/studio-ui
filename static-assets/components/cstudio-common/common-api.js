@@ -763,7 +763,7 @@ var nodeOpen = false,
               type: 'FETCH_ITEM_VERSIONS',
               payload: {
                 item,
-                ...(rootPath && { rootPath: rootPath })
+                ...(rootPath && { rootPath })
               }
             },
             { type: 'SHOW_HISTORY_DIALOG' }
