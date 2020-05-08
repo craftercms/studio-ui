@@ -1123,7 +1123,12 @@ export function revertContentToVersion(site: string, path: string, versionNumber
 
 export function getContentVersion(site: string, path: string, versionNumber: string): Observable<any> {
   return new Observable((observer) => {
-    observer.next({ name: 'Test', versionNumber, lastModifiedDate: Date.now(), contentType: '/page/home' });
+    observer.next({
+      name: 'Test',
+      versionNumber,
+      lastModifiedDate: Date.now(),
+      contentTypeId: '/page/home'
+    });
     observer.complete();
   });
 }

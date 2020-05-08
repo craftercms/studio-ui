@@ -72,7 +72,7 @@ interface VersionViewProps {
 function VersionView(props: VersionViewProps) {
   const { version, contentTypes } = props.resource.read();
   const classes = versionViewStyles({});
-  const values = Object.values(contentTypes[version.contentType].fields) as ContentTypeField[];
+  const values = Object.values(contentTypes[version.contentTypeId].fields) as ContentTypeField[];
   return (
     <>
       <section className={classes.viewVersionBox}>

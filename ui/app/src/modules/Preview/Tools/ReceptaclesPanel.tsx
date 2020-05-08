@@ -63,7 +63,7 @@ export default function ReceptaclesPanel() {
   const classes = useStyles({});
   const hostToGuest$ = getHostToGuestBus();
   const receptaclesBranch = useSelection(state => state.preview.receptacles);
-  const receptacles = receptaclesBranch.byId ? Object.values(receptaclesBranch.byId).filter((receptacle) => receptacle.contentType === receptaclesBranch.selectedContentType) : null;
+  const receptacles = receptaclesBranch.byId ? Object.values(receptaclesBranch.byId).filter((receptacle) => receptacle.contentTypeId === receptaclesBranch.selectedContentType) : null;
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const selectedContentTypeName = contentTypesBranch.byId[receptaclesBranch.selectedContentType]?.name;
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component') : null;
