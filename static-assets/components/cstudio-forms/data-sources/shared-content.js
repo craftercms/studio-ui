@@ -169,7 +169,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       mode: 'select' // open search not in default but in select mode
     };
 
-    if (this.type && this.type !== '') {
+    if (this.type) {
       searchContext.filters['content-type'] = [this.type];
     }
 

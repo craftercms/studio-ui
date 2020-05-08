@@ -183,7 +183,7 @@
         mode: 'select'              // open search not in default but in select mode
       };
 
-      if (this.contentTypes && this.contentTypes !== '') {
+      if (this.contentTypes) {
         searchContext.filters['content-type'] = this.contentTypes.split(',');
       }
 
