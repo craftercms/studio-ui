@@ -243,10 +243,13 @@ export function useMinimizeDialog(initialTab: MinimizedDialog) {
 
   return state?.minimized ?? initialTab.minimized;
 }
-export const useOnUnmount = (onClosed) => {
-  useEffect(() => {
-    return () => {
-      onClosed();
-    };
-  }, [onClosed]);
-};
+
+export function useOnUnmount(onUnmount: () => any) {
+  useEffect(
+    () => (() => onUnmount?.()),
+    // Suppressing exhaustive deps warning to avoid non-memoized
+    // onUnmount props to incur in wrongful unmount calls
+    // eslint-disable-next-line
+    []
+  );
+}
