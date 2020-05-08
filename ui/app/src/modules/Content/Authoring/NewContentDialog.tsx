@@ -339,7 +339,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
         }
       );
     }
-  }, [path, site]);
+  }, [dispatch, path, site]);
 
   return (
     <>
