@@ -19,7 +19,7 @@ import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import { palette } from '../styles/theme';
-import { useSelection, useSpreadState } from '../utils/hooks';
+import { useSelection } from '../utils/hooks';
 import { getSandboxItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
@@ -134,7 +134,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             src,
             type,
             inProgress: true,
-            showController: !embeddedParentPath && contentTypesBranch.byId?.[publishDialog.items.contentType]?.type === 'page',
+            showController: !embeddedParentPath && contentTypesBranch.byId?.[item.contentType]?.type === 'page',
             itemModel: models[modelId],
             embeddedParentPath
           })
