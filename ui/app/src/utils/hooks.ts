@@ -152,6 +152,14 @@ export function useResolveWhenNotNullResource(source) {
   return resource;
 }
 
+interface CustomResourceSelectors<ReturnType = unknown, SourceType = unknown, ErrorType = unknown> {
+  shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+  shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+  shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+  resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType;
+  errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
+}
+
 // TODO: Rename to useStateResource
 export function useStateResourceSelection<
   ReturnType = unknown,
@@ -159,32 +167,10 @@ export function useStateResourceSelection<
   ErrorType = unknown
 >(
   sourceSelector: (state: GlobalState) => SourceType,
-  checkers: {
-    shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-    shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-    shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-    resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType;
-    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
-  }
+  checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
   const state = useSelection<SourceType>(sourceSelector);
   return useStateResource<ReturnType, SourceType, ErrorType>(state, checkers);
-}
-
-interface CustomResourceCheckers {
-  shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-  shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-  shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-  resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType;
-  errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
-}
-
-interface CustomResourceSelectors<ReturnType = unknown, SourceType = unknown, ErrorType = unknown> {
-  shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-  shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-  shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-  resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType;
-  errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
 }
 
 // TODO: Rename to useCustomResource or simply useResource
