@@ -162,7 +162,7 @@ export class ModelHelper {
   }
 
   static getContentTypeId(model) {
-    return model?.craftercms?.contentType;
+    return model?.craftercms?.contentTypeId;
   }
 
   static isEmbedded(model) {
