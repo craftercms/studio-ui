@@ -495,6 +495,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
         });
       } else if (legacyField.type === 'node-selector') {
         field.validations = getFieldValidations(legacyField.properties.property, receptaclesLookup);
+
         // field.validations = {
         //   limit: { min: null, max: null, message: null },
         //   contentTypes: map.itemManager?.value,

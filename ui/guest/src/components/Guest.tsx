@@ -595,14 +595,12 @@ export function Guest(props: GuestProps) {
         return;
       }
 
-      const validatedReceptacles = receptacles.filter((record) => {
+      const validatedReceptacles = receptacles.filter((id) => {
         // TODO: min/max count validations
         return true;
       });
 
       // scrollToReceptacle(validatedReceptacles);
-
-      console.log(validatedReceptacles);
 
       validatedReceptacles.forEach(({ id }) => {
 
