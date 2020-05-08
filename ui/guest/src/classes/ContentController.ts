@@ -700,7 +700,7 @@ function fetchById(id: string, site: string = Cookies.get('crafterSite')): Obser
             items {
               id: objectId(filter: {equals: $id})
               path: localId
-              contentType: content__type
+              contentTypeId: content__type
               dateCreated: createdDate_dt
               dateModified: lastModifiedDate_dt
               label: internal__name
@@ -743,7 +743,7 @@ function fetchById(id: string, site: string = Cookies.get('crafterSite')): Obser
             items {
               id: objectId
               path: localId
-              contentType: content__type
+              contentTypeId: content__type
               dateCreated: createdDate_dt
               dateModified: lastModifiedDate_dt
               label: internal__name
@@ -854,7 +854,7 @@ function fetchById(id: string, site: string = Cookies.get('crafterSite')): Obser
             component {
               id: objectId
               path: localId
-              contentType: content__type
+              contentTypeId: content__type
               dateCreated: createdDate_dt
               dateModified: lastModifiedDate_dt
               label: internal__name
@@ -862,7 +862,7 @@ function fetchById(id: string, site: string = Cookies.get('crafterSite')): Obser
                 icon_s
                 title_t
                 body_html
-                contentType: content__type
+                contentTypeId: content__type
                 dateCreated: createdDate_dt
                 dateModified: lastModifiedDate_dt
               }
@@ -892,7 +892,7 @@ function fetchById(id: string, site: string = Cookies.get('crafterSite')): Obser
         fragment CrafterCMSProps on ContentItem {
           id: objectId
           path: localId
-          contentType: content__type
+          contentTypeId: content__type
           dateCreated: createdDate_dt
           dateModified: lastModifiedDate_dt
           label: internal__name
@@ -910,12 +910,12 @@ function fetchById(id: string, site: string = Cookies.get('crafterSite')): Obser
 
 function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstance): LookupTable<ContentInstance> {
 
-  const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
+  const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
   if ([
     '/page/search-results',
     '/component/level-descriptor'
-  ].includes(model.contentType)) {
+  ].includes(model.contentTypeId)) {
     return lookupTable;
   }
 
@@ -944,7 +944,7 @@ function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstan
           );
         }
       });
-    } else if (model.contentType === '/taxonomy' && key === 'items') {
+    } else if (model.contentTypeId === '/taxonomy' && key === 'items') {
       data[key] = value.item;
     } else {
       data[key] = value;

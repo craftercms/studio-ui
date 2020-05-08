@@ -356,7 +356,7 @@ export function GuestProxy(props) {
           const { modelId, fieldId, index = 0, value } = op.args;
           const updatedField: JQuery<any> = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`);
           const model = contentController.getCachedModel(modelId);
-          const contentType = contentController.getCachedContentType(model.craftercms.contentTypeIdId);
+          const contentType = contentController.getCachedContentType(model.craftercms.contentTypeId);
           const fieldType = ContentTypeHelper.getField(contentType, fieldId).type;
 
           if (fieldType === 'image') {

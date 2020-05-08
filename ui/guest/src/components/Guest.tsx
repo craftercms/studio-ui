@@ -524,7 +524,7 @@ export function Guest(props: GuestProps) {
       let containers = [];
       let dropZones = [];
 
-      const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeIdId);
+      const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
 
       if (receptacles.length === 0) {
         // TODO: If there are no receptacles, the component should it even be listed as an option (?)
