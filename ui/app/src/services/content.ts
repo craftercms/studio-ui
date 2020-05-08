@@ -538,11 +538,7 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
 
   let validations = {
     tags: [],
-    contentTypes: [],
-    limit: {
-      max: isBlank(map.maxSize.value) ? null : parseInt(map.maxSize.value),
-      min: isBlank(map.minSize.value) ? null : parseInt(map.minSize.value)
-    }
+    contentTypes: []
   };
 
   map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {

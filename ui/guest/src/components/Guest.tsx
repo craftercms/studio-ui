@@ -594,9 +594,8 @@ export function Guest(props: GuestProps) {
         // TODO: If there are no receptacles, the component should it even be listed as an option (?)
         return;
       }
-      console.log(receptacles);
+
       const validatedReceptacles = receptacles.filter((record) => {
-        const { field: { validations } } = iceRegistry.getReferentialEntries(record);
         // TODO: min/max count validations
         return true;
       });
