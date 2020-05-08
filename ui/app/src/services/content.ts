@@ -145,7 +145,7 @@ function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLook
       locale: null,
       dateCreated: nnou(doc) ? getInnerHtml(doc.querySelector('createdDate_dt')) : null,
       dateModified: nnou(doc) ? getInnerHtml(doc.querySelector('lastModifiedDate_dt')) : null,
-      contentType
+      contentTypeId: contentType
     }
   };
   if (nnou(doc)) {
@@ -661,7 +661,7 @@ export function insertComponent(
     doc => {
 
       const id = instance.craftercms.id;
-      const path = shared ? getComponentPath(id, instance.craftercms.contentType) : null;
+      const path = shared ? getComponentPath(id, instance.craftercms.contentTypeId) : null;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
       const newItem = doc.createElement('item');
@@ -719,7 +719,7 @@ export function insertInstance(
     parentModelId,
     doc => {
 
-      const path = getComponentPath(instance.craftercms.id, instance.craftercms.contentType);
+      const path = getComponentPath(instance.craftercms.id, instance.craftercms.contentTypeId);
 
       const newItem = doc.createElement('item');
 

@@ -17,7 +17,12 @@
 import { get } from '../utils/ajax';
 import { map, pluck } from 'rxjs/operators';
 import { forkJoin, Observable } from 'rxjs';
-import { extractLocalizedElements, fromString, getInnerHtml, getInnerHtmlNumber } from '../utils/xml';
+import {
+  extractLocalizedElements,
+  fromString,
+  getInnerHtml,
+  getInnerHtmlNumber
+} from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import { createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
@@ -201,7 +206,7 @@ export function fetchActiveTargetingModel(site?: string): Observable<ContentInst
           locale: null,
           dateCreated: null,
           dateModified: null,
-          contentType: null
+          contentTypeId: null
         },
         ...data
       };
@@ -241,7 +246,7 @@ function deserializeActiveTargetingModelData<T extends Object>(data: T, contentT
       locale: null,
       dateCreated: null,
       dateModified: null,
-      contentType: null
+      contentTypeId: null
     },
     ...data
   };

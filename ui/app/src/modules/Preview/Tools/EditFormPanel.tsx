@@ -86,7 +86,7 @@ export default function EditFormPanel() {
 
   const item = selected[0];
   const model = models[item.modelId];
-  const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentType);
+  const contentType = contentTypes.find((contentType) => contentType.id === model.craftercms.contentTypeId);
   const title = ((item.fieldId.length > 1) || (item.fieldId.length === 0))
     ? model.craftercms.label
     : ContentTypeHelper.getField(contentType, item.fieldId[0])?.name;

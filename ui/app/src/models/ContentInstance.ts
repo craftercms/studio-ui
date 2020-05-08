@@ -21,7 +21,7 @@ export interface ContentInstanceSystemProps {
   locale: string;
   dateCreated: string;
   dateModified: string;
-  contentType: string;
+  contentTypeId: string;
 }
 
 export interface ContentInstance {

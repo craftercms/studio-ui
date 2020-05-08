@@ -152,10 +152,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         return models[modelId].craftercms.path;
       }
       case 'template': {
-        return contentTypesBranch.byId[models[modelId].craftercms.contentType].displayTemplate;
+        return contentTypesBranch.byId[models[modelId].craftercms.contentTypeId].displayTemplate;
       }
       case 'controller': {
-        let pageName = popPiece(models[modelId].craftercms.contentType, '/');
+        let pageName = popPiece(models[modelId].craftercms.contentTypeId, '/');
         return `/scripts/pages/${pageName}.groovy`;
       }
       default: {
