@@ -242,7 +242,7 @@ export class ContentController {
         id: uuid(),
         path: null,
         label: `New ${contentType.name}`,
-        contentType: contentType.id,
+        contentTypeId: contentType.id,
         // dateCreated: now,
         // dateModified: now,
         locale: 'en'

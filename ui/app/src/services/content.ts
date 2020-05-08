@@ -421,7 +421,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   //     };
   //
   //     asArray<LegacyFormDefinitionProperty>(legacyDS.properties.property).forEach(prop => {
-  //       if (prop.name === 'contentType') {
+  //       if (prop.name === 'contentTypeId') {
   //         if (dataSources[legacyDS.id].contentTypes === null) {
   //           dataSources[legacyDS.id].contentTypes = [];
   //         }

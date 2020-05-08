@@ -76,7 +76,7 @@ export class ModelHelper {
   }
 
   static getContentTypeId(model: ContentInstance): string {
-    return model?.craftercms?.contentType;
+    return model?.craftercms?.contentTypeId;
   }
 
   static isEmbedded(model: ContentInstance): boolean {
