@@ -171,24 +171,35 @@ export function useStateResourceSelection<
   return useStateResource<ReturnType, SourceType, ErrorType>(state, checkers);
 }
 
+interface CustomResourceCheckers {
+  shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+  shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+  shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+  resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType;
+  errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
+}
+
+interface CustomResourceSelectors<ReturnType = unknown, SourceType = unknown, ErrorType = unknown> {
+  shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+  shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+  shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean;
+  resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType;
+  errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
+}
+
 // TODO: Rename to useCustomResource or simply useResource
 export function useStateResource<ReturnType = unknown, SourceType = unknown, ErrorType = unknown>(
   source: SourceType,
-  checkers: {
-    shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-    shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-    shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean;
-    resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType;
-    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
-  }
+  checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
-  const [bundle, setBundle] = useState(() => createResourceBundle<ReturnType>());
-  const [resource, resolve, reject] = bundle;
-  const ref = useRef<any>();
-  ref.current = checkers;
+
+  const [[resource, resolve, reject], setBundle] = useState(() => createResourceBundle<ReturnType>());
+  const checkersRef = useRef<CustomResourceSelectors<ReturnType, SourceType, ErrorType>>();
+
+  checkersRef.current = checkers;
 
   useEffect(() => {
-    const { shouldRenew, shouldReject, shouldResolve, errorSelector, resultSelector } = ref.current;
+    const { shouldRenew, shouldReject, shouldResolve, errorSelector, resultSelector } = checkersRef.current;
     if (shouldRenew(source, resource)) {
       setBundle(createResourceBundle);
     } else if (shouldReject(source, resource)) {
@@ -199,6 +210,7 @@ export function useStateResource<ReturnType = unknown, SourceType = unknown, Err
   }, [source, resource, reject, resolve]);
 
   return resource;
+
 }
 
 export function useOnMount(componentDidMount: EffectCallback): void {
