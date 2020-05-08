@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { LegacyItem, SandboxItem } from '../../../models/Item';
+import { SandboxItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import {
   useActiveSiteId,
@@ -25,7 +25,13 @@ import {
   useStateResource
 } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { isAsset, isCode, isEditableAsset, isImage } from '../../../utils/content';
+import {
+  isAsset,
+  isCode,
+  isEditableAsset,
+  isImage,
+  parseLegacyItemToSandBoxItem
+} from '../../../utils/content';
 import StandardAction from '../../../models/StandardAction';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
@@ -67,15 +73,15 @@ const assetsTypes = {
     label: <FormattedMessage
       id="dependenciesDialog.contentItems" defaultMessage="Content items only"
     />,
-    filter: (dependency: LegacyItem) => ((dependency.isComponent && !dependency.isAsset) || dependency.isPage)
+    filter: (dependency: SandboxItem) => (dependency.systemType === 'component' || dependency.systemType === 'page')
   },
   'assets': {
     label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only" />,
-    filter: (dependency: LegacyItem) => isAsset(dependency.uri)
+    filter: (dependency: SandboxItem) => isAsset(dependency.path)
   },
   'code': {
     label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only" />,
-    filter: (dependency: LegacyItem) => isCode(dependency.uri)
+    filter: (dependency: SandboxItem) => isCode(dependency.path)
   }
 };
 
@@ -215,11 +221,11 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
 }));
 
 interface DependenciesListProps {
-  resource: Resource<LegacyItem[]>;
+  resource: Resource<SandboxItem[]>;
   compactView: boolean;
   showTypes: string;
 
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: LegacyItem): void;
+  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: SandboxItem): void;
 }
 
 function DependenciesList(props: DependenciesListProps) {
@@ -230,7 +236,7 @@ function DependenciesList(props: DependenciesListProps) {
     handleContextMenuClick
   } = props;
   const classes = dependenciesDialogStyles({});
-  const dependencies: LegacyItem[] = resource.read();
+  const dependencies: SandboxItem[] = resource.read();
 
   return (
     <List className={classes.dependenciesList}>
@@ -239,19 +245,19 @@ function DependenciesList(props: DependenciesListProps) {
           .filter(dependency => assetsTypes[showTypes].filter(dependency))
           .map(dependency =>
             <ListItem
-              key={dependency.uri}
+              key={dependency.path}
               className={clsx(classes.dependenciesListItem, { [classes.dependenciesCompactListItem]: compactView })}
             >
               {
-                isImage(dependency.uri) && !compactView &&
+                isImage(dependency.path) && !compactView &&
                 <ListItemAvatar>
-                  <Avatar className={classes.listItemPreview} src={dependency.uri} />
+                  <Avatar className={classes.listItemPreview} src={dependency.path} />
                 </ListItemAvatar>
               }
               <ListItemText
                 className={classes.listItemContent}
-                primary={dependency.internalName}
-                secondary={(!compactView) ? dependency.uri : null}
+                primary={dependency.label}
+                secondary={(!compactView) ? dependency.path : null}
               />
 
               <IconButton
@@ -271,7 +277,7 @@ function DependenciesList(props: DependenciesListProps) {
 }
 
 interface DependenciesDialogUIProps {
-  resource: Resource<LegacyItem[]>
+  resource: Resource<SandboxItem[]>
   item: SandboxItem;
   rootPath: string;
   setItem: Function;
@@ -283,10 +289,10 @@ interface DependenciesDialogUIProps {
   setDependenciesShown: Function;
   onDismiss?(): void;
   isEditableItem: Function;
-  handleEditorDisplay: Function;
+  handleEditorDisplay(item: SandboxItem): void;
   contextMenu: any;
 
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: LegacyItem): void;
+  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: SandboxItem): void;
 
   handleContextMenuClose(): void;
 }
@@ -404,7 +410,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             onClose={handleContextMenuClose}
           >
             {
-              contextMenu.dependency && isEditableItem(contextMenu.dependency.uri) &&
+              contextMenu.dependency && isEditableItem(contextMenu.dependency.path) &&
               <MenuItem
                 onClick={() => {
                   handleEditorDisplay(contextMenu.dependency);
@@ -556,15 +562,15 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
   });
   const dispatch = useDispatch();
 
-  const handleEditorDisplay = item => {
+  const handleEditorDisplay = (item: SandboxItem) => {
     let type = 'controller';
 
-    if ((item.isComponent && !item.isAsset) || item.isPage) {
+    if (item.systemType === 'component' || item.systemType === 'page') {
       type = 'form';
-    } else if (item.contentType === 'renderingTemplate') {
+    } else if (item.contentTypeId === 'renderingTemplate') {
       type = 'template';
     }
-    let src = `${defaultFormSrc}?site=${siteId}&path=${item.uri}&type=${type}`;
+    let src = `${defaultFormSrc}?site=${siteId}&path=${item.path}&type=${type}`;
 
     dispatch(
       showEditDialog({
@@ -580,7 +586,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     return { deps, error };
   }, [deps, error]);
 
-  const resource = useStateResource<LegacyItem[], { deps: LegacyItem[], error: ApiResponse }>(
+  const resource = useStateResource<SandboxItem[], { deps: SandboxItem[], error: ApiResponse }>(
     depsSource,
     {
       shouldResolve: (source) => Boolean(source.deps),
@@ -595,7 +601,8 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     if (dialog.dependenciesShown === 'depends-on') {
       if (dialog.dependantItems === null || newItem) {
         getDependant(siteId, path)
-          .subscribe(dependantItems => {
+          .subscribe(response => {
+              const dependantItems = parseLegacyItemToSandBoxItem(response);
               setDialog({
                 dependantItems,
                 ...(
@@ -611,7 +618,8 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     } else {
       if (dialog.dependencies === null || newItem) {
         getSimpleDependencies(siteId, path)
-          .subscribe(dependencies => {
+          .subscribe(response => {
+              const dependencies = parseLegacyItemToSandBoxItem(response);
               setDialog({
                 dependencies,
                 ...(
@@ -664,7 +672,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     setDialog({ dependenciesShown });
   };
 
-  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: LegacyItem) => {
+  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: SandboxItem) => {
     setContextMenu({
       el: event.currentTarget,
       dependency

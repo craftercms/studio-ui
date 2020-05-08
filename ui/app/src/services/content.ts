@@ -259,7 +259,7 @@ export function fetchContentType(site: string, contentTypeId: string): Observabl
   );
 }
 
-const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
+const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
 export function fetchById(site: string, id: string): Observable<any> {
   return post(
@@ -272,7 +272,7 @@ export function fetchById(site: string, id: string): Observable<any> {
             items {
               id: objectId
               path: localId
-              contentType: content__type
+              contentTypeId: content__type
               dateCreated: createdDate_dt
               dateModified: lastModifiedDate_dt
               label: internal__name
@@ -358,7 +358,7 @@ export function fetchById(site: string, id: string): Observable<any> {
       if ([
         '/page/search-results',
         '/component/level-descriptor'
-      ].includes(model.contentType)) {
+      ].includes(model.contentTypeId)) {
         return [];
       }
 
@@ -368,7 +368,7 @@ export function fetchById(site: string, id: string): Observable<any> {
       Object.entries(data).forEach(([key, value]: [string, any]) => {
         if (key.endsWith('_o')) {
           data[key] = value.item.map((item) => item.component?.id || item);
-        } else if (model.contentType === '/taxonomy' && key === 'items') {
+        } else if (model.contentTypeId === '/taxonomy' && key === 'items') {
           data[key] = value.item;
         }
       });
