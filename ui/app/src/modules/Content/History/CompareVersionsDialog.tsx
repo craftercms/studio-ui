@@ -316,7 +316,7 @@ interface CompareVersionsProps {
 function CompareVersions(props: CompareVersionsProps) {
   const classes = CompareVersionsStyles({});
   const { a, b, contentTypes } = props.resource.read();
-  const values = Object.values(contentTypes[a.contentType].fields) as ContentTypeField[];
+  const values = Object.values(contentTypes[a.contentTypeId].fields) as ContentTypeField[];
 
   return (
     <>

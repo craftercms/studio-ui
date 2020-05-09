@@ -524,7 +524,7 @@ export function Guest(props: GuestProps) {
       let containers = [];
       let dropZones = [];
 
-      const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentType);
+      const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
 
       if (receptacles.length === 0) {
         // TODO: If there are no receptacles, the component should it even be listed as an option (?)
@@ -1301,7 +1301,7 @@ export function Guest(props: GuestProps) {
               fieldId: item.fieldId,
               label: highlight.label,
               id: item.id,
-              contentType: payload
+              contentTypeId: payload
             };
           });
           setState({
@@ -1318,7 +1318,7 @@ export function Guest(props: GuestProps) {
 
           post({
             type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
-            payload: { contentType: payload, receptacles }
+            payload: { contentTypeId: payload, receptacles }
           });
           break;
         }

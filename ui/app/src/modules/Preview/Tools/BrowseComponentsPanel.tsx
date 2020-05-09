@@ -174,7 +174,7 @@ export default function BrowseComponentsPanel() {
           source.page[source.pageNumber]
             ?.map((id: string) => source.byId[id])
             .filter(
-              (item: ContentInstance) => item.craftercms.contentType === source.contentTypeFilter
+              (item: ContentInstance) => item.craftercms.contentTypeId === source.contentTypeFilter
             ) || [];
         return {
           ...pluckProps(source, 'count', 'query.limit', 'pageNumber', 'contentTypeFilter'),

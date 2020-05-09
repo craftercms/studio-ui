@@ -97,7 +97,7 @@ export class ContentTypeHelper {
 
 }
 
-const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
+const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
 export class ModelHelper {
   descriptor: any = null;
@@ -162,7 +162,7 @@ export class ModelHelper {
   }
 
   static getContentTypeId(model) {
-    return model?.craftercms?.contentType;
+    return model?.craftercms?.contentTypeId;
   }
 
   static isEmbedded(model) {

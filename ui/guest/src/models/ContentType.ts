@@ -83,7 +83,7 @@ export interface ContentTypeReceptacle {
   fieldId: string;
   label: string;
   id: number;
-  contentType: string;
+  contentTypeId: string;
 
   [prop: string]: any;
 }

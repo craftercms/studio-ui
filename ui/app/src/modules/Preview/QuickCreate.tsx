@@ -195,8 +195,7 @@ export default function QuickCreate() {
   const onNewContentSelected = () => {
     dispatch(
       showNewContentDialog({
-        site: siteId,
-        previewItem: currentPreview,
+        item: currentPreview,
         compact: false,
         onContentTypeSelected: showEditDialog()
       })

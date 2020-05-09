@@ -160,10 +160,10 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         return itemModel.craftercms.path;
       }
       case 'template': {
-        return contentTypesBranch.byId[itemModel.craftercms.contentType].displayTemplate;
+        return contentTypesBranch.byId[itemModel.craftercms.contentTypeId].displayTemplate;
       }
       case 'controller': {
-        let pageName = popPiece(itemModel.craftercms.contentType, '/');
+        let pageName = popPiece(itemModel.craftercms.contentTypeId, '/');
         return `/scripts/pages/${pageName}.groovy`;
       }
       default: {

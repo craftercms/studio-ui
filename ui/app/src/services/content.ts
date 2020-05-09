@@ -145,7 +145,7 @@ function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLook
       locale: null,
       dateCreated: nnou(doc) ? getInnerHtml(doc.querySelector('createdDate_dt')) : null,
       dateModified: nnou(doc) ? getInnerHtml(doc.querySelector('lastModifiedDate_dt')) : null,
-      contentType
+      contentTypeId: contentType
     }
   };
   if (nnou(doc)) {
@@ -259,7 +259,7 @@ export function fetchContentType(site: string, contentTypeId: string): Observabl
   );
 }
 
-const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
+const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
 export function fetchById(site: string, id: string): Observable<any> {
   return post(
@@ -272,7 +272,7 @@ export function fetchById(site: string, id: string): Observable<any> {
             items {
               id: objectId
               path: localId
-              contentType: content__type
+              contentTypeId: content__type
               dateCreated: createdDate_dt
               dateModified: lastModifiedDate_dt
               label: internal__name
@@ -358,7 +358,7 @@ export function fetchById(site: string, id: string): Observable<any> {
       if ([
         '/page/search-results',
         '/component/level-descriptor'
-      ].includes(model.contentType)) {
+      ].includes(model.contentTypeId)) {
         return [];
       }
 
@@ -368,7 +368,7 @@ export function fetchById(site: string, id: string): Observable<any> {
       Object.entries(data).forEach(([key, value]: [string, any]) => {
         if (key.endsWith('_o')) {
           data[key] = value.item.map((item) => item.component?.id || item);
-        } else if (model.contentType === '/taxonomy' && key === 'items') {
+        } else if (model.contentTypeId === '/taxonomy' && key === 'items') {
           data[key] = value.item;
         }
       });
@@ -431,7 +431,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   //     };
   //
   //     asArray<LegacyFormDefinitionProperty>(legacyDS.properties.property).forEach(prop => {
-  //       if (prop.name === 'contentType') {
+  //       if (prop.name === 'contentTypeId') {
   //         if (dataSources[legacyDS.id].contentTypes === null) {
   //           dataSources[legacyDS.id].contentTypes = [];
   //         }
@@ -661,7 +661,7 @@ export function insertComponent(
     doc => {
 
       const id = instance.craftercms.id;
-      const path = shared ? getComponentPath(id, instance.craftercms.contentType) : null;
+      const path = shared ? getComponentPath(id, instance.craftercms.contentTypeId) : null;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
       const newItem = doc.createElement('item');
@@ -719,7 +719,7 @@ export function insertInstance(
     parentModelId,
     doc => {
 
-      const path = getComponentPath(instance.craftercms.id, instance.craftercms.contentType);
+      const path = getComponentPath(instance.craftercms.id, instance.craftercms.contentTypeId);
 
       const newItem = doc.createElement('item');
 
@@ -1123,7 +1123,12 @@ export function revertContentToVersion(site: string, path: string, versionNumber
 
 export function getContentVersion(site: string, path: string, versionNumber: string): Observable<any> {
   return new Observable((observer) => {
-    observer.next({ name: 'Test', versionNumber, lastModifiedDate: Date.now(), contentType: '/page/home' });
+    observer.next({
+      name: 'Test',
+      versionNumber,
+      lastModifiedDate: Date.now(),
+      contentTypeId: '/page/home'
+    });
     observer.complete();
   });
 }

@@ -174,7 +174,7 @@ export function PreviewConcierge(props: any) {
             parentModelId ? modelId : guest.models[modelId].craftercms.path,
             fieldId,
             targetIndex,
-            contentTypes.find((o) => o.id === instance.craftercms.contentType),
+            contentTypes.find((o) => o.id === instance.craftercms.contentTypeId),
             instance,
             parentModelId ? guest.models[parentModelId].craftercms.path : null,
             shared

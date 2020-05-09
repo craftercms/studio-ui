@@ -179,7 +179,7 @@ function getRepeatGroupChildren(
     if (type === 'node-selector') {
       fieldId = `${contentTypeField.id}.${fieldName}`;
       item[fieldName].forEach((id: string, i: number) => {
-        let itemContentTypeName = contentTypes[models[id].craftercms.contentType].name;
+        let itemContentTypeName = contentTypes[models[id].craftercms.contentTypeId].name;
         subChildren.push(
           getNodeSelectorChildren(
             models[id],
@@ -218,7 +218,7 @@ function getChildren(
     let subChildren = [];
     if (type === 'node-selector') {
       model[fieldName].forEach((id: string, i: number) => {
-        let itemContentTypeName = contentTypes[models[id].craftercms.contentType].name;
+        let itemContentTypeName = contentTypes[models[id].craftercms.contentTypeId].name;
         subChildren.push(
           getNodeSelectorChildren(
             models[id],
@@ -391,7 +391,7 @@ export default function ContentTree() {
   useEffect(() => {
     if (guest?.modelId && guest.models && contentTypesBranch.byId && data.selected === null) {
       let parent = guest.models[guest.modelId];
-      let contentType = contentTypesBranch.byId[parent.craftercms.contentType];
+      let contentType = contentTypesBranch.byId[parent.craftercms.contentTypeId];
       let data: RenderTree = {
         id: `${rootPrefix}${parent.craftercms.id}`,
         name: parent.craftercms.label,
@@ -411,7 +411,7 @@ export default function ContentTree() {
   const handleClick = (node: RenderTree) => {
     if (node.type === 'component' && !node.id.includes(rootPrefix)) {
       let model = guest.models[node.modelId];
-      let contentType = contentTypesBranch.byId[model.craftercms.contentType];
+      let contentType = contentTypesBranch.byId[model.craftercms.contentTypeId];
       const { type, modelId, name, index, fieldId, parentId, embeddedParentPath } = node;
       const nodeData = {
         id: `${rootPrefix}${model.craftercms.id}`,

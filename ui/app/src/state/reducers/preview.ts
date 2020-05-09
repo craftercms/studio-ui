@@ -434,7 +434,7 @@ const reducer = createReducer<GlobalState['preview']>({
     ...state,
     receptacles: {
       ...state.receptacles,
-      selectedContentType: payload.contentType,
+      selectedContentType: payload.contentTypeId,
       byId: { ...state.receptacles.byId, ...createLookupTable(payload.receptacles) }
     }
   }),

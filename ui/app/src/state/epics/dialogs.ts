@@ -38,7 +38,7 @@ import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { newContentCreationComplete } from '../reducers/dialogs/edit';
-import { changeCurrentUrl } from '../actions/preview';    // TODO: update to actions/dialogs
+import { changeCurrentUrl } from '../actions/preview'; // TODO: update to actions/dialogs
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -56,11 +56,6 @@ function getDialogState(type: string, state: GlobalState): { onClose: StandardAc
     console.error(`[epics/dialogs] Unable to retrieve dialog state from "${stateName}" action`);
   }
   return dialog;
-}
-
-function createClosedAction(type: string) {
-  const stateName = getDialogActionNameFromType(type);
-  return { type: `${stateName}_DIALOG_CLOSED` };
 }
 
 export default [
