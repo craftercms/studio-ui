@@ -16,6 +16,17 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
+import {
+  fetchSystemInformation,
+  fetchSystemInformationComplete,
+  fetchSystemInformationFailed
+} from '../actions/env';
+
+const systemInformationInitialState = {
+  isFetching: false,
+  error: null,
+  version: null
+};
 
 const initialState: GlobalState['env'] = ((origin: string) => ({
   AUTHORING_BASE: `${origin}/studio`,
@@ -23,7 +34,8 @@ const initialState: GlobalState['env'] = ((origin: string) => ({
   PREVIEW_LANDING_BASE: `/studio/preview-landing`,
   SITE_COOKIE: 'crafterSite',
   XSRF_CONFIG_ARGUMENT: '_csrf',
-  XSRF_CONFIG_HEADER: 'X-XSRF-TOKEN'
+  XSRF_CONFIG_HEADER: 'X-XSRF-TOKEN',
+  SYSTEM_INFORMATION: systemInformationInitialState
 }))(
   process.env.NODE_ENV === 'production'
     ? window.location.origin
@@ -33,6 +45,32 @@ const initialState: GlobalState['env'] = ((origin: string) => ({
     )
 );
 
-const reducer = createReducer<GlobalState['env']>(initialState, {});
-
+const reducer = createReducer<GlobalState['env']>(
+  initialState,
+  {
+    [fetchSystemInformation.type]: (state) => ({
+      ...state,
+      SYSTEM_INFORMATION: {
+        ...state.SYSTEM_INFORMATION,
+        isFetching: true
+      }
+    }),
+    [fetchSystemInformationComplete.type]: (state, action) => ({
+      ...state,
+      SYSTEM_INFORMATION: {
+        ...state.SYSTEM_INFORMATION,
+        isFetching: false,
+        version: action.payload
+      }
+    }),
+    [fetchSystemInformationFailed.type]: (state, action) => ({
+      ...state,
+      SYSTEM_INFORMATION: {
+        ...state.SYSTEM_INFORMATION,
+        isFetching: false,
+        error: action.payload
+      }
+    })
+  }
+);
 export default reducer;

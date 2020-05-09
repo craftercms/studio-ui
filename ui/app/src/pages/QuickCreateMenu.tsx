@@ -17,6 +17,8 @@
 import React, { useEffect, useState } from 'react';
 import { QuickCreateMenu } from '../modules/Preview/QuickCreate';
 import { useSelection } from '../utils/hooks';
+import { fetchSystemInformation } from '../state/actions/env';
+import { useDispatch } from 'react-redux';
 
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
@@ -37,6 +39,7 @@ export default function (props: QuickCreateMenuProps) {
   // TODO: Switch when Embedded legacy editors is moved to dialog manager
   // const editFormOpen = useSelection(state => state.dialogs.edit.open);
   const editFormOpen = false;
+  const dispatch = useDispatch();
 
   const onCloseMenu = () => setMenuAnchor(null);
 
@@ -45,6 +48,10 @@ export default function (props: QuickCreateMenuProps) {
       onClose();
     }
   }, [menuAnchor, createNewContentOpen, editFormOpen, onClose]);
+
+  useEffect(() => {
+    dispatch(fetchSystemInformation());
+  }, [dispatch]);
 
   return (
     <QuickCreateMenu

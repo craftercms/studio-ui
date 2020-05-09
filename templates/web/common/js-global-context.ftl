@@ -78,8 +78,13 @@
       "GUEST_BASE": `${'$'}{origin}`,
       "XSRF_CONFIG_HEADER": "${env_config.headerName!''}",
       "XSRF_CONFIG_ARGUMENT": "${env_config.parameterName!''}",
-      "SITE_COOKIE": "crafterSite",
-      "PREVIEW_LANDING_BASE": "/studio/preview-landing"
+      'SITE_COOKIE': 'crafterSite',
+      'PREVIEW_LANDING_BASE': '/studio/preview-landing',
+      'SYSTEM_INFORMATION': {
+        isFetching: false,
+        error: null,
+        version: null,
+      }
     }
   });
   document.write(`<script type="application/json" id="initialState">${'$'}{initialState}<\/script>`);

@@ -37,6 +37,7 @@ import { EmbeddedLegacyEditorsStateProps } from '../modules/Preview/EmbeddedLega
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
 import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
 import { VersionsStateProps } from './Version';
+import { SystemInformation } from './SystemInformation';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -82,6 +83,11 @@ export interface GlobalState {
     XSRF_CONFIG_ARGUMENT: string;
     SITE_COOKIE: string;
     PREVIEW_LANDING_BASE: string;
+    SYSTEM_INFORMATION: {
+      isFetching: boolean;
+      error: ApiResponse;
+      version: SystemInformation
+    };
   };
   preview: {
     currentUrl: string;

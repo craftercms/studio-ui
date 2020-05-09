@@ -27,10 +27,18 @@ import { palette } from '../../styles/theme';
 import { getQuickCreateContentList } from '../../services/content';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
-import { ApiResponse } from '../../models/ApiResponse';
+import { changeCurrentUrl } from '../../state/actions/preview';
 import { showNewContentDialog } from '../../state/actions/dialogs';
 import { newContentCreationComplete, showEditDialog } from '../../state/reducers/dialogs/edit';
+
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { fetchSystemInformation } from '../../state/actions/env';
+import GlobalState from '../../models/GlobalState';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -68,6 +76,29 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: palette.gray.light0,
         cursor: 'text'
       }
+    },
+    quickCreateEmptyRoot: {
+      width: '149px',
+      justifyContent: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      textAlign: 'center',
+      alignItems: 'center',
+      boxShadow: 'none'
+    },
+    quickCreateEmptyCardContent: {
+      padding: '5px 10px'
+    },
+    quickCreateEmptyDescription: {
+      fontSize: '12px'
+    },
+    quickCreateEmptyCardActions: {
+      padding: 0,
+      '& .MuiButton-root': {
+        fontSize: '14px',
+        textDecoration: 'underline',
+        color: palette.blue.main
+      }
     }
   })
 );
@@ -91,11 +122,20 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
     onQuickCreateItemSelected
   } = props;
   const classes = useStyles({});
+  const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
   const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [error, setError] = useState<ApiResponse>(null);
   const [quickCreateContentList, setQuickCreateContentList] = useState(null);
+
+  const systemInformation = useSelection<GlobalState['env']['SYSTEM_INFORMATION']['version']>(
+    (state) => state.env.SYSTEM_INFORMATION.version
+  );
+  const [studioVersion, setStudioVersion] = useState(null);
+
+  const onEmbeddedFormSaveSuccess = ({ data }) => {
+    data.item?.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
+  };
 
   const onNewContentClick = () => {
     onClose();
@@ -115,13 +155,25 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   };
 
   useEffect(() => {
+    if (systemInformation) {
+      setStudioVersion(systemInformation.packageVersion.substr(0, 3));
+    }
+  }, [systemInformation]);
+
+  useEffect(() => {
     if (siteId) {
       getQuickCreateContentList(siteId).subscribe(
         (data) => setQuickCreateContentList(data.items),
-        (error) => setError(error.response.response)
+        ({ response }) => {
+          dispatch(
+            showErrorDialog({
+              error: response.response
+            })
+          );
+        }
       );
     }
-  }, [siteId]);
+  }, [siteId, dispatch]);
 
   return (
     <>
@@ -144,8 +196,35 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
             {item.label}
           </MenuItem>
         ))}
+        {
+          quickCreateContentList?.length === 0 &&
+          <Card className={classes.quickCreateEmptyRoot}>
+            <CardContent className={classes.quickCreateEmptyCardContent}>
+              <Typography color="textSecondary" gutterBottom>
+                <ErrorOutlineOutlinedIcon fontSize={'small'} />
+              </Typography>
+              <Typography className={classes.quickCreateEmptyDescription}>
+                <FormattedMessage
+                  id="quickCreateMenu.learnMore"
+                  defaultMessage="Quick create has not been configured. Please contact your system administrator."
+                />
+              </Typography>
+            </CardContent>
+            <CardActions className={classes.quickCreateEmptyCardActions}>
+              {
+                studioVersion &&
+                <Button
+                  size="small"
+                  href={`https://docs.craftercms.org/en/${studioVersion}/developers/content-modeling.html#setting-up-quick-create`}
+                  target="_blank"
+                >
+                  <FormattedMessage id="quickCreateMenu.learnMore" defaultMessage="Learn More" />
+                </Button>
+              }
+            </CardActions>
+          </Card>
+        }
       </Menu>
-      <ErrorDialog open={Boolean(error)} error={error} onDismiss={() => setError(null)} />
     </>
   );
 }
@@ -172,6 +251,10 @@ export default function QuickCreate() {
   const { guest } = usePreviewState();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
+
+  useEffect(() => {
+    dispatch(fetchSystemInformation());
+  }, [dispatch]);
 
   const onMenuBtnClick = (e) => {
     setAnchorEl(e.currentTarget);
