@@ -22,8 +22,8 @@ import ToolPanel from './ToolPanel';
 import {
   useActiveSiteId,
   useDebouncedInput,
-  useOnMount,
-  useStateResource
+  useMount,
+  useLogicResource
 } from '../../../utils/hooks';
 import SearchBar from '../../../components/Controls/SearchBar';
 import {
@@ -167,7 +167,7 @@ export default function SearchPanel() {
   // const contentTypesLookup = createLookupTable(contentTypes, 'id');
   const [pageNumber, setPageNumber] = useState(0);
 
-  const resource = useStateResource<Array<ContentInstance | SearchItem>, ContentInstancePage | SearchResult>(searchResults, {
+  const resource = useLogicResource<Array<ContentInstance | SearchItem>, ContentInstancePage | SearchResult>(searchResults, {
     shouldResolve: (data) => Boolean(data),
     shouldReject: () => Boolean(error),
     shouldRenew: (data, resourceArg) => resourceArg.complete,
@@ -178,7 +178,7 @@ export default function SearchPanel() {
     errorSelector: () => error
   });
 
-  useOnMount(() => {
+  useMount(() => {
     onSearch();
   });
 

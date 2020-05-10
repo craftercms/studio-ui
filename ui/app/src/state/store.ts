@@ -70,8 +70,8 @@ export function retrieveInitialStateScript(): GlobalState {
     try {
       state = JSON.parse(script.innerHTML);
       if (nou(state.sites.active)) {
-        const cookie = Cookies.get(state.env.SITE_COOKIE);
-        cookie && (state.sites.active = Cookies.get(state.env.SITE_COOKIE));
+        const cookie = Cookies.get(state.env.siteCookieName);
+        cookie && (state.sites.active = Cookies.get(state.env.siteCookieName));
       }
     } catch {
       // The login screen won't have the preloaded state

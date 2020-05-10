@@ -15,10 +15,10 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import { SystemInformation } from '../../models/SystemInformation';
+import { Version } from '../../models/monitoring/Version';
 import { AjaxError } from 'rxjs/ajax';
 import StandardAction from '../../models/StandardAction';
 
-export const fetchSystemInformation = createAction<StandardAction>('FETCH_SYSTEM_INFORMATION');
-export const fetchSystemInformationComplete = createAction<SystemInformation>('FETCH_SYSTEM_INFORMATION_COMPLETE');
-export const fetchSystemInformationFailed = createAction<AjaxError>('FETCH_SYSTEM_INFORMATION_FAILED');
+export const fetchSystemVersion = createAction<StandardAction>('FETCH_SYSTEM_VERSION');
+export const fetchSystemVersionComplete = createAction<Version>('FETCH_SYSTEM_VERSION_COMPLETE');
+export const fetchSystemVersionFailed = createAction<AjaxError>('FETCH_SYSTEM_VERSION_FAILED');

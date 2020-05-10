@@ -29,7 +29,7 @@ import {
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   selectTool
 } from '../../../state/actions/preview';
-import { useStateResourceSelection } from '../../../utils/hooks';
+import { useSelectorResource } from '../../../utils/hooks';
 import { nnou } from '../../../utils/object';
 import { DraggablePanelListItem } from './DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
@@ -50,7 +50,7 @@ const translations = defineMessages({
 type ComponentsPanelUIProps = PropsWithResource<ContentType[]>;
 
 export default function ComponentsPanel() {
-  const resource = useStateResourceSelection<ContentType[], EntityState<ContentType>>(
+  const resource = useSelectorResource<ContentType[], EntityState<ContentType>>(
     (state) => state.contentTypes,
     {
       shouldRenew: (source, resource) => resource.complete,

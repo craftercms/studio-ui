@@ -14,11 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { QuickCreateMenu } from '../modules/Preview/QuickCreate';
-import { useSelection } from '../utils/hooks';
-import { fetchSystemInformation } from '../state/actions/env';
-import { useDispatch } from 'react-redux';
+import { useQuickCreateListResource, useSystemVersionResource } from '../utils/hooks';
 
 interface QuickCreateMenuProps {
   anchorEl: HTMLElement;
@@ -27,38 +25,44 @@ interface QuickCreateMenuProps {
   onClose?(): void;
 }
 
-export default function (props: QuickCreateMenuProps) {
-  const {
-    anchorEl,
-    onClose,
-    onQuickCreateItemSelected,
-    onNewContentSelected
-  } = props;
-  const [menuAnchor, setMenuAnchor] = useState(anchorEl);
-  const createNewContentOpen = useSelection((state) => state.dialogs.newContent.open);
-  // TODO: Switch when Embedded legacy editors is moved to dialog manager
-  // const editFormOpen = useSelection(state => state.dialogs.edit.open);
-  const editFormOpen = false;
-  const dispatch = useDispatch();
+export default function(props: QuickCreateMenuProps) {
 
-  const onCloseMenu = () => setMenuAnchor(null);
+  const { anchorEl, onClose, onQuickCreateItemSelected, onNewContentSelected } = props;
+  const [open, setOpen] = useState(true);
 
-  useEffect(() => {
-    if (!menuAnchor && !createNewContentOpen && !editFormOpen) {
-      onClose();
-    }
-  }, [menuAnchor, createNewContentOpen, editFormOpen, onClose]);
+  // Wait a few millis for the animation to finish before
+  // notifying legacy that the menu is closed to avoid
+  // the animation getting cut of by the unmounting
+  const onCloseDiffered = () => {
+    setTimeout(onClose, 500);
+  };
 
-  useEffect(() => {
-    dispatch(fetchSystemInformation());
-  }, [dispatch]);
+  const closeMenu = () => {
+    setOpen(false);
+    onCloseDiffered();
+  };
+
+  const quickCreateResource = useQuickCreateListResource();
+
+  const versionResource = useSystemVersionResource();
 
   return (
     <QuickCreateMenu
-      anchorEl={menuAnchor}
-      onClose={onCloseMenu}
-      onNewContentSelected={onNewContentSelected}
-      onQuickCreateItemSelected={onQuickCreateItemSelected}
+      open={open}
+      resource={{
+        version: versionResource,
+        quickCreate: quickCreateResource
+      }}
+      anchorEl={anchorEl}
+      onClose={closeMenu}
+      onNewContentSelected={() => {
+        closeMenu();
+        onNewContentSelected();
+      }}
+      onQuickCreateItemSelected={(src) => {
+        closeMenu();
+        onQuickCreateItemSelected(src);
+      }}
     />
   );
 }

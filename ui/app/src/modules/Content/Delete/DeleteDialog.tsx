@@ -20,9 +20,9 @@ import { deleteItems } from '../../../services/content';
 import {
   useActiveSiteId,
   useActiveUser,
-  useOnUnmount,
+  useUnmount,
   useSpreadState,
-  useStateResource
+  useLogicResource
 } from '../../../utils/hooks';
 import { fetchDeleteDependencies } from '../../../services/dependencies';
 import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
@@ -239,9 +239,9 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     deleteDependencies,
     apiState
   ]);
-  useOnUnmount(props.onClosed);
+  useUnmount(props.onClosed);
 
-  const resource = useStateResource<any, any>(depsSource, {
+  const resource = useLogicResource<any, any>(depsSource, {
     shouldResolve: (source) => Boolean(source.deleteDependencies),
     shouldReject: (source) => Boolean(source.apiState.error),
     shouldRenew: (source, resource) => resource.complete,

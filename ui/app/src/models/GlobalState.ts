@@ -37,7 +37,7 @@ import { EmbeddedLegacyEditorsStateProps } from '../modules/Preview/EmbeddedLega
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
 import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
 import { VersionsStateProps } from './Version';
-import { SystemInformation } from './SystemInformation';
+import QuickCreateItem from './content/QuickCreateItem';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -75,19 +75,24 @@ export interface GlobalState {
     isFetching: boolean;
     byId: LookupTable<Site>;
   };
+  content: {
+    // items: any;
+    quickCreate: {
+      error: ApiResponse;
+      isFetching: boolean;
+      items: QuickCreateItem[];
+    };
+    // contentTypes: EntityState<ContentType>;
+  }
   contentTypes: EntityState<ContentType>;
   env: {
-    AUTHORING_BASE: string;
-    GUEST_BASE: string;
-    XSRF_CONFIG_HEADER: string;
-    XSRF_CONFIG_ARGUMENT: string;
-    SITE_COOKIE: string;
-    PREVIEW_LANDING_BASE: string;
-    SYSTEM_INFORMATION: {
-      isFetching: boolean;
-      error: ApiResponse;
-      version: SystemInformation
-    };
+    authoringBase: string;
+    guestBase: string;
+    xsrfHeader: string;
+    xsrfArgument: string;
+    siteCookieName: string;
+    previewLandingBase: string;
+    version: string;
   };
   preview: {
     currentUrl: string;

@@ -18,7 +18,7 @@ import React from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../previewContext';
-import { useOnMount, useSelection, useStateResource } from '../../../utils/hooks';
+import { useMount, useSelection, useLogicResource } from '../../../utils/hooks';
 import { createStyles, makeStyles } from '@material-ui/core';
 import { ContentTypeReceptacle } from '../../../models/ContentTypeReceptacle';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -72,7 +72,7 @@ export default function ReceptaclesPanel() {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
-  useOnMount(() => {
+  useMount(() => {
     return () => {
       dispatch(clearReceptacles());
       hostToGuest$.next({
@@ -95,7 +95,7 @@ export default function ReceptaclesPanel() {
     });
   }
 
-  const receptacleResource = useStateResource<ContentTypeReceptacle[], { selectedContentType: string, byId: LookupTable<ContentTypeReceptacle> }>(receptaclesBranch, {
+  const receptacleResource = useLogicResource<ContentTypeReceptacle[], { selectedContentType: string, byId: LookupTable<ContentTypeReceptacle> }>(receptaclesBranch, {
     shouldResolve: (source) => Boolean(source.selectedContentType) && Boolean(source.byId),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,

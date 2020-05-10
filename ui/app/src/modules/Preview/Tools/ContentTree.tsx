@@ -31,7 +31,7 @@ import {
   useActiveSiteId,
   usePreviewGuest,
   useSelection,
-  useStateResource
+  useLogicResource
 } from '../../../utils/hooks';
 import { ContentType, ContentTypeField } from '../../../models/ContentType';
 import Page from '../../../components/Icons/Page';
@@ -486,7 +486,7 @@ export default function ContentTree() {
 
   const handleClose = () => setOptionsMenu({ ...optionsMenu, anchorEl: null });
 
-  const resource = useStateResource<Data, Data>(data, {
+  const resource = useLogicResource<Data, Data>(data, {
     shouldResolve: (source) => Boolean(source.selected),
     shouldReject: () => false,
     shouldRenew: (source, resource) => resource.complete,

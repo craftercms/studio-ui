@@ -60,8 +60,8 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   const { anchorEl, site, modelId, parentId, handleClose, embeddedParentPath = null, anchorOrigin = undefined } = props;
   const models = useSelection<LookupTable<ContentInstance>>(state => state.preview.guest?.models);
   const contentTypesBranch = useSelection(state => state.contentTypes);
-  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
-  const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const authoringBase = useSelection<string>(state => state.env.authoringBase);
+  const defaultSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
 
   const [item, setItem] = useState(null);

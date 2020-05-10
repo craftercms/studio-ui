@@ -17,10 +17,30 @@
 import { get } from '../utils/ajax';
 import { pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { SystemInformation } from '../models/SystemInformation';
+import { Version } from '../models/monitoring/Version';
+import { Status } from '../models/monitoring/Status';
+import { LogEvent } from '../models/monitoring/LogEvent';
+import { Memory } from '../models/monitoring/Memory';
 
-export function getSystemInformation(): Observable<SystemInformation> {
-  return get('/studio/api/2/monitoring/version').pipe(
-    pluck('response', 'version')
-  );
+export function version(): Observable<Version> {
+  return get(`/studio/api/2/monitoring/version`).pipe(pluck('response', 'version'));
 }
+
+export function status(): Observable<Status> {
+  return get('/studio/api/2/monitoring/status').pipe(pluck('response', 'status'));
+}
+
+export function memory(): Observable<Memory> {
+  return get('/studio/api/2/monitoring/memory').pipe(pluck('response', 'memory'));
+}
+
+export function log(since: number): Observable<LogEvent[]> {
+  return get(`/studio/api/2/monitoring/log?since=${since}`).pipe(pluck('response', 'events'));
+}
+
+export default {
+  version,
+  status,
+  memory,
+  log
+};

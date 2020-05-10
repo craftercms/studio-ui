@@ -230,7 +230,7 @@ export default function ToolBar() {
   const site = useActiveSiteId();
   const sitesTable = useSelection<LookupTable<Site>>(state => state.sites.byId);
   const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
-  const { PREVIEW_LANDING_BASE } = useEnv();
+  const { previewLandingBase } = useEnv();
   const {
     guest,
     currentUrl,
@@ -238,7 +238,7 @@ export default function ToolBar() {
   } = usePreviewState();
   let addressBarUrl = guest?.url ?? currentUrl;
 
-  if (addressBarUrl === PREVIEW_LANDING_BASE) {
+  if (addressBarUrl === previewLandingBase) {
     addressBarUrl = '';
   }
 

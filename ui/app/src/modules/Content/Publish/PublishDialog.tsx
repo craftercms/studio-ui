@@ -25,9 +25,9 @@ import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import {
   useActiveSiteId,
-  useOnUnmount,
+  useUnmount,
   useSpreadState,
-  useStateResource
+  useLogicResource
 } from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 import { Resource } from '../../../models/Resource';
@@ -446,7 +446,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
 
   const siteId = useActiveSiteId();
 
-  useOnUnmount(props.onClosed);
+  useUnmount(props.onClosed);
 
   const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
   const userSitesRoles: String[] = user?.rolesBySite[siteId];
@@ -491,7 +491,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
     publishingChannels
   }), [items, publishingChannels, apiState]);
 
-  const resource = useStateResource<Return, Source>(publishSource, {
+  const resource = useLogicResource<Return, Source>(publishSource, {
     shouldResolve: (source) => (Boolean(source.items) && Boolean(source.publishingChannels)),
     shouldReject: (source) => Boolean(source.apiState.error),
     shouldRenew: (source, resource) => resource.complete,

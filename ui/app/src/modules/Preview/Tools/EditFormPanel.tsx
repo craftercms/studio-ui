@@ -81,8 +81,8 @@ export default function EditFormPanel() {
   const { formatMessage } = useIntl();
   const classes = styles({});
   const onBack = createBackHandler(dispatch);
-  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
-  const defaultSrc = `${AUTHORING_BASE}/legacy/form?`;
+  const authoringBase = useSelection<string>(state => state.env.authoringBase);
+  const defaultSrc = `${authoringBase}/legacy/form?`;
 
   const item = selected[0];
   const model = models[item.modelId];

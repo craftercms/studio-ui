@@ -23,8 +23,9 @@ import audiencesPanel from './audiencesPanel';
 import dialogs from './dialogs';
 import preview from './preview';
 import legacy from './legacy';
-import versions from './versions';
+import itemVersions from './itemVersions';
 import env from './env';
+import content from './content';
 import { switchMap } from 'rxjs/operators';
 import { batchActions } from '../actions/misc';
 
@@ -42,8 +43,9 @@ const epic: any[] = combineEpics.apply(this, [
   ...preview,
   ...dialogs,
   ...legacy,
-  ...versions,
-  ...env
+  ...itemVersions,
+  ...env,
+  ...content
 ]);
 
 export default epic as any;

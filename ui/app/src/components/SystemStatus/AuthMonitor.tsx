@@ -87,7 +87,7 @@ export default function AuthMonitor() {
   const { formatMessage } = useIntl();
 
   const { username, authType } = useSelection((state) => state.user) ?? { username: '', authType: 'db' };
-  const authoringUrl = useSelection<string>((state) => state.env.AUTHORING_BASE);
+  const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
   const { active, error, isFetching } = useSelection((state) => state.auth);
   const [password, setPassword] = useState<string>('');
   const [logoutUrl, setLogoutUrl] = useState(authoringUrl);

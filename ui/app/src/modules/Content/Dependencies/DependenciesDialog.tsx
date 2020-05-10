@@ -19,10 +19,10 @@ import { SandboxItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import {
   useActiveSiteId,
-  useOnUnmount,
+  useUnmount,
   useSelection,
   useSpreadState,
-  useStateResource
+  useLogicResource
 } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import {
@@ -550,12 +550,12 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     item,
     dependenciesShown
   });
-  useOnUnmount(props.onClosed);
+  useUnmount(props.onClosed);
   const [deps, setDeps] = useState(null);
   const [error, setError] = useState<ApiResponse>(null);
   const siteId = useActiveSiteId();
-  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
-  const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
+  const authoringBase = useSelection<string>(state => state.env.authoringBase);
+  const defaultFormSrc = `${authoringBase}/legacy/form`;
   const [contextMenu, setContextMenu] = useSpreadState({
     el: null,
     dependency: null
@@ -586,7 +586,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     return { deps, error };
   }, [deps, error]);
 
-  const resource = useStateResource<SandboxItem[], { deps: SandboxItem[], error: ApiResponse }>(
+  const resource = useLogicResource<SandboxItem[], { deps: SandboxItem[], error: ApiResponse }>(
     depsSource,
     {
       shouldResolve: (source) => Boolean(source.deps),

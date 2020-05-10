@@ -15,7 +15,7 @@
  */
 
 import { CONTENT_TYPE_JSON, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
-import { catchError, map, pluck, switchMap } from 'rxjs/operators';
+import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import {
   createElements,
@@ -58,6 +58,8 @@ import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import { parseLegacyItemToSandBoxItem } from '../utils/content';
+import QuickCreateItem from '../models/content/QuickCreateItem';
+import { stringify } from 'query-string';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -65,8 +67,14 @@ export function getComponentInstanceHTML(path: string): Observable<string> {
   );
 }
 
-export function getContent(site: string, path: string): Observable<string> {
-  return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
+interface GetContentOptions {
+  lock: boolean
+}
+
+export function getContent(site: string, path: string, options?: GetContentOptions): Observable<string> {
+  options = { lock: false, ...options };
+  const qs = stringify({ site_id: site, path, edit: options.lock });
+  return get(`/studio/api/1/services/api/1/content/get-content.json?${qs}`).pipe(
     pluck('response', 'content')
   );
 }
@@ -1095,9 +1103,9 @@ export function getBulkUploadUrl(site: string, path: string): string {
   return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`;
 }
 
-export function getQuickCreateContentList(siteId: string) {
-  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${siteId}`).pipe(
-    pluck('response')
+export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]> {
+  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${site}`).pipe(
+    pluck('response', 'items')
   );
 }
 
@@ -1174,9 +1182,9 @@ export function getPages(site: string, item: any): Observable<any> {
   );
 }
 
-export function deleteItems(siteId: string, user: string, submissionComment: string, data: AnyObject): Observable<any> {
+export function deleteItems(site: string, user: string, submissionComment: string, data: AnyObject): Observable<any> {
   return postJSON(
-    `/studio/api/1/services/api/1/workflow/go-delete.json?site=${siteId}&user=${user}&submissionComment=${submissionComment}`,
+    `/studio/api/1/services/api/1/workflow/go-delete.json?site=${site}&user=${user}&submissionComment=${submissionComment}`,
     data
   ).pipe(
     pluck('response'),
@@ -1184,6 +1192,15 @@ export function deleteItems(siteId: string, user: string, submissionComment: str
   );
 }
 
+export function lock(site: string, path: string): Observable<boolean> {
+  return getContent(site, path, { lock: true }).pipe(mapTo(true));
+}
+
+export function unlock(site: string, path: string): Observable<boolean> {
+  return get(`/studio/api/1/services/api/1/content/unlock-content.json?site=${site}&path=${path}`).pipe(
+    mapTo(true)
+  );
+}
 
 export default {
   getComponentInstanceHTML,
@@ -1211,7 +1228,7 @@ export default {
   fetchPublishingChannels,
   uploadDataUrl,
   getBulkUploadUrl,
-  getQuickCreateContentList,
+  getQuickCreateContentList: fetchQuickCreateList,
   fetchLegacyContentTypes,
   getItemVersions,
   getConfigurationVersions,

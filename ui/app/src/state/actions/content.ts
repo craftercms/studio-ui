@@ -15,8 +15,10 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import StandardAction from '../../models/StandardAction';
+import QuickCreateItem from '../../models/content/QuickCreateItem';
 
-// region Batch Actions
-export const batchActions = createAction<StandardAction[]>('BATCH_ACTIONS');
+// region Quick Create
+export const fetchQuickCreateList = createAction('FETCH_QUICK_CREATE_LIST');
+export const fetchQuickCreateListComplete = createAction<QuickCreateItem[]>('FETCH_QUICK_CREATE_LIST_COMPLETE');
+export const fetchQuickCreateListFailed = createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion

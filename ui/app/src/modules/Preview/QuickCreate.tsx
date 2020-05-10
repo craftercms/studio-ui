@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircleRounded';
@@ -22,12 +22,15 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
-import { getQuickCreateContentList } from '../../services/content';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
+import {
+  usePreviewState,
+  useQuickCreateListResource,
+  useSelection,
+  useSystemVersionResource
+} from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { changeCurrentUrl } from '../../state/actions/preview';
 import { showNewContentDialog } from '../../state/actions/dialogs';
 import { newContentCreationComplete, showEditDialog } from '../../state/reducers/dialogs/edit';
 
@@ -36,9 +39,10 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { fetchSystemInformation } from '../../state/actions/env';
-import GlobalState from '../../models/GlobalState';
+import QuickCreateItem from '../../models/content/QuickCreateItem';
+import { Resource } from '../../models/Resource';
+import Suspencified from '../../components/SystemStatus/Suspencified';
+import { getSimplifiedVersion } from '../../utils/string';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -47,7 +51,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     addBtn: {
       padding: 0
@@ -99,12 +103,20 @@ const useStyles = makeStyles((theme: Theme) =>
         textDecoration: 'underline',
         color: palette.blue.main
       }
+    },
+    quickCreateLoadingState: {
+      width: 80
     }
   })
 );
 
 interface QuickCreateMenuProps {
+  open: boolean;
   anchorEl: HTMLElement;
+  resource: {
+    version: Resource<string>;
+    quickCreate: Resource<QuickCreateItem[]>;
+  };
   onNewContentSelected?(): void;
   onQuickCreateItemSelected?(src: string): void;
   onClose?(): void;
@@ -114,66 +126,36 @@ interface QuickCreateMenuButtonProps {
   onMenuBtnClick(e): void;
 }
 
+interface QuickCreateSectionProps {
+  classes: { [className: string]: string };
+  onItemSelected: (item: QuickCreateItem) => any;
+  resource: {
+    version: Resource<string>;
+    quickCreate: Resource<QuickCreateItem[]>;
+  };
+}
+
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const {
-    anchorEl,
+    open,
     onClose,
+    anchorEl,
+    resource,
     onNewContentSelected,
     onQuickCreateItemSelected
   } = props;
   const classes = useStyles({});
-  const dispatch = useDispatch();
-  const siteId = useActiveSiteId();
-  const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
-  const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  const [quickCreateContentList, setQuickCreateContentList] = useState(null);
+  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
+  const baseFormSrc = `${authoringBase}/legacy/form`;
 
-  const systemInformation = useSelection<GlobalState['env']['SYSTEM_INFORMATION']['version']>(
-    (state) => state.env.SYSTEM_INFORMATION.version
-  );
-  const [studioVersion, setStudioVersion] = useState(null);
-
-  const onEmbeddedFormSaveSuccess = ({ data }) => {
-    data.item?.isPage && dispatch(changeCurrentUrl(data.redirectUrl));
-  };
-
-  const onNewContentClick = () => {
-    onClose();
-    onNewContentSelected?.();
-  };
-
-  const onFormDisplay = (srcData) => () => {
-    const { contentTypeId, path: _path } = srcData;
+  const onFormDisplay = ({ contentTypeId, path }: QuickCreateItem) => {
     const today = new Date();
-    const formatPath = _path
-      .replace('{year}', today.getFullYear())
+    const formatPath = path
+      .replace('{year}', `${today.getFullYear()}`)
       .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
-
-    onClose();
-    const src = `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
+    const src = `${baseFormSrc}?isNewContent=true&contentTypeId=${contentTypeId}&path=${formatPath}&type=form`;
     onQuickCreateItemSelected?.(src);
   };
-
-  useEffect(() => {
-    if (systemInformation) {
-      setStudioVersion(systemInformation.packageVersion.substr(0, 3));
-    }
-  }, [systemInformation]);
-
-  useEffect(() => {
-    if (siteId) {
-      getQuickCreateContentList(siteId).subscribe(
-        (data) => setQuickCreateContentList(data.items),
-        ({ response }) => {
-          dispatch(
-            showErrorDialog({
-              error: response.response
-            })
-          );
-        }
-      );
-    }
-  }, [siteId, dispatch]);
 
   return (
     <>
@@ -181,55 +163,73 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         classes={{ paper: classes.menu }}
         anchorEl={anchorEl}
         keepMounted
-        open={Boolean(anchorEl)}
+        open={open}
         onClose={onClose}
       >
-        <MenuItem className={classes.menuTitle} onClick={onNewContentClick}>
+        <MenuItem className={classes.menuTitle} onClick={onNewContentSelected}>
           <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
         </MenuItem>
         <Divider />
         <Typography component="h4" className={classes.menuSectionTitle}>
           <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
-        {quickCreateContentList?.map((item) => (
-          <MenuItem key={item.path} onClick={onFormDisplay(item)} className={classes.menuItem}>
-            {item.label}
-          </MenuItem>
-        ))}
-        {
-          quickCreateContentList?.length === 0 &&
-          <Card className={classes.quickCreateEmptyRoot}>
-            <CardContent className={classes.quickCreateEmptyCardContent}>
-              <Typography color="textSecondary" gutterBottom>
-                <ErrorOutlineOutlinedIcon fontSize={'small'} />
-              </Typography>
-              <Typography className={classes.quickCreateEmptyDescription}>
-                <FormattedMessage
-                  id="quickCreateMenu.learnMore"
-                  defaultMessage="Quick create has not been configured. Please contact your system administrator."
-                />
-              </Typography>
-            </CardContent>
-            <CardActions className={classes.quickCreateEmptyCardActions}>
-              {
-                studioVersion &&
-                <Button
-                  size="small"
-                  href={`https://docs.craftercms.org/en/${studioVersion}/developers/content-modeling.html#setting-up-quick-create`}
-                  target="_blank"
-                >
-                  <FormattedMessage id="quickCreateMenu.learnMore" defaultMessage="Learn More" />
-                </Button>
-              }
-            </CardActions>
-          </Card>
-        }
+        <Suspencified loadingStateProps={{ classes: { graphic: classes.quickCreateLoadingState } }}>
+          <QuickCreateSection
+            classes={classes}
+            resource={resource}
+            onItemSelected={onFormDisplay}
+          />
+        </Suspencified>
       </Menu>
     </>
   );
 }
 
-export function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
+function QuickCreateSection(props: QuickCreateSectionProps) {
+  const { resource, classes, onItemSelected } = props;
+  const quickCreateItems = resource.quickCreate.read();
+
+  let version = getSimplifiedVersion(resource.version.read());
+
+  return (
+    <>
+      {quickCreateItems.map((item) => (
+        <MenuItem key={item.path} onClick={() => onItemSelected(item)} className={classes.menuItem}>
+          {item.label}
+        </MenuItem>
+      ))}
+      {quickCreateItems.length === 0 && (
+        <Card className={classes.quickCreateEmptyRoot}>
+          <CardContent className={classes.quickCreateEmptyCardContent}>
+            <Typography color="textSecondary" gutterBottom>
+              <ErrorOutlineOutlinedIcon fontSize={'small'} />
+            </Typography>
+            <Typography className={classes.quickCreateEmptyDescription}>
+              <FormattedMessage
+                id="quickCreateMenu.learnMore"
+                defaultMessage="Quick create has not been configured. Please contact your system administrator."
+              />
+            </Typography>
+          </CardContent>
+          <CardActions className={classes.quickCreateEmptyCardActions}>
+            {version && (
+              <Button
+                size="small"
+                href={`https://docs.craftercms.org/en/${version}/developers/content-modeling.html#setting-up-quick-create`}
+                target="_blank"
+                rel="nofollow noreferrer"
+              >
+                <FormattedMessage id="quickCreateMenu.learnMore" defaultMessage="Learn More" />
+              </Button>
+            )}
+          </CardActions>
+        </Card>
+      )}
+    </>
+  );
+}
+
+function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
   const { onMenuBtnClick } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
@@ -245,16 +245,11 @@ export function QuickCreateMenuButton(props: QuickCreateMenuButtonProps) {
   );
 }
 
-export default function QuickCreate() {
+export default function() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentPreview, setCurrentPreview] = useState(null);
   const { guest } = usePreviewState();
   const dispatch = useDispatch();
-  const siteId = useActiveSiteId();
-
-  useEffect(() => {
-    dispatch(fetchSystemInformation());
-  }, [dispatch]);
 
   const onMenuBtnClick = (e) => {
     setAnchorEl(e.currentTarget);
@@ -263,19 +258,17 @@ export default function QuickCreate() {
       const {
         craftercms: { label, path }
       } = models[modelId];
-
-      const item = {
+      setCurrentPreview({
         label,
         path
-      };
-
-      setCurrentPreview(item);
+      });
     }
   };
 
   const onMenuClose = () => setAnchorEl(null);
 
   const onNewContentSelected = () => {
+    onMenuClose();
     dispatch(
       showNewContentDialog({
         item: currentPreview,
@@ -286,6 +279,7 @@ export default function QuickCreate() {
   };
 
   const onQuickCreateItemSelected = (src: string) => {
+    onMenuClose();
     dispatch(
       showEditDialog({
         src,
@@ -297,12 +291,18 @@ export default function QuickCreate() {
     );
   };
 
+  const quickCreateResource = useQuickCreateListResource();
+
+  const versionResource = useSystemVersionResource();
+
   return (
     <>
       <QuickCreateMenuButton onMenuBtnClick={onMenuBtnClick} />
       <QuickCreateMenu
+        open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={onMenuClose}
+        resource={{ quickCreate: quickCreateResource, version: versionResource }}
         onNewContentSelected={onNewContentSelected}
         onQuickCreateItemSelected={onQuickCreateItemSelected}
       />

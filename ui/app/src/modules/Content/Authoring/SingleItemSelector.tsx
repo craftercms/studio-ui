@@ -32,7 +32,7 @@ import { LookupTable } from '../../../models/LookupTable';
 import ApiResponse from '../../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
-import { useActiveSiteId, useStateResource } from '../../../utils/hooks';
+import { useActiveSiteId, useLogicResource } from '../../../utils/hooks';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import Breadcrumbs from '../../../components/Navigation/PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../../../components/Navigation/PathNavigator/PathNavigatorList';
@@ -286,7 +286,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     [state, site]
   );
 
-  const itemsResource = useStateResource<SandboxItem[], SingleItemSelectorState>(state, {
+  const itemsResource = useLogicResource<SandboxItem[], SingleItemSelectorState>(state, {
     shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
     shouldReject: (consumer) => Boolean(consumer.error),
     shouldRenew: (consumer, resource) => (

@@ -14,9 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction } from '@reduxjs/toolkit';
-import StandardAction from '../../models/StandardAction';
-
-// region Batch Actions
-export const batchActions = createAction<StandardAction[]>('BATCH_ACTIONS');
-// endregion
+export interface Memory {
+  totalJvmMemory: number;
+  freeJvmMemory: number;
+  maxJvmMemory: number;
+  totalOsMemory: number;
+  freeOsMemory: number;
+  totalSwapMemory: number;
+  freeSwapMemory: number;
+}
