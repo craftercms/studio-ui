@@ -62,6 +62,10 @@ export interface DZStats {
   currentDZChildrenRects: DOMRect[];
 }
 
+export interface ValidatedRecord extends Record {
+  validations: any;
+}
+
 export interface Record {
   modelId?: string;
   index?: number | string;

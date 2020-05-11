@@ -454,7 +454,7 @@ export function Guest(props: GuestProps) {
 
     /*onDragStart*/
     dragstart(e, physicalRecord: Record): void {
-
+      console.log('dragstart');
       e.stopPropagation();
       (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', null);
 
@@ -595,10 +595,12 @@ export function Guest(props: GuestProps) {
         return;
       }
 
-      const validatedReceptacles = receptacles.filter((id) => {
-        // TODO: min/max count validations
-        return true;
-      });
+      const validatedReceptacles = iceRegistry.runReceptaclesValidations(receptacles);
+
+      // const validatedReceptacles = receptacles.filter((id) => {
+      //   // TODO: min/max count validations
+      //   return true;
+      // });
 
       // scrollToReceptacle(validatedReceptacles);
 

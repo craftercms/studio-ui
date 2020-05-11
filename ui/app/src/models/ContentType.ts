@@ -23,9 +23,18 @@ export interface ContentTypeSection {
   expandByDefault: boolean;
 }
 
+interface ContentTypeFieldValidation {
+  id: string;
+  value: any;
+  level: string;
+  //level: 'required' | 'suggestion';
+}
+
 export interface ContentTypeFieldValidations {
-  tags: string[];
-  contentTypes: string[];
+  tags: ContentTypeFieldValidation;
+  contentTypes: ContentTypeFieldValidation;
+  minCount: ContentTypeFieldValidation;
+  maxCount: ContentTypeFieldValidation;
 }
 
 export interface ContentTypeField {

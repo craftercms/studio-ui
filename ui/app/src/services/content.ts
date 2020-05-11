@@ -71,7 +71,7 @@ interface GetContentOptions {
 }
 
 export function getContent(site: string, path: string, options?: GetContentOptions): Observable<string> {
-  const qs = toQueryString({ site_id: site, path, edit: options.lock });
+  const qs = toQueryString({ site_id: site, path, edit: options?.lock });
   return get(`/studio/api/1/services/api/1/content/get-content.json${qs}`).pipe(
     pluck('response', 'content')
   );
@@ -87,7 +87,7 @@ export function getLegacyItem(site: string, path: string): Observable<LegacyItem
 export function getSandboxItem(site: string, path: string): Observable<SandboxItem> {
   return getLegacyItem(site, path).pipe(
     map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem)
-  )
+  );
 }
 
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
@@ -251,7 +251,7 @@ export function fetchFormDefinition(site: string, contentTypeId: string): Observ
 export function fetchLegacyContentType(site: string, contentTypeId: string): Observable<LegacyContentType> {
   return get(`/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`).pipe(
     pluck('response')
-  )
+  );
 }
 
 export function fetchContentType(site: string, contentTypeId: string): Observable<ContentType> {
@@ -555,17 +555,35 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
     }, {});
 
   let validations = {
-    tags: [],
-    contentTypes: []
+    tags: {
+      id: 'tags',
+      value: [],
+      level: 'required'
+    },
+    contentTypes: {
+      id: 'contentTypes',
+      value: [],
+      level: 'required'
+    },
+    minCount: {
+      id: 'minCount',
+      value: isBlank(map.minSize.value) ? null : parseInt(map.minSize.value),
+      level: 'required'
+    },
+    maxCount: {
+      id: 'maxCount',
+      value: isBlank(map.maxSize.value) ? null : parseInt(map.maxSize.value),
+      level: 'required'
+    }
   };
 
   map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
     if (receptaclesLookup[value]) {
       asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
         if (prop.name === 'contentTypes') {
-          validations.contentTypes = prop.value ? prop.value.split(',') : [];
+          validations.contentTypes.value = prop.value ? prop.value.split(',') : [];
         } else if (prop.name === 'tags') {
-          validations.tags = prop.value ? prop.value.split(',') : [];
+          validations.tags.value = prop.value ? prop.value.split(',') : [];
         }
       });
     }

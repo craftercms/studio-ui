@@ -15,6 +15,7 @@
  */
 
 import { LookupTable } from './LookupTable';
+import { ContentTypeFieldValidations } from '@craftercms/studio-ui/src/models/ContentType';
 
 type LegacyComponentTypes = 'component' | 'page' | 'unknown';
 
@@ -23,9 +24,7 @@ export interface ContentTypeField {
   name: string;
   type: string;
   sortable: boolean;
-  validations: {
-    contentTypes: string[];
-  };
+  validations: ContentTypeFieldValidations;
   defaultValue: string;
   required: boolean;
   fields?: LookupTable<ContentTypeField>;

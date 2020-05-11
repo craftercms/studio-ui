@@ -28,7 +28,7 @@ import { ModelHelper } from './ModelHelper';
 import { ContentInstance } from '../models/ContentInstance';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
-import { Record, ReferentialEntries } from '../models/InContextEditing';
+import { Record, ReferentialEntries, ValidatedRecord } from '../models/InContextEditing';
 
 export class ICERegistry {
 
@@ -232,7 +232,7 @@ export class ICERegistry {
       const { fieldId, index } = record;
       if (notNullOrUndefined(fieldId)) {
         const { field, contentType: _contentType, model } = this.getReferentialEntries(record);
-        const acceptedTypes = field?.validations?.contentTypes;
+        const acceptedTypes = field?.validations?.contentTypes.value;
         const accepts = acceptedTypes && (
           acceptedTypes.includes(contentTypeId) ||
           acceptedTypes.includes('*')
@@ -260,6 +260,18 @@ export class ICERegistry {
         return false;
       }
     });
+  }
+
+  runReceptaclesValidations(receptacles: Record[]): ValidatedRecord[] {
+    const validatedRecords = [];
+    receptacles.map(record => {
+      const validatedRecord = { ...record, validations: {} };
+      let { field: { validations } } = this.getReferentialEntries(record);
+      validatedRecords.push(validatedRecord);
+
+    });
+    //const { field: { validations } } = this.getReferentialEntries(record);
+    return [];
   }
 
   // minCountCheck() {
