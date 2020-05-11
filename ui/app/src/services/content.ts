@@ -1236,5 +1236,6 @@ export default {
   fetchQuickCreateList,
   fetchLegacyContentTypes,
   getContentHistory: getHistory,
-  revertTo
+  revertTo,
+  unlock
 };

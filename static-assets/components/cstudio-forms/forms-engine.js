@@ -1562,6 +1562,7 @@ var CStudioForms =
           };
 
           var unloadFn = function(e) {
+            console.log('UNLOAD');
             if (_notifyServer) {
               path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
               if (path && path.indexOf('.xml') != -1) {
@@ -1708,20 +1709,27 @@ var CStudioForms =
               } else {
                 if (path && path.indexOf('.xml') != -1) {
                   var entityId = buildEntityIdFn(null);
-                  CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
-                }
-                if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
-                  var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                  var componentsOn = !!sessionStorage.getItem('components-on');
-                  if (componentsOn) {
-                    CStudioAuthoring.Operations.refreshPreviewParent();
-                  }
-                } else {
-                  window.close();
-                  if (componentsOn) {
-                    CStudioAuthoring.Operations.refreshPreviewParent();
-                  }
+
+                  CrafterCMSNext.services.content.unlock(CStudioAuthoringContext.site, entityId).subscribe(
+                    (response) => {
+                      if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
+                        var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                        CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                        var componentsOn = !!sessionStorage.getItem('components-on');
+                        if (componentsOn) {
+                          CStudioAuthoring.Operations.refreshPreviewParent();
+                        }
+                      } else {
+                        window.close();
+                        if (componentsOn) {
+                          CStudioAuthoring.Operations.refreshPreviewParent();
+                        }
+                      }
+                    },
+                    () => {
+                      //ERROR
+                    }
+                  );
                 }
               }
             }
@@ -1792,7 +1800,7 @@ var CStudioForms =
             cancelButtonEl.value = CMgs.format(formsLangBundle, 'cancel');
             formButtonContainerEl.appendChild(cancelButtonEl);
 
-            YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
+            // YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
             YAHOO.util.Event.addListener(cancelButtonEl, 'click', cancelFn, me);
           } else {
             var closeButtonEl = document.createElement('input');
@@ -1802,7 +1810,7 @@ var CStudioForms =
             formButtonContainerEl.appendChild(closeButtonEl);
             YDom.setStyle(formButtonContainerEl, 'text-align', 'center');
 
-            YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
+            // YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
             YAHOO.util.Event.addListener(closeButtonEl, 'click', cancelFn, me);
 
             var focusEl = window;
