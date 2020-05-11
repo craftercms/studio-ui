@@ -72,7 +72,7 @@ import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useMount, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou, nou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
@@ -98,14 +98,14 @@ export function PreviewConcierge(props: any) {
   const site = useActiveSiteId();
   const { guest, selectedTool } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
-  const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelection(state => state.env);
+  const { guestBase, xsrfArgument } = useSelection(state => state.env);
   const priorState = useRef({ site });
   const assets = useSelection(state => state.preview.assets);
   const contentTypeComponents = useSelection(state => state.preview.components);
   const audiencesPanel = useSelection(state => state.preview.audiencesPanel);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  useOnMount(() => {
+  useMount(() => {
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
     return () => {
       sub.unsubscribe();
@@ -302,7 +302,7 @@ export function PreviewConcierge(props: any) {
             site,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
             `/static-assets/images/${payload.modelId}`,
-            XSRF_CONFIG_ARGUMENT
+            xsrfArgument
           ).subscribe(
             ({ payload: { progress } }) => {
               const percentage = Math.floor(parseInt((progress.bytesUploaded / progress.bytesTotal * 100).toFixed(2)));
@@ -392,7 +392,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     };
 
-  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT, contentTypeComponents, audiencesPanel, enqueueSnackbar]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, xsrfArgument, contentTypeComponents, audiencesPanel, enqueueSnackbar]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {
@@ -405,7 +405,7 @@ export function PreviewConcierge(props: any) {
         dispatch(checkOutGuest());
       }
     }
-  }, [site, guest, GUEST_BASE, dispatch, enqueueSnackbar, closeSnackbar]);
+  }, [site, guest, guestBase, dispatch, enqueueSnackbar, closeSnackbar]);
 
   return (
     <>

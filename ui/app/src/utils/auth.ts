@@ -17,13 +17,17 @@
 import Cookies from 'js-cookie';
 import { setGlobalHeaders } from './ajax';
 
-export function getRequestForgeryToken(): string {
-  return Cookies.get('XSRF-TOKEN');
+const siteCookie = 'crafterSite';
+const xsrfTokenHeader = 'X-XSRF-TOKEN';
+const xsrfTokenCookie = 'XSRF-TOKEN';
+
+export function getRequestForgeryToken(cookieName = xsrfTokenCookie): string {
+  return Cookies.get(cookieName);
 }
 
-export function setRequestForgeryToken(): void {
+export function setRequestForgeryToken(headerName = xsrfTokenHeader): void {
   const token = getRequestForgeryToken();
-  setGlobalHeaders({ 'X-XSRF-TOKEN': token });
+  setGlobalHeaders({ [headerName]: token });
 }
 
 export function getCookieDomain(): string {
@@ -43,8 +47,8 @@ export function setSiteCookie(name: string, value: string): void {
   });
 }
 
-export function getSiteCookie(cookieName: string = 'crafterSite'): string {
-  return Cookies.get('crafterSite') || null;
+export function getSiteCookie(cookieName: string = siteCookie): string {
+  return Cookies.get(cookieName) || null;
 }
 
 export default {

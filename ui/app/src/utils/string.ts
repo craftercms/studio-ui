@@ -135,6 +135,20 @@ export function insureSingleSlash(url: string): string {
     : url.replace(/\/+/g, '/');
 }
 
+export function getSimplifiedVersion(
+  version: string,
+  options: { minor?: boolean, patch?: boolean } = {}
+) {
+  if (!version) {
+    return version;
+  }
+  const { minor = true, patch = false } = options;
+  const pieces = version.split('.');
+  (!patch) && pieces.pop();
+  (!minor) && pieces.pop();
+  return pieces.join('.');
+}
+
 export default {
   camelize,
   capitalize,

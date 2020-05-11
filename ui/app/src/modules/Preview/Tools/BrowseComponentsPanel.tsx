@@ -17,7 +17,7 @@
 import React, { useCallback, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, useIntl } from 'react-intl';
-import { useDebouncedInput, useSelection, useStateResourceSelection } from '../../../utils/hooks';
+import { useDebouncedInput, useSelection, useSelectorResource } from '../../../utils/hooks';
 import { PagedEntityState } from '../../../models/GlobalState';
 import { nnou, pluckProps } from '../../../utils/object';
 import { ErrorBoundary } from '../../../components/SystemStatus/ErrorBoundary';
@@ -160,7 +160,7 @@ export default function BrowseComponentsPanel() {
     )
     : null;
   const isFetching = useSelection((state) => state.preview.components.isFetching);
-  const resource = useStateResourceSelection<ComponentResource, PagedEntityState<ContentInstance>>(
+  const resource = useSelectorResource<ComponentResource, PagedEntityState<ContentInstance>>(
     (state) => state.preview.components,
     {
       shouldRenew: (source, resource) => resource.complete,
@@ -184,7 +184,7 @@ export default function BrowseComponentsPanel() {
     }
   );
   const { formatMessage } = useIntl();
-  const authoringBase = useSelection<string>((state) => state.env.AUTHORING_BASE);
+  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const hostToGuest$ = getHostToGuestBus();
 
   const onDragStart = (item: ContentInstance) =>

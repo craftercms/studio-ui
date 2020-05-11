@@ -21,7 +21,7 @@ import {
   useActiveSiteId,
   useDebouncedInput,
   useSelection,
-  useStateResourceSelection
+  useSelectorResource
 } from '../../../utils/hooks';
 import { MediaItem } from '../../../models/Search';
 import { createStyles, fade } from '@material-ui/core';
@@ -166,7 +166,7 @@ export default function AssetsPanel() {
   const [dragInProgress, setDragInProgress] = useState(false);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
-  const resource = useStateResourceSelection<AssetResource, PagedEntityState<MediaItem>>(
+  const resource = useSelectorResource<AssetResource, PagedEntityState<MediaItem>>(
     (state) => state.preview.assets,
     {
       shouldRenew: (source, resource) => resource.complete,
@@ -182,7 +182,7 @@ export default function AssetsPanel() {
       }
     }
   );
-  const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelector<GlobalState, GlobalState['env']>(
+  const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>(
     (state) => state.env
   );
   const { formatMessage } = useIntl();
@@ -216,7 +216,7 @@ export default function AssetsPanel() {
             dataUrl: reader.result
           },
           '/static-assets/images/',
-          XSRF_CONFIG_ARGUMENT
+          xsrfArgument
         ).subscribe(
           () => {
           },
@@ -230,7 +230,7 @@ export default function AssetsPanel() {
       reader.readAsDataURL(file);
       setDragInProgress(false);
     },
-    [XSRF_CONFIG_ARGUMENT, dispatch, site]
+    [xsrfArgument, dispatch, site]
   );
 
   useEffect(() => {
@@ -319,7 +319,7 @@ export default function AssetsPanel() {
             onPageChanged={onPageChanged}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
-            GUEST_BASE={GUEST_BASE}
+            guestBase={guestBase}
             onDragDrop={onDragDrop}
           />
         </Suspencified>
@@ -329,7 +329,7 @@ export default function AssetsPanel() {
 }
 
 export function AssetsPanelUI(props) {
-  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, GUEST_BASE } = props;
+  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase } = props;
   const assets: AssetResource = assetsResource.read();
   const { count, pageNumber, items, limit } = assets;
   const { formatMessage } = useIntl();
@@ -359,7 +359,7 @@ export function AssetsPanelUI(props) {
           <MediaCard
             key={item.path}
             item={item}
-            previewAppBaseUri={GUEST_BASE}
+            previewAppBaseUri={guestBase}
             hasSubheader={false}
             avatar={DragIndicatorRounded}
             classes={{ root: classes.card }}

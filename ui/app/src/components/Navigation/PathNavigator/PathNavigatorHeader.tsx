@@ -51,11 +51,11 @@ export default function (props: HeaderProps) {
   };
   return (
     <header className={clsx(classes.headerRoot)} onClick={onClick}>
-      {typeof Icon === 'string' ? (
+      {Icon && (typeof Icon === 'string' ? (
         <span className={`fa ${Icon}`} />
       ) : (
         <Icon className={classes.pagesIcon} />
-      )}
+      ))}
       <Typography
         variant="body1"
         component="h6"

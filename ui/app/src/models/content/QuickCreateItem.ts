@@ -14,15 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface SystemInformation {
-  javaVendor: string;
-  javaVersion: string;
-  javaVm: string;
-  osArch: string;
-  osName: string;
-  osVersion: string;
-  packageBuild: string;
-  packageBuildDate: string;
-  packageName: string;
-  packageVersion: string;
+interface QuickCreateItem {
+  path: string;
+  label: string;
+  siteId: string;
+  contentTypeId: string;
 }
+
+export default QuickCreateItem;

@@ -18,7 +18,7 @@ import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { useOnUnmount, useSpreadState, useStateResource } from '../../../utils/hooks';
+import { useUnmount, useSpreadState, useLogicResource } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
@@ -217,11 +217,11 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
   const classes = historyStyles({});
   const dispatch = useDispatch();
 
-  useOnUnmount(props.onClosed);
+  useUnmount(props.onClosed);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
-  const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
+  const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
     shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
     shouldRenew: (versionsBranch, resource) => (

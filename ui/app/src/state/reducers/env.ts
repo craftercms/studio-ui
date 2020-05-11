@@ -16,26 +16,17 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
-import {
-  fetchSystemInformation,
-  fetchSystemInformationComplete,
-  fetchSystemInformationFailed
-} from '../actions/env';
-
-const systemInformationInitialState = {
-  isFetching: false,
-  error: null,
-  version: null
-};
+import { fetchSystemVersionComplete } from '../actions/env';
+import { Version } from '../../models/monitoring/Version';
 
 const initialState: GlobalState['env'] = ((origin: string) => ({
-  AUTHORING_BASE: `${origin}/studio`,
-  GUEST_BASE: origin,
-  PREVIEW_LANDING_BASE: `/studio/preview-landing`,
-  SITE_COOKIE: 'crafterSite',
-  XSRF_CONFIG_ARGUMENT: '_csrf',
-  XSRF_CONFIG_HEADER: 'X-XSRF-TOKEN',
-  SYSTEM_INFORMATION: systemInformationInitialState
+  authoringBase: `${origin}/studio`,
+  guestBase: origin,
+  xsrfHeader: 'X-XSRF-TOKEN',
+  xsrfArgument: '_csrf',
+  siteCookieName: 'crafterSite',
+  previewLandingBase: `/studio/preview-landing`,
+  version: null
 }))(
   process.env.NODE_ENV === 'production'
     ? window.location.origin
@@ -48,28 +39,9 @@ const initialState: GlobalState['env'] = ((origin: string) => ({
 const reducer = createReducer<GlobalState['env']>(
   initialState,
   {
-    [fetchSystemInformation.type]: (state) => ({
+    [fetchSystemVersionComplete.type]: (state, { payload }: { payload: Version }) => ({
       ...state,
-      SYSTEM_INFORMATION: {
-        ...state.SYSTEM_INFORMATION,
-        isFetching: true
-      }
-    }),
-    [fetchSystemInformationComplete.type]: (state, action) => ({
-      ...state,
-      SYSTEM_INFORMATION: {
-        ...state.SYSTEM_INFORMATION,
-        isFetching: false,
-        version: action.payload
-      }
-    }),
-    [fetchSystemInformationFailed.type]: (state, action) => ({
-      ...state,
-      SYSTEM_INFORMATION: {
-        ...state.SYSTEM_INFORMATION,
-        isFetching: false,
-        error: action.payload
-      }
+      version: payload.packageVersion.replace('-SNAPSHOT', '')
     })
   }
 );

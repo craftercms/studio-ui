@@ -14,9 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction } from '@reduxjs/toolkit';
-import StandardAction from '../../models/StandardAction';
-
-// region Batch Actions
-export const batchActions = createAction<StandardAction[]>('BATCH_ACTIONS');
-// endregion
+export interface Version {
+  javaVendor: string;
+  javaVersion: string;
+  javaVm: string;
+  osArch: string;
+  osName: string;
+  osVersion: string;
+  packageBuild: string;
+  packageBuildDate: string;
+  packageName: string;
+  packageVersion: string;
+}

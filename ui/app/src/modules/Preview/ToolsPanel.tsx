@@ -46,7 +46,7 @@ import {
   useActiveSiteId,
   usePreviewState,
   useSelection,
-  useStateResource
+  useLogicResource
 } from '../../utils/hooks';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
@@ -138,7 +138,12 @@ const translations = defineMessages({
     id: 'craftercms.ice.audiences.title',
     defaultMessage: 'Audience Targeting'
   },
+  // TODO: Remove/clean up.
   publishingChannel: {
+    id: 'craftercms.ice.simulator.title_legacy',
+    defaultMessage: 'Device Simulator'
+  },
+  deviceSimulator: {
     id: 'craftercms.ice.simulator.title',
     defaultMessage: 'Device Simulator'
   },
@@ -263,7 +268,7 @@ export default function ToolsPanel() {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { guest, tools, selectedTool, showToolsPanel } = usePreviewState();
-  const baseUrl = useSelection<string>((state) => state.env.AUTHORING_BASE);
+  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
   let Tool = guest?.selected
     ? EditFormPanel
@@ -273,7 +278,7 @@ export default function ToolsPanel() {
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
   let config = toolMeta?.config;
 
-  const resource = useStateResource(tools, {
+  const resource = useLogicResource(tools, {
     shouldRenew: (source, resource) => resource.complete,
     shouldResolve: (source) => nnou(source),
     shouldReject: () => false,

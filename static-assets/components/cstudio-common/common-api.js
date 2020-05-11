@@ -721,7 +721,7 @@ var nodeOpen = false,
           type: 'SHOW_DELETE_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
+            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
               type: 'BATCH_ACTIONS',
               payload: [
@@ -754,7 +754,7 @@ var nodeOpen = false,
       },
 
       viewContentHistory: function (contentObj, isWrite, rootPath) {
-        const item = CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(contentObj);
+        const item = CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(contentObj);
 
         CrafterCMSNext.system.store.dispatch({
           type: 'BATCH_ACTIONS',
@@ -829,7 +829,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
+            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(item)),
             scheduling,
             onSuccess: {
               type: 'BATCH_ACTIONS',
@@ -856,7 +856,7 @@ var nodeOpen = false,
           type: 'SHOW_DEPENDENCIES_DIALOG',
           payload: {
             open: true,
-            item: CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(items[0]),
+            item: CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(items[0]),
             dependenciesShown
           }
         });
@@ -870,7 +870,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.utils.content.parseLegacyItemToSandBoxItem(item)),
+            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(item)),
             onSuccess: {
               type: 'BATCH_ACTIONS',
               payload: [

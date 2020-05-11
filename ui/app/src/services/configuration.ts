@@ -26,6 +26,7 @@ import {
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import { createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
+import { VersionsResponse } from '../models/Version';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -317,9 +318,16 @@ export function getProductLanguages(): Observable<{ id: string; label: string }[
   return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
 }
 
+export function getHistory(site: string, path: string, environment: string, module: string): Observable<VersionsResponse> {
+  return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${path}&environment=${environment}&module=${module}`).pipe(
+    pluck('response', 'history')
+  );
+}
+
 export default {
   getProductLanguages,
   getRawContent: getConfiguration,
   getDOM,
-  getGlobalMenuItems
+  getGlobalMenuItems,
+  getConfigurationHistory: getHistory
 };

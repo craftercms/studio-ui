@@ -37,13 +37,14 @@ import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
 import { forkJoin, Observable } from 'rxjs';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, useEnv, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useMount, useSelection } from '../../utils/hooks';
 import { forEach } from '../../utils/array';
 import { getInnerHtml } from '../../utils/xml';
 import { createStyles } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
-import { camelize, popPiece } from '../../utils/string';
+import { camelize, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite, fetchSites } from '../../state/reducers/sites';
+import { fetchSystemVersion } from '../../state/actions/env';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -294,6 +295,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   const { anchor, onMenuClose, rolesBySite } = props;
   const classes = globalNavStyles({});
   const sitesState = useSelection(state => state.sites);
+  const { version } = useEnv();
   const sites = useMemo(() => Object.values(sitesState.byId), [sitesState]);
   const [menuItems, setMenuItems] = useState(null);
   const [siteMenu, setSiteMenu] = useState(null);
@@ -302,26 +304,35 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
-  const { AUTHORING_BASE } = useEnv();
+  const { authoringBase } = useEnv();
   const crafterSite = useActiveSiteId();
   const dispatch = useDispatch();
 
-  const cardActions = useMemo(() => ([
-    {
-      name: formatMessage(messages.preview),
-      onClick: () => navigateTo(globalNavUrlMapping.siteDashboard)
-    },
-    {
-      name: formatMessage(messages.dashboard),
-      onClick: () => navigateTo(globalNavUrlMapping.siteDashboard)
-    }
-  ]), [formatMessage]);
+  const cardActions = useMemo(
+    () => ([
+      {
+        name: formatMessage(messages.dashboard),
+        href: getLink('siteDashboard', authoringBase)
+      },
+      {
+        name: formatMessage(messages.preview),
+        href: getLink('preview', authoringBase)
+      },
+      {
+        name: formatMessage(messages.siteConfig),
+        href: getLink('siteConfig', authoringBase)
+      }
+    ]),
+    // Disable exhaustive hooks check since only need to create on mount
+    // eslint-disable-next-line
+    []
+  );
 
   const handleErrorBack = () => setApiState({ ...apiState, error: false });
 
   const onSiteCardClick = (id: string) => {
     dispatch(changeSite(id));
-    navigateTo(`${AUTHORING_BASE}/preview`);
+    navigateTo(`${authoringBase}/preview`);
   };
 
   useEffect(() => {
@@ -376,6 +387,10 @@ export default function GlobalNav(props: GlobalNavProps) {
       );
     }
   }, [crafterSite, dispatch, rolesBySite]);
+
+  useMount(() => {
+    version === null && dispatch(fetchSystemVersion());
+  });
 
   return (
     <Popover
@@ -448,19 +463,19 @@ export default function GlobalNav(props: GlobalNavProps) {
                     key={item.id}
                     title={formatMessage(messages[popPiece(camelize(item.id))])}
                     icon={item.icon}
-                    link={getLink(item.id, AUTHORING_BASE)}
+                    link={getLink(item.id, authoringBase)}
                     onClick={onMenuClose}
                   />
                 ))}
                 <Tile
                   title={formatMessage(messages.docs)}
                   icon={Docs}
-                  link="https://docs.craftercms.org/en/3.1/index.html"
+                  link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
                   target="_blank"
                 />
                 <Tile
                   icon={About}
-                  link={getLink('about', AUTHORING_BASE)}
+                  link={getLink('about', authoringBase)}
                   title={formatMessage(messages.about)}
                 />
               </nav>
@@ -472,34 +487,34 @@ export default function GlobalNav(props: GlobalNavProps) {
                   <Tile
                     title={formatMessage(messages.dashboard)}
                     icon="fa-tasks"
-                    link={`${AUTHORING_BASE}/site-dashboard`}
+                    link={`${authoringBase}/site-dashboard`}
                     onClick={onMenuClose}
                   />
                 )}
                 <Tile
                   title={formatMessage(messages.preview)}
                   icon={Preview}
-                  link={`${AUTHORING_BASE}/next/preview`}
+                  link={`${authoringBase}/next/preview`}
                   onClick={onMenuClose}
                 />
                 <Tile
                   title={formatMessage(messages.legacyPreview)}
                   icon={DevicesIcon}
-                  link={getLink('legacy.preview', AUTHORING_BASE)}
+                  link={getLink('legacy.preview', authoringBase)}
                   disabled={!crafterSite}
                 />
                 {siteMenu?.[siteMenuKeys.siteConfig] && (
                   <Tile
                     title={formatMessage(messages.siteConfig)}
                     icon="fa-sliders"
-                    link={getLink('siteConfig', AUTHORING_BASE)}
+                    link={getLink('siteConfig', authoringBase)}
                     onClick={onMenuClose}
                   />
                 )}
                 <Tile
                   title={formatMessage(messages.search)}
                   icon={SearchIcon}
-                  link={getLink('search', AUTHORING_BASE)}
+                  link={getLink('search', authoringBase)}
                   disabled={!crafterSite}
                 />
               </nav>

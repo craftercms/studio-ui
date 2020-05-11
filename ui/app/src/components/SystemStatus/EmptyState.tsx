@@ -55,11 +55,11 @@ export interface EmptyStateProps {
 
 export default function EmptyState(props: EmptyStateProps) {
   const classes = useStyles({});
-  const { image, title, subtitle, classes: propClasses, children } = props;
+  const { image = emptyImage, title, subtitle, classes: propClasses, children } = props;
 
   return (
     <div className={clsx(classes.root, propClasses?.root)}>
-      <img className={clsx(classes.graphic, propClasses?.image)} src={image ?? emptyImage} alt="" />
+      {image && <img className={clsx(classes.graphic, propClasses?.image)} src={image} alt="" />}
       {title && (
         <Typography
           variant="h6"

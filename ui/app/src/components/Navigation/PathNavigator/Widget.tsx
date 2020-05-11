@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useReducer, useState } from 'react';
+import React, { useCallback, useReducer, useState, Fragment } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
-  copyItem,
-  cutItem,
+  copy,
+  cut,
   getChildrenByPath,
   getPages,
-  pasteItem
+  paste
 } from '../../../services/content';
 import { getTargetLocales } from '../../../services/translation';
 import { LegacyItem, SandboxItem } from '../../../models/Item';
@@ -31,9 +31,9 @@ import { LookupTable } from '../../../models/LookupTable';
 import ContextMenu, { SectionItem } from '../../ContextMenu';
 import {
   useActiveSiteId,
-  useOnMount,
+  useMount,
   useSpreadState,
-  useStateResource
+  useLogicResource
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
 import ContentLocalizationDialog from '../../Dialogs/ContentLocalizationDialog';
@@ -53,6 +53,36 @@ import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import { fetchItemVersions } from '../../../state/reducers/versions';
 import { showDependenciesDialog, showHistoryDialog } from '../../../state/actions/dialogs';
+import ContentLoader from "react-content-loader"
+
+const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
+const createRand = () => rand(70, 85);
+
+const MyLoader = React.memo(function () {
+  const [items] = useState(() => {
+    const numOfItems = 5;
+    const start = 20;
+    return new Array(numOfItems).fill(null).map((_, i) => ({
+      y: start + (30 * i),
+      width: createRand()
+    }))
+  });
+  return (
+    <ContentLoader
+      speed={2}
+      width="100%"
+      backgroundColor="#f3f3f3"
+      foregroundColor="#ecebeb"
+    >
+      {items.map(({ y, width }, i) =>
+        <Fragment key={i}>
+          <circle cx="10" cy={y} r="8" />
+          <rect x="25" y={y - 5} rx="5" ry="5" width={`${width}%`} height="10" />
+        </Fragment>
+      )}
+    </ContentLoader>
+  );
+});
 
 const menuOptions = {
   edit: {
@@ -345,11 +375,11 @@ export default function (props: WidgetProps) {
   const [copyDialog, setCopyDialog] = useState(null);
   const [translationDialog, setTranslationDialog] = useState(null);
 
-  useOnMount(() => {
+  useMount(() => {
     exec(fetchPath(path));
   });
 
-  const itemsResource: Resource<SandboxItem[]> = useStateResource(state.itemsInPath, {
+  const itemsResource: Resource<SandboxItem[]> = useLogicResource(state.itemsInPath, {
     shouldResolve: (items) => Boolean(items),
     shouldRenew: (items, resource) => resource.complete,
     shouldReject: () => false,
@@ -393,7 +423,7 @@ export default function (props: WidgetProps) {
               });
               setCopyDialog(legacyItem);
             } else {
-              copyItem(site, menu.activeItem).subscribe(
+              copy(site, menu.activeItem).subscribe(
                 (response) => {
                   if (response.success) {
                     setMenu({
@@ -424,7 +454,7 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'paste': {
-        pasteItem(site, menu.activeItem).subscribe(
+        paste(site, menu.activeItem).subscribe(
           () => {
             setMenu({
               activeItem: null,
@@ -446,7 +476,7 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'cut': {
-        cutItem(site, menu.activeItem).subscribe(
+        cut(site, menu.activeItem).subscribe(
           (response) => {
             if (response.success) {
               setMenu({
@@ -574,7 +604,7 @@ export default function (props: WidgetProps) {
 
   const onCopyDialogOk = (item: Partial<LegacyItem>) => {
     setCopyDialog(null);
-    copyItem(site, item).subscribe(
+    copy(site, item).subscribe(
       (response) => {
         if (response.success) {
           setMenu({
@@ -634,6 +664,9 @@ export default function (props: WidgetProps) {
               title: 'No items at this location',
               classes: { image: classes.stateGraphics }
             }
+          }}
+          suspenseProps={{
+            fallback: <MyLoader />
           }}
         >
           <Breadcrumbs

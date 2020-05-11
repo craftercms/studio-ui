@@ -334,7 +334,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   const { current: refts } = useRef<any>({});
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
-  const { SITE_COOKIE, AUTHORING_BASE } = useEnv();
+  const { siteCookieName, authoringBase } = useEnv();
 
   const views: Views = {
     0: {
@@ -676,8 +676,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         handleClose();
         // TODO: Remove when createSite updates to API2
         // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
-        setSiteCookie(SITE_COOKIE, site.siteId ?? site.site_id);
-        window.location.href = `${AUTHORING_BASE}/preview`;
+        setSiteCookie(siteCookieName, site.siteId ?? site.site_id);
+        window.location.href = `${authoringBase}/preview`;
       },
       ({ response }) => {
         if (response) {

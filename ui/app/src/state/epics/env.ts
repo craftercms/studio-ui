@@ -16,22 +16,22 @@
 
 import { Epic, ofType } from 'redux-observable';
 import { map, switchMap } from 'rxjs/operators';
-import { getSystemInformation } from '../../services/monitoring';
+import { version } from '../../services/monitoring';
 import { catchAjaxError } from '../../utils/ajax';
 import {
-  fetchSystemInformation,
-  fetchSystemInformationComplete,
-  fetchSystemInformationFailed
+  fetchSystemVersion,
+  fetchSystemVersionComplete,
+  fetchSystemVersionFailed
 } from '../actions/env';
 
 export default [
   (action$) =>
     action$.pipe(
-      ofType(fetchSystemInformation.type),
+      ofType(fetchSystemVersion.type),
       switchMap(() =>
-        getSystemInformation().pipe(
-          map((version) => fetchSystemInformationComplete(version)),
-          catchAjaxError(fetchSystemInformationFailed)
+        version().pipe(
+          map((version) => fetchSystemVersionComplete(version)),
+          catchAjaxError(fetchSystemVersionFailed)
         )
       )
     )

@@ -34,6 +34,8 @@ import { ContentType } from '../models/ContentType';
 import { MinimizedDialog } from '../models/MinimizedDialog';
 import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
 import { LookupTable } from '../models/LookupTable';
+import { fetchSystemVersion } from '../state/actions/env';
+import { fetchQuickCreateList } from '../state/actions/content';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -63,6 +65,34 @@ export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 }
 
+export function useQuickCreateState(): GlobalState['content']['quickCreate'] {
+  return useSelection((state) => state.content.quickCreate);
+}
+
+export function useQuickCreateListResource() {
+  const dispatch = useDispatch();
+  const quickCreate = useQuickCreateState();
+  useEffect(() => {
+    (!quickCreate.isFetching) && (quickCreate.items === null) && dispatch(fetchQuickCreateList());
+  }, [dispatch, quickCreate]);
+  return useLogicResource(quickCreate, {
+    errorSelector: source => source.error,
+    resultSelector: source => source.items,
+    shouldReject: source => Boolean(source.error),
+    shouldResolve: source => Boolean(source.items),
+    shouldRenew: source => source.isFetching && Boolean(source.items)
+  });
+}
+
+export function useSystemVersionResource() {
+  const dispatch = useDispatch();
+  const env = useEnv();
+  useEffect(() => {
+    env.version === null && dispatch(fetchSystemVersion());
+  }, [dispatch, env.version]);
+  return useResolveWhenNotNullResource(env.version);
+}
+
 export function useContentTypeList(): Array<ContentType>;
 export function useContentTypeList(filterFn: (type: ContentType) => boolean): Array<ContentType>;
 export function useContentTypeList(
@@ -86,7 +116,7 @@ export function useContentTypeList(
 }
 
 export function useActiveUser(): GlobalState['user'] {
-  return useSelector<GlobalState, GlobalState['user']>(state => state.user);
+  return useSelector<GlobalState, GlobalState['user']>((state) => state.user);
 }
 
 export function createResource<T>(factoryFn: () => Promise<T>): Resource<T> {
@@ -136,19 +166,17 @@ export function createResourceBundle<T>(): [
   return [createResource(() => promise), resolve, reject];
 }
 
-export function useResolveWhenNotNullResource(source) {
-  const [bundle, setBundle] = useState(createResourceBundle);
-  const [resource, resolve] = bundle;
-  const effect = () => {
+export function useResolveWhenNotNullResource<ResultType = unknown>(
+  source: ResultType
+): Resource<ResultType> {
+  const [[resource, resolve], setBundle] = useState(() => createResourceBundle<ResultType>());
+  useEffect(() => {
     if (resource.complete) {
       setBundle(createResourceBundle);
     } else if (nnou(source)) {
       resolve(source);
     }
-  };
-
-  useEffect(effect, [source, bundle]);
-
+  }, [source, resource, resolve]);
   return resource;
 }
 
@@ -160,8 +188,7 @@ interface CustomResourceSelectors<ReturnType = unknown, SourceType = unknown, Er
   errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
 }
 
-// TODO: Rename to useStateResource
-export function useStateResourceSelection<
+export function useSelectorResource<
   ReturnType = unknown,
   SourceType = GlobalState,
   ErrorType = unknown
@@ -170,22 +197,28 @@ export function useStateResourceSelection<
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
   const state = useSelection<SourceType>(sourceSelector);
-  return useStateResource<ReturnType, SourceType, ErrorType>(state, checkers);
+  return useLogicResource<ReturnType, SourceType, ErrorType>(state, checkers);
 }
 
-// TODO: Rename to useCustomResource or simply useResource
-export function useStateResource<ReturnType = unknown, SourceType = unknown, ErrorType = unknown>(
+export function useLogicResource<ReturnType = unknown, SourceType = unknown, ErrorType = unknown>(
   source: SourceType,
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
-
-  const [[resource, resolve, reject], setBundle] = useState(() => createResourceBundle<ReturnType>());
+  const [[resource, resolve, reject], setBundle] = useState(() =>
+    createResourceBundle<ReturnType>()
+  );
   const checkersRef = useRef<CustomResourceSelectors<ReturnType, SourceType, ErrorType>>();
 
   checkersRef.current = checkers;
 
   useEffect(() => {
-    const { shouldRenew, shouldReject, shouldResolve, errorSelector, resultSelector } = checkersRef.current;
+    const {
+      shouldRenew,
+      shouldReject,
+      shouldResolve,
+      errorSelector,
+      resultSelector
+    } = checkersRef.current;
     if (shouldRenew(source, resource)) {
       setBundle(createResourceBundle);
     } else if (shouldReject(source, resource)) {
@@ -196,11 +229,20 @@ export function useStateResource<ReturnType = unknown, SourceType = unknown, Err
   }, [source, resource, reject, resolve]);
 
   return resource;
-
 }
 
-export function useOnMount(componentDidMount: EffectCallback): void {
-  useEffect(componentDidMount, []);
+export function useMount(onMount: EffectCallback): void {
+  useEffect(onMount, []);
+}
+
+export function useUnmount(onUnmount: () => any) {
+  useEffect(
+    () => () => onUnmount?.(),
+    // Suppressing exhaustive deps warning to avoid non-memoized
+    // onUnmount props to incur in wrongful unmount calls
+    // eslint-disable-next-line
+    []
+  );
 }
 
 export function useDebouncedInput(
@@ -242,14 +284,4 @@ export function useMinimizeDialog(initialTab: MinimizedDialog) {
   );
 
   return state?.minimized ?? initialTab.minimized;
-}
-
-export function useOnUnmount(onUnmount: () => any) {
-  useEffect(
-    () => (() => onUnmount?.()),
-    // Suppressing exhaustive deps warning to avoid non-memoized
-    // onUnmount props to incur in wrongful unmount calls
-    // eslint-disable-next-line
-    []
-  );
 }

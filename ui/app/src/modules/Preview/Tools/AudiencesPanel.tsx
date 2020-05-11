@@ -22,7 +22,7 @@ import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
-import { useSelection, useStateResource } from '../../../utils/hooks';
+import { useSelection, useLogicResource } from '../../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { setActiveTargetingModel, updateAudiencesPanelModel } from '../../../state/actions/preview';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
@@ -177,7 +177,7 @@ export default function AudiencesPanel() {
   const panelState = useSelection<GlobalState['preview']['audiencesPanel']>(
     (state) => state.preview.audiencesPanel
   );
-  const resource = useStateResource(panelState, {
+  const resource = useLogicResource(panelState, {
     shouldRenew: (source, resource) => resource.complete && nou(source.contentType),
     shouldResolve: (source) => !source.isFetching && nnou(source.contentType) && nnou(source.model),
     shouldReject: (source) => nnou(source.error),

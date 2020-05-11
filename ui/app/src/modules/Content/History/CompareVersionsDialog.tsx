@@ -17,7 +17,7 @@
 import StandardAction from '../../../models/StandardAction';
 import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { useOnUnmount, useStateResource } from '../../../utils/hooks';
+import { useUnmount, useLogicResource } from '../../../utils/hooks';
 import { FancyFormattedDate, VersionList } from './VersionList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import ApiResponse from '../../../models/ApiResponse';
@@ -124,9 +124,9 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
   const dispatch = useDispatch();
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
-  useOnUnmount(props.onClosed);
+  useUnmount(props.onClosed);
 
-  const versionsResource = useStateResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
+  const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (_versionsBranch) =>
       Boolean(_versionsBranch.versions) && !_versionsBranch.isFetching,
     shouldReject: (_versionsBranch) => Boolean(_versionsBranch.error),
@@ -143,7 +143,7 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
     [compareVersionsBranch, contentTypesBranch]
   );
 
-  const compareVersionsResource = useStateResource<CompareVersionsResource,
+  const compareVersionsResource = useLogicResource<CompareVersionsResource,
     { compareVersionsBranch: CompareVersionsBranch; contentTypesBranch: EntityState<ContentType> }>(compareVersionsData, {
     shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) =>
       compareVersionsBranch.compareVersions &&

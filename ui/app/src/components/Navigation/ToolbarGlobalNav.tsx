@@ -29,7 +29,7 @@ import Link from '@material-ui/core/Link';
 import { getLogoutInfoURL, logout } from '../../services/auth';
 import Cookies from 'js-cookie';
 import GlobalState from '../../models/GlobalState';
-import { useEnv, useOnMount, useSelection } from '../../utils/hooks';
+import { useEnv, useMount, useSelection } from '../../utils/hooks';
 
 const useStyles = makeStyles(() => ({
   avatarClickable: {
@@ -86,9 +86,9 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { AUTHORING_BASE } = useEnv();
+  const { authoringBase } = useEnv();
 
-  useOnMount(() => {
+  useMount(() => {
     if (user.authType === authHeaders || user.authType === authSaml) {
       getLogoutInfoURL().subscribe((response) => {
         setLogoutInfo({
@@ -140,7 +140,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
         </div>
         <MenuItem
           component={Link}
-          href={`${AUTHORING_BASE}/#/settings`}
+          href={`${authoringBase}/#/settings`}
           color="textPrimary"
           className={classes.anchor}
         >

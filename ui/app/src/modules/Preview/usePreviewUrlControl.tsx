@@ -28,7 +28,7 @@ export default function usePreviewUrlControl(history) {
   const { location: { search }, push } = history;
 
   const { guest, currentUrl } = usePreviewState();
-  const { PREVIEW_LANDING_BASE } = useEnv();
+  const { previewLandingBase } = useEnv();
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const priorState = useRef({
@@ -95,7 +95,7 @@ export default function usePreviewUrlControl(history) {
           // guest URL to avoid a momentary URL flicker between the previousGuestUrl, the stale currentUrl and the
           // new guest URL.
           const page = (guestUrlChanged && nou(guest)) ? prev.currentGuestUrl : (guest?.url ?? currentUrl);
-          if (page !== PREVIEW_LANDING_BASE) {
+          if (page !== previewLandingBase) {
             push({ search: stringify({ site, page }, { encode: false }) });
           }
 
@@ -120,6 +120,6 @@ export default function usePreviewUrlControl(history) {
 
     }
 
-  }, [search, site, currentUrl, guest, dispatch, PREVIEW_LANDING_BASE, push]);
+  }, [search, site, currentUrl, guest, dispatch, previewLandingBase, push]);
 
 }

@@ -31,9 +31,9 @@ import ContentTypesFilter from './ContentTypesFilter';
 import {
   useActiveSiteId,
   useDebouncedInput,
-  useOnUnmount,
+  useUnmount,
   useSelection,
-  useStateResource
+  useLogicResource
 } from '../../../utils/hooks';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
@@ -219,9 +219,9 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   const [previewItem, setPreviewItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [resetFilterType, setResetFilterType] = useState(defaultFilterType);
-  const AUTHORING_BASE = useSelection<string>((state) => state.env.AUTHORING_BASE);
-  const defaultFormSrc = `${AUTHORING_BASE}/legacy/form`;
-  useOnUnmount(props.onClosed);
+  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
+  const defaultFormSrc = `${authoringBase}/legacy/form`;
+  useUnmount(props.onClosed);
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl =
     '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
@@ -248,7 +248,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
       type: 'favorite'
     }
   ];
-  const resource = useStateResource(
+  const resource = useLogicResource(
     filterContentTypes,
     {
       shouldResolve: (source) => !!source,

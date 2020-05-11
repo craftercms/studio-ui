@@ -166,7 +166,7 @@ export default function Host() {
 
   const classes = useStyles({});
   const site = useActiveSiteId();
-  const GUEST_BASE = useSelection<string>(state => state.env.GUEST_BASE);
+  const guestBase = useSelection<string>(state => state.env.guestBase);
   const {
     hostSize,
     currentUrl,
@@ -182,10 +182,10 @@ export default function Host() {
   return (
     <div className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}>
       <HostUI
-        url={`${GUEST_BASE}${currentUrl}`}
+        url={`${guestBase}${currentUrl}`}
         site={site}
         width={hostSize.width}
-        origin={GUEST_BASE}
+        origin={guestBase}
         height={hostSize.height}
         onMessage={onMessage}
         postMessage$={postMessage$}
