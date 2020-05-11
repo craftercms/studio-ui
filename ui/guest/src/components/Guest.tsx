@@ -670,6 +670,13 @@ export function Guest(props: GuestProps) {
               ? { next: null, prev: null }
               : ElementRegistry.getSiblingRects(physicalRecord.id);
 
+        const dropzone = dragContext.dropZones.find((dz) =>
+          dz.element === element || dz.children.includes(element)
+        );
+        if (stateRef.current.dragContext.dropZone === undefined && dropzone.validations) {
+          showValidationMessage(dropzone.validations);
+        }
+
         setState({
           dragContext: {
             ...stateRef.current.dragContext,
@@ -678,9 +685,7 @@ export function Guest(props: GuestProps) {
             inZone: true,
             over: physicalRecord,
             coordinates: { x: e.clientX, y: e.clientY },
-            dropZone: dragContext.dropZones.find((dz) =>
-              dz.element === element || dz.children.includes(element)
-            )
+            dropZone: dropzone
           },
           common: {
             ...stateRef.current.common,
@@ -1241,6 +1246,23 @@ export function Guest(props: GuestProps) {
       object[id].validations = validations;
       return object;
     }, {} as LookupTable<HoverData>);
+  }
+
+  function showValidationMessage(validation) {
+    const validationImportance = ['maxCount', 'minCount'];
+    let choose = null;
+
+    validation.forEach(validation => {
+      if (choose) {
+        if (validationImportance.indexOf(validation.Id) < validationImportance.indexOf(choose.id)) {
+          choose = validation;
+        }
+      } else {
+        choose = validation;
+      }
+    });
+
+    post({ type: 'VALIDATION_MESSAGE', payload: choose });
   }
 
   // 1. Subscribes to accommodation messages and routes them.

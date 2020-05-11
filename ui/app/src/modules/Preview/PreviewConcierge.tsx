@@ -354,6 +354,11 @@ export function PreviewConcierge(props: any) {
           dispatch(setChildrenMap(payload));
           break;
         }
+        case 'VALIDATION_MESSAGE': {
+          console.log('VALIDATION_MESSAGE');
+          enqueueSnackbar(payload.message, { variant: payload.level === 'required' ? 'error' : 'warning' });
+          break;
+        }
       }
     });
 
