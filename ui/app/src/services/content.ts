@@ -35,7 +35,7 @@ import {
   LegacyFormDefinitionProperty,
   LegacyFormDefinitionSection
 } from '../models/ContentType';
-import { nnou, nou, pluckProps, reversePluckProps } from '../utils/object';
+import { nnou, nou, pluckProps, reversePluckProps, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import {
@@ -59,7 +59,6 @@ import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import { parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
-import { stringify } from 'query-string';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(
@@ -72,9 +71,8 @@ interface GetContentOptions {
 }
 
 export function getContent(site: string, path: string, options?: GetContentOptions): Observable<string> {
-  options = { lock: false, ...options };
-  const qs = stringify({ site_id: site, path, edit: options.lock });
-  return get(`/studio/api/1/services/api/1/content/get-content.json?${qs}`).pipe(
+  const qs = toQueryString({ site_id: site, path, edit: options.lock });
+  return get(`/studio/api/1/services/api/1/content/get-content.json${qs}`).pipe(
     pluck('response', 'content')
   );
 }
@@ -200,8 +198,9 @@ const systemPropsList = [
 ];
 
 export function fetchLegacyContentTypes(site: string, path?: string): Observable<LegacyContentType[]> {
+  const qs = toQueryString({ site, path });
   return get(
-    `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}${path ? `&path=${path}` : ''}`
+    `/studio/api/1/services/api/1/content/get-content-types.json${qs}`
   ).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
@@ -922,12 +921,12 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
   );
 }
 
-export function reformatDocument(site: string, id: string) {
-  return getDOM(site, id).pipe(
+export function formatXML(site: string, path: string) {
+  return getDOM(site, path).pipe(
     switchMap((doc) => post(
       writeContentUrl({
         site,
-        path: id,
+        path: path,
         unlock: 'true',
         fileName: getInnerHtml(doc.querySelector('file-name'))
       }),
@@ -1055,11 +1054,12 @@ export function uploadDataUrl(
   site: string,
   file: any,
   path: string,
-  XSRF_CONFIG_ARGUMENT: string
+  xsrfArgumentName: string
 ): Observable<any> {
+  const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
   return new Observable((subscriber) => {
     const uppy = Core({ autoProceed: true });
-    const uploadAssetUrl = `/studio/asset-upload?${XSRF_CONFIG_ARGUMENT}=${getRequestForgeryToken()}`;
+    const uploadAssetUrl = `/studio/asset-upload${qs}`;
     uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
     uppy.setMeta({ site, path });
 
@@ -1100,7 +1100,17 @@ export function uploadDataUrl(
 }
 
 export function getBulkUploadUrl(site: string, path: string): string {
-  return `/studio/api/1/services/api/1/content/write-content.json?site=${site}&path=${path}&contentType=folder&createFolders=true&draft=false&duplicate=false&unlock=true&_csrf=${getRequestForgeryToken()}`;
+  const qs = toQueryString({
+    site,
+    path,
+    contentType: 'folder',
+    createFolders: true,
+    draft: false,
+    duplicate: false,
+    unlock: true,
+    _csrf: getRequestForgeryToken()
+  });
+  return `/studio/api/1/services/api/1/content/write-content.json${qs}`;
 }
 
 export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]> {
@@ -1109,27 +1119,21 @@ export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]
   );
 }
 
-export function getItemVersions(site: string, path: string): Observable<VersionsResponse> {
+export function getHistory(site: string, path: string): Observable<VersionsResponse> {
   return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${path}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );
 }
 
-export function getConfigurationVersions(site: string, path: string, environment: string, module: string): Observable<VersionsResponse> {
-  return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${path}&environment=${environment}&module=${module}`).pipe(
-    pluck('response', 'history')
-  );
-}
-
-export function revertContentToVersion(site: string, path: string, versionNumber: string): Observable<Boolean> {
+export function revertTo(site: string, path: string, versionNumber: string): Observable<Boolean> {
   return get(`/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${path}&version=${versionNumber}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );
 }
 
-export function getContentVersion(site: string, path: string, versionNumber: string): Observable<any> {
+export function getVersion(site: string, path: string, versionNumber: string): Observable<any> {
   return new Observable((observer) => {
     observer.next({
       name: 'Test',
@@ -1153,7 +1157,7 @@ export function getChildrenByPath(site: string, path: string, options?: GetChild
   );
 }
 
-export function copyItem(site: string, item: Partial<LegacyItem>): Observable<any> {
+export function copy(site: string, item: Partial<LegacyItem>): Observable<any> {
   let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
   return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(
     pluck('response'),
@@ -1161,14 +1165,14 @@ export function copyItem(site: string, item: Partial<LegacyItem>): Observable<an
   );
 }
 
-export function cutItem(site: string, item: SandboxItem): Observable<any> {
+export function cut(site: string, item: SandboxItem): Observable<any> {
   return post(`/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`, { item: [{ uri: item.path }] }, CONTENT_TYPE_JSON).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );
 }
 
-export function pasteItem(site: string, item: SandboxItem): Observable<any> {
+export function paste(site: string, item: SandboxItem): Observable<any> {
   return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
@@ -1209,9 +1213,9 @@ export default {
   getSandboxItem,
   getDOM,
   getChildrenByPath,
-  copyItem,
-  cutItem,
-  pasteItem,
+  copyItem: copy,
+  cutItem: cut,
+  pasteItem: paste,
   getPages,
   getContentInstanceLookup,
   fetchContentTypes,
@@ -1228,10 +1232,8 @@ export default {
   fetchPublishingChannels,
   uploadDataUrl,
   getBulkUploadUrl,
-  getQuickCreateContentList: fetchQuickCreateList,
+  fetchQuickCreateList,
   fetchLegacyContentTypes,
-  getItemVersions,
-  getConfigurationVersions,
-  revertContentToVersion,
-  parseLegacyItemToSandBoxItem
+  getContentHistory: getHistory,
+  revertTo
 };

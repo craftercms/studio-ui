@@ -19,6 +19,7 @@ import { LookupTable } from '../models/LookupTable';
 import { MutableRefObject } from 'react';
 import { forEach } from './array';
 import { EntityState } from '../models/EntityState';
+import { stringify, StringifyOptions } from 'query-string';
 
 export function pluckProps(source: object, ...props: string[]): object {
   const object = {};
@@ -216,6 +217,17 @@ export function extend(
   return target;
 }
 
+export function toQueryString<T extends {} = {}>(
+  args: T,
+  options?: StringifyOptions & { prefix: string }
+): string {
+  if (!args) {
+    return '';
+  }
+  options = { prefix: '?', ...options }
+  return `${options.prefix}${stringify(args, options)}`;
+}
+
 export default {
   pluckProps,
   reversePluckProps,
@@ -233,5 +245,6 @@ export default {
   ref,
   findParentModelId,
   isPlainObject,
-  extend
+  extend,
+  toUrlSearch: toQueryString
 };

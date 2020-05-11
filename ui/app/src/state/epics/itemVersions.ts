@@ -18,10 +18,9 @@ import { Epic, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import GlobalState from '../../models/GlobalState';
 import {
-  getConfigurationVersions,
-  getContentVersion,
-  getItemVersions,
-  revertContentToVersion
+  getVersion,
+  getHistory as getContentHistory,
+  revertTo
 } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import {
@@ -41,6 +40,7 @@ import {
 } from '../reducers/versions';
 import { forkJoin, NEVER, of } from 'rxjs';
 import { historyDialogClosed } from '../actions/dialogs';
+import { getHistory as getConfigurationHistory } from '../../services/configuration';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
@@ -49,13 +49,13 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
         const service = (state.versions.config)
-          ? getConfigurationVersions(
+          ? getConfigurationHistory(
             state.sites.active,
             payload.path ?? state.versions.item.path,
             payload.environment ?? state.versions.environment,
             payload.module ?? state.versions.module
           )
-          : getItemVersions(state.sites.active, payload.path ?? state.versions.item.path);
+          : getContentHistory(state.sites.active, payload.path ?? state.versions.item.path);
         return service.pipe(
           map(fetchItemVersionsComplete),
           catchAjaxError(fetchItemVersionsFailed)
@@ -68,12 +68,12 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
         forkJoin(
-          getContentVersion(
+          getVersion(
             state.sites.active,
             state.versions.item.path,
             state.versions.selected[0]
           ),
-          getContentVersion(
+          getVersion(
             state.sites.active,
             state.versions.item.path,
             state.versions.selected[1]
@@ -89,7 +89,7 @@ export default [
       ofType(revertContent.type, revertToPreviousVersion.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        revertContentToVersion(
+        revertTo(
           state.sites.active,
           state.versions.config ? state.versions.revertPath : payload.path ?? state.versions.item.path,
           payload.versionNumber ?? state.versions.previous

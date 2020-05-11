@@ -18,11 +18,11 @@ import React, { useCallback, useReducer, useState, Fragment } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
-  copyItem,
-  cutItem,
+  copy,
+  cut,
   getChildrenByPath,
   getPages,
-  pasteItem
+  paste
 } from '../../../services/content';
 import { getTargetLocales } from '../../../services/translation';
 import { LegacyItem, SandboxItem } from '../../../models/Item';
@@ -423,7 +423,7 @@ export default function (props: WidgetProps) {
               });
               setCopyDialog(legacyItem);
             } else {
-              copyItem(site, menu.activeItem).subscribe(
+              copy(site, menu.activeItem).subscribe(
                 (response) => {
                   if (response.success) {
                     setMenu({
@@ -454,7 +454,7 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'paste': {
-        pasteItem(site, menu.activeItem).subscribe(
+        paste(site, menu.activeItem).subscribe(
           () => {
             setMenu({
               activeItem: null,
@@ -476,7 +476,7 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'cut': {
-        cutItem(site, menu.activeItem).subscribe(
+        cut(site, menu.activeItem).subscribe(
           (response) => {
             if (response.success) {
               setMenu({
@@ -604,7 +604,7 @@ export default function (props: WidgetProps) {
 
   const onCopyDialogOk = (item: Partial<LegacyItem>) => {
     setCopyDialog(null);
-    copyItem(site, item).subscribe(
+    copy(site, item).subscribe(
       (response) => {
         if (response.success) {
           setMenu({

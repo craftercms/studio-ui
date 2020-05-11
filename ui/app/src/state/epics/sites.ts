@@ -14,21 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { Epic, ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { setSiteCookie } from '../../utils/auth';
 import { fetchSites } from '../../services/sites';
 import { catchAjaxError } from '../../utils/ajax';
 import { changeSite, fetchSites as fetchSitesAction, fetchSitesComplete, fetchSitesFailed } from '../reducers/sites';
+import GlobalState from '../../models/GlobalState';
 
 export default [
   // region Change site
-  (action$, state$) =>
+  (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(changeSite.type),
       withLatestFrom(state$),
-      tap(([{ payload: { nextSite } }, { env: { SITE_COOKIE } }]) =>
-        setSiteCookie(SITE_COOKIE, nextSite)
+      tap(([{ payload: { nextSite } }, { env: { siteCookieName } }]) =>
+        setSiteCookie(siteCookieName, nextSite)
       ),
       ignoreElements()
     ),

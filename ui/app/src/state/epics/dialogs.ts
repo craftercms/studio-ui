@@ -32,7 +32,7 @@ import {
   fetchContentVersionComplete,
   fetchContentVersionFailed
 } from '../actions/dialogs';
-import { getContentVersion } from '../../services/content';
+import { getVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
@@ -97,7 +97,7 @@ export default [
       ofType(fetchContentVersion.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        getContentVersion(state.sites.active, payload.path, payload.versionNumber).pipe(
+        getVersion(state.sites.active, payload.path, payload.versionNumber).pipe(
           map(fetchContentVersionComplete),
           catchAjaxError(fetchContentVersionFailed)
         )
