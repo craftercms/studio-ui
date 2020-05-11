@@ -25,6 +25,7 @@ import { palette } from '../../styles/theme';
 import clsx from 'clsx';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -66,7 +67,15 @@ interface TitleCardProps {
 }
 
 export default function SiteCard(props: TitleCardProps) {
-  const { title, value, options, icon: Icon, onCardClick, cardActions = [], disabled = false } = props;
+  const {
+    title,
+    value,
+    options,
+    icon: Icon,
+    onCardClick,
+    cardActions = [],
+    disabled = false
+  } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles({});
 
@@ -80,48 +89,38 @@ export default function SiteCard(props: TitleCardProps) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleOptionClick = (event: any, action: any, id: string) => {
-    event.stopPropagation();
-    action.onClick(id);
-  };
-
   return (
     <Card
-      className={clsx(classes.card, props.classes?.root && props.classes.root, disabled && 'disabled')}
-      onClick={() => !disabled ? onCardClick(value) : null}
+      className={clsx(
+        classes.card,
+        props.classes?.root && props.classes.root,
+        disabled && 'disabled'
+      )}
+      onClick={() => (!disabled ? onCardClick(value) : null)}
     >
       <CardHeader
         classes={{ root: classes.root, avatar: classes.avatar, action: classes.action }}
         avatar={Icon && <Icon />}
         action={
-          options &&
-          <IconButton aria-label="settings" onClick={(e) => handleOptions(e)}>
-            <MoreVertIcon />
-          </IconButton>
+          options && (
+            <IconButton aria-label="settings" onClick={(e) => handleOptions(e)}>
+              <MoreVertIcon />
+            </IconButton>
+          )
         }
         title={title}
         titleTypographyProps={{
           variant: 'subtitle2',
-          // @ts-ignore
           component: 'h2',
           className: 'cardTitle'
         }}
       />
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={(e) => handleClose(e)}
-      >
-        {
-          cardActions.map((action, i) =>
-            <MenuItem
-              key={i}
-              onClick={(e) => handleOptionClick(e, action, value)}
-            >
-              {action.name}
-            </MenuItem>
-          )
-        }
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+        {cardActions.map((action, i) => (
+          <MenuItem key={i} component={Link} href={action.href} onClick={handleClose}>
+            {action.name}
+          </MenuItem>
+        ))}
       </Menu>
     </Card>
   );

@@ -308,16 +308,25 @@ export default function GlobalNav(props: GlobalNavProps) {
   const crafterSite = useActiveSiteId();
   const dispatch = useDispatch();
 
-  const cardActions = useMemo(() => ([
-    {
-      name: formatMessage(messages.preview),
-      onClick: () => navigateTo(globalNavUrlMapping.siteDashboard)
-    },
-    {
-      name: formatMessage(messages.dashboard),
-      onClick: () => navigateTo(globalNavUrlMapping.siteDashboard)
-    }
-  ]), [formatMessage]);
+  const cardActions = useMemo(
+    () => ([
+      {
+        name: formatMessage(messages.dashboard),
+        href: getLink('siteDashboard', authoringBase)
+      },
+      {
+        name: formatMessage(messages.preview),
+        href: getLink('preview', authoringBase)
+      },
+      {
+        name: formatMessage(messages.siteConfig),
+        href: getLink('siteConfig', authoringBase)
+      }
+    ]),
+    // Disable exhaustive hooks check since only need to create on mount
+    // eslint-disable-next-line
+    []
+  );
 
   const handleErrorBack = () => setApiState({ ...apiState, error: false });
 
