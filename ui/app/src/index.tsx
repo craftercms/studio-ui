@@ -19,6 +19,7 @@ import './styles/index.scss';
 if (process.env.NODE_ENV === 'production') {
   require('./utils/codebase-bridge').createCodebaseBridge();
 } else {
+  document.domain = 'localhost';
   const React = require('react');
   const ReactDOM = require('react-dom');
   const App = require('./components/App').default;
