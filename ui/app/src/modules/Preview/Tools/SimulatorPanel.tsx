@@ -100,7 +100,7 @@ export default function SimulatorPanel(props: any) {
   const maxWidth = window.innerWidth - DRAWER_WIDTH;
 
   const channels = useMemo(() => {
-    const _channels = props.config && props.config.channels;
+    const _channels = props.config?.channels;
     if (_channels) {
       if (!Array.isArray(_channels)) {
         console.log(`[SimulatorPanel] Expected channels to be array but instead got "${typeof _channels}"`);

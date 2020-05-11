@@ -138,7 +138,12 @@ const translations = defineMessages({
     id: 'craftercms.ice.audiences.title',
     defaultMessage: 'Audience Targeting'
   },
+  // TODO: Remove/clean up.
   publishingChannel: {
+    id: 'craftercms.ice.simulator.title_legacy',
+    defaultMessage: 'Device Simulator'
+  },
+  deviceSimulator: {
     id: 'craftercms.ice.simulator.title',
     defaultMessage: 'Device Simulator'
   },
