@@ -71,6 +71,7 @@ interface GetContentOptions {
 }
 
 export function getContent(site: string, path: string, options?: GetContentOptions): Observable<string> {
+  options = Object.assign({ lock: false }, options);
   const qs = toQueryString({ site_id: site, path, edit: options.lock });
   return get(`/studio/api/1/services/api/1/content/get-content.json${qs}`).pipe(
     pluck('response', 'content')
