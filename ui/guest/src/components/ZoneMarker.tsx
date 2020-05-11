@@ -18,16 +18,18 @@ import React, { useEffect, useState } from 'react';
 import { Markers } from '../classes/Markers';
 
 interface ZoneMarkerProps {
-  rect?: DOMRect;
-  label?: string;
-  id?: number;
-  key?: number;
+  rect: DOMRect;
+  label: string;
+  classes?: {
+    marker?: string;
+    label?: string;
+  };
 }
 
 export function ZoneMarker(props: ZoneMarkerProps) {
 
   const //
-    { rect, label } = props,
+    { rect, label, classes } = props,
     [zoneStyle, setZoneStyle] = useState(),
     [labelStyle, setLabelStyle] = useState();
 
@@ -40,8 +42,10 @@ export function ZoneMarker(props: ZoneMarkerProps) {
   );
 
   return (
-    <craftercms-zone-marker style={zoneStyle}>
-      <craftercms-zone-marker-label style={labelStyle}>{label}</craftercms-zone-marker-label>
+    <craftercms-zone-marker style={zoneStyle} class={classes?.marker}>
+      <craftercms-zone-marker-label
+        style={labelStyle} class={classes?.label}
+      >{label}</craftercms-zone-marker-label>
     </craftercms-zone-marker>
   );
 

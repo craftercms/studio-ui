@@ -454,7 +454,6 @@ export function Guest(props: GuestProps) {
 
     /*onDragStart*/
     dragstart(e, physicalRecord: Record): void {
-      console.log('dragstart');
       e.stopPropagation();
       (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', null);
 
@@ -595,19 +594,15 @@ export function Guest(props: GuestProps) {
         return;
       }
 
-      const validatedReceptacles = iceRegistry.runReceptaclesValidations(receptacles);
-
-      // const validatedReceptacles = receptacles.filter((id) => {
-      //   // TODO: min/max count validations
-      //   return true;
-      // });
+      const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
 
       // scrollToReceptacle(validatedReceptacles);
 
-      validatedReceptacles.forEach(({ id }) => {
+      receptacles.forEach(({ id }) => {
 
         const dropZone = ElementRegistry.compileDropZone(id);
         dropZone.origin = null;
+        dropZone.validations = validationsLookup[id];
         dropZones.push(dropZone);
 
         siblings = siblings.concat(dropZone.children);
@@ -1240,11 +1235,12 @@ export function Guest(props: GuestProps) {
     }
   }
 
-  function getHighlighted(dropZones: DropZone[]): LookupTable<{ id: number, rect: DOMRect, label: string }> {
-    return dropZones.reduce((object, { physicalRecordId: id }) => {
+  function getHighlighted(dropZones: DropZone[]): LookupTable<HoverData> {
+    return dropZones.reduce((object, { physicalRecordId: id, validations }) => {
       object[id] = ElementRegistry.getHoverData(id);
+      object[id].validations = validations;
       return object;
-    }, {});
+    }, {} as LookupTable<HoverData>);
   }
 
   // 1. Subscribes to accommodation messages and routes them.
@@ -1443,7 +1439,17 @@ export function Guest(props: GuestProps) {
             }
             {
               Object.values(stateRef.current.common.highlighted).map((highlight: HoverData) =>
-                <ZoneMarker key={highlight.id} {...highlight} />
+                <ZoneMarker
+                  key={highlight.id}
+                  {...highlight}
+                  classes={{
+                    marker: highlight.validations?.length ?
+                      highlight.validations.some(({ level }) => level === 'required')
+                        ? 'craftercms-required-validation'
+                        : 'craftercms-suggestion-validation'
+                      : null
+                  }}
+                />
               )
             }
             {

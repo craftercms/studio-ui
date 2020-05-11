@@ -109,7 +109,19 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
         textAlign: 'center',
         position: 'absolute',
         zIndex: '1000',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        '&.craftercms-required-validation': {
+          outlineColor: colors.red,
+          '& craftercms-zone-marker-label': {
+            background: colors.red
+          }
+        },
+        '&.craftercms-suggestion-validation': {
+          outlineColor: colors.orange,
+          '& craftercms-zone-marker-label': {
+            background: colors.orange
+          }
+        }
       },
       'craftercms-zone-marker-label': {
         background: `${colors.green}`,

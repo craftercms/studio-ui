@@ -28,7 +28,7 @@ import { ModelHelper } from './ModelHelper';
 import { ContentInstance } from '../models/ContentInstance';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
-import { Record, ReferentialEntries, ValidatedRecord } from '../models/InContextEditing';
+import { Record, ReferentialEntries, ValidationResult } from '../models/InContextEditing';
 
 export class ICERegistry {
 
@@ -262,16 +262,43 @@ export class ICERegistry {
     });
   }
 
-  runReceptaclesValidations(receptacles: Record[]): ValidatedRecord[] {
-    const validatedRecords = [];
-    receptacles.map(record => {
-      const validatedRecord = { ...record, validations: {} };
-      let { field: { validations } } = this.getReferentialEntries(record);
-      validatedRecords.push(validatedRecord);
-
+  runReceptaclesValidations(receptacles: Record[]): LookupTable<ValidationResult[]> {
+    const lookup = {};
+    receptacles.forEach(record => {
+      const validationResult = [];
+      const { fieldId, index } = record;
+      let { field: { validations }, model } = this.getReferentialEntries(record);
+      const collection = ModelHelper.extractCollectionItem(model, fieldId, index);
+      Object.keys(validations).forEach(key => {
+        const validation = validations[key];
+        switch (validation.id) {
+          case 'minCount': {
+            if (validation.value && (collection.length + 1) < validation.value) {
+              validationResult.push({
+                id: validation.id,
+                level: validation.level,
+                message: `The min count is less than allowable minimum of ${validation.value}`
+              });
+            }
+            break;
+          }
+          case 'maxCount': {
+            if (validation.value && (collection.length + 1) > validation.value) {
+              validationResult.push({
+                id: validation.id,
+                level: validation.level,
+                message: `The max count is more than allowable maximum of ${validation.value}`
+              });
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      });
+      lookup[record.id] = validationResult;
     });
-    //const { field: { validations } } = this.getReferentialEntries(record);
-    return [];
+    return lookup;
   }
 
   // minCountCheck() {

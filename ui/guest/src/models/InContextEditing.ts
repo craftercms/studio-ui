@@ -53,6 +53,7 @@ export interface DropZone {
   arrangement: string;
   childrenRects: DOMRect[];
   origin?: any;
+  validations: ValidationResult[];
 }
 
 export interface DZStats {
@@ -62,8 +63,10 @@ export interface DZStats {
   currentDZChildrenRects: DOMRect[];
 }
 
-export interface ValidatedRecord extends Record {
-  validations: any;
+export interface ValidationResult {
+  id: string;
+  level: string;
+  message: string;
 }
 
 export interface Record {
@@ -82,6 +85,7 @@ export interface HoverData {
   id: number;
   rect: DOMRect;
   label: string;
+  validations: ValidationResult[];
 }
 
 export interface ReferentialEntries extends Record {

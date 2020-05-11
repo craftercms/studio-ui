@@ -23,11 +23,10 @@ export interface ContentTypeSection {
   expandByDefault: boolean;
 }
 
-interface ContentTypeFieldValidation {
+export interface ContentTypeFieldValidation {
   id: string;
   value: any;
-  level: string;
-  //level: 'required' | 'suggestion';
+  level: 'required' | 'suggestion';
 }
 
 export interface ContentTypeFieldValidations {

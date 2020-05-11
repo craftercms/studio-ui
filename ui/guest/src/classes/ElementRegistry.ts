@@ -14,7 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { forEach, getChildArrangement, isNullOrUndefined, notNullOrUndefined, sibling } from '../util';
+import {
+  forEach,
+  getChildArrangement,
+  isNullOrUndefined,
+  notNullOrUndefined,
+  sibling
+} from '../util';
 import iceRegistry from './ICERegistry';
 import contentController from './ContentController';
 import { take } from 'rxjs/operators';
@@ -169,7 +175,8 @@ export class ElementRegistry {
     return {
       id,
       rect: record.element.getBoundingClientRect(),
-      label: record.label
+      label: record.label,
+      validations: []
     };
   }
 
