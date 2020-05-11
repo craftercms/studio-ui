@@ -16,8 +16,6 @@
 
 import './styles/index.scss';
 
-document.domain = 'localhost';
-
 if (process.env.NODE_ENV === 'production') {
   require('./utils/codebase-bridge').createCodebaseBridge();
 } else {
