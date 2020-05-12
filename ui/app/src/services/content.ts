@@ -554,7 +554,7 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
       return table;
     }, {});
 
-  let validations: ContentTypeFieldValidations = {
+  let validations: Partial<ContentTypeFieldValidations> = {
     tags: {
       id: 'tags',
       value: [],
