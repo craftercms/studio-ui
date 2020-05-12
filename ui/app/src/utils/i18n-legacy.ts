@@ -141,7 +141,7 @@ export const passwordRequirementMessages = defineMessages({
     defaultMessage: 'Must not be blank'
   },
   validationPassing: {
-    id: 'passwordRequirement.noBlank',
+    id: 'passwordRequirement.validationPassing',
     defaultMessage: 'Validation passing'
   },
   fulfillAllReqErrorMessage: {
