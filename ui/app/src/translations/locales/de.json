@@ -52,7 +52,7 @@
   "browseCMIS.cmis": "CMIS",
   "bulkUpload.dropHere": "Legen Sie Dateien hier ab oder <span>durchsuchen Sie</span>",
   "bulkUpload.filesProgression": "{start}/{end}",
-  "bulkUpload.subtitle": "Legen Sie die gewünschten Dateien von Ihrem Desktop im Browserfenster ab.",
+  "bulkUpload.subtitle": "Legen Sie die gewünschten Dateien von Ihrem Desktop in den darunter liegenden Bereich ab",
   "bulkUpload.title": "Massen-Upload",
   "bulkUpload.uploadInProgress": "Uploads sind noch im Gange. Wenn Sie diese Seite verlassen, werden die ausstehenden Uploads gestoppt. Bist du sicher, dass du gehen willst?",
   "bulkUploadConfirmDialogMessages.description": "Es wird noch ein Massen-Upload durchgeführt. Es kann immer nur ein Massen-Upload gleichzeitig ausgeführt werden.",
