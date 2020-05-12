@@ -1566,10 +1566,7 @@ var CStudioForms =
               path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
               if (path && path.indexOf('.xml') != -1) {
                 var entityId = buildEntityIdFn(null);
-                CrafterCMSNext.services.content.unlock(CStudioAuthoringContext.site, entityId).subscribe(
-                  (response) => {
-                  }
-                );
+                CrafterCMSNext.services.content.unlock(CStudioAuthoringContext.site, entityId).subscribe();
               }
             }
           };
