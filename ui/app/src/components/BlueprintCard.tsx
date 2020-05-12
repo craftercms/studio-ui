@@ -24,13 +24,13 @@ import CardActions from '@material-ui/core/CardActions';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 import { Blueprint } from '../models/Blueprint';
 import { defineMessages, useIntl } from 'react-intl';
 import MobileStepper from './MobileStepper';
 import { backgroundColor } from '../styles/theme';
 import Button from '@material-ui/core/Button';
-import { Theme, Tooltip } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import clsx from 'clsx';
 
 interface BlueprintCardProps {

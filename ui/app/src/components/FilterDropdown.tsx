@@ -18,7 +18,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
 import Popover from '@material-ui/core/Popover';
-import makeStyles from '@material-ui/styles/makeStyles/makeStyles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -27,7 +27,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import { CurrentFilters } from '../models/publishing';
 import SearchIcon from '@material-ui/icons/Search';
-import { Checkbox, FormGroup, Theme } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
