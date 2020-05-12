@@ -41,7 +41,7 @@ import WarningRounded from '@material-ui/icons/WarningRounded';
 import { parse } from 'query-string';
 import { getCurrentLocale } from '../CrafterCMSNextBridge';
 import TextField from '@material-ui/core/TextField';
-import { Snackbar } from '@material-ui/core';
+import Snackbar from '@material-ui/core/Snackbar';
 import PasswordTextField from '../PasswordTextField';
 import { passwordRequirementMessages } from '../../utils/i18n-legacy';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
@@ -108,7 +108,7 @@ const translations = defineMessages({
   },
   recoverYourPasswordViewTitle: {
     id: 'loginView.recoverYourPasswordIntroText',
-    defaultMessage: 'If your username exists, an email will be sent to you with a rest link.'
+    defaultMessage: 'If your username exists, an email will be sent to you with a reset link.'
   },
   recoverYourPasswordSuccessMessage: {
     id: 'loginView.recoverYourPasswordSuccessMessage',
@@ -132,7 +132,7 @@ const translations = defineMessages({
     defaultMessage: 'Error resetting password. Token may be invalid or expired.'
   },
   resetPasswordInvalidToken: {
-    id: 'resetView.resetPasswordError',
+    id: 'resetView.resetPasswordInvalidToken',
     defaultMessage: 'Invalid or expired token.'
   }
 });
