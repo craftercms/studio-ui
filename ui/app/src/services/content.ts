@@ -1214,9 +1214,9 @@ export default {
   getSandboxItem,
   getDOM,
   getChildrenByPath,
-  copyItem: copy,
-  cutItem: cut,
-  pasteItem: paste,
+  copy,
+  cut,
+  paste,
   getPages,
   getContentInstanceLookup,
   fetchContentTypes,
@@ -1236,5 +1236,7 @@ export default {
   fetchQuickCreateList,
   fetchLegacyContentTypes,
   getContentHistory: getHistory,
-  revertTo
+  revertTo,
+  lock,
+  unlock
 };
