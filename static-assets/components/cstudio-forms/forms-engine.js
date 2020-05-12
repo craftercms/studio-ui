@@ -1388,6 +1388,8 @@ var CStudioForms =
                 edit
               });
             } else {
+              YAHOO.util.Event.removeListener(window, 'unload', unloadFn, me);
+
               YAHOO.util.Connect.setDefaultPostHeader(false);
               YAHOO.util.Connect.initHeader('Content-Type', 'application/xml; charset=utf-8');
               YAHOO.util.Connect.initHeader(
