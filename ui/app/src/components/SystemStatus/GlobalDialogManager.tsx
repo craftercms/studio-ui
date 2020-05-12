@@ -117,7 +117,6 @@ function GlobalDialogManager() {
         showController={state.edit.showController}
         itemModel={state.edit.itemModel}
         embeddedParentPath={state.edit.embeddedParentPath}
-
         onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onDismiss={createCallback(state.edit.onDismiss, dispatch)}
@@ -156,7 +155,7 @@ function GlobalDialogManager() {
         rootPath={state.dependencies.rootPath}
         dependenciesShown={state.dependencies.dependenciesShown}
         onClose={createCallback(state.dependencies.onClose, dispatch)}
-        onClosed={createCallback(state.publish.onClosed, dispatch)}
+        onClosed={createCallback(state.dependencies.onClosed, dispatch)}
         onDismiss={createCallback(state.dependencies.onDismiss, dispatch)}
       />
       {/* endregion */}
