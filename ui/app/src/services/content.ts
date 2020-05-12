@@ -53,7 +53,7 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { LegacyItem, SandboxItem } from '../models/Item';
+import { LegacyItem, SandboxItem, WorkflowAffectedItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
@@ -1207,6 +1207,13 @@ export function unlock(site: string, path: string): Observable<boolean> {
   );
 }
 
+export function getWorkflowAffectedFiles(site: string, path: string): Observable<WorkflowAffectedItem[]> {
+  return get(`/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`).pipe(
+    pluck('response', 'items'),
+    catchError(errorSelectorApi1)
+  );
+}
+
 export default {
   getComponentInstanceHTML,
   getContent,
@@ -1238,5 +1245,6 @@ export default {
   getContentHistory: getHistory,
   revertTo,
   lock,
-  unlock
+  unlock,
+  getWorkflowAffectedFiles
 };

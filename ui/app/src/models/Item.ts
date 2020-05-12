@@ -90,3 +90,8 @@ export interface LegacyItem {
   [prop: string]: any;
 }
 
+export interface WorkflowAffectedItem {
+  browserUri: string;
+  name: string;
+  path: string;
+}
