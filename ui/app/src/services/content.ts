@@ -547,7 +547,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
 }
 
-function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup: LookupTable<LegacyDataSource>): ContentTypeFieldValidations {
+function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup: LookupTable<LegacyDataSource>): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty)
     .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
       table[prop.name] = prop;

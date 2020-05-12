@@ -40,7 +40,7 @@ export interface ContentTypeField {
   name: string;
   type: string;
   sortable: boolean;
-  validations: ContentTypeFieldValidations;
+  validations: Partial<ContentTypeFieldValidations>;
   defaultValue: any;
   required: boolean;
   fields?: LookupTable<ContentTypeField>;
