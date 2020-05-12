@@ -16,7 +16,7 @@
 
 import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
 import React, { ElementType } from 'react';
-import { Tooltip } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import HistoryIcon from '@material-ui/icons/HistoryRounded';
 import BackIcon from '@material-ui/icons/ArrowBackIosRounded';
 import CloseIcon from '@material-ui/icons/CloseRounded';

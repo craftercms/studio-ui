@@ -15,7 +15,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { createStyles, makeStyles, Menu, PopoverOrigin, Theme } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { PopoverOrigin } from '@material-ui/core/Popover';
+import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import { palette } from '../styles/theme';
@@ -37,7 +39,7 @@ import {
 import { showEditDialog } from '../state/reducers/dialogs/edit';
 import { batchActions } from '../state/actions/misc';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   separator: {
     borderTop: `1px solid ${palette.gray.light3}`,
     borderBottom: `1px solid ${palette.gray.light3}`
