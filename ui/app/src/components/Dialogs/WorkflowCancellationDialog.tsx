@@ -36,8 +36,24 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 
+// region Typings
+
 type Source = { workflowAffectedFiles: WorkflowAffectedItem[]; error: ApiResponse; };
 type Return = Omit<Source, 'error'>;
+
+interface WorkflowCancellationContentUIProps {
+  resource: Resource<Return>;
+  classes?: any;
+}
+
+interface WorkflowCancellationDialogUIProps {
+  resource: Resource<Return>;
+  classes?: any;
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
+  onContinue?(response): void;
+}
 
 interface WorkflowCancellationDialogBaseProps {
   open: boolean;
@@ -58,6 +74,8 @@ export interface WorkflowCancellationDialogStateProps extends WorkflowCancellati
   onContinue?: StandardAction;
 }
 
+// endregion
+
 const useStyles = makeStyles(() =>
   createStyles({
     contentRoot: {
@@ -70,25 +88,6 @@ const useStyles = makeStyles(() =>
     }
   })
 );
-
-export default function WorkflowCancellationDialog(props: WorkflowCancellationDialogProps) {
-  return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      aria-labelledby="requestPublishDialogTitle"
-      fullWidth
-      maxWidth="sm"
-    >
-      <WorkflowCancellationDialogWrapper {...props} />
-    </Dialog>
-  );
-}
-
-interface WorkflowCancellationContentUIProps {
-  resource: Resource<Return>;
-  classes?: any;
-}
 
 function WorkflowCancellationContentUI(props: WorkflowCancellationContentUIProps) {
   const {
@@ -114,15 +113,6 @@ function WorkflowCancellationContentUI(props: WorkflowCancellationContentUIProps
       </Grid>
     </Grid>
   );
-}
-
-interface WorkflowCancellationDialogUIProps {
-  resource: Resource<Return>;
-  classes?: any;
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-  onContinue?(response): void;
 }
 
 function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) {
@@ -181,6 +171,20 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
         </DialogActions>
       </DialogFooter>
     </>
+  );
+}
+
+export default function WorkflowCancellationDialog(props: WorkflowCancellationDialogProps) {
+  return (
+    <Dialog
+      open={props.open}
+      onClose={props.onClose}
+      aria-labelledby="requestPublishDialogTitle"
+      fullWidth
+      maxWidth="sm"
+    >
+      <WorkflowCancellationDialogWrapper {...props} />
+    </Dialog>
   );
 }
 
