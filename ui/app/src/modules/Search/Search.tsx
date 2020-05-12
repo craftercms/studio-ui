@@ -15,8 +15,8 @@
  */
 import React, { ElementType, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Avatar, Theme } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import Avatar from '@material-ui/core/Avatar';
 import AppsIcon from '@material-ui/icons/Apps';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
