@@ -16,6 +16,7 @@
 
 import { ContentType } from './ContentType';
 import { ContentInstance } from './ContentInstance';
+import { LookupTable } from './LookupTable';
 
 export interface IceZone {
   element?: Element;
@@ -53,7 +54,7 @@ export interface DropZone {
   arrangement: string;
   childrenRects: DOMRect[];
   origin?: any;
-  validations: ValidationResult[];
+  validations: LookupTable<ValidationResult>;
 }
 
 export interface DZStats {
@@ -85,7 +86,7 @@ export interface HoverData {
   id: number;
   rect: DOMRect;
   label: string;
-  validations: ValidationResult[];
+  validations: LookupTable<ValidationResult>;
 }
 
 export interface ReferentialEntries extends Record {

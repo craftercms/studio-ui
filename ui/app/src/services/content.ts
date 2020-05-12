@@ -564,18 +564,24 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
       id: 'contentTypes',
       value: [],
       level: 'required'
-    },
-    minCount: {
-      id: 'minCount',
-      value: isBlank(map.minSize.value) ? null : parseInt(map.minSize.value),
-      level: 'required'
-    },
-    maxCount: {
-      id: 'maxCount',
-      value: isBlank(map.maxSize.value) ? null : parseInt(map.maxSize.value),
-      level: 'required'
     }
   };
+
+  if (!isBlank(map.minSize.value)) {
+    validations.minCount = {
+      id: 'minCount',
+      value: parseInt(map.minSize.value),
+      level: 'required'
+    };
+  }
+
+  if (!isBlank(map.maxSize.value)) {
+    validations.maxCount = {
+      id: 'maxCount',
+      value: parseInt(map.maxSize.value),
+      level: 'required'
+    };
+  }
 
   map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
     if (receptaclesLookup[value]) {

@@ -29,11 +29,10 @@ export interface ContentTypeFieldValidation {
   level: 'required' | 'suggestion';
 }
 
-export interface ContentTypeFieldValidations {
-  tags: ContentTypeFieldValidation;
-  contentTypes: ContentTypeFieldValidation;
-  minCount: ContentTypeFieldValidation;
-  maxCount: ContentTypeFieldValidation;
+export type ValidationKeys = 'tags' | 'contentTypes' | 'minCount' | 'maxCount';
+
+export type ContentTypeFieldValidations = {
+  [key in ValidationKeys]: ContentTypeFieldValidation;
 }
 
 export interface ContentTypeField {

@@ -77,7 +77,7 @@ import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
 import { Asset, ContentType } from '../models/ContentType';
 import { ContentInstance } from '../models/ContentInstance';
-import { DropZone, HoverData, Record } from '../models/InContextEditing';
+import { DropZone, HoverData, Record, ValidationResult } from '../models/InContextEditing';
 import { LookupTable } from '../models/LookupTable';
 import { Editor } from 'tinymce';
 import { AssetUploaderMask } from './AssetUploaderMask';
@@ -128,6 +128,8 @@ export function Guest(props: GuestProps) {
     contentReady: false,
     mouseOverTimeout: null,
     dragover$: null,
+    dragenter$: null,
+    dragleave$: null,
     scrolling$: null,
     onScroll: null
   });
@@ -236,6 +238,44 @@ export function Guest(props: GuestProps) {
       $(document).off('scroll', persistence.onScroll);
       persistence.onScroll = null;
 
+    },
+
+    initializeValidationEvents(dropZones: DropZone[]): void {
+      dropZones.forEach((dropZone) => {
+        persistence.dragenter$ = fromEvent(dropZone.element, 'dragenter').subscribe((e: any) => {
+          if (!dropZone.element.contains(e.relatedTarget)) {
+            let length = dropZone.children.length;
+            if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
+              length = length = 1;
+            }
+
+            let validations = {};
+            let validate = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
+            if (validate) {
+              validations['maxCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
+              showValidationMessages(validations);
+              updateHighlightedValidations(dropZone, validations);
+            }
+          }
+        });
+        persistence.dragleave$ = fromEvent(dropZone.element, 'dragleave').subscribe((e: any) => {
+          if (!dropZone.element.contains(e.relatedTarget)) {
+            let length = dropZone.children.length;
+            let validations = {};
+            let validate = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
+            if (validate) {
+              validations['minCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
+              showValidationMessages(validations);
+              updateHighlightedValidations(dropZone, validations);
+            }
+          }
+        });
+      });
+    },
+
+    destroyValidationEvents(): void {
+      persistence.dragenter$.unsubscribe();
+      persistence.dragleave$.unsubscribe();
     },
 
     /*onClick*/
@@ -474,15 +514,14 @@ export function Guest(props: GuestProps) {
       let dropZones = [];
 
       const receptacles = iceRegistry.getRecordReceptacles(iceId);
-      const validatedReceptacles = receptacles.filter((id) => {
-        // TODO: min/max count validations
-        return true;
-      });
 
-      validatedReceptacles.forEach((id) => {
+      const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
+
+      receptacles.forEach(({ id }) => {
 
         const dropZone = ElementRegistry.compileDropZone(id);
         dropZone.origin = dropZone.children.includes(physicalRecord.element);
+        dropZone.validations = dropZone.children.includes(physicalRecord.element) ? [] : validationsLookup[id] ?? [];
         dropZones.push(dropZone);
 
         siblings = [...siblings, ...dropZone.children];
@@ -494,6 +533,7 @@ export function Guest(props: GuestProps) {
       const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
+      fn.initializeValidationEvents(dropZones);
 
       setState({
         dragContext: {
@@ -518,11 +558,6 @@ export function Guest(props: GuestProps) {
     },
 
     onHostInstanceDragStarted(instance: ContentInstance): void {
-      let players = [];
-      let siblings = [];
-      let containers = [];
-      let dropZones = [];
-
       const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
 
       if (receptacles.length === 0) {
@@ -530,24 +565,11 @@ export function Guest(props: GuestProps) {
         return;
       }
 
-      const validatedReceptacles = receptacles.filter((id) => {
-        // TODO: min/max count validations
-        return true;
-      });
+      const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
 
       //scrollToReceptacle(validatedReceptacles);
 
-      validatedReceptacles.forEach(({ id }) => {
-
-        const dropZone = ElementRegistry.compileDropZone(id);
-        dropZone.origin = null;
-        dropZones.push(dropZone);
-
-        siblings = siblings.concat(dropZone.children);
-        players = players.concat(dropZone.children).concat(dropZone.element);
-        containers.push(dropZone.element);
-
-      });
+      const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
 
       const highlighted = getHighlighted(dropZones);
 
@@ -581,12 +603,6 @@ export function Guest(props: GuestProps) {
     },
 
     onHostComponentDragStarted(contentType: ContentType): void {
-
-      let players = [];
-      let siblings = [];
-      let containers = [];
-      let dropZones = [];
-
       const receptacles = iceRegistry.getContentTypeReceptacles(contentType);
 
       if (receptacles.length === 0) {
@@ -596,24 +612,13 @@ export function Guest(props: GuestProps) {
 
       const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
 
-      // scrollToReceptacle(validatedReceptacles);
-
-      receptacles.forEach(({ id }) => {
-
-        const dropZone = ElementRegistry.compileDropZone(id);
-        dropZone.origin = null;
-        dropZone.validations = validationsLookup[id];
-        dropZones.push(dropZone);
-
-        siblings = siblings.concat(dropZone.children);
-        players = players.concat(dropZone.children).concat(dropZone.element);
-        containers.push(dropZone.element);
-
-      });
+      const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
 
       const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
+
+      fn.initializeValidationEvents(dropZones);
 
       setState({
         dragContext: {
@@ -673,16 +678,13 @@ export function Guest(props: GuestProps) {
         const dropzone = dragContext.dropZones.find((dz) =>
           dz.element === element || dz.children.includes(element)
         );
-        if (stateRef.current.dragContext.dropZone === undefined && dropzone.validations) {
-          showValidationMessage(dropzone.validations);
-        }
 
         setState({
           dragContext: {
             ...stateRef.current.dragContext,
             next,
             prev,
-            inZone: true,
+            inZone: !Object.values(dropzone.validations).some(({ level }) => level === 'required'),
             over: physicalRecord,
             coordinates: { x: e.clientX, y: e.clientY },
             dropZone: dropzone
@@ -943,6 +945,7 @@ export function Guest(props: GuestProps) {
 
     onDragEnd(): void {
       fn.destroySubjects();
+      fn.destroyValidationEvents();
 
       setState({
         dragContext: null,
@@ -1248,21 +1251,55 @@ export function Guest(props: GuestProps) {
     }, {} as LookupTable<HoverData>);
   }
 
-  function showValidationMessage(validation) {
-    const validationImportance = ['maxCount', 'minCount'];
-    let choose = null;
+  function showValidationMessages(validations) {
+    Object.values(validations).forEach(validation => {
+      post({ type: 'VALIDATION_MESSAGE', payload: validation });
+    });
+  }
 
-    validation.forEach(validation => {
-      if (choose) {
-        if (validationImportance.indexOf(validation.Id) < validationImportance.indexOf(choose.id)) {
-          choose = validation;
-        }
-      } else {
-        choose = validation;
-      }
+  function updateHighlightedValidations(dropZone: DropZone, validations: LookupTable<ValidationResult>) {
+    Object.values(validations).forEach(validation => {
+      dropZone.validations[validation.id] = validation;
     });
 
-    post({ type: 'VALIDATION_MESSAGE', payload: choose });
+    let dropZones = [...stateRef.current.dragContext.dropZones];
+    dropZones.filter(item => item.iceId !== dropZone.iceId);
+    dropZones.push(dropZone);
+
+    setState({
+      ...stateRef.current,
+      common: {
+        ...stateRef.current.common,
+        highlighted: getHighlighted(dropZones)
+      },
+      dragContext: {
+        ...stateRef.current.dragContext,
+        dropZones: dropZones
+      }
+    });
+  }
+
+  function getDragContextFromReceptacles(
+    receptacles: Record[],
+    validationsLookup: LookupTable<LookupTable<ValidationResult>>
+  ): { dropZones: any; siblings: any; players: any; containers: any; } {
+    const response = {
+      dropZones: [],
+      siblings: [],
+      players: [],
+      containers: []
+    };
+    receptacles.forEach(({ id }) => {
+      const dropZone = ElementRegistry.compileDropZone(id);
+      dropZone.origin = null;
+      dropZone.validations = validationsLookup?.[id] ?? {};
+      response.dropZones.push(dropZone);
+      response.siblings = response.siblings.concat(dropZone.children);
+      response.players = response.players.concat(dropZone.children).concat(dropZone.element);
+      response.containers.push(dropZone.element);
+    });
+
+    return response;
   }
 
   // 1. Subscribes to accommodation messages and routes them.
@@ -1465,8 +1502,8 @@ export function Guest(props: GuestProps) {
                   key={highlight.id}
                   {...highlight}
                   classes={{
-                    marker: highlight.validations?.length ?
-                      highlight.validations.some(({ level }) => level === 'required')
+                    marker: Object.values(highlight.validations).length ?
+                      Object.values(highlight.validations).some(({ level }) => level === 'required')
                         ? 'craftercms-required-validation'
                         : 'craftercms-suggestion-validation'
                       : null

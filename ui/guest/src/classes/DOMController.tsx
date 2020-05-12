@@ -247,7 +247,6 @@ export class DOMController {
   }
 
   static onDragStart({ element }: { element: Element }) {
-
     const zone = this.getZoneFor(element);
     // Images, links, annumberd selections are draggable
     // by default in HTML.
@@ -262,8 +261,8 @@ export class DOMController {
       recordId = zone.recordIds[0],
       record = iceRegistry.getReferentialEntries(recordId),
       receptacles = iceRegistry.getRecordReceptacles(recordId),
-      receptacleZones = receptacles.map((recId: number) =>
-        this.zones.find((zn: IceZone) => zn.recordIds.includes(recId))
+      receptacleZones = receptacles.map(({ id: number }) =>
+        this.zones.find((zn: IceZone) => zn.recordIds.includes(id))
       ),
       dropZones = receptacleZones.map(z => z.element);
 
