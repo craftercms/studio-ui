@@ -1566,7 +1566,10 @@ var CStudioForms =
               path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
               if (path && path.indexOf('.xml') != -1) {
                 var entityId = buildEntityIdFn(null);
-                CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
+                CrafterCMSNext.services.content.unlock(CStudioAuthoringContext.site, entityId).subscribe(
+                  (response) => {
+                  }
+                );
               }
             }
           };
@@ -1709,6 +1712,7 @@ var CStudioForms =
                 if (path && path.indexOf('.xml') != -1) {
                   var entityId = buildEntityIdFn(null);
 
+                  YAHOO.util.Event.removeListener(window, 'unload', unloadFn, me);
                   CrafterCMSNext.services.content.unlock(CStudioAuthoringContext.site, entityId).subscribe(
                     (response) => {
                       if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
@@ -1796,7 +1800,7 @@ var CStudioForms =
             cancelButtonEl.value = CMgs.format(formsLangBundle, 'cancel');
             formButtonContainerEl.appendChild(cancelButtonEl);
 
-            // YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
+            YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
             YAHOO.util.Event.addListener(cancelButtonEl, 'click', cancelFn, me);
           } else {
             var closeButtonEl = document.createElement('input');
@@ -1806,7 +1810,7 @@ var CStudioForms =
             formButtonContainerEl.appendChild(closeButtonEl);
             YDom.setStyle(formButtonContainerEl, 'text-align', 'center');
 
-            // YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
+            YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
             YAHOO.util.Event.addListener(closeButtonEl, 'click', cancelFn, me);
 
             var focusEl = window;
