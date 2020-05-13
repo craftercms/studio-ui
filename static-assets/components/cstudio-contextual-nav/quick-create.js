@@ -119,7 +119,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           type: 'SHOW_NEW_CONTENT_DIALOG',
           payload: {
             site: CStudioAuthoringContext.site,
-            previewItem: previewItem,
+            item: previewItem,
             compact: false,
             onContentTypeSelected: {
               type: 'LEGACY_DIALOG_CALLBACK',
@@ -147,7 +147,6 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
 
       // Render quick create menu
       CrafterCMSNext.render(container, 'QuickCreateMenu', {
-        previewItem,
         anchorEl,
         onNewContentSelected,
         onQuickCreateItemSelected,

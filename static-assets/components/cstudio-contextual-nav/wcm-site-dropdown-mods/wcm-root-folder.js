@@ -3288,7 +3288,7 @@
           payload: {
             open: true,
             site,
-            previewItem: {
+            item: {
               label: internalName,
               path: uri
             },
