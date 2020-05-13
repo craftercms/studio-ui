@@ -26,7 +26,7 @@ import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
-import { WorkflowAffectedItem } from '../../models/Item';
+import { LegacyItem } from '../../models/Item';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -36,7 +36,7 @@ import { palette } from '../../styles/theme';
 
 // region Typings
 
-type Source = { workflowAffectedFiles: WorkflowAffectedItem[] };
+type Source = { workflowAffectedFiles: LegacyItem[] };
 type Return = Omit<Source, 'error'>;
 
 interface WorkflowCancellationContentUIProps {
@@ -55,7 +55,7 @@ interface WorkflowCancellationDialogUIProps {
 
 interface WorkflowCancellationDialogBaseProps {
   open: boolean;
-  workflowAffectedFiles?: WorkflowAffectedItem[];
+  workflowAffectedFiles?: LegacyItem[];
   onContinueProps?: any;      //TODO: type
 }
 
