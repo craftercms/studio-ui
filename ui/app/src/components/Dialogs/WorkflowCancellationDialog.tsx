@@ -14,17 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
-import { useActiveSiteId, useLogicResource, useSelection, useUnmount } from '../../utils/hooks';
+import { useLogicResource, useUnmount } from '../../utils/hooks';
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import { getWorkflowAffectedFiles } from '../../services/content';
-import { ApiResponse } from '../../models/ApiResponse';
 import { FormattedMessage } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
@@ -38,7 +36,7 @@ import { palette } from '../../styles/theme';
 
 // region Typings
 
-type Source = { workflowAffectedFiles: WorkflowAffectedItem[]; error: ApiResponse; };
+type Source = { workflowAffectedFiles: WorkflowAffectedItem[] };
 type Return = Omit<Source, 'error'>;
 
 interface WorkflowCancellationContentUIProps {
@@ -57,7 +55,8 @@ interface WorkflowCancellationDialogUIProps {
 
 interface WorkflowCancellationDialogBaseProps {
   open: boolean;
-  path?: string;
+  workflowAffectedFiles?: WorkflowAffectedItem[];
+  onContinueProps?: any;      //TODO: type
 }
 
 export type WorkflowCancellationDialogProps = PropsWithChildren<WorkflowCancellationDialogBaseProps & {
@@ -84,7 +83,8 @@ const useStyles = makeStyles(() =>
     filesList: {
       height: '100%',
       border: '1px solid #D8D8DC',
-      backgroundColor: palette.white
+      backgroundColor: palette.white,
+      padding: 0
     }
   })
 );
@@ -95,10 +95,9 @@ function WorkflowCancellationContentUI(props: WorkflowCancellationContentUIProps
     classes
   } = props;
 
-  const { workflowAffectedFiles }: { workflowAffectedFiles: WorkflowAffectedItem[] } = resource.read();
+  const { workflowAffectedFiles } = resource.read();
 
   return (
-    // height 254px
     <Grid container spacing={3} className={classes.contentRoot}>
       <Grid item xs={12}>
         <List className={classes.filesList}>
@@ -124,15 +123,21 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
     classes
   } = props;
 
-  const title = 'Warning: Workflow Cancellation';
-  const subtitle = 'Edit will cancel all items that are in the scheduled deployment batch. Please review the list of files below and chose "Continue" to cancel workflow and edit or "Cancel" to remain in your dashboard.';
-
   return (
     <>
       <DialogHeader
         id="workflowCancellationDialogTitle"
-        title={title}
-        subtitle={subtitle}
+        title={
+          <FormattedMessage
+            id="workflowCancellation.title" defaultMessage="Warning: Workflow Cancellation"
+          />
+        }
+        subtitle={
+          <FormattedMessage
+            id="workflowCancellation.subtitle"
+            defaultMessage="Edit will cancel all items that are in the scheduled deployment batch. Please review the list of files below and chose “Continue” to cancel workflow and edit or “Cancel” to remain in your dashboard."
+          />
+        }
         onDismiss={onDismiss}
       />
       <DialogBody id="confirmDialogBody">
@@ -159,13 +164,13 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
       <DialogFooter>
         <DialogActions>
           {onClose && (
-            <Button onClick={onClose} variant="outlined">
-              <FormattedMessage id='workflowCancellationCancel' defaultMessage='Cancel' />
+            <Button onClick={onClose} variant="contained">
+              <FormattedMessage id="workflowCancellation.cancel" defaultMessage="Cancel" />
             </Button>
           )}
           {onContinue && (
             <Button onClick={onContinue} variant="contained" color="primary" autoFocus>
-              <FormattedMessage id='workflowCancellationCancel' defaultMessage='Continue' />
+              <FormattedMessage id="workflowCancellation.continue" defaultMessage="Continue" />
             </Button>
           )}
         </DialogActions>
@@ -190,52 +195,33 @@ export default function WorkflowCancellationDialog(props: WorkflowCancellationDi
 
 function WorkflowCancellationDialogWrapper(props: WorkflowCancellationDialogProps) {
   const {
-    path,
+    workflowAffectedFiles,
     onClose,
     onClosed,
     onDismiss,
-    onContinue
+    onContinue,
+    onContinueProps
   } = props;
   useUnmount(props.onClosed);
 
-  const siteId = useActiveSiteId();
-  const [workflowAffectedFiles, setWorkflowAffectedFiles] = useState(null);
-  const [error, setError] = useState(null);
-  const authoringBase = useSelection(state => state.env.authoringBase);
-
-  useEffect(() => {
-    getWorkflowAffectedFiles(siteId, path).subscribe(
-      (items) => {
-        setWorkflowAffectedFiles(items);
-      },
-      (error) => {
-        setError(error);
-      }
-    );
-  }, [siteId, path]);
-
   const workflowCancellationSource = useMemo(() => ({
-    workflowAffectedFiles,
-    error
-  }), [workflowAffectedFiles, error]);
+    workflowAffectedFiles
+  }), [workflowAffectedFiles]);
 
   const resource = useLogicResource<Return, Source>(workflowCancellationSource, {
     shouldResolve: (source) => Boolean(source.workflowAffectedFiles),
-    shouldReject: (source) => Boolean(source.error),
+    shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => ({
       workflowAffectedFiles: source.workflowAffectedFiles
     }),
-    errorSelector: (source) => source.error
+    errorSelector: (source) => null
   });
 
   const onContinueClick = () => {
     onDismiss();
     onContinue({
-      src: `${authoringBase}/legacy/form?site=${siteId}&path=${path}&type=form`,
-      type: 'form',
-      inProgress: false,
-      showTabs: false
+      ...onContinueProps
     });
   };
 
