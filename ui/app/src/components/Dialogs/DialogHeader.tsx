@@ -24,7 +24,7 @@ import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
 import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
 import createStyles from '@material-ui/styles/createStyles/createStyles';
 import clsx from 'clsx';
-import { Tooltip } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import Action, { ActionIcon } from './DialogHeaderAction';

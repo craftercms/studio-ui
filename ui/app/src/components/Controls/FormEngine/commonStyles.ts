@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { StyleRules } from '@material-ui/core';
+import { StyleRules } from '@material-ui/core/styles';
 
 export const controlBaseStyles: StyleRules<any, any> = {
   formControl: {

@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import makeStyles from '@material-ui/styles/makeStyles';
-import { Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { palette } from '../../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import Typography from '@material-ui/core/Typography';
@@ -23,7 +22,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 
-const dialogTitleStyles = makeStyles((theme: Theme) => ({
+const dialogTitleStyles = makeStyles(() => ({
   titleRoot: {
     margin: 0,
     padding: '13px 20px 11px',
