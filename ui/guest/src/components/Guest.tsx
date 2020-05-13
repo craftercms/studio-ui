@@ -241,8 +241,10 @@ export function Guest(props: GuestProps) {
     },
 
     initializeValidationEvents(dropZones: DropZone[]): void {
+      persistence.dragenter$ = [];
+      persistence.dragleave$ = [];
       dropZones.forEach((dropZone) => {
-        persistence.dragenter$ = fromEvent(dropZone.element, 'dragenter').subscribe((e: any) => {
+        persistence.dragenter$.push(fromEvent(dropZone.element, 'dragenter').subscribe((e: any) => {
           if (!dropZone.element.contains(e.relatedTarget)) {
             let length = dropZone.children.length;
             if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
@@ -253,13 +255,17 @@ export function Guest(props: GuestProps) {
             let validate = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
             if (validate) {
               validations['maxCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
-              showValidationMessages(validations);
-              updateHighlightedValidations(dropZone, validations);
             }
+            delete dropZone.validations.minCount;
+            showValidationMessages(validations);
+            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations });
           }
-        });
-        persistence.dragleave$ = fromEvent(dropZone.element, 'dragleave').subscribe((e: any) => {
+        }));
+        persistence.dragleave$.push(fromEvent(dropZone.element, 'dragleave').subscribe((e: any) => {
           if (!dropZone.element.contains(e.relatedTarget)) {
+            if (stateRef.current.dragContext.invalidDrop && !dropZone.origin) {
+              return;
+            }
             let length = dropZone.children.length;
             if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
               length = length - 1;
@@ -272,13 +278,13 @@ export function Guest(props: GuestProps) {
               updateHighlightedValidations(dropZone, validations);
             }
           }
-        });
+        }));
       });
     },
 
     destroyValidationEvents(): void {
-      persistence.dragenter$.unsubscribe();
-      persistence.dragleave$.unsubscribe();
+      persistence.dragenter$.forEach(sub => sub.unsubscribe());
+      persistence.dragleave$.forEach(sub => sub.unsubscribe());
     },
 
     /*onClick*/
@@ -687,7 +693,7 @@ export function Guest(props: GuestProps) {
             ...stateRef.current.dragContext,
             next,
             prev,
-            inZone: !Object.values(dropzone.validations).some(({ level }) => level === 'required'),
+            inZone: true,
             over: physicalRecord,
             coordinates: { x: e.clientX, y: e.clientY },
             dropZone: dropzone
@@ -1261,11 +1267,9 @@ export function Guest(props: GuestProps) {
   }
 
   function updateHighlightedValidations(dropZone: DropZone, validations: LookupTable<ValidationResult>) {
-    Object.values(validations).forEach(validation => {
-      dropZone.validations[validation.id] = validation;
-    });
+    dropZone.validations = validations;
 
-    let dropZones = [...stateRef.current.dragContext.dropZones];
+    let dropZones: DropZone[] = [...stateRef.current.dragContext.dropZones];
     dropZones.filter(item => item.iceId !== dropZone.iceId);
     dropZones.push(dropZone);
 
@@ -1277,7 +1281,8 @@ export function Guest(props: GuestProps) {
       },
       dragContext: {
         ...stateRef.current.dragContext,
-        dropZones: dropZones
+        dropZones: dropZones,
+        invalidDrop: Object.values(dropZone.validations).some(validation => validation.level === 'required') || Object.values(dropZones).some(dropZone => dropZone.validations['minCount'])
       }
     });
   }
@@ -1521,6 +1526,7 @@ export function Guest(props: GuestProps) {
                 EditingStatus.PLACING_DETACHED_COMPONENT
               ].includes(stateRef.current.common.status) &&
               stateRef.current.dragContext.inZone &&
+              !stateRef.current.dragContext.invalidDrop &&
               <DropMarker
                 onDropPosition={fn.onSetDropPosition}
                 dropZone={stateRef.current.dragContext.dropZone}
