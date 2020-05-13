@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -26,8 +26,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
   login,
   sendPasswordRecovery,
-  validatePasswordResetToken,
-  setPassword as setPasswordService
+  setPassword as setPasswordService,
+  validatePasswordResetToken
 } from '../../services/auth';
 import { insureSingleSlash, isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
@@ -48,6 +48,7 @@ import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutline
 import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
 import clsx from 'clsx';
 import { filter } from 'rxjs/operators';
+import { useDebouncedInput, useMount } from '../../utils/hooks';
 
 setRequestForgeryToken();
 
@@ -83,6 +84,7 @@ type SubViewProps = React.PropsWithChildren<{
   classes: { [props: string]: string };
   formatMessage: Function;
   onSnack: React.Dispatch<React.SetStateAction<{ open: boolean; message: string }>>;
+  setLanguage: React.Dispatch<React.SetStateAction<string>>;
 }>;
 
 interface PasswordRequirementsDisplayProps {
@@ -225,11 +227,32 @@ const dispatchLanguageChange = (language: string) => {
   document.dispatchEvent(event);
 };
 
+const retrieveStoredLangPreferences = () =>
+  Object.keys(window.localStorage).filter((key) => key.includes('_crafterStudioLanguage'));
+
+const buildKey = (username: string) => `${username}_crafterStudioLanguage`;
+
 function LoginView(props: SubViewProps) {
-  const { children, isFetching, onSubmit, classes, formatMessage, language } = props;
+  const { children, isFetching, onSubmit, classes, formatMessage, language, setLanguage } = props;
   const [username, setUsername] = useState(() => localStorage.getItem('userName') ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [storedLangPreferences] = useState(retrieveStoredLangPreferences);
+  const username$ = useDebouncedInput(
+    useCallback(
+      (user: string) => {
+        const key = buildKey(user);
+        if (storedLangPreferences.includes(key)) {
+          setLanguage(window.localStorage.getItem(key));
+        }
+      },
+      [setLanguage, storedLangPreferences]
+    ),
+    200
+  );
+  useMount(() => {
+    username$.next(username);
+  });
   const submit = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
@@ -241,7 +264,7 @@ function LoginView(props: SubViewProps) {
           onSubmit(false);
           localStorage.setItem('crafterStudioLanguage', language);
           localStorage.setItem('userName', username);
-          localStorage.setItem(`${username}_crafterStudioLanguage`, language);
+          localStorage.setItem(buildKey(username), language);
           setTimeout(() => {
             let redirectUrl = parse(window.location.search).redirect as string;
             redirectUrl = decodeURIComponent(redirectUrl ?? '/studio');
@@ -273,7 +296,10 @@ function LoginView(props: SubViewProps) {
           isFetching={isFetching}
           enableUsernameInput={true}
           onSetPassword={setPassword}
-          onSetUsername={setUsername}
+          onSetUsername={(user: string) => {
+            setUsername(user);
+            username$.next(user);
+          }}
         />
         {children}
       </DialogContent>
@@ -408,11 +434,11 @@ function ResetView(props: SubViewProps) {
     }
   }, [newPassword, newPasswordConfirm]);
   useEffect(() => {
-    validatePasswordResetToken(token).pipe(
-      filter((isValid) => !isValid)
-    ).subscribe(() => {
-      setError(formatMessage(translations.resetPasswordInvalidToken))
-    });
+    validatePasswordResetToken(token)
+      .pipe(filter((isValid) => !isValid))
+      .subscribe(() => {
+        setError(formatMessage(translations.resetPasswordInvalidToken));
+      });
   }, [formatMessage, token]);
   const submit = (e: any) => {
     e.preventDefault();
@@ -559,13 +585,13 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
   let captureGroups = passwordRequirementsRegex.match(/\(\?<.*?>.*?\)/g);
   let namedCaptureGroupSupport = true;
   let fallback;
-    if (!captureGroups) {
-      // RegExp may be valid and have no capture groups
-      fallback = {
-        regEx,
-        description: formatMessage(passwordRequirementMessages.validationPassing)
-      };
-    }
+  if (!captureGroups) {
+    // RegExp may be valid and have no capture groups
+    fallback = {
+      regEx,
+      description: formatMessage(passwordRequirementMessages.validationPassing)
+    };
+  }
   try {
     regEx = new RegExp(passwordRequirementsRegex);
     captureGroups = passwordRequirementsRegex.match(/\(\?<.*?>.*?\)/g);
@@ -590,58 +616,61 @@ function getPrimeMatter(props: Partial<PasswordRequirementsDisplayProps>) {
   }
   return {
     regEx,
-    conditions: captureGroups ? captureGroups.map((captureGroup) => {
-      let description;
-      let captureGroupKey =
-        captureGroup.match(/\?<(.*?)>/g)?.[0].replace(/\?<|>/g, '') ?? 'Unnamed condition';
-      if (!namedCaptureGroupSupport) {
-        captureGroup = captureGroup.replace(/\?<(.*?)>/g, '');
-      }
-      switch (captureGroupKey) {
-        case 'hasSpecialChars':
-          const allowedChars = (passwordRequirementsRegex.match(
-            /\(\?<hasSpecialChars>(.*)\[(.*?)]\)/
-          ) || ['', '', ''])[2];
-          description = formatMessage(passwordRequirementMessages.hasSpecialChars, {
-            chars: allowedChars ? `(${allowedChars})` : ''
-          });
-          break;
-        case 'minLength':
-          const min = ((passwordRequirementsRegex.match(/\(\?<minLength>(.*){(.*?)}\)/) || [
-            ''
-          ])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[0];
-          description = formatMessage(passwordRequirementMessages.minLength, { min });
-          break;
-        case 'maxLength':
-          const max = ((passwordRequirementsRegex.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [
-            ''
-          ])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[1];
-          description = formatMessage(passwordRequirementMessages.maxLength, { max });
-          break;
-        case 'minMaxLength':
-          const minLength = ((passwordRequirementsRegex.match(
-            /\(\?<minMaxLength>(.*){(.*?)}\)/
-          ) || [''])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[0];
-          const maxLength = ((passwordRequirementsRegex.match(
-            /\(\?<minMaxLength>(.*){(.*?)}\)/
-          ) || [''])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[1];
-          description = formatMessage(passwordRequirementMessages.minMaxLength, {
-            minLength,
-            maxLength
-          });
-          break;
-        default:
-          description = formatMessage(
-            // @ts-ignore
-            passwordRequirementMessages[captureGroupKey] ?? passwordRequirementMessages.unnamedGroup
-          );
-          break;
-      }
-      return {
-        regEx: new RegExp(captureGroup),
-        description
-      };
-    }): [fallback]
+    conditions: captureGroups
+      ? captureGroups.map((captureGroup) => {
+          let description;
+          let captureGroupKey =
+            captureGroup.match(/\?<(.*?)>/g)?.[0].replace(/\?<|>/g, '') ?? 'Unnamed condition';
+          if (!namedCaptureGroupSupport) {
+            captureGroup = captureGroup.replace(/\?<(.*?)>/g, '');
+          }
+          switch (captureGroupKey) {
+            case 'hasSpecialChars':
+              const allowedChars = (passwordRequirementsRegex.match(
+                /\(\?<hasSpecialChars>(.*)\[(.*?)]\)/
+              ) || ['', '', ''])[2];
+              description = formatMessage(passwordRequirementMessages.hasSpecialChars, {
+                chars: allowedChars ? `(${allowedChars})` : ''
+              });
+              break;
+            case 'minLength':
+              const min = ((passwordRequirementsRegex.match(/\(\?<minLength>(.*){(.*?)}\)/) || [
+                ''
+              ])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[0];
+              description = formatMessage(passwordRequirementMessages.minLength, { min });
+              break;
+            case 'maxLength':
+              const max = ((passwordRequirementsRegex.match(/\(\?<maxLength>(.*){(.*?)}\)/) || [
+                ''
+              ])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[1];
+              description = formatMessage(passwordRequirementMessages.maxLength, { max });
+              break;
+            case 'minMaxLength':
+              const minLength = ((passwordRequirementsRegex.match(
+                /\(\?<minMaxLength>(.*){(.*?)}\)/
+              ) || [''])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[0];
+              const maxLength = ((passwordRequirementsRegex.match(
+                /\(\?<minMaxLength>(.*){(.*?)}\)/
+              ) || [''])[0].match(/{(.*?)}/) || ['', ''])[1].split(',')[1];
+              description = formatMessage(passwordRequirementMessages.minMaxLength, {
+                minLength,
+                maxLength
+              });
+              break;
+            default:
+              description = formatMessage(
+                // @ts-ignore
+                passwordRequirementMessages[captureGroupKey] ??
+                  passwordRequirementMessages.unnamedGroup
+              );
+              break;
+          }
+          return {
+            regEx: new RegExp(captureGroup),
+            description
+          };
+        })
+      : [fallback]
   };
 }
 
@@ -684,7 +713,7 @@ function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
   );
 }
 
-export default function(props: LoginViewProps) {
+export default function (props: LoginViewProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const token = parse(window.location.search).token as string;
@@ -707,6 +736,7 @@ export default function(props: LoginViewProps) {
     onSubmit,
     onSnack,
     passwordRequirementsRegex,
+    setLanguage,
     children: (
       <LanguageDropDown
         language={language}
