@@ -134,7 +134,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
         }
 
-        fetchWorkflowAffectedFiles(siteId, '/site/website/health/index.xml').subscribe(
+        fetchWorkflowAffectedFiles(siteId, path).subscribe(
           (affectedFiles) => {
             const editProps = {
               src,
