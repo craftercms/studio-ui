@@ -38,6 +38,7 @@ import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVers
 import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
 import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
+import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -131,6 +132,7 @@ export interface GlobalState {
     dependencies: DependenciesDialogStateProps;
     delete: DeleteDialogStateProps;
     edit: EmbeddedLegacyEditorsStateProps;
+    reject: RejectDialogStateProps;
   };
 }
 

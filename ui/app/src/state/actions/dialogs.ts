@@ -25,6 +25,7 @@ import { PublishDialogStateProps } from '../../modules/Content/Publish/PublishDi
 import { DeleteDialogStateProps } from '../../modules/Content/Delete/DeleteDialog';
 import { NewContentDialogStateProps } from '../../modules/Content/Authoring/NewContentDialog';
 import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies/DependenciesDialog';
+import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -78,4 +79,10 @@ export const newContentDialogClosed = createAction('NEW_CONTENT_DIALOG_CLOSED');
 export const showDependenciesDialog = createAction<Partial<DependenciesDialogStateProps>>('SHOW_DEPENDENCIES_DIALOG');
 export const closeDependenciesDialog = createAction<StandardAction>('CLOSE_DEPENDENCIES_DIALOG');
 export const dependenciesDialogClosed = createAction('DEPENDENCIES_DIALOG_CLOSED');
+// endregion
+
+// region Reject
+export const showRejectDialog = createAction<Partial<RejectDialogStateProps>>('SHOW_REJECT_DIALOG');
+export const closeRejectDialog = createAction<StandardAction>('CLOSE_REJECT_DIALOG');
+export const rejectDialogClosed = createAction('REJECT_DIALOG_CLOSED');
 // endregion

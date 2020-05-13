@@ -28,6 +28,7 @@ import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
 import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
+import RejectDialog from '../Dialogs/RejectDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -223,6 +224,15 @@ function GlobalDialogManager() {
 
       {/* region Auth Monitor */}
       {/* TODO: Move auth monitor here */}
+      {/* endregion */}
+
+      {/* region Reject */}
+      <RejectDialog
+        open={state.reject.open}
+        onClose={createCallback(state.reject.onClose, dispatch)}
+        onClosed={createCallback(state.reject.onClosed, dispatch)}
+        onDismiss={createCallback(state.reject.onDismiss, dispatch)}
+      />
       {/* endregion */}
     </Suspense>
   );
