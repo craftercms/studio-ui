@@ -184,7 +184,7 @@ export default function WorkflowCancellationDialog(props: WorkflowCancellationDi
     <Dialog
       open={props.open}
       onClose={props.onClose}
-      aria-labelledby="requestPublishDialogTitle"
+      aria-labelledby="workflowCancellationDialogTitle"
       fullWidth
       maxWidth="sm"
     >
