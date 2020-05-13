@@ -1388,8 +1388,6 @@ var CStudioForms =
                 edit
               });
             } else {
-              YAHOO.util.Event.removeListener(window, 'unload', unloadFn, me);
-
               YAHOO.util.Connect.setDefaultPostHeader(false);
               YAHOO.util.Connect.initHeader('Content-Type', 'application/xml; charset=utf-8');
               YAHOO.util.Connect.initHeader(
@@ -1401,8 +1399,10 @@ var CStudioForms =
                 CStudioAuthoring.Service.createServiceUri(serviceUrl),
                 {
                   success: function() {
+                    YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
+
                     var getContentItemCb = {
-                      success: function(contentTO) {
+                      success: function (contentTO) {
                         var previewUrl = CStudioAuthoringContext.previewAppBaseUri + contentTO.item.browserUri;
                         path = entityId;
                         var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
@@ -1564,6 +1564,7 @@ var CStudioForms =
           };
 
           var unloadFn = function(e) {
+            console.log('UNLOAD');
             if (_notifyServer) {
               path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
               if (path && path.indexOf('.xml') != -1) {
@@ -1711,9 +1712,10 @@ var CStudioForms =
                 if (path && path.indexOf('.xml') != -1) {
                   var entityId = buildEntityIdFn(null);
 
-                  YAHOO.util.Event.removeListener(window, 'unload', unloadFn, me);
                   CrafterCMSNext.services.content.unlock(CStudioAuthoringContext.site, entityId).subscribe(
                     (response) => {
+                      YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
+
                       if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
                         var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
                         CStudioAuthoring.InContextEdit.unstackDialog(editorId);
@@ -1799,7 +1801,7 @@ var CStudioForms =
             cancelButtonEl.value = CMgs.format(formsLangBundle, 'cancel');
             formButtonContainerEl.appendChild(cancelButtonEl);
 
-            YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
+            YAHOO.util.Event.addListener(window, 'beforeunload', unloadFn, me);
             YAHOO.util.Event.addListener(cancelButtonEl, 'click', cancelFn, me);
           } else {
             var closeButtonEl = document.createElement('input');
@@ -1809,7 +1811,7 @@ var CStudioForms =
             formButtonContainerEl.appendChild(closeButtonEl);
             YDom.setStyle(formButtonContainerEl, 'text-align', 'center');
 
-            YAHOO.util.Event.addListener(window, 'unload', unloadFn, me);
+            YAHOO.util.Event.addListener(window, 'beforeunload', unloadFn, me);
             YAHOO.util.Event.addListener(closeButtonEl, 'click', cancelFn, me);
 
             var focusEl = window;
