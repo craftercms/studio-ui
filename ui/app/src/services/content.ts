@@ -789,7 +789,8 @@ export function sortItem(
     parentModelId,
     doc => {
       const item = extractNode(doc, fieldId, currentIndex);
-      insertCollectionItem(doc, fieldId, targetIndex, item);
+      let newIndex = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) + 1 : targetIndex + 1;
+      insertCollectionItem(doc, fieldId, targetIndex, item, newIndex);
     }
   );
 }
@@ -1051,9 +1052,9 @@ function getComponentPath(id: string, contentType: string) {
   return `${pathBase}/${id}.xml`;
 }
 
-function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node): void {
+function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node, newIndex?: number): void {
   let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
-  let index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
+  let index = newIndex || ((typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex);
 
   if (nou(fieldNode)) {
     fieldNode = doc.createElement(fieldId);
