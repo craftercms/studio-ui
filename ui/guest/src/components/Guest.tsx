@@ -246,7 +246,7 @@ export function Guest(props: GuestProps) {
           if (!dropZone.element.contains(e.relatedTarget)) {
             let length = dropZone.children.length;
             if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
-              length = length = 1;
+              length = length - 1;
             }
 
             let validations = {};
@@ -261,6 +261,9 @@ export function Guest(props: GuestProps) {
         persistence.dragleave$ = fromEvent(dropZone.element, 'dragleave').subscribe((e: any) => {
           if (!dropZone.element.contains(e.relatedTarget)) {
             let length = dropZone.children.length;
+            if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
+              length = length - 1;
+            }
             let validations = {};
             let validate = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
             if (validate) {
@@ -521,7 +524,7 @@ export function Guest(props: GuestProps) {
 
         const dropZone = ElementRegistry.compileDropZone(id);
         dropZone.origin = dropZone.children.includes(physicalRecord.element);
-        dropZone.validations = dropZone.children.includes(physicalRecord.element) ? [] : validationsLookup[id] ?? [];
+        dropZone.validations = dropZone.children.includes(physicalRecord.element) ? {} : validationsLookup[id] ?? {};
         dropZones.push(dropZone);
 
         siblings = [...siblings, ...dropZone.children];
@@ -574,6 +577,7 @@ export function Guest(props: GuestProps) {
       const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
+      fn.initializeValidationEvents(dropZones);
 
       setState({
         dragContext: {
@@ -617,7 +621,6 @@ export function Guest(props: GuestProps) {
       const highlighted = getHighlighted(dropZones);
 
       fn.initializeSubjects();
-
       fn.initializeValidationEvents(dropZones);
 
       setState({

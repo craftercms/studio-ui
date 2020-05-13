@@ -17,6 +17,7 @@
 import { ContentType } from './ContentType';
 import { ContentInstance } from './ContentInstance';
 import { LookupTable } from './LookupTable';
+import { ValidationKeys } from '@craftercms/studio-ui/src/models/ContentType';
 
 export interface IceZone {
   element?: Element;
@@ -65,9 +66,9 @@ export interface DZStats {
 }
 
 export interface ValidationResult {
-  id: string;
-  level: string;
-  message: string;
+  id: ValidationKeys;
+  level: 'required' | 'suggestion';
+  values: object;
 }
 
 export interface Record {

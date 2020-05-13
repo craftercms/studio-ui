@@ -37,7 +37,7 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
       return {
         id,
         level,
-        message: `The max count is more than allowable minimum of ${min}`
+        values: { min }
       };
     } else {
       return null;
@@ -48,7 +48,7 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
       return {
         id,
         level,
-        message: `The max count is more than allowable minimum of ${max}`
+        values: { max }
       };
     } else {
       return null;
@@ -309,7 +309,7 @@ export class ICERegistry {
               validationResult[validation.id] = {
                 id: validation.id,
                 level: validation.level,
-                message: `The min count is less than allowable minimum of ${validation.value}`
+                values: { min: validation.value }
               };
             }
             break;
@@ -319,7 +319,7 @@ export class ICERegistry {
               validationResult[validation.id] = {
                 id: validation.id,
                 level: validation.level,
-                message: `The max count is more than allowable maximum of ${validation.value}`
+                values: { max: validation.value }
               };
             }
             break;
