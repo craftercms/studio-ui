@@ -26,6 +26,7 @@ import publish from './publish';
 import dependencies from './dependencies';
 import deleteDialog from './delete';
 import edit from './edit';
+import reject from './reject';
 
 export default combineReducers({
   confirm,
@@ -38,5 +39,6 @@ export default combineReducers({
   publish,
   dependencies,
   delete: deleteDialog,
-  edit
+  edit,
+  reject
 });
