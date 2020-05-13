@@ -1564,7 +1564,6 @@ var CStudioForms =
           };
 
           var unloadFn = function(e) {
-            console.log('UNLOAD');
             if (_notifyServer) {
               path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
               if (path && path.indexOf('.xml') != -1) {
