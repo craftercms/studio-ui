@@ -24,7 +24,7 @@ import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
-import { useSelection, useSpreadState } from '../../utils/hooks';
+import { useSelection, useSpreadState, useUnmount } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
   EDIT_FORM_CHANGE_TAB,
@@ -67,8 +67,8 @@ const translations = defineMessages({
 const styles = makeStyles(() =>
   createStyles({
     iframe: {
-      'height': '0',
-      'border': 0,
+      height: '0',
+      border: 0,
       '&.complete': {
         height: '100%'
       }
@@ -106,11 +106,14 @@ interface EmbeddedLegacyEditorsBaseProps {
   embeddedParentPath?: string;
 }
 
-export type EmbeddedLegacyEditorsProps = PropsWithChildren<EmbeddedLegacyEditorsBaseProps & {
-  onSaveSuccess?(response?: any): any;
-  onClose?(): any;
-  onDismiss?(): any;
-}>;
+export type EmbeddedLegacyEditorsProps = PropsWithChildren<
+  EmbeddedLegacyEditorsBaseProps & {
+    onClose?(): any;
+    onClosed?(): any;
+    onDismiss?(): any;
+    onSaveSuccess?(response?: any): any;
+  }
+>;
 
 export interface EmbeddedLegacyEditorsStateProps extends EmbeddedLegacyEditorsBaseProps {
   onSaveSuccess?: StandardAction;
@@ -118,9 +121,8 @@ export interface EmbeddedLegacyEditorsStateProps extends EmbeddedLegacyEditorsBa
   onDismiss?: StandardAction;
 }
 
-export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
+function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
   const {
-    open,
     src,
     type,
     inProgress,
@@ -130,14 +132,15 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     embeddedParentPath,
     onSaveSuccess,
     onDismiss,
-    onClose,
+    onClosed
   } = props;
+
   const { formatMessage } = useIntl();
   const classes = styles({});
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
   const [error, setError] = useState<ApiResponse>(null);
-  const contentTypesBranch = useSelection(state => state.contentTypes);
+  const contentTypesBranch = useSelection((state) => state.contentTypes);
 
   const [tabsState, setTabsState] = useSpreadState({
     form: { loaded: false, pendingChanges: false },
@@ -152,104 +155,108 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     closeEmbeddedLegacyForm(false);
   };
 
-  const getPath = useCallback((type?: string) => {
-    switch (type) {
-      case 'publish':
-      case 'form': {
-        if (embeddedParentPath) return embeddedParentPath;
-        return itemModel.craftercms.path;
+  const getPath = useCallback(
+    (type?: string) => {
+      switch (type) {
+        case 'publish':
+        case 'form': {
+          if (embeddedParentPath) return embeddedParentPath;
+          return itemModel.craftercms.path;
+        }
+        case 'template': {
+          return contentTypesBranch.byId[itemModel.craftercms.contentTypeId].displayTemplate;
+        }
+        case 'controller': {
+          let pageName = popPiece(itemModel.craftercms.contentTypeId, '/');
+          return `/scripts/pages/${pageName}.groovy`;
+        }
+        default: {
+          return itemModel.craftercms.path;
+        }
       }
-      case 'template': {
-        return contentTypesBranch.byId[itemModel.craftercms.contentTypeId].displayTemplate;
+    },
+    [contentTypesBranch.byId, embeddedParentPath, itemModel]
+  );
+
+  const handleTabChange = useCallback(
+    (event: React.ChangeEvent<{}>, type: string) => {
+      let inProgress = !tabsState[type].loaded;
+      const config = { type, inProgress };
+      dispatch(updateEditConfig(config));
+      iframeRef.current.contentWindow.postMessage(
+        {
+          type: EDIT_FORM_CHANGE_TAB,
+          tab: type,
+          path: getPath(type)
+        },
+        '*'
+      );
+    },
+    [getPath, tabsState, dispatch]
+  );
+
+  const closeEmbeddedLegacyForm = useCallback(
+    (refresh: boolean, tab?: string) => {
+      let hasSomeLoaded = filterBy('loaded', tabsState, tab);
+
+      if (hasSomeLoaded.length && tab) {
+        setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
+        handleTabChange(null, hasSomeLoaded[0]);
+      } else {
+        !showTabs && setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
+
+        onDismiss();
+        if (refresh) {
+          getHostToGuestBus().next({ type: RELOAD_REQUEST });
+        }
       }
-      case 'controller': {
-        let pageName = popPiece(itemModel.craftercms.contentTypeId, '/');
-        return `/scripts/pages/${pageName}.groovy`;
-      }
-      default: {
-        return itemModel.craftercms.path;
-      }
-    }
-  }, [contentTypesBranch.byId, embeddedParentPath, itemModel]);
-
-  const handleTabChange = useCallback((event: React.ChangeEvent<{}>, type: string) => {
-    let inProgress = !tabsState[type].loaded;
-    const config = { type, inProgress };
-    dispatch(updateEditConfig(config));
-    iframeRef.current.contentWindow.postMessage(
-      {
-        type: EDIT_FORM_CHANGE_TAB,
-        tab: type,
-        path: getPath(type)
-      },
-      '*'
-    );
-
-  }, [getPath, tabsState, dispatch]);
-
-  const closeEmbeddedLegacyForm = useCallback((refresh: boolean, tab?: string) => {
-    let hasSomeLoaded = filterBy('loaded', tabsState, tab);
-
-    if (hasSomeLoaded.length && tab) {
-      setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
-      handleTabChange(null, hasSomeLoaded[0]);
-    } else {
-      !showTabs && setTabsState({ [tab]: { loaded: false, pendingChanges: false } });
-
-      onDismiss();
-      if (refresh) {
-        getHostToGuestBus().next({ type: RELOAD_REQUEST });
-      }
-    }
-  }, [onDismiss, handleTabChange, setTabsState, tabsState, showTabs]);
+    },
+    [onDismiss, handleTabChange, setTabsState, tabsState, showTabs]
+  );
 
   useEffect(() => {
-    if (open) {
-      const messagesSubscription = messages.subscribe((e: any) => {
-        let tab = e.data.tab || 'form';
-        switch (e.data.type) {
-          case EMBEDDED_LEGACY_FORM_CLOSE: {
-            closeEmbeddedLegacyForm(e.data.refresh, tab);
-            break;
-          }
-          case EMBEDDED_LEGACY_FORM_RENDERED: {
-            if (inProgress) {
-              const config = { inProgress: false };
-              dispatch(updateEditConfig(config));
-            }
-            setTabsState({
-              [tab]: { loaded: true, pendingChanges: tabsState[tab].pendingChanges }
-            });
-            break;
-          }
-          case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
-            if (tabsState[tab].pendingChanges === false) {
-              setTabsState({ [tab]: { loaded: true, pendingChanges: true } });
-            }
-            break;
-          }
-          case EMBEDDED_LEGACY_FORM_SAVE: {
-            closeEmbeddedLegacyForm(e.data.refresh, tab);
-            onSaveSuccess?.(e.data);
-            break;
-          }
-          case EMBEDDED_LEGACY_FORM_FAILURE: {
-            setError({
-              message: e.data.message
-            });
-            break;
-          }
+    const messagesSubscription = messages.subscribe((e: any) => {
+      let tab = e.data.tab || 'form';
+      switch (e.data.type) {
+        case EMBEDDED_LEGACY_FORM_CLOSE: {
+          closeEmbeddedLegacyForm(e.data.refresh, tab);
+          break;
         }
-      });
-      return () => {
-        messagesSubscription.unsubscribe();
-      };
-    }
+        case EMBEDDED_LEGACY_FORM_RENDERED: {
+          if (inProgress) {
+            const config = { inProgress: false };
+            dispatch(updateEditConfig(config));
+          }
+          setTabsState({
+            [tab]: { loaded: true, pendingChanges: tabsState[tab].pendingChanges }
+          });
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
+          if (tabsState[tab].pendingChanges === false) {
+            setTabsState({ [tab]: { loaded: true, pendingChanges: true } });
+          }
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_SAVE: {
+          closeEmbeddedLegacyForm(e.data.refresh, tab);
+          onSaveSuccess?.(e.data);
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_FAILURE: {
+          setError({
+            message: e.data.message
+          });
+          break;
+        }
+      }
+    });
+    return () => {
+      messagesSubscription.unsubscribe();
+    };
   }, [
     inProgress,
-    open,
     onSaveSuccess,
-    handleTabChange,
     setTabsState,
     tabsState,
     messages,
@@ -257,16 +264,13 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
     dispatch
   ]);
 
+  useUnmount(onClosed);
+
   return (
-    <Dialog fullScreen open={open} onClose={onClose}>
+    <>
       {showTabs && (
         <AppBar position="static" color="default">
-          <Tabs
-            value={type}
-            onChange={handleTabChange}
-            aria-label="simple tabs example"
-            centered
-          >
+          <Tabs value={type} onChange={handleTabChange} aria-label="simple tabs example" centered>
             <Tab
               value="form"
               label={
@@ -304,8 +308,7 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
           </Tabs>
         </AppBar>
       )}
-
-      {inProgress && open && (
+      {inProgress && (
         <LoadingState
           title={formatMessage(translations.loadingForm)}
           classes={{ root: classes.loadingRoot }}
@@ -318,6 +321,14 @@ export default function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps)
         className={clsx(classes.iframe, !inProgress && 'complete')}
       />
       <ErrorDialog open={Boolean(error)} error={error} onDismiss={onErrorClose} />
+    </>
+  );
+}
+
+export default function(props: EmbeddedLegacyEditorsProps) {
+  return (
+    <Dialog fullScreen open={props.open} onClose={props.onClose}>
+      <EmbeddedLegacyEditors {...props} />
     </Dialog>
   );
 }
