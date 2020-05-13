@@ -246,24 +246,26 @@ export function Guest(props: GuestProps) {
       dropZones.forEach((dropZone) => {
         persistence.dragenter$.push(fromEvent(dropZone.element, 'dragenter').subscribe((e: any) => {
           if (!dropZone.element.contains(e.relatedTarget)) {
+            if (stateRef.current.dragContext.invalidDrop && !dropZone.origin && stateRef.current.common.status === EditingStatus.SORTING_COMPONENT) {
+              return;
+            }
             let length = dropZone.children.length;
             if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
               length = length - 1;
             }
 
             let validations = {};
-            let validate = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
-            if (validate) {
+            let maxCount = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
+            if (maxCount) {
               validations['maxCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
             }
-            delete dropZone.validations.minCount;
             showValidationMessages(validations);
-            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations });
+            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations }, 'enter');
           }
         }));
         persistence.dragleave$.push(fromEvent(dropZone.element, 'dragleave').subscribe((e: any) => {
           if (!dropZone.element.contains(e.relatedTarget)) {
-            if (stateRef.current.dragContext.invalidDrop && !dropZone.origin) {
+            if (!dropZone.origin) {
               return;
             }
             let length = dropZone.children.length;
@@ -274,9 +276,9 @@ export function Guest(props: GuestProps) {
             let validate = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
             if (validate) {
               validations['minCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
-              showValidationMessages(validations);
-              updateHighlightedValidations(dropZone, validations);
             }
+            showValidationMessages(validations);
+            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations }, 'leave');
           }
         }));
       });
@@ -530,7 +532,7 @@ export function Guest(props: GuestProps) {
 
         const dropZone = ElementRegistry.compileDropZone(id);
         dropZone.origin = dropZone.children.includes(physicalRecord.element);
-        dropZone.validations = dropZone.children.includes(physicalRecord.element) ? {} : validationsLookup[id] ?? {};
+        dropZone.validations = validationsLookup[id] ?? {};
         dropZones.push(dropZone);
 
         siblings = [...siblings, ...dropZone.children];
@@ -1266,12 +1268,19 @@ export function Guest(props: GuestProps) {
     });
   }
 
-  function updateHighlightedValidations(dropZone: DropZone, validations: LookupTable<ValidationResult>) {
+  function updateHighlightedValidations(dropZone: DropZone, validations: LookupTable<ValidationResult>, event: string) {
     dropZone.validations = validations;
 
     let dropZones: DropZone[] = [...stateRef.current.dragContext.dropZones];
     dropZones.filter(item => item.iceId !== dropZone.iceId);
     dropZones.push(dropZone);
+
+    let invalidDrop = false;
+    if (event === 'leave') {
+      invalidDrop = Boolean(dropZone.validations['minCount']);
+    } else {
+      invalidDrop = !dropZone.origin && Boolean(dropZone.validations['maxCount']);
+    }
 
     setState({
       ...stateRef.current,
@@ -1282,7 +1291,7 @@ export function Guest(props: GuestProps) {
       dragContext: {
         ...stateRef.current.dragContext,
         dropZones: dropZones,
-        invalidDrop: Object.values(dropZone.validations).some(validation => validation.level === 'required') || Object.values(dropZones).some(dropZone => dropZone.validations['minCount'])
+        invalidDrop
       }
     });
   }
