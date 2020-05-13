@@ -304,7 +304,7 @@ export function PreviewConcierge(props: any) {
         }
         case INSTANCE_DRAG_BEGUN:
         case INSTANCE_DRAG_ENDED: {
-          dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN));
+          dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN ? payload : null));
           break;
         }
         case DESKTOP_ASSET_DROP: {
@@ -427,8 +427,8 @@ export function PreviewConcierge(props: any) {
     <>
       {props.children}
       <RubbishBin
-        open={guest?.itemBeingDragged}
-        onTrash={() => getHostToGuestBus().next({ type: TRASHED })}
+        open={nnou(guest?.itemBeingDragged)}
+        onTrash={() => getHostToGuestBus().next({ type: TRASHED, payload: guest.itemBeingDragged })}
       />
     </>
   );

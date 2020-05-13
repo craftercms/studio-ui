@@ -204,10 +204,10 @@ export function changeCurrentUrl(nextValue: string): StandardAction {
   };
 }
 
-export function setItemBeingDragged(active: boolean): StandardAction {
+export function setItemBeingDragged(iceId: number): StandardAction {
   return {
     type: SET_ITEM_BEING_DRAGGED,
-    payload: active
+    payload: iceId
   };
 }
 

@@ -246,10 +246,8 @@ export function Guest(props: GuestProps) {
       dropZones.forEach((dropZone) => {
         persistence.dragenter$.push(fromEvent(dropZone.element, 'dragenter').subscribe((e: any) => {
           if (!dropZone.element.contains(e.relatedTarget)) {
-            if (stateRef.current.dragContext.invalidDrop && !dropZone.origin && stateRef.current.common.status === EditingStatus.SORTING_COMPONENT) {
-              return;
-            }
             let length = dropZone.children.length;
+            let invalidDrop = stateRef.current.dragContext.invalidDrop;
             if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
               length = length - 1;
             }
@@ -259,26 +257,36 @@ export function Guest(props: GuestProps) {
             if (maxCount) {
               validations['maxCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
             }
+
+            if (dropZone.origin) {
+              invalidDrop = false;
+            } else if (maxCount) {
+              invalidDrop = true;
+            }
+
             showValidationMessages(validations);
-            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations }, 'enter');
+            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations }, invalidDrop);
           }
         }));
         persistence.dragleave$.push(fromEvent(dropZone.element, 'dragleave').subscribe((e: any) => {
           if (!dropZone.element.contains(e.relatedTarget)) {
-            if (!dropZone.origin) {
-              return;
-            }
             let length = dropZone.children.length;
+            let invalidDrop = false;
             if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
               length = length - 1;
             }
             let validations = {};
-            let validate = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
-            if (validate) {
+            let minCount = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
+            if (minCount) {
               validations['minCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
             }
+
+            if (dropZone.origin && minCount) {
+              invalidDrop = true;
+              post({ type: INSTANCE_DRAG_ENDED });
+            }
             showValidationMessages(validations);
-            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations }, 'leave');
+            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations }, invalidDrop);
           }
         }));
       });
@@ -517,7 +525,7 @@ export function Guest(props: GuestProps) {
         return;
       }
 
-      post({ type: INSTANCE_DRAG_BEGUN });
+      post({ type: INSTANCE_DRAG_BEGUN, payload: iceId });
 
       let players = [];
       let siblings = [];
@@ -532,7 +540,8 @@ export function Guest(props: GuestProps) {
 
         const dropZone = ElementRegistry.compileDropZone(id);
         dropZone.origin = dropZone.children.includes(physicalRecord.element);
-        dropZone.validations = validationsLookup[id] ?? {};
+        //dropZone.validations = validationsLookup[id] ?? {};
+        dropZone.validations = {};
         dropZones.push(dropZone);
 
         siblings = [...siblings, ...dropZone.children];
@@ -1134,10 +1143,8 @@ export function Guest(props: GuestProps) {
 
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
-    onTrashDrop(): void {
-      const { dragContext } = stateRef.current;
-      const { id } = dragContext.dragged;
-      let { modelId, fieldId, index } = iceRegistry.recordOf(id);
+    onTrashDrop(iceId: number): void {
+      let { modelId, fieldId, index } = iceRegistry.recordOf(iceId);
       contentController.deleteItem(modelId, fieldId, index);
     },
 
@@ -1268,19 +1275,12 @@ export function Guest(props: GuestProps) {
     });
   }
 
-  function updateHighlightedValidations(dropZone: DropZone, validations: LookupTable<ValidationResult>, event: string) {
+  function updateHighlightedValidations(dropZone: DropZone, validations: LookupTable<ValidationResult>, invalidDrop: boolean = false) {
     dropZone.validations = validations;
 
     let dropZones: DropZone[] = [...stateRef.current.dragContext.dropZones];
     dropZones.filter(item => item.iceId !== dropZone.iceId);
     dropZones.push(dropZone);
-
-    let invalidDrop = false;
-    if (event === 'leave') {
-      invalidDrop = Boolean(dropZone.validations['minCount']);
-    } else {
-      invalidDrop = !dropZone.origin && Boolean(dropZone.validations['maxCount']);
-    }
 
     setState({
       ...stateRef.current,
@@ -1352,7 +1352,7 @@ export function Guest(props: GuestProps) {
         case COMPONENT_INSTANCE_DRAG_ENDED:
           return fn.onHostInstanceDragEnd();
         case TRASHED:
-          return fn.onTrashDrop();
+          return fn.onTrashDrop(payload);
         case CLEAR_SELECTED_ZONES:
           fn.clearAndListen();
           break;
