@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
 import { useLogicResource, useUnmount } from '../../utils/hooks';
@@ -36,7 +36,7 @@ import { palette } from '../../styles/theme';
 
 // region Typings
 
-type Source = { workflowAffectedFiles: LegacyItem[] };
+type Source = LegacyItem[];
 type Return = Omit<Source, 'error'>;
 
 interface WorkflowCancellationContentUIProps {
@@ -95,7 +95,7 @@ function WorkflowCancellationContentUI(props: WorkflowCancellationContentUIProps
     classes
   } = props;
 
-  const { workflowAffectedFiles } = resource.read();
+  const workflowAffectedFiles = resource.read();
 
   return (
     <Grid container spacing={3} className={classes.contentRoot}>
@@ -152,7 +152,7 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
                 />
               )
             },
-            isEmpty: (value) => value.workflowAffectedFiles.length === 0
+            isEmpty: (value) => value.length === 0
           }}
         >
           <WorkflowCancellationContentUI
@@ -204,17 +204,11 @@ function WorkflowCancellationDialogWrapper(props: WorkflowCancellationDialogProp
   } = props;
   useUnmount(props.onClosed);
 
-  const workflowCancellationSource = useMemo(() => ({
-    workflowAffectedFiles
-  }), [workflowAffectedFiles]);
-
-  const resource = useLogicResource<Return, Source>(workflowCancellationSource, {
-    shouldResolve: (source) => Boolean(source.workflowAffectedFiles),
+  const resource = useLogicResource<Return, Source>(workflowAffectedFiles, {
+    shouldResolve: (source) => Boolean(source),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => ({
-      workflowAffectedFiles: source.workflowAffectedFiles
-    }),
+    resultSelector: (source) => source,
     errorSelector: (source) => null
   });
 
