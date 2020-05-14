@@ -229,7 +229,6 @@ function GlobalDialogManager() {
       {/* region Workflow Cancellation */}
       <WorkflowCancellationDialog
         open={state.workflowCancellation.open}
-        onContinueProps={state.workflowCancellation.onContinueProps}
         workflowAffectedFiles={state.workflowCancellation.workflowAffectedFiles}
         onClose={createCallback(state.workflowCancellation.onClose, dispatch)}
         onClosed={createCallback(state.workflowCancellation.onClosed, dispatch)}

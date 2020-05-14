@@ -56,7 +56,6 @@ interface WorkflowCancellationDialogUIProps {
 interface WorkflowCancellationDialogBaseProps {
   open: boolean;
   workflowAffectedFiles?: LegacyItem[];
-  onContinueProps?: any;      //TODO: type
 }
 
 export type WorkflowCancellationDialogProps = PropsWithChildren<WorkflowCancellationDialogBaseProps & {
@@ -199,8 +198,7 @@ function WorkflowCancellationDialogWrapper(props: WorkflowCancellationDialogProp
     onClose,
     onClosed,
     onDismiss,
-    onContinue,
-    onContinueProps
+    onContinue
   } = props;
   useUnmount(props.onClosed);
 
@@ -214,9 +212,7 @@ function WorkflowCancellationDialogWrapper(props: WorkflowCancellationDialogProp
 
   const onContinueClick = () => {
     onDismiss();
-    onContinue({
-      ...onContinueProps
-    });
+    onContinue();
   };
 
   return (

@@ -148,10 +148,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             if (affectedFiles?.length > 0) {
               dispatch(showWorkflowCancellationDialog({
                 workflowAffectedFiles: affectedFiles,
-                onContinue: showEditDialog(),
-                onContinueProps: {
-                  ...editProps
-                }
+                onContinue: showEditDialog(editProps)
               }));
             } else {
               dispatch(
