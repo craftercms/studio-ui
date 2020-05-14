@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
@@ -26,7 +25,6 @@ import DialogHeader from './DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from './DialogBody';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
-import { ApiResponse } from '../../models/ApiResponse';
 import { Resource } from '../../models/Resource';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
@@ -63,8 +61,8 @@ interface RejectDialogUIProps {
   checkedItems: string[];
   rejectionReason: string;
   rejectionComment: string;
-  setRejectionReason?(reason: string): void;
-  setRejectionComment?(comment: string): void;
+  setRejectionReason?(value: string): void;
+  setRejectionComment?(value: string): void;
   onUpdateChecked?(value?: string): void;
   classes?: any;
   onClose?(): void;
@@ -206,26 +204,32 @@ function RejectDialogUI(props: RejectDialogUIProps) {
 
           <Grid item xs={12}>
             <form>
-              <FormControl fullWidth>               {/* TODO: translations */}
+              <FormControl fullWidth>
                 <InputLabel className={classes.sectionLabel}>Rejection Reason:</InputLabel>
                 <Select
                   fullWidth
                   input={<SelectInput />}
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value as string)}
                 >
                   <MenuItem key={'NotApproved'} value={'NotApproved'}>
-                    Not Approved
+                    <FormattedMessage id="rejectDialog.notApproved" defaultMessage="Not Approved" />
                   </MenuItem>
                   <MenuItem key={'IncorrectBranding'} value={'IncorrectBranding'}>
-                    Incorrect Branding
+                    <FormattedMessage
+                      id="rejectDialog.incorrectBranding" defaultMessage="Incorrect Branding"
+                    />
                   </MenuItem>
                   <MenuItem key={'Typos'} value={'Typos'}>
-                    Typos
+                    <FormattedMessage id="rejectDialog.typos" defaultMessage="Typos" />
                   </MenuItem>
                   <MenuItem key={'BrokenLinks'} value={'BrokenLinks'}>
-                    Broken Links
+                    <FormattedMessage id="rejectDialog.brokenLinks" defaultMessage="Broken Links" />
                   </MenuItem>
                   <MenuItem key={'NSOA'} value={'NSOA'}>
-                    Needs Section Owner's Approval
+                    <FormattedMessage
+                      id="rejectDialog.nsoa" defaultMessage="Needs Section Owner's Approval"
+                    />
                   </MenuItem>
                 </Select>
               </FormControl>
@@ -236,6 +240,8 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                 fullWidth
                 InputLabelProps={{ shrink: true }}
                 multiline
+                defaultValue={rejectionComment}
+                onChange={(e) => setRejectionComment(e.target.value as string)}
               />
             </form>
           </Grid>
