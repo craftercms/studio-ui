@@ -107,7 +107,7 @@ export function PreviewConcierge(props: any) {
 
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, selectedTool } = usePreviewState();
+  const { guest, selectedTool, currentUrl } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const { guestBase, xsrfArgument } = useSelection(state => state.env);
   const priorState = useRef({ site });
@@ -192,6 +192,22 @@ export function PreviewConcierge(props: any) {
             shared
           ).subscribe(
             () => {
+
+              let ifrm = document.createElement('iframe');
+              ifrm.setAttribute('src', `${guestBase}${currentUrl}`);
+              ifrm.style.width = '0';
+              ifrm.style.height = '0';
+              document.body.appendChild(ifrm);
+
+              ifrm.onload = function () {
+                let htmlString = ifrm.contentWindow.document.documentElement
+                  .querySelector(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`);
+                ifrm.remove();
+                hostToGuest$.next({
+                  type: 'COMPONENT_HTML_RESPONSE',
+                  payload: { response: htmlString.outerHTML, id: instance.craftercms.id }
+                });
+              };
               enqueueSnackbar('Insert component operation completed.');
             },
             (error) => {

@@ -243,51 +243,61 @@ export function Guest(props: GuestProps) {
     initializeValidationEvents(dropZones: DropZone[]): void {
       persistence.dragenter$ = [];
       persistence.dragleave$ = [];
+      const dropZoneDragLeave = (dropZone: DropZone) => {
+        let length = dropZone.children.length;
+        let invalidDrop = false;
+        if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
+          length = length - 1;
+        }
+        let validations = dropZone.validations;
+        let minCount = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
+        if (minCount) {
+          validations['minCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
+        } else {
+          validations.minCount && delete validations.minCount;
+        }
+
+        if (dropZone.origin && minCount) {
+          invalidDrop = true;
+          // if minCount validation is running we need to disable the trashbin
+          post({ type: INSTANCE_DRAG_ENDED });
+        }
+        updateHighlightedValidations(dropZone, { ...validations }, invalidDrop);
+        validations.maxCount && delete validations.maxCount;
+        showValidationMessages(validations);
+      };
+      const dropZoneDragEnter = (dropZone: DropZone) => {
+        let length = dropZone.children.length;
+        let invalidDrop = stateRef.current.dragContext.invalidDrop;
+        if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
+          length = length - 1;
+        }
+        let validations = dropZone.validations;
+        let maxCount = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
+        validations.minCount && delete validations.minCount;
+        if (maxCount) {
+          validations['maxCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
+        } else {
+          validations.maxCount && delete validations.maxCount;
+        }
+
+        if (dropZone.origin) {
+          invalidDrop = false;
+        } else if (maxCount) {
+          invalidDrop = true;
+        }
+
+        showValidationMessages(validations);
+        updateHighlightedValidations(dropZone, validations, invalidDrop);
+      };
+      console.log('40 === dinamic content');
+      console.log('44 === layout items');
       dropZones.forEach((dropZone) => {
         persistence.dragenter$.push(fromEvent(dropZone.element, 'dragenter').subscribe((e: any) => {
-          if (!dropZone.element.contains(e.relatedTarget)) {
-            let length = dropZone.children.length;
-            let invalidDrop = stateRef.current.dragContext.invalidDrop;
-            if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
-              length = length - 1;
-            }
-
-            let validations = {};
-            let maxCount = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
-            if (maxCount) {
-              validations['maxCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'maxCount', [length]);
-            }
-
-            if (dropZone.origin) {
-              invalidDrop = false;
-            } else if (maxCount) {
-              invalidDrop = true;
-            }
-
-            showValidationMessages(validations);
-            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations }, invalidDrop);
-          }
+          console.log('entrando en la zona', dropZone.iceId);
         }));
         persistence.dragleave$.push(fromEvent(dropZone.element, 'dragleave').subscribe((e: any) => {
-          if (!dropZone.element.contains(e.relatedTarget)) {
-            let length = dropZone.children.length;
-            let invalidDrop = false;
-            if (stateRef.current.common.status === EditingStatus.SORTING_COMPONENT && dropZone.origin) {
-              length = length - 1;
-            }
-            let validations = {};
-            let minCount = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
-            if (minCount) {
-              validations['minCount'] = iceRegistry.runValidation(dropZone.iceId as number, 'minCount', [length]);
-            }
-
-            if (dropZone.origin && minCount) {
-              invalidDrop = true;
-              post({ type: INSTANCE_DRAG_ENDED });
-            }
-            showValidationMessages(validations);
-            updateHighlightedValidations(dropZone, { ...dropZone.validations, ...validations }, invalidDrop);
-          }
+          console.log('saiendo de la zona', dropZone.iceId);
         }));
       });
     },
@@ -540,8 +550,7 @@ export function Guest(props: GuestProps) {
 
         const dropZone = ElementRegistry.compileDropZone(id);
         dropZone.origin = dropZone.children.includes(physicalRecord.element);
-        //dropZone.validations = validationsLookup[id] ?? {};
-        dropZone.validations = {};
+        dropZone.validations = validationsLookup[id] ?? {};
         dropZones.push(dropZone);
 
         siblings = [...siblings, ...dropZone.children];
@@ -1278,19 +1287,18 @@ export function Guest(props: GuestProps) {
   function updateHighlightedValidations(dropZone: DropZone, validations: LookupTable<ValidationResult>, invalidDrop: boolean = false) {
     dropZone.validations = validations;
 
-    let dropZones: DropZone[] = [...stateRef.current.dragContext.dropZones];
-    dropZones.filter(item => item.iceId !== dropZone.iceId);
-    dropZones.push(dropZone);
+    let newDropZones = stateRef.current.dragContext.dropZones.filter(item => item.iceId !== dropZone.iceId);
+    newDropZones.push(dropZone);
 
     setState({
       ...stateRef.current,
       common: {
         ...stateRef.current.common,
-        highlighted: getHighlighted(dropZones)
+        highlighted: getHighlighted(newDropZones)
       },
       dragContext: {
         ...stateRef.current.dragContext,
-        dropZones: dropZones,
+        dropZones: newDropZones,
         invalidDrop
       }
     });
