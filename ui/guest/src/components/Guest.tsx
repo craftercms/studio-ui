@@ -290,14 +290,22 @@ export function Guest(props: GuestProps) {
         showValidationMessages(validations);
         updateHighlightedValidations(dropZone, validations, invalidDrop);
       };
-      console.log('40 === dinamic content');
-      console.log('44 === layout items');
+      const isDropZone = (zone: any) => {
+        return dropZones.some(({ element }) => zone === element);
+      };
+      let counter = 0;
       dropZones.forEach((dropZone) => {
         persistence.dragenter$.push(fromEvent(dropZone.element, 'dragenter').subscribe((e: any) => {
-          console.log('entrando en la zona', dropZone.iceId);
+          if (isDropZone(e.currentTarget) && counter === 0) {
+            counter++;
+            console.log('entering', dropZone.element);
+          }
         }));
         persistence.dragleave$.push(fromEvent(dropZone.element, 'dragleave').subscribe((e: any) => {
-          console.log('saiendo de la zona', dropZone.iceId);
+          if (isDropZone(e.currentTarget) && counter === 1) {
+            counter--;
+            console.log('leaving', dropZone.element);
+          }
         }));
       });
     },
