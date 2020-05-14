@@ -598,7 +598,7 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
   return validations;
 }
 
-function writeContentUrl(qs: object) {
+function writeContentUrl(qs: object): string {
   qs = new URLSearchParams(qs as URLSearchParams);
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }

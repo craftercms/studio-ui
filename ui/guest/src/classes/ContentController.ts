@@ -272,6 +272,14 @@ export class ContentController {
     // Insert in desired position
     result.splice(targetIndex as number, 0, instance.craftercms.id);
 
+    post(GUEST_MODELS_RECEIVED, {
+      [instance.craftercms.id]: instance,
+      [modelId]: {
+        ...model,
+        [fieldId]: result
+      }
+    });
+
     ContentController.models$.next({
       ...models,
       [instance.craftercms.id]: instance,
@@ -280,6 +288,8 @@ export class ContentController {
         [fieldId]: result
       }
     });
+
+    this.children[modelId].push(instance.craftercms.id);
 
     post(INSERT_COMPONENT_OPERATION, {
       modelId,
