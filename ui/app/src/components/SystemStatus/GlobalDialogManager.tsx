@@ -229,6 +229,7 @@ function GlobalDialogManager() {
       {/* region Reject */}
       <RejectDialog
         open={state.reject.open}
+        items={state.reject.items}
         onClose={createCallback(state.reject.onClose, dispatch)}
         onClosed={createCallback(state.reject.onClosed, dispatch)}
         onDismiss={createCallback(state.reject.onDismiss, dispatch)}
