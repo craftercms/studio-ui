@@ -19,25 +19,15 @@ import { ajax, AjaxResponse } from 'rxjs/ajax';
 import { filter, map, share, take } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import {
-  CHILDREN_MAP_UPDATE,
-  CONTENT_TYPES_RESPONSE,
   createLookupTable,
-  DELETE_ITEM_OPERATION,
   findComponentContainerFields,
   forEach,
-  GUEST_MODELS_RECEIVED,
-  INSERT_COMPONENT_OPERATION,
-  INSERT_INSTANCE_OPERATION,
-  INSERT_ITEM_OPERATION,
   isNullOrUndefined,
-  MOVE_ITEM_OPERATION,
   notNullOrUndefined,
   pluckProps,
   popPiece,
   removeLastPiece,
-  reversePluckProps,
-  SORT_ITEM_OPERATION,
-  UPDATE_FIELD_VALUE_OPERATION
+  reversePluckProps
 } from '../util';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../communicator';
@@ -46,6 +36,17 @@ import { ContentInstance, ContentInstanceSystemProps } from '../models/ContentIn
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { Operation } from '../models/Operations';
+import {
+  CHILDREN_MAP_UPDATE,
+  CONTENT_TYPES_RESPONSE,
+  DELETE_ITEM_OPERATION,
+  GUEST_MODELS_RECEIVED,
+  INSERT_COMPONENT_OPERATION,
+  INSERT_INSTANCE_OPERATION,
+  INSERT_ITEM_OPERATION,
+  MOVE_ITEM_OPERATION, SORT_ITEM_OPERATION,
+  UPDATE_FIELD_VALUE_OPERATION
+} from '../constants';
 
 const apiUrl = window.location.origin;
 

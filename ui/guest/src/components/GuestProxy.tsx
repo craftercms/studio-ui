@@ -15,41 +15,37 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import {
-  addAnimation,
-  COMPONENT_INSTANCE_HTML_REQUEST,
-  COMPONENT_INSTANCE_HTML_RESPONSE,
-  DELETE_ITEM_OPERATION,
-  forEach,
-  INSERT_COMPONENT_OPERATION,
-  INSERT_INSTANCE_OPERATION,
-  MOVE_ITEM_OPERATION,
-  notNullOrUndefined,
-  popPiece,
-  removeLastPiece,
-  SORT_ITEM_OPERATION,
-  UPDATE_FIELD_VALUE_OPERATION
-} from '../util';
+import { addAnimation, forEach, notNullOrUndefined, popPiece, removeLastPiece } from '../util';
 import { useGuestContext } from './GuestContext';
 import { ElementRegistry } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery';
 import contentController, { ContentController } from '../classes/ContentController';
 import { zip } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 import { ContentTypeHelper } from '../classes/ContentTypeHelper';
 import { message$, post } from '../communicator';
 import { ContentTypeField } from '../models/ContentType';
 import { ContentInstance } from '../models/ContentInstance';
 import { Operation } from '../models/Operations';
+import {
+  COMPONENT_INSTANCE_HTML_REQUEST,
+  COMPONENT_INSTANCE_HTML_RESPONSE,
+  DELETE_ITEM_OPERATION,
+  INSERT_COMPONENT_OPERATION,
+  INSERT_INSTANCE_OPERATION,
+  MOVE_ITEM_OPERATION,
+  SORT_ITEM_OPERATION,
+  UPDATE_FIELD_VALUE_OPERATION
+} from '../constants';
+import { useSelector } from 'react-redux';
+import { GuestState } from '../store/models/GuestState';
 
 export function GuestProxy(props) {
 
-  const context = useGuestContext();
-  const { current: persistence } = useRef({
-    draggable: null,
-    editable: null
-  });
+  const state = useSelector<GuestState, GuestState>(state => state);
+  const { onEvent } = useGuestContext();
+  const { current: persistence } = useRef({ draggable: null });
 
   useEffect(() => {
 
@@ -69,7 +65,7 @@ export function GuestProxy(props) {
         index = parseInt(index, 10);
       }
 
-      context.register({ element, modelId, fieldId, index, label });
+      ElementRegistry.register({ element, modelId, fieldId, index, label });
 
     };
 
@@ -94,7 +90,7 @@ export function GuestProxy(props) {
           }
           $(el).attr('data-craftercms-index', elementNewIndex);
           const pr = ElementRegistry.fromElement(el);
-          pr && context.deregister(pr.id);
+          pr && ElementRegistry.deregister(pr.id);
           registerElement(el);
         });
       } else if (type === 'sort') {
@@ -117,13 +113,13 @@ export function GuestProxy(props) {
             addAnimation($(el), 'craftercms-contentTree-pulse');
           }
           const pr = ElementRegistry.fromElement(el);
-          pr && context.deregister(pr.id);
+          pr && ElementRegistry.deregister(pr.id);
           registerElement(el);
         });
       }
     };
 
-    const getDropzoneElement = (modelId: string, fieldId: string, targetIndex: string | number): JQuery<Element> => {
+    const getDropZoneElement = (modelId: string, fieldId: string, targetIndex: string | number): JQuery<Element> => {
       const dropZoneId = iceRegistry.exists({
         modelId,
         fieldId,
@@ -160,13 +156,13 @@ export function GuestProxy(props) {
           e.preventDefault();
           e.stopPropagation();
         }
-        context.onEvent(e, record.id);
+        onEvent(e, record.id);
       }
     };
 
     $(document)
       .on('mouseover', '[data-craftercms-model-id]', handler)
-      .on('mouseout', '[data-craftercms-model-id]', handler)
+      .on('mouseleave', '[data-craftercms-model-id]', handler)
       .on('dragstart', '[data-craftercms-model-id]', handler)
       .on('dragover', '[data-craftercms-model-id]', handler)
       .on('dragleave', '[data-craftercms-model-id]', handler)
@@ -277,7 +273,7 @@ export function GuestProxy(props) {
           const iceId = iceRegistry.exists({ modelId, fieldId, index });
           const phyRecord = ElementRegistry.fromICEId(iceId);
 
-          context.deregister(phyRecord.id);
+          ElementRegistry.deregister(phyRecord.id);
 
           // Immediate removal of the element causes the dragend event not
           // to fire leaving the state corrupt - in a state of "SORTING".
@@ -292,7 +288,7 @@ export function GuestProxy(props) {
         case INSERT_COMPONENT_OPERATION: {
           const { modelId, fieldId, targetIndex, contentType, instance, shared } = op.args;
 
-          const $daddy = getDropzoneElement(modelId, fieldId, targetIndex);
+          const $daddy = getDropZoneElement(modelId, fieldId, targetIndex);
           let $clone = $daddy.children(':first').clone();
           if ($clone.length) {
             const processFields = function (instance: ContentInstance, fields: ContentTypeField): void {
@@ -327,15 +323,14 @@ export function GuestProxy(props) {
             </svg>
           `);
 
-          const $daddy = getDropzoneElement(modelId, fieldId, targetIndex);
+          const $daddy = getDropZoneElement(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 
           const id = Date.now();
 
           message$.pipe(
-            filter((e: MessageEvent) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.id === id)),
-            map(e => e.data),
+            filter((e) => (e.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.payload.id === id)),
             take(1)
           ).subscribe(function ({ payload }) {
             const $root = $('<div/>').html(payload.response);
@@ -384,22 +379,6 @@ export function GuestProxy(props) {
 
   useEffect(() => {
 
-    if (context.editable !== persistence.editable) {
-
-      persistence.editable && Object.values(persistence.editable).forEach(({ element }: any) => {
-        $(element).attr('contenteditable', 'false').removeAttr('contenteditable');
-        }
-      );
-
-      persistence.editable = context.editable;
-
-      persistence.editable && Object.values(persistence.editable).forEach(({ element }: any) => {
-        (persistence.editable === null) && (persistence.editable = []);
-        $(element).attr('contenteditable', 'true');
-      });
-
-    }
-
     if (notNullOrUndefined(persistence.draggable)) {
       $(persistence.draggable)
         .attr('draggable', 'false')
@@ -407,7 +386,7 @@ export function GuestProxy(props) {
     }
 
     forEach(
-      Object.entries(context.draggable),
+      Object.entries(state.draggable),
       ([phyId, iceId]) => {
         if (iceId !== false) {
           const record = ElementRegistry.get(phyId);
@@ -420,18 +399,6 @@ export function GuestProxy(props) {
         }
       }
     );
-
-    // context$.next(
-    //   pluckProps(
-    //     context,
-    //     'inEditMode',
-    //     'status',
-    //     'dragged',
-    //     'editable',
-    //     'draggable',
-    //     'highlighted'
-    //   )
-    // );
 
   });
 

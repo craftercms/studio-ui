@@ -14,16 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Guest from './components/Guest';
-import { GuestProxy } from './components/GuestProxy';
+import StandardAction from '@craftercms/studio-ui/src/models/StandardAction';
+import { GuestActionTypes } from './GuestActionTypes';
 
-const guestProxyElement = document.createElement('craftercms-guest-proxy');
-
-ReactDOM.render(
-  <Guest modelId="8d7f21fa-5e09-00aa-8340-853b7db302da">
-    <GuestProxy />
-  </Guest>,
-  guestProxyElement
-);
+export type GuestStandardAction = StandardAction<unknown, GuestActionTypes>;

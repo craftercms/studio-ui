@@ -58,7 +58,7 @@ interface ComponentMenuProps {
 }
 
 export default function ComponentMenu(props: ComponentMenuProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
   const { anchorEl, site, modelId, parentId, handleClose, embeddedParentPath = null, anchorOrigin = undefined } = props;
   const models = useSelection<LookupTable<ContentInstance>>(state => state.preview.guest?.models);
   const contentTypesBranch = useSelection(state => state.contentTypes);
@@ -106,7 +106,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       case 'history': {
         dispatch(batchActions([
           fetchItemVersions({ item: item }),
-          showHistoryDialog()
+          showHistoryDialog({})
         ]));
         break;
       }

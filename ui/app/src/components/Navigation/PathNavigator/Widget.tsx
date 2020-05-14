@@ -528,7 +528,7 @@ export default function (props: WidgetProps) {
       }
       case 'history': {
         dispatch(fetchItemVersions({ rootPath: path, item: menu.activeItem }));
-        dispatch(showHistoryDialog());
+        dispatch(showHistoryDialog({}));
         setMenu({
           activeItem: null,
           anchorEl: null

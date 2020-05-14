@@ -27,7 +27,8 @@ import {
 import { LookupTable } from './models/LookupTable';
 import { ContentTypeField, ContentTypeReceptacle } from './models/ContentType';
 import { RenderTree } from './models/ContentTree';
-import { Record } from './models/InContextEditing';
+import { DropZone, HoverData, Record } from './models/InContextEditing';
+import { ElementRegistry } from './classes/ElementRegistry';
 
 export const foo = (...args: any[]) => void null;
 export const
@@ -38,61 +39,17 @@ export const
   TOLERANCE_PERCENTS = { x: 5, y: 5 },
   DEFAULT_RECORD_DATA = { fieldId: null, index: null, refCount: 1 };
 
-// region Accommodation Actions
-// To be moved to a common file for sharing across apps
-
-export const HOST_CHECK_IN = 'HOST_CHECK_IN';
-export const GUEST_CHECK_IN = 'GUEST_CHECK_IN';
-export const GUEST_CHECK_OUT = 'GUEST_CHECK_OUT';
-export const SORT_ITEM_OPERATION = 'SORT_ITEM_OPERATION';
-export const INSERT_COMPONENT_OPERATION = 'INSERT_COMPONENT_OPERATION';
-export const INSERT_INSTANCE_OPERATION = 'INSERT_INSTANCE_OPERATION';
-export const INSERT_ITEM_OPERATION = 'INSERT_ITEM_OPERATION';
-export const MOVE_ITEM_OPERATION = 'MOVE_ITEM_OPERATION';
-export const DELETE_ITEM_OPERATION = 'DELETE_ITEM_OPERATION';
-export const UPDATE_FIELD_VALUE_OPERATION = 'UPDATE_FIELD_VALUE_OPERATION';
-export const ICE_ZONE_SELECTED = 'ICE_ZONE_SELECTED';
-export const CLEAR_SELECTED_ZONES = 'CLEAR_SELECTED_ZONES';
-export const EDIT_MODE_CHANGED = 'EDIT_MODE_CHANGED';
-export const ASSET_DRAG_STARTED = 'ASSET_DRAG_STARTED';
-export const ASSET_DRAG_ENDED = 'ASSET_DRAG_ENDED';
-export const COMPONENT_DRAG_STARTED = 'COMPONENT_DRAG_STARTED';
-export const COMPONENT_DRAG_ENDED = 'COMPONENT_DRAG_ENDED';
-export const TRASHED = 'TRASHED';
-export const CONTENT_TYPES_REQUEST = 'CONTENT_TYPES_REQUEST';
-export const CONTENT_TYPES_RESPONSE = 'CONTENT_TYPES_RESPONSE';
-export const INSTANCE_DRAG_BEGUN = 'INSTANCE_DRAG_BEGUN';
-export const INSTANCE_DRAG_ENDED = 'INSTANCE_DRAG_ENDED';
-export const GUEST_MODELS_RECEIVED = 'GUEST_MODELS_RECEIVED';
-export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
-export const RELOAD_REQUEST = 'RELOAD_REQUEST';
-export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
-export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
-export const DESKTOP_ASSET_UPLOAD_PROGRESS = 'DESKTOP_ASSET_UPLOAD_PROGRESS';
-export const COMPONENT_INSTANCE_DRAG_STARTED = 'COMPONENT_INSTANCE_DRAG_STARTED';
-export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
-export const COMPONENT_INSTANCE_HTML_REQUEST = 'COMPONENT_INSTANCE_HTML_REQUEST';
-export const COMPONENT_INSTANCE_HTML_RESPONSE = 'COMPONENT_INSTANCE_HTML_RESPONSE';
-export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUEST';
-export const CONTENT_TYPE_RECEPTACLES_RESPONSE = 'CONTENT_TYPE_RECEPTACLES_RESPONSE';
-export const SCROLL_TO_RECEPTACLE = 'SCROLL_TO_RECEPTACLE';
-export const CLEAR_HIGHLIGHTED_RECEPTACLES = 'CLEAR_HIGHLIGHTED_RECEPTACLES';
-export const CONTENT_TREE_FIELD_SELECTED = 'CONTENT_TREE_FIELD_SELECTED';
-export const CHILDREN_MAP_UPDATE = 'CHILDREN_MAP_UPDATE';
-
-// endregion
-
-export const EditingStatus = {
-  OFF: 'OFF',
-  LISTENING: 'LISTENING',
-  SORTING_COMPONENT: 'SORTING_COMPONENT',
-  PLACING_NEW_COMPONENT: 'PLACING_NEW_COMPONENT',
-  PLACING_DETACHED_COMPONENT: 'PLACING_DETACHED_COMPONENT',
-  PLACING_DETACHED_ASSET: 'PLACING_DETACHED_ASSET',
-  EDITING_COMPONENT: 'EDITING_COMPONENT',
-  EDITING_COMPONENT_INLINE: 'EDITING_COMPONENT_INLINE',
-  UPLOAD_ASSET_FROM_DESKTOP: 'UPLOAD_ASSET_FROM_DESKTOP',
-  SHOW_RECEPTACLES: 'SHOW_RECEPTACLES'
+export enum EditingStatus {
+  OFF = 'OFF',
+  LISTENING = 'LISTENING',
+  SORTING_COMPONENT = 'SORTING_COMPONENT',
+  PLACING_NEW_COMPONENT = 'PLACING_NEW_COMPONENT',
+  PLACING_DETACHED_COMPONENT = 'PLACING_DETACHED_COMPONENT',
+  PLACING_DETACHED_ASSET = 'PLACING_DETACHED_ASSET',
+  EDITING_COMPONENT = 'EDITING_COMPONENT',
+  EDITING_COMPONENT_INLINE = 'EDITING_COMPONENT_INLINE',
+  UPLOAD_ASSET_FROM_DESKTOP = 'UPLOAD_ASSET_FROM_DESKTOP',
+  SHOW_RECEPTACLES = 'SHOW_RECEPTACLES'
 };
 
 export function notNullOrUndefined(value: any): boolean {
@@ -559,6 +516,7 @@ export function isBlank(str: string): boolean {
 export function addAnimation($element: JQuery<Element> | JQuery<HTMLElement>, animationClass: string): void {
   const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
   $element.addClass(animationClass);
+  // @ts-ignore
   $element.one(END_EVENT, function () {
     $element.removeClass(animationClass);
   });
@@ -603,4 +561,11 @@ export function scrollToReceptacle(receptacles: ContentTypeReceptacle[] | Record
       scrollTop: $(element).offset().top - 100
     }, 300);
   }
+}
+
+export function getHighlighted(dropZones: DropZone[]): LookupTable<HoverData> {
+  return dropZones.reduce((object, { physicalRecordId: id }) => {
+    object[id] = ElementRegistry.getHoverData(id);
+    return object;
+  }, {});
 }

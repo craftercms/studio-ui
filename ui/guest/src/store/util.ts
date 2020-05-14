@@ -14,16 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Guest from './components/Guest';
-import { GuestProxy } from './components/GuestProxy';
+import { EditingStatus } from '../util';
+import { SyntheticEvent } from 'react';
 
-const guestProxyElement = document.createElement('craftercms-guest-proxy');
-
-ReactDOM.render(
-  <Guest modelId="8d7f21fa-5e09-00aa-8340-853b7db302da">
-    <GuestProxy />
-  </Guest>,
-  guestProxyElement
-);
+export function dragOk(status): boolean {
+  return [
+    EditingStatus.SORTING_COMPONENT,
+    EditingStatus.PLACING_NEW_COMPONENT,
+    EditingStatus.PLACING_DETACHED_ASSET,
+    EditingStatus.PLACING_DETACHED_COMPONENT,
+    EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
+  ].includes(status);
+}
+export function unwrapEvent<T extends Event>(event: JQueryEventObject | SyntheticEvent): T {
+  // @ts-ignore
+  return event?.originalEvent ?? event?.nativeEvent ?? event;
+}

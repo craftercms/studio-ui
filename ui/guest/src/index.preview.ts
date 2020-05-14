@@ -17,7 +17,7 @@
 import $ from 'jquery';
 import { message$, post } from './communicator';
 import { filter, map } from 'rxjs/operators';
-import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './util';
+import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './constants';
 
 message$.pipe(
   filter((e: MessageEvent) => (e.data?.type) != null),

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineEpics, ofType } from 'redux-observable';
+import { combineEpics, Epic, ofType } from 'redux-observable';
 import auth from './auth';
 import sites from './sites';
 import contentTypes from './contentTypes';
@@ -28,8 +28,10 @@ import env from './env';
 import content from './content';
 import { switchMap } from 'rxjs/operators';
 import { batchActions } from '../actions/misc';
+import GlobalState from '../../models/GlobalState';
+import StandardAction from '../../models/StandardAction';
 
-const epic: any[] = combineEpics.apply(this, [
+const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.apply(this, [
   (action$) =>
     action$.pipe(
       ofType(batchActions.type),
@@ -48,4 +50,4 @@ const epic: any[] = combineEpics.apply(this, [
   ...content
 ]);
 
-export default epic as any;
+export default epic;

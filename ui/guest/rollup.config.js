@@ -53,9 +53,10 @@ const plugins = [
         'hydrate',
         'render',
         'unmountComponentAtNode',
-        'flushSync'
+        'flushSync',
+        'unstable_batchedUpdates'
       ],
-      'react-is': ['isValidElementType', 'ForwardRef'],
+      'react-is': ['isValidElementType', 'ForwardRef', 'isContextConsumer'],
       'prop-types': ['elementType'],
       'react': [
         'Children',
@@ -104,7 +105,7 @@ const globals = {};
 const baseConfig = {
   // TODO: Without @babel/preset-env this error doesn't occur.
   // Addresses rollup's this replaced to undefined
-  // context: 'this'
+  context: 'this'
 };
 
 export default [
@@ -124,20 +125,20 @@ export default [
     ...baseConfig
   },
   /* UMD build for preview landing controller */
-  {
-    input: 'src/index.preview.ts',
-    external,
-    plugins,
-    output: {
-      sourcemap: 'inline',
-      name: 'preview-landing',
-      file: 'dist/preview-landing.umd.js',
-      format: 'umd',
-      amd: { id: 'org.craftercms.previewLanding' },
-      globals
-    },
-    ...baseConfig
-  }
+  // {
+  //   input: 'src/index.preview.ts',
+  //   external,
+  //   plugins,
+  //   output: {
+  //     sourcemap: 'inline',
+  //     name: 'preview-landing',
+  //     file: 'dist/preview-landing.umd.js',
+  //     format: 'umd',
+  //     amd: { id: 'org.craftercms.previewLanding' },
+  //     globals
+  //   },
+  //   ...baseConfig
+  // }
 ];
 
 /*

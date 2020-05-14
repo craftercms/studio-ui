@@ -946,7 +946,7 @@ interface LegacyContentDocumentProps {
   'lastModifiedDate_dt': string;
   'objectId': string;
   'locale': string;
-  'placeInNav'?: 'true' | 'false';
+  placeInNav?: 'true' | 'false';
 }
 
 interface AnyObject {
@@ -1000,19 +1000,21 @@ function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContent
   const now = (data.lastModifiedDate_dt && data.createdDate_dt) ? null : createModifiedDate();
   const dateCreated = data.createdDate_dt ? data.createdDate_dt : now;
   const dateModified = data.lastModifiedDate_dt ? data.lastModifiedDate_dt : now;
-  return Object.assign({
-    'content-type': '',
-    'display-template': '',
-    'internal-name': '',
-    'file-name': '',
-    'merge-strategy': 'inherit-levels',
-    'createdDate_dt': dateCreated,
-    'lastModifiedDate_dt': dateModified,
-    'objectId': '',
-    'locale': 'en'
-  }, (type === 'page' ? {
-    'placeInNav': 'false'
-  } : {}), (data || {}));
+  return Object.assign(
+    {
+      'content-type': '',
+      'display-template': '',
+      'internal-name': '',
+      'file-name': '',
+      'merge-strategy': 'inherit-levels',
+      'createdDate_dt': dateCreated,
+      'lastModifiedDate_dt': dateModified,
+      'objectId': '',
+      'locale': 'en'
+    },
+    (type === 'page' ? { placeInNav: 'false' as 'false' } : {}),
+    (data || {})
+  );
 }
 
 function createModifiedDate() {
