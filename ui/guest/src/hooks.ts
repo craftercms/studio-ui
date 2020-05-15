@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { foo} from './utils/util';
+import { foo } from './utils/util';
 import { useContext, useEffect, useRef, useState } from 'react';
 import contentController from './classes/ContentController';
 import { GuestContext } from './components/GuestContext';
