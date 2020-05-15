@@ -27,7 +27,7 @@ import {
   throttleTime,
   withLatestFrom
 } from 'rxjs/operators';
-import { EditingStatus, isNullOrUndefined, not, notNullOrUndefined, pluckProps } from '../../util';
+import { not} from '../../utils/util';
 import { post } from '../../communicator';
 import iceRegistry from '../../classes/ICERegistry';
 import { dragOk, unwrapEvent } from '../util';
@@ -51,6 +51,8 @@ import {
 } from '../../constants';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState, GuestStateObservable } from '../models/GuestStore';
+import { EditingStatus } from '../../models/ICEStatus';
+import { isNullOrUndefined, notNullOrUndefined, pluckProps } from '../../utils/object';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
   function multiEventPropagationStopperEpic(

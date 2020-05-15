@@ -18,17 +18,6 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ajax, AjaxResponse } from 'rxjs/ajax';
 import { filter, map, share, take } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
-import {
-  createLookupTable,
-  findComponentContainerFields,
-  forEach,
-  isNullOrUndefined,
-  notNullOrUndefined,
-  pluckProps,
-  popPiece,
-  removeLastPiece,
-  reversePluckProps
-} from '../util';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../communicator';
 import uuid from 'uuid/v4';
@@ -47,6 +36,15 @@ import {
   MOVE_ITEM_OPERATION, SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
+import {
+  createLookupTable,
+  isNullOrUndefined, notNullOrUndefined,
+  pluckProps,
+  reversePluckProps
+} from '../utils/object';
+import { forEach } from '../utils/array';
+import { popPiece, removeLastPiece } from '../utils/string';
+import { findComponentContainerFields } from '../utils/ice';
 
 const apiUrl = window.location.origin;
 

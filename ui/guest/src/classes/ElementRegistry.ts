@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { forEach, getChildArrangement, isNullOrUndefined, notNullOrUndefined, sibling } from '../util';
 import iceRegistry from './ICERegistry';
 import contentController from './ContentController';
 import { take } from 'rxjs/operators';
@@ -23,6 +22,9 @@ import { ModelHelper } from './ModelHelper';
 import { DropZone, HoverData, Record } from '../models/InContextEditing';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '../models/LookupTable';
+import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
+import { forEach } from '../utils/array';
+import { getChildArrangement, sibling } from '../utils/dom';
 
 let seq = 0;
 

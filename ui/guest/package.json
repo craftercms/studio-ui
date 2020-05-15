@@ -31,7 +31,8 @@
     "build": "rollup -c",
     "watch": "rollup -c -w",
     "rollup": "rollup -c",
-    "rollup:watch": "rollup -c -w"
+    "rollup:watch": "rollup -c -w",
+    "compile": "tsc -p tsconfig.json"
   },
   "eslintConfig": {
     "extends": "react-app"

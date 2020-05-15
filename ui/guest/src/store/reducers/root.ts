@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deleteProperty, EditingStatus, getHighlighted, notNullOrUndefined } from '../../util';
 import { ElementRegistry } from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import iceRegistry from '../../classes/ICERegistry';
@@ -24,6 +23,9 @@ import { GuestStandardAction } from '../models/GuestStandardAction';
 import { Record } from '../../models/InContextEditing';
 import { GuestActionTypes } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
+import { EditingStatus } from '../../models/ICEStatus';
+import { deleteProperty, notNullOrUndefined } from '../../utils/object';
+import { getHighlighted } from '../../utils/dom';
 
 // region mouseover
 // TODO: Not pure.

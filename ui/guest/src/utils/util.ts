@@ -14,19 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SyntheticEvent } from 'react';
-import { EditingStatus } from '../models/ICEStatus';
+export const foo = (...args: any[]) => void null;
+export const
+  X_AXIS = 'X',
+  Y_AXIS = 'Y',
+  HORIZONTAL = 'horizontal',
+  VERTICAL = 'vertical',
+  TOLERANCE_PERCENTS = { x: 5, y: 5 },
+  DEFAULT_RECORD_DATA = { fieldId: null, index: null, refCount: 1 };
 
-export function dragOk(status): boolean {
-  return [
-    EditingStatus.SORTING_COMPONENT,
-    EditingStatus.PLACING_NEW_COMPONENT,
-    EditingStatus.PLACING_DETACHED_ASSET,
-    EditingStatus.PLACING_DETACHED_COMPONENT,
-    EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
-  ].includes(status);
-}
-export function unwrapEvent<T extends Event>(event: JQueryEventObject | SyntheticEvent | Event): T {
-  // @ts-ignore
-  return event?.originalEvent ?? event?.nativeEvent ?? event;
+export function not(condition: boolean): boolean {
+  return !condition;
 }
