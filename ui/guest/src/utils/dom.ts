@@ -413,7 +413,8 @@ export function getHighlighted(dropZones: DropZone[]): LookupTable<HoverData> {
 
 export function getDragContextFromReceptacles(
   receptacles: Record[],
-  validationsLookup: LookupTable<LookupTable<ValidationResult>>
+  validationsLookup?: LookupTable<LookupTable<ValidationResult>>,
+  currentRecord?: Record
 ): { dropZones: any; siblings: any; players: any; containers: any; } {
   const response = {
     dropZones: [],
@@ -424,10 +425,11 @@ export function getDragContextFromReceptacles(
   receptacles.forEach(({ id }) => {
     const dropZone = ElementRegistry.compileDropZone(id);
     dropZone.origin = null;
+    dropZone.origin = currentRecord ? dropZone.children.includes(currentRecord.element) : null;
     dropZone.validations = validationsLookup?.[id] ?? {};
     response.dropZones.push(dropZone);
-    response.siblings = response.siblings.concat(dropZone.children);
-    response.players = response.players.concat(dropZone.children).concat(dropZone.element);
+    response.siblings = [...response.siblings, ...dropZone.children];
+    response.players = [...response.players, ...dropZone.children, dropZone.element];
     response.containers.push(dropZone.element);
   });
 

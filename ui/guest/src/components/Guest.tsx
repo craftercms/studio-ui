@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fromEvent, interval, zip } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
@@ -28,7 +28,7 @@ import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
-import { Asset, ContentType } from '../models/ContentType';
+import { Asset } from '../models/ContentType';
 import { ContentInstance } from '../models/ContentInstance';
 import { HoverData } from '../models/InContextEditing';
 import { LookupTable } from '../models/LookupTable';
@@ -59,7 +59,6 @@ import {
 import { createGuestStore } from '../store/store';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { clearAndListen$, initializeDragSubjects } from '../store/subjects';
-import { dragOk } from '../store/util';
 import { GuestState } from '../store/models/GuestStore';
 import { EditingStatus } from '../models/ICEStatus';
 import { isNullOrUndefined } from '../utils/object';
@@ -110,6 +109,16 @@ export function Guest(props: GuestProps) {
   });
   const dispatch = useDispatch();
   const state = useSelector<GuestState, GuestState>((state) => state);
+
+  const dragOk = useCallback(() => {
+    return [
+      EditingStatus.SORTING_COMPONENT,
+      EditingStatus.PLACING_NEW_COMPONENT,
+      EditingStatus.PLACING_DETACHED_ASSET,
+      EditingStatus.PLACING_DETACHED_COMPONENT,
+      EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
+    ].includes(state.status);
+  }, [state.status]);
 
   const highlightedInitialData: LookupTable<HoverData> = {};
 
@@ -202,76 +211,7 @@ export function Guest(props: GuestProps) {
     },
 
     onHostInstanceDragEnd(): void {
-      dragOk(state.status) && dispatch({ type: 'computed_dragend' });
-    },
-
-    onHostComponentDragStarted(contentType: ContentType): void {
-      let players = [];
-      let siblings = [];
-      let containers = [];
-      let dropZones = [];
-
-      const receptacles = iceRegistry.getContentTypeReceptacles(contentType);
-
-      if (receptacles.length === 0) {
-        // TODO: If there are no receptacles, the component should it even be listed as an option (?)
-        return;
-      }
-
-      const validatedReceptacles = receptacles.filter((id) => {
-        // TODO: min/max count validations
-        return true;
-      });
-
-      validatedReceptacles.forEach(({ id }) => {
-        const dropZone = ElementRegistry.compileDropZone(id);
-        dropZone.origin = null;
-        dropZones.push(dropZone);
-
-        siblings = siblings.concat(dropZone.children);
-        players = players.concat(dropZone.children).concat(dropZone.element);
-        containers.push(dropZone.element);
-      });
-
-      const highlighted = getHighlighted(dropZones);
-
-      initializeDragSubjects();
-
-      setState({
-        dragContext: {
-          players,
-          siblings,
-          dropZones,
-          containers,
-          contentType,
-          inZone: false,
-          dragged: null,
-          targetIndex: null
-        },
-        common: {
-          ...stateRef.current.common,
-          status: EditingStatus.PLACING_NEW_COMPONENT,
-          highlighted
-        }
-      });
-    },
-
-    onHostComponentDragEnd(): void {
-      dragOk(state.status) && dispatch({ type: 'computed_dragend' });
-    },
-
-    insertComponent(): void {
-      const { targetIndex, contentType, dropZone } = stateRef.current.dragContext;
-      const record = iceRegistry.recordOf(dropZone.iceId);
-
-      setTimeout(() => {
-        contentController.insertComponent(
-          record.modelId,
-          record.fieldId,
-          record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-          contentType
-        );
-      });
+      //dragOk() && dispatch({ type: 'computed_dragend' });
     },
 
     insertInstance(): void {
@@ -375,16 +315,6 @@ export function Guest(props: GuestProps) {
     onTrashDrop(iceId: number): void {
       let { modelId, fieldId, index } = iceRegistry.recordOf(iceId);
       contentController.deleteItem(modelId, fieldId, index);
-    },
-
-    dragOk(): boolean {
-      return [
-        EditingStatus.SORTING_COMPONENT,
-        EditingStatus.PLACING_NEW_COMPONENT,
-        EditingStatus.PLACING_DETACHED_ASSET,
-        EditingStatus.PLACING_DETACHED_COMPONENT,
-        EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
-      ].includes(stateRef.current.common.status);
     },
 
     onDesktopAssetDragStarted(asset: DataTransferItem): void {
@@ -492,10 +422,12 @@ export function Guest(props: GuestProps) {
         case ASSET_DRAG_ENDED:
           return fn.onAssetDragEnded();
         case COMPONENT_DRAG_STARTED:
-          dispatch({ type: 'host_component_drag_started', payload });
+          dispatch({ type: 'host_component_drag_started', payload: { contentType: payload } });
           break;
         case COMPONENT_DRAG_ENDED:
-          return fn.onHostComponentDragEnd();
+          console.log('COMPONENT_DRAG_ENDED');
+          dragOk() && dispatch({ type: 'computed_dragend' });
+          break;
         case COMPONENT_INSTANCE_DRAG_STARTED:
           return fn.onHostInstanceDragStarted(payload);
         case COMPONENT_INSTANCE_DRAG_ENDED:
@@ -575,7 +507,7 @@ export function Guest(props: GuestProps) {
     return () => {
       sub.unsubscribe();
     };
-  }, [scrollElement]);
+  }, [dispatch, dragOk, scrollElement]);
 
   // Registers zones
   useEffect(() => {

@@ -25,7 +25,7 @@ import { GuestActionTypes } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
 import { EditingStatus } from '../../models/ICEStatus';
 import { deleteProperty, notNullOrUndefined } from '../../utils/object';
-import { getHighlighted } from '../../utils/dom';
+import { getDragContextFromReceptacles, getHighlighted } from '../../utils/dom';
 
 // region mouseover
 // TODO: Not pure.
@@ -57,9 +57,34 @@ const mouseleave: GuestReducer = (state) => {
 // endregion
 
 // region host_component_drag_started
+// TODO: Not pure.
 const host_component_drag_started: GuestReducer = (state, action) => {
   const { contentType } = action.payload;
-  return state;
+  if (notNullOrUndefined(contentType)) {
+
+    const receptacles = iceRegistry.getContentTypeReceptacles(contentType);
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles);
+    const highlighted = getHighlighted(dropZones);
+
+    return {
+      ...state,
+      highlighted,
+      status: EditingStatus.PLACING_NEW_COMPONENT,
+      dragContext: {
+        ...state.dragContext,
+        players,
+        siblings,
+        dropZones,
+        containers,
+        contentType,
+        inZone: false,
+        targetIndex: null,
+        dragged: null
+      }
+    };
+  } else {
+    return state;
+  }
 };
 // endregion
 
@@ -71,26 +96,9 @@ const dragstart: GuestReducer = (state, action) => {
   // Items that browser make draggable by default (images, etc)
   const iceId = state.draggable?.[record.id];
   if (notNullOrUndefined(iceId)) {
-    let players = [];
-    let siblings = [];
-    let containers = [];
-    let dropZones = [];
 
     const receptacles = iceRegistry.getRecordReceptacles(iceId);
-    const validatedReceptacles = receptacles.filter((id) => {
-      // TODO: min/max count validations
-      return true;
-    });
-
-    validatedReceptacles.forEach(({ id }) => {
-      const dropZone = ElementRegistry.compileDropZone(id);
-      dropZone.origin = dropZone.children.includes(record.element);
-      dropZones.push(dropZone);
-      siblings = [...siblings, ...dropZone.children];
-      players = [...players, ...dropZone.children, dropZone.element];
-      containers.push(dropZone.element);
-    });
-
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, null, record);
     const highlighted = getHighlighted(dropZones);
 
     return {
@@ -122,13 +130,13 @@ const dragstart: GuestReducer = (state, action) => {
 const dragleave: GuestReducer = (state) => {
   return dragOk(state.status)
     ? {
-        ...state,
-        dragContext: {
-          ...state.dragContext,
-          over: null,
-          inZone: false,
-          targetIndex: null
-        }
+      ...state,
+      dragContext: {
+        ...state.dragContext,
+        over: null,
+        inZone: false,
+        targetIndex: null
+      }
     }
     : state;
 };
@@ -178,7 +186,6 @@ const exit_component_inline_edit: GuestReducer = (state) => {
 
 // region ice_zone_selected
 const ice_zone_selected: GuestReducer = (state, action) => {
-  console.log(action);
   const { record } = action.payload;
   const highlight = ElementRegistry.getHoverData(record.id);
   return {
@@ -195,12 +202,12 @@ const dblclick: GuestReducer = (state, action) => {
   const { record } = action.payload;
   return state.status === EditingStatus.LISTENING
     ? {
-        ...state,
-        status: EditingStatus.EDITING_COMPONENT_INLINE,
-        editable: {
-          [record.id]: record
-        }
+      ...state,
+      status: EditingStatus.EDITING_COMPONENT_INLINE,
+      editable: {
+        [record.id]: record
       }
+    }
     : state;
 };
 // endregion
@@ -307,7 +314,6 @@ const desktop_asset_upload_started: GuestReducer = (state, action) => {
 
 // region start_listening
 const start_listening: GuestReducer = (state) => {
-  console.log('start_listening');
   return {
     ...state,
     status: EditingStatus.LISTENING,
@@ -325,7 +331,7 @@ const scrolling: GuestReducer = (state) => {
       scrolling: true
     }
   };
-}
+};
 // endregion
 
 // region scrolling_end
@@ -342,7 +348,7 @@ const scrolling_stopped: GuestReducer = (state) => {
       }))
     }
   };
-}
+};
 // endregion
 
 const initialState: GuestState = {

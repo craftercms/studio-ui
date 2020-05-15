@@ -20,6 +20,7 @@ import { DropZone, Record } from '../../models/InContextEditing';
 import { LookupTable } from '../../models/LookupTable';
 import { StateObservable } from 'redux-observable';
 import { EditingStatus } from '../../models/ICEStatus';
+import { ContentType } from '../../models/ContentType';
 
 interface T {
   [K: string]: any
@@ -42,6 +43,7 @@ export interface GuestState {
     dragged: Record & { path?: string };
     dropZones: DropZone[];
     scrolling: boolean;
+    contentType: ContentType;
   };
   ICE_GUEST_INIT: boolean;
   status: EditingStatus;

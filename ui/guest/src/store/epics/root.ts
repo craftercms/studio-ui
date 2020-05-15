@@ -93,7 +93,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           console.error('No ice id found for this drag instance.');
         } else if (not(iceId)) {
           // Items that browser make draggable by default (images, etc)
-          console.warn("Element is draggable but wasn't set draggable by craftercms");
+          console.warn('Element is draggable but wasn\'t set draggable by craftercms');
         } else {
           event.stopPropagation();
           post({ type: INSTANCE_DRAG_BEGUN, payload: iceId });
@@ -186,12 +186,24 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             case EditingStatus.SORTING_COMPONENT: {
               if (notNullOrUndefined(dragContext.targetIndex)) {
                 moveComponent(dragContext);
+                //return of({ type: 'move_component' });
               }
               break;
             }
             case EditingStatus.PLACING_NEW_COMPONENT: {
               if (notNullOrUndefined(dragContext.targetIndex)) {
-                return of({ type: 'insert_component' });
+                const { targetIndex, contentType, dropZone } = dragContext;
+                const record = iceRegistry.recordOf(dropZone.iceId);
+
+                setTimeout(() => {
+                  contentController.insertComponent(
+                    record.modelId,
+                    record.fieldId,
+                    record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+                    contentType
+                  );
+                });
+                //return of({ type: 'insert_component' });
               }
               break;
             }
@@ -254,6 +266,29 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       ofType('host_component_drag_started'),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
+        const contentType = state.dragContext.contentType;
+        console.log(contentType);
+        if (isNullOrUndefined(contentType.id)) {
+          console.error('No contentTypeId found for this drag instance.');
+        } else {
+          initializeDragSubjects();
+          return merge(
+            dragover$().pipe(
+              throttleTime(100),
+              map((payload) => ({ type: 'computed_dragover', payload }))
+            ),
+            scrolling$().pipe(
+              throttleTime(200),
+              withLatestFrom(state$),
+              filter(([, state]) => !state.dragContext?.scrolling),
+              map(() => ({ type: 'scrolling' }))
+            ),
+            scrolling$().pipe(
+              debounceTime(200),
+              map(() => ({ type: 'scrolling_stopped' }))
+            )
+          );
+        }
 
         return NEVER;
       })
@@ -278,7 +313,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             if (!window.tinymce) {
               alert(
                 'Looks like tinymce is not added on the page. ' +
-                  'Please add tinymce on to the page to enable editing.'
+                'Please add tinymce on to the page to enable editing.'
               );
               return NEVER;
             } else {
