@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ActionsObservable } from 'redux-observable';
-import StandardAction from '@craftercms/studio-ui/src/models/StandardAction';
-import { SyntheticEvent } from 'react';
-import { Record } from '../../models/InContextEditing';
-import { GuestActionTypes } from './GuestActionTypes';
+import { Reducer } from '@reduxjs/toolkit';
+import { GuestState } from './GuestState';
+import { GuestStandardAction } from './GuestStandardAction';
 
-export type Action$ = ActionsObservable<
-  StandardAction<{ event: SyntheticEvent | JQueryEventObject; record: Record }, GuestActionTypes>
+export type GuestReducer<Payload extends {} = any> = Reducer<
+  GuestState,
+  GuestStandardAction<Payload>
 >;
+
+export default GuestReducer;

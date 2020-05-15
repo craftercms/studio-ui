@@ -14,11 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BehaviorSubject, fromEvent, Subject } from 'rxjs';
-import { debounceTime, delay, filter, tap, throttleTime } from 'rxjs/operators';
+import { fromEvent, Observable, Subject } from 'rxjs';
+import { filter, share, takeUntil } from 'rxjs/operators';
 import { Record } from '../models/InContextEditing';
-import $ from 'jquery';
 import { SyntheticEvent } from 'react';
+
+type DragOver$ = {
+  event: DragEvent | SyntheticEvent | JQueryMouseEventObject | Event;
+  record: Record;
+};
 
 export const clearAndListen$ = new Subject();
 
@@ -26,65 +30,31 @@ export const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
   filter((e) => e.key === 'Escape')
 );
 
-type DragOver$ = {
-  event: DragEvent | SyntheticEvent | JQueryEventObject;
-  record: Record;
-};
 let dragover$: Subject<DragOver$>;
-
 const getDragOver = () => dragover$;
 
-let scrolling$: BehaviorSubject<boolean>;
+let killSignal$: Subject<void>;
+let scrolling$: Observable<Event>;
 const getScrolling = () => scrolling$;
 
 export { getDragOver as dragover$, getScrolling as scrolling$ };
 
-export function initializeSubjects(/*dispatch*/) {
-
+export function initializeDragSubjects() {
+  killSignal$ = new Subject();
   dragover$ = new Subject<DragOver$>();
-  scrolling$ = new BehaviorSubject<boolean>(false);
-  // let onScroll = () => scrolling$.next(true);
-
-  // dragover$
-  //   .pipe(throttleTime(100))
-  //   .subscribe((value) => {
-  //     dispatch({ type: 'computed_dragover', payload: value });
-  //   });
-
-  // scrolling$
-  //   .pipe(
-  //     tap(() => {
-  //       state?.dragContext?.inZone &&
-  //       fn.onScroll()
-  //     }),
-  //     filter(is => is),
-  //     debounceTime(200),
-  //     delay(50)
-  //   )
-  //   .subscribe(
-  //     () => {
-  //       scrolling$.next(false);
-  //       fn.onScrollStopped();
-  //     }
-  //   );
-
-  // $(document).bind('scroll', (e) => {
-  //   persistence.onScroll(e)
-  // });
-
+  scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
 }
 
-export function destroySubjects() {
+export function destroyDragSubjects() {
+
+  // scrolling$ is terminated by killSignal$
+  killSignal$.next();
+  killSignal$.complete();
+  killSignal$.unsubscribe();
+  killSignal$ = null;
 
   dragover$.complete();
   dragover$.unsubscribe();
   dragover$ = null;
-
-  scrolling$.complete();
-  scrolling$.unsubscribe();
-  scrolling$ = null;
-
-  // $(document).off('scroll', persistence.onScroll);
-  // persistence.onScroll = null;
 
 }

@@ -14,7 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export type   GuestActionTypes =
+import { GuestStandardAction } from './GuestStandardAction';
+import { SyntheticEvent } from 'react';
+import { Record } from '../../models/InContextEditing';
+import { ActionsObservable } from 'redux-observable';
+import GuestReducer from './GuestReducer';
+
+export type GuestActionTypes =
 // dom events
   | 'mouseover'
   | 'mouseleave'
@@ -38,4 +44,17 @@ export type   GuestActionTypes =
   | 'desktop_asset_upload_progress'
   | 'desktop_asset_upload_complete'
   | 'set_edit_mode'
-  | 'start_listening';
+  | 'start_listening'
+  | 'scrolling'
+  | 'scrolling_stopped';
+
+export type MouseEventAction = GuestStandardAction<{
+  event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;
+  record: Record;
+}>;
+
+export type WithRecordAction = GuestReducer<{
+  record: Record;
+}>;
+
+export type MouseEventActionObservable = ActionsObservable<MouseEventAction>;

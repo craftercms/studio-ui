@@ -15,6 +15,6 @@
  */
 
 import StandardAction from '@craftercms/studio-ui/src/models/StandardAction';
-import { GuestActionTypes } from './GuestActionTypes';
+import { GuestActionTypes } from './Actions';
 
-export type GuestStandardAction = StandardAction<unknown, GuestActionTypes>;
+export type GuestStandardAction<Payload extends {} = any> = StandardAction<Payload, GuestActionTypes>;

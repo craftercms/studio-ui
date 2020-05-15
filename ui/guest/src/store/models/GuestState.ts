@@ -15,11 +15,15 @@
  */
 
 import { EditingStatus } from '../../util';
+import { Record } from '../../models/InContextEditing';
+import { LookupTable } from '../../models/LookupTable';
+import { StateObservable } from 'redux-observable';
 
 interface T {
-
+  [K: string]: any
 }
 
+// TODO: Types
 export interface GuestState {
   dragContext: {
     targetIndex: number;
@@ -32,20 +36,19 @@ export interface GuestState {
     prev: any;
     next: any;
     coordinates: any;
-    dragged: {
-      path: string
-    };
+    // TODO: Dragged seems to be an ICE record, but there's code looking for dragged.path
+    dragged: Record & { path?: string };
+    dropZones: any;
+    scrolling: boolean;
   };
-  // common: {
   ICE_GUEST_INIT: boolean;
   status: EditingStatus;
   inEditMode: boolean;
   editable: T;
   draggable: T;
   highlighted: T;
-  uploading: T;
-  // register: Function;
-  // deregister: Function;
+  uploading: LookupTable<T>;
   onEvent: Function;
-  // };
 }
+
+export type GuestStateObservable = StateObservable<GuestState>;
