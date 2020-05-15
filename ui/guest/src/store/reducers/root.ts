@@ -294,7 +294,6 @@ const start_listening: GuestReducer = (state) => {
 
 // region scrolling
 const scrolling: GuestReducer = (state) => {
-  console.log('Started scrolling');
   return {
     ...state,
     dragContext: {
@@ -307,7 +306,6 @@ const scrolling: GuestReducer = (state) => {
 
 // region scrolling_end
 const scrolling_stopped: GuestReducer = (state) => {
-  console.log('Finished scrolling');
   return {
     ...state,
     dragContext: {

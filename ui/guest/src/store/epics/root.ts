@@ -58,7 +58,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     state$: GuestStateObservable
   ) {
     return action$.pipe(
-      ofType('mouseover', 'mouseleave', 'dragstart'),
+      ofType('mouseover', 'mouseleave'),
       withLatestFrom(state$),
       filter((args) => args[1].status === EditingStatus.LISTENING),
       tap(([action]) => action.payload.event.stopPropagation()),
@@ -67,7 +67,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   },
 
   // region mouseover
-  // done by multievent propagation stopper epic
+  // Propagation stopped by multiEventPropagationStopperEpic
   // (action$: Action$, state$: State$) => {},
   // endregion
 
@@ -76,6 +76,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region dragstart
+  // Propagation stopped by multiEventPropagationStopperEpic
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(
       ofType('dragstart'),
