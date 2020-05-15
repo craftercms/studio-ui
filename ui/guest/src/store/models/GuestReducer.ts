@@ -15,8 +15,8 @@
  */
 
 import { Reducer } from '@reduxjs/toolkit';
-import { GuestState } from './GuestState';
 import { GuestStandardAction } from './GuestStandardAction';
+import { GuestState } from './GuestStore';
 
 export type GuestReducer<Payload extends {} = any> = Reducer<
   GuestState,

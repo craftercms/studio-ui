@@ -19,11 +19,11 @@ import { ElementRegistry } from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import iceRegistry from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
-import { GuestState } from '../models/GuestState';
 import GuestReducer from '../models/GuestReducer';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { Record } from '../../models/InContextEditing';
 import { GuestActionTypes } from '../models/Actions';
+import { GuestState } from '../models/GuestStore';
 
 // region mouseover
 // TODO: Not pure.

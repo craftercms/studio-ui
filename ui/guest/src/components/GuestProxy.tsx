@@ -39,7 +39,7 @@ import {
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
 import { useSelector } from 'react-redux';
-import { GuestState } from '../store/models/GuestState';
+import { GuestState } from '../store/models/GuestStore';
 
 export function GuestProxy(props) {
 

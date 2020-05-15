@@ -20,8 +20,7 @@ import { GuestStandardAction } from './models/GuestStandardAction';
 import epic from './epics/root';
 import reducer from './reducers/root';
 import { Middleware } from 'redux';
-import { GuestStore } from './models/GuestStore';
-import { GuestState } from './models/GuestState';
+import { GuestState, GuestStore } from './models/GuestStore';
 
 let store: GuestStore;
 

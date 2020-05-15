@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Record } from '../../models/InContextEditing';
-import iceRegistry from '../../classes/ICERegistry';
+import { Record } from './models/InContextEditing';
+import iceRegistry from './classes/ICERegistry';
 import { Editor } from 'tinymce';
-import contentController from '../../classes/ContentController';
-import { createGuestStore } from '../store';
+import contentController from './classes/ContentController';
+import { createGuestStore } from './store/store';
 
 export function initTinyMCE(record: Record) {
   const store = createGuestStore();

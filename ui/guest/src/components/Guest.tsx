@@ -65,9 +65,9 @@ import {
 } from '../constants';
 import { createGuestStore } from '../store/store';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { clearAndListen$, dragover$, initializeDragSubjects } from '../store/subjects';
-import { GuestState } from '../store/models/GuestState';
+import { clearAndListen$, initializeDragSubjects } from '../store/subjects';
 import { dragOk } from '../store/util';
+import { GuestState } from '../store/models/GuestStore';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';

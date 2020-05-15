@@ -41,7 +41,7 @@ import {
   initializeDragSubjects,
   scrolling$
 } from '../subjects';
-import { initTinyMCE } from './rte';
+import { initTinyMCE } from '../../rte';
 import {
   CLEAR_SELECTED_ZONES,
   DESKTOP_ASSET_DROP,
@@ -49,8 +49,8 @@ import {
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED
 } from '../../constants';
-import { GuestState, GuestStateObservable } from '../models/GuestState';
 import { MouseEventActionObservable } from '../models/Actions';
+import { GuestState, GuestStateObservable } from '../models/GuestStore';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
   function multiEventPropagationStopperEpic(

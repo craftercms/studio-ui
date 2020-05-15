@@ -16,6 +16,42 @@
 
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { GuestStandardAction } from './GuestStandardAction';
-import { GuestState } from './GuestState';
+import { Record } from '../../models/InContextEditing';
+import { EditingStatus } from '../../util';
+import { LookupTable } from '../../models/LookupTable';
+import { StateObservable } from 'redux-observable';
 
+interface T {
+  [K: string]: any
+}
+
+// TODO: Types
+export interface GuestState {
+  dragContext: {
+    targetIndex: number;
+    inZone: boolean;
+    dropZone: any;
+    players: any[];
+    siblings: any[];
+    containers: any[];
+    over: any;
+    prev: any;
+    next: any;
+    coordinates: any;
+    // TODO: Dragged seems to be an ICE record, but there's code looking for dragged.path
+    dragged: Record & { path?: string };
+    dropZones: any;
+    scrolling: boolean;
+  };
+  ICE_GUEST_INIT: boolean;
+  status: EditingStatus;
+  inEditMode: boolean;
+  editable: T;
+  draggable: T;
+  highlighted: T;
+  uploading: LookupTable<any>;
+  onEvent: Function;
+}
+
+export type GuestStateObservable = StateObservable<GuestState>;
 export type GuestStore = EnhancedStore<GuestState, GuestStandardAction>;
