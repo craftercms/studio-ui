@@ -28,7 +28,7 @@ import {
   throttleTime,
   withLatestFrom
 } from 'rxjs/operators';
-import { not} from '../../utils/util';
+import { not } from '../../utils/util';
 import { post } from '../../communicator';
 import iceRegistry from '../../classes/ICERegistry';
 import { dragOk, unwrapEvent } from '../util';
@@ -96,7 +96,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           console.warn("Element is draggable but wasn't set draggable by craftercms");
         } else {
           event.stopPropagation();
-          post(INSTANCE_DRAG_BEGUN);
+          post({ type: INSTANCE_DRAG_BEGUN, payload: iceId });
           unwrapEvent<DragEvent>(event).dataTransfer.setData('text/plain', null);
           initializeDragSubjects();
           return merge(

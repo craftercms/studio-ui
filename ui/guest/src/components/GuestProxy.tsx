@@ -24,8 +24,6 @@ import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { ContentTypeHelper } from '../classes/ContentTypeHelper';
 import { message$, post } from '../communicator';
-import { ContentTypeField } from '../models/ContentType';
-import { ContentInstance } from '../models/ContentInstance';
 import { Operation } from '../models/Operations';
 import {
   COMPONENT_INSTANCE_HTML_REQUEST,
@@ -289,31 +287,28 @@ export function GuestProxy(props) {
           break;
         }
         case INSERT_COMPONENT_OPERATION: {
-          const { modelId, fieldId, targetIndex, contentType, instance, shared } = op.args;
+          const { modelId, fieldId, targetIndex, instance } = op.args;
+
+          const $spinner = $(`
+            <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+              <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
+            </svg>
+          `);
 
           const $daddy = getDropZoneElement(modelId, fieldId, targetIndex);
-          let $clone = $daddy.children(':first').clone();
-          if ($clone.length) {
-            const processFields = function (instance: ContentInstance, fields: ContentTypeField): void {
-              Object.entries(fields).forEach(([id, field]) => {
-                switch (field.type) {
-                  case 'repeat':
-                  case 'node-selector': {
-                    throw new Error('Not implemented.');
-                  }
-                  default:
-                    $clone.find(`[data-craftercms-field-id="${id}"]`).html(instance[id]);
-                }
-              });
-            };
-            processFields(instance, contentType.fields);
-          } else {
-            $clone = $(`<div  data-craftercms-model-id="${modelId}" data-craftercms-field-id="${fieldId}">${instance.craftercms.label}</div>`);
-          }
 
-          insertElement($clone, $daddy, targetIndex);
+          insertElement($spinner, $daddy, targetIndex);
 
-          updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
+          message$.pipe(
+            filter((e) => (e.type === 'COMPONENT_HTML_RESPONSE') && (e.payload.id === instance.craftercms.id)),
+            take(1)
+          ).subscribe(function ({ payload }) {
+            $spinner.remove();
+            const $component = $(payload.response);
+            insertElement($component, $daddy, targetIndex);
+            updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
+            $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
+          });
 
           break;
         }

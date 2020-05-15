@@ -548,25 +548,49 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
 }
 
-function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup: LookupTable<LegacyDataSource>): ContentTypeFieldValidations {
+function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup: LookupTable<LegacyDataSource>): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty)
     .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
       table[prop.name] = prop;
       return table;
     }, {});
 
-  let validations = {
-    tags: [],
-    contentTypes: []
+  let validations: Partial<ContentTypeFieldValidations> = {
+    tags: {
+      id: 'tags',
+      value: [],
+      level: 'required'
+    },
+    contentTypes: {
+      id: 'contentTypes',
+      value: [],
+      level: 'required'
+    }
   };
+
+  if (!isBlank(map.minSize.value)) {
+    validations.minCount = {
+      id: 'minCount',
+      value: parseInt(map.minSize.value),
+      level: 'required'
+    };
+  }
+
+  if (!isBlank(map.maxSize.value)) {
+    validations.maxCount = {
+      id: 'maxCount',
+      value: parseInt(map.maxSize.value),
+      level: 'required'
+    };
+  }
 
   map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
     if (receptaclesLookup[value]) {
       asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
         if (prop.name === 'contentTypes') {
-          validations.contentTypes = prop.value ? prop.value.split(',') : [];
+          validations.contentTypes.value = prop.value ? prop.value.split(',') : [];
         } else if (prop.name === 'tags') {
-          validations.tags = prop.value ? prop.value.split(',') : [];
+          validations.tags.value = prop.value ? prop.value.split(',') : [];
         }
       });
     }
@@ -575,7 +599,7 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
   return validations;
 }
 
-function writeContentUrl(qs: object) {
+function writeContentUrl(qs: object): string {
   qs = new URLSearchParams(qs as URLSearchParams);
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }
@@ -766,7 +790,8 @@ export function sortItem(
     parentModelId,
     doc => {
       const item = extractNode(doc, fieldId, currentIndex);
-      insertCollectionItem(doc, fieldId, targetIndex, item);
+      let newIndex = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) + 1 : targetIndex + 1;
+      insertCollectionItem(doc, fieldId, targetIndex, item, newIndex);
     }
   );
 }
@@ -1030,9 +1055,9 @@ function getComponentPath(id: string, contentType: string) {
   return `${pathBase}/${id}.xml`;
 }
 
-function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node): void {
+function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node, newIndex?: number): void {
   let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
-  let index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
+  let index = newIndex || ((typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex);
 
   if (nou(fieldNode)) {
     fieldNode = doc.createElement(fieldId);

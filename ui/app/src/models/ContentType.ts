@@ -23,9 +23,16 @@ export interface ContentTypeSection {
   expandByDefault: boolean;
 }
 
-export interface ContentTypeFieldValidations {
-  tags: string[];
-  contentTypes: string[];
+export interface ContentTypeFieldValidation {
+  id: string;
+  value: any;
+  level: 'required' | 'suggestion';
+}
+
+export type ValidationKeys = 'tags' | 'contentTypes' | 'minCount' | 'maxCount';
+
+export type ContentTypeFieldValidations = {
+  [key in ValidationKeys]: ContentTypeFieldValidation;
 }
 
 export interface ContentTypeField {
@@ -33,7 +40,7 @@ export interface ContentTypeField {
   name: string;
   type: string;
   sortable: boolean;
-  validations: ContentTypeFieldValidations;
+  validations: Partial<ContentTypeFieldValidations>;
   defaultValue: any;
   required: boolean;
   fields?: LookupTable<ContentTypeField>;

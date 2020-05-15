@@ -16,11 +16,7 @@
 
 import $ from 'jquery';
 import contentController from './ContentController';
-import {
-  HORIZONTAL,
-  not,
-  VERTICAL
-} from '../utils/util';
+import { HORIZONTAL, not, VERTICAL } from '../utils/util';
 import iceRegistry from './ICERegistry';
 // import { Markers } from './Markers';
 import { ComponentEditor } from './ComponentEditor';
@@ -263,8 +259,8 @@ export class DOMController {
       recordId = zone.recordIds[0],
       record = iceRegistry.getReferentialEntries(recordId),
       receptacles = iceRegistry.getRecordReceptacles(recordId),
-      receptacleZones = receptacles.map((recId: number) =>
-        this.zones.find((zn: IceZone) => zn.recordIds.includes(recId))
+      receptacleZones = receptacles.map(({ id: number }) =>
+        this.zones.find((zn: IceZone) => zn.recordIds.includes(id))
       ),
       dropZones = receptacleZones.map(z => z.element);
 

@@ -69,7 +69,7 @@ import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
 import Button from '@material-ui/core/Button';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useMount, usePreviewState, useSelection } from '../../utils/hooks';
@@ -92,11 +92,22 @@ const contentTypes$: {
   return fn;
 })();
 
+const guestMessages = defineMessages({
+  maxCount: {
+    id: 'validations.maxCount',
+    defaultMessage: 'The max count is more than allowable maximum of {max}'
+  },
+  minCount: {
+    id: 'validations.minCount',
+    defaultMessage: 'The min count is less than allowable minimum of {min}'
+  }
+});
+
 export function PreviewConcierge(props: any) {
 
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, selectedTool } = usePreviewState();
+  const { guest, selectedTool, currentUrl } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const { guestBase, xsrfArgument } = useSelection(state => state.env);
   const priorState = useRef({ site });
@@ -104,6 +115,7 @@ export function PreviewConcierge(props: any) {
   const contentTypeComponents = useSelection(state => state.preview.components);
   const audiencesPanel = useSelection(state => state.preview.audiencesPanel);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { formatMessage } = useIntl();
 
   useMount(() => {
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
@@ -180,6 +192,22 @@ export function PreviewConcierge(props: any) {
             shared
           ).subscribe(
             () => {
+              let ifrm = document.createElement('iframe');
+              ifrm.setAttribute('src', `${guestBase}${currentUrl}`);
+              ifrm.style.width = '0';
+              ifrm.style.height = '0';
+              document.body.appendChild(ifrm);
+
+              ifrm.onload = function () {
+                let htmlString = ifrm.contentWindow.document.documentElement
+                  .querySelector(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`);
+                ifrm.remove();
+                hostToGuest$.next({
+                  type: 'COMPONENT_HTML_RESPONSE',
+                  payload: { response: htmlString.outerHTML, id: instance.craftercms.id }
+                });
+              };
+
               enqueueSnackbar('Insert component operation completed.');
             },
             (error) => {
@@ -292,7 +320,7 @@ export function PreviewConcierge(props: any) {
         }
         case INSTANCE_DRAG_BEGUN:
         case INSTANCE_DRAG_ENDED: {
-          dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN));
+          dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN ? payload : null));
           break;
         }
         case DESKTOP_ASSET_DROP: {
@@ -354,6 +382,10 @@ export function PreviewConcierge(props: any) {
           dispatch(setChildrenMap(payload));
           break;
         }
+        case 'VALIDATION_MESSAGE': {
+          enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), { variant: payload.level === 'required' ? 'error' : 'warning' });
+          break;
+        }
       }
     });
 
@@ -411,8 +443,8 @@ export function PreviewConcierge(props: any) {
     <>
       {props.children}
       <RubbishBin
-        open={guest?.itemBeingDragged}
-        onTrash={() => getHostToGuestBus().next({ type: TRASHED })}
+        open={nnou(guest?.itemBeingDragged)}
+        onTrash={() => getHostToGuestBus().next({ type: TRASHED, payload: guest.itemBeingDragged })}
       />
     </>
   );

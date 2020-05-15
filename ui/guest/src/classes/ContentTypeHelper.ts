@@ -30,7 +30,7 @@ export class ContentTypeHelper {
           ('validations' in field) &&
           ('contentTypes' in field.validations)
         ) {
-          field.validations.contentTypes.forEach((ctid) =>
+          field.validations.contentTypes.value.forEach((ctid) =>
             !accumulator.includes(ctid) && accumulator.push(ctid)
           );
         }

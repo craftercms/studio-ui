@@ -33,12 +33,14 @@ import {
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
-  MOVE_ITEM_OPERATION, SORT_ITEM_OPERATION,
+  MOVE_ITEM_OPERATION,
+  SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
 import {
   createLookupTable,
-  isNullOrUndefined, notNullOrUndefined,
+  isNullOrUndefined,
+  notNullOrUndefined,
   pluckProps,
   reversePluckProps
 } from '../utils/object';
@@ -271,6 +273,14 @@ export class ContentController {
     // Insert in desired position
     result.splice(targetIndex as number, 0, instance.craftercms.id);
 
+    post(GUEST_MODELS_RECEIVED, {
+      [instance.craftercms.id]: instance,
+      [modelId]: {
+        ...model,
+        [fieldId]: result
+      }
+    });
+
     ContentController.models$.next({
       ...models,
       [instance.craftercms.id]: instance,
@@ -279,6 +289,8 @@ export class ContentController {
         [fieldId]: result
       }
     });
+
+    this.children[modelId].push(instance.craftercms.id);
 
     post(INSERT_COMPONENT_OPERATION, {
       modelId,

@@ -171,7 +171,8 @@ export class ElementRegistry {
     return {
       id,
       rect: record.element.getBoundingClientRect(),
-      label: record.label
+      label: record.label,
+      validations: {}
     };
   }
 

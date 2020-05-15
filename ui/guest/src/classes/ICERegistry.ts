@@ -15,18 +15,48 @@
  */
 
 import contentController from './ContentController';
-import {
-  DEFAULT_RECORD_DATA
-} from '../utils/util';
+import { DEFAULT_RECORD_DATA } from '../utils/util';
 import { ContentTypeHelper } from './ContentTypeHelper';
 import { ModelHelper } from './ModelHelper';
 import { ContentInstance } from '../models/ContentInstance';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
-import { Record, ReferentialEntries } from '../models/InContextEditing';
+import { Record, ReferentialEntries, ValidationResult } from '../models/InContextEditing';
 import { isNullOrUndefined, notNullOrUndefined, pluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
 import { findComponentContainerFields } from '../utils/ice';
+import { ValidationKeys } from '@craftercms/studio-ui/src/models/ContentType';
+
+const validationChecks: { [key in ValidationKeys]: Function } = {
+  minCount(id, min, level, length) {
+    if (length < min) {
+      return {
+        id,
+        level,
+        values: { min }
+      };
+    } else {
+      return null;
+    }
+  },
+  maxCount(id, max, level, length) {
+    if (length >= max) {
+      return {
+        id,
+        level,
+        values: { max }
+      };
+    } else {
+      return null;
+    }
+  },
+  tags() {
+
+  },
+  contentTypes() {
+
+  }
+};
 
 export class ICERegistry {
 
@@ -182,7 +212,7 @@ export class ICERegistry {
     return receptacles;
   }
 
-  getRecordReceptacles(id: number): number[] {
+  getRecordReceptacles(id: number): Record[] {
     const record = this.recordOf(id);
     const { index, field, fieldId, model } = this.getReferentialEntries(record);
     if (isNullOrUndefined(index)) {
@@ -195,7 +225,7 @@ export class ICERegistry {
       const id = ModelHelper.extractCollectionItem(model, fieldId, index);
       const nestedModel = models[id];
       const contentType = ModelHelper.getContentTypeId(nestedModel);
-      return this.getContentTypeReceptacles(contentType).map((rec) => rec.id);
+      return this.getContentTypeReceptacles(contentType).map((rec) => rec);
     } else if (field.type === 'repeat') {
       // const item = ModelHelper.extractCollectionItem(model, fieldId, index);
       return this.getRepeatGroupItemReceptacles(record);
@@ -205,7 +235,7 @@ export class ICERegistry {
     }
   }
 
-  getRepeatGroupItemReceptacles(record: Record): number[] {
+  getRepeatGroupItemReceptacles(record: Record): Record[] {
     const entries = this.getReferentialEntries(record);
     return Object.values(this.registry)
       .filter((rec) =>
@@ -216,7 +246,7 @@ export class ICERegistry {
         const es = this.getReferentialEntries(rec);
         return es.contentTypeId === entries.contentTypeId;
       })
-      .map((rec) => rec.id);
+      .map((rec) => rec);
   }
 
   getComponentItemReceptacles(record: Record): number[] {
@@ -230,7 +260,7 @@ export class ICERegistry {
       const { fieldId, index } = record;
       if (notNullOrUndefined(fieldId)) {
         const { field, contentType: _contentType, model } = this.getReferentialEntries(record);
-        const acceptedTypes = field?.validations?.contentTypes;
+        const acceptedTypes = field?.validations?.contentTypes.value;
         const accepts = acceptedTypes && (
           acceptedTypes.includes(contentTypeId) ||
           acceptedTypes.includes('*')
@@ -260,24 +290,54 @@ export class ICERegistry {
     });
   }
 
-  // minCountCheck() {
-  //
-  // }
-  //
-  // maxCountCheck() {
-  //   // Max count rule check...
-  //   if (okSoFar) {
-  //     const fieldValue = ModelHelper.value(model, field.id);
-  //     return (
-  //       // If there's no a maxCount then no problem
-  //       not('maxCount' in field.validations) ||
-  //       (
-  //         // If one is added, would it violate the maxCount
-  //         (fieldValue.length + 1) <= field.validations.maxCount
-  //       )
-  //     );
-  //   }
-  // }
+  runReceptaclesValidations(receptacles: Record[]): LookupTable<LookupTable<ValidationResult>> {
+    const lookup = {};
+    receptacles.forEach(record => {
+      const validationResult = {};
+      const { fieldId, index } = record;
+      let { field: { validations }, model } = this.getReferentialEntries(record);
+      const collection = ModelHelper.extractCollectionItem(model, fieldId, index);
+      Object.keys(validations).forEach(key => {
+        const validation = validations[key];
+        switch (validation.id) {
+          case 'minCount': {
+            if (validation.value && (collection.length) < validation.value) {
+              validationResult[validation.id] = {
+                id: validation.id,
+                level: validation.level,
+                values: { min: validation.value }
+              };
+            }
+            break;
+          }
+          case 'maxCount': {
+            if (validation.value && (collection.length) >= validation.value) {
+              validationResult[validation.id] = {
+                id: validation.id,
+                level: validation.level,
+                values: { max: validation.value }
+              };
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      });
+      lookup[record.id] = validationResult;
+    });
+    return lookup;
+  }
+
+  runValidation(iceId: number, validationId: ValidationKeys, args?: unknown[]): ValidationResult {
+    const record = this.recordOf(iceId);
+    let { field: { validations } } = this.getReferentialEntries(record);
+    if (validations[validationId]) {
+      return validationChecks[validationId](...[...Object.values(validations[validationId]), ...args]);
+    } else {
+      return null;
+    }
+  }
 
   getReferentialEntries(record: number | Record): ReferentialEntries {
     record = typeof record === 'object' ? record : this.recordOf(record);

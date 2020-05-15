@@ -372,10 +372,8 @@ export function Guest(props: GuestProps) {
 
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
-    onTrashDrop(): void {
-      const { dragContext } = stateRef.current;
-      const { id } = dragContext.dragged;
-      let { modelId, fieldId, index } = iceRegistry.recordOf(id);
+    onTrashDrop(iceId: number): void {
+      let { modelId, fieldId, index } = iceRegistry.recordOf(iceId);
       contentController.deleteItem(modelId, fieldId, index);
     },
 
@@ -503,7 +501,7 @@ export function Guest(props: GuestProps) {
         case COMPONENT_INSTANCE_DRAG_ENDED:
           return fn.onHostInstanceDragEnd();
         case TRASHED:
-          return fn.onTrashDrop();
+          return fn.onTrashDrop(payload);
         case CLEAR_SELECTED_ZONES:
           clearAndListen$.next();
           dispatch({ type: 'start_listening' });
@@ -663,7 +661,17 @@ export function Guest(props: GuestProps) {
             <AssetUploaderMask key={highlight.id} {...highlight} />
           ))}
           {Object.values(state.highlighted).map((highlight: HoverData) => (
-            <ZoneMarker key={highlight.id} {...highlight} />
+            <ZoneMarker
+              key={highlight.id}
+              {...highlight}
+              classes={{
+                marker: Object.values(highlight.validations).length ?
+                  Object.values(highlight.validations).some(({ level }) => level === 'required')
+                    ? 'craftercms-required-validation'
+                    : 'craftercms-suggestion-validation'
+                  : null
+              }}
+            />
           ))}
           {[
             EditingStatus.SORTING_COMPONENT,

@@ -82,7 +82,7 @@ const dragstart: GuestReducer = (state, action) => {
       return true;
     });
 
-    validatedReceptacles.forEach((id) => {
+    validatedReceptacles.forEach(({ id }) => {
       const dropZone = ElementRegistry.compileDropZone(id);
       dropZone.origin = dropZone.children.includes(record.element);
       dropZones.push(dropZone);

@@ -16,6 +16,8 @@
 
 import { ContentType } from './ContentType';
 import { ContentInstance } from './ContentInstance';
+import { ValidationKeys } from '@craftercms/studio-ui/src/models/ContentType';
+import { LookupTable } from './LookupTable';
 
 export interface IceZone {
   element?: Element;
@@ -53,6 +55,7 @@ export interface DropZone {
   arrangement: string;
   childrenRects: DOMRect[];
   origin?: any;
+  validations: LookupTable<ValidationResult>;
 }
 
 export interface DZStats {
@@ -60,6 +63,12 @@ export interface DZStats {
   currentDZChildren: Element[];
   currentDZElementRect: DOMRect;
   currentDZChildrenRects: DOMRect[];
+}
+
+export interface ValidationResult {
+  id: ValidationKeys;
+  level: 'required' | 'suggestion';
+  values: object;
 }
 
 export interface Record {
@@ -78,6 +87,7 @@ export interface HoverData {
   id: number;
   rect: DOMRect;
   label: string;
+  validations: LookupTable<ValidationResult>;
 }
 
 export interface ReferentialEntries extends Record {

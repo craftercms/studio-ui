@@ -195,7 +195,7 @@ const reducer = createReducer<GlobalState['preview']>({
       // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
       guest: {
         selected: null,
-        itemBeingDragged: false,
+        itemBeingDragged: null,
         ...payload
       },
       computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : payload.url
