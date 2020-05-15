@@ -129,8 +129,8 @@ const dragleave: GuestReducer = (state) => {
 // const drop: GuestReducer = (state) => state;
 // endregion
 
-//region setDropPosition
-const setDropPosition: GuestReducer = (state, action) => {
+// region set_drop_position
+const set_drop_position: GuestReducer = (state, action) => {
   const { targetIndex } = action.payload;
   return {
     ...state,
@@ -361,7 +361,7 @@ const reducerFunctions: {
   dragover: (state) => state,
   dragstart,
   drop: (state) => state,
-  setDropPosition,
+  set_drop_position,
   edit_component_inline,
   exit_component_inline_edit,
   ice_zone_selected,

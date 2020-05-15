@@ -227,8 +227,6 @@ export function Guest(props: GuestProps) {
         return true;
       });
 
-      // scrollToReceptacle(validatedReceptacles);
-
       validatedReceptacles.forEach(({ id }) => {
         const dropZone = ElementRegistry.compileDropZone(id);
         dropZone.origin = null;
@@ -376,19 +374,6 @@ export function Guest(props: GuestProps) {
       dispatch({ type: 'computed_dragend' });
     },
 
-    onSetDropPosition(payload): void {
-      setState({
-        ...stateRef.current,
-        dragContext: {
-          ...stateRef.current.dragContext,
-          targetIndex: payload.targetIndex
-        },
-        common: {
-          ...stateRef.current.common
-        }
-      });
-    },
-
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     onTrashDrop(): void {
@@ -406,18 +391,6 @@ export function Guest(props: GuestProps) {
         EditingStatus.PLACING_DETACHED_COMPONENT,
         EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
       ].includes(stateRef.current.common.status);
-    },
-
-    clearAndListen(): void {
-      clearAndListen$.next();
-      setState({
-        ...stateRef.current,
-        common: {
-          ...stateRef.current.common,
-          status: EditingStatus.LISTENING,
-          highlighted: {}
-        }
-      });
     },
 
     onDesktopAssetDragStarted(asset: DataTransferItem): void {
@@ -703,7 +676,7 @@ export function Guest(props: GuestProps) {
           ].includes(state.status) &&
           state.dragContext.inZone && (
             <DropMarker
-              onDropPosition={(payload) => dispatch({ type: 'setDropPosition', payload })}
+              onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
               dropZone={state.dragContext.dropZone}
               over={state.dragContext.over}
               prev={state.dragContext.prev}

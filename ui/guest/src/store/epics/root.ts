@@ -244,6 +244,20 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region click
+  // endregion
+
+  // region hostComponentDragStarted
+  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+    return action$.pipe(
+      ofType('host_component_drag_started'),
+      withLatestFrom(state$),
+      switchMap(([action, state]) => {
+
+        return NEVER;
+      })
+    );
+  },
+  // endregion
 
   // Dispatches stuff. Needs store access.
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {

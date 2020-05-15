@@ -32,7 +32,7 @@ export type GuestActionTypes =
   | 'click'
   | 'dblclick'
   // other
-  | 'setDropPosition'
+  | 'set_drop_position'
   | 'add_asset_types'
   | 'move_component'
   | 'insert_component'
@@ -47,7 +47,8 @@ export type GuestActionTypes =
   | 'set_edit_mode'
   | 'start_listening'
   | 'scrolling'
-  | 'scrolling_stopped';
+  | 'scrolling_stopped'
+  | 'host_component_drag_started';
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;
