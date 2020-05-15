@@ -22,7 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import { palette } from '../styles/theme';
 import { useActiveSiteId, useSelection } from '../utils/hooks';
-import { fetchWorkflowAffectedFiles, getSandboxItem } from '../services/content';
+import { fetchWorkflowAffectedItems, getSandboxItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
@@ -134,7 +134,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
         }
 
-        fetchWorkflowAffectedFiles(siteId, path).subscribe(
+        fetchWorkflowAffectedItems(siteId, path).subscribe(
           (affectedFiles) => {
             const editProps = {
               src,
@@ -152,9 +152,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
               }));
             } else {
               dispatch(
-                showEditDialog({
-                  ...editProps
-                })
+                showEditDialog(editProps)
               );
             }
 

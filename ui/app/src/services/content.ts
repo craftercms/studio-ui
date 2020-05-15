@@ -1207,7 +1207,7 @@ export function unlock(site: string, path: string): Observable<boolean> {
   );
 }
 
-export function fetchWorkflowAffectedFiles(site: string, path: string): Observable<LegacyItem[]> {
+export function fetchWorkflowAffectedItems(site: string, path: string): Observable<LegacyItem[]> {
   return get(`/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`).pipe(
     pluck('response', 'items'),
     catchError(errorSelectorApi1)
@@ -1246,5 +1246,5 @@ export default {
   revertTo,
   lock,
   unlock,
-  fetchWorkflowAffectedFiles
+  fetchWorkflowAffectedFiles: fetchWorkflowAffectedItems
 };

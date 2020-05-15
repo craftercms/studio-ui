@@ -55,7 +55,7 @@ interface WorkflowCancellationDialogUIProps {
 
 interface WorkflowCancellationDialogBaseProps {
   open: boolean;
-  workflowAffectedFiles?: LegacyItem[];
+  items?: LegacyItem[];
 }
 
 export type WorkflowCancellationDialogProps = PropsWithChildren<WorkflowCancellationDialogBaseProps & {
@@ -94,14 +94,14 @@ function WorkflowCancellationContentUI(props: WorkflowCancellationContentUIProps
     classes
   } = props;
 
-  const workflowAffectedFiles = resource.read();
+  const items = resource.read();
 
   return (
     <Grid container spacing={3} className={classes.contentRoot}>
       <Grid item xs={12}>
         <List className={classes.filesList}>
           {
-            workflowAffectedFiles.map(file =>
+            items.map(file =>
               <ListItem key={file.browserUri}>
                 <ListItemText primary={file.name} secondary={file.browserUri} />
               </ListItem>
@@ -150,8 +150,7 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
                   defaultMessage="There are no affected files"
                 />
               )
-            },
-            isEmpty: (value) => value.length === 0
+            }
           }}
         >
           <WorkflowCancellationContentUI
@@ -194,7 +193,7 @@ export default function WorkflowCancellationDialog(props: WorkflowCancellationDi
 
 function WorkflowCancellationDialogWrapper(props: WorkflowCancellationDialogProps) {
   const {
-    workflowAffectedFiles,
+    items,
     onClose,
     onClosed,
     onDismiss,
@@ -202,7 +201,7 @@ function WorkflowCancellationDialogWrapper(props: WorkflowCancellationDialogProp
   } = props;
   useUnmount(props.onClosed);
 
-  const resource = useLogicResource<Return, Source>(workflowAffectedFiles, {
+  const resource = useLogicResource<Return, Source>(items, {
     shouldResolve: (source) => Boolean(source),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,

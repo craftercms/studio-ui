@@ -2538,7 +2538,7 @@ var nodeOpen = false,
                 type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
                 payload: {
                   open: true,
-                  workflowAffectedFiles: content,
+                  items: content,
                   onContinue: {
                     type: 'BATCH_ACTIONS',
                     payload: [
