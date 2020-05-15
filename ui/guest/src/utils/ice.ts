@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
@@ -15,14 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: Move all DOMController & Markers function as utils here.
-
-// To be removed. Just a placeholder so the file
-// isn't empty and the linter doesn't complain.
 import { LookupTable } from '../models/LookupTable';
 import { ContentTypeField } from '../models/ContentType';
 
-export const naught = null;
+// TODO: Move all DOMController & Markers function as utils here.
 
 // export function findContainerField(model, fields, modelId) {
 //   return forEach(fields, (field) => {
@@ -37,6 +32,7 @@ export const naught = null;
 //     }
 //   });
 // }
+
 export function findComponentContainerFields(fields: LookupTable<ContentTypeField> | ContentTypeField[]): ContentTypeField[] {
   if (!Array.isArray(fields)) {
     fields = Object.values(fields);

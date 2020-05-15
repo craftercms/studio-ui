@@ -26,6 +26,7 @@ export function dragOk(status): boolean {
     EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
   ].includes(status);
 }
+
 export function unwrapEvent<T extends Event>(event: JQueryEventObject | SyntheticEvent | Event): T {
   // @ts-ignore
   return event?.originalEvent ?? event?.nativeEvent ?? event;
