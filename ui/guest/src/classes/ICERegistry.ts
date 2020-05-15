@@ -139,7 +139,7 @@ export class ICERegistry {
     );
   }
 
-  recordOf(id: number): Record {
+  recordOf(id: number | string): Record {
     return this.registry[id];
   }
 

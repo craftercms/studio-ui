@@ -120,13 +120,26 @@ const dragleave: GuestReducer = (state) => {
           inZone: false,
           targetIndex: null
         }
-      }
+    }
     : state;
 };
 // endregion
 
 // region drop
 // const drop: GuestReducer = (state) => state;
+// endregion
+
+//region setDropPosition
+const setDropPosition: GuestReducer = (state, action) => {
+  const { targetIndex } = action.payload;
+  return {
+    ...state,
+    dragContext: {
+      ...state.dragContext,
+      targetIndex
+    }
+  };
+};
 // endregion
 
 // region dragend
@@ -156,6 +169,7 @@ const exit_component_inline_edit: GuestReducer = (state) => {
 
 // region ice_zone_selected
 const ice_zone_selected: GuestReducer = (state, action) => {
+  console.log(action);
   const { record } = action.payload;
   const highlight = ElementRegistry.getHoverData(record.id);
   return {
@@ -284,6 +298,7 @@ const desktop_asset_upload_started: GuestReducer = (state, action) => {
 
 // region start_listening
 const start_listening: GuestReducer = (state) => {
+  console.log('start_listening');
   return {
     ...state,
     status: EditingStatus.LISTENING,
@@ -346,6 +361,7 @@ const reducerFunctions: {
   dragover: (state) => state,
   dragstart,
   drop: (state) => state,
+  setDropPosition,
   edit_component_inline,
   exit_component_inline_edit,
   ice_zone_selected,

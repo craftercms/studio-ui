@@ -22,6 +22,7 @@ import {
   ignoreElements,
   map,
   switchMap,
+  take,
   takeUntil,
   tap,
   throttleTime,
@@ -182,7 +183,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             }
             case EditingStatus.SORTING_COMPONENT: {
               if (notNullOrUndefined(dragContext.targetIndex)) {
-                return of({ type: 'move_component' });
+                moveComponent(dragContext);
               }
               break;
             }
@@ -250,7 +251,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       ofType('click'),
       withLatestFrom(state$),
       filter(([, state]) => state.status === EditingStatus.LISTENING),
-      tap(([action]) => {
+      switchMap(([action]) => {
         const { record } = action.payload;
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
         const type = field?.type;
@@ -271,17 +272,18 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           }
           default: {
             post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
-            escape$.pipe(takeUntil(clearAndListen$)).subscribe(() => {
-              post(CLEAR_SELECTED_ZONES);
-              // TODO:
-              // Container.clearAndListen();
-              // of({ type: 'start_listening' });
-            });
-            return of({ type: 'ice_zone_selected' });
+            return merge(
+              escape$.pipe(
+                takeUntil(clearAndListen$),
+                tap(() => post(CLEAR_SELECTED_ZONES)),
+                map(() => ({ type: 'start_listening' })),
+                take(1)
+              ),
+              of({ type: 'ice_zone_selected', payload: action.payload })
+            );
           }
         }
-      }),
-      ignoreElements()
+      })
     );
   },
   // endregion
@@ -294,7 +296,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(
       ofType('computed_dragend'),
-      withLatestFrom(state$),
       tap(() => destroyDragSubjects()),
       ignoreElements()
     );
@@ -345,3 +346,70 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
 ]);
 
 export default epic;
+
+const moveComponent = (dragContext) => {
+  let { dragged, dropZone, dropZones, targetIndex } = dragContext,
+    record = dragged,
+    draggedElementIndex = record.index,
+    originDropZone = dropZones.find((dropZone) => dropZone.origin),
+    currentDZ = dropZone.element;
+
+  if (typeof draggedElementIndex === 'string') {
+    // If the index is a string, it's a nested index with dot notation.
+    // At this point, we only care for the last index piece, which is
+    // the index of this item in the collection that's being manipulated.
+    draggedElementIndex = parseInt(
+      draggedElementIndex.substr(draggedElementIndex.lastIndexOf('.') + 1),
+      10
+    );
+  }
+
+  const containerRecord = iceRegistry.recordOf(originDropZone.iceId);
+
+  // Determine whether the component is to be sorted or moved.
+  if (currentDZ === originDropZone.element) {
+    // Same drop zone: Sort identified
+
+    // If moving the item down the array of items, need to account
+    // for all the originally subsequent items shifting up.
+    if (draggedElementIndex < targetIndex) {
+      // Hence the final target index in reality is
+      // the drop marker's index minus 1
+      --targetIndex;
+    }
+
+    if (draggedElementIndex !== targetIndex) {
+      setTimeout(() => {
+        contentController.sortItem(
+          containerRecord.modelId,
+          containerRecord.fieldId,
+          containerRecord.fieldId.includes('.')
+            ? `${containerRecord.index}.${draggedElementIndex}`
+            : draggedElementIndex,
+          containerRecord.fieldId.includes('.')
+            ? `${containerRecord.index}.${targetIndex}`
+            : targetIndex
+        );
+      });
+    }
+  } else {
+    // Different drop zone: Move identified
+
+    const rec = iceRegistry.recordOf(dropZone.iceId);
+
+    // Chrome didn't trigger the dragend event
+    // without the set timeout.
+    setTimeout(() => {
+      contentController.moveItem(
+        containerRecord.modelId,
+        containerRecord.fieldId,
+        containerRecord.fieldId.includes('.')
+          ? `${containerRecord.index}.${draggedElementIndex}`
+          : draggedElementIndex,
+        rec.modelId,
+        rec.fieldId,
+        rec.fieldId.includes('.') ? `${rec.index}.${targetIndex}` : targetIndex
+      );
+    }, 20);
+  }
+};

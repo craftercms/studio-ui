@@ -32,6 +32,7 @@ export type GuestActionTypes =
   | 'click'
   | 'dblclick'
   // other
+  | 'setDropPosition'
   | 'add_asset_types'
   | 'move_component'
   | 'insert_component'

@@ -16,7 +16,7 @@
 
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { GuestStandardAction } from './GuestStandardAction';
-import { Record } from '../../models/InContextEditing';
+import { DropZone, Record } from '../../models/InContextEditing';
 import { EditingStatus } from '../../util';
 import { LookupTable } from '../../models/LookupTable';
 import { StateObservable } from 'redux-observable';
@@ -30,7 +30,7 @@ export interface GuestState {
   dragContext: {
     targetIndex: number;
     inZone: boolean;
-    dropZone: any;
+    dropZone: DropZone;
     players: any[];
     siblings: any[];
     containers: any[];
@@ -40,7 +40,7 @@ export interface GuestState {
     coordinates: any;
     // TODO: Dragged seems to be an ICE record, but there's code looking for dragged.path
     dragged: Record & { path?: string };
-    dropZones: any;
+    dropZones: DropZone[];
     scrolling: boolean;
   };
   ICE_GUEST_INIT: boolean;

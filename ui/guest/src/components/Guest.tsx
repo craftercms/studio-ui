@@ -266,73 +266,6 @@ export function Guest(props: GuestProps) {
       dragOk(state.status) && dispatch({ type: 'computed_dragend' });
     },
 
-    moveComponent(): void {
-      let { dragged, dropZone, dropZones, targetIndex } = stateRef.current.dragContext,
-        record = dragged,
-        draggedElementIndex = record.index,
-        originDropZone = dropZones.find((dropZone) => dropZone.origin),
-        currentDZ = dropZone.element;
-
-      if (typeof draggedElementIndex === 'string') {
-        // If the index is a string, it's a nested index with dot notation.
-        // At this point, we only care for the last index piece, which is
-        // the index of this item in the collection that's being manipulated.
-        draggedElementIndex = parseInt(
-          draggedElementIndex.substr(draggedElementIndex.lastIndexOf('.') + 1),
-          10
-        );
-      }
-
-      const containerRecord = iceRegistry.recordOf(originDropZone.iceId);
-
-      // Determine whether the component is to be sorted or moved.
-      if (currentDZ === originDropZone.element) {
-        // Same drop zone: Sort identified
-
-        // If moving the item down the array of items, need to account
-        // for all the originally subsequent items shifting up.
-        if (draggedElementIndex < targetIndex) {
-          // Hence the final target index in reality is
-          // the drop marker's index minus 1
-          --targetIndex;
-        }
-
-        if (draggedElementIndex !== targetIndex) {
-          setTimeout(() => {
-            contentController.sortItem(
-              containerRecord.modelId,
-              containerRecord.fieldId,
-              containerRecord.fieldId.includes('.')
-                ? `${containerRecord.index}.${draggedElementIndex}`
-                : draggedElementIndex,
-              containerRecord.fieldId.includes('.')
-                ? `${containerRecord.index}.${targetIndex}`
-                : targetIndex
-            );
-          });
-        }
-      } else {
-        // Different drop zone: Move identified
-
-        const rec = iceRegistry.recordOf(dropZone.iceId);
-
-        // Chrome didn't trigger the dragend event
-        // without the set timeout.
-        setTimeout(() => {
-          contentController.moveItem(
-            containerRecord.modelId,
-            containerRecord.fieldId,
-            containerRecord.fieldId.includes('.')
-              ? `${containerRecord.index}.${draggedElementIndex}`
-              : draggedElementIndex,
-            rec.modelId,
-            rec.fieldId,
-            rec.fieldId.includes('.') ? `${rec.index}.${targetIndex}` : targetIndex
-          );
-        }, 20);
-      }
-    },
-
     insertComponent(): void {
       const { targetIndex, contentType, dropZone } = stateRef.current.dragContext;
       const record = iceRegistry.recordOf(dropZone.iceId);
@@ -583,7 +516,7 @@ export function Guest(props: GuestProps) {
   useEffect(() => {
     const fn = fnRef.current;
 
-    const sub = message$.subscribe(function({ type, payload }) {
+    const sub = message$.subscribe(function ({ type, payload }) {
       switch (type) {
         case EDIT_MODE_CHANGED:
           return fn.onEditModeChanged(payload.inEditMode);
@@ -602,7 +535,9 @@ export function Guest(props: GuestProps) {
         case TRASHED:
           return fn.onTrashDrop();
         case CLEAR_SELECTED_ZONES:
-          fn.clearAndListen();
+          clearAndListen$.next();
+          dispatch({ type: 'start_listening' });
+          //fn.clearAndListen();
           break;
         case RELOAD_REQUEST: {
           post({ type: GUEST_CHECK_OUT });
@@ -766,23 +701,23 @@ export function Guest(props: GuestProps) {
             EditingStatus.PLACING_NEW_COMPONENT,
             EditingStatus.PLACING_DETACHED_COMPONENT
           ].includes(state.status) &&
-            state.dragContext.inZone && (
-              <DropMarker
-                onDropPosition={fn.onSetDropPosition}
-                dropZone={state.dragContext.dropZone}
-                over={state.dragContext.over}
-                prev={state.dragContext.prev}
-                next={state.dragContext.next}
-                coordinates={state.dragContext.coordinates}
-              />
-            )}
+          state.dragContext.inZone && (
+            <DropMarker
+              onDropPosition={(payload) => dispatch({ type: 'setDropPosition', payload })}
+              dropZone={state.dragContext.dropZone}
+              over={state.dragContext.over}
+              prev={state.dragContext.prev}
+              next={state.dragContext.next}
+              coordinates={state.dragContext.coordinates}
+            />
+          )}
         </CrafterCMSPortal>
       )}
     </GuestContextProvider>
   );
 }
 
-export default function(props: GuestProps) {
+export default function (props: GuestProps) {
   const { isAuthoring = true, children } = props;
   const store = useMemo(() => createGuestStore(), []);
   return isAuthoring ? (
