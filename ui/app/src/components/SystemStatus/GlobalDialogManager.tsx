@@ -233,6 +233,7 @@ function GlobalDialogManager() {
         onClose={createCallback(state.reject.onClose, dispatch)}
         onClosed={createCallback(state.reject.onClosed, dispatch)}
         onDismiss={createCallback(state.reject.onDismiss, dispatch)}
+        onRejectSuccess={createCallback(state.reject.onRejectSuccess, dispatch)}
       />
       {/* endregion */}
     </Suspense>

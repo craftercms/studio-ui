@@ -55,6 +55,20 @@ export function goLive(siteId: string, user: string, data): Observable<any> {
   );
 }
 
+export function reject(siteId: string, dependencies: string[], items: string[], reason: string): Observable<any> {    // TODO: observable return type
+  return postJSON(
+    `/studio/api/1/services/api/1/workflow/reject.json?site=${siteId}`,
+    {
+      dependencies,
+      items,
+      reason
+    }
+  ).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
+}
+
 export default {
   fetchPackages,
   fetchPackage,

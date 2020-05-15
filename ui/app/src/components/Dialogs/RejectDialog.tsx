@@ -17,7 +17,7 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import StandardAction from '../../models/StandardAction';
 import Dialog from '@material-ui/core/Dialog';
-import { useLogicResource, useUnmount } from '../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../utils/hooks';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
 import { LegacyItem } from '../../models/Item';
@@ -43,9 +43,13 @@ import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import { palette } from '../../styles/theme';
+import { fetchDependencies } from '../../services/dependencies';
+import { reject } from '../../services/publishing';
+import { ApiResponse } from '../../models/ApiResponse';
 
 // region Typings
 
+type ApiState = { error: ApiResponse, submitting: boolean };
 type Source = LegacyItem[];
 type Return = Source;
 
@@ -65,6 +69,7 @@ interface RejectDialogUIProps {
   setRejectionComment?(value: string): void;
   onUpdateChecked?(value?: string): void;
   classes?: any;
+  onReject?(): void;
   onClose?(): void;
   onDismiss?(): void;
 }
@@ -78,25 +83,34 @@ export type RejectDialogProps = PropsWithChildren<RejectDialogBaseProps & {
   onClose?(response?: any): any;
   onClosed?(response?: any): any;
   onDismiss?(response?: any): any;
+  onRejectSuccess?(response?: any): any;
 }>;
 
 export interface RejectDialogStateProps extends RejectDialogBaseProps {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onDismiss?: StandardAction;
+  onRejectSuccess?: StandardAction;
 }
 
 // endregion
 
 const useStyles = makeStyles(() =>
   createStyles({
-    contentRoot: {
-
-    },
     itemsList: {
       border: '1px solid #D8D8DC',
       backgroundColor: palette.white,
-      padding: 0
+      padding: 0,
+      height: '100%'
+    },
+    submissionTextField: {
+      marginTop: '10px'
+    },
+    textField: {
+      padding: 0,
+      '& textarea[aria-hidden="true"]': {
+        width: '50% !important'
+      }
     }
   })
 );
@@ -124,7 +138,7 @@ function RejectDialogContentUI(props: RejectDialogContentUIProps) {
           const labelId = `checkbox-list-label-${file.uri}`;
 
           return (
-            <ListItem key={file.uri} onClick={ () => onUpdateChecked(file.uri)}>
+            <ListItem key={file.uri} onClick={() => onUpdateChecked(file.uri)} button>
               <ListItemIcon>
                 <Checkbox
                   edge="start"
@@ -155,6 +169,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
     onUpdateChecked,
     onClose,
     onDismiss,
+    onReject,
     classes
   } = props;
 
@@ -177,7 +192,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
       />
       <DialogBody id="confirmDialogBody">
         <Grid container spacing={3} className={classes.contentRoot}>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
             <SuspenseWithEmptyState
               resource={resource}
               withEmptyStateProps={{
@@ -202,10 +217,14 @@ function RejectDialogUI(props: RejectDialogUIProps) {
             </SuspenseWithEmptyState>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
             <form>
               <FormControl fullWidth>
-                <InputLabel className={classes.sectionLabel}>Rejection Reason:</InputLabel>
+                <InputLabel className={classes.sectionLabel}>
+                  <FormattedMessage
+                    id="rejectDialog.rejectionReason" defaultMessage="Rejection Reason"
+                  />:
+                </InputLabel>
                 <Select
                   fullWidth
                   input={<SelectInput />}
@@ -236,12 +255,17 @@ function RejectDialogUI(props: RejectDialogUIProps) {
 
               <TextField
                 className={classes.submissionTextField}
-                label={<span className={classes.sectionLabel}>Rejection Comment</span>}
+                label={<FormattedMessage
+                  id="rejectDialog.rejectCommentLabel" defaultMessage="Rejection Comment"
+                />}
                 fullWidth
-                InputLabelProps={{ shrink: true }}
                 multiline
+                rows={8}
                 defaultValue={rejectionComment}
                 onChange={(e) => setRejectionComment(e.target.value as string)}
+                InputProps={{
+                  className: classes.textField
+                }}
               />
             </form>
           </Grid>
@@ -251,14 +275,20 @@ function RejectDialogUI(props: RejectDialogUIProps) {
         <DialogActions>
           {onClose && (
             <Button onClick={onClose} variant="contained">
-              <FormattedMessage id="workflowCancellation.cancel" defaultMessage="Cancel" />
+              <FormattedMessage id="rejectDialog.cancel" defaultMessage="Cancel" />
             </Button>
           )}
-          {/*{onContinue && (*/}
-          {/*  <Button onClick={onContinue} variant="contained" color="primary" autoFocus>*/}
-          {/*    <FormattedMessage id="workflowCancellation.continue" defaultMessage="Continue" />*/}
-          {/*  </Button>*/}
-          {/*)}*/}
+          {onReject && (
+            <Button
+              onClick={onReject}
+              variant="contained"
+              color="primary"
+              autoFocus
+              disabled={checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''}
+            >
+              <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />
+            </Button>
+          )}
         </DialogActions>
       </DialogFooter>
     </>
@@ -272,7 +302,7 @@ export default function RejectDialog(props: RejectDialogProps) {
       onClose={props.onClose}
       aria-labelledby="rejectDialogTitle"
       fullWidth
-      maxWidth="sm"
+      maxWidth="md"
     >
       <RejectDialogWrapper {...props} />
     </Dialog>
@@ -284,21 +314,27 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     items,
     onClose,
     onClosed,
-    onDismiss
+    onDismiss,
+    onRejectSuccess
   } = props;
   useUnmount(onClosed);
   const [checkedItems, setCheckedItems] = useState([]);
   const [rejectionReason, setRejectionReason] = useState('');
   const [rejectionComment, setRejectionComment] = useState('');
+  const siteId = useActiveSiteId();
+  const [apiState, setApiState] = useSpreadState<ApiState>({
+    error: null,
+    submitting: false
+  });
 
   // check all items as default
   useEffect(() => {
     const newChecked = [];
 
-    items.map((item) => {
+    items.forEach((item) => {
       const uri = item.uri;
       newChecked.push(uri);
-    })
+    });
 
     setCheckedItems(newChecked);
   }, [items, setCheckedItems]);
@@ -314,6 +350,33 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     }
 
     setCheckedItems(newChecked);
+  };
+
+  const onReject = () => {
+    fetchDependencies(siteId, checkedItems).subscribe(
+      (response) => {
+        // api being used in legacy (/studio/api/1/services/api/1/dependency/get-dependencies.json)
+        // returns only softDependencies
+        const deps = response.softDependencies;
+
+        setApiState({ ...apiState, submitting: true });
+
+        reject(siteId, deps, checkedItems, '').subscribe(
+          () => {
+            setApiState({ error: null, submitting: false });
+            onRejectSuccess?.();
+            onDismiss?.();
+          },
+          (error) => {
+            setApiState({ error: null, submitting: false });
+            setApiState({ error });
+          }
+        );
+      },
+      (error) => {
+        setApiState({ error });
+      }
+    );
   };
 
   const resource = useLogicResource<Return, Source>(items, {
@@ -335,6 +398,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
       onUpdateChecked={updateChecked}
       onClose={onClose}
       onDismiss={onDismiss}
+      onReject={onReject}
       classes={useStyles()}
     />
   );
