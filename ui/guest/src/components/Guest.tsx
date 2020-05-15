@@ -494,7 +494,8 @@ export function Guest(props: GuestProps) {
         case ASSET_DRAG_ENDED:
           return fn.onAssetDragEnded();
         case COMPONENT_DRAG_STARTED:
-          return fn.onHostComponentDragStarted(payload);
+          dispatch({ type: 'host_component_drag_started', payload });
+          break;
         case COMPONENT_DRAG_ENDED:
           return fn.onHostComponentDragEnd();
         case COMPONENT_INSTANCE_DRAG_STARTED:
@@ -506,7 +507,6 @@ export function Guest(props: GuestProps) {
         case CLEAR_SELECTED_ZONES:
           clearAndListen$.next();
           dispatch({ type: 'start_listening' });
-          //fn.clearAndListen();
           break;
         case RELOAD_REQUEST: {
           post({ type: GUEST_CHECK_OUT });

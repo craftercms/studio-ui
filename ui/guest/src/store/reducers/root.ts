@@ -56,6 +56,13 @@ const mouseleave: GuestReducer = (state) => {
 };
 // endregion
 
+// region host_component_drag_started
+const host_component_drag_started: GuestReducer = (state, action) => {
+  const { contentType } = action.payload;
+  return state;
+};
+// endregion
+
 // region dragstart
 // TODO: Not pure.
 const dragstart: GuestReducer = (state, action) => {
@@ -377,7 +384,8 @@ const reducerFunctions: {
   add_asset_types: (state) => state,
   click: (state) => state,
   scrolling,
-  scrolling_stopped
+  scrolling_stopped,
+  host_component_drag_started
 };
 
 export default createReducer<GuestState>(initialState, reducerFunctions);
