@@ -15,13 +15,6 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  EditingStatus,
-  getHighlighted,
-  isNullOrUndefined,
-  scrollToNode,
-  scrollToReceptacle
-} from '../util';
 import { fromEvent, interval, zip } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
@@ -68,6 +61,9 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import { clearAndListen$, initializeDragSubjects } from '../store/subjects';
 import { dragOk } from '../store/util';
 import { GuestState } from '../store/models/GuestStore';
+import { EditingStatus } from '../models/ICEStatus';
+import { isNullOrUndefined } from '../utils/object';
+import { getHighlighted, scrollToNode, scrollToReceptacle } from '../utils/dom';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';

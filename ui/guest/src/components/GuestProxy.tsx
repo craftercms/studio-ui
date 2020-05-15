@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { addAnimation, forEach, notNullOrUndefined, popPiece, removeLastPiece } from '../util';
 import { useGuestContext } from './GuestContext';
 import { ElementRegistry } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
@@ -40,6 +39,10 @@ import {
 } from '../constants';
 import { useSelector } from 'react-redux';
 import { GuestState } from '../store/models/GuestStore';
+import { notNullOrUndefined } from '../utils/object';
+import { forEach } from '../utils/array';
+import { popPiece, removeLastPiece } from '../utils/string';
+import { addAnimation } from '../utils/dom';
 
 export function GuestProxy(props) {
 

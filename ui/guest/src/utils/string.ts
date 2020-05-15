@@ -14,19 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SyntheticEvent } from 'react';
-import { EditingStatus } from '../models/ICEStatus';
-
-export function dragOk(status): boolean {
-  return [
-    EditingStatus.SORTING_COMPONENT,
-    EditingStatus.PLACING_NEW_COMPONENT,
-    EditingStatus.PLACING_DETACHED_ASSET,
-    EditingStatus.PLACING_DETACHED_COMPONENT,
-    EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
-  ].includes(status);
+export function capitalize(str: string): string {
+  return `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
 }
-export function unwrapEvent<T extends Event>(event: JQueryEventObject | SyntheticEvent | Event): T {
-  // @ts-ignore
-  return event?.originalEvent ?? event?.nativeEvent ?? event;
+export function removeLastPiece(str: string, splitChar: string = '.'): string {
+  return str.substr(0, str.lastIndexOf(splitChar));
+}
+export function popPiece(str: string, splitChar: string = '.'): string {
+  return str.substr(str.lastIndexOf(splitChar) + 1);
+}
+export function isBlank(str: string): boolean {
+  return str === '';
 }

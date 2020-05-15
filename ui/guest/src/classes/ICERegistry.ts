@@ -16,19 +16,17 @@
 
 import contentController from './ContentController';
 import {
-  DEFAULT_RECORD_DATA,
-  findComponentContainerFields,
-  forEach,
-  isNullOrUndefined,
-  notNullOrUndefined,
-  pluckProps
-} from '../util';
+  DEFAULT_RECORD_DATA
+} from '../utils/util';
 import { ContentTypeHelper } from './ContentTypeHelper';
 import { ModelHelper } from './ModelHelper';
 import { ContentInstance } from '../models/ContentInstance';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { Record, ReferentialEntries } from '../models/InContextEditing';
+import { isNullOrUndefined, notNullOrUndefined, pluckProps } from '../utils/object';
+import { forEach } from '../utils/array';
+import { findComponentContainerFields } from '../utils/ice';
 
 export class ICERegistry {
 

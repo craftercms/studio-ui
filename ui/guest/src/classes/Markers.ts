@@ -17,12 +17,9 @@
 import $ from 'jquery';
 import { Coordinates } from '../models/Positioning';
 import { CSSProperties } from 'react';
+import { capitalize } from '../utils/string';
 
 const TOLERANCE_PERCENTS = { x: 5, y: 5 };
-
-function capitalize(str: string): string {
-  return `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
-}
 
 export const
   HORIZONTAL = 'horizontal',

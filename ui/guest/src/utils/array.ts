@@ -14,19 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SyntheticEvent } from 'react';
-import { EditingStatus } from '../models/ICEStatus';
+import { notNullOrUndefined } from './object';
 
-export function dragOk(status): boolean {
-  return [
-    EditingStatus.SORTING_COMPONENT,
-    EditingStatus.PLACING_NEW_COMPONENT,
-    EditingStatus.PLACING_DETACHED_ASSET,
-    EditingStatus.PLACING_DETACHED_COMPONENT,
-    EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
-  ].includes(status);
-}
-export function unwrapEvent<T extends Event>(event: JQueryEventObject | SyntheticEvent | Event): T {
-  // @ts-ignore
-  return event?.originalEvent ?? event?.nativeEvent ?? event;
+export function forEach(array: any[], fn: (item: any, index?: number, array?: any[]) => any, emptyReturnValue?: any): any {
+  if (notNullOrUndefined(emptyReturnValue) && array.length === 0) {
+    return emptyReturnValue;
+  }
+  for (let i = 0, l = array.length; i < l; i++) {
+    const result = fn(array[i], i, array);
+    if (result === 'continue') {
+
+    } else if (result === 'break') {
+      break;
+    } else if (result !== undefined) {
+      return result;
+    }
+  }
+  return emptyReturnValue;
 }

@@ -17,17 +17,10 @@
 import $ from 'jquery';
 import contentController from './ContentController';
 import {
-  findClosestRect,
-  forEach,
-  getChildArrangement,
-  getInRectStats,
   HORIZONTAL,
-  insertDropMarker,
-  isNullOrUndefined,
   not,
-  notNullOrUndefined,
   VERTICAL
-} from '../util';
+} from '../utils/util';
 import iceRegistry from './ICERegistry';
 // import { Markers } from './Markers';
 import { ComponentEditor } from './ComponentEditor';
@@ -36,6 +29,14 @@ import { debounceTime, delay, filter } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import { render } from 'react-dom';
 import { DZStats, IceZone, Stats } from '../models/InContextEditing';
+import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
+import { forEach } from '../utils/array';
+import {
+  findClosestRect,
+  getChildArrangement,
+  getInRectStats,
+  insertDropMarker
+} from '../utils/dom';
 
 const hostTrashed$ = new Subject();
 

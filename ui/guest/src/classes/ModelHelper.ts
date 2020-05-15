@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isNullOrUndefined, removeLastPiece, retrieveProperty, setProperty } from '../util';
 import { ContentInstance } from '../models/ContentInstance';
+import { isNullOrUndefined, retrieveProperty, setProperty } from '../utils/object';
+import { removeLastPiece } from '../utils/string';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 

@@ -17,9 +17,9 @@
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { GuestStandardAction } from './GuestStandardAction';
 import { DropZone, Record } from '../../models/InContextEditing';
-import { EditingStatus } from '../../util';
 import { LookupTable } from '../../models/LookupTable';
 import { StateObservable } from 'redux-observable';
+import { EditingStatus } from '../../models/ICEStatus';
 
 interface T {
   [K: string]: any
