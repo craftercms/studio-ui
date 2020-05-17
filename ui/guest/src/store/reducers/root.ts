@@ -88,6 +88,38 @@ const host_component_drag_started: GuestReducer = (state, action) => {
 };
 // endregion
 
+// region host_instance_drag_started
+// TODO: Not pure.
+const host_instance_drag_started: GuestReducer = (state, action) => {
+  const { instance } = action.payload;
+  if (notNullOrUndefined(instance)) {
+
+    const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles);
+    const highlighted = getHighlighted(dropZones);
+
+    return {
+      ...state,
+      highlighted,
+      status: EditingStatus.PLACING_DETACHED_COMPONENT,
+      dragContext: {
+        ...state.dragContext,
+        players,
+        siblings,
+        dropZones,
+        containers,
+        instance,
+        inZone: false,
+        targetIndex: null,
+        dragged: null
+      }
+    };
+  } else {
+    return state;
+  }
+};
+// endregion
+
 // region dragstart
 // TODO: Not pure.
 const dragstart: GuestReducer = (state, action) => {
@@ -391,7 +423,8 @@ const reducerFunctions: {
   click: (state) => state,
   scrolling,
   scrolling_stopped,
-  host_component_drag_started
+  host_component_drag_started,
+  host_instance_drag_started
 };
 
 export default createReducer<GuestState>(initialState, reducerFunctions);

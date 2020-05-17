@@ -45,6 +45,7 @@ export interface GuestState {
     dropZones: DropZone[];
     scrolling: boolean;
     contentType: ContentType;
+    instance: ContentInstance;
   };
   ICE_GUEST_INIT: boolean;
   status: EditingStatus;

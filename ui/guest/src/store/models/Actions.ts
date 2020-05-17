@@ -48,7 +48,8 @@ export type GuestActionTypes =
   | 'start_listening'
   | 'scrolling'
   | 'scrolling_stopped'
-  | 'host_component_drag_started';
+  | 'host_component_drag_started'
+  | 'host_instance_drag_started';
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;

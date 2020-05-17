@@ -307,8 +307,8 @@ export class ContentController {
 
   }
 
-  insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void;
-  insertInstance(modelId: string, fieldId: string, targetIndex: string, instance: ContentInstance): void;
+  //insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void;
+  //insertInstance(modelId: string, fieldId: string, targetIndex: string, instance: ContentInstance): void;
   insertInstance(modelId: string, fieldId: string, targetIndex: number | string, instance: ContentInstance): void {
     const models = this.getCachedModels();
     const model = models[modelId];

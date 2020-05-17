@@ -185,7 +185,18 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             }
             case EditingStatus.PLACING_DETACHED_COMPONENT: {
               if (notNullOrUndefined(dragContext.targetIndex)) {
-                return of({ type: 'insert_instance' });
+                const { targetIndex, instance, dropZone } = dragContext;
+                const record = iceRegistry.recordOf(dropZone.iceId);
+
+                setTimeout(() => {
+                  contentController.insertInstance(
+                    record.modelId,
+                    record.fieldId,
+                    record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+                    instance
+                  );
+                });
+                //return of({ type: 'insert_instance' });
               }
               break;
             }
@@ -345,7 +356,24 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         return NEVER;
       })
     );
-  }
+  },
+  // endregion
+
+  // region host_instance_drag_started
+  (action$: any, state$: GuestStateObservable) => {
+    return action$.pipe(
+      ofType('host_instance_drag_started'),
+      withLatestFrom(state$),
+      switchMap(([action, state]) => {
+        if (isNullOrUndefined(state.dragContext.instance.craftercms.contentTypeId)) {
+          console.error('No contentTypeId found for this drag instance.');
+        } else {
+          return initializeDragSubjects(state$);
+        }
+        return NEVER;
+      })
+    );
+  },
   // endregion
 
 ]);
