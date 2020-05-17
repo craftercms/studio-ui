@@ -29,7 +29,6 @@ import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
 import { Asset } from '../models/ContentType';
-import { ContentInstance } from '../models/ContentInstance';
 import { HoverData } from '../models/InContextEditing';
 import { LookupTable } from '../models/LookupTable';
 import { AssetUploaderMask } from './AssetUploaderMask';
@@ -154,77 +153,6 @@ export function Guest(props: GuestProps) {
           status,
           inEditMode
         }
-      });
-    },
-
-    onHostInstanceDragStarted(instance: ContentInstance): void {
-      let players = [];
-      let siblings = [];
-      let containers = [];
-      let dropZones = [];
-
-      const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
-
-      if (receptacles.length === 0) {
-        // TODO: If there are no receptacles, the component should it even be listed as an option (?)
-        return;
-      }
-
-      const validatedReceptacles = receptacles.filter((id) => {
-        // TODO: min/max count validations
-        return true;
-      });
-
-      //scrollToReceptacle(validatedReceptacles);
-
-      validatedReceptacles.forEach(({ id }) => {
-        const dropZone = ElementRegistry.compileDropZone(id);
-        dropZone.origin = null;
-        dropZones.push(dropZone);
-
-        siblings = siblings.concat(dropZone.children);
-        players = players.concat(dropZone.children).concat(dropZone.element);
-        containers.push(dropZone.element);
-      });
-
-      const highlighted = getHighlighted(dropZones);
-
-      initializeDragSubjects();
-
-      setState({
-        dragContext: {
-          players,
-          siblings,
-          dropZones,
-          containers,
-          instance,
-          inZone: false,
-          dragged: null,
-          targetIndex: null
-        },
-        common: {
-          ...stateRef.current.common,
-          status: EditingStatus.PLACING_DETACHED_COMPONENT,
-          highlighted
-        }
-      });
-    },
-
-    onHostInstanceDragEnd(): void {
-      //dragOk() && dispatch({ type: 'computed_dragend' });
-    },
-
-    insertInstance(): void {
-      const { targetIndex, instance, dropZone } = stateRef.current.dragContext;
-      const record = iceRegistry.recordOf(dropZone.iceId);
-
-      setTimeout(() => {
-        contentController.insertInstance(
-          record.modelId,
-          record.fieldId,
-          record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-          instance
-        );
       });
     },
 
@@ -425,13 +353,14 @@ export function Guest(props: GuestProps) {
           dispatch({ type: 'host_component_drag_started', payload: { contentType: payload } });
           break;
         case COMPONENT_DRAG_ENDED:
-          console.log('COMPONENT_DRAG_ENDED');
           dragOk() && dispatch({ type: 'computed_dragend' });
           break;
         case COMPONENT_INSTANCE_DRAG_STARTED:
-          return fn.onHostInstanceDragStarted(payload);
+          dispatch({ type: 'host_instance_drag_started', payload: { instance: payload } });
+          break;
         case COMPONENT_INSTANCE_DRAG_ENDED:
-          return fn.onHostInstanceDragEnd();
+          dragOk() && dispatch({ type: 'computed_dragend' });
+          break;
         case TRASHED:
           return fn.onTrashDrop(payload);
         case CLEAR_SELECTED_ZONES:

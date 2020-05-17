@@ -209,7 +209,18 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             }
             case EditingStatus.PLACING_DETACHED_COMPONENT: {
               if (notNullOrUndefined(dragContext.targetIndex)) {
-                return of({ type: 'insert_instance' });
+                const { targetIndex, instance, dropZone } = dragContext;
+                const record = iceRegistry.recordOf(dropZone.iceId);
+
+                setTimeout(() => {
+                  contentController.insertInstance(
+                    record.modelId,
+                    record.fieldId,
+                    record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
+                    instance
+                  );
+                });
+                //return of({ type: 'insert_instance' });
               }
               break;
             }
@@ -261,14 +272,12 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region hostComponentDragStarted
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: any, state$: GuestStateObservable) => {
     return action$.pipe(
       ofType('host_component_drag_started'),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
-        const contentType = state.dragContext.contentType;
-        console.log(contentType);
-        if (isNullOrUndefined(contentType.id)) {
+        if (isNullOrUndefined(state.dragContext.contentType.id)) {
           console.error('No contentTypeId found for this drag instance.');
         } else {
           initializeDragSubjects();
@@ -289,7 +298,39 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             )
           );
         }
+        return NEVER;
+      })
+    );
+  },
+  // endregion
 
+  // region hostInstanceDragStarted
+  (action$: any, state$: GuestStateObservable) => {
+    return action$.pipe(
+      ofType('host_instance_drag_started'),
+      withLatestFrom(state$),
+      switchMap(([action, state]) => {
+        if (isNullOrUndefined(state.dragContext.instance.craftercms.contentTypeId)) {
+          console.error('No contentTypeId found for this drag instance.');
+        } else {
+          initializeDragSubjects();
+          return merge(
+            dragover$().pipe(
+              throttleTime(100),
+              map((payload) => ({ type: 'computed_dragover', payload }))
+            ),
+            scrolling$().pipe(
+              throttleTime(200),
+              withLatestFrom(state$),
+              filter(([, state]) => !state.dragContext?.scrolling),
+              map(() => ({ type: 'scrolling' }))
+            ),
+            scrolling$().pipe(
+              debounceTime(200),
+              map(() => ({ type: 'scrolling_stopped' }))
+            )
+          );
+        }
         return NEVER;
       })
     );

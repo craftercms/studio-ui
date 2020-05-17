@@ -21,6 +21,7 @@ import { LookupTable } from '../../models/LookupTable';
 import { StateObservable } from 'redux-observable';
 import { EditingStatus } from '../../models/ICEStatus';
 import { ContentType } from '../../models/ContentType';
+import { ContentInstance } from '../../models/ContentInstance';
 
 interface T {
   [K: string]: any
@@ -44,6 +45,7 @@ export interface GuestState {
     dropZones: DropZone[];
     scrolling: boolean;
     contentType: ContentType;
+    instance: ContentInstance;
   };
   ICE_GUEST_INIT: boolean;
   status: EditingStatus;
