@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 
 export type GuestContextProps = { onEvent: Function };
-export const GuestContext = React.createContext<GuestContextProps>(undefined);
+
+const GuestContext = React.createContext<GuestContextProps>(undefined);
 
 export function useGuestContext(): GuestContextProps {
   const context = useContext(GuestContext);

@@ -14,24 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LookupTable } from '../models/LookupTable';
-import { ContentTypeField } from '../models/ContentType';
-
-// TODO: Move all DOMController & Markers function as utils here.
-
-// export function findContainerField(model, fields, modelId) {
-//   return forEach(fields, (field) => {
-//     const value = ModelHelper.value(model, field.id);
-//     if (
-//       (field.type === 'node-selector' && value === modelId) ||
-//       (field.type === 'array' && value.includes(modelId))
-//     ) {
-//       return field;
-//     } else if (field.type === 'repeat') {
-//       // TODO ...
-//     }
-//   });
-// }
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
+import { ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
+import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
+import { isNullOrUndefined, notNullOrUndefined } from './object';
+import { ModelHelper } from './ModelHelper';
+import { forEach } from './array';
+import { popPiece } from './string';
 
 export function findComponentContainerFields(fields: LookupTable<ContentTypeField> | ContentTypeField[]): ContentTypeField[] {
   if (!Array.isArray(fields)) {
@@ -47,4 +36,48 @@ export function findComponentContainerFields(fields: LookupTable<ContentTypeFiel
       return false;
     }
   });
+}
+
+export function getParentModelId(modelId: string, models: LookupTable<ContentInstance>, children: LookupTable<ContentInstance>): string {
+  return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
+    ? findParentModelId(modelId, children, models)
+    : null;
+}
+
+function findParentModelId(modelId: string, childrenMap: LookupTable<ContentInstance>, models: LookupTable<ContentInstance>): string {
+  const parentId = forEach(
+    Object.entries(childrenMap),
+    ([id, children]) => {
+      if (
+        notNullOrUndefined(children) &&
+        (id !== modelId) &&
+        children.includes(modelId)
+      ) {
+        return id;
+      }
+    },
+    null
+  );
+  return notNullOrUndefined(parentId)
+    // If it has a path, it is not embedded and hence the parent
+    // Otherwise, need to keep looking.
+    ? notNullOrUndefined(ModelHelper.prop(models[parentId], 'path'))
+      ? parentId
+      : findParentModelId(parentId, childrenMap, models)
+    // No parent found for this model
+    : null;
+}
+
+export function getCollectionWithoutItemAtIndex(collection: string[], index: string | number): string[] {
+  const parsedIndex = parseInt(popPiece(`${index}`), 10);
+  return collection
+    .slice(0, parsedIndex)
+    .concat(collection.slice(parsedIndex + 1));
+}
+
+export function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
+  const isStringIndex = typeof index === 'string';
+  return isStringIndex
+    ? ModelHelper.extractCollection(model, fieldId, index)
+    : ModelHelper.value(model, fieldId);
 }

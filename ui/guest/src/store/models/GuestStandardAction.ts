@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import StandardAction from '@craftercms/studio-ui/src/models/StandardAction';
+import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 import { GuestActionTypes } from './Actions';
 
 export type GuestStandardAction<Payload extends {} = any> = StandardAction<Payload, GuestActionTypes>;

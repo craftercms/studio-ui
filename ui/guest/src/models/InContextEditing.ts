@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentType } from './ContentType';
-import { ContentInstance } from './ContentInstance';
-import { ValidationKeys } from '@craftercms/studio-ui/src/models/ContentType';
-import { LookupTable } from './LookupTable';
+import { ContentType } from '@craftercms/studio-ui/models/ContentType';
+import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
+import { ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 
 export interface IceZone {
   element?: Element;

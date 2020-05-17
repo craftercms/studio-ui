@@ -17,13 +17,13 @@
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ajax, AjaxResponse } from 'rxjs/ajax';
 import { filter, map, share, take } from 'rxjs/operators';
-import { ModelHelper } from './ModelHelper';
+import { ModelHelper } from '../utils/ModelHelper';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../communicator';
 import uuid from 'uuid/v4';
-import { ContentInstance, ContentInstanceSystemProps } from '../models/ContentInstance';
-import { ContentType, ContentTypeField } from '../models/ContentType';
-import { LookupTable } from '../models/LookupTable';
+import { ContentInstance, ContentInstanceSystemProps } from '@craftercms/studio-ui/models/ContentInstance';
+import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { Operation } from '../models/Operations';
 import {
   CHILDREN_MAP_UPDATE,
@@ -37,16 +37,14 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
-import {
-  createLookupTable,
-  isNullOrUndefined,
-  notNullOrUndefined,
-  pluckProps,
-  reversePluckProps
-} from '../utils/object';
-import { forEach } from '../utils/array';
+import { createLookupTable, pluckProps, reversePluckProps } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
-import { findComponentContainerFields } from '../utils/ice';
+import {
+  findComponentContainerFields,
+  getCollection,
+  getCollectionWithoutItemAtIndex,
+  getParentModelId
+} from '../utils/ice';
 
 const apiUrl = window.location.origin;
 
@@ -244,8 +242,8 @@ export class ContentController {
         path: null,
         label: `New ${contentType.name}`,
         contentTypeId: contentType.id,
-        // dateCreated: now,
-        // dateModified: now,
+        dateCreated: null,
+        dateModified: null,
         locale: 'en'
       }
     };
@@ -658,36 +656,6 @@ export class ContentController {
 
 }
 
-function getParentModelId(modelId: string, models: LookupTable<ContentInstance>, children: LookupTable<ContentInstance>): string {
-  return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
-    ? findParentModelId(modelId, children, models)
-    : null;
-}
-
-function findParentModelId(modelId: string, childrenMap: LookupTable<ContentInstance>, models: LookupTable<ContentInstance>): string {
-  const parentId = forEach(
-    Object.entries(childrenMap),
-    ([id, children]) => {
-      if (
-        notNullOrUndefined(children) &&
-        (id !== modelId) &&
-        children.includes(modelId)
-      ) {
-        return id;
-      }
-    },
-    null
-  );
-  return notNullOrUndefined(parentId)
-    // If it has a path, it is not embedded and hence the parent
-    // Otherwise, need to keep looking.
-    ? notNullOrUndefined(ModelHelper.prop(models[parentId], 'path'))
-      ? parentId
-      : findParentModelId(parentId, childrenMap, models)
-    // No parent found for this model
-    : null;
-}
-
 function fetchById(id: string, site: string = Cookies.get('crafterSite')): Observable<ContentInstance> {
   const isArticleRequest = [
     'f360780a-372f-d005-d736-bcc9d657e50c',
@@ -973,20 +941,6 @@ function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstan
 
   return lookupTable;
 
-}
-
-function getCollectionWithoutItemAtIndex(collection: string[], index: string | number): string[] {
-  const parsedIndex = parseInt(popPiece(`${index}`), 10);
-  return collection
-    .slice(0, parsedIndex)
-    .concat(collection.slice(parsedIndex + 1));
-}
-
-function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
-  const isStringIndex = typeof index === 'string';
-  return isStringIndex
-    ? ModelHelper.extractCollection(model, fieldId, index)
-    : ModelHelper.value(model, fieldId);
 }
 
 export const contentController = new ContentController();

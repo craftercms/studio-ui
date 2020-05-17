@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentType, ContentTypeField } from '../models/ContentType';
-import { createLookupTable, retrieveProperty } from '../utils/object';
+import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
+import { createLookupTable, retrieveProperty } from './object';
 
 export class ContentTypeHelper {
 

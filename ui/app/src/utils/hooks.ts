@@ -33,9 +33,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ContentType } from '../models/ContentType';
 import { MinimizedDialog } from '../models/MinimizedDialog';
 import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
-import { LookupTable } from '../models/LookupTable';
 import { fetchSystemVersion } from '../state/actions/env';
 import { fetchQuickCreateList } from '../state/actions/content';
+import { fetchContentTypes } from '../state/actions/preview';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -98,7 +98,14 @@ export function useContentTypeList(filterFn: (type: ContentType) => boolean): Ar
 export function useContentTypeList(
   filterFn: (type: ContentType) => boolean = null
 ): Array<ContentType> {
-  const byId = useSelection<LookupTable<ContentType>>((state) => state.contentTypes.byId);
+  const dispatch = useDispatch();
+  const site = useActiveSiteId();
+  const { byId } = useSelection((state) => state.contentTypes);
+  useEffect(() => {
+    if (!byId && site) {
+      dispatch(fetchContentTypes());
+    }
+  }, [dispatch, site, byId]);
   return useMemo(
     () => {
       if (!byId) {

@@ -16,20 +16,14 @@
 
 import $ from 'jquery';
 import { message$, post } from './communicator';
-import { filter, map } from 'rxjs/operators';
 import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './constants';
 
-message$.pipe(
-  filter((e: MessageEvent) => (e.data?.type) != null),
-  map(e => e.data)
-).subscribe(function ({ type, payload }) {
+message$.subscribe(function ({ type, payload }) {
   switch (type) {
     case NAVIGATION_REQUEST: {
       window.location.href = payload.url;
       break;
     }
-    default:
-      console.warn(`[message$] Unhandled host message "${type}".`);
   }
 });
 

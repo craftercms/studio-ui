@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   changeCurrentUrl,
   checkInGuest,
@@ -34,7 +34,6 @@ import {
   fetchAssetsPanelItems,
   fetchAudiencesPanelFormDefinition,
   fetchComponentsByContentType,
-  fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -65,32 +64,23 @@ import {
   updateField,
   uploadDataUrl
 } from '../../services/content';
-import { delay, filter, take, takeUntil } from 'rxjs/operators';
+import { filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
-import { of, ReplaySubject, Subscription } from 'rxjs';
+import { interval, ReplaySubject, Subscription } from 'rxjs';
 import Button from '@material-ui/core/Button';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from './previewContext';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useMount, usePreviewState, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useContentTypeList,
+  useMount,
+  usePreviewState,
+  useSelection
+} from '../../utils/hooks';
 import { nnou, nou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
-
-// WARNING: This assumes there will only ever be 1 PreviewConcierge. This wouldn't be viable
-// with multiple instances or multiple unrelated content type collections to hold per instance.
-// This subject helps keep the async nature of content type fetching and guest
-// check in events. The idea is that it keeps things in sync despite the timing of
-// content types getting fetch and guest checking in.
-const contentTypes$: {
-  (): ReplaySubject<ContentType[]>;
-  destroy(): void;
-} = (() => {
-  let instance: ReplaySubject<ContentType[]>;
-  const fn: any = () => instance ?? (instance = new ReplaySubject<ContentType[]>(1));
-  fn.destroy = () => (instance = null);
-  return fn;
-})();
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -104,40 +94,42 @@ const guestMessages = defineMessages({
 });
 
 export function PreviewConcierge(props: any) {
-
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { guest, selectedTool, currentUrl } = usePreviewState();
-  const contentTypesBranch = useSelection(state => state.contentTypes);
-  const { guestBase, xsrfArgument } = useSelection(state => state.env);
+  const contentTypes = useContentTypeList();
+  const { guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
-  const assets = useSelection(state => state.preview.assets);
-  const contentTypeComponents = useSelection(state => state.preview.components);
-  const audiencesPanel = useSelection(state => state.preview.audiencesPanel);
+  const assets = useSelection((state) => state.preview.assets);
+  const contentTypeComponents = useSelection((state) => state.preview.components);
+  const audiencesPanel = useSelection((state) => state.preview.audiencesPanel);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
+  const models = guest?.models;
+  const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
 
   useMount(() => {
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
     return () => {
       sub.unsubscribe();
-      contentTypes$().complete();
-      contentTypes$().unsubscribe();
-      contentTypes$.destroy();
+      contentTypes$.complete();
+      contentTypes$.unsubscribe();
     };
   });
 
+  // Post content types
   useEffect(() => {
+    contentTypes && contentTypes$.next(contentTypes);
+  });
 
+  useEffect(() => {
     const hostToGuest$ = getHostToGuestBus();
     const guestToHost$ = getGuestToHostBus();
     const hostToHost$ = getHostToHostBus();
-
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
       switch (type) {
         case GUEST_CHECK_IN: {
-
           hostToGuest$.next({ type: HOST_CHECK_IN });
 
           dispatch(checkInGuest(payload));
@@ -145,13 +137,13 @@ export function PreviewConcierge(props: any) {
           if (payload.__CRAFTERCMS_GUEST_LANDING__) {
             nnou(site) && dispatch(changeCurrentUrl('/'));
           } else {
-
             // If the content types have already been loaded, contentTypes$ subject will emit
             // immediately. If not, it will emit when the content type fetch payload does arrive.
-            contentTypes$().pipe(take(1)).subscribe((payload) => {
-              hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
-            });
-
+            contentTypes$
+              .pipe(take(1))
+              .subscribe((payload) => {
+                hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
+              });
           }
 
           break;
@@ -163,11 +155,11 @@ export function PreviewConcierge(props: any) {
           const { modelId, fieldId, currentIndex, targetIndex, parentModelId } = payload;
           sortItem(
             site,
-            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            parentModelId ? modelId : models[modelId].craftercms.path,
             fieldId,
             currentIndex,
             targetIndex,
-            parentModelId ? guest.models[parentModelId].craftercms.path : null
+            parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
               enqueueSnackbar('Sort operation completed.');
@@ -183,12 +175,12 @@ export function PreviewConcierge(props: any) {
           const { modelId, fieldId, targetIndex, instance, parentModelId, shared } = payload;
           insertComponent(
             site,
-            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            parentModelId ? modelId : models[modelId].craftercms.path,
             fieldId,
             targetIndex,
             contentTypes.find((o) => o.id === instance.craftercms.contentTypeId),
             instance,
-            parentModelId ? guest.models[parentModelId].craftercms.path : null,
+            parentModelId ? models[parentModelId].craftercms.path : null,
             shared
           ).subscribe(
             () => {
@@ -198,9 +190,10 @@ export function PreviewConcierge(props: any) {
               ifrm.style.height = '0';
               document.body.appendChild(ifrm);
 
-              ifrm.onload = function () {
-                let htmlString = ifrm.contentWindow.document.documentElement
-                  .querySelector(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`);
+              ifrm.onload = function() {
+                let htmlString = ifrm.contentWindow.document.documentElement.querySelector(
+                  `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
+                );
                 ifrm.remove();
                 hostToGuest$.next({
                   type: 'COMPONENT_HTML_RESPONSE',
@@ -221,11 +214,11 @@ export function PreviewConcierge(props: any) {
           const { modelId, fieldId, targetIndex, instance, parentModelId } = payload;
           insertInstance(
             site,
-            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            parentModelId ? modelId : models[modelId].craftercms.path,
             fieldId,
             targetIndex,
             instance,
-            parentModelId ? guest.models[parentModelId].craftercms.path : null
+            parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
               enqueueSnackbar('Insert component operation completed.');
@@ -253,14 +246,14 @@ export function PreviewConcierge(props: any) {
           } = payload;
           moveItem(
             site,
-            originalParentModelId ? originalModelId : guest.models[originalModelId].craftercms.path,
+            originalParentModelId ? originalModelId : models[originalModelId].craftercms.path,
             originalFieldId,
             originalIndex,
-            targetParentModelId ? targetModelId : guest.models[targetModelId].craftercms.path,
+            targetParentModelId ? targetModelId : models[targetModelId].craftercms.path,
             targetFieldId,
             targetIndex,
-            originalParentModelId ? guest.models[originalParentModelId].craftercms.path : null,
-            targetParentModelId ? guest.models[targetParentModelId].craftercms.path : null
+            originalParentModelId ? models[originalParentModelId].craftercms.path : null,
+            targetParentModelId ? models[targetParentModelId].craftercms.path : null
           ).subscribe(
             () => {
               enqueueSnackbar('Move operation completed.');
@@ -276,10 +269,10 @@ export function PreviewConcierge(props: any) {
           const { modelId, fieldId, index, parentModelId } = payload;
           deleteItem(
             site,
-            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            parentModelId ? modelId : models[modelId].craftercms.path,
             fieldId,
             index,
-            parentModelId ? guest.models[parentModelId].craftercms.path : null
+            parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
               enqueueSnackbar('Delete operation completed.');
@@ -293,17 +286,21 @@ export function PreviewConcierge(props: any) {
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
           const { modelId, fieldId, index, parentModelId, value } = payload;
-          updateField(site,
-            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+          updateField(
+            site,
+            parentModelId ? modelId : models[modelId].craftercms.path,
             fieldId,
             index,
-            parentModelId ? guest.models[parentModelId].craftercms.path : null,
+            parentModelId ? models[parentModelId].craftercms.path : null,
             value
-          ).subscribe(() => {
-            enqueueSnackbar('Update operation completed.');
-          }, (e) => {
-            enqueueSnackbar('Update operation failed.');
-          });
+          ).subscribe(
+            () => {
+              enqueueSnackbar('Update operation completed.');
+            },
+            () => {
+              enqueueSnackbar('Update operation failed.');
+            }
+          );
           break;
         }
         case ICE_ZONE_SELECTED: {
@@ -333,7 +330,9 @@ export function PreviewConcierge(props: any) {
             xsrfArgument
           ).subscribe(
             ({ payload: { progress } }) => {
-              const percentage = Math.floor(parseInt((progress.bytesUploaded / progress.bytesTotal * 100).toFixed(2)));
+              const percentage = Math.floor(
+                parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
+              );
               hostToGuest$.next({
                 type: DESKTOP_ASSET_UPLOAD_PROGRESS,
                 payload: {
@@ -358,7 +357,10 @@ export function PreviewConcierge(props: any) {
           );
           const sub = hostToHost$.subscribe((action) => {
             const { type, payload: uploadFile } = action;
-            if (type === DESKTOP_ASSET_UPLOAD_STARTED && uploadFile.elementZoneId === payload.elementZoneId) {
+            if (
+              type === DESKTOP_ASSET_UPLOAD_STARTED &&
+              uploadFile.elementZoneId === payload.elementZoneId
+            ) {
               sub.unsubscribe();
               uppySubscription.unsubscribe();
             }
@@ -383,25 +385,35 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case 'VALIDATION_MESSAGE': {
-          enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), { variant: payload.level === 'required' ? 'error' : 'warning' });
+          enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
+            variant: payload.level === 'required' ? 'error' : 'warning'
+          });
           break;
         }
       }
     });
+    return () => {
+      guestToHostSubscription.unsubscribe();
+    };
+  }, [
+    contentTypes,
+    currentUrl,
+    dispatch,
+    enqueueSnackbar,
+    formatMessage,
+    models,
+    guestBase,
+    site,
+    xsrfArgument
+  ]);
 
-    const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
-
-    // Retrieve all content types in the system
-    if (nnou(site) && nou(contentTypes) && !contentTypesBranch.isFetching && nou(contentTypesBranch.error)) {
-      dispatch(fetchContentTypes());
-    }
-
-    nnou(contentTypes) && contentTypes$().next(contentTypes);
-
-    let fetchSubscription;
+  useEffect(() => {
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems({}));
+        assets.isFetching === null &&
+          site &&
+          assets.error === null &&
+          dispatch(fetchAssetsPanelItems({}));
         break;
       case 'craftercms.ice.audiences':
         if (
@@ -414,17 +426,27 @@ export function PreviewConcierge(props: any) {
         }
         break;
       case 'craftercms.ice.browseComponents':
-        (contentTypeComponents.contentTypeFilter && contentTypeComponents.isFetching === null && site && contentTypeComponents.error === null)
-        && dispatch(fetchComponentsByContentType());
+        contentTypeComponents.contentTypeFilter &&
+          contentTypeComponents.isFetching === null &&
+          site &&
+          contentTypeComponents.error === null &&
+          dispatch(fetchComponentsByContentType());
         break;
     }
-
-    return () => {
-      fetchSubscription && fetchSubscription.unsubscribe();
-      guestToHostSubscription.unsubscribe();
-    };
-
-  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, xsrfArgument, contentTypeComponents, audiencesPanel, enqueueSnackbar]);
+  }, [
+    assets.error,
+    assets.isFetching,
+    audiencesPanel.contentType,
+    audiencesPanel.error,
+    audiencesPanel.isFetching,
+    audiencesPanel.model,
+    contentTypeComponents.contentTypeFilter,
+    contentTypeComponents.error,
+    contentTypeComponents.isFetching,
+    dispatch,
+    selectedTool,
+    site
+  ]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {
@@ -448,29 +470,33 @@ export function PreviewConcierge(props: any) {
       />
     </>
   );
-
 }
 
 function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
   const guestToHost$ = getGuestToHostBus();
-  return of('').pipe(
-    delay(1500),
-    take(1),
-    takeUntil(guestToHost$.pipe(
-      filter(({ type }) => type === GUEST_CHECK_IN)
-    ))
-  ).subscribe(() => {
-    enqueueSnackbar(
-      <FormattedMessage
-        id="guestDetectionMessage"
-        defaultMessage="Communication with guest site was not detected."
-      />
-      ,
-      {
-        action: (key) =>
-          <Button key="learnMore" color="secondary" size="small" onClick={() => closeSnackbar(key)}>
-            Learn More
-          </Button>
-      });
-  });
+  return interval(1500)
+    .pipe(
+      take(1),
+      takeUntil(guestToHost$.pipe(filter(({ type }) => type === GUEST_CHECK_IN)))
+    )
+    .subscribe(() => {
+      enqueueSnackbar(
+        <FormattedMessage
+          id="guestDetectionMessage"
+          defaultMessage="Communication with guest site was not detected."
+        />,
+        {
+          action: (key) => (
+            <Button
+              key="learnMore"
+              color="secondary"
+              size="small"
+              onClick={() => closeSnackbar(key)}
+            >
+              Learn More
+            </Button>
+          )
+        }
+      );
+    });
 }

@@ -37,7 +37,7 @@ interface DropMarkerProps {
   onDropPosition: Function;
 }
 
-export function DropMarker(props: DropMarkerProps) {
+export default function DropMarker(props: DropMarkerProps) {
 
   const //
     {

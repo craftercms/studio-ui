@@ -1,27 +1,27 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "strictNullChecks": false,
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./src",
+    "rootDir": "./src",
+    "outDir": "build_tsc",
     "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "preserve",
-    "noImplicitAny": false
+    "target": "esnext",
+    "importHelpers": true,
+    "composite": true,
+    "paths": {
+      "@craftercms/studio-ui": ["../../app/src"],
+      "@craftercms/studio-ui/*": ["../../app/src/*"]
+    }
   },
-  "include": [
-    "src"
+  "references": [
+    {
+      "path": "../app/tsconfig.build.json"
+    }
+  ],
+  "include": ["./src"],
+  "exclude": [
+    "./src/tests",
+    "./src/hooks.ts",
+    "node_modules"
   ]
 }

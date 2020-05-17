@@ -25,7 +25,7 @@ interface SpinnerProps {
   circleClassName: string;
 }
 
-export function Spinner(props: SpinnerProps) {
+export default function Spinner(props: SpinnerProps) {
   return (
     <svg className={props.className}
          width={props.width}

@@ -14,6 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { fromEvent, interval, Subscription } from 'rxjs';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
+import { forEach } from './array';
+import {
+  Coordinates,
+  DropMarkerPosition,
+  DropMarkerPositionArgs,
+  InRectStats
+} from '../models/Positioning';
+import $ from 'jquery';
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
+import { RenderTree } from '../models/ContentTree';
+import { DropZone, HoverData, Record, ValidationResult } from '../models/InContextEditing';
+import { ElementRegistry } from '../classes/ElementRegistry';
+import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
+import { CSSProperties } from 'react';
+import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeReceptacle';
+
 // Regular click gets triggered even after loooong mouse downs or
 // when mousing-down and dragging cursor - without actually being on
 // a drag and drop of an element - and then mousing-up some other place.
@@ -24,24 +42,6 @@
 // delegate on the document (i.e. the event as bubbled all the way up).
 // Would need to add additional logic to set the delegation in a way that
 // events can still be stopped (see jQuery).
-import { fromEvent, interval, Subscription } from 'rxjs';
-import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
-import { forEach } from './array';
-import {
-  Coordinates,
-  DropMarkerPosition,
-  DropMarkerPositionArgs,
-  InRectStats
-} from '../models/Positioning';
-import { Markers } from '../classes/Markers';
-import $ from 'jquery';
-import { LookupTable } from '../models/LookupTable';
-import { ContentTypeReceptacle } from '../models/ContentType';
-import { RenderTree } from '../models/ContentTree';
-import { DropZone, HoverData, Record, ValidationResult } from '../models/InContextEditing';
-import { ElementRegistry } from '../classes/ElementRegistry';
-import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
-
 export function addClickListener(
   element: HTMLElement | Document,
   type: string,
@@ -285,7 +285,7 @@ export function getInRectStats(
   coordinates: Coordinates,
   tolerancePercents: Coordinates = TOLERANCE_PERCENTS
 ): InRectStats {
-  const percents = Markers.getRelativePointerPositionPercentages(coordinates, rect),
+  const percents = getRelativePointerPositionPercentages(coordinates, rect),
     inRectTop = coordinates.y >= rect.top,
     inRectRight = coordinates.x <= rect.right,
     inRectBottom = coordinates.y <= rect.bottom,
@@ -314,6 +314,29 @@ export function getInRectStats(
     inInnerRect,
     percents
   };
+}
+
+export function getRelativePointerPositionPercentages(mousePosition: Coordinates, rect: DOMRect): Coordinates {
+
+  const
+    x = (
+      (
+        /* mouse X distance from rect left edge */
+        (mousePosition.x - rect.left) /
+        /* width */
+        rect.width
+      ) * 100
+    ),
+    y = (
+      (
+        /* mouse X distance from rect top edge */
+        (mousePosition.y - rect.top) /
+        /* height */
+        (rect.height)
+      ) * 100
+    );
+
+  return { x, y };
 }
 
 export function isElementInView(element: Element | JQuery, fullyInView?: boolean): boolean {
@@ -434,4 +457,32 @@ export function getDragContextFromReceptacles(
   });
 
   return response;
+}
+
+export function getZoneMarkerLabelStyle(rect: DOMRect): CSSProperties {
+  const $body = $('body');
+  return ((rect.top + $body.scrollTop()) <= 0) ? {
+    top: 0,
+    left: '50%',
+    marginLeft: -60,
+    position: 'fixed'
+  } : {};
+}
+
+export function getZoneMarkerStyle(rect: DOMRect, padding: number = 0): CSSProperties {
+  const $window = $(window);
+  return {
+    height: rect.height + padding,
+    width: rect.width + padding,
+    top: (
+      rect.top +
+      $window.scrollTop() -
+      (padding / 2)
+    ),
+    left: (
+      rect.left +
+      $window.scrollLeft() -
+      (padding / 2)
+    )
+  };
 }

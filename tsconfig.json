@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
+    "rootDir": ".",
     "target": "es5",
     "lib": [
       "dom",
@@ -18,17 +19,22 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react",
     "noImplicitAny": false,
     "noErrorTruncation": true,
     "noEmit": false,
     "declaration": true,
+    "declarationMap": false,
     "paths": {
-      "@craftercms/studio/*": ["./app/src/*"],
-      "@craftercms/models/*": ["./models/src/*"],
-      "@craftercms/utils/*": ["./utils/src/*"],
-      "@craftercms/services/*": ["./services/src/*"]
+      "@craftercms/studio-ui": ["./ui/app/src"],
+      "@craftercms/studio-ui/*": ["./ui/app/src/*"],
+      "@craftercms/studio-guest": ["./ui/guest/src"],
+      "@craftercms/studio-guest/*": ["./ui/guest/src/*"]
     }
   },
-  "exclude": ["**/build"]
+  "exclude": [
+    "**/dist",
+    "**/build",
+    "**/build_tsc"
+  ]
 }

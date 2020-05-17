@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentInstance } from '../models/ContentInstance';
-import { isNullOrUndefined, retrieveProperty, setProperty } from '../utils/object';
-import { removeLastPiece } from '../utils/string';
+import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
+import { isNullOrUndefined, retrieveProperty, setProperty } from './object';
+import { removeLastPiece } from './string';
 
 const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
 
@@ -108,6 +108,7 @@ function extractCollectionPiece(model: ContentInstance, fieldId: string, index: 
     aux = aux[field][index];
   });
   if (indexes.length === fields.length) {
+    // @ts-ignore TODO: Fix type
     return aux;
   } else if (indexes.length < fields.length) {
     // There's one more field to use as there were less indexes

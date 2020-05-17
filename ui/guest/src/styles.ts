@@ -77,7 +77,7 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
       },
       'craftercms-asset-uploader-mask-container': {
         position: 'absolute',
-        zIndex: '1001',
+        zIndex: 1001,
         pointerEvents: 'none',
         '& craftercms-asset-uploader-mask': {
           background: 'white',
@@ -108,7 +108,7 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
         outlineOffset: '-2px',
         textAlign: 'center',
         position: 'absolute',
-        zIndex: '1000',
+        zIndex: 1000,
         pointerEvents: 'none',
         '&.craftercms-required-validation': {
           outlineColor: colors.red,
@@ -140,12 +140,12 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        fontWeight: '700',
+        fontWeight: 700,
         pointerEvents: 'none',
-        zIndex: '1000'
+        zIndex: 1000
       },
       'craftercms-drop-marker': {
-        zIndex: '1010',
+        zIndex: 1010,
         position: 'fixed',
         pointerEvents: 'none',
         '&::before, &::after': {

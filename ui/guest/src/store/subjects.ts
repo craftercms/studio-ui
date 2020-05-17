@@ -14,10 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromEvent, Observable, Subject } from 'rxjs';
-import { filter, share, takeUntil } from 'rxjs/operators';
+import { fromEvent, merge, Observable, Subject } from 'rxjs';
+import {
+  debounceTime,
+  filter,
+  map,
+  share,
+  takeUntil,
+  throttleTime,
+  withLatestFrom
+} from 'rxjs/operators';
 import { Record } from '../models/InContextEditing';
 import { SyntheticEvent } from 'react';
+import { GuestStateObservable } from './models/GuestStore';
 
 type DragOver$ = {
   event: DragEvent | SyntheticEvent | JQueryMouseEventObject | Event;
@@ -39,10 +48,33 @@ const getScrolling = () => scrolling$;
 
 export { getDragOver as dragover$, getScrolling as scrolling$ };
 
-export function initializeDragSubjects() {
+export function initializeDragSubjects(state$: GuestStateObservable) {
+
   killSignal$ = new Subject();
   dragover$ = new Subject<DragOver$>();
   scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
+
+  return merge(
+    dragover$.pipe(
+      throttleTime(100),
+      map((payload) => ({ type: 'computed_dragover', payload }))
+    ),
+    scrolling$.pipe(
+      throttleTime(200),
+      withLatestFrom(state$),
+      filter(([, state]) => !state.dragContext?.scrolling),
+      map(() => ({ type: 'scrolling' }))
+    ),
+    // Scrolling ended
+    scrolling$.pipe(
+      // Emit values from scroll$ only after 200ms have
+      // passed without another source emission should give
+      // us the end of scrolling.
+      debounceTime(200),
+      map(() => ({ type: 'scrolling_stopped' }))
+    )
+  );
+
 }
 
 export function destroyDragSubjects() {

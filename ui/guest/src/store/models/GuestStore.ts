@@ -17,10 +17,11 @@
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { GuestStandardAction } from './GuestStandardAction';
 import { DropZone, Record } from '../../models/InContextEditing';
-import { LookupTable } from '../../models/LookupTable';
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { StateObservable } from 'redux-observable';
 import { EditingStatus } from '../../models/ICEStatus';
-import { ContentType } from '../../models/ContentType';
+import { ContentType } from '@craftercms/studio-ui/models/ContentType';
+import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 
 interface T {
   [K: string]: any
@@ -51,8 +52,8 @@ export interface GuestState {
   editable: T;
   draggable: T;
   highlighted: T;
-  uploading: LookupTable<any>;
-  onEvent: Function;
+  uploading: LookupTable;
+  content: LookupTable<ContentInstance>;
 }
 
 export type GuestStateObservable = StateObservable<GuestState>;

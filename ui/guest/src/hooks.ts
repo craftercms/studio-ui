@@ -17,9 +17,8 @@
 import { foo } from './utils/util';
 import { useContext, useEffect, useRef, useState } from 'react';
 import contentController from './classes/ContentController';
-import { GuestContext } from './components/GuestContext';
 import { skip } from 'rxjs/operators';
-import { ContentInstance } from './models/ContentInstance';
+import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { isNullOrUndefined, notNullOrUndefined } from './utils/object';
 
 const fooEvents = {

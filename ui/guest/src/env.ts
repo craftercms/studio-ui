@@ -14,18 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface ContentInstanceSystemProps {
-  id: string;
-  path: string;
-  label: string; // Internal name
-  locale: string;
-  dateCreated?: string;
-  dateModified?: string;
-  contentTypeId: string;
-}
+import React from 'react';
 
-export interface ContentInstance {
-  craftercms: ContentInstanceSystemProps;
-
-  [prop: string]: any;
+declare global {
+  interface Window {
+    tinymce: any;
+  }
+  type CrafterCMSCustomElementProps = React.DetailedHTMLProps<
+    Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> & { class?: string },
+    HTMLDivElement
+  >;
+  namespace JSX {
+    interface IntrinsicElements {
+      'craftercms-zone-marker': CrafterCMSCustomElementProps;
+      'craftercms-zone-marker-label': CrafterCMSCustomElementProps;
+      'craftercms-asset-uploader-mask-container': CrafterCMSCustomElementProps;
+      'craftercms-asset-uploader-mask': CrafterCMSCustomElementProps;
+    }
+  }
 }

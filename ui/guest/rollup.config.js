@@ -91,8 +91,8 @@ const plugins = [
   }),
   copy({
     targets: [
-      { src: 'dist/*.umd.js', dest: '../app/public' },
-      { src: 'dist/*.umd.js', dest: '../../static-assets/scripts' }
+      { src: 'build/*.umd.js', dest: '../app/public' },
+      { src: 'build/*.umd.js', dest: '../../static-assets/scripts' }
     ],
     hook: 'writeBundle'
   })
@@ -116,7 +116,7 @@ export default [
     plugins,
     output: {
       sourcemap: 'inline',
-      name: 'craftercms-guest',
+      name: 'craftercms.guest',
       file: pkg.browser,
       format: 'umd',
       amd: { id: pkg.craftercms.id },
@@ -131,10 +131,10 @@ export default [
   //   plugins,
   //   output: {
   //     sourcemap: 'inline',
-  //     name: 'preview-landing',
-  //     file: 'dist/preview-landing.umd.js',
+  //     name: 'craftercms.previewLanding',
+  //     file: 'build/preview-landing.umd.js',
   //     format: 'umd',
-  //     amd: { id: 'org.craftercms.previewLanding' },
+  //     amd: { id: 'craftercms.previewLanding' },
   //     globals
   //   },
   //   ...baseConfig

@@ -17,11 +17,11 @@
 import iceRegistry from './ICERegistry';
 import contentController from './ContentController';
 import { take } from 'rxjs/operators';
-import { ContentTypeHelper } from './ContentTypeHelper';
-import { ModelHelper } from './ModelHelper';
+import { ContentTypeHelper } from '../utils/ContentTypeHelper';
+import { ModelHelper } from '../utils/ModelHelper';
 import { DropZone, HoverData, Record } from '../models/InContextEditing';
 import { RegistryEntry } from '../models/Registry';
-import { LookupTable } from '../models/LookupTable';
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { getChildArrangement, sibling } from '../utils/dom';
@@ -60,6 +60,7 @@ export class ElementRegistry {
               // TODO: Only works for nested node-selector (?)...
               // A nested repeat group would not be a component and `aux` would rather be
               // an object to read the last piece of the `fieldId`
+              // @ts-ignore TODO: Fix type
               component = models[aux];
             } else {
               // Ok for mono-level node selectors
@@ -203,7 +204,9 @@ export class ElementRegistry {
       physicalRecordId,
       rect,
       arrangement: getChildArrangement(children, childrenRects, rect),
-      childrenRects
+      childrenRects,
+      // TODO: Aaron, add validations
+      validations: null
     };
 
   }

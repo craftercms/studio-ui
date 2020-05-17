@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { fromEvent, interval, zip } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
@@ -23,16 +23,15 @@ import { ElementRegistry } from '../classes/ElementRegistry';
 import $ from 'jquery';
 import { GuestContextProvider } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
-import { ZoneMarker } from './ZoneMarker';
-import { DropMarker } from './DropMarker';
+import ZoneMarker from './ZoneMarker';
+import DropMarker from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
-import { Asset } from '../models/ContentType';
-import { ContentInstance } from '../models/ContentInstance';
+import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { HoverData } from '../models/InContextEditing';
-import { LookupTable } from '../models/LookupTable';
-import { AssetUploaderMask } from './AssetUploaderMask';
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
+import AssetUploaderMask from './AssetUploaderMask';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -58,11 +57,13 @@ import {
 } from '../constants';
 import { createGuestStore } from '../store/store';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { clearAndListen$, initializeDragSubjects } from '../store/subjects';
+import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { EditingStatus } from '../models/ICEStatus';
 import { isNullOrUndefined } from '../utils/object';
 import { getHighlighted, scrollToNode, scrollToReceptacle } from '../utils/dom';
+import { dragOk } from '../store/util';
+import { Asset } from '../models/Asset';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -80,13 +81,7 @@ interface GuestProps {
   editModeOnIndicatorClass?: string;
 }
 
-declare global {
-  interface Window {
-    tinymce: any;
-  }
-}
-
-export function Guest(props: GuestProps) {
+function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
   const {
@@ -99,7 +94,30 @@ export function Guest(props: GuestProps) {
     editModeOnIndicatorClass = 'craftercms-ice-on'
   } = props;
 
+  const dispatch = useDispatch();
+  const state = useSelector<GuestState, GuestState>((state) => state);
+  const status = state.status;
+  const context = useMemo(
+    () => ({
+      onEvent(event: Event, dispatcherElementRecordId: number) {
+        if (persistenceRef.current.contentReady && state.inEditMode) {
+          const { type } = event;
+
+          const record = ElementRegistry.get(dispatcherElementRecordId);
+          if (isNullOrUndefined(record)) {
+            throw new Error('No record found for dispatcher element');
+          }
+
+          dispatch({ type: type, payload: { event, record } });
+        }
+      }
+    }),
+    [dispatch, state.inEditMode]
+  );
+
+  // region Stuff to remove
   const fnRef = useRef<any>();
+  const highlightedInitialData: LookupTable<HoverData> = {};
   const persistenceRef = useRef({
     contentReady: false,
     mouseOverTimeout: null,
@@ -107,21 +125,6 @@ export function Guest(props: GuestProps) {
     scrolling$: null,
     onScroll: null
   });
-  const dispatch = useDispatch();
-  const state = useSelector<GuestState, GuestState>((state) => state);
-
-  const dragOk = useCallback(() => {
-    return [
-      EditingStatus.SORTING_COMPONENT,
-      EditingStatus.PLACING_NEW_COMPONENT,
-      EditingStatus.PLACING_DETACHED_ASSET,
-      EditingStatus.PLACING_DETACHED_COMPONENT,
-      EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
-    ].includes(state.status);
-  }, [state.status]);
-
-  const highlightedInitialData: LookupTable<HoverData> = {};
-
   const [, forceUpdate] = useState({});
   const stateRef = useRef({
     dragContext: null,
@@ -135,19 +138,17 @@ export function Guest(props: GuestProps) {
       uploading: highlightedInitialData
     }
   });
-
-  const setState = (nextState) => {
+  const toBeRemoved_setState = (nextState) => {
     stateRef.current = nextState;
     forceUpdate({});
   };
-
   const fn = {
     onEditModeChanged(inEditMode): void {
       const status = inEditMode ? EditingStatus.LISTENING : EditingStatus.OFF;
 
       $('html')[inEditMode ? 'addClass' : 'removeClass'](editModeOnIndicatorClass);
 
-      setState({
+      toBeRemoved_setState({
         ...stateRef.current,
         common: {
           ...stateRef.current.common,
@@ -189,9 +190,9 @@ export function Guest(props: GuestProps) {
 
       const highlighted = getHighlighted(dropZones);
 
-      initializeDragSubjects();
+      // initializeDragSubjects();
 
-      setState({
+      toBeRemoved_setState({
         dragContext: {
           players,
           siblings,
@@ -229,7 +230,7 @@ export function Guest(props: GuestProps) {
     },
 
     onScroll(): void {
-      setState({
+      toBeRemoved_setState({
         dragContext: {
           ...stateRef.current.dragContext,
           over: null,
@@ -245,7 +246,7 @@ export function Guest(props: GuestProps) {
 
     onScrollStopped(): void {
       const dragContext = stateRef.current.dragContext;
-      setState({
+      toBeRemoved_setState({
         dragContext: {
           ...stateRef.current.dragContext,
           scrolling: false,
@@ -286,9 +287,9 @@ export function Guest(props: GuestProps) {
 
       const highlighted = getHighlighted(dropZones);
 
-      initializeDragSubjects();
+      // initializeDragSubjects();
 
-      setState({
+      toBeRemoved_setState({
         dragContext: {
           players,
           siblings,
@@ -343,9 +344,9 @@ export function Guest(props: GuestProps) {
 
       const highlighted = getHighlighted(dropZones);
 
-      initializeDragSubjects();
+      // initializeDragSubjects();
 
-      setState({
+      toBeRemoved_setState({
         dragContext: {
           players,
           siblings,
@@ -363,30 +364,8 @@ export function Guest(props: GuestProps) {
       });
     }
   };
-
   fnRef.current = fn;
-
-  function getElementRegistry(id: number): Element {
-    return ElementRegistry.fromICEId(id).element;
-  }
-
-  const context = useMemo(() => ({
-    onEvent(event: Event, dispatcherElementRecordId: number): boolean {
-      if (persistenceRef.current.contentReady && stateRef.current.common.inEditMode) {
-        const { type } = event;
-
-        const record = ElementRegistry.get(dispatcherElementRecordId);
-        if (isNullOrUndefined(record)) {
-          throw new Error('No record found for dispatcher element');
-        }
-
-        dispatch({ type: type, payload: { event, record } });
-
-      } else {
-        return true;
-      }
-    }
-  }), [dispatch]);
+  // endregion
 
   // Sets document domain
   useEffect(() => {
@@ -412,8 +391,7 @@ export function Guest(props: GuestProps) {
   // Subscribes to accommodation messages and routes them.
   useEffect(() => {
     const fn = fnRef.current;
-
-    const sub = message$.subscribe(function ({ type, payload }) {
+    const sub = message$.subscribe(function({ type, payload }) {
       switch (type) {
         case EDIT_MODE_CHANGED:
           return fn.onEditModeChanged(payload.inEditMode);
@@ -425,8 +403,7 @@ export function Guest(props: GuestProps) {
           dispatch({ type: 'host_component_drag_started', payload: { contentType: payload } });
           break;
         case COMPONENT_DRAG_ENDED:
-          console.log('COMPONENT_DRAG_ENDED');
-          dragOk() && dispatch({ type: 'computed_dragend' });
+          dragOk(status) && dispatch({ type: 'computed_dragend' });
           break;
         case COMPONENT_INSTANCE_DRAG_STARTED:
           return fn.onHostInstanceDragStarted(payload);
@@ -460,7 +437,7 @@ export function Guest(props: GuestProps) {
               contentTypeId: payload
             };
           });
-          setState({
+          toBeRemoved_setState({
             dragContext: {
               ...stateRef.current.dragContext,
               inZone: false
@@ -471,7 +448,6 @@ export function Guest(props: GuestProps) {
               highlighted
             }
           });
-
           post({
             type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
             payload: { contentTypeId: payload, receptacles }
@@ -479,10 +455,11 @@ export function Guest(props: GuestProps) {
           break;
         }
         case SCROLL_TO_RECEPTACLE:
-          scrollToReceptacle([payload], scrollElement, getElementRegistry);
+          scrollToReceptacle([payload], scrollElement, (id: number) => ElementRegistry.fromICEId(id).element);
           break;
         case CLEAR_HIGHLIGHTED_RECEPTACLES:
-          setState({
+          // TODO: Use new mechanics, remove the toBeRemoved_setState
+          toBeRemoved_setState({
             ...stateRef.current,
             common: {
               ...stateRef.current.common,
@@ -499,46 +476,35 @@ export function Guest(props: GuestProps) {
         case DESKTOP_ASSET_UPLOAD_COMPLETE:
           // dispatch(type.toLowerCase())
           break;
-        // default:
-        //   console.warn(`[message$] Unhandled host message "${type}".`);
       }
     });
-
     return () => {
       sub.unsubscribe();
     };
-  }, [dispatch, dragOk, scrollElement]);
+  }, [dispatch, scrollElement, status]);
 
-  // Registers zones
+  // Check in & host detection
   useEffect(() => {
-    const fn = fnRef.current;
-    const iceId = iceRegistry.register({ modelId });
     const location = window.location.href;
     const origin = window.location.origin;
     const url = location.replace(origin, '');
     const site = Cookies.get('crafterSite');
-
-    post(GUEST_CHECK_IN, { url, location, origin, modelId, path, site });
-
-    let timeout = setTimeout(() => {
-      hostDetectionSubscription.unsubscribe();
-      console.log('No Host was detected. In-Context Editing is off.');
-    }, 700);
-
-    const hostDetectionSubscription = fromTopic(HOST_CHECK_IN)
-      .pipe(take(1))
+    interval(1000)
+      .pipe(takeUntil(fromTopic(HOST_CHECK_IN).pipe(take(1))), take(1))
       .subscribe(() => {
-        clearTimeout(timeout);
+        console.log('No Host was detected. In-Context Editing is off.');
       });
+    post(GUEST_CHECK_IN, { url, location, origin, modelId, path, site });
+  }, [modelId, path]);
 
+  // Registers parent zone
+  useEffect(() => {
+    const iceId = iceRegistry.register({ modelId });
     zip(contentController.models$(modelId), contentController.contentTypes$())
       .pipe(take(1))
       .subscribe(() => {
         persistenceRef.current.contentReady = true;
       });
-
-    fn.onEditModeChanged(stateRef.current.common.inEditMode);
-
     return () => {
       iceRegistry.deregister(iceId);
     };
@@ -559,7 +525,7 @@ export function Guest(props: GuestProps) {
   // Listen for drag events for desktop asset drag & drop
   useEffect(() => {
     const fn = fnRef.current;
-    if (EditingStatus.UPLOAD_ASSET_FROM_DESKTOP === stateRef.current.common.status) {
+    if (EditingStatus.UPLOAD_ASSET_FROM_DESKTOP === status) {
       const dropSubscription = fromEvent(document, 'drop').subscribe((e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -582,12 +548,12 @@ export function Guest(props: GuestProps) {
         dragleaveSubscription.unsubscribe();
       };
     }
-  }, [stateRef.current.common.status]);
+  }, [status]);
 
   return (
     <GuestContextProvider value={context}>
       {children}
-      {state.status !== EditingStatus.OFF && (
+      {status !== EditingStatus.OFF && (
         <CrafterCMSPortal>
           {Object.values(state.uploading).map((highlight: HoverData) => (
             <AssetUploaderMask key={highlight.id} {...highlight} />
@@ -597,8 +563,8 @@ export function Guest(props: GuestProps) {
               key={highlight.id}
               {...highlight}
               classes={{
-                marker: Object.values(highlight.validations).length ?
-                  Object.values(highlight.validations).some(({ level }) => level === 'required')
+                marker: Object.values(highlight.validations).length
+                  ? Object.values(highlight.validations).some(({ level }) => level === 'required')
                     ? 'craftercms-required-validation'
                     : 'craftercms-suggestion-validation'
                   : null
@@ -609,24 +575,24 @@ export function Guest(props: GuestProps) {
             EditingStatus.SORTING_COMPONENT,
             EditingStatus.PLACING_NEW_COMPONENT,
             EditingStatus.PLACING_DETACHED_COMPONENT
-          ].includes(state.status) &&
-          state.dragContext.inZone && (
-            <DropMarker
-              onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
-              dropZone={state.dragContext.dropZone}
-              over={state.dragContext.over}
-              prev={state.dragContext.prev}
-              next={state.dragContext.next}
-              coordinates={state.dragContext.coordinates}
-            />
-          )}
+          ].includes(status) &&
+            state.dragContext.inZone && (
+              <DropMarker
+                onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
+                dropZone={state.dragContext.dropZone}
+                over={state.dragContext.over}
+                prev={state.dragContext.prev}
+                next={state.dragContext.next}
+                coordinates={state.dragContext.coordinates}
+              />
+            )}
         </CrafterCMSPortal>
       )}
     </GuestContextProvider>
   );
 }
 
-export default function (props: GuestProps) {
+export default function(props: GuestProps) {
   const { isAuthoring = true, children } = props;
   const store = useMemo(() => createGuestStore(), []);
   return isAuthoring ? (

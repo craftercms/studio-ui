@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LookupTable } from '../models/LookupTable';
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 
 export function notNullOrUndefined(value: any): boolean {
   return value != null;

@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
-import { Markers } from '../classes/Markers';
+import React, { CSSProperties, useEffect, useState } from 'react';
+import { getZoneMarkerStyle } from '../utils/dom';
 
 interface AssetUploaderMaskProps {
   rect?: DOMRect;
@@ -25,17 +25,15 @@ interface AssetUploaderMaskProps {
   progress?: number;
 }
 
-export function AssetUploaderMask(props: AssetUploaderMaskProps) {
+export default function AssetUploaderMask(props: AssetUploaderMaskProps) {
 
   const
     { rect, progress } = props,
-    [zoneStyle, setZoneStyle] = useState(),
-    [labelStyle, setLabelStyle] = useState();
+    [zoneStyle, setZoneStyle] = useState<CSSProperties>();
 
   useEffect(
     () => {
-      setZoneStyle(Markers.getZoneMarkerStyle(rect));
-      setLabelStyle(Markers.getZoneMarkerLabelStyle(rect));
+      setZoneStyle(getZoneMarkerStyle(rect));
     },
     [rect]
   );

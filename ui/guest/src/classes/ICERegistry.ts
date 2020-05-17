@@ -16,16 +16,16 @@
 
 import contentController from './ContentController';
 import { DEFAULT_RECORD_DATA } from '../utils/util';
-import { ContentTypeHelper } from './ContentTypeHelper';
-import { ModelHelper } from './ModelHelper';
-import { ContentInstance } from '../models/ContentInstance';
-import { ContentType, ContentTypeField } from '../models/ContentType';
-import { LookupTable } from '../models/LookupTable';
+import { ContentTypeHelper } from '../utils/ContentTypeHelper';
+import { ModelHelper } from '../utils/ModelHelper';
+import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
+import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { Record, ReferentialEntries, ValidationResult } from '../models/InContextEditing';
 import { isNullOrUndefined, notNullOrUndefined, pluckProps } from '../utils/object';
 import { forEach } from '../utils/array';
 import { findComponentContainerFields } from '../utils/ice';
-import { ValidationKeys } from '@craftercms/studio-ui/src/models/ContentType';
+import { ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
   minCount(id, min, level, length) {
@@ -223,6 +223,7 @@ export class ICERegistry {
       // Get content type of item
       const models = contentController.getCachedModels();
       const id = ModelHelper.extractCollectionItem(model, fieldId, index);
+      // @ts-ignore TODO: Fix type
       const nestedModel = models[id];
       const contentType = ModelHelper.getContentTypeId(nestedModel);
       return this.getContentTypeReceptacles(contentType).map((rec) => rec);

@@ -358,9 +358,9 @@ const initialState: GuestState = {
   highlighted: {},
   ICE_GUEST_INIT: false,
   inEditMode: true,
-  onEvent: null,
   status: EditingStatus.LISTENING,
-  uploading: {}
+  uploading: {},
+  content: {}
 };
 
 const reducerFunctions: {

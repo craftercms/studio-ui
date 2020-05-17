@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
-import { Markers } from '../classes/Markers';
+import React, { CSSProperties, useEffect, useState } from 'react';
+import { getZoneMarkerLabelStyle, getZoneMarkerStyle } from '../utils/dom';
 
 interface ZoneMarkerProps {
   rect: DOMRect;
@@ -26,21 +26,14 @@ interface ZoneMarkerProps {
   };
 }
 
-export function ZoneMarker(props: ZoneMarkerProps) {
-
-  const //
-    { rect, label, classes } = props,
-    [zoneStyle, setZoneStyle] = useState(),
-    [labelStyle, setLabelStyle] = useState();
-
-  useEffect(
-    () => {
-      setZoneStyle(Markers.getZoneMarkerStyle(rect));
-      setLabelStyle(Markers.getZoneMarkerLabelStyle(rect));
-    },
-    [rect]
-  );
-
+export default function ZoneMarker(props: ZoneMarkerProps) {
+  const { rect, label, classes } = props
+  const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
+  const [labelStyle, setLabelStyle] = useState<CSSProperties>();
+  useEffect(() => {
+    setZoneStyle(getZoneMarkerStyle(rect));
+    setLabelStyle(getZoneMarkerLabelStyle(rect));
+  }, [rect]);
   return (
     <craftercms-zone-marker style={zoneStyle} class={classes?.marker}>
       <craftercms-zone-marker-label style={labelStyle} class={classes?.label}>
@@ -48,5 +41,4 @@ export function ZoneMarker(props: ZoneMarkerProps) {
       </craftercms-zone-marker-label>
     </craftercms-zone-marker>
   );
-
 }

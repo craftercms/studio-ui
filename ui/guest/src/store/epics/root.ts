@@ -17,7 +17,6 @@
 import { combineEpics, Epic, ofType } from 'redux-observable';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import {
-  debounceTime,
   filter,
   ignoreElements,
   map,
@@ -25,7 +24,6 @@ import {
   take,
   takeUntil,
   tap,
-  throttleTime,
   withLatestFrom
 } from 'rxjs/operators';
 import { not } from '../../utils/util';
@@ -39,8 +37,7 @@ import {
   destroyDragSubjects,
   dragover$,
   escape$,
-  initializeDragSubjects,
-  scrolling$
+  initializeDragSubjects
 } from '../subjects';
 import { initTinyMCE } from '../../rte';
 import {
@@ -79,7 +76,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region dragstart
-  // Propagation stopped by multiEventPropagationStopperEpic
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(
       ofType('dragstart'),
@@ -98,27 +94,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           event.stopPropagation();
           post({ type: INSTANCE_DRAG_BEGUN, payload: iceId });
           unwrapEvent<DragEvent>(event).dataTransfer.setData('text/plain', null);
-          initializeDragSubjects();
-          return merge(
-            dragover$().pipe(
-              throttleTime(100),
-              map((payload) => ({ type: 'computed_dragover', payload }))
-            ),
-            scrolling$().pipe(
-              throttleTime(200),
-              withLatestFrom(state$),
-              filter(([, state]) => !state.dragContext?.scrolling),
-              map(() => ({ type: 'scrolling' }))
-            ),
-            // Scrolling ended
-            scrolling$().pipe(
-              // Emit values from scroll$ only after 200ms have
-              // passed without another source emission should give
-              // us the end of scrolling.
-              debounceTime(200),
-              map(() => ({ type: 'scrolling_stopped' }))
-            )
-          );
+          return initializeDragSubjects(state$);
         }
         return NEVER;
       })
@@ -258,45 +234,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region click
-  // endregion
-
-  // region hostComponentDragStarted
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
-    return action$.pipe(
-      ofType('host_component_drag_started'),
-      withLatestFrom(state$),
-      switchMap(([action, state]) => {
-        const contentType = state.dragContext.contentType;
-        console.log(contentType);
-        if (isNullOrUndefined(contentType.id)) {
-          console.error('No contentTypeId found for this drag instance.');
-        } else {
-          initializeDragSubjects();
-          return merge(
-            dragover$().pipe(
-              throttleTime(100),
-              map((payload) => ({ type: 'computed_dragover', payload }))
-            ),
-            scrolling$().pipe(
-              throttleTime(200),
-              withLatestFrom(state$),
-              filter(([, state]) => !state.dragContext?.scrolling),
-              map(() => ({ type: 'scrolling' }))
-            ),
-            scrolling$().pipe(
-              debounceTime(200),
-              map(() => ({ type: 'scrolling_stopped' }))
-            )
-          );
-        }
-
-        return NEVER;
-      })
-    );
-  },
-  // endregion
-
-  // Dispatches stuff. Needs store access.
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(
       ofType('click'),
@@ -384,16 +321,33 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region Start listening
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: MouseEventActionObservable) => {
     return action$.pipe(
       ofType('start_listening'),
-      tap((action) => {
-        post(CLEAR_SELECTED_ZONES);
-      }),
+      tap(() => post(CLEAR_SELECTED_ZONES)),
       ignoreElements()
+    );
+  },
+  // endregion
+
+  // region hostComponentDragStarted
+  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+    return action$.pipe(
+      ofType('host_component_drag_started'),
+      withLatestFrom(state$),
+      switchMap(([action, state]) => {
+        const contentType = state.dragContext.contentType;
+        if (isNullOrUndefined(contentType.id)) {
+          console.error('No contentTypeId found for this drag instance.');
+        } else {
+          return initializeDragSubjects(state$);
+        }
+        return NEVER;
+      })
     );
   }
   // endregion
+
 ]);
 
 export default epic;

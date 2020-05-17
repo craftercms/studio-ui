@@ -17,13 +17,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Guest from './components/Guest';
-import { GuestProxy } from './components/GuestProxy';
+import GuestProxy from './components/GuestProxy';
+import DropMarker from './components/DropMarker';
+import CrafterCMSPortal from './components/CrafterCMSPortal';
+import AssetUploaderMask from './components/AssetUploaderMask';
+import { useGuestContext, GuestContextProvider } from './components/GuestContext';
+import ZoneMarker from './components/ZoneMarker';
+import Spinner from './components/Spinner';
 
-const guestProxyElement = document.createElement('craftercms-guest-proxy');
+function addAuthoringSupport({ modelId, path }) {
+  const guestProxyElement = document.createElement('craftercms-guest-proxy');
+  ReactDOM.render(
+    <Guest modelId={modelId} path={path}>
+      <GuestProxy />
+    </Guest>,
+    guestProxyElement
+  );
+}
 
-ReactDOM.render(
-  <Guest modelId="8d7f21fa-5e09-00aa-8340-853b7db302da">
-    <GuestProxy />
-  </Guest>,
-  guestProxyElement
-);
+export {
+  Guest,
+  Spinner,
+  GuestProxy,
+  ZoneMarker,
+  DropMarker,
+  CrafterCMSPortal,
+  AssetUploaderMask,
+  GuestContextProvider,
+  useGuestContext,
+  addAuthoringSupport
+};

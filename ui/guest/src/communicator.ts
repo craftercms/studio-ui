@@ -16,7 +16,7 @@
 
 import { fromEvent, Observable } from 'rxjs';
 import { filter, map, share } from 'rxjs/operators';
-import StandardAction from '@craftercms/studio-ui/src/models/StandardAction';
+import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 const useBroadcastChannel = window.parent === window && window.BroadcastChannel !== undefined;
 if (window.parent === window && window.BroadcastChannel === undefined) {

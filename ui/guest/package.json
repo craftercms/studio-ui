@@ -1,12 +1,12 @@
 {
   "name": "@craftercms/studio-guest",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "main": "dist/craftercms-guest.cjs.js",
-  "module": "dist/craftercms-guest.esm.js",
-  "browser": "dist/craftercms-guest.umd.js",
+  "module": "build/craftercms-guest.esm.js",
+  "browser": "build/craftercms-guest.umd.js",
   "craftercms": {
-    "id": "org.craftercms.plugin.guest"
+    "id": "craftercms.guest"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.3.6",
@@ -32,7 +32,7 @@
     "watch": "rollup -c -w",
     "rollup": "rollup -c",
     "rollup:watch": "rollup -c -w",
-    "compile": "tsc -p tsconfig.json"
+    "compile": "tsc --build tsconfig.json"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -22,7 +22,7 @@ import $ from 'jquery';
 import contentController, { ContentController } from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
-import { ContentTypeHelper } from '../classes/ContentTypeHelper';
+import { ContentTypeHelper } from '../utils/ContentTypeHelper';
 import { message$, post } from '../communicator';
 import { Operation } from '../models/Operations';
 import {
@@ -42,7 +42,7 @@ import { forEach } from '../utils/array';
 import { popPiece, removeLastPiece } from '../utils/string';
 import { addAnimation } from '../utils/dom';
 
-export function GuestProxy(props) {
+export default function GuestProxy() {
 
   const state = useSelector<GuestState, GuestState>(state => state);
   const { onEvent } = useGuestContext();
@@ -144,13 +144,13 @@ export function GuestProxy(props) {
     zip(
       contentController.models$(),
       contentController.contentTypes$()
-    ).pipe(take(1)).subscribe(() =>
+    ).pipe(take(1)).subscribe(() => {
       document
         .querySelectorAll('[data-craftercms-model-id]')
-        .forEach(registerElement)
-    );
+        .forEach(registerElement);
+    });
 
-    const handler = (e: Event): void => {
+    const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
       let record = ElementRegistry.fromElement(e.currentTarget as Element);
       if (notNullOrUndefined(record)) {
         if (['click', 'dblclick'].includes(e.type)) {
@@ -370,10 +370,19 @@ export function GuestProxy(props) {
 
     return () => {
       sub.unsubscribe();
-      // clickSubscription.unsubscribe();
+      $(document)
+        .off('mouseover', '[data-craftercms-model-id]', handler)
+        .off('mouseleave', '[data-craftercms-model-id]', handler)
+        .off('dragstart', '[data-craftercms-model-id]', handler)
+        .off('dragover', '[data-craftercms-model-id]', handler)
+        .off('dragleave', '[data-craftercms-model-id]', handler)
+        .off('drop', '[data-craftercms-model-id]', handler)
+        .off('dragend', '[data-craftercms-model-id]', handler)
+        .off('click', '[data-craftercms-model-id]', handler)
+        .off('dblclick', '[data-craftercms-model-id]', handler);
     };
 
-  }, []);
+  }, [onEvent]);
 
   useEffect(() => {
 
