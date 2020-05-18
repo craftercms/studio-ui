@@ -30,6 +30,7 @@ declare global {
       'craftercms-zone-marker-label': CrafterCMSCustomElementProps;
       'craftercms-asset-uploader-mask-container': CrafterCMSCustomElementProps;
       'craftercms-asset-uploader-mask': CrafterCMSCustomElementProps;
+      'craftercms-snackbar': CrafterCMSCustomElementProps;
     }
   }
 }

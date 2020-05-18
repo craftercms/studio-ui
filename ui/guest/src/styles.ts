@@ -226,6 +226,27 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
         'to': {
           transform: 'scaleX(1)'
         }
+      },
+      'craftercms-snackbar': {
+        top: 10,
+        right: 10,
+        position: 'absolute',
+        color: '#fff',
+        display: 'flex',
+        padding: '15px 20px',
+        flexGrow: 1,
+        flexWrap: 'wrap',
+        fontSize: '0.875rem',
+        alignItems: 'center',
+        fontFamily: '"Source Sans Pro", "Open Sans", sans-serif',
+        fontWeight: 400,
+        lineHeight: 1.43,
+        borderRadius: '4px',
+        backgroundColor: 'rgb(49, 49, 49)',
+        minWidth: '288px',
+        transform: 'none',
+        transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms',
+        boxShadow: '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)',
       }
     }
   });

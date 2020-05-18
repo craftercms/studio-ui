@@ -62,6 +62,8 @@ import { EditingStatus } from '../models/ICEStatus';
 import { isNullOrUndefined } from '../utils/object';
 import { getHighlighted, scrollToNode, scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
+import { Asset } from '../models/Asset';
+import SnackBar, { Snack } from './SnackBar';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -92,6 +94,7 @@ function Guest(props: GuestProps) {
     editModeOnIndicatorClass = 'craftercms-ice-on'
   } = props;
 
+  const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState, GuestState>((state) => state);
   const status = state.status;
@@ -373,7 +376,10 @@ function Guest(props: GuestProps) {
     interval(1000)
       .pipe(takeUntil(fromTopic(HOST_CHECK_IN).pipe(take(1))), take(1))
       .subscribe(() => {
-        console.log('No Host was detected. In-Context Editing is off.');
+        setSnack({
+          duration: 8000,
+          message: 'Crafter CMS not detected. In-Context Editing is is disabled.'
+        });
       });
     post(GUEST_CHECK_IN, { url, location, origin, modelId, path, site });
   }, [modelId, path]);
@@ -472,6 +478,11 @@ function Guest(props: GuestProps) {
                 coordinates={state.dragContext.coordinates}
               />
             )}
+          {snack && (
+            <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
+              {snack.message}
+            </SnackBar>
+          )}
         </CrafterCMSPortal>
       )}
     </GuestContextProvider>
