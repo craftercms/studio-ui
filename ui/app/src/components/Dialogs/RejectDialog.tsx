@@ -361,7 +361,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
 
         setApiState({ ...apiState, submitting: true });
 
-        reject(siteId, deps, checkedItems, '').subscribe(
+        reject(siteId, deps, checkedItems, rejectionReason, rejectionComment).subscribe(
           () => {
             setApiState({ error: null, submitting: false });
             onRejectSuccess?.();
