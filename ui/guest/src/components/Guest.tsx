@@ -62,7 +62,6 @@ import { EditingStatus } from '../models/ICEStatus';
 import { isNullOrUndefined } from '../utils/object';
 import { getHighlighted, scrollToNode, scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
-import { Asset } from '../models/Asset';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -190,55 +189,6 @@ function Guest(props: GuestProps) {
       });
     },
 
-    onAssetDragStarted(asset: Asset): void {
-      let players = [],
-        siblings = [],
-        containers = [],
-        dropZones = [],
-        type;
-
-      if (asset.mimeType.includes('image/')) {
-        type = 'image';
-      } else if (asset.mimeType.includes('video/')) {
-        type = 'video-picker';
-      }
-      const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
-
-      validatedReceptacles.forEach(({ id }) => {
-        const dropZone = ElementRegistry.compileDropZone(id);
-        dropZone.origin = false;
-        dropZones.push(dropZone);
-
-        players = [...players, dropZone.element];
-        containers.push(dropZone.element);
-      });
-
-      const highlighted = getHighlighted(dropZones);
-
-      // initializeDragSubjects();
-
-      toBeRemoved_setState({
-        dragContext: {
-          players,
-          siblings,
-          dropZones,
-          containers,
-          inZone: false,
-          targetIndex: null,
-          dragged: asset
-        },
-        common: {
-          ...stateRef.current.common,
-          status: EditingStatus.PLACING_DETACHED_ASSET,
-          highlighted
-        }
-      });
-    },
-
-    onAssetDragEnded(): void {
-      dispatch({ type: 'computed_dragend' });
-    },
-
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     onTrashDrop(iceId: number): void {
@@ -323,9 +273,11 @@ function Guest(props: GuestProps) {
         case EDIT_MODE_CHANGED:
           return fn.onEditModeChanged(payload.inEditMode);
         case ASSET_DRAG_STARTED:
-          return fn.onAssetDragStarted(payload);
+          dispatch({ type: 'asset_drag_started', payload: { asset: payload } });
+          break;
         case ASSET_DRAG_ENDED:
-          return fn.onAssetDragEnded();
+          dragOk(status) && dispatch({ type: 'computed_dragend' });
+          break;
         case COMPONENT_DRAG_STARTED:
           dispatch({ type: 'host_component_drag_started', payload: { contentType: payload } });
           break;
