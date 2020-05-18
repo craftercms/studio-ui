@@ -2881,21 +2881,33 @@ var nodeOpen = false,
        * reject content
        */
       rejectContent: function (site, contentItems) {
-        var submitDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-            dialogClass.showDialog && dialogClass.showDialog(moduleConfig.site, moduleConfig.contentItems);
+        const eventIdSuccess = 'rejectDialogSuccess'
+
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_REJECT_DIALOG',
+          payload: {
+            open: true,
+            items: contentItems,
+            onRejectSuccess: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_REJECT_DIALOG' }
+              ]
+            }
           }
-        };
-        var moduleConfig = {
-          contentItems: contentItems,
-          site: site
-        };
-        CStudioAuthoring.Module.requireModule(
-          'dialog-reject',
-          '/static-assets/components/cstudio-dialogs/reject.js',
-          moduleConfig,
-          submitDialogCb
-        );
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+          if (CStudioAuthoringContext.isPreview) {
+            CStudioAuthoring.Operations.refreshPreview();
+          }
+          eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
+          document.dispatchEvent(eventNS);
+        });
       },
 
       /**
