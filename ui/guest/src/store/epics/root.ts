@@ -382,9 +382,26 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       ofType('asset_drag_started'),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
-        console.log(state.dragContext.dragged.path);
         if (isNullOrUndefined(state.dragContext.dragged.path)) {
           console.error('No path found for this drag asset.');
+        } else {
+          return initializeDragSubjects(state$);
+        }
+        return NEVER;
+      })
+    );
+  },
+  // endregion
+
+  // region host_instance_drag_started
+  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+    return action$.pipe(
+      ofType('desktop_asset_drag_started'),
+      withLatestFrom(state$),
+      switchMap(([action, state]) => {
+        console.log(state.dragContext.dragged);
+        if (isNullOrUndefined(state.dragContext.dragged)) {
+          console.error('No file found for this drag asset.');
         } else {
           return initializeDragSubjects(state$);
         }

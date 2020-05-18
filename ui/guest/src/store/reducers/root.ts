@@ -155,6 +155,41 @@ const asset_drag_started: GuestReducer = (state, action) => {
 };
 // endregion
 
+// region desktop_asset_drag_started
+const desktop_asset_drag_started: GuestReducer = (state, action) => {
+  const { asset } = action.payload;
+  if (notNullOrUndefined(asset)) {
+    let type;
+    if (asset.type.includes('image/')) {
+      type = 'image';
+    } else if (asset.type.includes('video/')) {
+      type = 'video-picker';
+    }
+    const receptacles = iceRegistry.getMediaReceptacles(type);
+    const { players, containers, dropZones } = getDragContextFromReceptacles(receptacles);
+    const highlighted = getHighlighted(dropZones);
+
+    return {
+      ...state,
+      highlighted,
+      status: EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
+      dragContext: {
+        ...state.dragContext,
+        players,
+        siblings: [],
+        dropZones,
+        containers,
+        inZone: false,
+        targetIndex: null,
+        dragged: asset
+      }
+    };
+  } else {
+    return state;
+  }
+};
+// endregion
+
 // region dragstart
 // TODO: Not pure.
 const dragstart: GuestReducer = (state, action) => {
@@ -461,6 +496,7 @@ const reducerFunctions: {
   scrolling_stopped,
   host_component_drag_started,
   host_instance_drag_started,
+  desktop_asset_drag_started,
   asset_drag_started
 };
 

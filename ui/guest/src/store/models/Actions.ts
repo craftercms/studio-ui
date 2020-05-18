@@ -50,6 +50,7 @@ export type GuestActionTypes =
   | 'scrolling_stopped'
   | 'host_component_drag_started'
   | 'host_instance_drag_started'
+  | 'desktop_asset_drag_started'
   | 'asset_drag_started';
 
 export type MouseEventAction = GuestStandardAction<{

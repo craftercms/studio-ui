@@ -398,7 +398,10 @@ function Guest(props: GuestProps) {
       .subscribe((e) => {
         e.preventDefault();
         e.stopPropagation();
-        fnRef.current.onDesktopAssetDragStarted(e.dataTransfer.items[0]);
+        dispatch({
+          type: 'desktop_asset_drag_started',
+          payload: { asset: e.dataTransfer.items[0] }
+        });
       });
     return () => subscription.unsubscribe();
   }, []);
@@ -410,7 +413,8 @@ function Guest(props: GuestProps) {
       const dropSubscription = fromEvent(document, 'drop').subscribe((e) => {
         e.preventDefault();
         e.stopPropagation();
-        fn.dragend(e);
+        //fn.dragend(e);
+        dragOk(status) && dispatch({ type: 'computed_dragend' });
       });
       const dragover$ = fromEvent(document, 'dragover').pipe(
         tap((e) => {
