@@ -51,6 +51,8 @@ import {
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_DROP,
+  DESKTOP_ASSET_UPLOAD_COMPLETE,
+  DESKTOP_ASSET_UPLOAD_STARTED,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED
@@ -58,7 +60,12 @@ import {
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState, GuestStateObservable } from '../models/GuestStore';
 import { EditingStatus } from '../../models/ICEStatus';
-import { isNullOrUndefined, notNullOrUndefined, pluckProps } from '../../utils/object';
+import {
+  isNullOrUndefined,
+  notNullOrUndefined,
+  pluckProps,
+  reversePluckProps
+} from '../../utils/object';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
   function multiEventPropagationStopperEpic(
@@ -209,7 +216,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               break;
             }
             case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
-              console.log('UPLOAD_ASSET_FROM_DESKTOP');
               if (dragContext.inZone) {
                 const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
                 const reader = new FileReader();
@@ -218,12 +224,13 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                     dataUrl: event.target.result,
                     name: file.name,
                     type: file.type,
-                    modelId: record.modelId,
-                    elementZoneId: record.id
+                    record: reversePluckProps(record, 'element')
                   });
                   aImg.src = event.target.result;
                 })(record.element as HTMLImageElement);
                 reader.readAsDataURL(file);
+
+                return of({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload: { record } });
               }
               break;
             }
@@ -324,14 +331,12 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
 
   // region Desktop Asset Upload (Complete)
   // TODO: Carry or retrieve record for these events
-  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+  (action$: any, state$: GuestStateObservable) => {
     return action$.pipe(
-      ofType('desktop_asset_upload_complete'),
+      ofType(DESKTOP_ASSET_UPLOAD_COMPLETE),
       withLatestFrom(state$),
       tap(([action, state]) => {
-        const { record } = action.payload;
-        // TODO: Path comes from Host. This is the real payload here.
-        const path = '';
+        const { record, path } = action.payload;
         contentController.updateField(record.modelId, record.fieldId[0], record.index, path);
       }),
       ignoreElements()
@@ -416,7 +421,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       ofType(DESKTOP_ASSET_DRAG_STARTED),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
-        console.log(state.dragContext.dragged);
         if (isNullOrUndefined(state.dragContext.dragged)) {
           console.error('No file found for this drag asset.');
         } else {

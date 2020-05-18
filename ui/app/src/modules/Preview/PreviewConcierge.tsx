@@ -326,7 +326,7 @@ export function PreviewConcierge(props: any) {
           const uppySubscription = uploadDataUrl(
             site,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
-            `/static-assets/images/${payload.modelId}`,
+            `/static-assets/images/${payload.record.modelId}`,
             xsrfArgument
           ).subscribe(
             ({ payload: { progress } }) => {
@@ -336,7 +336,7 @@ export function PreviewConcierge(props: any) {
               hostToGuest$.next({
                 type: DESKTOP_ASSET_UPLOAD_PROGRESS,
                 payload: {
-                  id: payload.name,
+                  record: payload.record,
                   percentage
                 }
               });
@@ -349,8 +349,8 @@ export function PreviewConcierge(props: any) {
               hostToGuest$.next({
                 type: DESKTOP_ASSET_UPLOAD_COMPLETE,
                 payload: {
-                  id: payload.name,
-                  path: `/static-assets/images/${payload.modelId}/${payload.name}`
+                  record: payload.record,
+                  path: `/static-assets/images/${payload.record.modelId}/${payload.name}`
                 }
               });
             }
@@ -359,7 +359,7 @@ export function PreviewConcierge(props: any) {
             const { type, payload: uploadFile } = action;
             if (
               type === DESKTOP_ASSET_UPLOAD_STARTED &&
-              uploadFile.elementZoneId === payload.elementZoneId
+              uploadFile.record.id === payload.record.id
             ) {
               sub.unsubscribe();
               uppySubscription.unsubscribe();

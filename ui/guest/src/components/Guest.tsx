@@ -62,7 +62,7 @@ import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { EditingStatus } from '../models/ICEStatus';
 import { isNullOrUndefined } from '../utils/object';
-import { getHighlighted, scrollToNode, scrollToReceptacle } from '../utils/dom';
+import { scrollToNode, scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
@@ -200,51 +200,6 @@ function Guest(props: GuestProps) {
       contentController.deleteItem(modelId, fieldId, index);
     },
 
-    onDesktopAssetDragStarted(asset: DataTransferItem): void {
-      let players = [],
-        siblings = [],
-        containers = [],
-        dropZones = [],
-        type;
-
-      if (asset.type.includes('image/')) {
-        type = 'image';
-      } else if (asset.type.includes('video/')) {
-        type = 'video-picker';
-      }
-      const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
-      // scrollToReceptacle(validatedReceptacles);
-
-      validatedReceptacles.forEach(({ id }) => {
-        const dropZone = ElementRegistry.compileDropZone(id);
-        dropZone.origin = false;
-        dropZones.push(dropZone);
-
-        players = [...players, dropZone.element];
-        containers.push(dropZone.element);
-      });
-
-      const highlighted = getHighlighted(dropZones);
-
-      // initializeDragSubjects();
-
-      toBeRemoved_setState({
-        dragContext: {
-          players,
-          siblings,
-          dropZones,
-          containers,
-          inZone: false,
-          targetIndex: null,
-          dragged: asset
-        },
-        common: {
-          ...stateRef.current.common,
-          status: EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
-          highlighted
-        }
-      });
-    }
   };
   // endregion
 
@@ -272,7 +227,7 @@ function Guest(props: GuestProps) {
   // Subscribes to host messages and routes them.
   useEffect(() => {
     const fn = fnRef.current;
-    const sub = message$.subscribe(function({ type, payload }) {
+    const sub = message$.subscribe(function ({ type, payload }) {
       switch (type) {
         case EDIT_MODE_CHANGED:
           return fn.onEditModeChanged(payload.inEditMode);
@@ -358,8 +313,10 @@ function Guest(props: GuestProps) {
           break;
         }
         case DESKTOP_ASSET_UPLOAD_PROGRESS:
+          dispatch({ type: DESKTOP_ASSET_UPLOAD_PROGRESS, payload: payload });
+          break;
         case DESKTOP_ASSET_UPLOAD_COMPLETE:
-          // dispatch(type.toLowerCase())
+          dispatch({ type: DESKTOP_ASSET_UPLOAD_COMPLETE, payload: payload });
           break;
       }
     });
@@ -415,7 +372,6 @@ function Guest(props: GuestProps) {
 
   // Listen for drag events for desktop asset drag & drop
   useEffect(() => {
-    const fn = fnRef.current;
     if (EditingStatus.UPLOAD_ASSET_FROM_DESKTOP === status) {
       const dropSubscription = fromEvent(document, 'drop').subscribe((e) => {
         e.preventDefault();
@@ -432,7 +388,9 @@ function Guest(props: GuestProps) {
       const dragoverSubscription = dragover$.subscribe();
       const dragleaveSubscription = fromEvent(document, 'dragleave')
         .pipe(switchMap(() => interval(100).pipe(takeUntil(dragover$))))
-        .subscribe(fn.onDragEnd);
+        .subscribe(() => {
+          dragOk(status) && dispatch({ type: DESKTOP_ASSET_DRAG_ENDED });
+        });
       return () => {
         dropSubscription.unsubscribe();
         dragoverSubscription.unsubscribe();
@@ -468,16 +426,16 @@ function Guest(props: GuestProps) {
             EditingStatus.PLACING_NEW_COMPONENT,
             EditingStatus.PLACING_DETACHED_COMPONENT
           ].includes(status) &&
-            state.dragContext.inZone && (
-              <DropMarker
-                onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
-                dropZone={state.dragContext.dropZone}
-                over={state.dragContext.over}
-                prev={state.dragContext.prev}
-                next={state.dragContext.next}
-                coordinates={state.dragContext.coordinates}
-              />
-            )}
+          state.dragContext.inZone && (
+            <DropMarker
+              onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
+              dropZone={state.dragContext.dropZone}
+              over={state.dragContext.over}
+              prev={state.dragContext.prev}
+              next={state.dragContext.next}
+              coordinates={state.dragContext.coordinates}
+            />
+          )}
           {snack && (
             <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
               {snack.message}
@@ -489,7 +447,7 @@ function Guest(props: GuestProps) {
   );
 }
 
-export default function(props: GuestProps) {
+export default function (props: GuestProps) {
   const { isAuthoring = true, children } = props;
   const store = useMemo(() => createGuestStore(), []);
   return isAuthoring ? (

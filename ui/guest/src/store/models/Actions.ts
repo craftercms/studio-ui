@@ -27,7 +27,10 @@ import {
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
   DESKTOP_ASSET_DRAG_ENDED,
-  DESKTOP_ASSET_DRAG_STARTED
+  DESKTOP_ASSET_DRAG_STARTED,
+  DESKTOP_ASSET_UPLOAD_COMPLETE,
+  DESKTOP_ASSET_UPLOAD_PROGRESS,
+  DESKTOP_ASSET_UPLOAD_STARTED
 } from '../../constants';
 
 export type GuestActionTypes =
@@ -52,8 +55,6 @@ export type GuestActionTypes =
   | 'ice_zone_selected'
   | 'edit_component_inline'
   | 'exit_component_inline_edit'
-  | 'desktop_asset_upload_progress'
-  | 'desktop_asset_upload_complete'
   | 'set_edit_mode'
   | 'start_listening'
   | 'scrolling'
@@ -63,6 +64,9 @@ export type GuestActionTypes =
   | typeof COMPONENT_INSTANCE_DRAG_STARTED
   | typeof COMPONENT_INSTANCE_DRAG_ENDED
   | typeof DESKTOP_ASSET_DRAG_STARTED
+  | typeof DESKTOP_ASSET_UPLOAD_STARTED
+  | typeof DESKTOP_ASSET_UPLOAD_PROGRESS
+  | typeof DESKTOP_ASSET_UPLOAD_COMPLETE
   | typeof DESKTOP_ASSET_DRAG_ENDED
   | typeof ASSET_DRAG_STARTED
   | typeof ASSET_DRAG_ENDED;

@@ -30,7 +30,10 @@ import {
   ASSET_DRAG_STARTED,
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_STARTED,
-  DESKTOP_ASSET_DRAG_STARTED
+  DESKTOP_ASSET_DRAG_STARTED,
+  DESKTOP_ASSET_UPLOAD_COMPLETE,
+  DESKTOP_ASSET_UPLOAD_PROGRESS,
+  DESKTOP_ASSET_UPLOAD_STARTED
 } from '../../constants';
 
 // region mouseover
@@ -400,6 +403,7 @@ const desktop_asset_upload_progress: GuestReducer = (state, action) => {
     uploading: {
       ...state.uploading,
       [record.id]: {
+        ...state.uploading[record.id],
         progress: percentage
       }
     }
@@ -478,8 +482,9 @@ const reducerFunctions: {
   computed_dragend,
   computed_dragover,
   dblclick,
-  desktop_asset_upload_complete,
-  desktop_asset_upload_progress,
+  [DESKTOP_ASSET_UPLOAD_STARTED]: desktop_asset_upload_started,
+  [DESKTOP_ASSET_UPLOAD_COMPLETE]: desktop_asset_upload_complete,
+  [DESKTOP_ASSET_UPLOAD_PROGRESS]: desktop_asset_upload_progress,
   dragend: (state) => state,
   dragleave,
   dragover: (state) => state,
