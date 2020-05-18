@@ -360,7 +360,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region host_instance_drag_started
-  (action$: any, state$: GuestStateObservable) => {
+  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(
       ofType('host_instance_drag_started'),
       withLatestFrom(state$),
@@ -374,6 +374,24 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       })
     );
   },
+  // endregion
+
+  // region host_instance_drag_started
+  (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
+    return action$.pipe(
+      ofType('asset_drag_started'),
+      withLatestFrom(state$),
+      switchMap(([action, state]) => {
+        console.log(state.dragContext.dragged.path);
+        if (isNullOrUndefined(state.dragContext.dragged.path)) {
+          console.error('No path found for this drag asset.');
+        } else {
+          return initializeDragSubjects(state$);
+        }
+        return NEVER;
+      })
+    );
+  }
   // endregion
 
 ]);
