@@ -2530,15 +2530,15 @@ var nodeOpen = false,
           }
         }
 
-        CSA.Operations.getWorkflowAffectedFiles(params, {
-          success: function (content) {
-            if (content && content.length) {
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
+          (items) => {
+            if (items && items.length) {
               const eventIdSuccess = 'workflowCancellationDialogContinue';
               CrafterCMSNext.system.store.dispatch({
                 type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
                 payload: {
                   open: true,
-                  items: content,
+                  items,
                   onContinue: {
                     type: 'BATCH_ACTIONS',
                     payload: [
@@ -2558,7 +2558,7 @@ var nodeOpen = false,
               doEdit();
             }
           }
-        });
+        );
       },
 
       /**
