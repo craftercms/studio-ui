@@ -324,6 +324,12 @@ export function getHistory(site: string, path: string, environment: string, modu
   );
 }
 
+export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {
+   return get(`/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`).pipe(
+     pluck('response')
+   )
+}
+
 export default {
   getProductLanguages,
   getRawContent: getConfiguration,

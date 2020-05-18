@@ -46,6 +46,7 @@ import { palette } from '../../styles/theme';
 import { fetchDependencies } from '../../services/dependencies';
 import { reject } from '../../services/publishing';
 import { ApiResponse } from '../../models/ApiResponse';
+import { fetchCannedMessage } from '../../services/configuration';
 
 // region Typings
 
@@ -338,6 +339,18 @@ function RejectDialogWrapper(props: RejectDialogProps) {
 
     setCheckedItems(newChecked);
   }, [items, setCheckedItems]);
+
+  useEffect(() => {
+    if (rejectionReason === '') {
+      setRejectionComment('');
+    } else {
+      fetchCannedMessage(siteId, 'en', rejectionReason).subscribe(
+        (message) => {
+          setRejectionComment(message);
+        }
+      )
+    }
+  }, [rejectionReason, setRejectionComment])
 
   const updateChecked = (value) => {
     const itemExist = checkedItems.includes(value);
