@@ -15,7 +15,7 @@
  */
 
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { getZoneMarkerLabelStyle, getZoneMarkerStyle } from '../utils/dom';
+import { getZoneMarkerStyle } from '../utils/dom';
 
 interface ZoneMarkerProps {
   rect: DOMRect;
