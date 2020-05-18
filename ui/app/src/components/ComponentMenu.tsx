@@ -135,7 +135,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
 
         fetchWorkflowAffectedItems(siteId, path).subscribe(
-          (affectedFiles) => {
+          (items) => {
             const editProps = {
               src,
               type,
@@ -145,9 +145,9 @@ export default function ComponentMenu(props: ComponentMenuProps) {
               embeddedParentPath
             };
 
-            if (affectedFiles?.length > 0) {
+            if (items?.length > 0) {
               dispatch(showWorkflowCancellationDialog({
-                workflowAffectedFiles: affectedFiles,
+                items,
                 onContinue: showEditDialog(editProps)
               }));
             } else {

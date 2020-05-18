@@ -26,7 +26,7 @@ import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
 import { Resource } from '../../models/Resource';
-import { LegacyItem } from '../../models/Item';
+import { SandboxItem } from '../../models/Item';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -36,7 +36,7 @@ import { palette } from '../../styles/theme';
 
 // region Typings
 
-type Source = LegacyItem[];
+type Source = SandboxItem[];
 type Return = Omit<Source, 'error'>;
 
 interface WorkflowCancellationContentUIProps {
@@ -55,7 +55,7 @@ interface WorkflowCancellationDialogUIProps {
 
 interface WorkflowCancellationDialogBaseProps {
   open: boolean;
-  items?: LegacyItem[];
+  items?: SandboxItem[];
 }
 
 export type WorkflowCancellationDialogProps = PropsWithChildren<WorkflowCancellationDialogBaseProps & {
@@ -101,9 +101,9 @@ function WorkflowCancellationContentUI(props: WorkflowCancellationContentUIProps
       <Grid item xs={12}>
         <List className={classes.filesList}>
           {
-            items.map(file =>
-              <ListItem key={file.browserUri}>
-                <ListItemText primary={file.name} secondary={file.browserUri} />
+            items.map(item =>
+              <ListItem key={item.path}>
+                <ListItemText primary={item.label} secondary={item.path} />
               </ListItem>
             )
           }
