@@ -396,6 +396,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     };
   }, [
+    contentTypes$,
     contentTypes,
     currentUrl,
     dispatch,

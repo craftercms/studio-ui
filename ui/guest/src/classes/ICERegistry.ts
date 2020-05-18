@@ -19,13 +19,27 @@ import { DEFAULT_RECORD_DATA } from '../utils/util';
 import { ContentTypeHelper } from '../utils/ContentTypeHelper';
 import { ModelHelper } from '../utils/ModelHelper';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
+import {
+  ContentType,
+  ContentTypeField,
+  ValidationKeys
+} from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import { Record, ReferentialEntries, ValidationResult } from '../models/InContextEditing';
-import { isNullOrUndefined, notNullOrUndefined, pluckProps } from '../utils/object';
+import {
+  ICEProps,
+  ICERecord,
+  ICERecordRegistration,
+  ReferentialEntries,
+  ValidationResult
+} from '../models/InContextEditing';
+import {
+  isNullOrUndefined,
+  notNullOrUndefined,
+  pluckProps,
+  reversePluckProps
+} from '../utils/object';
 import { forEach } from '../utils/array';
 import { findComponentContainerFields } from '../utils/ice';
-import { ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
   minCount(id, min, level, length) {
@@ -64,21 +78,22 @@ export class ICERegistry {
   static contentReady = false;
 
   /* private */
-  registry: LookupTable<Record> = { /* [id]: { modelId, fieldId, index } */ };
+  registry: LookupTable<ICERecord> = { /* [id]: { modelId, fieldId, index } */ };
 
-  register(data: Record): number {
+  register(registration: ICERecordRegistration): number {
 
     // For consistency, set `fieldId` and `index` props
     // to null for records that don't include those values
-    data = Object.assign(
+    const data = Object.assign(
       {},
       DEFAULT_RECORD_DATA,
-      pluckProps(data, 'modelId', 'fieldId', 'index')
+      pluckProps(registration, 'modelId', 'fieldId', 'index')
     );
 
     if (isNullOrUndefined(data.modelId)) {
       throw new Error(
-        `ICE component registration requires a model ID to be supplied. Supplied model id was ${data.modelId}.`
+        'ICE component registration requires a model ID to be supplied. ' +
+        `Supplied model id was ${data.modelId}.`
       );
     } else if (
       notNullOrUndefined(data.fieldId) &&
@@ -110,7 +125,7 @@ export class ICERegistry {
 
     } else {
 
-      const record: Record = { ...data, id: ICERegistry.rid++ };
+      const record: ICERecord = { ...data, id: ICERegistry.rid++ };
       const entities = this.getReferentialEntries(record);
 
       // Record coherence validation
@@ -133,7 +148,7 @@ export class ICERegistry {
 
   }
 
-  deregister(id: number): Record {
+  deregister(id: number): ICERecord {
     const
       registry = this.registry,
       record = registry[id];
@@ -146,7 +161,7 @@ export class ICERegistry {
     return record;
   }
 
-  exists(data: Record): number {
+  exists(data: Partial<ICEProps>): number {
     const records = Object.values(this.registry);
     const lastIndex = records.length - 1;
     return forEach(
@@ -167,7 +182,7 @@ export class ICERegistry {
     );
   }
 
-  recordOf(id: number | string): Record {
+  recordOf(id: number | string): ICERecord {
     return this.registry[id];
   }
 
@@ -198,11 +213,11 @@ export class ICERegistry {
     );
   }
 
-  getMediaReceptacles(type: string): Record[] {
+  getMediaReceptacles(type: string): ICERecord[] {
     const receptacles = [];
     forEach(
       Object.values(this.registry),
-      (record: Record) => {
+      (record: ICERecord) => {
         const entries = this.getReferentialEntries(record);
         if (entries.field && entries.field.type === type) {
           receptacles.push(record);
@@ -212,7 +227,7 @@ export class ICERegistry {
     return receptacles;
   }
 
-  getRecordReceptacles(id: number): Record[] {
+  getRecordReceptacles(id: number): ICERecord[] {
     const record = this.recordOf(id);
     const { index, field, fieldId, model } = this.getReferentialEntries(record);
     if (isNullOrUndefined(index)) {
@@ -236,7 +251,7 @@ export class ICERegistry {
     }
   }
 
-  getRepeatGroupItemReceptacles(record: Record): Record[] {
+  getRepeatGroupItemReceptacles(record: ICERecord): ICERecord[] {
     const entries = this.getReferentialEntries(record);
     return Object.values(this.registry)
       .filter((rec) =>
@@ -250,12 +265,12 @@ export class ICERegistry {
       .map((rec) => rec);
   }
 
-  getComponentItemReceptacles(record: Record): number[] {
+  getComponentItemReceptacles(record: ICERecord): number[] {
     const contentType = this.getReferentialEntries(record).contentType;
     return this.getContentTypeReceptacles(contentType).map((rec) => rec.id);
   }
 
-  getContentTypeReceptacles(contentType: string | ContentType): Record[] {
+  getContentTypeReceptacles(contentType: string | ContentType): ICERecord[] {
     const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
     return Object.values(this.registry).filter((record) => {
       const { fieldId, index } = record;
@@ -291,7 +306,7 @@ export class ICERegistry {
     });
   }
 
-  runReceptaclesValidations(receptacles: Record[]): LookupTable<LookupTable<ValidationResult>> {
+  runReceptaclesValidations(receptacles: ICERecord[]): LookupTable<LookupTable<ValidationResult>> {
     const lookup = {};
     receptacles.forEach(record => {
       const validationResult = {};
@@ -340,7 +355,7 @@ export class ICERegistry {
     }
   }
 
-  getReferentialEntries(record: number | Record): ReferentialEntries {
+  getReferentialEntries(record: number | ICERecord): ReferentialEntries {
     record = typeof record === 'object' ? record : this.recordOf(record);
     const
       model = contentController.getCachedModel(record.modelId),
@@ -349,14 +364,14 @@ export class ICERegistry {
       field = record.fieldId ? ContentTypeHelper.getField(contentType, record.fieldId) : null;
     return {
       model,
-      contentType,
       field,
+      contentType,
       contentTypeId,
-      ...record
+      ...reversePluckProps(record, 'refCount')
     };
   }
 
-  getRecordField(record: Record): string {
+  getRecordField(record: ICERecord): string {
     return this.getReferentialEntries(record).field;
   }
 

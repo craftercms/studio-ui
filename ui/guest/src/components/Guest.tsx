@@ -28,8 +28,7 @@ import DropMarker from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
-import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { HoverData } from '../models/InContextEditing';
+import { HighlightData } from '../models/InContextEditing';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import AssetUploaderMask from './AssetUploaderMask';
 import {
@@ -117,7 +116,7 @@ function Guest(props: GuestProps) {
 
   // region Stuff to remove
   const fnRef = useRef<any>();
-  const highlightedInitialData: LookupTable<HoverData> = {};
+  const highlightedInitialData: LookupTable<HighlightData> = {};
   const persistenceRef = useRef({
     contentReady: false,
     mouseOverTimeout: null,
@@ -142,7 +141,7 @@ function Guest(props: GuestProps) {
     stateRef.current = nextState;
     forceUpdate({});
   };
-  const fn = {
+  fnRef.current = {
     onEditModeChanged(inEditMode): void {
       const status = inEditMode ? EditingStatus.LISTENING : EditingStatus.OFF;
 
@@ -293,7 +292,6 @@ function Guest(props: GuestProps) {
       });
     }
   };
-  fnRef.current = fn;
   // endregion
 
   // Sets document domain
@@ -317,7 +315,7 @@ function Guest(props: GuestProps) {
     };
   }, [styles]);
 
-  // Subscribes to accommodation messages and routes them.
+  // Subscribes to host messages and routes them.
   useEffect(() => {
     const fn = fnRef.current;
     const sub = message$.subscribe(function({ type, payload }) {
@@ -338,7 +336,7 @@ function Guest(props: GuestProps) {
           dispatch({ type: 'host_instance_drag_started', payload: { instance: payload } });
           break;
         case COMPONENT_INSTANCE_DRAG_ENDED:
-          dragOk() && dispatch({ type: 'computed_dragend' });
+          dragOk(status) && dispatch({ type: 'computed_dragend' });
           break;
         case TRASHED:
           return fn.onTrashDrop(payload);
@@ -486,18 +484,19 @@ function Guest(props: GuestProps) {
       {children}
       {status !== EditingStatus.OFF && (
         <CrafterCMSPortal>
-          {Object.values(state.uploading).map((highlight: HoverData) => (
+          {Object.values(state.uploading).map((highlight: HighlightData) => (
             <AssetUploaderMask key={highlight.id} {...highlight} />
           ))}
-          {Object.values(state.highlighted).map((highlight: HoverData) => (
+          {Object.values(state.highlighted).map((highlight: HighlightData, index, array) => (
             <ZoneMarker
               key={highlight.id}
               {...highlight}
               classes={{
+                label: (array.length > 1) && 'craftercms-zone-marker-label__multi-mode',
                 marker: Object.values(highlight.validations).length
                   ? Object.values(highlight.validations).some(({ level }) => level === 'required')
-                    ? 'craftercms-required-validation'
-                    : 'craftercms-suggestion-validation'
+                    ? 'craftercms-required-validation-failed'
+                    : 'craftercms-suggestion-validation-failed'
                   : null
               }}
             />

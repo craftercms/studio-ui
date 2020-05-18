@@ -26,7 +26,13 @@ import {
 import $ from 'jquery';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { RenderTree } from '../models/ContentTree';
-import { DropZone, HoverData, Record, ValidationResult } from '../models/InContextEditing';
+import {
+  DropZone,
+  HighlightData,
+  ElementRecord,
+  ValidationResult,
+  ICERecord
+} from '../models/InContextEditing';
 import { ElementRegistry } from '../classes/ElementRegistry';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
 import { CSSProperties } from 'react';
@@ -395,7 +401,8 @@ export function scrollToNode(node: RenderTree, scrollElement: string): void {
 }
 
 export function scrollToReceptacle(
-  receptacles: ContentTypeReceptacle[] | Record[],
+  // TODO: This doesn't look good. Why either?
+  receptacles: ContentTypeReceptacle[] | ElementRecord[],
   scrollElement: string,
   getElementRegistry: (id: number) => Element
 ) {
@@ -426,18 +433,18 @@ export function scrollToReceptacle(
   }
 }
 
-export function getHighlighted(dropZones: DropZone[]): LookupTable<HoverData> {
+export function getHighlighted(dropZones: DropZone[]): LookupTable<HighlightData> {
   return dropZones.reduce((object, { physicalRecordId: id, validations }) => {
     object[id] = ElementRegistry.getHoverData(id);
     object[id].validations = validations;
     return object;
-  }, {} as LookupTable<HoverData>);
+  }, {} as LookupTable<HighlightData>);
 }
 
 export function getDragContextFromReceptacles(
-  receptacles: Record[],
+  receptacles: ICERecord[],
   validationsLookup?: LookupTable<LookupTable<ValidationResult>>,
-  currentRecord?: Record
+  currentRecord?: ElementRecord
 ): { dropZones: any; siblings: any; players: any; containers: any; } {
   const response = {
     dropZones: [],

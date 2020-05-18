@@ -29,14 +29,12 @@ interface ZoneMarkerProps {
 export default function ZoneMarker(props: ZoneMarkerProps) {
   const { rect, label, classes } = props
   const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
-  const [labelStyle, setLabelStyle] = useState<CSSProperties>();
   useEffect(() => {
     setZoneStyle(getZoneMarkerStyle(rect));
-    setLabelStyle(getZoneMarkerLabelStyle(rect));
   }, [rect]);
   return (
     <craftercms-zone-marker style={zoneStyle} class={classes?.marker}>
-      <craftercms-zone-marker-label style={labelStyle} class={classes?.label}>
+      <craftercms-zone-marker-label class={classes?.label}>
         {label}
       </craftercms-zone-marker-label>
     </craftercms-zone-marker>

@@ -16,7 +16,7 @@
 
 import { GuestStandardAction } from './GuestStandardAction';
 import { SyntheticEvent } from 'react';
-import { Record } from '../../models/InContextEditing';
+import { ElementRecord } from '../../models/InContextEditing';
 import { ActionsObservable } from 'redux-observable';
 import GuestReducer from './GuestReducer';
 
@@ -53,11 +53,11 @@ export type GuestActionTypes =
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;
-  record: Record;
+  record: ElementRecord;
 }>;
 
 export type WithRecordAction = GuestReducer<{
-  record: Record;
+  record: ElementRecord;
 }>;
 
 export type MouseEventActionObservable = ActionsObservable<MouseEventAction>;

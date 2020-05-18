@@ -17,21 +17,37 @@
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
 import {
   debounceTime,
+  distinctUntilChanged,
   filter,
   map,
+  pluck,
   share,
   takeUntil,
   throttleTime,
   withLatestFrom
 } from 'rxjs/operators';
-import { Record } from '../models/InContextEditing';
+import { ElementRecord } from '../models/InContextEditing';
 import { SyntheticEvent } from 'react';
 import { GuestStateObservable } from './models/GuestStore';
+import createGuestStore from './store';
 
-type DragOver$ = {
-  event: DragEvent | SyntheticEvent | JQueryMouseEventObject | Event;
-  record: Record;
-};
+export const state$ = new Observable((subscriber) => {
+  const store = createGuestStore();
+  return store.subscribe(() => {
+    const state = store.getState();
+    subscriber.next(state.models);
+  });
+});
+
+export const models$ = state$.pipe(
+  pluck('content'),
+  distinctUntilChanged()
+);
+
+export const contentTypes$ = state$.pipe(
+  pluck('contentTypes'),
+  distinctUntilChanged()
+);
 
 export const clearAndListen$ = new Subject();
 
@@ -39,7 +55,10 @@ export const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
   filter((e) => e.key === 'Escape')
 );
 
-let dragover$: Subject<DragOver$>;
+let dragover$: Subject<{
+  event: DragEvent | SyntheticEvent | JQueryMouseEventObject | Event;
+  record: ElementRecord;
+}>;
 const getDragOver = () => dragover$;
 
 let killSignal$: Subject<void>;
@@ -51,7 +70,7 @@ export { getDragOver as dragover$, getScrolling as scrolling$ };
 export function initializeDragSubjects(state$: GuestStateObservable) {
 
   killSignal$ = new Subject();
-  dragover$ = new Subject<DragOver$>();
+  dragover$ = new Subject();
   scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
 
   return merge(

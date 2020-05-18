@@ -16,7 +16,7 @@
 
 import { EnhancedStore } from '@reduxjs/toolkit';
 import { GuestStandardAction } from './GuestStandardAction';
-import { DropZone, Record } from '../../models/InContextEditing';
+import { DropZone, ICERecord } from '../../models/InContextEditing';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { StateObservable } from 'redux-observable';
 import { EditingStatus } from '../../models/ICEStatus';
@@ -41,7 +41,7 @@ export interface GuestState {
     next: any;
     coordinates: any;
     // TODO: Dragged seems to be an ICE record, but there's code looking for dragged.path
-    dragged: Record & { path?: string };
+    dragged: ICERecord & { path?: string };
     dropZones: DropZone[];
     scrolling: boolean;
     contentType: ContentType;
@@ -54,7 +54,8 @@ export interface GuestState {
   draggable: T;
   highlighted: T;
   uploading: LookupTable;
-  content: LookupTable<ContentInstance>;
+  models: LookupTable<ContentInstance>;
+  contentTypes: LookupTable<ContentType>;
 }
 
 export type GuestStateObservable = StateObservable<GuestState>;

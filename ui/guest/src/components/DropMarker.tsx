@@ -23,13 +23,13 @@ import {
   Y_AXIS
 } from '../utils/util';
 import { Coordinates } from '../models/Positioning';
-import { DropZone, Record } from '../models/InContextEditing';
+import { DropZone, ElementRecord } from '../models/InContextEditing';
 import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { findClosestRect, getDropMarkerPosition, getInRectStats, splitRect } from '../utils/dom';
 
 interface DropMarkerProps {
-  over: Record;
+  over: ElementRecord;
   prev: DOMRect;
   next: DOMRect;
   dropZone: DropZone;

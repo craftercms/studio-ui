@@ -19,7 +19,7 @@ import contentController from './ContentController';
 import { take } from 'rxjs/operators';
 import { ContentTypeHelper } from '../utils/ContentTypeHelper';
 import { ModelHelper } from '../utils/ModelHelper';
-import { DropZone, HoverData, Record } from '../models/InContextEditing';
+import { DropZone, HighlightData, ElementRecord } from '../models/InContextEditing';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
@@ -33,7 +33,7 @@ export class ElementRegistry {
   static db = {};
   static registry = {};
 
-  static get(id: number): Record {
+  static get(id: number): ElementRecord {
     const record = this.db[id];
     record && isNullOrUndefined(record.label) && this.setLabel(record);
     return record;
@@ -41,7 +41,7 @@ export class ElementRegistry {
 
   // TODO: Unknown field names go by ignored. Trace the registration point to warn...
   // developers about field names that aren't found in the content type
-  static setLabel(record: Record): void {
+  static setLabel(record: ElementRecord): void {
     const labels = [];
     const models = contentController.getCachedModels();
     record.iceIds.forEach((iceId) => {
@@ -142,7 +142,7 @@ export class ElementRegistry {
 
   }
 
-  static deregister(id: string | number): Record {
+  static deregister(id: string | number): ElementRecord {
     const record = this.db[id];
     if (notNullOrUndefined(record)) {
       const { iceIds } = record;
@@ -167,7 +167,7 @@ export class ElementRegistry {
     );
   }
 
-  static getHoverData(id: number): HoverData {
+  static getHoverData(id: number): HighlightData {
     const record = this.get(id);
     return {
       id,
@@ -240,7 +240,7 @@ export class ElementRegistry {
 
   }
 
-  static fromElement(element: Element): Record {
+  static fromElement(element: Element): ElementRecord {
     const db = this.db;
     return forEach(
       Object.values(db),

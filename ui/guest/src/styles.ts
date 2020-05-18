@@ -110,13 +110,13 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
         position: 'absolute',
         zIndex: 1000,
         pointerEvents: 'none',
-        '&.craftercms-required-validation': {
+        '&.craftercms-required-validation-failed': {
           outlineColor: colors.red,
           '& craftercms-zone-marker-label': {
             background: colors.red
           }
         },
-        '&.craftercms-suggestion-validation': {
+        '&.craftercms-suggestion-validation-failed': {
           outlineColor: colors.orange,
           '& craftercms-zone-marker-label': {
             background: colors.orange
@@ -124,25 +124,39 @@ export function appendStyleSheet(styles: StyleSheet): StyleSheet {
         }
       },
       'craftercms-zone-marker-label': {
-        background: `${colors.green}`,
-        color: '#fff',
-        padding: '2px 10px',
+        background: `linear-gradient(to bottom, rgba(48,219,91,0.8) 0%,rgba(52,199,89,0.8) 100%)`,
+        color: '#00270b',
+        padding: '10px',
+        borderRadius: 10,
         display: 'inline-block',
         fontSize: '14px',
-        position: 'absolute',
-        top: '-25px',
+        position: 'fixed',
+        top: '1em',
         left: '50%',
         right: '0',
-        marginLeft: '-60px',
+        marginLeft: '-150px',
         textAlign: 'center',
-        minWidth: '120px',
-        maxWidth: '120px',
+        minWidth: '300px',
+        maxWidth: '300px',
         overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
         fontWeight: 700,
         pointerEvents: 'none',
-        zIndex: 1000
+        zIndex: 1000,
+        boxShadow: `0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)`
+      },
+      '.craftercms-zone-marker-label__multi-mode': {
+        background: colors.greenTint,
+        top: 0,
+        left: 'auto',
+        right: 0,
+        minWidth: 0,
+        marginLeft: 0,
+        position: 'absolute',
+        padding: '2px 10px',
+        borderRadius: 0,
+        boxShadow: 'none',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
       },
       'craftercms-drop-marker': {
         zIndex: 1010,

@@ -19,9 +19,11 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 export function notNullOrUndefined(value: any): boolean {
   return value != null;
 }
+
 export function isNullOrUndefined(value: any): boolean {
   return value == null;
 }
+
 export function pluckProps(source: object, ...props: string[]): object {
   const object = {};
   if (isNullOrUndefined(source)) {
@@ -34,18 +36,22 @@ export function pluckProps(source: object, ...props: string[]): object {
   });
   return object;
 }
-export function reversePluckProps(source: object, ...props: string[]): object {
-  const object = {};
+
+export function reversePluckProps<T extends object = {}, K extends keyof T = any>(source: T, ...props: K[]): Omit<T, K> {
+  const object = {} as Omit<T, K>;
   if (isNullOrUndefined(source)) {
     return object;
   }
   for (let key in source) {
+    // @ts-ignore
     if (!props.includes(key) && source.hasOwnProperty(key)) {
+      // @ts-ignore
       object[key] = source[key];
     }
   }
   return object;
 }
+
 export function retrieveProperty(object: object, prop: string): any {
   return (object == null)
     ? null
@@ -53,10 +59,12 @@ export function retrieveProperty(object: object, prop: string): any {
       ? object
       : prop.split('.').reduce((value, prop) => value[prop], object);
 }
+
 export function deleteProperty<T, P extends keyof T>(object: T, prop: P): Omit<T, P> {
   delete object[prop];
   return object;
 }
+
 export function setProperty(object: object, prop: string, value: any): boolean {
   if (object) {
     const props = prop.split('.');
@@ -71,6 +79,7 @@ export function setProperty(object: object, prop: string, value: any): boolean {
   }
   return false;
 }
+
 export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTable<T> {
   const table = {};
   list.forEach((item) => {

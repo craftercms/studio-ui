@@ -19,33 +19,6 @@ import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 
-export interface IceZone {
-  element?: Element;
-  field?: any;
-  modelId?: string;
-  label?: string;
-  id?: number;
-  index?: number;
-  recordIds?: number[];
-  contentType?: ContentType;
-}
-
-export interface Stats {
-  currentDZ: Element;
-  currentDZChildren: Element[];
-  dropZones: Element[];
-  dropZoneRects: DOMRect[];
-  currentDZElementRect: DOMRect;
-  currentDZChildrenRects: DOMRect[];
-  record: Record;
-  $dropMarker: JQuery;
-  draggedElementIndex: number;
-  draggedElement: Element;
-  childArrangement: string;
-  originDropZone: Element;
-  receptacles: any;
-}
-
 export interface DropZone {
   element: Element;
   children: Element[];
@@ -58,42 +31,49 @@ export interface DropZone {
   validations: LookupTable<ValidationResult>;
 }
 
-export interface DZStats {
-  currentDZ: Element;
-  currentDZChildren: Element[];
-  currentDZElementRect: DOMRect;
-  currentDZChildrenRects: DOMRect[];
-}
-
 export interface ValidationResult {
   id: ValidationKeys;
   level: 'required' | 'suggestion';
   values: object;
 }
 
-export interface Record {
-  modelId?: string;
-  index?: number | string;
-  fieldId?: string;
-  id?: number;
-  element?: Element;
-  label?: string;
-  iceIds?: number[];
-  complete?: boolean;
-  refCount?: number;
+export interface ICEProps {
+  modelId: string;
+  fieldId: string;
+  index: string | number;
 }
 
-export interface HoverData {
+export interface BaseICERecord extends ICEProps {
+  id: number;
+}
+
+export interface ICERecord extends BaseICERecord {
+  refCount: number;
+}
+
+export interface ICERecordRegistration {
+  modelId: string;
+  fieldId?: string;
+  index?: string | number;
+}
+
+export interface ElementRecord extends BaseICERecord {
+  label: string;
+  iceIds: number[];
+  element: Element;
+  complete: boolean;
+}
+
+export interface HighlightData {
   id: number;
   rect: DOMRect;
   label: string;
   validations: LookupTable<ValidationResult>;
 }
 
-export interface ReferentialEntries extends Record {
+export interface ReferentialEntries extends BaseICERecord {
+  field: any;
   model: ContentInstance;
   contentType: ContentType;
-  field: any;
   contentTypeId: string;
-
 }

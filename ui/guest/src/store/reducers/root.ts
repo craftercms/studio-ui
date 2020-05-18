@@ -20,7 +20,7 @@ import iceRegistry from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
 import GuestReducer from '../models/GuestReducer';
 import { GuestStandardAction } from '../models/GuestStandardAction';
-import { Record } from '../../models/InContextEditing';
+import { ElementRecord } from '../../models/InContextEditing';
 import { GuestActionTypes } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
 import { EditingStatus } from '../../models/ICEStatus';
@@ -306,7 +306,7 @@ const computed_dragover: GuestReducer = (state, action) => {
 // TODO: Carry or retrieve record for these events
 const desktop_asset_upload_complete: GuestReducer = (
   state,
-  action: GuestStandardAction<{ record: Record }>
+  action: GuestStandardAction<{ record: ElementRecord }>
 ) => {
   const { record } = action.payload;
   return {
@@ -392,7 +392,8 @@ const initialState: GuestState = {
   inEditMode: true,
   status: EditingStatus.LISTENING,
   uploading: {},
-  content: {}
+  models: {},
+  contentTypes: {}
 };
 
 const reducerFunctions: {
