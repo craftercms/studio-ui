@@ -47,6 +47,7 @@ import { fetchDependencies } from '../../services/dependencies';
 import { reject } from '../../services/publishing';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fetchCannedMessage } from '../../services/configuration';
+import { getCurrentLocale } from '../CrafterCMSNextBridge';
 
 // region Typings
 
@@ -323,6 +324,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
   const [rejectionReason, setRejectionReason] = useState('');
   const [rejectionComment, setRejectionComment] = useState('');
   const siteId = useActiveSiteId();
+  const currentLocale = getCurrentLocale();
   const [apiState, setApiState] = useSpreadState<ApiState>({
     error: null,
     submitting: false
@@ -344,13 +346,13 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     if (rejectionReason === '') {
       setRejectionComment('');
     } else {
-      fetchCannedMessage(siteId, 'en', rejectionReason).subscribe(
+      fetchCannedMessage(siteId, currentLocale, rejectionReason).subscribe(
         (message) => {
           setRejectionComment(message);
         }
       )
     }
-  }, [rejectionReason, setRejectionComment])
+  }, [rejectionReason, setRejectionComment, currentLocale, siteId])
 
   const updateChecked = (value) => {
     const itemExist = checkedItems.includes(value);
