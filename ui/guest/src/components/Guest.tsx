@@ -19,7 +19,7 @@ import { fromEvent, interval, zip } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
-import { ElementRegistry } from '../classes/ElementRegistry';
+import ElementRegistry from '../classes/ElementRegistry';
 import $ from 'jquery';
 import { GuestContextProvider } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';

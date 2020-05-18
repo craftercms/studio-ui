@@ -16,10 +16,10 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext } from './GuestContext';
-import { ElementRegistry } from '../classes/ElementRegistry';
+import ElementRegistry from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery';
-import contentController, { ContentController } from '../classes/ContentController';
+import contentController from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { ContentTypeHelper } from '../utils/ContentTypeHelper';
@@ -172,7 +172,7 @@ export default function GuestProxy() {
       .on('click', '[data-craftercms-model-id]', handler)
       .on('dblclick', '[data-craftercms-model-id]', handler);
 
-    const sub = ContentController.operations.subscribe((op: Operation) => {
+    const sub = contentController.operations.subscribe((op: Operation) => {
       switch (op.type) {
         case SORT_ITEM_OPERATION: {
           let [modelId, fieldId, index, newIndex] = op.args;

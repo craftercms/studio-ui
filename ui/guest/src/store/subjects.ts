@@ -37,7 +37,7 @@ export const state$ = new Observable((subscriber) => {
     const state = store.getState();
     subscriber.next(state.models);
   });
-});
+}).pipe(share());
 
 export const models$ = state$.pipe(
   pluck('content'),

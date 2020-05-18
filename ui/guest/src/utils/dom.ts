@@ -33,7 +33,7 @@ import {
   ValidationResult,
   ICERecord
 } from '../models/InContextEditing';
-import { ElementRegistry } from '../classes/ElementRegistry';
+import ElementRegistry from '../classes/ElementRegistry';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
 import { CSSProperties } from 'react';
 import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeReceptacle';

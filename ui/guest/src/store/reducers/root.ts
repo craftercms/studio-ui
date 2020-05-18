@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementRegistry } from '../../classes/ElementRegistry';
+import ElementRegistry from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import iceRegistry from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
