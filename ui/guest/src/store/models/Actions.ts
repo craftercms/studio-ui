@@ -19,6 +19,16 @@ import { SyntheticEvent } from 'react';
 import { ElementRecord } from '../../models/InContextEditing';
 import { ActionsObservable } from 'redux-observable';
 import GuestReducer from './GuestReducer';
+import {
+  ASSET_DRAG_ENDED,
+  ASSET_DRAG_STARTED,
+  COMPONENT_DRAG_ENDED,
+  COMPONENT_DRAG_STARTED,
+  COMPONENT_INSTANCE_DRAG_ENDED,
+  COMPONENT_INSTANCE_DRAG_STARTED,
+  DESKTOP_ASSET_DRAG_ENDED,
+  DESKTOP_ASSET_DRAG_STARTED
+} from '../../constants';
 
 export type GuestActionTypes =
 // dom events
@@ -48,10 +58,14 @@ export type GuestActionTypes =
   | 'start_listening'
   | 'scrolling'
   | 'scrolling_stopped'
-  | 'host_component_drag_started'
-  | 'host_instance_drag_started'
-  | 'desktop_asset_drag_started'
-  | 'asset_drag_started';
+  | typeof COMPONENT_DRAG_STARTED
+  | typeof COMPONENT_DRAG_ENDED
+  | typeof COMPONENT_INSTANCE_DRAG_STARTED
+  | typeof COMPONENT_INSTANCE_DRAG_ENDED
+  | typeof DESKTOP_ASSET_DRAG_STARTED
+  | typeof DESKTOP_ASSET_DRAG_ENDED
+  | typeof ASSET_DRAG_STARTED
+  | typeof ASSET_DRAG_ENDED;
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;

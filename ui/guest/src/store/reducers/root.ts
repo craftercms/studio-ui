@@ -26,6 +26,12 @@ import { GuestState } from '../models/GuestStore';
 import { EditingStatus } from '../../models/ICEStatus';
 import { deleteProperty, notNullOrUndefined } from '../../utils/object';
 import { getDragContextFromReceptacles, getHighlighted } from '../../utils/dom';
+import {
+  ASSET_DRAG_STARTED,
+  COMPONENT_DRAG_STARTED,
+  COMPONENT_INSTANCE_DRAG_STARTED,
+  DESKTOP_ASSET_DRAG_STARTED
+} from '../../constants';
 
 // region mouseover
 // TODO: Not pure.
@@ -494,10 +500,10 @@ const reducerFunctions: {
   click: (state) => state,
   scrolling,
   scrolling_stopped,
-  host_component_drag_started,
-  host_instance_drag_started,
-  desktop_asset_drag_started,
-  asset_drag_started
+  [COMPONENT_DRAG_STARTED]: host_component_drag_started,
+  [COMPONENT_INSTANCE_DRAG_STARTED]: host_instance_drag_started,
+  [DESKTOP_ASSET_DRAG_STARTED]: desktop_asset_drag_started,
+  [ASSET_DRAG_STARTED]: asset_drag_started
 };
 
 export default createReducer<GuestState>(initialState, reducerFunctions);

@@ -41,7 +41,15 @@ import {
 } from '../subjects';
 import { initTinyMCE } from '../../rte';
 import {
+  ASSET_DRAG_ENDED,
+  ASSET_DRAG_STARTED,
   CLEAR_SELECTED_ZONES,
+  COMPONENT_DRAG_ENDED,
+  COMPONENT_DRAG_STARTED,
+  COMPONENT_INSTANCE_DRAG_ENDED,
+  COMPONENT_INSTANCE_DRAG_STARTED,
+  DESKTOP_ASSET_DRAG_ENDED,
+  DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_DROP,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
@@ -201,6 +209,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               break;
             }
             case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
+              console.log('UPLOAD_ASSET_FROM_DESKTOP');
               if (dragContext.inZone) {
                 const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
                 const reader = new FileReader();
@@ -215,7 +224,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                   aImg.src = event.target.result;
                 })(record.element as HTMLImageElement);
                 reader.readAsDataURL(file);
-                return of({ type: 'computed_dragend' });
               }
               break;
             }
@@ -240,6 +248,15 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         }
         return NEVER;
       })
+    );
+  },
+  // endregion
+
+  // region dragend_listener
+  (action$: MouseEventActionObservable) => {
+    return action$.pipe(
+      ofType(ASSET_DRAG_ENDED, COMPONENT_DRAG_ENDED, COMPONENT_INSTANCE_DRAG_ENDED, DESKTOP_ASSET_DRAG_ENDED),
+      map(() => ({ type: 'computed_dragend' }))
     );
   },
   // endregion
@@ -344,7 +361,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region hostComponentDragStarted
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(
-      ofType('host_component_drag_started'),
+      ofType(COMPONENT_DRAG_STARTED),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
         const contentType = state.dragContext.contentType;
@@ -362,7 +379,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region host_instance_drag_started
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(
-      ofType('host_instance_drag_started'),
+      ofType(COMPONENT_INSTANCE_DRAG_STARTED),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
         if (isNullOrUndefined(state.dragContext.instance.craftercms.contentTypeId)) {
@@ -376,10 +393,10 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   },
   // endregion
 
-  // region host_instance_drag_started
+  // region asset_drag_started
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(
-      ofType('asset_drag_started'),
+      ofType(ASSET_DRAG_STARTED),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
         if (isNullOrUndefined(state.dragContext.dragged.path)) {
@@ -393,10 +410,10 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   },
   // endregion
 
-  // region host_instance_drag_started
+  // region desktop_asset_drag_started
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(
-      ofType('desktop_asset_drag_started'),
+      ofType(DESKTOP_ASSET_DRAG_STARTED),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
         console.log(state.dragContext.dragged);

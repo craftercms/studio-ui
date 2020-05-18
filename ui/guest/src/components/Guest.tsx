@@ -43,6 +43,8 @@ import {
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
+  DESKTOP_ASSET_DRAG_ENDED,
+  DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   EDIT_MODE_CHANGED,
@@ -62,7 +64,6 @@ import { EditingStatus } from '../models/ICEStatus';
 import { isNullOrUndefined } from '../utils/object';
 import { getHighlighted, scrollToNode, scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
-import { Asset } from '../models/Asset';
 import SnackBar, { Snack } from './SnackBar';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
@@ -276,22 +277,22 @@ function Guest(props: GuestProps) {
         case EDIT_MODE_CHANGED:
           return fn.onEditModeChanged(payload.inEditMode);
         case ASSET_DRAG_STARTED:
-          dispatch({ type: 'asset_drag_started', payload: { asset: payload } });
+          dispatch({ type: ASSET_DRAG_STARTED, payload: { asset: payload } });
           break;
         case ASSET_DRAG_ENDED:
-          dragOk(status) && dispatch({ type: 'computed_dragend' });
+          dragOk(status) && dispatch({ type: ASSET_DRAG_ENDED });
           break;
         case COMPONENT_DRAG_STARTED:
-          dispatch({ type: 'host_component_drag_started', payload: { contentType: payload } });
+          dispatch({ type: COMPONENT_DRAG_STARTED, payload: { contentType: payload } });
           break;
         case COMPONENT_DRAG_ENDED:
-          dragOk(status) && dispatch({ type: 'computed_dragend' });
+          dragOk(status) && dispatch({ type: COMPONENT_DRAG_ENDED });
           break;
         case COMPONENT_INSTANCE_DRAG_STARTED:
-          dispatch({ type: 'host_instance_drag_started', payload: { instance: payload } });
+          dispatch({ type: COMPONENT_INSTANCE_DRAG_STARTED, payload: { instance: payload } });
           break;
         case COMPONENT_INSTANCE_DRAG_ENDED:
-          dragOk(status) && dispatch({ type: 'computed_dragend' });
+          dragOk(status) && dispatch({ type: COMPONENT_INSTANCE_DRAG_ENDED });
           break;
         case TRASHED:
           return fn.onTrashDrop(payload);
@@ -405,12 +406,12 @@ function Guest(props: GuestProps) {
         e.preventDefault();
         e.stopPropagation();
         dispatch({
-          type: 'desktop_asset_drag_started',
+          type: DESKTOP_ASSET_DRAG_STARTED,
           payload: { asset: e.dataTransfer.items[0] }
         });
       });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [dispatch]);
 
   // Listen for drag events for desktop asset drag & drop
   useEffect(() => {
@@ -419,8 +420,7 @@ function Guest(props: GuestProps) {
       const dropSubscription = fromEvent(document, 'drop').subscribe((e) => {
         e.preventDefault();
         e.stopPropagation();
-        //fn.dragend(e);
-        dragOk(status) && dispatch({ type: 'computed_dragend' });
+        dragOk(status) && dispatch({ type: DESKTOP_ASSET_DRAG_ENDED });
       });
       const dragover$ = fromEvent(document, 'dragover').pipe(
         tap((e) => {
@@ -439,7 +439,7 @@ function Guest(props: GuestProps) {
         dragleaveSubscription.unsubscribe();
       };
     }
-  }, [status]);
+  }, [dispatch, status]);
 
   return (
     <GuestContextProvider value={context}>

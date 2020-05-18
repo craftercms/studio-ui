@@ -97,6 +97,7 @@ export function initializeDragSubjects(state$: GuestStateObservable) {
 }
 
 export function destroyDragSubjects() {
+console.log('destroyDragSubjects');
 
   // scrolling$ is terminated by killSignal$
   killSignal$.next();
