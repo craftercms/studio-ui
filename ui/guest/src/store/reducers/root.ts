@@ -115,7 +115,8 @@ const host_instance_drag_started: GuestReducer = (state, action) => {
   const { instance } = action.payload;
   if (notNullOrUndefined(instance)) {
     const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles);
+    const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
     const highlighted = getHighlighted(dropZones);
 
     return {
@@ -219,9 +220,10 @@ const dragstart: GuestReducer = (state, action) => {
   const iceId = state.draggable?.[record.id];
   if (notNullOrUndefined(iceId)) {
     const receptacles = iceRegistry.getRecordReceptacles(iceId);
+    const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
     const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(
       receptacles,
-      null,
+      validationsLookup,
       record
     );
     const highlighted = getHighlighted(dropZones);
