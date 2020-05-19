@@ -16,9 +16,12 @@
 
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 
-export function notNullOrUndefined(value: any): boolean {
-  return value != null;
+// Not Null Or Undefined (nnou)
+export function nnou(object: any): boolean {
+  return object != null;
 }
+
+export const notNullOrUndefined = nnou;
 
 export function isNullOrUndefined(value: any): boolean {
   return value == null;

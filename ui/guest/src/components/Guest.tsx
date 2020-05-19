@@ -58,7 +58,7 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { EditingStatus } from '../models/ICEStatus';
-import { isNullOrUndefined } from '../utils/object';
+import { isNullOrUndefined, nnou } from '../utils/object';
 import { scrollToNode, scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
@@ -293,16 +293,18 @@ function Guest(props: GuestProps) {
   }, [dispatch, status]);
 
   // Listen for mouse switching between drop zones
-  const dragContextDropZoneElement = state.dragContext?.dropZone?.element;
+  const dragContextDropZoneIceId = state.dragContext?.dropZone?.iceId;
 
   useEffect(() => {
-    //console.log('actual', dragContextDropZoneElement)
-    //dispatch dropZoneEnter
-    return () => {
-      //dispatch dropZoneLeave
-      //console.log('anterior', dragContextDropZoneElement)
-    };
-  }, [dragContextDropZoneElement]);
+    if (nnou(dragContextDropZoneIceId)) {
+      dispatch({ type: 'drop_zone_enter', payload: { iceId: dragContextDropZoneIceId } });
+      console.log({ type: 'drop_zone_enter' }, dragContextDropZoneIceId);
+      return () => {
+        dispatch({ type: 'drop_zone_leave', payload: { iceId: dragContextDropZoneIceId } });
+        console.log({ type: 'drop_zone_leave' }, dragContextDropZoneIceId);
+      };
+    }
+  }, [dispatch, dragContextDropZoneIceId]);
 
   return (
     <GuestContextProvider value={context}>
@@ -331,7 +333,8 @@ function Guest(props: GuestProps) {
             EditingStatus.PLACING_NEW_COMPONENT,
             EditingStatus.PLACING_DETACHED_COMPONENT
           ].includes(status) &&
-          state.dragContext.inZone && (
+          state.dragContext.inZone &&
+          !state.dragContext.invalidDrop && (
             <DropMarker
               onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
               dropZone={state.dragContext.dropZone}
