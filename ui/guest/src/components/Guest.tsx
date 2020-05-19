@@ -20,7 +20,6 @@ import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
 import ElementRegistry from '../classes/ElementRegistry';
-import $ from 'jquery';
 import { GuestContextProvider } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
@@ -145,20 +144,6 @@ function Guest(props: GuestProps) {
     forceUpdate({});
   };
   fnRef.current = {
-    onEditModeChanged(inEditMode): void {
-      const status = inEditMode ? EditingStatus.LISTENING : EditingStatus.OFF;
-
-      $('html')[inEditMode ? 'addClass' : 'removeClass'](editModeOnIndicatorClass);
-
-      toBeRemoved_setState({
-        ...stateRef.current,
-        common: {
-          ...stateRef.current.common,
-          status,
-          inEditMode
-        }
-      });
-    },
 
     onScroll(): void {
       toBeRemoved_setState({
@@ -222,7 +207,11 @@ function Guest(props: GuestProps) {
     const sub = message$.subscribe(function ({ type, payload }) {
       switch (type) {
         case EDIT_MODE_CHANGED:
-          return fn.onEditModeChanged(payload.inEditMode);
+          dispatch({
+            type: EDIT_MODE_CHANGED,
+            payload: { inEditMode: payload.inEditMode, editModeOnIndicatorClass }
+          });
+          break;
         case ASSET_DRAG_STARTED:
           dispatch({ type: ASSET_DRAG_STARTED, payload: { asset: payload } });
           break;

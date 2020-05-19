@@ -53,6 +53,7 @@ import {
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  EDIT_MODE_CHANGED,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
@@ -67,6 +68,7 @@ import {
   pluckProps,
   reversePluckProps
 } from '../../utils/object';
+import $ from 'jquery';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
   function multiEventPropagationStopperEpic(
@@ -351,6 +353,19 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region Desktop Asset Upload (Started)
   // dropEpic does what these would
   // (action$: Action$, state$: State$) => {},
+  // endregion
+
+  // region edit_mode_changed
+  (action$: ActionsObservable<GuestStandardAction<{ inEditMode: boolean, editModeOnIndicatorClass: string }>>) => {
+    return action$.pipe(
+      ofType(EDIT_MODE_CHANGED),
+      tap((action) => {
+        const { inEditMode, editModeOnIndicatorClass } = action.payload;
+        $('html')[inEditMode ? 'addClass' : 'removeClass'](editModeOnIndicatorClass);
+      }),
+      ignoreElements()
+    );
+  },
   // endregion
 
   // region Start listening

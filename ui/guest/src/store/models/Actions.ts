@@ -31,6 +31,7 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  EDIT_MODE_CHANGED,
   TRASHED
 } from '../../constants';
 
@@ -71,7 +72,8 @@ export type GuestActionTypes =
   | typeof DESKTOP_ASSET_DRAG_ENDED
   | typeof ASSET_DRAG_STARTED
   | typeof ASSET_DRAG_ENDED
-  | typeof TRASHED;
+  | typeof TRASHED
+  | typeof EDIT_MODE_CHANGED;
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;

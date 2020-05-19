@@ -38,6 +38,7 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  EDIT_MODE_CHANGED,
   TRASHED
 } from '../../constants';
 
@@ -430,6 +431,18 @@ const desktop_asset_upload_started: GuestReducer = (state, action) => {
 };
 // endregion
 
+// region edit_mode_changed
+const edit_mode_changed: GuestReducer = (state, action) => {
+  const { inEditMode } = action.payload;
+  const status = inEditMode ? EditingStatus.LISTENING : EditingStatus.OFF;
+  return {
+    ...state,
+    status,
+    inEditMode
+  };
+};
+// endregion
+
 // region start_listening
 const start_listening: GuestReducer = (state) => {
   return {
@@ -512,16 +525,10 @@ const reducerFunctions: {
   scrolling_stopped,
   [TRASHED]: foo,
   [ASSET_DRAG_ENDED]: foo,
-  [ASSET_DRAG_STARTED]: foo,
   [COMPONENT_DRAG_ENDED]: foo,
-  [COMPONENT_DRAG_STARTED]: foo,
   [COMPONENT_INSTANCE_DRAG_ENDED]: foo,
-  [COMPONENT_INSTANCE_DRAG_STARTED]: foo,
   [DESKTOP_ASSET_DRAG_ENDED]: foo,
-  [DESKTOP_ASSET_DRAG_STARTED]: foo,
-  [DESKTOP_ASSET_UPLOAD_COMPLETE]: foo,
-  [DESKTOP_ASSET_UPLOAD_PROGRESS]: foo,
-  [DESKTOP_ASSET_UPLOAD_STARTED]: foo,
+  [EDIT_MODE_CHANGED]: edit_mode_changed,
   [DESKTOP_ASSET_UPLOAD_STARTED]: desktop_asset_upload_started,
   [DESKTOP_ASSET_UPLOAD_COMPLETE]: desktop_asset_upload_complete,
   [DESKTOP_ASSET_UPLOAD_PROGRESS]: desktop_asset_upload_progress,
