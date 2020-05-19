@@ -569,7 +569,7 @@ const drop_zone_leave: GuestReducer = (state, action) => {
   const { dropZones: currentDropZones } = state.dragContext;
   const currentDropZone = currentDropZones.find((dropZone) => dropZone.iceId === iceId);
   let length = currentDropZone.children.length;
-  let invalidDrop = state.dragContext.invalidDrop;
+  let invalidDrop = state.status === EditingStatus.SORTING_COMPONENT ? state.dragContext.invalidDrop : false;
   let rest = reversePluckProps(currentDropZone.validations, 'minCount');
 
   if (state.status === EditingStatus.SORTING_COMPONENT && currentDropZone.origin) {
