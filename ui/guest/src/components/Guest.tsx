@@ -28,7 +28,6 @@ import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
 import { HighlightData } from '../models/InContextEditing';
-import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import AssetUploaderMask from './AssetUploaderMask';
 import {
   ASSET_DRAG_ENDED,
@@ -41,7 +40,6 @@ import {
   COMPONENT_INSTANCE_DRAG_STARTED,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
-  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
@@ -117,8 +115,6 @@ function Guest(props: GuestProps) {
   );
 
   // region Stuff to remove
-  const fnRef = useRef<any>();
-  const highlightedInitialData: LookupTable<HighlightData> = {};
   const persistenceRef = useRef({
     contentReady: false,
     mouseOverTimeout: null,
@@ -126,58 +122,6 @@ function Guest(props: GuestProps) {
     scrolling$: null,
     onScroll: null
   });
-  const [, forceUpdate] = useState({});
-  const stateRef = useRef({
-    dragContext: null,
-    common: {
-      ICE_GUEST_INIT: true,
-      status: EditingStatus.LISTENING,
-      inEditMode: true,
-      editable: {},
-      draggable: {},
-      highlighted: highlightedInitialData,
-      uploading: highlightedInitialData
-    }
-  });
-  const toBeRemoved_setState = (nextState) => {
-    stateRef.current = nextState;
-    forceUpdate({});
-  };
-  fnRef.current = {
-
-    onScroll(): void {
-      toBeRemoved_setState({
-        dragContext: {
-          ...stateRef.current.dragContext,
-          over: null,
-          inZone: false,
-          targetIndex: null,
-          scrolling: true
-        },
-        common: {
-          ...stateRef.current.common
-        }
-      });
-    },
-
-    onScrollStopped(): void {
-      const dragContext = stateRef.current.dragContext;
-      toBeRemoved_setState({
-        dragContext: {
-          ...stateRef.current.dragContext,
-          scrolling: false,
-          dropZones: dragContext?.dropZones?.map((dropZone) => ({
-            ...dropZone,
-            rect: dropZone.element.getBoundingClientRect(),
-            childrenRects: dropZone.children.map((child) => child.getBoundingClientRect())
-          }))
-        },
-        common: {
-          ...stateRef.current.common
-        }
-      });
-    },
-  };
   // endregion
 
   // Sets document domain
@@ -203,7 +147,6 @@ function Guest(props: GuestProps) {
 
   // Subscribes to host messages and routes them.
   useEffect(() => {
-    const fn = fnRef.current;
     const sub = message$.subscribe(function ({ type, payload }) {
       switch (type) {
         case EDIT_MODE_CHANGED:
@@ -246,33 +189,9 @@ function Guest(props: GuestProps) {
           return (window.location.href = payload.url);
         }
         case CONTENT_TYPE_RECEPTACLES_REQUEST: {
-          const highlighted = {};
-          let receptacles = iceRegistry.getContentTypeReceptacles(payload).map((item) => {
-            let { physicalRecordId } = ElementRegistry.compileDropZone(item.id);
-            let highlight = ElementRegistry.getHoverData(physicalRecordId);
-            highlighted[physicalRecordId] = highlight;
-            return {
-              modelId: item.modelId,
-              fieldId: item.fieldId,
-              label: highlight.label,
-              id: item.id,
-              contentTypeId: payload
-            };
-          });
-          toBeRemoved_setState({
-            dragContext: {
-              ...stateRef.current.dragContext,
-              inZone: false
-            },
-            common: {
-              ...stateRef.current.common,
-              status: EditingStatus.SHOW_RECEPTACLES,
-              highlighted
-            }
-          });
-          post({
-            type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
-            payload: { contentTypeId: payload, receptacles }
+          dispatch({
+            type: CONTENT_TYPE_RECEPTACLES_REQUEST,
+            payload: { contentTypeId: payload }
           });
           break;
         }
@@ -280,15 +199,7 @@ function Guest(props: GuestProps) {
           scrollToReceptacle([payload], scrollElement, (id: number) => ElementRegistry.fromICEId(id).element);
           break;
         case CLEAR_HIGHLIGHTED_RECEPTACLES:
-          // TODO: Use new mechanics, remove the toBeRemoved_setState
-          toBeRemoved_setState({
-            ...stateRef.current,
-            common: {
-              ...stateRef.current.common,
-              status: EditingStatus.LISTENING,
-              highlighted: {}
-            }
-          });
+          dispatch({ type: CLEAR_HIGHLIGHTED_RECEPTACLES });
           break;
         case CONTENT_TREE_FIELD_SELECTED: {
           scrollToNode(payload, scrollElement);
@@ -305,7 +216,7 @@ function Guest(props: GuestProps) {
     return () => {
       sub.unsubscribe();
     };
-  }, [dispatch, scrollElement, status]);
+  }, [dispatch, editModeOnIndicatorClass, scrollElement, status]);
 
   // Check in & host detection
   useEffect(() => {

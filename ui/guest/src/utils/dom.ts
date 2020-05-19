@@ -28,10 +28,10 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { RenderTree } from '../models/ContentTree';
 import {
   DropZone,
-  HighlightData,
   ElementRecord,
-  ValidationResult,
-  ICERecord
+  HighlightData,
+  ICERecord,
+  ValidationResult
 } from '../models/InContextEditing';
 import ElementRegistry from '../classes/ElementRegistry';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
@@ -401,8 +401,7 @@ export function scrollToNode(node: RenderTree, scrollElement: string): void {
 }
 
 export function scrollToReceptacle(
-  // TODO: This doesn't look good. Why either?
-  receptacles: ContentTypeReceptacle[] | ElementRecord[],
+  receptacles: ContentTypeReceptacle[],
   scrollElement: string,
   getElementRegistry: (id: number) => Element
 ) {

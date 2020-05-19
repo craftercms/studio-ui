@@ -48,6 +48,8 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
+  CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_DROP,
@@ -69,6 +71,8 @@ import {
   reversePluckProps
 } from '../../utils/object';
 import $ from 'jquery';
+import { ElementRecord } from '../../models/InContextEditing';
+import ElementRegistry from '../../classes/ElementRegistry';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
   function multiEventPropagationStopperEpic(
@@ -333,11 +337,10 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region Desktop Asset Upload (Complete)
-  (action$: any, state$: GuestStateObservable) => {
+  (action$: ActionsObservable<GuestStandardAction<{ path: string, record: ElementRecord }>>) => {
     return action$.pipe(
       ofType(DESKTOP_ASSET_UPLOAD_COMPLETE),
-      withLatestFrom(state$),
-      tap(([action, state]) => {
+      tap((action) => {
         const { record, path } = action.payload;
         contentController.updateField(record.modelId, record.fieldId[0], record.index, path);
       }),
@@ -362,6 +365,33 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       tap((action) => {
         const { inEditMode, editModeOnIndicatorClass } = action.payload;
         $('html')[inEditMode ? 'addClass' : 'removeClass'](editModeOnIndicatorClass);
+      }),
+      ignoreElements()
+    );
+  },
+  // endregion
+
+  // region content_type_receptacles_request
+  (action$: ActionsObservable<GuestStandardAction<{ contentTypeId: string }>>) => {
+    return action$.pipe(
+      ofType(CONTENT_TYPE_RECEPTACLES_REQUEST),
+      tap((action) => {
+        const { contentTypeId } = action.payload;
+        const receptacles = iceRegistry.getContentTypeReceptacles(contentTypeId).map((item) => {
+          let { physicalRecordId } = ElementRegistry.compileDropZone(item.id);
+          let highlight = ElementRegistry.getHoverData(physicalRecordId);
+          return {
+            modelId: item.modelId,
+            fieldId: item.fieldId,
+            label: highlight.label,
+            id: item.id,
+            contentTypeId
+          };
+        });
+        post({
+          type: CONTENT_TYPE_RECEPTACLES_RESPONSE,
+          payload: { contentTypeId, receptacles }
+        });
       }),
       ignoreElements()
     );

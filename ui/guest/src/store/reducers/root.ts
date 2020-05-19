@@ -29,10 +29,12 @@ import { getDragContextFromReceptacles, getHighlighted } from '../../utils/dom';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
+  CLEAR_HIGHLIGHTED_RECEPTACLES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TYPE_RECEPTACLES_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
@@ -248,14 +250,14 @@ const dragstart: GuestReducer = (state, action) => {
 const dragleave: GuestReducer = (state) => {
   return dragOk(state.status)
     ? {
-        ...state,
-        dragContext: {
-          ...state.dragContext,
-          over: null,
-          inZone: false,
-          targetIndex: null
-        }
+      ...state,
+      dragContext: {
+        ...state.dragContext,
+        over: null,
+        inZone: false,
+        targetIndex: null
       }
+    }
     : state;
 };
 // endregion
@@ -320,12 +322,12 @@ const dblclick: GuestReducer = (state, action) => {
   const { record } = action.payload;
   return state.status === EditingStatus.LISTENING
     ? {
-        ...state,
-        status: EditingStatus.EDITING_COMPONENT_INLINE,
-        editable: {
-          [record.id]: record
-        }
+      ...state,
+      status: EditingStatus.EDITING_COMPONENT_INLINE,
+      editable: {
+        [record.id]: record
       }
+    }
     : state;
 };
 // endregion
@@ -443,6 +445,38 @@ const edit_mode_changed: GuestReducer = (state, action) => {
 };
 // endregion
 
+// region clear_highlighted_receptacles
+const clear_highlighted_receptacles: GuestReducer = (state, action) => {
+  return {
+    ...state,
+    status: EditingStatus.LISTENING,
+    highlighted: {}
+  };
+};
+// endregion
+
+// region content_type_receptacles_request
+const content_type_receptacles_request: GuestReducer = (state, action) => {
+  const { contentTypeId } = action.payload;
+  const highlighted = {};
+
+  iceRegistry.getContentTypeReceptacles(contentTypeId).forEach((item) => {
+    let { physicalRecordId } = ElementRegistry.compileDropZone(item.id);
+    highlighted[physicalRecordId] = ElementRegistry.getHoverData(physicalRecordId);
+  });
+
+  return {
+    ...state,
+    dragContext: {
+      ...state.dragContext,
+      inZone: false
+    },
+    status: EditingStatus.SHOW_RECEPTACLES,
+    highlighted
+  };
+};
+// endregion
+
 // region start_listening
 const start_listening: GuestReducer = (state) => {
   return {
@@ -529,6 +563,8 @@ const reducerFunctions: {
   [COMPONENT_INSTANCE_DRAG_ENDED]: foo,
   [DESKTOP_ASSET_DRAG_ENDED]: foo,
   [EDIT_MODE_CHANGED]: edit_mode_changed,
+  [CONTENT_TYPE_RECEPTACLES_REQUEST]: content_type_receptacles_request,
+  [CLEAR_HIGHLIGHTED_RECEPTACLES]: clear_highlighted_receptacles,
   [DESKTOP_ASSET_UPLOAD_STARTED]: desktop_asset_upload_started,
   [DESKTOP_ASSET_UPLOAD_COMPLETE]: desktop_asset_upload_complete,
   [DESKTOP_ASSET_UPLOAD_PROGRESS]: desktop_asset_upload_progress,
