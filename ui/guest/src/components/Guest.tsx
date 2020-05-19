@@ -292,6 +292,18 @@ function Guest(props: GuestProps) {
     }
   }, [dispatch, status]);
 
+  // Listen for mouse switching between drop zones
+  const dragContextDropZoneElement = state.dragContext?.dropZone?.element;
+
+  useEffect(() => {
+    //console.log('actual', dragContextDropZoneElement)
+    //dispatch dropZoneEnter
+    return () => {
+      //dispatch dropZoneLeave
+      //console.log('anterior', dragContextDropZoneElement)
+    };
+  }, [dragContextDropZoneElement]);
+
   return (
     <GuestContextProvider value={context}>
       {children}
