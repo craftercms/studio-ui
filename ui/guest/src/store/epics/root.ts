@@ -364,10 +364,10 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region trashDrop
-  (action$: MouseEventActionObservable) => {
+  (action$: any) => {
     return action$.pipe(
       ofType(TRASHED),
-      tap((action) => {
+      tap((action: any) => {
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.recordOf(iceId);
         contentController.deleteItem(modelId, fieldId, index);
