@@ -159,7 +159,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       ofType('drop'),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
-        if (dragOk(state.status)) {
+        if (dragOk(state.status) && !state.dragContext.invalidDrop) {
           const {
             payload: { event, record }
           } = action;
