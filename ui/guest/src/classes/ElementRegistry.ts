@@ -19,7 +19,7 @@ import contentController from './ContentController';
 import { take } from 'rxjs/operators';
 import { ContentTypeHelper } from '../utils/ContentTypeHelper';
 import { ModelHelper } from '../utils/ModelHelper';
-import { DropZone, HighlightData, ElementRecord } from '../models/InContextEditing';
+import { DropZone, ElementRecord, HighlightData } from '../models/InContextEditing';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
@@ -201,8 +201,7 @@ export function compileDropZone(iceId: number): DropZone {
     rect,
     arrangement: getChildArrangement(children, childrenRects, rect),
     childrenRects,
-    // TODO: Aaron, add validations
-    validations: null
+    validations: {}
   };
 
 }
