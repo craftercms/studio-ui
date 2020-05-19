@@ -424,6 +424,52 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   },
   // endregion
 
+  // region drop_zone_enter
+  (action$: ActionsObservable<GuestStandardAction<{ iceId: number }>>, state$: GuestStateObservable) => {
+    // onDrop doesn't execute when trashing on host side
+    // Consider behaviour when running Host Guest-side
+    return action$.pipe(
+      ofType('drop_zone_enter'),
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        const { iceId } = action.payload;
+        const { validations } = state.dragContext.dropZones.find((dropZone) => dropZone.iceId === iceId);
+        Object.values(validations).forEach(validation => {
+          post({ type: 'VALIDATION_MESSAGE', payload: validation });
+        });
+      }),
+      ignoreElements()
+    );
+  },
+  // endregion
+
+  // region drop_zone_leave
+  (action$: ActionsObservable<GuestStandardAction<{ iceId: number }>>, state$: GuestStateObservable) => {
+    return action$.pipe(
+      ofType('drop_zone_leave'),
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        if (!state.dragContext) {
+          return;
+        }
+        const { iceId } = action.payload;
+        const { validations } = state.dragContext.dropZones.find((dropZone) => dropZone.iceId === iceId);
+        if (validations.minCount) {
+          post({ type: INSTANCE_DRAG_ENDED });
+        }
+        Object.values(validations).forEach(validation => {
+          //We dont want to show a validation message for maxCount on Leaving Dropzone
+          if (validations.maxCount) {
+            return;
+          }
+          post({ type: 'VALIDATION_MESSAGE', payload: validation });
+        });
+      }),
+      ignoreElements()
+    );
+  },
+  // endregion
+
   // region hostComponentDragStarted
   (action$: MouseEventActionObservable, state$: GuestStateObservable) => {
     return action$.pipe(

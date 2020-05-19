@@ -253,7 +253,7 @@ const dragstart: GuestReducer = (state, action) => {
 
 // region dragleave
 const dragleave: GuestReducer = (state, action) => {
-  const leavingDropZone = !state.dragContext.dropZone?.element.contains(action.payload.event.relatedTarget);
+  const leavingDropZone = !state.dragContext?.dropZone?.element.contains(action.payload.event.relatedTarget);
   return dragOk(state.status)
     ? {
       ...state,
@@ -523,20 +523,20 @@ const scrolling_stopped: GuestReducer = (state) => {
 };
 // endregion
 
-// region dropZone_enter
+// region drop_zone_enter
 const drop_zone_enter: GuestReducer = (state, action) => {
   const { iceId } = action.payload;
   const { dropZones: currentDropZones } = state.dragContext;
   const currentDropZone = currentDropZones.find((dropZone) => dropZone.iceId === iceId);
   let length = currentDropZone.children.length;
   let invalidDrop = currentDropZone.origin ? false : state.dragContext.invalidDrop;
-  let rest = reversePluckProps(currentDropZone.validations, 'maxCount');
+  let rest = reversePluckProps(currentDropZone.validations, 'maxCount', 'minCount');
 
   if (state.status === EditingStatus.SORTING_COMPONENT && currentDropZone.origin) {
     length = length - 1;
   }
 
-  const maxCount = iceRegistry.runValidation(currentDropZone.iceId as number, 'maxCount', [length]);
+  const maxCount = !currentDropZone.origin ? iceRegistry.runValidation(currentDropZone.iceId as number, 'maxCount', [length]) : null;
 
   if (maxCount) {
     rest.maxCount = maxCount;
@@ -561,11 +561,14 @@ const drop_zone_enter: GuestReducer = (state, action) => {
 // region drop_zone_leave
 const drop_zone_leave: GuestReducer = (state, action) => {
   const { iceId } = action.payload;
+  if (!state.dragContext) {
+    return;
+  }
   const { dropZones: currentDropZones } = state.dragContext;
   const currentDropZone = currentDropZones.find((dropZone) => dropZone.iceId === iceId);
   let length = currentDropZone.children.length;
-  let invalidDrop = false;
-  let rest = reversePluckProps(currentDropZone.validations, 'maxCount');
+  let invalidDrop = state.dragContext.invalidDrop;
+  let rest = reversePluckProps(currentDropZone.validations, 'minCount');
 
   if (state.status === EditingStatus.SORTING_COMPONENT && currentDropZone.origin) {
     length = length - 1;

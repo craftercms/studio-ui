@@ -297,11 +297,11 @@ function Guest(props: GuestProps) {
 
   useEffect(() => {
     if (nnou(dragContextDropZoneIceId)) {
-      dispatch({ type: 'drop_zone_enter', payload: { iceId: dragContextDropZoneIceId } });
       console.log({ type: 'drop_zone_enter' }, dragContextDropZoneIceId);
+      dispatch({ type: 'drop_zone_enter', payload: { iceId: dragContextDropZoneIceId } });
       return () => {
-        dispatch({ type: 'drop_zone_leave', payload: { iceId: dragContextDropZoneIceId } });
         console.log({ type: 'drop_zone_leave' }, dragContextDropZoneIceId);
+        dispatch({ type: 'drop_zone_leave', payload: { iceId: dragContextDropZoneIceId } });
       };
     }
   }, [dispatch, dragContextDropZoneIceId]);
