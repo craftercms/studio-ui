@@ -192,9 +192,6 @@ function Guest(props: GuestProps) {
         }
       });
     },
-
-    // onDrop doesn't execute when trashing on host side
-    // Consider behaviour when running Host Guest-side
   };
   // endregion
 
