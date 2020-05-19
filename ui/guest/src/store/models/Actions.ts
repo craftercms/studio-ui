@@ -30,7 +30,8 @@ import {
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
-  DESKTOP_ASSET_UPLOAD_STARTED
+  DESKTOP_ASSET_UPLOAD_STARTED,
+  TRASHED
 } from '../../constants';
 
 export type GuestActionTypes =
@@ -69,7 +70,8 @@ export type GuestActionTypes =
   | typeof DESKTOP_ASSET_UPLOAD_COMPLETE
   | typeof DESKTOP_ASSET_DRAG_ENDED
   | typeof ASSET_DRAG_STARTED
-  | typeof ASSET_DRAG_ENDED;
+  | typeof ASSET_DRAG_ENDED
+  | typeof TRASHED;
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;

@@ -198,7 +198,7 @@ function Guest(props: GuestProps) {
     onTrashDrop(iceId: number): void {
       let { modelId, fieldId, index } = iceRegistry.recordOf(iceId);
       contentController.deleteItem(modelId, fieldId, index);
-    },
+    }
 
   };
   // endregion
@@ -250,6 +250,7 @@ function Guest(props: GuestProps) {
           dragOk(status) && dispatch({ type: COMPONENT_INSTANCE_DRAG_ENDED });
           break;
         case TRASHED:
+          dispatch({ type: TRASHED, payload: { iceId: payload } });
           return fn.onTrashDrop(payload);
         case CLEAR_SELECTED_ZONES:
           clearAndListen$.next();

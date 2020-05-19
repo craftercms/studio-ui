@@ -55,7 +55,8 @@ import {
   DESKTOP_ASSET_UPLOAD_STARTED,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
-  INSTANCE_DRAG_ENDED
+  INSTANCE_DRAG_ENDED,
+  TRASHED
 } from '../../constants';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState, GuestStateObservable } from '../models/GuestStore';
@@ -330,7 +331,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region Desktop Asset Upload (Complete)
-  // TODO: Carry or retrieve record for these events
   (action$: any, state$: GuestStateObservable) => {
     return action$.pipe(
       ofType(DESKTOP_ASSET_UPLOAD_COMPLETE),
@@ -358,6 +358,20 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     return action$.pipe(
       ofType('start_listening'),
       tap(() => post(CLEAR_SELECTED_ZONES)),
+      ignoreElements()
+    );
+  },
+  // endregion
+
+  // region trashDrop
+  (action$: MouseEventActionObservable) => {
+    return action$.pipe(
+      ofType(TRASHED),
+      tap((action) => {
+        const { iceId } = action.payload;
+        let { modelId, fieldId, index } = iceRegistry.recordOf(iceId);
+        contentController.deleteItem(modelId, fieldId, index);
+      }),
       ignoreElements()
     );
   },
