@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineEpics, Epic, ofType } from 'redux-observable';
+import { ActionsObservable, combineEpics, Epic, ofType } from 'redux-observable';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import {
   filter,
@@ -364,7 +364,9 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // endregion
 
   // region trashDrop
-  (action$: MouseEventActionObservable) => {
+  (action$: ActionsObservable<GuestStandardAction<{ iceId: number }>>) => {
+    // onDrop doesn't execute when trashing on host side
+    // Consider behaviour when running Host Guest-side
     return action$.pipe(
       ofType(TRASHED),
       tap((action) => {

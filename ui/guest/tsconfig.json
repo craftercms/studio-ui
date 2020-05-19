@@ -21,7 +21,7 @@
   "include": ["./src"],
   "exclude": [
     "./src/tests",
-    "./src/hooks.ts",
+    "./src/hooks.bak.ts",
     "node_modules"
   ]
 }

@@ -195,11 +195,6 @@ function Guest(props: GuestProps) {
 
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
-    onTrashDrop(iceId: number): void {
-      let { modelId, fieldId, index } = iceRegistry.recordOf(iceId);
-      contentController.deleteItem(modelId, fieldId, index);
-    }
-
   };
   // endregion
 
@@ -251,7 +246,7 @@ function Guest(props: GuestProps) {
           break;
         case TRASHED:
           dispatch({ type: TRASHED, payload: { iceId: payload } });
-          return fn.onTrashDrop(payload);
+          break;
         case CLEAR_SELECTED_ZONES:
           clearAndListen$.next();
           dispatch({ type: 'start_listening' });

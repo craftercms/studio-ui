@@ -27,13 +27,18 @@ import { EditingStatus } from '../../models/ICEStatus';
 import { deleteProperty, notNullOrUndefined } from '../../utils/object';
 import { getDragContextFromReceptacles, getHighlighted } from '../../utils/dom';
 import {
+  ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
+  COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
+  COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
-  DESKTOP_ASSET_UPLOAD_STARTED
+  DESKTOP_ASSET_UPLOAD_STARTED,
+  TRASHED
 } from '../../constants';
 
 // region mouseover
@@ -70,7 +75,6 @@ const mouseleave: GuestReducer = (state) => {
 const host_component_drag_started: GuestReducer = (state, action) => {
   const { contentType } = action.payload;
   if (notNullOrUndefined(contentType)) {
-
     const receptacles = iceRegistry.getContentTypeReceptacles(contentType);
     const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles);
     const highlighted = getHighlighted(dropZones);
@@ -102,7 +106,6 @@ const host_component_drag_started: GuestReducer = (state, action) => {
 const host_instance_drag_started: GuestReducer = (state, action) => {
   const { instance } = action.payload;
   if (notNullOrUndefined(instance)) {
-
     const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
     const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles);
     const highlighted = getHighlighted(dropZones);
@@ -207,9 +210,12 @@ const dragstart: GuestReducer = (state, action) => {
   // Items that browser make draggable by default (images, etc)
   const iceId = state.draggable?.[record.id];
   if (notNullOrUndefined(iceId)) {
-
     const receptacles = iceRegistry.getRecordReceptacles(iceId);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, null, record);
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(
+      receptacles,
+      null,
+      record
+    );
     const highlighted = getHighlighted(dropZones);
 
     return {
@@ -241,14 +247,14 @@ const dragstart: GuestReducer = (state, action) => {
 const dragleave: GuestReducer = (state) => {
   return dragOk(state.status)
     ? {
-      ...state,
-      dragContext: {
-        ...state.dragContext,
-        over: null,
-        inZone: false,
-        targetIndex: null
+        ...state,
+        dragContext: {
+          ...state.dragContext,
+          over: null,
+          inZone: false,
+          targetIndex: null
+        }
       }
-    }
     : state;
 };
 // endregion
@@ -313,12 +319,12 @@ const dblclick: GuestReducer = (state, action) => {
   const { record } = action.payload;
   return state.status === EditingStatus.LISTENING
     ? {
-      ...state,
-      status: EditingStatus.EDITING_COMPONENT_INLINE,
-      editable: {
-        [record.id]: record
+        ...state,
+        status: EditingStatus.EDITING_COMPONENT_INLINE,
+        editable: {
+          [record.id]: record
+        }
       }
-    }
     : state;
 };
 // endregion
@@ -476,35 +482,49 @@ const initialState: GuestState = {
   contentTypes: {}
 };
 
+const foo = (state) => state;
+
 const reducerFunctions: {
   [K in GuestActionTypes]: (...args: any) => GuestState;
 } = {
   computed_dragend,
   computed_dragover,
   dblclick,
-  [DESKTOP_ASSET_UPLOAD_STARTED]: desktop_asset_upload_started,
-  [DESKTOP_ASSET_UPLOAD_COMPLETE]: desktop_asset_upload_complete,
-  [DESKTOP_ASSET_UPLOAD_PROGRESS]: desktop_asset_upload_progress,
-  dragend: (state) => state,
+  dragend: foo,
   dragleave,
-  dragover: (state) => state,
+  dragover: foo,
   dragstart,
-  drop: (state) => state,
+  drop: foo,
   set_drop_position,
   edit_component_inline,
   exit_component_inline_edit,
   ice_zone_selected,
-  insert_component: (state) => state,
-  insert_instance: (state) => state,
+  insert_component: foo,
+  insert_instance: foo,
   mouseleave,
   mouseover,
-  move_component: (state) => state,
-  set_edit_mode: (state) => state,
+  move_component: foo,
+  set_edit_mode: foo,
   start_listening,
-  add_asset_types: (state) => state,
-  click: (state) => state,
+  add_asset_types: foo,
+  click: foo,
   scrolling,
   scrolling_stopped,
+  [TRASHED]: foo,
+  [ASSET_DRAG_ENDED]: foo,
+  [ASSET_DRAG_STARTED]: foo,
+  [COMPONENT_DRAG_ENDED]: foo,
+  [COMPONENT_DRAG_STARTED]: foo,
+  [COMPONENT_INSTANCE_DRAG_ENDED]: foo,
+  [COMPONENT_INSTANCE_DRAG_STARTED]: foo,
+  [DESKTOP_ASSET_DRAG_ENDED]: foo,
+  [DESKTOP_ASSET_DRAG_STARTED]: foo,
+  [DESKTOP_ASSET_UPLOAD_COMPLETE]: foo,
+  [DESKTOP_ASSET_UPLOAD_PROGRESS]: foo,
+  [DESKTOP_ASSET_UPLOAD_STARTED]: foo,
+  [DESKTOP_ASSET_UPLOAD_STARTED]: desktop_asset_upload_started,
+  [DESKTOP_ASSET_UPLOAD_COMPLETE]: desktop_asset_upload_complete,
+  [DESKTOP_ASSET_UPLOAD_PROGRESS]: desktop_asset_upload_progress,
   [COMPONENT_DRAG_STARTED]: host_component_drag_started,
   [COMPONENT_INSTANCE_DRAG_STARTED]: host_instance_drag_started,
   [DESKTOP_ASSET_DRAG_STARTED]: desktop_asset_drag_started,

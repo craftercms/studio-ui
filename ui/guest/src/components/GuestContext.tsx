@@ -16,7 +16,10 @@
 
 import React, { useContext, useMemo } from 'react';
 
-export type GuestContextProps = { onEvent: Function };
+export type GuestContextProps = {
+  // onEvent: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>
+  onEvent: (event, elementRegistryId?: number) => any
+};
 
 const GuestContext = React.createContext<GuestContextProps>(undefined);
 
