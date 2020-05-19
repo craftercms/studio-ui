@@ -20,7 +20,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, useSpreadState, useUnmount } from '../../utils/hooks';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
-import { LegacyItem } from '../../models/Item';
+import { SandboxItem } from '../../models/Item';
 import DialogHeader from './DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from './DialogBody';
@@ -52,7 +52,7 @@ import { getCurrentLocale } from '../CrafterCMSNextBridge';
 // region Typings
 
 type ApiState = { error: ApiResponse, submitting: boolean };
-type Source = LegacyItem[];
+type Source = SandboxItem[];
 type Return = Source;
 
 interface RejectDialogContentUIProps {
@@ -78,7 +78,7 @@ interface RejectDialogUIProps {
 
 interface RejectDialogBaseProps {
   open: boolean;
-  items?: LegacyItem[];
+  items?: SandboxItem[];
 }
 
 export type RejectDialogProps = PropsWithChildren<RejectDialogBaseProps & {
@@ -136,22 +136,22 @@ function RejectDialogContentUI(props: RejectDialogContentUIProps) {
   return (
     <List className={classes.itemsList}>
       {
-        rejectItems.map(file => {
-          const labelId = `checkbox-list-label-${file.uri}`;
+        rejectItems.map(item => {
+          const labelId = `checkbox-list-label-${item.path}`;
 
           return (
-            <ListItem key={file.uri} onClick={() => onUpdateChecked(file.uri)} button>
+            <ListItem key={item.path} onClick={() => onUpdateChecked(item.path)} button>
               <ListItemIcon>
                 <Checkbox
                   edge="start"
-                  checked={checkedItems.includes(file.uri)}
+                  checked={checkedItems.includes(item.path)}
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ 'aria-labelledby': labelId }}
                   color="primary"
                 />
               </ListItemIcon>
-              <ListItemText primary={file.name} secondary={file.uri} id={labelId}/>
+              <ListItemText primary={item.label} secondary={item.path} id={labelId}/>
             </ListItem>
           );
         })
@@ -236,7 +236,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                   <MenuItem key={'NotApproved'} value={'NotApproved'}>
                     <FormattedMessage id="rejectDialog.notApproved" defaultMessage="Not Approved" />
                   </MenuItem>
-                  <MenuItem key={'IncorrectBranding'} value={'IncorrectBranding'}>
+                  <MenuItem key={'IB'} value={'IB'}>
                     <FormattedMessage
                       id="rejectDialog.incorrectBranding" defaultMessage="Incorrect Branding"
                     />
@@ -335,7 +335,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     const newChecked = [];
 
     items.forEach((item) => {
-      const uri = item.uri;
+      const uri = item.path;
       newChecked.push(uri);
     });
 

@@ -34,7 +34,8 @@ import {
   showDeleteDialog,
   showDependenciesDialog,
   showHistoryDialog,
-  showPublishDialog
+  showPublishDialog,
+  showRejectDialog
 } from '../state/actions/dialogs';
 import { showEditDialog } from '../state/reducers/dialogs/edit';
 import { batchActions } from '../state/actions/misc';
@@ -100,6 +101,12 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         dispatch(showPublishDialog({
           items: [item],
           scheduling: 'now'
+        }));
+        break;
+      }
+      case 'reject': {
+        dispatch(showRejectDialog({
+          items: [item]
         }));
         break;
       }
@@ -195,6 +202,15 @@ export default function ComponentMenu(props: ComponentMenuProps) {
             <FormattedMessage
               id="previewToolBar.menu.publish"
               defaultMessage="Publish"
+            />
+          </MenuItem>
+        }
+        {
+          (item && (item.submitted || item.scheduled || item.deleted)) &&
+          <MenuItem onClick={() => handleEdit('reject')}>
+            <FormattedMessage
+              id="previewToolBar.menu.reject"
+              defaultMessage="Reject"
             />
           </MenuItem>
         }

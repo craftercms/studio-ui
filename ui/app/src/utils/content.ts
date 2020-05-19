@@ -101,7 +101,10 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     modifier: null,
     lastModifiedDate: null,
     commitId: null,
-    sizeInBytes: null
+    sizeInBytes: null,
+    submitted: item.isSubmitted,
+    scheduled: item.isScheduled,
+    deleted: item.isDeleted
   };
 }
 
