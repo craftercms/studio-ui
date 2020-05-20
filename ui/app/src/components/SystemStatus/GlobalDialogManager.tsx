@@ -36,7 +36,8 @@ const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDi
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
 const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
-const EmbeddedLegacyEditors = lazy(() =>  import('../../modules/Preview/EmbeddedLegacyEditors'));
+const EmbeddedLegacyEditors = lazy(() => import('../../modules/Preview/EmbeddedLegacyEditors'));
+const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 
 function createCallback(
   action: StandardAction,
@@ -223,6 +224,17 @@ function GlobalDialogManager() {
 
       {/* region Auth Monitor */}
       {/* TODO: Move auth monitor here */}
+      {/* endregion */}
+
+      {/* region Workflow Cancellation */}
+      <WorkflowCancellationDialog
+        open={state.workflowCancellation.open}
+        items={state.workflowCancellation.items}
+        onClose={createCallback(state.workflowCancellation.onClose, dispatch)}
+        onClosed={createCallback(state.workflowCancellation.onClosed, dispatch)}
+        onDismiss={createCallback(state.workflowCancellation.onDismiss, dispatch)}
+        onContinue={createCallback(state.workflowCancellation.onContinue, dispatch)}
+      />
       {/* endregion */}
     </Suspense>
   );
