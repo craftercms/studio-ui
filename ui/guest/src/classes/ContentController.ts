@@ -14,17 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { filter, map, share, take } from 'rxjs/operators';
+import { BehaviorSubject, NEVER, Observable, Subject } from 'rxjs';
+import { filter, map, pluck, share, switchMap, take, tap } from 'rxjs/operators';
 import { ModelHelper } from '../utils/ModelHelper';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../communicator';
 import uuid from 'uuid/v4';
-import {
-  ContentInstance,
-  ContentInstanceSystemProps
-} from '@craftercms/studio-ui/models/ContentInstance';
+import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { Operation } from '../models/Operations';
@@ -40,7 +36,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../constants';
-import { createLookupTable, pluckProps, reversePluckProps } from '../utils/object';
+import { createLookupTable, isNullOrUndefined } from '../utils/object';
 import { popPiece, removeLastPiece } from '../utils/string';
 import {
   findComponentContainerFields,
@@ -48,6 +44,14 @@ import {
   getCollectionWithoutItemAtIndex,
   getParentModelId
 } from '../utils/ice';
+import { createQuery, search } from '@craftercms/search';
+import { parseDescriptor } from '@craftercms/content';
+import {
+  createChildModelIdList,
+  modelsToLookup,
+  normalizeModelsLookup,
+  preParseSearchResults
+} from '../utils/content';
 
 const operations$ = new Subject<Operation>();
 const operations = operations$.asObservable();
@@ -74,7 +78,7 @@ export const children = {
   /* [id]: [id, id, id] */
 };
 
-const modelRequestsInFlight = {};
+const modelsRequested = {};
 
 function computeChildren(model: ContentInstance): void {
 
@@ -534,13 +538,25 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
 // endregion
 
+const fetching$ = new BehaviorSubject<boolean>(false);
+
 function fetchModel(modelId: string): void {
-  if (!(modelId in modelRequestsInFlight)) {
-    modelRequestsInFlight[modelId] = fetchById(modelId).subscribe(
-      (response: LookupTable<ContentInstance>) => {
-        delete modelRequestsInFlight[modelId];
-        modelsResponseReceived(response);
-      },
+  if (!(modelId in modelsRequested)) {
+    modelsRequested[modelId] = true;
+    fetching$.pipe(
+      filter(isFetching => !isFetching),
+      switchMap(() => _models$.pipe(pluck(modelId), take(1))),
+      switchMap((model) => {
+        if (isNullOrUndefined(model)) {
+          return fetchById(modelId);
+        } else {
+          // Model was already fetched, discard repeated request.
+          return NEVER;
+        }
+      }),
+      take(1)
+    ).subscribe(
+      modelResponseReceived,
       (e) => console.log('Model fetch has failed...', e)
     );
   }
@@ -550,35 +566,33 @@ function fetchContentType(contentTypeId: string): boolean {
   return false;
 }
 
-function modelsResponseReceived(responseModels: ContentInstance[]): void;
-function modelsResponseReceived(responseModels: LookupTable<ContentInstance>): void;
-function modelsResponseReceived(responseModels: LookupTable<ContentInstance> | ContentInstance[]): void {
-
-  if (Array.isArray(responseModels)) {
-    responseModels = createLookupTable(responseModels, 'craftercms.id');
-  }
+function modelResponseReceived(responseModels: LookupTable<ContentInstance>): void {
 
   const currentModels = _models$.value;
+  const normalizedModels = normalizeModelsLookup(responseModels);
 
-  post(GUEST_MODELS_RECEIVED, responseModels);
-
-  _contentTypes$.pipe(
-    filter(hash => Object.values(hash).length !== 0),
-    take(1)
-  ).subscribe(() => {
-    Object.values(responseModels).forEach((model) =>
-      computeChildren(model)
-    );
-    post(CHILDREN_MAP_UPDATE, children);
+  Object.entries(responseModels).forEach(([id, model]) => {
+    children[id] = createChildModelIdList(model);
+    children[id].forEach((modelId) => {
+      modelsRequested[modelId] = true;
+    });
+    if (children[id].length === 0) {
+      children[id] = null;
+    }
   });
+
+  post(GUEST_MODELS_RECEIVED, normalizedModels);
+  post(CHILDREN_MAP_UPDATE, children);
 
   _models$.next(
     Object.assign(
       {},
       currentModels,
-      responseModels
+      normalizedModels
     )
   );
+
+  fetching$.next(false);
 
 }
 
@@ -602,291 +616,36 @@ function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentT
 
 }
 
-function fetchById(id: string, site: string = Cookies.get('crafterSite')): Observable<ContentInstance> {
-  const isArticleRequest = [
-    'f360780a-372f-d005-d736-bcc9d657e50c',
-    'b7a724f1-3422-055d-a244-5fc79a1ca007',
-    '52e8e75d-94f8-ae0b-3317-8d592b3d7dce',
-    '07fc5ac7-05ea-b038-6455-26f895ba8822',
-    '6121741f-8b6f-75ce-151b-75e57f04da13',
-    '8bdd0180-b7c8-1eff-1f20-76ddca377e3c',
-    'd5824453-b743-4575-bb7a-5c49c0fbedbb',
-    'b30875f3-87ce-7b55-fd19-3d5c00508a08',
-    'f1f9c488-67e1-7ec0-d3ca-560b194e64d1'
-  ].includes(id);
-  return ajax.post(
-    `/api/1/site/graphql?crafterSite=${site}`,
-    {
-      variables: { id },
-      query: (isArticleRequest ? `
-        query Articles($id: String) {
-          contentItems: page_article {
-            total
-            items {
-              id: objectId(filter: {equals: $id})
-              path: localId
-              contentTypeId: content__type
-              dateCreated: createdDate_dt
-              dateModified: lastModifiedDate_dt
-              label: internal__name
-              title_t
-              author_s
-              categories_o {
-                item {
-                  key
-                  value_smv
-                }
-              }
-              featured_b
-              summary_t
-              subject_t
-              segments_o {
-                item {
-                  key
-                  value_smv
-                }
-              }
-              sections_o {
-                item {
-                  section_html
-                }
-              }
-              orderDefault_f
-              left_rail_o {
-                ...ContentIncludeWrapperFragment
-              }
-              header_o {
-                ...ContentIncludeWrapperFragment
-              }
-              image_s
-            }
-          }
-        }` : `
-        query Page {
-          contentItems(limit: 1000) {
-            total
-            items {
-              id: objectId
-              path: localId
-              contentTypeId: content__type
-              dateCreated: createdDate_dt
-              dateModified: lastModifiedDate_dt
-              label: internal__name
-              ... on page_article {
-                ...CrafterCMSProps
-                title_t
-                author_s
-                categories_o {
-                  item {
-                    key
-                    value_smv
-                  }
-                }
-                featured_b
-                summary_t
-                subject_t
-                segments_o {
-                  item {
-                    key
-                    value_smv
-                  }
-                }
-                sections_o {
-                  item {
-                    section_html
-                  }
-                }
-                orderDefault_f
-                left_rail_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                header_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                image_s
-              }
-              ... on component_articles__widget {
-                title_t
-                max_articles_i
-              }
-              ... on component_contact__widget {
-                title_t
-                text_html
-                email_s
-                phone_s
-                address_html
-              }
-              ... on component_feature {
-                icon_s
-                title_t
-                body_html
-              }
-              ... on component_header {
-                logo_s
-                logo_text_t
-                business_name_s
-                social_media_links_o {
-                  item {
-                    social_media_s
-                    url_s
-                  }
-                }
-              }
-              ... on component_left__rail {
-                widgets_o {
-                  item {
-                    key
-                    component {
-                      id: objectId
-                    }
-                  }
-                }
-              }
-              ... on page_home {
-                title_t
-                header_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                left_rail_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                hero_title_html
-                hero_text_html
-                hero_image_s
-                features_title_t
-                features_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                content_o {
-                  ...ContentIncludeWrapperFragment
-                }
-              }
-              ... on taxonomy {
-                items {
-                  item {
-                    key
-                    value
+function fetchById(
+  id: string,
+  site: string = Cookies.get('crafterSite')
+): Observable<LookupTable<ContentInstance>> {
+  fetching$.next(true);
+  return search(
+    createQuery('elasticsearch', {
+      query: {
+        bool: {
+          filter: [
+            {
+              bool: {
+                should: {
+                  multi_match: {
+                    query: id,
+                    fields: ['*objectId'],
                   }
                 }
               }
             }
-          }
+          ]
         }
-      `) + (`
-        fragment ContentIncludeWrapperFragment on ContentIncludeWrapper {
-          item {
-            key
-            component {
-              id: objectId
-              path: localId
-              contentTypeId: content__type
-              dateCreated: createdDate_dt
-              dateModified: lastModifiedDate_dt
-              label: internal__name
-              ... on component_feature {
-                icon_s
-                title_t
-                body_html
-                contentTypeId: content__type
-                dateCreated: createdDate_dt
-                dateModified: lastModifiedDate_dt
-              }
-              ... on component_layout {
-                numberOfColumns_s
-                items_o {
-                  item {
-                    content_o {
-                      item {
-                        key
-                        component {
-                          ...CrafterCMSProps
-                          ... on component_feature {
-                            icon_s
-                            title_t
-                            body_html
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        fragment CrafterCMSProps on ContentItem {
-          id: objectId
-          path: localId
-          contentTypeId: content__type
-          dateCreated: createdDate_dt
-          dateModified: lastModifiedDate_dt
-          label: internal__name
-        }`
-      )
-    },
-    { 'Content-Type': 'application/json' }
+      }
+    }),
+    { baseUrl: '', site }
   ).pipe(
-    map(({ response }) => response.data.contentItems.items.reduce(
-      reducer,
-      {}
-    ))
+    tap(({ total }) => (total === 0) && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)),
+    map<any, ContentInstance[]>(({ hits }) => hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))),
+    map(modelsToLookup)
   );
-}
-
-function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstance): LookupTable<ContentInstance> {
-
-  const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
-
-  if ([
-    '/page/search-results',
-    '/component/level-descriptor'
-  ].includes(model.contentTypeId)) {
-    return lookupTable;
-  }
-
-  const system = pluckProps(model, ...systemPropList);
-  const rawData = reversePluckProps(model, ...systemPropList);
-  const data = {};
-
-  const processEntry = ([key, value], data) => {
-    if (key.endsWith('_o')) {
-      data[key] = [];
-      value.item.forEach((item) => {
-        // Components & repeat groups
-        if (item.component?.id) {
-          // 1. Components
-          data[key].push(item.component.id);
-          if (item.component.id === item.key) {
-            // Embedded component found.
-            reducer(lookupTable, item.component);
-          }
-        } else {
-          // 2. Repeat Groups
-          const repeatGroupItem = {};
-          data[key].push(repeatGroupItem);
-          Object.entries(item).forEach((entry) =>
-            processEntry(entry, repeatGroupItem)
-          );
-        }
-      });
-    } else if (model.contentTypeId === '/taxonomy' && key === 'items') {
-      data[key] = value.item;
-    } else {
-      data[key] = value;
-    }
-  };
-
-  Object.entries(rawData).forEach((entry, index) =>
-    processEntry(entry, data)
-  );
-
-  lookupTable[model.id] = {
-    craftercms: system as ContentInstanceSystemProps,
-    ...data
-  };
-
-  return lookupTable;
-
 }
 
 fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) => {

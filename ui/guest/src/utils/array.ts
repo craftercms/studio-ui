@@ -16,18 +16,22 @@
 
 import { notNullOrUndefined } from './object';
 
-export function forEach(array: any[], fn: (item: any, index?: number, array?: any[]) => any, emptyReturnValue?: any): any {
+export function forEach<T = unknown, R = undefined>(
+  array: T[],
+  fn: (item: T, index: number, array: T[]) => R | 'continue' | 'break' | undefined,
+  emptyReturnValue?: R
+): R {
   if (notNullOrUndefined(emptyReturnValue) && array.length === 0) {
     return emptyReturnValue;
   }
   for (let i = 0, l = array.length; i < l; i++) {
     const result = fn(array[i], i, array);
-    if (result === 'continue') {
-
-    } else if (result === 'break') {
-      break;
-    } else if (result !== undefined) {
-      return result;
+    if (result !== 'continue') {
+      if (result === 'break') {
+        break;
+      } else if (result !== undefined) {
+        return result;
+      }
     }
   }
   return emptyReturnValue;

@@ -98,9 +98,12 @@ const plugins = [
   })
 ];
 
-const external = [];
+const globals = {
+  // '@craftercms/content': 'craftercms.content',
+  // '@craftercms/search': 'craftercms.search'
+};
 
-const globals = {};
+const external = Object.keys(globals);
 
 const baseConfig = {
   // TODO: Without @babel/preset-env this error doesn't occur.

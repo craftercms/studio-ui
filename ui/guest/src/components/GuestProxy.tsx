@@ -396,6 +396,7 @@ export default function GuestProxy() {
       Object.entries(state.draggable),
       ([phyId, iceId]) => {
         if (iceId !== false) {
+          // @ts-ignore TODO: Fix type
           const record = ElementRegistry.get(phyId);
           // Item deletion incurs in a brief moment where a record has been removed
           // but the context draggable table hasn't been cleaned up.

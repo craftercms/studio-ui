@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "rootDir": "./src",
-    "outDir": "build_tsc",
+    "outDir": "./build_tsc",
     "module": "esnext",
     "target": "esnext",
     "importHelpers": true,

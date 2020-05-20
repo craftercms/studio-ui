@@ -48,35 +48,35 @@ import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeR
 // delegate on the document (i.e. the event as bubbled all the way up).
 // Would need to add additional logic to set the delegation in a way that
 // events can still be stopped (see jQuery).
-export function addClickListener(
-  element: HTMLElement | Document,
-  type: string,
-  handler: (e: Event) => any
-): Subscription {
-  if (element === document) {
-    // TODO: set up as delegate, control event propagation & stopping accordingly
-  }
-
-  const mouseDown$ = fromEvent(element, 'mousedown');
-  const mouseUp$ = fromEvent(element, 'mouseup');
-  return mouseDown$
-    .pipe(
-      switchMap(() => mouseUp$.pipe(takeUntil(interval(300)), take(1))),
-      filter(
-        (e: any) =>
-          e.target.hasAttribute('data-craftercms-model-id') ||
-          forEach(
-            e.path,
-            (el) =>
-              el !== window && el !== document && el.hasAttribute('data-craftercms-model-id')
-                ? true
-                : 'continue',
-            false
-          )
-      )
-    )
-    .subscribe(handler);
-}
+// export function addClickListener(
+//   element: HTMLElement | Document,
+//   type: string,
+//   handler: (e: Event) => any
+// ): Subscription {
+//   if (element === document) {
+//     // TODO: set up as delegate, control event propagation & stopping accordingly
+//   }
+//
+//   const mouseDown$ = fromEvent(element, 'mousedown');
+//   const mouseUp$ = fromEvent(element, 'mouseup');
+//   return mouseDown$
+//     .pipe(
+//       switchMap(() => mouseUp$.pipe(takeUntil(interval(300)), take(1))),
+//       filter(
+//         (e: any) =>
+//           e.target.hasAttribute('data-craftercms-model-id') ||
+//           forEach(
+//             e.path,
+//             (el) =>
+//               el !== window && el !== document && el.hasAttribute('data-craftercms-model-id')
+//                 ? true
+//                 : 'continue',
+//             false
+//           )
+//       )
+//     )
+//     .subscribe(handler);
+// }
 
 export function sibling(element: HTMLElement, next: boolean): Element {
   return next ? element.nextElementSibling : element.previousElementSibling;

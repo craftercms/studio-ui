@@ -28,7 +28,7 @@ import { getChildArrangement, sibling } from '../utils/dom';
 
 let seq = 0;
 
-const db = {};
+const db: LookupTable<ElementRecord> = {};
 const registry = {};
 
 export function get(id: number): ElementRecord {
@@ -123,6 +123,7 @@ export function completeDeferredRegistration(id: number): void {
   const { element, modelId, index, label, fieldId: fieldIds, iceIds } = db[id];
 
   if (fieldIds.length > 0) {
+    // @ts-ignore TODO: Fix type
     fieldIds.forEach((fieldId) => {
       const iceId = iceRegistry.register({ modelId, index, fieldId });
       registry[iceId] = { id, element, modelId, index, label, fieldId, iceId };
@@ -150,11 +151,11 @@ export function deregister(id: string | number): ElementRecord {
   return record;
 }
 
-export function getDraggable(id: number): string {
+export function getDraggable(id: number): number | boolean {
   const record = get(id);
   return forEach(
     record.iceIds,
-    (iceId) => {
+    function (iceId): boolean | number {
       if (iceRegistry.isMovable(iceId)) {
         return iceId;
       }
