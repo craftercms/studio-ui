@@ -139,7 +139,7 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
         }
         onDismiss={onDismiss}
       />
-      <DialogBody id="confirmDialogBody">
+      <DialogBody>
         <SuspenseWithEmptyState
           resource={resource}
           withEmptyStateProps={{
