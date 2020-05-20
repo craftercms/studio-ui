@@ -25,8 +25,6 @@ import { GuestContextProvider, useGuestContext } from './components/GuestContext
 import ZoneMarker from './components/ZoneMarker';
 import Spinner from './components/Spinner';
 
-document.domain = 'localhost';
-
 function initPageBuilder({ modelId, path }) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   ReactDOM.render(
