@@ -19,8 +19,10 @@ import iceRegistry from './classes/ICERegistry';
 import { Editor } from 'tinymce';
 import contentController from './classes/ContentController';
 import { createGuestStore } from './store/store';
+import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
+import { post } from './communicator';
 
-export function initTinyMCE(record: ElementRecord) {
+export function initTinyMCE(record: ElementRecord, validations: Partial<ContentTypeFieldValidations>) {
   const store = createGuestStore();
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
@@ -53,8 +55,19 @@ export function initTinyMCE(record: ElementRecord) {
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
           if (!e.relatedTarget) {
+            if (validations.required && !getContent().trim()) {
+              post({
+                type: 'VALIDATION_MESSAGE', payload: {
+                  id: 'required',
+                  level: 'required',
+                  values: { field: record.label }
+                }
+              });
+              editor.setContent(originalContent);
+            } else {
+              save();
+            }
             e.stopImmediatePropagation();
-            save();
             cancel();
           }
         });
@@ -64,10 +77,25 @@ export function initTinyMCE(record: ElementRecord) {
         });
 
         editor.on('keydown', (e) => {
+          const char = String.fromCharCode(e.keyCode);
           if (e.keyCode === 27) {
             e.stopImmediatePropagation();
             editor.setContent(originalContent);
             cancel();
+          } else if (
+            validations.maxLength &&
+            /[a-zA-Z0-9-_ ]/.test(char) &&
+            getContent().length + 1 > parseInt(validations.maxLength.value)
+          ) {
+            post({
+              type: 'VALIDATION_MESSAGE', payload: {
+                id: 'maxLength',
+                level: 'required',
+                values: { maxLength: validations.maxLength.value }
+              }
+            });
+            e.stopPropagation();
+            return false;
           }
         });
 

@@ -42,33 +42,37 @@ import { forEach } from '../utils/array';
 import { findComponentContainerFields } from '../utils/ice';
 
 const validationChecks: { [key in ValidationKeys]: Function } = {
-  minCount(id, min, level, length) {
-    if (length < min) {
+  minCount(id, minCount, level, length) {
+    if (length < minCount) {
       return {
         id,
         level,
-        values: { min }
+        values: { minCount }
       };
     } else {
       return null;
     }
   },
-  maxCount(id, max, level, length) {
-    if (length >= max) {
+  maxCount(id, maxCount, level, length) {
+    if (length >= maxCount) {
       return {
         id,
         level,
-        values: { max }
+        values: { maxCount }
       };
     } else {
       return null;
     }
   },
   allowedContentTypeTags() {
-
   },
   allowedContentTypes() {
-
+  },
+  maxLength() {
+  },
+  readOnly() {
+  },
+  required() {
   }
 };
 

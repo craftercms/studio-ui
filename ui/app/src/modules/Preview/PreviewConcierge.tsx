@@ -85,11 +85,19 @@ import { useSnackbar } from 'notistack';
 const guestMessages = defineMessages({
   maxCount: {
     id: 'validations.maxCount',
-    defaultMessage: 'The max count is more than allowable maximum of {max}'
+    defaultMessage: 'The max count is more than allowable maximum of {maxCount}'
   },
   minCount: {
     id: 'validations.minCount',
-    defaultMessage: 'The min count is less than allowable minimum of {min}'
+    defaultMessage: 'The min count is less than allowable minimum of {minCount}'
+  },
+  required: {
+    id: 'validations.required',
+    defaultMessage: '{field} is required'
+  },
+  maxLength: {
+    id: 'validations.maxLength',
+    defaultMessage: 'The max count of {maxLength} characters is reached'
   }
 });
 

@@ -33,7 +33,10 @@ export type ValidationKeys =
   'allowedContentTypeTags'
   | 'allowedContentTypes'
   | 'minCount'
-  | 'maxCount';
+  | 'maxCount'
+  | 'maxLength'
+  | 'readOnly'
+  | 'required';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;
