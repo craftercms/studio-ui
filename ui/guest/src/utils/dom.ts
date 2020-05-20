@@ -109,35 +109,35 @@ export function getDropMarkerPosition(args: DropMarkerPositionArgs): DropMarkerP
     : // Account for whether the previous rect inline with current rect...
     // Only matters when working with horizontally laid-out elements
     horizontal && nextOrPrevRect.top !== refElementRect.top
-    ? 0
-    : // Calculate the middle point between the two adjacent rects.
-    // This avoids the drop marker moving by millimeters when switching from
-    // inserting after nodes[i] to before node[i+1]
-    before
-    ? // Inserting before
-      horizontal
-      ? // Smaller number fronted to obtain a negative
-        // value since wish to subtract from the position
-        (prevRect.right - refElementRect.left) / 2
-      : (prevRect.bottom - refElementRect.top) / 2
-    : // Inserting after
-    horizontal
-    ? // Bigger number fronted to obtain a positive
-      // value to add to the position
-      (nextRect.left - refElementRect.right) / 2
-    : (nextRect.top - refElementRect.bottom) / 2;
+      ? 0
+      : // Calculate the middle point between the two adjacent rects.
+      // This avoids the drop marker moving by millimeters when switching from
+      // inserting after nodes[i] to before node[i+1]
+      before
+        ? // Inserting before
+        horizontal
+          ? // Smaller number fronted to obtain a negative
+            // value since wish to subtract from the position
+          (prevRect.right - refElementRect.left) / 2
+          : (prevRect.bottom - refElementRect.top) / 2
+        : // Inserting after
+        horizontal
+          ? // Bigger number fronted to obtain a positive
+            // value to add to the position
+          (nextRect.left - refElementRect.right) / 2
+          : (nextRect.top - refElementRect.bottom) / 2;
 
   return horizontal
     ? {
-        height: refElementRect.height,
-        top: refElementRect.top,
-        left: before ? refElementRect.left + difference : refElementRect.right + difference
-      }
+      height: refElementRect.height,
+      top: refElementRect.top,
+      left: before ? refElementRect.left + difference : refElementRect.right + difference
+    }
     : {
-        width: refElementRect.width,
-        top: before ? refElementRect.top + difference : refElementRect.bottom + difference,
-        left: refElementRect.left
-      };
+      width: refElementRect.width,
+      top: before ? refElementRect.top + difference : refElementRect.bottom + difference,
+      left: refElementRect.left
+    };
 }
 
 export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
@@ -193,10 +193,10 @@ export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
 }
 
 export function insertDropMarker({
-  $dropMarker,
-  insertPosition,
-  refElement
-}: {
+                                   $dropMarker,
+                                   insertPosition,
+                                   refElement
+                                 }: {
   $dropMarker: JQuery<any>;
   insertPosition: string;
   refElement: HTMLElement | JQuery | string;
@@ -365,7 +365,7 @@ export function addAnimation(
   const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
   $element.addClass(animationClass);
   // @ts-ignore
-  $element.one(END_EVENT, function() {
+  $element.one(END_EVENT, function () {
     $element.removeClass(animationClass);
   });
 }
@@ -390,7 +390,7 @@ export function scrollToNode(node: RenderTree, scrollElement: string): void {
           scrollTop: $element.offset().top - 100
         },
         300,
-        function() {
+        function () {
           addAnimation($element, 'craftercms-contentTree-pulse');
         }
       );
@@ -438,6 +438,15 @@ export function getHighlighted(dropZones: DropZone[]): LookupTable<HighlightData
     object[id].validations = validations;
     return object;
   }, {} as LookupTable<HighlightData>);
+}
+
+export function updateDropZoneValidations(dropZone: DropZone, dropZones: DropZone[], validations: LookupTable<ValidationResult>): DropZone[] {
+  const newDropZone = { ...dropZone };
+  let newDropZones = [...dropZones];
+  newDropZone.validations = validations;
+  newDropZones = newDropZones.filter(item => item.iceId !== newDropZone.iceId);
+  newDropZones.push(newDropZone);
+  return newDropZones;
 }
 
 export function getDragContextFromReceptacles(

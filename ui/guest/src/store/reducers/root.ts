@@ -24,8 +24,12 @@ import { ElementRecord } from '../../models/InContextEditing';
 import { GuestActionTypes } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
 import { EditingStatus } from '../../models/ICEStatus';
-import { deleteProperty, notNullOrUndefined } from '../../utils/object';
-import { getDragContextFromReceptacles, getHighlighted } from '../../utils/dom';
+import { deleteProperty, notNullOrUndefined, reversePluckProps } from '../../utils/object';
+import {
+  getDragContextFromReceptacles,
+  getHighlighted,
+  updateDropZoneValidations
+} from '../../utils/dom';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -79,7 +83,8 @@ const host_component_drag_started: GuestReducer = (state, action) => {
   const { contentType } = action.payload;
   if (notNullOrUndefined(contentType)) {
     const receptacles = iceRegistry.getContentTypeReceptacles(contentType);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles);
+    const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
     const highlighted = getHighlighted(dropZones);
 
     return {
@@ -110,7 +115,8 @@ const host_instance_drag_started: GuestReducer = (state, action) => {
   const { instance } = action.payload;
   if (notNullOrUndefined(instance)) {
     const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
-    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles);
+    const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
+    const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(receptacles, validationsLookup);
     const highlighted = getHighlighted(dropZones);
 
     return {
@@ -214,9 +220,10 @@ const dragstart: GuestReducer = (state, action) => {
   const iceId = state.draggable?.[record.id];
   if (notNullOrUndefined(iceId)) {
     const receptacles = iceRegistry.getRecordReceptacles(iceId);
+    const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
     const { players, siblings, containers, dropZones } = getDragContextFromReceptacles(
       receptacles,
-      null,
+      validationsLookup,
       record
     );
     const highlighted = getHighlighted(dropZones);
@@ -247,7 +254,8 @@ const dragstart: GuestReducer = (state, action) => {
 // endregion
 
 // region dragleave
-const dragleave: GuestReducer = (state) => {
+const dragleave: GuestReducer = (state, action) => {
+  const leavingDropZone = !state.dragContext?.dropZone?.element.contains(action.payload.event.relatedTarget);
   return dragOk(state.status)
     ? {
       ...state,
@@ -255,7 +263,8 @@ const dragleave: GuestReducer = (state) => {
         ...state.dragContext,
         over: null,
         inZone: false,
-        targetIndex: null
+        targetIndex: null,
+        dropZone: leavingDropZone ? null : state.dragContext.dropZone
       }
     }
     : state;
@@ -516,6 +525,79 @@ const scrolling_stopped: GuestReducer = (state) => {
 };
 // endregion
 
+// region drop_zone_enter
+const drop_zone_enter: GuestReducer = (state, action) => {
+  const { iceId } = action.payload;
+  const { dropZones: currentDropZones } = state.dragContext;
+  const currentDropZone = currentDropZones.find((dropZone) => dropZone.iceId === iceId);
+  let length = currentDropZone.children.length;
+  let invalidDrop = currentDropZone.origin ? false : state.dragContext.invalidDrop;
+  let rest = reversePluckProps(currentDropZone.validations, 'maxCount', 'minCount');
+
+  if (state.status === EditingStatus.SORTING_COMPONENT && currentDropZone.origin) {
+    length = length - 1;
+  }
+
+  const maxCount = !currentDropZone.origin ? iceRegistry.runValidation(currentDropZone.iceId as number, 'maxCount', [length]) : null;
+
+  if (maxCount) {
+    rest.maxCount = maxCount;
+    invalidDrop = true;
+  }
+
+  const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
+  const highlighted = getHighlighted(dropZones);
+
+  return {
+    ...state,
+    dragContext: {
+      ...state.dragContext,
+      dropZones,
+      invalidDrop
+    },
+    highlighted
+  };
+};
+// endregion
+
+// region drop_zone_leave
+const drop_zone_leave: GuestReducer = (state, action) => {
+  const { iceId } = action.payload;
+  if (!state.dragContext) {
+    return;
+  }
+  const { dropZones: currentDropZones } = state.dragContext;
+  const currentDropZone = currentDropZones.find((dropZone) => dropZone.iceId === iceId);
+  let length = currentDropZone.children.length;
+  let invalidDrop = state.status === EditingStatus.SORTING_COMPONENT ? state.dragContext.invalidDrop : false;
+  let rest = reversePluckProps(currentDropZone.validations, 'minCount');
+
+  if (state.status === EditingStatus.SORTING_COMPONENT && currentDropZone.origin) {
+    length = length - 1;
+  }
+
+  const minCount = iceRegistry.runValidation(currentDropZone.iceId as number, 'minCount', [length]);
+
+  if (minCount) {
+    rest.minCount = minCount;
+    invalidDrop = !!currentDropZone.origin;
+  }
+
+  const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
+  const highlighted = getHighlighted(dropZones);
+
+  return {
+    ...state,
+    dragContext: {
+      ...state.dragContext,
+      dropZones,
+      invalidDrop
+    },
+    highlighted
+  };
+};
+// endregion
+
 const initialState: GuestState = {
   dragContext: null,
   draggable: {},
@@ -557,6 +639,8 @@ const reducerFunctions: {
   click: foo,
   scrolling,
   scrolling_stopped,
+  drop_zone_enter,
+  drop_zone_leave,
   [TRASHED]: foo,
   [ASSET_DRAG_ENDED]: foo,
   [COMPONENT_DRAG_ENDED]: foo,

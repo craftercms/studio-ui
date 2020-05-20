@@ -289,7 +289,7 @@ export function insertComponent(
     }
   });
 
-  children[modelId].push(instance.craftercms.id);
+  children[modelId]?.push(instance.craftercms.id);
 
   post(INSERT_COMPONENT_OPERATION, {
     modelId,

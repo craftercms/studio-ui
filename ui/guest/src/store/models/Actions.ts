@@ -63,6 +63,8 @@ export type GuestActionTypes =
   | 'start_listening'
   | 'scrolling'
   | 'scrolling_stopped'
+  | 'drop_zone_enter'
+  | 'drop_zone_leave'
   | typeof COMPONENT_DRAG_STARTED
   | typeof COMPONENT_DRAG_ENDED
   | typeof COMPONENT_INSTANCE_DRAG_STARTED

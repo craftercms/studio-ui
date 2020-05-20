@@ -32,6 +32,7 @@ export interface GuestState {
   dragContext: {
     targetIndex: number;
     inZone: boolean;
+    invalidDrop: boolean;
     dropZone: DropZone;
     players: any[];
     siblings: any[];
