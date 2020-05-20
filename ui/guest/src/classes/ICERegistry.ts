@@ -271,7 +271,7 @@ export function getContentTypeReceptacles(contentType: string | ContentType): IC
     const { fieldId, index } = record;
     if (notNullOrUndefined(fieldId)) {
       const { field, contentType: _contentType, model } = getReferentialEntries(record);
-      const acceptedTypes = field?.validations?.allowedContentTypes.value;
+      const acceptedTypes = field?.validations?.allowedContentTypes?.value;
       const accepts = acceptedTypes && (
         acceptedTypes.includes(contentTypeId) ||
         acceptedTypes.includes('*')

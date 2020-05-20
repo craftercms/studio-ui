@@ -88,7 +88,7 @@ export function getLegacyItem(site: string, path: string): Observable<LegacyItem
 export function getSandboxItem(site: string, path: string): Observable<SandboxItem> {
   return getLegacyItem(site, path).pipe(
     map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem)
-  )
+  );
 }
 
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
@@ -252,7 +252,7 @@ export function fetchFormDefinition(site: string, contentTypeId: string): Observ
 export function fetchLegacyContentType(site: string, contentTypeId: string): Observable<LegacyContentType> {
   return get(`/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`).pipe(
     pluck('response')
-  )
+  );
 }
 
 export function fetchContentType(site: string, contentTypeId: string): Observable<ContentType> {
@@ -430,7 +430,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   //       id: legacyDS.id,
   //       name: legacyDS.title,
   //       type: typeMap[legacyDS.type] || legacyDS.type, // e.g. shared-content, embedded-content, img-desktop-upload, img-repository-upload
-  //       contentTypes: null,
+  //       allowedContentTypes: null,
   //       repoPath: null,
   //       browsePath: null,
   //       enableSearchExisting: null,
@@ -440,10 +440,10 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   //
   //     asArray<LegacyFormDefinitionProperty>(legacyDS.properties.property).forEach(prop => {
   //       if (prop.name === 'contentTypeId') {
-  //         if (dataSources[legacyDS.id].contentTypes === null) {
-  //           dataSources[legacyDS.id].contentTypes = [];
+  //         if (dataSources[legacyDS.id].allowedContentTypes === null) {
+  //           dataSources[legacyDS.id].allowedContentTypes = [];
   //         }
-  //         dataSources[legacyDS.id].contentTypes.push(...prop.value.split(','));
+  //         dataSources[legacyDS.id].allowedContentTypes.push(...prop.value.split(','));
   //       } else if (propsToPluck.includes(prop.name)) {
   //         // TODO: Figure out how to reliable extract this for the purpose of validating welcomed content types.
   //         dataSources[legacyDS.id][prop.name] = prop.value;
@@ -494,6 +494,8 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           }
         });
 
+      console.log(legacyField.type);
+
       if (legacyField.type === 'repeat') {
         field.fields = {};
         asArray(legacyField.fields.field).forEach((_legacyField) => {
@@ -513,13 +515,8 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
         });
       } else if (legacyField.type === 'node-selector') {
         field.validations = getFieldValidations(legacyField.properties.property, receptaclesLookup);
+      } else if (legacyField.type === 'input') {
 
-        // field.validations = {
-        //   limit: { min: null, max: null, message: null },
-        //   allowedContentTypes: map.itemManager?.value,
-        // };
-        // asArray(legacyField.properties.property)
-        // minSize>value, maxSize>value, itemManager>value
       }
 
       fields[fieldId] = field;
@@ -548,6 +545,15 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
 }
 
+const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxLength'];
+const systemValidationsKeysMap = {
+  minSize: 'minCount',
+  maxSize: 'maxCount',
+  maxLength: 'maxLength',
+  contentTypes: 'allowedContentTypes',
+  tags: 'allowedContentTypeTags'
+};
+
 function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup: LookupTable<LegacyDataSource>): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty)
     .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
@@ -555,47 +561,31 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
       return table;
     }, {});
 
-  let validations: Partial<ContentTypeFieldValidations> = {
-    allowedContentTypeTags: {
-      id: 'allowedContentTypeTags',
-      value: [],
-      level: 'required'
-    },
-    allowedContentTypes: {
-      id: 'allowedContentTypes',
-      value: [],
-      level: 'required'
-    }
-  };
+  let validations: Partial<ContentTypeFieldValidations> = {};
 
-  if (!isBlank(map.minSize.value)) {
-    validations.minCount = {
-      id: 'minCount',
-      value: parseInt(map.minSize.value),
-      level: 'required'
-    };
-  }
-
-  if (!isBlank(map.maxSize.value)) {
-    validations.maxCount = {
-      id: 'maxCount',
-      value: parseInt(map.maxSize.value),
-      level: 'required'
-    };
-  }
-
-  map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
-    if (receptaclesLookup[value]) {
-      asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
-        if (prop.name === 'contentTypes') {
-          validations.allowedContentTypes.value = prop.value ? prop.value.split(',') : [];
-        } else if (prop.name === 'tags') {
-          validations.allowedContentTypeTags.value = prop.value ? prop.value.split(',') : [];
-        }
-      });
+  Object.keys(map).forEach(key => {
+    if (systemValidationsNames.includes(key)) {
+      if (key === 'itemManager') {
+        map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
+          if (receptaclesLookup[value]) {
+            asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
+              validations[systemValidationsKeysMap[prop.name]] = {
+                id: systemValidationsKeysMap[prop.name],
+                value: prop.value ? prop.value.split(',') : [],
+                level: 'required'
+              };
+            });
+          }
+        });
+      } else if (!isBlank(map[key]?.value)) {
+        validations[systemValidationsKeysMap[key]] = {
+          id: systemValidationsKeysMap[key],
+          value: parseInt(map[key].value),
+          level: 'required'
+        };
+      }
     }
   });
-
   return validations;
 }
 
