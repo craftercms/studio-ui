@@ -64,10 +64,10 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
       return null;
     }
   },
-  tags() {
+  allowedContentTypeTags() {
 
   },
-  contentTypes() {
+  allowedContentTypes() {
 
   }
 };
@@ -271,7 +271,7 @@ export function getContentTypeReceptacles(contentType: string | ContentType): IC
     const { fieldId, index } = record;
     if (notNullOrUndefined(fieldId)) {
       const { field, contentType: _contentType, model } = getReferentialEntries(record);
-      const acceptedTypes = field?.validations?.contentTypes.value;
+      const acceptedTypes = field?.validations?.allowedContentTypes.value;
       const accepts = acceptedTypes && (
         acceptedTypes.includes(contentTypeId) ||
         acceptedTypes.includes('*')
@@ -366,7 +366,7 @@ export function getReferentialEntries(record: number | ICERecord): ReferentialEn
   };
 }
 
-export function getRecordField(record: ICERecord): string {
+export function getRecordField(record: ICERecord): ContentTypeField {
   return getReferentialEntries(record).field;
 }
 

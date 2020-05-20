@@ -516,7 +516,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
         // field.validations = {
         //   limit: { min: null, max: null, message: null },
-        //   contentTypes: map.itemManager?.value,
+        //   allowedContentTypes: map.itemManager?.value,
         // };
         // asArray(legacyField.properties.property)
         // minSize>value, maxSize>value, itemManager>value
@@ -556,13 +556,13 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
     }, {});
 
   let validations: Partial<ContentTypeFieldValidations> = {
-    tags: {
-      id: 'tags',
+    allowedContentTypeTags: {
+      id: 'allowedContentTypeTags',
       value: [],
       level: 'required'
     },
-    contentTypes: {
-      id: 'contentTypes',
+    allowedContentTypes: {
+      id: 'allowedContentTypes',
       value: [],
       level: 'required'
     }
@@ -588,9 +588,9 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
     if (receptaclesLookup[value]) {
       asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
         if (prop.name === 'contentTypes') {
-          validations.contentTypes.value = prop.value ? prop.value.split(',') : [];
+          validations.allowedContentTypes.value = prop.value ? prop.value.split(',') : [];
         } else if (prop.name === 'tags') {
-          validations.tags.value = prop.value ? prop.value.split(',') : [];
+          validations.allowedContentTypeTags.value = prop.value ? prop.value.split(',') : [];
         }
       });
     }

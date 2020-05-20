@@ -14,9 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentType } from '@craftercms/studio-ui/models/ContentType';
+import {
+  ContentType,
+  ContentTypeField,
+  ValidationKeys
+} from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { ValidationKeys } from '@craftercms/studio-ui/models/ContentType';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 
 export interface DropZone {
@@ -72,7 +75,7 @@ export interface HighlightData {
 }
 
 export interface ReferentialEntries extends BaseICERecord {
-  field: any;
+  field: ContentTypeField;
   model: ContentInstance;
   contentType: ContentType;
   contentTypeId: string;
