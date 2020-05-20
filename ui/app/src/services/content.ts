@@ -494,8 +494,6 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           }
         });
 
-      console.log(legacyField.type);
-
       if (legacyField.type === 'repeat') {
         field.fields = {};
         asArray(legacyField.fields.field).forEach((_legacyField) => {
@@ -516,7 +514,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
       } else if (legacyField.type === 'node-selector') {
         field.validations = getFieldValidations(legacyField.properties.property, receptaclesLookup);
       } else if (legacyField.type === 'input') {
-
+        field.validations = getFieldValidations(legacyField.properties.property);
       }
 
       fields[fieldId] = field;
@@ -545,16 +543,16 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
 }
 
-const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxLength'];
+const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxlength'];
 const systemValidationsKeysMap = {
   minSize: 'minCount',
   maxSize: 'maxCount',
-  maxLength: 'maxLength',
+  maxlength: 'maxLength',
   contentTypes: 'allowedContentTypes',
   tags: 'allowedContentTypeTags'
 };
 
-function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup: LookupTable<LegacyDataSource>): Partial<ContentTypeFieldValidations> {
+function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup?: LookupTable<LegacyDataSource>): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty)
     .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
       table[prop.name] = prop;
@@ -565,7 +563,7 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
 
   Object.keys(map).forEach(key => {
     if (systemValidationsNames.includes(key)) {
-      if (key === 'itemManager') {
+      if (key === 'itemManager' && receptaclesLookup) {
         map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
           if (receptaclesLookup[value]) {
             asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
