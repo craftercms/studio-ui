@@ -88,7 +88,7 @@ export function getLegacyItem(site: string, path: string): Observable<LegacyItem
 export function getSandboxItem(site: string, path: string): Observable<SandboxItem> {
   return getLegacyItem(site, path).pipe(
     map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem)
-  )
+  );
 }
 
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
@@ -252,7 +252,7 @@ export function fetchFormDefinition(site: string, contentTypeId: string): Observ
 export function fetchLegacyContentType(site: string, contentTypeId: string): Observable<LegacyContentType> {
   return get(`/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`).pipe(
     pluck('response')
-  )
+  );
 }
 
 export function fetchContentType(site: string, contentTypeId: string): Observable<ContentType> {
@@ -430,7 +430,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   //       id: legacyDS.id,
   //       name: legacyDS.title,
   //       type: typeMap[legacyDS.type] || legacyDS.type, // e.g. shared-content, embedded-content, img-desktop-upload, img-repository-upload
-  //       contentTypes: null,
+  //       allowedContentTypes: null,
   //       repoPath: null,
   //       browsePath: null,
   //       enableSearchExisting: null,
@@ -440,10 +440,10 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   //
   //     asArray<LegacyFormDefinitionProperty>(legacyDS.properties.property).forEach(prop => {
   //       if (prop.name === 'contentTypeId') {
-  //         if (dataSources[legacyDS.id].contentTypes === null) {
-  //           dataSources[legacyDS.id].contentTypes = [];
+  //         if (dataSources[legacyDS.id].allowedContentTypes === null) {
+  //           dataSources[legacyDS.id].allowedContentTypes = [];
   //         }
-  //         dataSources[legacyDS.id].contentTypes.push(...prop.value.split(','));
+  //         dataSources[legacyDS.id].allowedContentTypes.push(...prop.value.split(','));
   //       } else if (propsToPluck.includes(prop.name)) {
   //         // TODO: Figure out how to reliable extract this for the purpose of validating welcomed content types.
   //         dataSources[legacyDS.id][prop.name] = prop.value;
@@ -471,7 +471,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
         name: legacyField.title,
         type: typeMap[legacyField.type] || legacyField.type,
         sortable: (legacyField.type === 'node-selector' || legacyField.type === 'repeat'),
-        validations: null,
+        validations: {},
         defaultValue: legacyField.defaultValue,
         required: false
       };
@@ -481,7 +481,13 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           const value = legacyProp.value.trim();
           switch (legacyProp.name) {
             case 'required':
-              field.required = (value === 'true');
+              if (value === 'true') {
+                field.validations.required = {
+                  id: 'required',
+                  value: (value === 'true'),
+                  level: 'required'
+                };
+              }
               break;
             case 'allowDuplicates':
               break;
@@ -512,14 +518,9 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           }
         });
       } else if (legacyField.type === 'node-selector') {
-        field.validations = getFieldValidations(legacyField.properties.property, receptaclesLookup);
-
-        // field.validations = {
-        //   limit: { min: null, max: null, message: null },
-        //   contentTypes: map.itemManager?.value,
-        // };
-        // asArray(legacyField.properties.property)
-        // minSize>value, maxSize>value, itemManager>value
+        field.validations = { ...field.validations, ...getFieldValidations(legacyField.properties.property, receptaclesLookup) };
+      } else if (legacyField.type === 'input') {
+        field.validations = { ...field.validations, ...getFieldValidations(legacyField.properties.property) };
       }
 
       fields[fieldId] = field;
@@ -548,54 +549,50 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
 }
 
-function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup: LookupTable<LegacyDataSource>): Partial<ContentTypeFieldValidations> {
+const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxlength', 'readonly'];
+const systemValidationsKeysMap = {
+  minSize: 'minCount',
+  maxSize: 'maxCount',
+  maxlength: 'maxLength',
+  contentTypes: 'allowedContentTypes',
+  tags: 'allowedContentTypeTags',
+  readonly: 'readOnly'
+};
+
+function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup?: LookupTable<LegacyDataSource>): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty)
     .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
       table[prop.name] = prop;
       return table;
     }, {});
 
-  let validations: Partial<ContentTypeFieldValidations> = {
-    tags: {
-      id: 'tags',
-      value: [],
-      level: 'required'
-    },
-    contentTypes: {
-      id: 'contentTypes',
-      value: [],
-      level: 'required'
-    }
-  };
+  let validations: Partial<ContentTypeFieldValidations> = {};
 
-  if (!isBlank(map.minSize.value)) {
-    validations.minCount = {
-      id: 'minCount',
-      value: parseInt(map.minSize.value),
-      level: 'required'
-    };
-  }
-
-  if (!isBlank(map.maxSize.value)) {
-    validations.maxCount = {
-      id: 'maxCount',
-      value: parseInt(map.maxSize.value),
-      level: 'required'
-    };
-  }
-
-  map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
-    if (receptaclesLookup[value]) {
-      asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
-        if (prop.name === 'contentTypes') {
-          validations.contentTypes.value = prop.value ? prop.value.split(',') : [];
-        } else if (prop.name === 'tags') {
-          validations.tags.value = prop.value ? prop.value.split(',') : [];
-        }
-      });
+  Object.keys(map).forEach(key => {
+    if (systemValidationsNames.includes(key)) {
+      if (key === 'itemManager' && receptaclesLookup) {
+        map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
+          if (receptaclesLookup[value]) {
+            asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
+              if (systemValidationsKeysMap[prop.name]) {
+                validations[systemValidationsKeysMap[prop.name]] = {
+                  id: systemValidationsKeysMap[prop.name],
+                  value: prop.value ? prop.value.split(',') : [],
+                  level: 'required'
+                };
+              }
+            });
+          }
+        });
+      } else if (systemValidationsNames.includes(key) && !isBlank(map[key]?.value)) {
+        validations[systemValidationsKeysMap[key]] = {
+          id: systemValidationsKeysMap[key],
+          value: map[key].value, //TODO this is a string? should be parsed as (int or boolean or string) based on the key?
+          level: 'required'
+        };
+      }
     }
   });
-
   return validations;
 }
 

@@ -284,6 +284,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       switchMap(([action]) => {
         const { record } = action.payload;
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+        const { validations } = field;
         const type = field?.type;
         switch (type) {
           case 'html':
@@ -294,11 +295,11 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                 'Looks like tinymce is not added on the page. ' +
                 'Please add tinymce on to the page to enable editing.'
               );
-              return NEVER;
-            } else {
-              initTinyMCE(record);
+            } else if (validations?.readOnly.value !== 'true') {
+              initTinyMCE(record, validations);
               return of({ type: 'edit_component_inline' });
             }
+            return NEVER;
           }
           default: {
             post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
