@@ -21,8 +21,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import { palette } from '../styles/theme';
-import { useSelection } from '../utils/hooks';
-import { getSandboxItem } from '../services/content';
+import { useActiveSiteId, useSelection } from '../utils/hooks';
+import { fetchWorkflowAffectedItems, getSandboxItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
@@ -34,7 +34,8 @@ import {
   showDeleteDialog,
   showDependenciesDialog,
   showHistoryDialog,
-  showPublishDialog
+  showPublishDialog,
+  showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
 import { showEditDialog } from '../state/reducers/dialogs/edit';
 import { batchActions } from '../state/actions/misc';
@@ -64,6 +65,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const authoringBase = useSelection<string>(state => state.env.authoringBase);
   const defaultSrc = `${authoringBase}/legacy/form?`;
+  const siteId = useActiveSiteId();
   const dispatch = useDispatch();
 
   const [item, setItem] = useState(null);
@@ -126,21 +128,37 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       case 'form':
       case 'template':
       case 'controller': {
-        let src = `${defaultSrc}site=${site}&path=${getPath(type)}&type=${type}`;
+        const path = getPath(type);
+        let src = `${defaultSrc}site=${site}&path=${path}&type=${type}`;
         if (embeddedParentPath && type === 'form') {
           src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
         }
 
-        dispatch(
-          showEditDialog({
-            src,
-            type,
-            inProgress: true,
-            showController: !embeddedParentPath && contentTypesBranch.byId?.[item.contentTypeId]?.type === 'page',
-            itemModel: models[modelId],
-            embeddedParentPath
-          })
+        fetchWorkflowAffectedItems(siteId, path).subscribe(
+          (items) => {
+            const editProps = {
+              src,
+              type,
+              inProgress: true,
+              showController: !embeddedParentPath && contentTypesBranch.byId?.[item.contentTypeId]?.type === 'page',
+              itemModel: models[modelId],
+              embeddedParentPath
+            };
+
+            if (items?.length > 0) {
+              dispatch(showWorkflowCancellationDialog({
+                items,
+                onContinue: showEditDialog(editProps)
+              }));
+            } else {
+              dispatch(
+                showEditDialog(editProps)
+              );
+            }
+
+          }
         );
+
         break;
       }
     }

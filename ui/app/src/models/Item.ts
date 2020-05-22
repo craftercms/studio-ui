@@ -89,4 +89,3 @@ export interface LegacyItem {
   children: LegacyItem[];
   [prop: string]: any;
 }
-

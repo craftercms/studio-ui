@@ -1246,6 +1246,14 @@ export function unlock(site: string, path: string): Observable<boolean> {
   );
 }
 
+export function fetchWorkflowAffectedItems(site: string, path: string): Observable<SandboxItem[]> {
+  return get(`/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`).pipe(
+    pluck('response', 'items'),
+    map(items => items.map(parseLegacyItemToSandBoxItem)),
+    catchError(errorSelectorApi1)
+  );
+}
+
 export default {
   getComponentInstanceHTML,
   getContent,
@@ -1277,5 +1285,6 @@ export default {
   getContentHistory: getHistory,
   revertTo,
   lock,
-  unlock
+  unlock,
+  fetchWorkflowAffectedItems
 };

@@ -33,6 +33,7 @@ CStudioForms.Controls.RTETINYMCE5 =
     this.supportedPostFixes = ['_html'];
 
     this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.words = CrafterCMSNext.i18n.messages.words;
     this.messages = CrafterCMSNext.i18n.messages.rteControlMessages;
     this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
 
@@ -508,7 +509,19 @@ CStudioAuthoring.Module.requireModule(
                     _self.addContainerEl = null;
                     $('.cstudio-form-control-image-picker-add-container').remove();
 
-                    addFunction(mapDatasource, cb); //video or image add function
+                    try {
+                      addFunction(mapDatasource, cb); //video or image add function
+                    } catch (e) {
+                      CStudioAuthoring.Operations.showSimpleDialog(
+                        'datasourceError',
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        _self.formatMessage(_self.words.notification),
+                        _self.formatMessage(_self.messages.incompatibleDatasource),
+                        null, // use default button
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        'studioDialog'
+                      );
+                    }
                   },
                   itemEl
                 );

@@ -2530,29 +2530,35 @@ var nodeOpen = false,
           }
         }
 
-        CSA.Operations.getWorkflowAffectedFiles(params, {
-          success: function (content) {
-            if (content && content.length) {
-              CSA.Operations._showDialogueView({
-                controller: 'viewcontroller-cancel-workflow',
-                fn: function (oAjaxCfg) {
-                  // because _showDialogueView was designed to load the body from a
-                  // webscript, must simulate the ajax process here
-                  oAjaxCfg.success({ responseText: '' });
-                },
-                callback: function () {
-                  var view = this;
-                  view.setContent(content);
-                  view.on('continue', function () {
-                    doEdit();
-                  });
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
+          (items) => {
+            if (items && items.length) {
+              const eventIdSuccess = 'workflowCancellationDialogContinue';
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                payload: {
+                  open: true,
+                  items,
+                  onContinue: {
+                    type: 'BATCH_ACTIONS',
+                    payload: [
+                      {
+                        type: 'LEGACY_DIALOG_CALLBACK',
+                        payload: { id: eventIdSuccess }
+                      },
+                      { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
+                    ]
+                  }
                 }
+              });
+              CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+                doEdit();
               });
             } else {
               doEdit();
             }
           }
-        });
+        );
       },
 
       /**
