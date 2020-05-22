@@ -34,7 +34,10 @@ export function createGuestStore(): GuestStore {
     GuestState
   >();
   const middleware = [
-    ...getDefaultMiddleware<GuestState, { thunk: boolean }>({ thunk: false }),
+    ...getDefaultMiddleware<GuestState, { thunk: boolean; serializableCheck: boolean }>({
+      thunk: false,
+      serializableCheck: false
+    }),
     epicMiddleware
   ];
   store = configureStore<GuestState, GuestStandardAction, Middleware[]>({

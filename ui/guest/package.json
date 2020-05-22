@@ -2,9 +2,9 @@
   "name": "@craftercms/studio-guest",
   "version": "1.0.0",
   "private": true,
-  "main": "dist/craftercms-guest.cjs.js",
-  "module": "build/craftercms-guest.esm.js",
-  "browser": "build/craftercms-guest.umd.js",
+  "main": "index.js",
+  "module": "index.js",
+  "typings": "index.d.ts",
   "craftercms": {
     "id": "craftercms.guest"
   },

@@ -640,7 +640,8 @@ function fetchById(
         }
       }
     }),
-    { baseUrl: '', site }
+    // TODO: Remove hardcoded url
+    { baseUrl: 'http://localhost:8080', site }
   ).pipe(
     tap(({ total }) => (total === 0) && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)),
     map<any, ContentInstance[]>(({ hits }) => hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))),

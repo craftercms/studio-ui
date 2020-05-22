@@ -15,6 +15,7 @@
  */
 
 import { ICERecord } from '../models/InContextEditing';
+import { pluckProps } from './object';
 
 export const foo = (...args: any[]) => void null;
 export const X_AXIS = 'X',
@@ -32,4 +33,19 @@ export const X_AXIS = 'X',
 
 export function not(condition: boolean): boolean {
   return !condition;
+}
+
+export function createLocationArgument() {
+  return pluckProps(
+    window.location,
+    'hash',
+    'host',
+    'hostname',
+    'href',
+    'origin',
+    'pathname',
+    'port',
+    'protocol',
+    'search'
+  );
 }

@@ -153,10 +153,6 @@ export default function GuestProxy() {
     const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
       let record = ElementRegistry.fromElement(e.currentTarget as Element);
       if (notNullOrUndefined(record)) {
-        if (['click', 'dblclick'].includes(e.type)) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
         onEvent(e, record.id);
       }
     };

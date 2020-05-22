@@ -45,6 +45,7 @@ import {
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
   EDIT_MODE_CHANGED,
+  HOST_CHECK_IN,
   TRASHED
 } from '../../constants';
 
@@ -604,11 +605,12 @@ const initialState: GuestState = {
   editable: {},
   highlighted: {},
   ICE_GUEST_INIT: false,
-  inEditMode: true,
+  inEditMode: false,
   status: EditingStatus.LISTENING,
   uploading: {},
   models: {},
-  contentTypes: {}
+  contentTypes: {},
+  hostCheckedIn: false
 };
 
 const foo = (state) => state;
@@ -633,7 +635,7 @@ const reducerFunctions: {
   mouseleave,
   mouseover,
   move_component: foo,
-  set_edit_mode: foo,
+  set_edit_mode: (state, action) => ({ ...state, inEditMode: action.payload.inEditMode }),
   start_listening,
   add_asset_types: foo,
   click: foo,
@@ -655,7 +657,12 @@ const reducerFunctions: {
   [COMPONENT_DRAG_STARTED]: host_component_drag_started,
   [COMPONENT_INSTANCE_DRAG_STARTED]: host_instance_drag_started,
   [DESKTOP_ASSET_DRAG_STARTED]: desktop_asset_drag_started,
-  [ASSET_DRAG_STARTED]: asset_drag_started
+  [ASSET_DRAG_STARTED]: asset_drag_started,
+  [HOST_CHECK_IN]: (state, action) => ({
+    ...state,
+    hostCheckedIn: true,
+    inEditMode: action.payload.editMode
+  })
 };
 
 export default createReducer<GuestState>(initialState, reducerFunctions);

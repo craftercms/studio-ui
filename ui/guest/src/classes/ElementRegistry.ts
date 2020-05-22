@@ -19,7 +19,12 @@ import contentController from './ContentController';
 import { take } from 'rxjs/operators';
 import { ContentTypeHelper } from '../utils/ContentTypeHelper';
 import { ModelHelper } from '../utils/ModelHelper';
-import { DropZone, ElementRecord, HighlightData } from '../models/InContextEditing';
+import {
+  DropZone,
+  ElementRecord,
+  ElementRecordRegistration,
+  HighlightData
+} from '../models/InContextEditing';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
@@ -86,7 +91,8 @@ export function setLabel(record: ElementRecord): void {
   record.label = labels.join(', ');
 }
 
-export function register(payload): number {
+export function register(payload: ElementRecordRegistration): number {
+  // @ts-ignore
   if (notNullOrUndefined(payload.id)) {
     throw new Error('Record already has id. Was it pre-registered? Please deregister first.');
   }

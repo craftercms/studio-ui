@@ -86,7 +86,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     height: 28,
     margin: 4
   },
-
   addressBarContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -232,12 +231,11 @@ export default function ToolBar() {
   const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
   const { previewLandingBase } = useEnv();
   const {
-    guest,
-    currentUrl,
+    computedUrl,
     showToolsPanel
   } = usePreviewState();
-  let addressBarUrl = guest?.url ?? currentUrl;
 
+  let addressBarUrl = computedUrl;
   if (addressBarUrl === previewLandingBase) {
     addressBarUrl = '';
   }

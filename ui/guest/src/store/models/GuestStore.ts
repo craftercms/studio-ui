@@ -48,6 +48,7 @@ export interface GuestState {
     contentType: ContentType;
     instance: ContentInstance;
   };
+  hostCheckedIn: boolean;
   ICE_GUEST_INIT: boolean;
   status: EditingStatus;
   inEditMode: boolean;

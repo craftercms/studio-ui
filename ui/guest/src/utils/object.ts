@@ -23,12 +23,14 @@ export function nnou(object: any): boolean {
 
 export const notNullOrUndefined = nnou;
 
-export function isNullOrUndefined(value: any): boolean {
+export function nou(value: any): boolean {
   return value == null;
 }
 
-export function pluckProps(source: object, ...props: string[]): object {
-  const object = {};
+export const isNullOrUndefined = nou;
+
+export function pluckProps<T extends object = {}, K extends keyof T = any>(source: T, ...props: K[]): Pick<T, K> {
+  const object = {} as Pick<T, K>;
   if (isNullOrUndefined(source)) {
     return object;
   }

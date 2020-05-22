@@ -15,20 +15,19 @@
  */
 
 import React, { useContext, useMemo } from 'react';
+import { GuestState } from '../store/models/GuestStore';
 
 export type GuestContextProps = {
-  // onEvent: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>
-  onEvent: (event, elementRegistryId?: number) => any
+  hasHost: boolean;
+  draggable: GuestState['draggable'];
+  // onEvent: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+  onEvent: (event, elementRegistryId?: number) => any;
 };
 
 const GuestContext = React.createContext<GuestContextProps>(undefined);
 
 export function useGuestContext(): GuestContextProps {
-  const context = useContext(GuestContext);
-  if (!context) {
-    throw new Error('useGuestContext should be used inside a GuestContextProvider');
-  }
-  return context;
+  return useContext(GuestContext);
 }
 
 export function GuestContextProvider(props): JSX.Element {

@@ -19,30 +19,29 @@ import { GlobalState } from '../../models/GlobalState';
 import { fetchSystemVersionComplete } from '../actions/env';
 import { Version } from '../../models/monitoring/Version';
 
-const initialState: GlobalState['env'] = ((origin: string) => ({
+export const envInitialState: GlobalState['env'] = ((origin: string) => ({
   authoringBase: `${origin}/studio`,
   guestBase: origin,
   xsrfHeader: 'X-XSRF-TOKEN',
   xsrfArgument: '_csrf',
   siteCookieName: 'crafterSite',
-  previewLandingBase: `/studio/preview-landing`,
+  // TODO: Remove hardcoded url
+  previewLandingBase: `http://localhost:8080/studio/preview-landing`,
   version: null
 }))(
   process.env.NODE_ENV === 'production'
     ? window.location.origin
     : window.location.origin.replace(
-      process.env.REACT_APP_DEV_SERVER_PORT ?? '3000',
-      '8080'
-    )
+        process.env.REACT_APP_DEV_SERVER_PORT ?? '3000',
+        process.env.REACT_APP_CRAFTER_CMS_PORT ?? '8080'
+      )
 );
 
-const reducer = createReducer<GlobalState['env']>(
-  initialState,
-  {
-    [fetchSystemVersionComplete.type]: (state, { payload }: { payload: Version }) => ({
-      ...state,
-      version: payload.packageVersion.replace('-SNAPSHOT', '')
-    })
-  }
-);
+const reducer = createReducer<GlobalState['env']>(envInitialState, {
+  [fetchSystemVersionComplete.type]: (state, { payload }: { payload: Version }) => ({
+    ...state,
+    version: payload.packageVersion.replace('-SNAPSHOT', '')
+  })
+});
+
 export default reducer;

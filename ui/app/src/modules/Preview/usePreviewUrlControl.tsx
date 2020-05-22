@@ -20,22 +20,20 @@ import { useEffect, useRef } from 'react';
 import { parse, stringify } from 'query-string';
 import { LookupTable } from '../../models/LookupTable';
 import { changeCurrentUrl } from '../../state/actions/preview';
-import { nou } from '../../utils/object';
 import { changeSite } from '../../state/reducers/sites';
 
 export default function usePreviewUrlControl(history) {
 
   const { location: { search }, push } = history;
 
-  const { guest, currentUrl } = usePreviewState();
+  const { computedUrl } = usePreviewState();
   const { previewLandingBase } = useEnv();
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const priorState = useRef({
     qs: undefined,
     site,
-    currentUrl,
-    currentGuestUrl: guest?.url,
+    computedUrl,
     qsSite: undefined,
     qsPage: undefined,
     search: search,
@@ -45,23 +43,45 @@ export default function usePreviewUrlControl(history) {
   useEffect(() => {
     const prev = priorState.current;
 
+    // Retrieve the stored query string (QS)
     let qs = prev.qs;
+    // If nothing is stored or the search portion has changed...
     if ((!qs) || (prev.search !== search)) {
+      // Parse the current QS
       qs = parse(search) as LookupTable<string>;
+      // In case somehow 2 site or page arguments ended on the
+      // URL, only use the first one and issue a warning on the console
+      if (Array.isArray(qs.site)) {
+        console.warn('Multiple site params detected on the URL. Excess ignored.');
+        qs.site = qs.site[0];
+      }
+      if (Array.isArray(qs.page)) {
+        console.warn('Multiple page params detected on the URL. Excess ignored.');
+        qs.page = qs.page[0];
+      }
+      // Store the newly parsed search string and parsed QS
       prev.search = search;
       prev.qs = qs;
     }
 
     if (!prev.mounted) {
+      // If this is the very first render...
 
+      // If there is a site or page on the URL, sync the state to the URL.
       if (qs.site || qs.page) {
+        // Check if QS site differs from the one stored in the
+        // state (e.g. state may have been restored from a previous session)
         if (qs.site && qs.site !== site) {
+          // At this point, there's a site on the QS for sure
           if (qs.page) {
+            // If there is a also a page, change site and send to QS page
             dispatch(changeSite(qs.site, qs.page));
           } else {
+            // If there's no page, send to the homepage of the QS site
             dispatch(changeSite(qs.site, '/'));
           }
-        } else if (qs.page && qs.page !== currentUrl) {
+        } else if (qs.page && qs.page !== computedUrl) {
+          // Change the current page to match the QS site
           dispatch(changeCurrentUrl(qs.page));
         }
       }
@@ -69,32 +89,29 @@ export default function usePreviewUrlControl(history) {
       prev.mounted = true;
 
     } else {
+      // Not the first render. Something changed and we're updating.
 
+      // Check if either the QS or the state has changed
       const qsSiteChanged = (qs.site !== prev.qsSite) && (qs.site !== site);
       const siteChanged = (site !== prev.site);
-      const qsUrlChanged = (qs.page !== prev.qsPage) && (qs.page !== (guest ? guest.url : currentUrl));
-      const urlChanged = (currentUrl !== prev.currentUrl);
-      const guestUrlChanged = (guest?.url !== prev.currentGuestUrl);
+      const qsUrlChanged = (qs.page !== prev.qsPage) && (qs.page !== computedUrl);
+      const urlChanged = (computedUrl !== prev.computedUrl);
       const somethingDidChanged = (
         qsSiteChanged ||
         siteChanged ||
         qsUrlChanged ||
-        urlChanged ||
-        guestUrlChanged
+        urlChanged
       );
 
+      // If nothing changed, skip...
       if (somethingDidChanged) {
 
         if (
-          (siteChanged || urlChanged || guestUrlChanged) &&
-          (currentUrl !== qs.page || site !== qs.site)
+          (siteChanged || urlChanged) &&
+          (computedUrl !== qs.page || site !== qs.site)
         ) {
 
-          // When navigation occurs within guest, it will check out. For a brief moment whilst the new page
-          // checks in, the guest.url will be undefined. The intention of this validation is to hold on to the prior
-          // guest URL to avoid a momentary URL flicker between the previousGuestUrl, the stale currentUrl and the
-          // new guest URL.
-          const page = (guestUrlChanged && nou(guest)) ? prev.currentGuestUrl : (guest?.url ?? currentUrl);
+          const page = computedUrl;
           if (page !== previewLandingBase) {
             push({ search: stringify({ site, page }, { encode: false }) });
           }
@@ -107,9 +124,8 @@ export default function usePreviewUrlControl(history) {
           dispatch(changeSite(qs.site, '/'));
         }
 
-        prev.currentUrl = currentUrl;
+        prev.computedUrl = computedUrl;
         prev.site = site;
-        prev.currentGuestUrl = guest?.url;
 
       }
 
@@ -120,6 +136,6 @@ export default function usePreviewUrlControl(history) {
 
     }
 
-  }, [search, site, currentUrl, guest, dispatch, previewLandingBase, push]);
+  }, [computedUrl, dispatch, previewLandingBase, push, search, site]);
 
 }

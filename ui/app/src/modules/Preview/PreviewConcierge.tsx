@@ -130,7 +130,7 @@ export function PreviewConcierge(props: any) {
       const { type, payload } = action;
       switch (type) {
         case GUEST_CHECK_IN: {
-          hostToGuest$.next({ type: HOST_CHECK_IN });
+          hostToGuest$.next({ type: HOST_CHECK_IN, payload: { editMode: true } });
 
           dispatch(checkInGuest(payload));
 

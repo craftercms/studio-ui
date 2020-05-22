@@ -57,11 +57,17 @@ export interface ICERecordRegistration {
   index?: string | number;
 }
 
-export interface ElementRecord extends BaseICERecord {
+export interface ElementRecord extends Omit<BaseICERecord, 'fieldId'> {
   label: string;
   iceIds: number[];
   element: Element;
   complete: boolean;
+  fieldId: string[];
+}
+
+export interface ElementRecordRegistration extends ICEProps {
+  label?: string;
+  element: Element;
 }
 
 export interface HighlightData {

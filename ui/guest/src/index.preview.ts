@@ -17,6 +17,7 @@
 import $ from 'jquery';
 import { message$, post } from './communicator';
 import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './constants';
+import { createLocationArgument } from './utils/util';
 
 message$.subscribe(function ({ type, payload }) {
   switch (type) {
@@ -27,11 +28,9 @@ message$.subscribe(function ({ type, payload }) {
   }
 });
 
-const location = window.location.href;
-const origin = window.location.origin;
-const url = location.replace(origin, '');
+const location = createLocationArgument();
 
-post(GUEST_CHECK_IN, { url, location, origin, site: null, __CRAFTERCMS_GUEST_LANDING__: true });
+post(GUEST_CHECK_IN, { location, __CRAFTERCMS_GUEST_LANDING__: true });
 
 setTimeout(() => {
   $('img').fadeIn();

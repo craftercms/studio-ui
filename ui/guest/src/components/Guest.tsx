@@ -62,6 +62,7 @@ import { isNullOrUndefined, nnou } from '../utils/object';
 import { scrollToNode, scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
+import { createLocationArgument } from '../utils/util';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -96,33 +97,33 @@ function Guest(props: GuestProps) {
   const dispatch = useDispatch();
   const state = useSelector<GuestState, GuestState>((state) => state);
   const status = state.status;
+  const hasHost = state.hostCheckedIn;
+  const draggable = state.draggable;
+  const refs = useRef({ contentReady: false });
   const context = useMemo(
     () => ({
+      hasHost,
+      draggable,
       onEvent(event: Event, dispatcherElementRecordId: number) {
-        if (persistenceRef.current.contentReady && state.inEditMode) {
+        if (hasHost && refs.current.contentReady && state.inEditMode) {
           const { type } = event;
-
           const record = ElementRegistry.get(dispatcherElementRecordId);
           if (isNullOrUndefined(record)) {
-            throw new Error('No record found for dispatcher element');
+            console.error('No record found for dispatcher element');
+          } else {
+            if (['click', 'dblclick'].includes(type)) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            dispatch({ type: type, payload: { event, record } });
+            return true;
           }
-
-          dispatch({ type: type, payload: { event, record } });
         }
+        return false;
       }
     }),
-    [dispatch, state.inEditMode]
+    [dispatch, state.inEditMode, hasHost, draggable]
   );
-
-  // region Stuff to remove
-  const persistenceRef = useRef({
-    contentReady: false,
-    mouseOverTimeout: null,
-    dragover$: null,
-    scrolling$: null,
-    onScroll: null
-  });
-  // endregion
 
   // Sets document domain
   useEffect(() => {
@@ -147,7 +148,7 @@ function Guest(props: GuestProps) {
 
   // Subscribes to host messages and routes them.
   useEffect(() => {
-    const sub = message$.subscribe(function ({ type, payload }) {
+    const sub = message$.subscribe(function({ type, payload }) {
       switch (type) {
         case EDIT_MODE_CHANGED:
           dispatch({
@@ -196,7 +197,11 @@ function Guest(props: GuestProps) {
           break;
         }
         case SCROLL_TO_RECEPTACLE:
-          scrollToReceptacle([payload], scrollElement, (id: number) => ElementRegistry.fromICEId(id).element);
+          scrollToReceptacle(
+            [payload],
+            scrollElement,
+            (id: number) => ElementRegistry.fromICEId(id).element
+          );
           break;
         case CLEAR_HIGHLIGHTED_RECEPTACLES:
           dispatch({ type: CLEAR_HIGHLIGHTED_RECEPTACLES });
@@ -220,20 +225,32 @@ function Guest(props: GuestProps) {
 
   // Check in & host detection
   useEffect(() => {
-    const location = window.location.href;
-    const origin = window.location.origin;
-    const url = location.replace(origin, '');
-    const site = Cookies.get('crafterSite');
-    interval(1000)
-      .pipe(takeUntil(fromTopic(HOST_CHECK_IN).pipe(take(1))), take(1))
-      .subscribe(() => {
-        setSnack({
-          duration: 8000,
-          message: 'Crafter CMS not detected. In-Context Editing is is disabled.'
+    if (!state.hostCheckedIn) {
+      const location = createLocationArgument();
+      const site = Cookies.get('crafterSite');
+      interval(1000)
+        .pipe(takeUntil(fromTopic(HOST_CHECK_IN).pipe(tap(dispatch), take(1))), take(1))
+        .subscribe(() => {
+          setSnack({
+            duration: 8000,
+            message: 'In-context editing is disabled: page running out of Crafter CMS frame.'
+          });
         });
-      });
-    post(GUEST_CHECK_IN, { url, location, origin, modelId, path, site });
-  }, [modelId, path]);
+      post(GUEST_CHECK_IN, { location, modelId, path, site, documentDomain });
+    }
+  }, [dispatch, modelId, path, state.hostCheckedIn, documentDomain]);
+
+  // Check out (dismount, beforeunload)
+  useEffect(() => {
+    // Notice this is not executed when the iFrame url is changed abruptly.
+    // This only triggers when navigation occurs from within the guest page.
+    const handler = () => post({ type: GUEST_CHECK_OUT });
+    window.addEventListener('beforeunload', handler, false);
+    return () => {
+      post(GUEST_CHECK_OUT);
+      window.removeEventListener('beforeunload', handler);
+    };
+  }, []);
 
   // Registers parent zone
   useEffect(() => {
@@ -241,7 +258,7 @@ function Guest(props: GuestProps) {
     zip(contentController.models$(modelId), contentController.contentTypes$())
       .pipe(take(1))
       .subscribe(() => {
-        persistenceRef.current.contentReady = true;
+        refs.current.contentReady = true;
       });
     return () => {
       iceRegistry.deregister(iceId);
@@ -294,7 +311,6 @@ function Guest(props: GuestProps) {
 
   // Listen for mouse switching between drop zones
   const dragContextDropZoneIceId = state.dragContext?.dropZone?.iceId;
-
   useEffect(() => {
     if (nnou(dragContextDropZoneIceId)) {
       dispatch({ type: 'drop_zone_enter', payload: { iceId: dragContextDropZoneIceId } });
@@ -317,7 +333,7 @@ function Guest(props: GuestProps) {
               key={highlight.id}
               {...highlight}
               classes={{
-                label: (array.length > 1) && 'craftercms-zone-marker-label__multi-mode',
+                label: array.length > 1 && 'craftercms-zone-marker-label__multi-mode',
                 marker: Object.values(highlight.validations).length
                   ? Object.values(highlight.validations).some(({ level }) => level === 'required')
                     ? 'craftercms-required-validation-failed'
@@ -326,22 +342,25 @@ function Guest(props: GuestProps) {
               }}
             />
           ))}
-          {[
-            EditingStatus.SORTING_COMPONENT,
-            EditingStatus.PLACING_NEW_COMPONENT,
-            EditingStatus.PLACING_DETACHED_COMPONENT
-          ].includes(status) &&
-          state.dragContext.inZone &&
-          !state.dragContext.invalidDrop && (
-            <DropMarker
-              onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
-              dropZone={state.dragContext.dropZone}
-              over={state.dragContext.over}
-              prev={state.dragContext.prev}
-              next={state.dragContext.next}
-              coordinates={state.dragContext.coordinates}
-            />
-          )}
+          {/* prettier-ignore */}
+          {
+            [
+              EditingStatus.SORTING_COMPONENT,
+              EditingStatus.PLACING_NEW_COMPONENT,
+              EditingStatus.PLACING_DETACHED_COMPONENT
+            ].includes(status) &&
+            state.dragContext.inZone &&
+            !state.dragContext.invalidDrop && (
+              <DropMarker
+                onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
+                dropZone={state.dragContext.dropZone}
+                over={state.dragContext.over}
+                prev={state.dragContext.prev}
+                next={state.dragContext.next}
+                coordinates={state.dragContext.coordinates}
+              />
+            )
+          }
           {snack && (
             <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
               {snack.message}
@@ -353,24 +372,14 @@ function Guest(props: GuestProps) {
   );
 }
 
-export default function (props: GuestProps) {
-  const { isAuthoring = true, children } = props;
-  const store = useMemo(() => createGuestStore(), []);
+export default function(props: GuestProps) {
+  const { isAuthoring, children } = props;
+  const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   return isAuthoring ? (
     <Provider store={store}>
-      <Guest {...props}>{children}</Guest>
+      <Guest {...props} />
     </Provider>
   ) : (
     children
   );
 }
-
-// Notice this is not executed when the iFrame url is changed abruptly.
-// This only triggers when navigation occurs from within the guest page.
-window.addEventListener(
-  'beforeunload',
-  () => {
-    post({ type: GUEST_CHECK_OUT });
-  },
-  false
-);

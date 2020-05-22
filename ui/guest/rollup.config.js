@@ -112,6 +112,7 @@ const baseConfig = {
 };
 
 export default [
+
   /* UMD build */
   {
     input,
@@ -120,39 +121,28 @@ export default [
     output: {
       sourcemap: 'inline',
       name: 'craftercms.guest',
-      file: pkg.browser,
+      file: 'build/craftercms-guest.umd.js',
       format: 'umd',
       amd: { id: pkg.craftercms.id },
       globals
     },
     ...baseConfig
   },
-  /* UMD build for preview landing controller */
-  // {
-  //   input: 'src/index.preview.ts',
-  //   external,
-  //   plugins,
-  //   output: {
-  //     sourcemap: 'inline',
-  //     name: 'craftercms.previewLanding',
-  //     file: 'build/preview-landing.umd.js',
-  //     format: 'umd',
-  //     amd: { id: 'craftercms.previewLanding' },
-  //     globals
-  //   },
-  //   ...baseConfig
-  // }
-];
 
-/*
-// CommonJS & ES module build
-{
-  input,
-  external,
-  plugins,
-  output: [
-    { file: pkg.main, format: 'cjs' },
-    { file: pkg.module, format: 'es' }
-  ]
-}
-*/
+  /* UMD build for preview landing controller */
+  {
+    input: 'src/index.preview.ts',
+    external,
+    plugins,
+    output: {
+      sourcemap: 'inline',
+      name: 'craftercms.previewLanding',
+      file: 'build/preview-landing.umd.js',
+      format: 'umd',
+      amd: { id: 'craftercms.previewLanding' },
+      globals
+    },
+    ...baseConfig
+  }
+
+];

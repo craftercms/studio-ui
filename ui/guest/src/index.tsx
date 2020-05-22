@@ -21,29 +21,34 @@ import GuestProxy from './components/GuestProxy';
 import DropMarker from './components/DropMarker';
 import CrafterCMSPortal from './components/CrafterCMSPortal';
 import AssetUploaderMask from './components/AssetUploaderMask';
-import { useGuestContext, GuestContextProvider } from './components/GuestContext';
+import { GuestContextProvider, useGuestContext } from './components/GuestContext';
 import ZoneMarker from './components/ZoneMarker';
 import Spinner from './components/Spinner';
+import Field from './components/Field';
+import { useICE } from './hooks';
+import ContentType from './components/ContentType';
 
-function initPageBuilder({ modelId, path }) {
+export {
+  useICE,
+  Guest,
+  Field,
+  Spinner,
+  GuestProxy,
+  ZoneMarker,
+  DropMarker,
+  ContentType,
+  CrafterCMSPortal,
+  AssetUploaderMask,
+  GuestContextProvider,
+  useGuestContext
+};
+
+export function initPageBuilder({ modelId, path }) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   ReactDOM.render(
-    <Guest modelId={modelId} path={path}>
+    <Guest modelId={modelId} path={path} isAuthoring>
       <GuestProxy />
     </Guest>,
     guestProxyElement
   );
 }
-
-export {
-  Guest,
-  Spinner,
-  GuestProxy,
-  ZoneMarker,
-  DropMarker,
-  CrafterCMSPortal,
-  AssetUploaderMask,
-  GuestContextProvider,
-  useGuestContext,
-  initPageBuilder
-};

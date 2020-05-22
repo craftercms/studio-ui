@@ -34,6 +34,7 @@ import {
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
   EDIT_MODE_CHANGED,
+  HOST_CHECK_IN,
   TRASHED
 } from '../../constants';
 
@@ -79,7 +80,8 @@ export type GuestActionTypes =
   | typeof TRASHED
   | typeof EDIT_MODE_CHANGED
   | typeof CLEAR_HIGHLIGHTED_RECEPTACLES
-  | typeof CONTENT_TYPE_RECEPTACLES_REQUEST;
+  | typeof CONTENT_TYPE_RECEPTACLES_REQUEST
+  | typeof HOST_CHECK_IN;
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;

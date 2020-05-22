@@ -63,8 +63,7 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import PreviewTool from '../../models/PreviewTool';
 import { changeSite } from './sites';
-
-// TODO: Notes on currentUrl, computedUrl and guest.url...
+import { envInitialState } from './env';
 
 const audiencesPanelInitialState = {
   isFetching: false,
@@ -75,11 +74,15 @@ const audiencesPanelInitialState = {
   applied: false
 };
 
+const guestBase = envInitialState.guestBase;
+
 const reducer = createReducer<GlobalState['preview']>({
-  computedUrl: null,
-  currentUrl: '/studio/preview-landing',
+  // What's shown to the user across the board (url, address bar, etc)
+  computedUrl: '',
+  // The src of the iframe
+  currentUrl: envInitialState.previewLandingBase,
   hostSize: { width: null, height: null },
-  showToolsPanel: true,
+  showToolsPanel: false,
   previousTool: null,
   // Don't change/commit the tool you're working with. Use your .env.development to set it
   selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,
@@ -189,16 +192,28 @@ const reducer = createReducer<GlobalState['preview']>({
     };
   },
   [GUEST_CHECK_IN]: (state, { payload }) => {
+    const { location, modelId } = payload;
+    const href = location.href;
+    const origin = location.origin;
+    const url = href.replace(location.origin, '');
     return {
       ...state,
+      guest: {
+        url,
+        origin,
+        modelId,
+        models: null,
+        childrenMap: null,
+        selected: null,
+        itemBeingDragged: null
+      },
+      computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url,
       // Setting URL causes dual reload when guest navigation occurs
       // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
-      guest: {
-        selected: null,
-        itemBeingDragged: null,
-        ...payload
-      },
-      computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : payload.url
+      // TODO: Retrieval of guestBase from initialState is not right.
+      // currentUrl: payload.__CRAFTERCMS_GUEST_LANDING__
+      //   ? envInitialState.previewLandingBase
+      //   : `${origin}${url}`
     };
   },
   [GUEST_CHECK_OUT]: (state) => {
@@ -206,8 +221,7 @@ const reducer = createReducer<GlobalState['preview']>({
     if (state.guest) {
       nextState = {
         ...nextState,
-        guest: null,
-        computedUrl: state.guest.url
+        guest: null
       };
     }
     // If guest checks out, doesn't mean site is changing necessarily
@@ -276,7 +290,8 @@ const reducer = createReducer<GlobalState['preview']>({
       ? state
       : {
         ...state,
-        currentUrl: payload
+        computedUrl: payload,
+        currentUrl: `${guestBase}${payload}`
       }
   ),
   [changeSite.type]: (state, { payload }) => {
@@ -295,7 +310,8 @@ const reducer = createReducer<GlobalState['preview']>({
     if (payload.nextUrl !== nextState.currentUrl) {
       nextState = {
         ...nextState,
-        currentUrl: payload.nextUrl
+        computedUrl: payload.nextUrl,
+        currentUrl: `${guestBase}${payload.nextUrl}`
       };
     }
 
