@@ -33,9 +33,9 @@ export class ContentTypeHelper {
           (field.type === 'array') &&
           (field.validations != null) &&
           ('validations' in field) &&
-          ('contentTypes' in field.validations)
+          ('allowedContentTypes' in field.validations)
         ) {
-          field.validations.contentTypes.forEach((ctid) =>
+          field.validations.allowedContentTypes.value.forEach((ctid) =>
             !accumulator.includes(ctid) && accumulator.push(ctid)
           );
         }

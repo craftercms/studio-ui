@@ -14,6 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface LookupTable<T = any> {
-  [id: string]: T
-}
+import { Reducer } from '@reduxjs/toolkit';
+import { GuestStandardAction } from './GuestStandardAction';
+import { GuestState } from './GuestStore';
+
+export type GuestReducer<Payload extends {} = any> = Reducer<
+  GuestState,
+  GuestStandardAction<Payload>
+>;
+
+export default GuestReducer;

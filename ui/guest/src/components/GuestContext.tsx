@@ -14,50 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useReducer } from 'react';
-import { foo } from '../util';
+import React, { useContext, useMemo } from 'react';
+import { GuestState } from '../store/models/GuestStore';
 
-export const GuestContext = React.createContext({
-
-  ICE_GUEST_INIT: false,
-
-  onEvent: foo,
-  register: foo,
-  deregister: foo,
-
-  inEditMode: false,
-  status: 'OFF',
-
-  dragged: {},
-  editable: {},
-  draggable: {},
-  highlighted: {}
-
-});
-
-const reducer = (state, action) => {
-  const { type, payload } = action;
-  switch (type) {
-
-    default:
-      return state;
-  }
+export type GuestContextProps = {
+  hasHost: boolean;
+  draggable: GuestState['draggable'];
+  // onEvent: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+  onEvent: (event, elementRegistryId?: number) => any;
 };
 
-const INITIAL_STATE = {};
+const GuestContext = React.createContext<GuestContextProps>(undefined);
 
-export function useGuestContext() {
-  const context = useContext(GuestContext);
-  if (!context) {
-    throw new Error('useGuestContext should be used inside a GuestContextProvider');
-  }
-  return context;
+export function useGuestContext(): GuestContextProps {
+  return useContext(GuestContext);
 }
 
 export function GuestContextProvider(props): JSX.Element {
-  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const value = useMemo(() => [state, dispatch], [state]);
-  return (
-    <GuestContext.Provider value={value} {...props}/>
-  );
+  const value = useMemo(() => props.value, [props.value]);
+  return <GuestContext.Provider {...props} value={value} />;
 }

@@ -56,7 +56,6 @@ export interface EditSelection {
 export interface GuestData {
   url: string;
   origin: string;
-  location: string;
   models: LookupTable<ContentInstance>;
   childrenMap: LookupTable<string[]>;
   modelId: string;
@@ -96,6 +95,7 @@ export interface GlobalState {
     version: string;
   };
   preview: {
+    editMode: boolean;
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;

@@ -14,18 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface ContentInstanceSystemProps {
-  id: string;
-  path: string;
-  label: string; // Internal name
-  locale: string;
-  dateCreated?: string;
-  dateModified?: string;
-  contentTypeId: string;
+import { SyntheticEvent } from 'react';
+import { EditingStatus } from '../models/ICEStatus';
+
+export function dragOk(status): boolean {
+  return [
+    EditingStatus.SORTING_COMPONENT,
+    EditingStatus.PLACING_NEW_COMPONENT,
+    EditingStatus.PLACING_DETACHED_ASSET,
+    EditingStatus.PLACING_DETACHED_COMPONENT,
+    EditingStatus.UPLOAD_ASSET_FROM_DESKTOP
+  ].includes(status);
 }
 
-export interface ContentInstance {
-  craftercms: ContentInstanceSystemProps;
-
-  [prop: string]: any;
+export function unwrapEvent<T extends Event>(event: JQueryEventObject | SyntheticEvent | Event): T {
+  // @ts-ignore
+  return event?.originalEvent ?? event?.nativeEvent ?? event;
 }

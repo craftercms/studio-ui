@@ -102,7 +102,7 @@ export function getParentPath(path: string): string {
 export function getParentsFromPath(path: string, rootPath: string): string[] {
   let splitPath = withoutIndex(path).replace(rootPath, '').split('/');
   splitPath.pop();
-  return [rootPath, ...splitPath.map((value, i) => '/' + splitPath.slice(1, i + 1).join('/')).splice(2)];
+  return [rootPath, ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(2)];
 }
 
 export default {

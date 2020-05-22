@@ -269,7 +269,7 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
       rightActions: [
         {
           icon: 'HistoryIcon',
-          onClick: showHistoryDialog(),
+          onClick: showHistoryDialog({}),
           'aria-label': formatMessage(translations.backToHistoryList)
         }
       ]
@@ -284,7 +284,7 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
         rightActions: [
           {
             icon: 'HistoryIcon',
-            onClick: showHistoryDialog(),
+            onClick: showHistoryDialog({}),
             'aria-label': formatMessage(translations.backToHistoryList)
           }
         ]

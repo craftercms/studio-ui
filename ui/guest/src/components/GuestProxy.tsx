@@ -15,41 +15,38 @@
  */
 
 import React, { useEffect, useRef } from 'react';
+import { useGuestContext } from './GuestContext';
+import ElementRegistry from '../classes/ElementRegistry';
+import iceRegistry from '../classes/ICERegistry';
+import $ from 'jquery';
+import contentController from '../classes/ContentController';
+import { zip } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
+import { ContentTypeHelper } from '../utils/ContentTypeHelper';
+import { message$, post } from '../communicator';
+import { Operation } from '../models/Operations';
 import {
-  addAnimation,
   COMPONENT_INSTANCE_HTML_REQUEST,
   COMPONENT_INSTANCE_HTML_RESPONSE,
   DELETE_ITEM_OPERATION,
-  forEach,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   MOVE_ITEM_OPERATION,
-  notNullOrUndefined,
-  popPiece,
-  removeLastPiece,
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
-} from '../util';
-import { useGuestContext } from './GuestContext';
-import { ElementRegistry } from '../classes/ElementRegistry';
-import iceRegistry from '../classes/ICERegistry';
-import $ from 'jquery';
-import contentController, { ContentController } from '../classes/ContentController';
-import { zip } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
-import { ContentTypeHelper } from '../classes/ContentTypeHelper';
-import { message$, post } from '../communicator';
-import { ContentTypeField } from '../models/ContentType';
-import { ContentInstance } from '../models/ContentInstance';
-import { Operation } from '../models/Operations';
+} from '../constants';
+import { useSelector } from 'react-redux';
+import { GuestState } from '../store/models/GuestStore';
+import { notNullOrUndefined } from '../utils/object';
+import { forEach } from '../utils/array';
+import { popPiece, removeLastPiece } from '../utils/string';
+import { addAnimation } from '../utils/dom';
 
-export function GuestProxy(props) {
+export default function GuestProxy() {
 
-  const context = useGuestContext();
-  const { current: persistence } = useRef({
-    draggable: null,
-    editable: null
-  });
+  const state = useSelector<GuestState, GuestState>(state => state);
+  const { onEvent } = useGuestContext();
+  const { current: persistence } = useRef({ draggable: null });
 
   useEffect(() => {
 
@@ -69,7 +66,7 @@ export function GuestProxy(props) {
         index = parseInt(index, 10);
       }
 
-      context.register({ element, modelId, fieldId, index, label });
+      ElementRegistry.register({ element, modelId, fieldId, index, label });
 
     };
 
@@ -94,7 +91,7 @@ export function GuestProxy(props) {
           }
           $(el).attr('data-craftercms-index', elementNewIndex);
           const pr = ElementRegistry.fromElement(el);
-          pr && context.deregister(pr.id);
+          pr && ElementRegistry.deregister(pr.id);
           registerElement(el);
         });
       } else if (type === 'sort') {
@@ -117,13 +114,13 @@ export function GuestProxy(props) {
             addAnimation($(el), 'craftercms-contentTree-pulse');
           }
           const pr = ElementRegistry.fromElement(el);
-          pr && context.deregister(pr.id);
+          pr && ElementRegistry.deregister(pr.id);
           registerElement(el);
         });
       }
     };
 
-    const getDropzoneElement = (modelId: string, fieldId: string, targetIndex: string | number): JQuery<Element> => {
+    const getDropZoneElement = (modelId: string, fieldId: string, targetIndex: string | number): JQuery<Element> => {
       const dropZoneId = iceRegistry.exists({
         modelId,
         fieldId,
@@ -147,26 +144,22 @@ export function GuestProxy(props) {
     zip(
       contentController.models$(),
       contentController.contentTypes$()
-    ).pipe(take(1)).subscribe(() =>
+    ).pipe(take(1)).subscribe(() => {
       document
         .querySelectorAll('[data-craftercms-model-id]')
-        .forEach(registerElement)
-    );
+        .forEach(registerElement);
+    });
 
-    const handler = (e: Event): void => {
+    const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
       let record = ElementRegistry.fromElement(e.currentTarget as Element);
       if (notNullOrUndefined(record)) {
-        if (['click', 'dblclick'].includes(e.type)) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-        context.onEvent(e, record.id);
+        onEvent(e, record.id);
       }
     };
 
     $(document)
       .on('mouseover', '[data-craftercms-model-id]', handler)
-      .on('mouseout', '[data-craftercms-model-id]', handler)
+      .on('mouseleave', '[data-craftercms-model-id]', handler)
       .on('dragstart', '[data-craftercms-model-id]', handler)
       .on('dragover', '[data-craftercms-model-id]', handler)
       .on('dragleave', '[data-craftercms-model-id]', handler)
@@ -175,7 +168,7 @@ export function GuestProxy(props) {
       .on('click', '[data-craftercms-model-id]', handler)
       .on('dblclick', '[data-craftercms-model-id]', handler);
 
-    const sub = ContentController.operations.subscribe((op: Operation) => {
+    const sub = contentController.operations.subscribe((op: Operation) => {
       switch (op.type) {
         case SORT_ITEM_OPERATION: {
           let [modelId, fieldId, index, newIndex] = op.args;
@@ -277,7 +270,7 @@ export function GuestProxy(props) {
           const iceId = iceRegistry.exists({ modelId, fieldId, index });
           const phyRecord = ElementRegistry.fromICEId(iceId);
 
-          context.deregister(phyRecord.id);
+          ElementRegistry.deregister(phyRecord.id);
 
           // Immediate removal of the element causes the dragend event not
           // to fire leaving the state corrupt - in a state of "SORTING".
@@ -290,31 +283,28 @@ export function GuestProxy(props) {
           break;
         }
         case INSERT_COMPONENT_OPERATION: {
-          const { modelId, fieldId, targetIndex, contentType, instance, shared } = op.args;
+          const { modelId, fieldId, targetIndex, instance } = op.args;
 
-          const $daddy = getDropzoneElement(modelId, fieldId, targetIndex);
-          let $clone = $daddy.children(':first').clone();
-          if ($clone.length) {
-            const processFields = function (instance: ContentInstance, fields: ContentTypeField): void {
-              Object.entries(fields).forEach(([id, field]) => {
-                switch (field.type) {
-                  case 'repeat':
-                  case 'node-selector': {
-                    throw new Error('Not implemented.');
-                  }
-                  default:
-                    $clone.find(`[data-craftercms-field-id="${id}"]`).html(instance[id]);
-                }
-              });
-            };
-            processFields(instance, contentType.fields);
-          } else {
-            $clone = $(`<div  data-craftercms-model-id="${modelId}" data-craftercms-field-id="${fieldId}">${instance.craftercms.label}</div>`);
-          }
+          const $spinner = $(`
+            <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+              <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
+            </svg>
+          `);
 
-          insertElement($clone, $daddy, targetIndex);
+          const $daddy = getDropZoneElement(modelId, fieldId, targetIndex);
 
-          updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
+          insertElement($spinner, $daddy, targetIndex);
+
+          message$.pipe(
+            filter((e) => (e.type === 'COMPONENT_HTML_RESPONSE') && (e.payload.id === instance.craftercms.id)),
+            take(1)
+          ).subscribe(function ({ payload }) {
+            $spinner.remove();
+            const $component = $(payload.response);
+            insertElement($component, $daddy, targetIndex);
+            updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
+            $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
+          });
 
           break;
         }
@@ -327,15 +317,14 @@ export function GuestProxy(props) {
             </svg>
           `);
 
-          const $daddy = getDropzoneElement(modelId, fieldId, targetIndex);
+          const $daddy = getDropZoneElement(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 
           const id = Date.now();
 
           message$.pipe(
-            filter((e: MessageEvent) => (e.data?.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.data?.payload.id === id)),
-            map(e => e.data),
+            filter((e) => (e.type === COMPONENT_INSTANCE_HTML_RESPONSE) && (e.payload.id === id)),
             take(1)
           ).subscribe(function ({ payload }) {
             const $root = $('<div/>').html(payload.response);
@@ -377,28 +366,21 @@ export function GuestProxy(props) {
 
     return () => {
       sub.unsubscribe();
-      // clickSubscription.unsubscribe();
+      $(document)
+        .off('mouseover', '[data-craftercms-model-id]', handler)
+        .off('mouseleave', '[data-craftercms-model-id]', handler)
+        .off('dragstart', '[data-craftercms-model-id]', handler)
+        .off('dragover', '[data-craftercms-model-id]', handler)
+        .off('dragleave', '[data-craftercms-model-id]', handler)
+        .off('drop', '[data-craftercms-model-id]', handler)
+        .off('dragend', '[data-craftercms-model-id]', handler)
+        .off('click', '[data-craftercms-model-id]', handler)
+        .off('dblclick', '[data-craftercms-model-id]', handler);
     };
 
-  }, []);
+  }, [onEvent]);
 
   useEffect(() => {
-
-    if (context.editable !== persistence.editable) {
-
-      persistence.editable && Object.values(persistence.editable).forEach(({ element }: any) => {
-        $(element).attr('contenteditable', 'false').removeAttr('contenteditable');
-        }
-      );
-
-      persistence.editable = context.editable;
-
-      persistence.editable && Object.values(persistence.editable).forEach(({ element }: any) => {
-        (persistence.editable === null) && (persistence.editable = []);
-        $(element).attr('contenteditable', 'true');
-      });
-
-    }
 
     if (notNullOrUndefined(persistence.draggable)) {
       $(persistence.draggable)
@@ -407,9 +389,10 @@ export function GuestProxy(props) {
     }
 
     forEach(
-      Object.entries(context.draggable),
+      Object.entries(state.draggable),
       ([phyId, iceId]) => {
         if (iceId !== false) {
+          // @ts-ignore TODO: Fix type
           const record = ElementRegistry.get(phyId);
           // Item deletion incurs in a brief moment where a record has been removed
           // but the context draggable table hasn't been cleaned up.
@@ -420,18 +403,6 @@ export function GuestProxy(props) {
         }
       }
     );
-
-    // context$.next(
-    //   pluckProps(
-    //     context,
-    //     'inEditMode',
-    //     'status',
-    //     'dragged',
-    //     'editable',
-    //     'draggable',
-    //     'highlighted'
-    //   )
-    // );
 
   });
 

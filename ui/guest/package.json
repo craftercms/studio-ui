@@ -1,14 +1,18 @@
 {
   "name": "@craftercms/studio-guest",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "main": "dist/craftercms-guest.cjs.js",
-  "module": "dist/craftercms-guest.esm.js",
-  "browser": "dist/craftercms-guest.umd.js",
+  "main": "index.js",
+  "module": "index.js",
+  "typings": "index.d.ts",
   "craftercms": {
-    "id": "org.craftercms.plugin.guest"
+    "id": "craftercms.guest"
   },
   "dependencies": {
+    "@craftercms/classes": "^1.2.2",
+    "@craftercms/content": "^1.2.2",
+    "@craftercms/search": "^1.2.2",
+    "@reduxjs/toolkit": "^1.3.6",
     "@types/jquery": "^3.3.32",
     "@types/node": "^13.9.0",
     "@types/react": "^16.9.23",
@@ -19,6 +23,9 @@
     "jss-preset-default": "^10.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5",
+    "redux-observable": "^1.2.0",
     "rxjs": "^6.5.4",
     "typescript": "^3.8.3",
     "uuid": "^3.3.3"
@@ -27,7 +34,8 @@
     "build": "rollup -c",
     "watch": "rollup -c -w",
     "rollup": "rollup -c",
-    "rollup:watch": "rollup -c -w"
+    "rollup:watch": "rollup -c -w",
+    "compile": "tsc --build tsconfig.json"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -29,6 +29,7 @@ import { fetchSites } from '../services/sites';
 import LookupTable from '../models/LookupTable';
 import { initialState as sitesInitialState } from './reducers/sites';
 import { initialState as authInitialState } from './reducers/auth';
+import { Middleware } from 'redux';
 
 export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
 
@@ -52,9 +53,12 @@ export function createStore(useMock = false): Observable<CrafterCMSStore> {
 }
 
 export function createStoreSync(preloadedState: Partial<GlobalState>): CrafterCMSStore {
-  const epicMiddleware = createEpicMiddleware();
-  const middleware = [...getDefaultMiddleware<GlobalState>({ thunk: false }), epicMiddleware];
-  const store = configureStore<GlobalState, StandardAction>({
+  const epicMiddleware = createEpicMiddleware<StandardAction, StandardAction, GlobalState>();
+  const middleware = [
+    ...getDefaultMiddleware<GlobalState, { thunk: boolean }>({ thunk: false }),
+    epicMiddleware
+  ];
+  const store = configureStore<GlobalState, StandardAction, Middleware[]>({
     reducer,
     middleware,
     preloadedState

@@ -204,10 +204,10 @@ export function changeCurrentUrl(nextValue: string): StandardAction {
   };
 }
 
-export function setItemBeingDragged(active: boolean): StandardAction {
+export function setItemBeingDragged(iceId: number): StandardAction {
   return {
     type: SET_ITEM_BEING_DRAGGED,
-    payload: active
+    payload: iceId
   };
 }
 
@@ -287,4 +287,8 @@ export const fetchPreviewToolsConfigComplete = createAction<PreviewToolsConfig>(
 
 export const fetchPreviewToolsConfigFailed = createAction<AjaxError>('FETCH_PREVIEW_TOOLS_CONFIG_FAILED');
 
+// endregion
+
+// region Edit Mode
+export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
 // endregion

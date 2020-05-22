@@ -273,7 +273,7 @@ export default function() {
       showNewContentDialog({
         item: currentPreview,
         compact: false,
-        onContentTypeSelected: showEditDialog()
+        onContentTypeSelected: showEditDialog({})
       })
     );
   };

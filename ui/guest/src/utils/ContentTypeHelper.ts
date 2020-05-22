@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createLookupTable, retrieveProperty } from '../util';
-import { ContentType, ContentTypeField } from '../models/ContentType';
+import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
+import { createLookupTable, retrieveProperty } from './object';
 
 export class ContentTypeHelper {
 
@@ -28,9 +28,9 @@ export class ContentTypeHelper {
           (field.type === 'array') &&
           (field.validations != null) &&
           ('validations' in field) &&
-          ('contentTypes' in field.validations)
+          ('allowedContentTypes' in field.validations)
         ) {
-          field.validations.contentTypes.forEach((ctid) =>
+          field.validations.allowedContentTypes.value.forEach((ctid) =>
             !accumulator.includes(ctid) && accumulator.push(ctid)
           );
         }
@@ -54,7 +54,7 @@ export class ContentTypeHelper {
     const field = ContentTypeHelper.getField(contentType, fieldId);
   }
 
-  static getField(type: ContentType, fieldId: string): any {
+  static getField(type: ContentType, fieldId: string): ContentTypeField {
     // For repeat groups, the field inside the repeat group field will be
     // under {repeatName}.fields.{fieldName}. To abstract this complexity from devs
     // we parse it here.

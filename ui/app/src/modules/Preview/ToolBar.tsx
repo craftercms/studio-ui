@@ -30,7 +30,13 @@ import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 import CustomMenu from '../../components/Icons/CustomMenu';
-import { changeCurrentUrl, closeTools, openTools, RELOAD_REQUEST } from '../../state/actions/preview';
+import {
+  changeCurrentUrl,
+  closeTools,
+  openTools,
+  RELOAD_REQUEST,
+  setPreviewEditMode
+} from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
@@ -41,88 +47,100 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ComponentMenu from '../../components/ComponentMenu';
 import QuickCreate from './QuickCreate';
 import { changeSite } from '../../state/reducers/sites';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
+import withStyles from '@material-ui/core/styles/withStyles';
+import { palette } from '../../styles/theme';
 
 const translations = defineMessages({
   openToolsPanel: {
     id: 'openToolsPanel.label',
     defaultMessage: 'Open tools panel'
+  },
+  toggleEditMode: {
+    id: 'previewToolbar.toggleEditMode',
+    defaultMessage: 'Toggle edit mode'
   }
 });
 
-
 const foo = () => void 0;
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  toolBar: {
-    placeContent: 'center space-between'
-    // background: palette.gray.dark4
-  },
-  addressBarInput: {
-    width: 400,
-    padding: '2px 4px',
-    // margin: '0 5px 0 0 ',
-    display: 'flex',
-    alignItems: 'center'
-    // backgroundColor: palette.gray.dark6
-  },
-  inputContainer: {
-    marginLeft: theme.spacing(1),
-    flex: 1
-  },
-  input: {
-    border: 'none',
-    '&:focus:invalid, &:focus': {
-      border: 'none',
-      boxShadow: 'none'
-    }
-  },
-  iconButton: {
-    // padding: 5,
-    // margin: '0 5px 0 0',
-    // color: palette.gray.light4,
-    // backgroundColor: palette.gray.dark2
-  },
-  divider: {
-    height: 28,
-    margin: 4
-  },
-
-  addressBarContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  actionButtonSection: {
-    display: 'flex',
-    alignItems: 'center',
-
-    '& > *': {
-      marginRight: theme.spacing(1)
-    }
-  },
-  globalNavSection: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  iframe: {
-    height: '0',
-    border: 0,
-    '&.complete': {
-      height: '100%'
-    }
-  },
-  loadingRoot: {
-    height: 'calc(100% - 104px)',
-    justifyContent: 'center'
+const EditSwitch = withStyles({
+  checked: {
+    color: palette.green.tint
   }
-}));
+})(Switch);
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    toolBar: {
+      placeContent: 'center space-between'
+      // background: palette.gray.dark4
+    },
+    addressBarInput: {
+      width: 400,
+      padding: '2px 4px',
+      // margin: '0 5px 0 0 ',
+      display: 'flex',
+      alignItems: 'center'
+      // backgroundColor: palette.gray.dark6
+    },
+    inputContainer: {
+      marginLeft: theme.spacing(1),
+      flex: 1
+    },
+    input: {
+      border: 'none',
+      '&:focus:invalid, &:focus': {
+        border: 'none',
+        boxShadow: 'none'
+      }
+    },
+    iconButton: {
+      // padding: 5,
+      // margin: '0 5px 0 0',
+      // color: palette.gray.light4,
+      // backgroundColor: palette.gray.dark2
+    },
+    divider: {
+      height: 28,
+      margin: 4
+    },
+    addressBarContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    actionButtonSection: {
+      display: 'flex',
+      alignItems: 'center',
+
+      '& > *': {
+        marginRight: theme.spacing(1)
+      }
+    },
+    globalNavSection: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    iframe: {
+      height: '0',
+      border: 0,
+      '&.complete': {
+        height: '100%'
+      }
+    },
+    loadingRoot: {
+      height: 'calc(100% - 104px)',
+      justifyContent: 'center'
+    }
+  })
+);
 
 function createOnEnter(handler, argument: 'value' | 'event' = 'event') {
-  return (
-    (argument === 'value')
-      ? (e) => (e.key === 'Enter') && handler(e.target.value)
-      : (e) => (e.key === 'Enter') && handler(e)
-  );
+  return argument === 'value'
+    ? (e) => e.key === 'Enter' && handler(e.target.value)
+    : (e) => e.key === 'Enter' && handler(e);
 }
 
 interface AddressBarProps {
@@ -131,7 +149,7 @@ interface AddressBarProps {
   onSiteChange: (siteId: string) => any;
   onUrlChange: (value: string) => any;
   onRefresh: (e) => any;
-  sites: { id: string; name: string; } [];
+  sites: { id: string; name: string }[];
 }
 
 export function AddressBar(props: AddressBarProps) {
@@ -147,13 +165,13 @@ export function AddressBar(props: AddressBarProps) {
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
   const [anchorEl, setAnchorEl] = useState(null);
-  const modelId = useSelection<string>(state => state.preview.guest?.modelId);
+  const modelId = useSelection<string>((state) => state.preview.guest?.modelId);
 
   useEffect(() => {
-    (url) && setInternalUrl(url);
+    url && setInternalUrl(url);
   }, [url]);
 
-  const onSiteChangeInternal = (value) => !isBlank(value) && (value !== site) && onSiteChange(value);
+  const onSiteChangeInternal = (value) => !isBlank(value) && value !== site && onSiteChange(value);
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -181,20 +199,19 @@ export function AddressBar(props: AddressBarProps) {
           onChange={({ target: { value } }) => onSiteChangeInternal(value)}
           displayEmpty
         >
-          {
-            noSiteSet &&
+          {noSiteSet && (
             <MenuItem value="">
               <FormattedMessage
                 id="previewToolBar.siteSelectorNoSiteSelected"
                 defaultMessage="Choose site"
               />
             </MenuItem>
-          }
-          {
-            sites.map(({ id, name }) =>
-              <MenuItem key={id} value={id}>{name}</MenuItem>
-            )
-          }
+          )}
+          {sites.map(({ id, name }) => (
+            <MenuItem key={id} value={id}>
+              {name}
+            </MenuItem>
+          ))}
         </Select>
         <InputBase
           value={internalUrl}
@@ -213,12 +230,7 @@ export function AddressBar(props: AddressBarProps) {
       <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <MoreVertRounded />
       </IconButton>
-      <ComponentMenu
-        anchorEl={anchorEl}
-        handleClose={handleClose}
-        site={site}
-        modelId={modelId}
-      />
+      <ComponentMenu anchorEl={anchorEl} handleClose={handleClose} site={site} modelId={modelId} />
     </>
   );
 }
@@ -228,16 +240,13 @@ export default function ToolBar() {
   const classes = useStyles({});
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const sitesTable = useSelection<LookupTable<Site>>(state => state.sites.byId);
+  const sitesTable = useSelection<LookupTable<Site>>((state) => state.sites.byId);
+  const editMode = useSelection((state) => state.preview.editMode);
   const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
   const { previewLandingBase } = useEnv();
-  const {
-    guest,
-    currentUrl,
-    showToolsPanel
-  } = usePreviewState();
-  let addressBarUrl = guest?.url ?? currentUrl;
+  const { computedUrl, showToolsPanel } = usePreviewState();
 
+  let addressBarUrl = computedUrl;
   if (addressBarUrl === previewLandingBase) {
     addressBarUrl = '';
   }
@@ -253,6 +262,13 @@ export default function ToolBar() {
             <CustomMenu />
           </IconButton>
           <QuickCreate />
+          <Tooltip title={formatMessage(translations.toggleEditMode)}>
+            <EditSwitch
+              color="default"
+              checked={editMode}
+              onChange={(e) => dispatch(setPreviewEditMode({ editMode: e.target.checked }))}
+            />
+          </Tooltip>
         </section>
         <section className={classes.addressBarContainer}>
           <AddressBar

@@ -13,10 +13,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-export interface LegacyItem {
-  name: string;
-  internalName: string;
-  uri: string;
 
-  [prop: string]: any;
+export function capitalize(str: string): string {
+  return `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
+}
+export function removeLastPiece(str: string, splitChar: string = '.'): string {
+  return str.substr(0, str.lastIndexOf(splitChar));
+}
+export function popPiece(str: string, splitChar: string = '.'): string {
+  return str.substr(str.lastIndexOf(splitChar) + 1);
+}
+export function isBlank(str: string): boolean {
+  return str === '';
 }

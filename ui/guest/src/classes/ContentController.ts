@@ -14,970 +14,662 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { ajax, AjaxResponse } from 'rxjs/ajax';
-import { filter, map, share, take } from 'rxjs/operators';
-import { ModelHelper } from './ModelHelper';
+import { BehaviorSubject, NEVER, Observable, Subject } from 'rxjs';
+import { filter, map, pluck, share, switchMap, take, tap } from 'rxjs/operators';
+import { ModelHelper } from '../utils/ModelHelper';
+import Cookies from 'js-cookie';
+import { fromTopic, post } from '../communicator';
+import uuid from 'uuid/v4';
+import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
+import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
+import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
+import { Operation } from '../models/Operations';
 import {
   CHILDREN_MAP_UPDATE,
   CONTENT_TYPES_RESPONSE,
-  createLookupTable,
   DELETE_ITEM_OPERATION,
-  findComponentContainerFields,
-  forEach,
   GUEST_MODELS_RECEIVED,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
-  isNullOrUndefined,
   MOVE_ITEM_OPERATION,
-  notNullOrUndefined,
-  pluckProps,
-  popPiece,
-  removeLastPiece,
-  reversePluckProps,
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
-} from '../util';
-import Cookies from 'js-cookie';
-import { fromTopic, post } from '../communicator';
-import uuid from 'uuid/v4';
-import { ContentInstance, ContentInstanceSystemProps } from '../models/ContentInstance';
-import { ContentType, ContentTypeField } from '../models/ContentType';
-import { LookupTable } from '../models/LookupTable';
-import { Operation } from '../models/Operations';
+} from '../constants';
+import { createLookupTable, isNullOrUndefined } from '../utils/object';
+import { popPiece, removeLastPiece } from '../utils/string';
+import {
+  findComponentContainerFields,
+  getCollection,
+  getCollectionWithoutItemAtIndex,
+  getParentModelId
+} from '../utils/ice';
+import { createQuery, search } from '@craftercms/search';
+import { parseDescriptor } from '@craftercms/content';
+import {
+  createChildModelIdList,
+  modelsToLookup,
+  normalizeModelsLookup,
+  preParseSearchResults
+} from '../utils/content';
+import { crafterConf } from '@craftercms/classes';
 
-const apiUrl = window.location.origin;
+if (process.env.NODE_ENV === 'development') {
+  // TODO: Notice
+  // Not so sure about this assumption. Maybe best to just leave it up to the consumer
+  // app to set the crafter URL via `crafterConf` if it wants something different?
+  (crafterConf.getConfig().baseUrl === '') && crafterConf.configure({
+    baseUrl: 'http://localhost:8080',
+    site: Cookies.get('crafterSite')
+  });
+}
 
-export class ContentController {
+const operations$ = new Subject<Operation>();
+const operations = operations$.asObservable();
 
-  static operations$ = new Subject<Operation>();
-  static operations = ContentController.operations$.asObservable();
+/* private */
+const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
+  /*'modelId': { ...modelData }*/
+});
 
-  /* private */
-  static models$ = new BehaviorSubject<LookupTable<ContentInstance>>({ /*'modelId': { ...modelData }*/ });
-  /* private */
-  static modelsObs$ = ContentController.models$.asObservable().pipe(
-    filter((objects) => Object.keys(objects).length > 0),
-    share()
+/* private */
+const modelsObs$ = _models$.asObservable().pipe(
+  filter((objects) => Object.keys(objects).length > 0),
+  share()
+);
+
+/* private */
+const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
+  /*...*/
+});
+
+/* private */
+const contentTypesObs$ = _contentTypes$.asObservable().pipe(
+  filter((objects) => Object.keys(objects).length > 0),
+  share()
+);
+
+export const children = {
+  /* [id]: [id, id, id] */
+};
+
+const modelsRequested = {};
+
+function computeChildren(model: ContentInstance): void {
+  let childIds = [];
+  const modelId = ModelHelper.prop(model, 'id');
+
+  const contentTypeId = ModelHelper.getContentTypeId(model);
+  const contentType = getCachedContentType(contentTypeId);
+
+  findComponentContainerFields(contentType.fields).forEach((field) => {
+    const value = ModelHelper.value(model, field.id);
+    if (value != null) {
+      if (field.type === 'node-selector') {
+        childIds = childIds.concat(value);
+      } else if (field.type === 'repeat') {
+        // TODO ...
+        throw new Error('Path not implemented.');
+      }
+    }
+  });
+
+  children[modelId] = childIds.length ? childIds : null;
+}
+
+export function getModel(modelId: string): Promise<ContentInstance> {
+  return getModel$(modelId).toPromise();
+}
+
+export function getModel$(modelId: string): Observable<ContentInstance> {
+  return models$(modelId).pipe(
+    filter((models) => modelId in models),
+    map((models) => models[modelId])
   );
+}
 
-  /* private */
-  static contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({ /*...*/ });
-  /* private */
-  static contentTypesObs$ = ContentController.contentTypes$.asObservable().pipe(
-    filter((objects) => Object.keys(objects).length > 0),
-    share()
+export function getContentType(contentTypeId: string): Promise<ContentType> {
+  return getContentType$(contentTypeId).toPromise();
+}
+
+export function getContentType$(contentTypeId: string): Observable<ContentType> {
+  !hasCachedContentType(contentTypeId) && fetchContentType(contentTypeId);
+  return contentTypesObs$.pipe(
+    filter((contentTypes) => contentTypeId in contentTypes),
+    map((contentTypes) => contentTypes[contentTypeId])
   );
+}
 
-  children = {
-    /* [id]: [id, id, id] */
+export function models$(modelId?: string): Observable<LookupTable<ContentInstance>> {
+  modelId && !hasCachedModel(modelId) && fetchModel(modelId);
+  return modelsObs$;
+}
+
+export function contentTypes$(): Observable<LookupTable<ContentType>> {
+  return contentTypesObs$;
+}
+
+export function hasCachedModel(modelId: string): boolean {
+  return getCachedModel(modelId) != null;
+}
+
+export function getCachedModel(modelId: string): ContentInstance {
+  return getCachedModels()[modelId];
+}
+
+export function getCachedModels(): LookupTable<ContentInstance> {
+  return _models$.value;
+}
+
+export function hasCachedContentType(contentTypeId: string): boolean {
+  return getCachedContentType(contentTypeId) != null;
+}
+
+export function getCachedContentType(contentTypeId: string): ContentType {
+  return getCachedContentTypes()[contentTypeId];
+}
+
+export function getCachedContentTypes(): LookupTable<ContentType> {
+  return _contentTypes$.value;
+}
+
+// region Operations
+
+export function updateField(
+  modelId: string,
+  fieldId: string,
+  index: string | number,
+  value: unknown
+): void {
+  const models = getCachedModels();
+  const model = { ...models[modelId] };
+
+  ModelHelper.value(model, fieldId, value);
+
+  _models$.next({
+    ...models,
+    [modelId]: model
+  });
+
+  post(UPDATE_FIELD_VALUE_OPERATION, {
+    modelId,
+    fieldId,
+    index,
+    value,
+    parentModelId: getParentModelId(modelId, models, children)
+  });
+
+  operations$.next({
+    type: UPDATE_FIELD_VALUE_OPERATION,
+    args: { modelId, fieldId, index, value }
+  });
+}
+
+export function insertItem(
+  modelId: string,
+  fieldId: string,
+  index: number | string,
+  item: ContentInstance
+): void {
+  const models = getCachedModels();
+  const model = models[modelId];
+  const collection = ModelHelper.value(model, fieldId);
+  const result = collection.slice(0);
+
+  // Insert in desired position
+  result.splice(index, 0, item);
+
+  _models$.next({
+    ...models,
+    [modelId]: {
+      ...model,
+      [fieldId]: result
+    }
+  });
+
+  post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
+
+  operations$.next({
+    type: 'insert',
+    args: arguments
+  });
+}
+
+export function insertComponent(
+  modelId: string,
+  fieldId: string,
+  targetIndex: number | string,
+  contentType: ContentType,
+  shared: boolean = false
+): void {
+  if (typeof contentType === 'string') {
+    contentType = getCachedContentType(contentType);
+  }
+
+  const models = getCachedModels();
+  const model = models[modelId];
+  const result = getCollection(model, fieldId, targetIndex);
+
+  // Create Item
+  // const now = new Date().toISOString();
+  const instance: ContentInstance = {
+    craftercms: {
+      id: uuid(),
+      path: null,
+      label: `New ${contentType.name}`,
+      contentTypeId: contentType.id,
+      dateCreated: null,
+      dateModified: null,
+      locale: 'en'
+    }
   };
 
-  modelRequestsInFlight = {};
-
-  constructor() {
-    fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) => {
-      this.contentTypesResponseReceived(data.payload);
-    });
-  }
-
-  computeChildren(model: ContentInstance): void {
-
-    let childIds = [];
-    const modelId = ModelHelper.prop(model, 'id');
-    const children = this.children;
-    const contentTypeId = ModelHelper.getContentTypeId(model);
-    const contentType = this.getCachedContentType(contentTypeId);
-
-    findComponentContainerFields(contentType.fields).forEach((field) => {
-      const value = ModelHelper.value(model, field.id);
-      if (value != null) {
-        if (field.type === 'node-selector') {
-          childIds = childIds.concat(value);
-        } else if (field.type === 'repeat') {
-          // TODO ...
-          throw new Error('Path not implemented.');
-        }
-      }
-    });
-
-    children[modelId] = (childIds.length) ? childIds : null;
-
-  }
-
-  getModel(modelId: string): Promise<ContentInstance> {
-    return this.getModel$(modelId).toPromise();
-  }
-
-  getModel$(modelId: string): Observable<ContentInstance> {
-    return this.models$(modelId).pipe(
-      filter(models => modelId in models),
-      map(models => models[modelId])
-    );
-  }
-
-  getContentType(contentTypeId: string): Promise<ContentType> {
-    return this.getContentType$(contentTypeId).toPromise();
-  }
-
-  getContentType$(contentTypeId: string): Observable<ContentType> {
-    (!this.hasCachedContentType(contentTypeId)) && this.fetchContentType(contentTypeId);
-    return ContentController.contentTypesObs$.pipe(
-      filter(contentTypes => contentTypeId in contentTypes),
-      map(contentTypes => contentTypes[contentTypeId])
-    );
-  }
-
-  models$(modelId?: string): Observable<LookupTable<ContentInstance>> {
-    (modelId && !this.hasCachedModel(modelId)) && this.fetchModel(modelId);
-    return ContentController.modelsObs$;
-  }
-
-  contentTypes$(): Observable<LookupTable<ContentType>> {
-    return ContentController.contentTypesObs$;
-  }
-
-  hasCachedModel(modelId: string): boolean {
-    return (this.getCachedModel(modelId) != null);
-  }
-
-  getCachedModel(modelId: string): ContentInstance {
-    return this.getCachedModels()[modelId];
-  }
-
-  getCachedModels(): LookupTable<ContentInstance> {
-    return ContentController.models$.value;
-  }
-
-  hasCachedContentType(contentTypeId: string): boolean {
-    return (this.getCachedContentType(contentTypeId) != null);
-  }
-
-  getCachedContentType(contentTypeId: string): ContentType {
-    return this.getCachedContentTypes()[contentTypeId];
-  }
-
-  getCachedContentTypes(): LookupTable<ContentType> {
-    return ContentController.contentTypes$.value;
-  }
-
-  updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
-    const models = this.getCachedModels();
-    const model = { ...models[modelId] };
-
-    ModelHelper.value(model, fieldId, value);
-
-    ContentController.models$.next({
-      ...models,
-      [modelId]: model
-    });
-
-    post(UPDATE_FIELD_VALUE_OPERATION, {
-      modelId,
-      fieldId,
-      index,
-      value,
-      parentModelId: getParentModelId(modelId, models, this.children)
-    });
-
-    ContentController.operations$.next({
-      type: UPDATE_FIELD_VALUE_OPERATION,
-      args: { modelId, fieldId, index, value }
-    });
-
-  }
-
-  insertItem(
-    modelId: string,
-    fieldId: string,
-    index: number | string,
-    item: ContentInstance
-  ): void {
-
-    const models = this.getCachedModels();
-    const model = models[modelId];
-    const collection = ModelHelper.value(model, fieldId);
-    const result = collection.slice(0);
-
-    // Insert in desired position
-    result.splice(index, 0, item);
-
-    ContentController.models$.next({
-      ...models,
-      [modelId]: {
-        ...model,
-        [fieldId]: result
-      }
-    });
-
-    post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
-
-    ContentController.operations$.next({
-      type: 'insert',
-      args: arguments
-    });
-
-  }
-
-  insertComponent(
-    modelId: string,
-    fieldId: string,
-    targetIndex: number | string,
-    contentType: ContentType,
-    shared: boolean = false
-  ): void {
-    if (typeof contentType === 'string') {
-      contentType = this.getCachedContentType(contentType);
-    }
-
-    const models = this.getCachedModels();
-    const model = models[modelId];
-    const result = getCollection(model, fieldId, targetIndex);
-
-    // Create Item
-    // const now = new Date().toISOString();
-    const instance: ContentInstance = {
-      craftercms: {
-        id: uuid(),
-        path: null,
-        label: `New ${contentType.name}`,
-        contentTypeId: contentType.id,
-        // dateCreated: now,
-        // dateModified: now,
-        locale: 'en'
-      }
-    };
-
-    function processFields(instance, fields: LookupTable<ContentTypeField>) {
-      Object.entries(fields).forEach(([id, field]) => {
-        switch (field.type) {
-          case 'repeat':
-          case 'node-selector': {
-            instance[id] = [];
-            if (field.type === 'repeat') {
-              instance[id].push({});
-              processFields(instance[id][0], field.fields);
-            }
-            break;
+  function processFields(instance, fields: LookupTable<ContentTypeField>) {
+    Object.entries(fields).forEach(([id, field]) => {
+      switch (field.type) {
+        case 'repeat':
+        case 'node-selector': {
+          instance[id] = [];
+          if (field.type === 'repeat') {
+            instance[id].push({});
+            processFields(instance[id][0], field.fields);
           }
-          default:
-            instance[id] = field.defaultValue;
+          break;
         }
-      });
+        default:
+          instance[id] = field.defaultValue;
+      }
+    });
+  }
+
+  processFields(instance, contentType.fields);
+
+  // Insert in desired position
+  result.splice(targetIndex as number, 0, instance.craftercms.id);
+
+  post(GUEST_MODELS_RECEIVED, {
+    [instance.craftercms.id]: instance,
+    [modelId]: {
+      ...model,
+      [fieldId]: result
     }
+  });
 
-    processFields(instance, contentType.fields);
-
-    // Insert in desired position
-    result.splice(targetIndex as number, 0, instance.craftercms.id);
-
-    ContentController.models$.next({
-      ...models,
-      [instance.craftercms.id]: instance,
-      [modelId]: {
-        ...model,
-        [fieldId]: result
-      }
-    });
-
-    post(INSERT_COMPONENT_OPERATION, {
-      modelId,
-      fieldId,
-      targetIndex,
-      contentType,
-      instance,
-      parentModelId: getParentModelId(modelId, models, this.children),
-      shared
-    });
-
-    ContentController.operations$.next({
-      type: INSERT_COMPONENT_OPERATION,
-      args: { modelId, fieldId, targetIndex, contentType, shared, instance }
-    });
-
-  }
-
-  insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void;
-  insertInstance(modelId: string, fieldId: string, targetIndex: string, instance: ContentInstance): void;
-  insertInstance(modelId: string, fieldId: string, targetIndex: number | string, instance: ContentInstance): void {
-    const models = this.getCachedModels();
-    const model = models[modelId];
-
-    const result = getCollection(model, fieldId, targetIndex);
-
-    // Insert in desired position
-    result.splice(targetIndex as number, 0, instance.craftercms.id);
-
-    ContentController.models$.next({
-      ...models,
-      [instance.craftercms.id]: instance,
-      [modelId]: {
-        ...model,
-        [fieldId]: result
-      }
-    });
-
-    post(INSERT_INSTANCE_OPERATION, {
-      modelId,
-      fieldId,
-      targetIndex,
-      instance,
-      parentModelId: getParentModelId(modelId, models, this.children)
-    });
-
-    ContentController.operations$.next({
-      type: INSERT_INSTANCE_OPERATION,
-      args: { modelId, fieldId, targetIndex, instance }
-    });
-
-  }
-
-  insertGroup(modelId, fieldId, data): void {
-  }
-
-  sortItem(
-    modelId: string,
-    fieldId: string,
-    currentIndex: number | string,
-    targetIndex: number | string
-  ): void {
-
-    const models = this.getCachedModels();
-    const model = models[modelId];
-    const currentIndexParsed = (typeof currentIndex === 'number') ? currentIndex : parseInt(popPiece(currentIndex));
-    const targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
-    const collection = getCollection(model, fieldId, currentIndex);
-    const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
-
-    // Insert in desired position
-    result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
-
-    ContentController.models$.next({
-      ...models,
-      [modelId]: {
-        ...model,
-        [fieldId]: result
-      }
-    });
-
-    post(SORT_ITEM_OPERATION, {
-      modelId,
-      fieldId,
-      currentIndex,
-      targetIndex,
-      parentModelId: getParentModelId(modelId, models, this.children)
-    });
-
-    ContentController.operations$.next({
-      type: SORT_ITEM_OPERATION,
-      args: arguments
-    });
-
-  }
-
-  moveItem(
-    originalModelId: string,
-    originalFieldId: string,
-    originalIndex: number | string,
-    targetModelId: string,
-    targetFieldId: string,
-    targetIndex: number | string
-  ): void {
-
-    const models = this.getCachedModels();
-
-    // Parse indexes to clear out dot notation for nested repeat/collection items.
-    let originalIndexParsed = (typeof originalIndex === 'number') ? originalIndex : parseInt(popPiece(originalIndex));
-    let targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
-
-    const symmetricOriginal = (originalFieldId.split('.').length === `${originalIndex}`.split('.').length);
-    const symmetricTarget = (targetFieldId.split('.').length === `${targetIndex}`.split('.').length);
-
-    if (!symmetricOriginal) {
-      debugger
-    } else if (!symmetricTarget) {
-      debugger
+  _models$.next({
+    ...models,
+    [instance.craftercms.id]: instance,
+    [modelId]: {
+      ...model,
+      [fieldId]: result
     }
+  });
 
-    const currentModel = models[originalModelId];
-    const currentCollection = (
-      symmetricOriginal
-        ? ModelHelper.extractCollection(currentModel, originalFieldId, originalIndex)
-        : ModelHelper.extractCollectionItem(currentModel, originalFieldId, originalIndex)
-    );
-    // Remove item from original collection
-    const currentResult = currentCollection
-      .slice(0, originalIndexParsed)
-      .concat(currentCollection.slice(originalIndexParsed + 1));
+  children[modelId]?.push(instance.craftercms.id);
 
-    const targetModel = models[targetModelId];
-    const targetCollection = (
-      symmetricTarget
-        ? ModelHelper.extractCollection(targetModel, targetFieldId, targetIndex)
-        : ModelHelper.extractCollectionItem(targetModel, targetFieldId, targetIndex)
-    );
-    // Insert item in target collection @ the desired position
-    const targetResult = targetCollection.slice(0);
+  post(INSERT_COMPONENT_OPERATION, {
+    modelId,
+    fieldId,
+    targetIndex,
+    contentType,
+    instance,
+    parentModelId: getParentModelId(modelId, models, children),
+    shared
+  });
 
-    targetResult.splice(targetIndexParsed, 0, currentCollection[originalIndexParsed]);
+  operations$.next({
+    type: INSERT_COMPONENT_OPERATION,
+    args: { modelId, fieldId, targetIndex, contentType, shared, instance }
+  });
+}
 
-    const newOriginalModel = { ...currentModel };
-    const newTargetModel = (originalModelId === targetModelId) ? newOriginalModel : { ...targetModel };
+//insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void;
+//insertInstance(modelId: string, fieldId: string, targetIndex: string, instance: ContentInstance): void;
+export function insertInstance(
+  modelId: string,
+  fieldId: string,
+  targetIndex: number | string,
+  instance: ContentInstance
+): void {
+  const models = getCachedModels();
+  const model = models[modelId];
 
-    // This should extract the object that contains the
-    // collection so the collection can be replaced with the new one with the modifications.
-    // This is for nested cases where there's something like `field_1.field_2`.
-    const getFieldItem = (model, field, index) => {
-      let item;
-      if (symmetricOriginal) {
-        item = ModelHelper.extractCollectionItem(
-          model,
-          removeLastPiece(`${field}`),
-          removeLastPiece(`${index}`)
-        );
-      } else {
-        debugger;
-      }
-      return item;
-    };
+  const result = getCollection(model, fieldId, targetIndex);
 
-    if (originalFieldId.includes('.')) {
-      let item = getFieldItem(newOriginalModel, originalFieldId, originalIndex);
-      item[popPiece(originalFieldId)] = targetResult;
-    } else {
-      newOriginalModel[originalFieldId] = currentResult;
+  // Insert in desired position
+  result.splice(targetIndex as number, 0, instance.craftercms.id);
+
+  _models$.next({
+    ...models,
+    [instance.craftercms.id]: instance,
+    [modelId]: {
+      ...model,
+      [fieldId]: result
     }
+  });
 
-    if (
-      (targetModelId !== originalModelId) &&
-      (targetFieldId.includes('.'))
-    ) {
-      let item = getFieldItem(newTargetModel, targetFieldId, targetIndex);
-      item[popPiece(targetFieldId)] = targetResult;
-    } else {
-      newTargetModel[targetFieldId] = targetResult;
+  post(INSERT_INSTANCE_OPERATION, {
+    modelId,
+    fieldId,
+    targetIndex,
+    instance,
+    parentModelId: getParentModelId(modelId, models, children)
+  });
+
+  operations$.next({
+    type: INSERT_INSTANCE_OPERATION,
+    args: { modelId, fieldId, targetIndex, instance }
+  });
+}
+
+export function insertGroup(modelId, fieldId, data): void {}
+
+export function sortItem(
+  modelId: string,
+  fieldId: string,
+  currentIndex: number | string,
+  targetIndex: number | string
+): void {
+  const models = getCachedModels();
+  const model = models[modelId];
+  const currentIndexParsed =
+    typeof currentIndex === 'number' ? currentIndex : parseInt(popPiece(currentIndex));
+  const targetIndexParsed =
+    typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
+  const collection = getCollection(model, fieldId, currentIndex);
+  const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
+
+  // Insert in desired position
+  result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
+
+  _models$.next({
+    ...models,
+    [modelId]: {
+      ...model,
+      [fieldId]: result
     }
+  });
 
-    ContentController.models$.next(
-      (originalModelId === targetModelId) ? {
-        ...models,
-        [originalModelId]: newOriginalModel
-      } : {
-        ...models,
-        [originalModelId]: newOriginalModel,
-        [targetModelId]: newTargetModel
-      }
-    );
+  post(SORT_ITEM_OPERATION, {
+    modelId,
+    fieldId,
+    currentIndex,
+    targetIndex,
+    parentModelId: getParentModelId(modelId, models, children)
+  });
 
-    post(MOVE_ITEM_OPERATION, {
-      originalModelId,
-      originalFieldId,
-      originalIndex,
-      targetModelId,
-      targetFieldId,
-      targetIndex,
-      originalParentModelId: getParentModelId(originalModelId, models, this.children),
-      targetParentModelId: getParentModelId(targetModelId, models, this.children)
-    });
+  operations$.next({
+    type: SORT_ITEM_OPERATION,
+    args: arguments
+  });
+}
 
-    ContentController.operations$.next({
-      type: MOVE_ITEM_OPERATION,
-      args: arguments
-    });
+export function moveItem(
+  originalModelId: string,
+  originalFieldId: string,
+  originalIndex: number | string,
+  targetModelId: string,
+  targetFieldId: string,
+  targetIndex: number | string
+): void {
+  const models = getCachedModels();
 
+  // Parse indexes to clear out dot notation for nested repeat/collection items.
+  let originalIndexParsed =
+    typeof originalIndex === 'number' ? originalIndex : parseInt(popPiece(originalIndex));
+  let targetIndexParsed =
+    typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
+
+  const symmetricOriginal =
+    originalFieldId.split('.').length === `${originalIndex}`.split('.').length;
+  const symmetricTarget = targetFieldId.split('.').length === `${targetIndex}`.split('.').length;
+
+  if (!symmetricOriginal) {
+    debugger;
+  } else if (!symmetricTarget) {
+    debugger;
   }
 
-  deleteItem(modelId: string, fieldId: string, index: number | string): void {
+  const currentModel = models[originalModelId];
+  const currentCollection = symmetricOriginal
+    ? ModelHelper.extractCollection(currentModel, originalFieldId, originalIndex)
+    : ModelHelper.extractCollectionItem(currentModel, originalFieldId, originalIndex);
+  // Remove item from original collection
+  const currentResult = currentCollection
+    .slice(0, originalIndexParsed)
+    .concat(currentCollection.slice(originalIndexParsed + 1));
 
-    const isStringIndex = typeof index === 'string';
-    const parsedIndex = parseInt(popPiece(`${index}`), 10);
+  const targetModel = models[targetModelId];
+  const targetCollection = symmetricTarget
+    ? ModelHelper.extractCollection(targetModel, targetFieldId, targetIndex)
+    : ModelHelper.extractCollectionItem(targetModel, targetFieldId, targetIndex);
+  // Insert item in target collection @ the desired position
+  const targetResult = targetCollection.slice(0);
 
-    const models = this.getCachedModels();
-    const model = models[modelId];
-    const collection = isStringIndex
-      ? ModelHelper.extractCollection(model, fieldId, index)
-      : ModelHelper.value(model, fieldId);
+  targetResult.splice(targetIndexParsed, 0, currentCollection[originalIndexParsed]);
 
-    const result = collection
-      .slice(0, parsedIndex)
-      .concat(collection.slice(parsedIndex + 1));
+  const newOriginalModel = { ...currentModel };
+  const newTargetModel = originalModelId === targetModelId ? newOriginalModel : { ...targetModel };
 
-    ContentController.models$.next({
-      ...models,
-      [modelId]: {
-        ...model,
-        [fieldId]: result
-      }
-    });
-
-    post(DELETE_ITEM_OPERATION, {
-      modelId,
-      fieldId,
-      index,
-      parentModelId: getParentModelId(modelId, models, this.children)
-    });
-
-    ContentController.operations$.next({
-      type: DELETE_ITEM_OPERATION,
-      args: arguments,
-      state: { item: collection[parsedIndex] }
-    });
-
-  }
-
-  /* private */
-  createModelRequest(modelId: string): Observable<AjaxResponse> {
-    return ajax.get(`${apiUrl}/content/${modelId}`);
-  }
-
-  /* private */
-  fetchModel(modelId: string): void {
-    if (!(modelId in this.modelRequestsInFlight)) {
-      this.modelRequestsInFlight[modelId] = fetchById(modelId).subscribe(
-        (response: LookupTable<ContentInstance>) => {
-          delete this.modelRequestsInFlight[modelId];
-          this.modelsResponseReceived(response);
-        },
-        (e) => console.log('Model fetch has failed...', e)
+  // This should extract the object that contains the
+  // collection so the collection can be replaced with the new one with the modifications.
+  // This is for nested cases where there's something like `field_1.field_2`.
+  const getFieldItem = (model, field, index) => {
+    let item;
+    if (symmetricOriginal) {
+      item = ModelHelper.extractCollectionItem(
+        model,
+        removeLastPiece(`${field}`),
+        removeLastPiece(`${index}`)
       );
-    }
-  }
-
-  /* private */
-  fetchContentType(contentTypeId: string): boolean {
-    return false;
-  }
-
-  /* private */
-  modelsResponseReceived(responseModels: ContentInstance[]): void;
-  modelsResponseReceived(responseModels: LookupTable<ContentInstance>): void;
-  modelsResponseReceived(responseModels: LookupTable<ContentInstance> | ContentInstance[]): void {
-
-    if (Array.isArray(responseModels)) {
-      responseModels = createLookupTable(responseModels, 'craftercms.id');
-    }
-
-    const currentModels = ContentController.models$.value;
-
-    post(GUEST_MODELS_RECEIVED, responseModels);
-
-    ContentController.contentTypes$.pipe(
-      filter(hash => Object.values(hash).length !== 0),
-      take(1)
-    ).subscribe(() => {
-      Object.values(responseModels).forEach((model) =>
-        this.computeChildren(model)
-      );
-      post(CHILDREN_MAP_UPDATE, this.children);
-    });
-
-    ContentController.models$.next(
-      Object.assign(
-        {},
-        currentModels,
-        responseModels
-      )
-    );
-
-  }
-
-  /* private */
-  contentTypesResponseReceived(responseContentTypes: ContentType[]): void;
-  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>): void;
-  contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]): void {
-
-    if (Array.isArray(responseContentTypes)) {
-      (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
-    }
-
-    const currentContentTypes = ContentController.contentTypes$.value;
-
-    ContentController.contentTypes$.next(
-      Object.assign(
-        {},
-        currentContentTypes,
-        responseContentTypes
-      )
-    );
-
-  }
-
-  /* private */
-  responseReceived(response): void {
-    const
-
-      currentContentTypes = ContentController.contentTypes$.value,
-      currentModels = ContentController.models$.value,
-
-      responseContentTypes = response.contentTypes,
-      responseModels = response.data;
-
-    // cancel any inflight requests for loaded types.
-
-    ContentController.contentTypes$.next(
-      Object.assign({},
-        currentContentTypes,
-        responseContentTypes)
-    );
-
-    ContentController.models$.next(
-      Object.assign({},
-        currentModels,
-        responseModels)
-    );
-
-    // Update test.
-    // setTimeout(() => {
-    //   const
-    //     contentTypes = ContentController.contentTypes$.value,
-    //     models = ContentController.models$.value;
-    //
-    //   models['4qT1W3HXewc'].title = 'NEW TITLE!';
-    //   models['3biG6L6Kx06Q'].items[0].title = 'NEW TITLE!';
-    //   models['feature_1'].title = 'NEW TITLE!';
-    //
-    //   contentTypes['3biG6LKx06Q_ctid'].name = 'NEW COMPONENT NAME';
-    //
-    //   ContentController.contentTypes$.next(contentTypes);
-    //   ContentController.models$.next(models);
-    // }, 2000);
-
-  }
-
-}
-
-function getParentModelId(modelId: string, models: LookupTable<ContentInstance>, children: LookupTable<ContentInstance>): string {
-  return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
-    ? findParentModelId(modelId, children, models)
-    : null;
-}
-
-function findParentModelId(modelId: string, childrenMap: LookupTable<ContentInstance>, models: LookupTable<ContentInstance>): string {
-  const parentId = forEach(
-    Object.entries(childrenMap),
-    ([id, children]) => {
-      if (
-        notNullOrUndefined(children) &&
-        (id !== modelId) &&
-        children.includes(modelId)
-      ) {
-        return id;
-      }
-    },
-    null
-  );
-  return notNullOrUndefined(parentId)
-    // If it has a path, it is not embedded and hence the parent
-    // Otherwise, need to keep looking.
-    ? notNullOrUndefined(ModelHelper.prop(models[parentId], 'path'))
-      ? parentId
-      : findParentModelId(parentId, childrenMap, models)
-    // No parent found for this model
-    : null;
-}
-
-function fetchById(id: string, site: string = Cookies.get('crafterSite')): Observable<ContentInstance> {
-  const isArticleRequest = [
-    'f360780a-372f-d005-d736-bcc9d657e50c',
-    'b7a724f1-3422-055d-a244-5fc79a1ca007',
-    '52e8e75d-94f8-ae0b-3317-8d592b3d7dce',
-    '07fc5ac7-05ea-b038-6455-26f895ba8822',
-    '6121741f-8b6f-75ce-151b-75e57f04da13',
-    '8bdd0180-b7c8-1eff-1f20-76ddca377e3c',
-    'd5824453-b743-4575-bb7a-5c49c0fbedbb',
-    'b30875f3-87ce-7b55-fd19-3d5c00508a08',
-    'f1f9c488-67e1-7ec0-d3ca-560b194e64d1'
-  ].includes(id);
-  return ajax.post(
-    `/api/1/site/graphql?crafterSite=${site}`,
-    {
-      variables: { id },
-      query: (isArticleRequest ? `
-        query Articles($id: String) {
-          contentItems: page_article {
-            total
-            items {
-              id: objectId(filter: {equals: $id})
-              path: localId
-              contentTypeId: content__type
-              dateCreated: createdDate_dt
-              dateModified: lastModifiedDate_dt
-              label: internal__name
-              title_t
-              author_s
-              categories_o {
-                item {
-                  key
-                  value_smv
-                }
-              }
-              featured_b
-              summary_t
-              subject_t
-              segments_o {
-                item {
-                  key
-                  value_smv
-                }
-              }
-              sections_o {
-                item {
-                  section_html
-                }
-              }
-              orderDefault_f
-              left_rail_o {
-                ...ContentIncludeWrapperFragment
-              }
-              header_o {
-                ...ContentIncludeWrapperFragment
-              }
-              image_s
-            }
-          }
-        }` : `
-        query Page {
-          contentItems(limit: 1000) {
-            total
-            items {
-              id: objectId
-              path: localId
-              contentTypeId: content__type
-              dateCreated: createdDate_dt
-              dateModified: lastModifiedDate_dt
-              label: internal__name
-              ... on page_article {
-                ...CrafterCMSProps
-                title_t
-                author_s
-                categories_o {
-                  item {
-                    key
-                    value_smv
-                  }
-                }
-                featured_b
-                summary_t
-                subject_t
-                segments_o {
-                  item {
-                    key
-                    value_smv
-                  }
-                }
-                sections_o {
-                  item {
-                    section_html
-                  }
-                }
-                orderDefault_f
-                left_rail_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                header_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                image_s
-              }
-              ... on component_articles__widget {
-                title_t
-                max_articles_i
-              }
-              ... on component_contact__widget {
-                title_t
-                text_html
-                email_s
-                phone_s
-                address_html
-              }
-              ... on component_feature {
-                icon_s
-                title_t
-                body_html
-              }
-              ... on component_header {
-                logo_s
-                logo_text_t
-                business_name_s
-                social_media_links_o {
-                  item {
-                    social_media_s
-                    url_s
-                  }
-                }
-              }
-              ... on component_left__rail {
-                widgets_o {
-                  item {
-                    key
-                    component {
-                      id: objectId
-                    }
-                  }
-                }
-              }
-              ... on page_home {
-                title_t
-                header_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                left_rail_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                hero_title_html
-                hero_text_html
-                hero_image_s
-                features_title_t
-                features_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                content_o {
-                  ...ContentIncludeWrapperFragment
-                }
-              }
-              ... on taxonomy {
-                items {
-                  item {
-                    key
-                    value
-                  }
-                }
-              }
-            }
-          }
-        }
-      `) + (`
-        fragment ContentIncludeWrapperFragment on ContentIncludeWrapper {
-          item {
-            key
-            component {
-              id: objectId
-              path: localId
-              contentTypeId: content__type
-              dateCreated: createdDate_dt
-              dateModified: lastModifiedDate_dt
-              label: internal__name
-              ... on component_feature {
-                icon_s
-                title_t
-                body_html
-                contentTypeId: content__type
-                dateCreated: createdDate_dt
-                dateModified: lastModifiedDate_dt
-              }
-              ... on component_layout {
-                numberOfColumns_s
-                items_o {
-                  item {
-                    content_o {
-                      item {
-                        key
-                        component {
-                          ...CrafterCMSProps
-                          ... on component_feature {
-                            icon_s
-                            title_t
-                            body_html
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        fragment CrafterCMSProps on ContentItem {
-          id: objectId
-          path: localId
-          contentTypeId: content__type
-          dateCreated: createdDate_dt
-          dateModified: lastModifiedDate_dt
-          label: internal__name
-        }`
-      )
-    },
-    { 'Content-Type': 'application/json' }
-  ).pipe(
-    map(({ response }) => response.data.contentItems.items.reduce(
-      reducer,
-      {}
-    ))
-  );
-}
-
-function reducer(lookupTable: LookupTable<ContentInstance>, model: ContentInstance): LookupTable<ContentInstance> {
-
-  const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
-
-  if ([
-    '/page/search-results',
-    '/component/level-descriptor'
-  ].includes(model.contentTypeId)) {
-    return lookupTable;
-  }
-
-  const system = pluckProps(model, ...systemPropList);
-  const rawData = reversePluckProps(model, ...systemPropList);
-  const data = {};
-
-  const processEntry = ([key, value], data) => {
-    if (key.endsWith('_o')) {
-      data[key] = [];
-      value.item.forEach((item) => {
-        // Components & repeat groups
-        if (item.component?.id) {
-          // 1. Components
-          data[key].push(item.component.id);
-          if (item.component.id === item.key) {
-            // Embedded component found.
-            reducer(lookupTable, item.component);
-          }
-        } else {
-          // 2. Repeat Groups
-          const repeatGroupItem = {};
-          data[key].push(repeatGroupItem);
-          Object.entries(item).forEach((entry) =>
-            processEntry(entry, repeatGroupItem)
-          );
-        }
-      });
-    } else if (model.contentTypeId === '/taxonomy' && key === 'items') {
-      data[key] = value.item;
     } else {
-      data[key] = value;
+      debugger;
     }
+    return item;
   };
 
-  Object.entries(rawData).forEach((entry, index) =>
-    processEntry(entry, data)
+  if (originalFieldId.includes('.')) {
+    let item = getFieldItem(newOriginalModel, originalFieldId, originalIndex);
+    item[popPiece(originalFieldId)] = targetResult;
+  } else {
+    newOriginalModel[originalFieldId] = currentResult;
+  }
+
+  if (targetModelId !== originalModelId && targetFieldId.includes('.')) {
+    let item = getFieldItem(newTargetModel, targetFieldId, targetIndex);
+    item[popPiece(targetFieldId)] = targetResult;
+  } else {
+    newTargetModel[targetFieldId] = targetResult;
+  }
+
+  _models$.next(
+    originalModelId === targetModelId
+      ? {
+          ...models,
+          [originalModelId]: newOriginalModel
+        }
+      : {
+          ...models,
+          [originalModelId]: newOriginalModel,
+          [targetModelId]: newTargetModel
+        }
   );
 
-  lookupTable[model.id] = {
-    craftercms: system as ContentInstanceSystemProps,
-    ...data
-  };
+  post(MOVE_ITEM_OPERATION, {
+    originalModelId,
+    originalFieldId,
+    originalIndex,
+    targetModelId,
+    targetFieldId,
+    targetIndex,
+    originalParentModelId: getParentModelId(originalModelId, models, children),
+    targetParentModelId: getParentModelId(targetModelId, models, children)
+  });
 
-  return lookupTable;
-
+  operations$.next({
+    type: MOVE_ITEM_OPERATION,
+    args: arguments
+  });
 }
 
-function getCollectionWithoutItemAtIndex(collection: string[], index: string | number): string[] {
-  const parsedIndex = parseInt(popPiece(`${index}`), 10);
-  return collection
-    .slice(0, parsedIndex)
-    .concat(collection.slice(parsedIndex + 1));
-}
-
-function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
+export function deleteItem(modelId: string, fieldId: string, index: number | string): void {
   const isStringIndex = typeof index === 'string';
-  return isStringIndex
+  const parsedIndex = parseInt(popPiece(`${index}`), 10);
+
+  const models = getCachedModels();
+  const model = models[modelId];
+  const collection = isStringIndex
     ? ModelHelper.extractCollection(model, fieldId, index)
     : ModelHelper.value(model, fieldId);
+
+  const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
+
+  _models$.next({
+    ...models,
+    [modelId]: {
+      ...model,
+      [fieldId]: result
+    }
+  });
+
+  post(DELETE_ITEM_OPERATION, {
+    modelId,
+    fieldId,
+    index,
+    parentModelId: getParentModelId(modelId, models, children)
+  });
+
+  operations$.next({
+    type: DELETE_ITEM_OPERATION,
+    args: arguments,
+    state: { item: collection[parsedIndex] }
+  });
 }
 
-export const contentController = new ContentController();
+// endregion
 
-export default contentController;
+const fetching$ = new BehaviorSubject<boolean>(false);
+
+function fetchModel(modelId: string): void {
+  if (!(modelId in modelsRequested)) {
+    modelsRequested[modelId] = true;
+    fetching$
+      .pipe(
+        filter((isFetching) => !isFetching),
+        switchMap(() => _models$.pipe(pluck(modelId), take(1))),
+        switchMap((model) => {
+          if (isNullOrUndefined(model)) {
+            return fetchById(modelId);
+          } else {
+            // Model was already fetched, discard repeated request.
+            return NEVER;
+          }
+        }),
+        take(1)
+      )
+      .subscribe(modelResponseReceived, (e) => console.log('Model fetch has failed...', e));
+  }
+}
+
+function fetchContentType(contentTypeId: string): boolean {
+  return false;
+}
+
+function modelResponseReceived(responseModels: LookupTable<ContentInstance>): void {
+  const currentModels = _models$.value;
+  const normalizedModels = normalizeModelsLookup(responseModels);
+
+  Object.entries(responseModels).forEach(([id, model]) => {
+    children[id] = createChildModelIdList(model);
+    children[id].forEach((modelId) => {
+      modelsRequested[modelId] = true;
+    });
+    if (children[id].length === 0) {
+      children[id] = null;
+    }
+  });
+
+  post(GUEST_MODELS_RECEIVED, normalizedModels);
+  post(CHILDREN_MAP_UPDATE, children);
+
+  _models$.next(Object.assign({}, currentModels, normalizedModels));
+
+  fetching$.next(false);
+}
+
+function contentTypesResponseReceived(responseContentTypes: ContentType[]): void;
+function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>): void;
+function contentTypesResponseReceived(
+  responseContentTypes: LookupTable<ContentType> | ContentType[]
+): void {
+  if (Array.isArray(responseContentTypes)) {
+    (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
+  }
+
+  const currentContentTypes = _contentTypes$.value;
+
+  _contentTypes$.next(Object.assign({}, currentContentTypes, responseContentTypes));
+}
+
+function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
+  fetching$.next(true);
+  return search(
+    createQuery('elasticsearch', {
+      query: {
+        bool: {
+          filter: [
+            {
+              bool: {
+                should: {
+                  multi_match: {
+                    query: id,
+                    fields: ['*objectId']
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }),
+    // TODO: Remove hardcoded url
+    crafterConf.getConfig()
+  ).pipe(
+    tap(
+      ({ total }) =>
+        total === 0 && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)
+    ),
+    map<any, ContentInstance[]>(({ hits }) =>
+      hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))
+    ),
+    map(modelsToLookup)
+  );
+}
+
+fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) => {
+  contentTypesResponseReceived(data.payload);
+});
+
+export default {
+  children,
+  operations,
+  getModel,
+  getModel$,
+  getContentType,
+  getContentType$,
+  models$,
+  contentTypes$,
+  hasCachedModel,
+  getCachedModel,
+  getCachedModels,
+  hasCachedContentType,
+  getCachedContentType,
+  getCachedContentTypes,
+  updateField,
+  insertItem,
+  insertComponent,
+  insertInstance,
+  insertGroup,
+  sortItem,
+  moveItem,
+  deleteItem
+};

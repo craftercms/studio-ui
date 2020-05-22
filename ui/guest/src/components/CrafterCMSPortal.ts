@@ -17,9 +17,12 @@
 import { useLayoutEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 
-export default function CrafterCMSPortal(props) {
+export default function (props) {
 
-  const portalRef = useRef(document.createElement('craftercms-portal'));
+  const portalRef = useRef<HTMLElement>(null);
+  if (portalRef.current === null) {
+    portalRef.current = document.createElement('craftercms-portal');
+  }
 
   useLayoutEffect(() => {
     const body: HTMLElement = document.body;
@@ -35,4 +38,4 @@ export default function CrafterCMSPortal(props) {
     portalRef.current
   );
 
-}
+};

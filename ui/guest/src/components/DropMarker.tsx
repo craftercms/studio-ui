@@ -16,23 +16,20 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  findClosestRect,
   foo,
-  forEach,
-  getDropMarkerPosition,
-  getInRectStats,
   HORIZONTAL,
-  notNullOrUndefined,
-  splitRect,
   VERTICAL,
   X_AXIS,
   Y_AXIS
-} from '../util';
+} from '../utils/util';
 import { Coordinates } from '../models/Positioning';
-import { DropZone, Record } from '../models/InContextEditing';
+import { DropZone, ElementRecord } from '../models/InContextEditing';
+import { notNullOrUndefined } from '../utils/object';
+import { forEach } from '../utils/array';
+import { findClosestRect, getDropMarkerPosition, getInRectStats, splitRect } from '../utils/dom';
 
 interface DropMarkerProps {
-  over: Record;
+  over: ElementRecord;
   prev: DOMRect;
   next: DOMRect;
   dropZone: DropZone;
@@ -40,7 +37,7 @@ interface DropMarkerProps {
   onDropPosition: Function;
 }
 
-export function DropMarker(props: DropMarkerProps) {
+export default function DropMarker(props: DropMarkerProps) {
 
   const //
     {

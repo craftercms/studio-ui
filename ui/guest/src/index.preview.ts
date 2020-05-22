@@ -16,28 +16,21 @@
 
 import $ from 'jquery';
 import { message$, post } from './communicator';
-import { filter, map } from 'rxjs/operators';
-import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './util';
+import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './constants';
+import { createLocationArgument } from './utils/util';
 
-message$.pipe(
-  filter((e: MessageEvent) => (e.data?.type) != null),
-  map(e => e.data)
-).subscribe(function ({ type, payload }) {
+message$.subscribe(function ({ type, payload }) {
   switch (type) {
     case NAVIGATION_REQUEST: {
       window.location.href = payload.url;
       break;
     }
-    default:
-      console.warn(`[message$] Unhandled host message "${type}".`);
   }
 });
 
-const location = window.location.href;
-const origin = window.location.origin;
-const url = location.replace(origin, '');
+const location = createLocationArgument();
 
-post(GUEST_CHECK_IN, { url, location, origin, site: null, __CRAFTERCMS_GUEST_LANDING__: true });
+post(GUEST_CHECK_IN, { location, __CRAFTERCMS_GUEST_LANDING__: true });
 
 setTimeout(() => {
   $('img').fadeIn();

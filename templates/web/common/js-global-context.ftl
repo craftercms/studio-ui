@@ -75,11 +75,11 @@
     </#if>
     "env": {
       "authoringBase": `${'$'}{origin}/studio`,
-      "guestBase": `${'$'}{origin}`,
+      "guestBase": origin,
       "xsrfHeader": "${env_config.headerName!''}",
       "xsrfArgument": "${env_config.parameterName!''}",
       'siteCookieName': 'crafterSite',
-      'previewLandingBase': '/studio/preview-landing',
+      'previewLandingBase': `${'$'}{origin}/studio/preview-landing`,
       'version': null
     }
   });
