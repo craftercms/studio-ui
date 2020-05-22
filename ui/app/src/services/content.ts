@@ -559,6 +559,20 @@ const systemValidationsKeysMap = {
   readonly: 'readOnly'
 };
 
+function bestGuessParse(value: any) {
+  if (nou(value)) {
+    return null;
+  } else if (value === 'true') {
+    return true;
+  } else if (value === 'false') {
+    return false;
+  } else if (!isNaN(parseFloat(value))) {
+    return parseFloat(value);
+  } else {
+    return value
+  }
+}
+
 function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup?: LookupTable<LegacyDataSource>): Partial<ContentTypeFieldValidations> {
   const map = asArray<LegacyFormDefinitionProperty>(fieldProperty)
     .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
@@ -587,7 +601,8 @@ function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | Legac
       } else if (systemValidationsNames.includes(key) && !isBlank(map[key]?.value)) {
         validations[systemValidationsKeysMap[key]] = {
           id: systemValidationsKeysMap[key],
-          value: map[key].value, //TODO this is a string? should be parsed as (int or boolean or string) based on the key?
+          // TODO: Parse values robustly
+          value: bestGuessParse(map[key].value),
           level: 'required'
         };
       }

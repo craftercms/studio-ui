@@ -17,10 +17,8 @@
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
 import {
   debounceTime,
-  distinctUntilChanged,
   filter,
   map,
-  pluck,
   share,
   takeUntil,
   throttleTime,
@@ -29,25 +27,6 @@ import {
 import { ElementRecord } from '../models/InContextEditing';
 import { SyntheticEvent } from 'react';
 import { GuestStateObservable } from './models/GuestStore';
-import createGuestStore from './store';
-
-export const state$ = new Observable((subscriber) => {
-  const store = createGuestStore();
-  return store.subscribe(() => {
-    const state = store.getState();
-    subscriber.next(state.models);
-  });
-}).pipe(share());
-
-export const models$ = state$.pipe(
-  pluck('content'),
-  distinctUntilChanged()
-);
-
-export const contentTypes$ = state$.pipe(
-  pluck('contentTypes'),
-  distinctUntilChanged()
-);
 
 export const clearAndListen$ = new Subject();
 

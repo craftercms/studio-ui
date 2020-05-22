@@ -55,7 +55,6 @@ import {
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_STARTED,
-  EDIT_MODE_CHANGED,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
@@ -70,7 +69,6 @@ import {
   pluckProps,
   reversePluckProps
 } from '../../utils/object';
-import $ from 'jquery';
 import { ElementRecord } from '../../models/InContextEditing';
 import ElementRegistry from '../../classes/ElementRegistry';
 
@@ -115,7 +113,10 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         } else {
           event.stopPropagation();
           post({ type: INSTANCE_DRAG_BEGUN, payload: iceId });
-          unwrapEvent<DragEvent>(event).dataTransfer.setData('text/plain', null);
+          const e = unwrapEvent<DragEvent>(event);
+          e.dataTransfer.setData('text/plain', `${record.id}`);
+          const image = document.querySelector('craftercms-dragged-element');
+          e.dataTransfer.setDragImage(image, 0, 0);
           return initializeDragSubjects(state$);
         }
         return NEVER;
@@ -284,7 +285,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       switchMap(([action]) => {
         const { record } = action.payload;
         const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
-        const { validations } = field;
+        const validations = field?.validations;
         const type = field?.type;
         switch (type) {
           case 'html':
@@ -295,9 +296,8 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                 'Looks like tinymce is not added on the page. ' +
                 'Please add tinymce on to the page to enable editing.'
               );
-            } else if (validations?.readOnly.value !== 'true') {
-              initTinyMCE(record, validations);
-              return of({ type: 'edit_component_inline' });
+            } else if (not(validations?.readOnly?.value)) {
+              return initTinyMCE(record, validations);
             }
             return NEVER;
           }
@@ -357,19 +357,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   // region Desktop Asset Upload (Started)
   // dropEpic does what these would
   // (action$: Action$, state$: State$) => {},
-  // endregion
-
-  // region edit_mode_changed
-  (action$: ActionsObservable<GuestStandardAction<{ inEditMode: boolean, editModeOnIndicatorClass: string }>>) => {
-    return action$.pipe(
-      ofType(EDIT_MODE_CHANGED),
-      tap((action) => {
-        const { inEditMode, editModeOnIndicatorClass } = action.payload;
-        $('html')[inEditMode ? 'addClass' : 'removeClass'](editModeOnIndicatorClass);
-      }),
-      ignoreElements()
-    );
-  },
   // endregion
 
   // region content_type_receptacles_request

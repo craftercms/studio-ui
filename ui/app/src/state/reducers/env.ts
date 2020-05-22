@@ -20,22 +20,14 @@ import { fetchSystemVersionComplete } from '../actions/env';
 import { Version } from '../../models/monitoring/Version';
 
 export const envInitialState: GlobalState['env'] = ((origin: string) => ({
-  authoringBase: `${origin}/studio`,
-  guestBase: origin,
+  authoringBase: process.env.REACT_APP_AUTHORING_BASE ?? `${origin}/studio`,
+  guestBase: process.env.REACT_APP_GUEST_BASE ?? origin,
   xsrfHeader: 'X-XSRF-TOKEN',
   xsrfArgument: '_csrf',
   siteCookieName: 'crafterSite',
-  // TODO: Remove hardcoded url
-  previewLandingBase: `http://localhost:8080/studio/preview-landing`,
+  previewLandingBase: process.env.REACT_APP_PREVIEW_LANDING ?? `${origin}/studio/preview-landing`,
   version: null
-}))(
-  process.env.NODE_ENV === 'production'
-    ? window.location.origin
-    : window.location.origin.replace(
-        process.env.REACT_APP_DEV_SERVER_PORT ?? '3000',
-        process.env.REACT_APP_CRAFTER_CMS_PORT ?? '8080'
-      )
-);
+}))(window.location.origin);
 
 const reducer = createReducer<GlobalState['env']>(envInitialState, {
   [fetchSystemVersionComplete.type]: (state, { payload }: { payload: Version }) => ({

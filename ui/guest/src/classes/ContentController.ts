@@ -52,12 +52,25 @@ import {
   normalizeModelsLookup,
   preParseSearchResults
 } from '../utils/content';
+import { crafterConf } from '@craftercms/classes';
+
+if (process.env.NODE_ENV === 'development') {
+  // TODO: Notice
+  // Not so sure about this assumption. Maybe best to just leave it up to the consumer
+  // app to set the crafter URL via `crafterConf` if it wants something different?
+  (crafterConf.getConfig().baseUrl === '') && crafterConf.configure({
+    baseUrl: 'http://localhost:8080',
+    site: Cookies.get('crafterSite')
+  });
+}
 
 const operations$ = new Subject<Operation>();
 const operations = operations$.asObservable();
 
 /* private */
-const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({ /*'modelId': { ...modelData }*/ });
+const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
+  /*'modelId': { ...modelData }*/
+});
 
 /* private */
 const modelsObs$ = _models$.asObservable().pipe(
@@ -66,7 +79,9 @@ const modelsObs$ = _models$.asObservable().pipe(
 );
 
 /* private */
-const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({ /*...*/ });
+const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
+  /*...*/
+});
 
 /* private */
 const contentTypesObs$ = _contentTypes$.asObservable().pipe(
@@ -81,7 +96,6 @@ export const children = {
 const modelsRequested = {};
 
 function computeChildren(model: ContentInstance): void {
-
   let childIds = [];
   const modelId = ModelHelper.prop(model, 'id');
 
@@ -100,8 +114,7 @@ function computeChildren(model: ContentInstance): void {
     }
   });
 
-  children[modelId] = (childIds.length) ? childIds : null;
-
+  children[modelId] = childIds.length ? childIds : null;
 }
 
 export function getModel(modelId: string): Promise<ContentInstance> {
@@ -110,8 +123,8 @@ export function getModel(modelId: string): Promise<ContentInstance> {
 
 export function getModel$(modelId: string): Observable<ContentInstance> {
   return models$(modelId).pipe(
-    filter(models => modelId in models),
-    map(models => models[modelId])
+    filter((models) => modelId in models),
+    map((models) => models[modelId])
   );
 }
 
@@ -120,15 +133,15 @@ export function getContentType(contentTypeId: string): Promise<ContentType> {
 }
 
 export function getContentType$(contentTypeId: string): Observable<ContentType> {
-  (!hasCachedContentType(contentTypeId)) && fetchContentType(contentTypeId);
+  !hasCachedContentType(contentTypeId) && fetchContentType(contentTypeId);
   return contentTypesObs$.pipe(
-    filter(contentTypes => contentTypeId in contentTypes),
-    map(contentTypes => contentTypes[contentTypeId])
+    filter((contentTypes) => contentTypeId in contentTypes),
+    map((contentTypes) => contentTypes[contentTypeId])
   );
 }
 
 export function models$(modelId?: string): Observable<LookupTable<ContentInstance>> {
-  (modelId && !hasCachedModel(modelId)) && fetchModel(modelId);
+  modelId && !hasCachedModel(modelId) && fetchModel(modelId);
   return modelsObs$;
 }
 
@@ -137,7 +150,7 @@ export function contentTypes$(): Observable<LookupTable<ContentType>> {
 }
 
 export function hasCachedModel(modelId: string): boolean {
-  return (getCachedModel(modelId) != null);
+  return getCachedModel(modelId) != null;
 }
 
 export function getCachedModel(modelId: string): ContentInstance {
@@ -149,7 +162,7 @@ export function getCachedModels(): LookupTable<ContentInstance> {
 }
 
 export function hasCachedContentType(contentTypeId: string): boolean {
-  return (getCachedContentType(contentTypeId) != null);
+  return getCachedContentType(contentTypeId) != null;
 }
 
 export function getCachedContentType(contentTypeId: string): ContentType {
@@ -162,7 +175,12 @@ export function getCachedContentTypes(): LookupTable<ContentType> {
 
 // region Operations
 
-export function updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
+export function updateField(
+  modelId: string,
+  fieldId: string,
+  index: string | number,
+  value: unknown
+): void {
   const models = getCachedModels();
   const model = { ...models[modelId] };
 
@@ -185,7 +203,6 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
     type: UPDATE_FIELD_VALUE_OPERATION,
     args: { modelId, fieldId, index, value }
   });
-
 }
 
 export function insertItem(
@@ -194,7 +211,6 @@ export function insertItem(
   index: number | string,
   item: ContentInstance
 ): void {
-
   const models = getCachedModels();
   const model = models[modelId];
   const collection = ModelHelper.value(model, fieldId);
@@ -217,7 +233,6 @@ export function insertItem(
     type: 'insert',
     args: arguments
   });
-
 }
 
 export function insertComponent(
@@ -305,12 +320,16 @@ export function insertComponent(
     type: INSERT_COMPONENT_OPERATION,
     args: { modelId, fieldId, targetIndex, contentType, shared, instance }
   });
-
 }
 
 //insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void;
 //insertInstance(modelId: string, fieldId: string, targetIndex: string, instance: ContentInstance): void;
-export function insertInstance(modelId: string, fieldId: string, targetIndex: number | string, instance: ContentInstance): void {
+export function insertInstance(
+  modelId: string,
+  fieldId: string,
+  targetIndex: number | string,
+  instance: ContentInstance
+): void {
   const models = getCachedModels();
   const model = models[modelId];
 
@@ -340,11 +359,9 @@ export function insertInstance(modelId: string, fieldId: string, targetIndex: nu
     type: INSERT_INSTANCE_OPERATION,
     args: { modelId, fieldId, targetIndex, instance }
   });
-
 }
 
-export function insertGroup(modelId, fieldId, data): void {
-}
+export function insertGroup(modelId, fieldId, data): void {}
 
 export function sortItem(
   modelId: string,
@@ -352,11 +369,12 @@ export function sortItem(
   currentIndex: number | string,
   targetIndex: number | string
 ): void {
-
   const models = getCachedModels();
   const model = models[modelId];
-  const currentIndexParsed = (typeof currentIndex === 'number') ? currentIndex : parseInt(popPiece(currentIndex));
-  const targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
+  const currentIndexParsed =
+    typeof currentIndex === 'number' ? currentIndex : parseInt(popPiece(currentIndex));
+  const targetIndexParsed =
+    typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
   const collection = getCollection(model, fieldId, currentIndex);
   const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
 
@@ -383,7 +401,6 @@ export function sortItem(
     type: SORT_ITEM_OPERATION,
     args: arguments
   });
-
 }
 
 export function moveItem(
@@ -394,46 +411,44 @@ export function moveItem(
   targetFieldId: string,
   targetIndex: number | string
 ): void {
-
   const models = getCachedModels();
 
   // Parse indexes to clear out dot notation for nested repeat/collection items.
-  let originalIndexParsed = (typeof originalIndex === 'number') ? originalIndex : parseInt(popPiece(originalIndex));
-  let targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
+  let originalIndexParsed =
+    typeof originalIndex === 'number' ? originalIndex : parseInt(popPiece(originalIndex));
+  let targetIndexParsed =
+    typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
 
-  const symmetricOriginal = (originalFieldId.split('.').length === `${originalIndex}`.split('.').length);
-  const symmetricTarget = (targetFieldId.split('.').length === `${targetIndex}`.split('.').length);
+  const symmetricOriginal =
+    originalFieldId.split('.').length === `${originalIndex}`.split('.').length;
+  const symmetricTarget = targetFieldId.split('.').length === `${targetIndex}`.split('.').length;
 
   if (!symmetricOriginal) {
-    debugger
+    debugger;
   } else if (!symmetricTarget) {
-    debugger
+    debugger;
   }
 
   const currentModel = models[originalModelId];
-  const currentCollection = (
-    symmetricOriginal
-      ? ModelHelper.extractCollection(currentModel, originalFieldId, originalIndex)
-      : ModelHelper.extractCollectionItem(currentModel, originalFieldId, originalIndex)
-  );
+  const currentCollection = symmetricOriginal
+    ? ModelHelper.extractCollection(currentModel, originalFieldId, originalIndex)
+    : ModelHelper.extractCollectionItem(currentModel, originalFieldId, originalIndex);
   // Remove item from original collection
   const currentResult = currentCollection
     .slice(0, originalIndexParsed)
     .concat(currentCollection.slice(originalIndexParsed + 1));
 
   const targetModel = models[targetModelId];
-  const targetCollection = (
-    symmetricTarget
-      ? ModelHelper.extractCollection(targetModel, targetFieldId, targetIndex)
-      : ModelHelper.extractCollectionItem(targetModel, targetFieldId, targetIndex)
-  );
+  const targetCollection = symmetricTarget
+    ? ModelHelper.extractCollection(targetModel, targetFieldId, targetIndex)
+    : ModelHelper.extractCollectionItem(targetModel, targetFieldId, targetIndex);
   // Insert item in target collection @ the desired position
   const targetResult = targetCollection.slice(0);
 
   targetResult.splice(targetIndexParsed, 0, currentCollection[originalIndexParsed]);
 
   const newOriginalModel = { ...currentModel };
-  const newTargetModel = (originalModelId === targetModelId) ? newOriginalModel : { ...targetModel };
+  const newTargetModel = originalModelId === targetModelId ? newOriginalModel : { ...targetModel };
 
   // This should extract the object that contains the
   // collection so the collection can be replaced with the new one with the modifications.
@@ -459,10 +474,7 @@ export function moveItem(
     newOriginalModel[originalFieldId] = currentResult;
   }
 
-  if (
-    (targetModelId !== originalModelId) &&
-    (targetFieldId.includes('.'))
-  ) {
+  if (targetModelId !== originalModelId && targetFieldId.includes('.')) {
     let item = getFieldItem(newTargetModel, targetFieldId, targetIndex);
     item[popPiece(targetFieldId)] = targetResult;
   } else {
@@ -470,14 +482,16 @@ export function moveItem(
   }
 
   _models$.next(
-    (originalModelId === targetModelId) ? {
-      ...models,
-      [originalModelId]: newOriginalModel
-    } : {
-      ...models,
-      [originalModelId]: newOriginalModel,
-      [targetModelId]: newTargetModel
-    }
+    originalModelId === targetModelId
+      ? {
+          ...models,
+          [originalModelId]: newOriginalModel
+        }
+      : {
+          ...models,
+          [originalModelId]: newOriginalModel,
+          [targetModelId]: newTargetModel
+        }
   );
 
   post(MOVE_ITEM_OPERATION, {
@@ -495,11 +509,9 @@ export function moveItem(
     type: MOVE_ITEM_OPERATION,
     args: arguments
   });
-
 }
 
 export function deleteItem(modelId: string, fieldId: string, index: number | string): void {
-
   const isStringIndex = typeof index === 'string';
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
 
@@ -509,9 +521,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
     ? ModelHelper.extractCollection(model, fieldId, index)
     : ModelHelper.value(model, fieldId);
 
-  const result = collection
-    .slice(0, parsedIndex)
-    .concat(collection.slice(parsedIndex + 1));
+  const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
   _models$.next({
     ...models,
@@ -533,7 +543,6 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
     args: arguments,
     state: { item: collection[parsedIndex] }
   });
-
 }
 
 // endregion
@@ -543,22 +552,21 @@ const fetching$ = new BehaviorSubject<boolean>(false);
 function fetchModel(modelId: string): void {
   if (!(modelId in modelsRequested)) {
     modelsRequested[modelId] = true;
-    fetching$.pipe(
-      filter(isFetching => !isFetching),
-      switchMap(() => _models$.pipe(pluck(modelId), take(1))),
-      switchMap((model) => {
-        if (isNullOrUndefined(model)) {
-          return fetchById(modelId);
-        } else {
-          // Model was already fetched, discard repeated request.
-          return NEVER;
-        }
-      }),
-      take(1)
-    ).subscribe(
-      modelResponseReceived,
-      (e) => console.log('Model fetch has failed...', e)
-    );
+    fetching$
+      .pipe(
+        filter((isFetching) => !isFetching),
+        switchMap(() => _models$.pipe(pluck(modelId), take(1))),
+        switchMap((model) => {
+          if (isNullOrUndefined(model)) {
+            return fetchById(modelId);
+          } else {
+            // Model was already fetched, discard repeated request.
+            return NEVER;
+          }
+        }),
+        take(1)
+      )
+      .subscribe(modelResponseReceived, (e) => console.log('Model fetch has failed...', e));
   }
 }
 
@@ -567,7 +575,6 @@ function fetchContentType(contentTypeId: string): boolean {
 }
 
 function modelResponseReceived(responseModels: LookupTable<ContentInstance>): void {
-
   const currentModels = _models$.value;
   const normalizedModels = normalizeModelsLookup(responseModels);
 
@@ -584,42 +591,26 @@ function modelResponseReceived(responseModels: LookupTable<ContentInstance>): vo
   post(GUEST_MODELS_RECEIVED, normalizedModels);
   post(CHILDREN_MAP_UPDATE, children);
 
-  _models$.next(
-    Object.assign(
-      {},
-      currentModels,
-      normalizedModels
-    )
-  );
+  _models$.next(Object.assign({}, currentModels, normalizedModels));
 
   fetching$.next(false);
-
 }
 
 function contentTypesResponseReceived(responseContentTypes: ContentType[]): void;
 function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>): void;
-function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType> | ContentType[]): void {
-
+function contentTypesResponseReceived(
+  responseContentTypes: LookupTable<ContentType> | ContentType[]
+): void {
   if (Array.isArray(responseContentTypes)) {
     (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
   }
 
   const currentContentTypes = _contentTypes$.value;
 
-  _contentTypes$.next(
-    Object.assign(
-      {},
-      currentContentTypes,
-      responseContentTypes
-    )
-  );
-
+  _contentTypes$.next(Object.assign({}, currentContentTypes, responseContentTypes));
 }
 
-function fetchById(
-  id: string,
-  site: string = Cookies.get('crafterSite')
-): Observable<LookupTable<ContentInstance>> {
+function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
   fetching$.next(true);
   return search(
     createQuery('elasticsearch', {
@@ -631,7 +622,7 @@ function fetchById(
                 should: {
                   multi_match: {
                     query: id,
-                    fields: ['*objectId'],
+                    fields: ['*objectId']
                   }
                 }
               }
@@ -641,10 +632,15 @@ function fetchById(
       }
     }),
     // TODO: Remove hardcoded url
-    { baseUrl: 'http://localhost:8080', site }
+    crafterConf.getConfig()
   ).pipe(
-    tap(({ total }) => (total === 0) && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)),
-    map<any, ContentInstance[]>(({ hits }) => hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))),
+    tap(
+      ({ total }) =>
+        total === 0 && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)
+    ),
+    map<any, ContentInstance[]>(({ hits }) =>
+      hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))
+    ),
     map(modelsToLookup)
   );
 }

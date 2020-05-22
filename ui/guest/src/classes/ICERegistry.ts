@@ -64,25 +64,21 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
       return null;
     }
   },
-  allowedContentTypeTags() {
-  },
-  allowedContentTypes() {
-  },
-  maxLength() {
-  },
-  readOnly() {
-  },
-  required() {
-  }
+  allowedContentTypeTags() {},
+  allowedContentTypes() {},
+  maxLength() {},
+  readOnly() {},
+  required() {}
 };
 
 let rid = 0;
 
 /* private */
-let registry: LookupTable<ICERecord> = { /* [id]: { modelId, fieldId, index } */ };
+let registry: LookupTable<ICERecord> = {
+  /* [id]: { modelId, fieldId, index } */
+};
 
 export function register(registration: ICERecordRegistration): number {
-
   // For consistency, set `fieldId` and `index` props
   // to null for records that don't include those values
   const data = Object.assign(
@@ -94,19 +90,18 @@ export function register(registration: ICERecordRegistration): number {
   if (isNullOrUndefined(data.modelId)) {
     throw new Error(
       'ICE component registration requires a model ID to be supplied. ' +
-      `Supplied model id was ${data.modelId}.`
+        `Supplied model id was ${data.modelId}.`
     );
   } else if (
     notNullOrUndefined(data.fieldId) &&
     isNullOrUndefined(data.index) &&
-    ContentTypeHelper.isGroupItem(
-      getReferentialEntries(data).contentType,
-      data.fieldId
-    )
+    ContentTypeHelper.isGroupItem(getReferentialEntries(data).contentType, data.fieldId)
   ) {
     throw new Error(
       'Group item registration requires the index within the collection that contains the item to be supplied. ' +
-      `Please supply index for '${data.fieldId}' of the ${getReferentialEntries(data).contentType.name} model.`
+        `Please supply index for '${data.fieldId}' of the ${
+          getReferentialEntries(data).contentType.name
+        } model.`
     );
   }
 
@@ -123,38 +118,28 @@ export function register(registration: ICERecordRegistration): number {
     record.refCount++;
 
     return record.id;
-
   } else {
-
     const record: ICERecord = { ...data, id: rid++ };
     const entities = getReferentialEntries(record);
 
     // Record coherence validation
-    if (
-      notNullOrUndefined(entities.fieldId) &&
-      isNullOrUndefined(entities.field)
-    ) {
+    if (notNullOrUndefined(entities.fieldId) && isNullOrUndefined(entities.field)) {
       console.error(
         `[ICERegistry] Field "${entities.fieldId}" was not found on the "${entities.contentType.name}" content type. ` +
-        `Please check the field name matches one of the content type field names ` +
-        `(${Object.keys(entities.contentType.fields).join(', ')})`
+          `Please check the field name matches one of the content type field names ` +
+          `(${Object.keys(entities.contentType.fields).join(', ')})`
       );
     }
 
     registry[record.id] = record;
 
     return record.id;
-
   }
-
 }
 
 export function deregister(id: number): ICERecord {
   const record = registry[id];
-  if (
-    (id in registry) &&
-    (--record.refCount === 0)
-  ) {
+  if (id in registry && --record.refCount === 0) {
     delete registry[id];
   }
   return record;
@@ -162,19 +147,19 @@ export function deregister(id: number): ICERecord {
 
 export function exists(data: Partial<ICEProps>): number {
   const records = Object.values(registry);
-  const lastIndex = records.length - 1;
   return forEach(
     records,
     (record, i) => {
       if (
         record.modelId === data.modelId &&
-        (data.fieldId == null || record.fieldId === data.fieldId) &&
-        (data.index == null || `${record.index}` === `${data.index}`)
+        // Using == to avoid false negatives with null/undefined
+        // eslint-disable-next-line eqeqeq
+        record.fieldId == data.fieldId &&
+        // Using == to avoid false negatives with '1'/1
+        // eslint-disable-next-line eqeqeq
+        record.index == data.index
       ) {
         return record.id;
-      }
-      if (i === lastIndex) {
-        return -1;
       }
     },
     -1
@@ -187,11 +172,7 @@ export function recordOf(id: number | string): ICERecord {
 
 export function isRepeatGroup(id): boolean {
   const { field, index } = getReferentialEntries(id);
-  return (
-    notNullOrUndefined(field) &&
-    isNullOrUndefined(index) &&
-    field.type === 'repeat'
-  );
+  return notNullOrUndefined(field) && isNullOrUndefined(index) && field.type === 'repeat';
 }
 
 export function isRepeatGroupItem(id: number): boolean {
@@ -214,15 +195,12 @@ export function isRepeatGroupItem(id: number): boolean {
 
 export function getMediaReceptacles(type: string): ICERecord[] {
   const receptacles = [];
-  forEach(
-    Object.values(registry),
-    (record: ICERecord) => {
-      const entries = getReferentialEntries(record);
-      if (entries.field && entries.field.type === type) {
-        receptacles.push(record);
-      }
+  forEach(Object.values(registry), (record: ICERecord) => {
+    const entries = getReferentialEntries(record);
+    if (entries.field && entries.field.type === type) {
+      receptacles.push(record);
     }
-  );
+  });
   return receptacles;
 }
 
@@ -253,10 +231,7 @@ export function getRecordReceptacles(id: number): ICERecord[] {
 export function getRepeatGroupItemReceptacles(record: ICERecord): ICERecord[] {
   const entries = getReferentialEntries(record);
   return Object.values(registry)
-    .filter((rec) =>
-      isNullOrUndefined(rec.index) &&
-      rec.fieldId === record.fieldId
-    )
+    .filter((rec) => isNullOrUndefined(rec.index) && rec.fieldId === record.fieldId)
     .filter((rec) => {
       const es = getReferentialEntries(rec);
       return es.contentTypeId === entries.contentTypeId;
@@ -276,10 +251,8 @@ export function getContentTypeReceptacles(contentType: string | ContentType): IC
     if (notNullOrUndefined(fieldId)) {
       const { field, contentType: _contentType, model } = getReferentialEntries(record);
       const acceptedTypes = field?.validations?.allowedContentTypes?.value;
-      const accepts = acceptedTypes && (
-        acceptedTypes.includes(contentTypeId) ||
-        acceptedTypes.includes('*')
-      );
+      const accepts =
+        acceptedTypes && (acceptedTypes.includes(contentTypeId) || acceptedTypes.includes('*'));
       if (!accepts) {
         return false;
       } else if (isNullOrUndefined(index)) {
@@ -305,18 +278,23 @@ export function getContentTypeReceptacles(contentType: string | ContentType): IC
   });
 }
 
-export function runReceptaclesValidations(receptacles: ICERecord[]): LookupTable<LookupTable<ValidationResult>> {
+export function runReceptaclesValidations(
+  receptacles: ICERecord[]
+): LookupTable<LookupTable<ValidationResult>> {
   const lookup = {};
-  receptacles.forEach(record => {
+  receptacles.forEach((record) => {
     const validationResult = {};
     const { fieldId, index } = record;
-    let { field: { validations }, model } = getReferentialEntries(record);
+    let {
+      field: { validations },
+      model
+    } = getReferentialEntries(record);
     const collection = ModelHelper.extractCollectionItem(model, fieldId, index);
-    Object.keys(validations).forEach(key => {
+    Object.keys(validations).forEach((key) => {
       const validation = validations[key];
       switch (validation.id) {
         case 'minCount': {
-          if (validation.value && (collection.length) < validation.value) {
+          if (validation.value && collection.length < validation.value) {
             validationResult[validation.id] = {
               id: validation.id,
               level: validation.level,
@@ -326,7 +304,7 @@ export function runReceptaclesValidations(receptacles: ICERecord[]): LookupTable
           break;
         }
         case 'maxCount': {
-          if (validation.value && (collection.length) >= validation.value) {
+          if (validation.value && collection.length >= validation.value) {
             validationResult[validation.id] = {
               id: validation.id,
               level: validation.level,
@@ -344,11 +322,19 @@ export function runReceptaclesValidations(receptacles: ICERecord[]): LookupTable
   return lookup;
 }
 
-export function runValidation(iceId: number, validationId: ValidationKeys, args?: unknown[]): ValidationResult {
+export function runValidation(
+  iceId: number,
+  validationId: ValidationKeys,
+  args?: unknown[]
+): ValidationResult {
   const record = recordOf(iceId);
-  let { field: { validations } } = getReferentialEntries(record);
+  let {
+    field: { validations }
+  } = getReferentialEntries(record);
   if (validations[validationId]) {
-    return validationChecks[validationId](...[...Object.values(validations[validationId]), ...args]);
+    return validationChecks[validationId](
+      ...[...Object.values(validations[validationId]), ...args]
+    );
   } else {
     return null;
   }
@@ -356,8 +342,7 @@ export function runValidation(iceId: number, validationId: ValidationKeys, args?
 
 export function getReferentialEntries(record: number | ICERecord): ReferentialEntries {
   record = typeof record === 'object' ? record : recordOf(record);
-  const
-    model = contentController.getCachedModel(record.modelId),
+  const model = contentController.getCachedModel(record.modelId),
     contentTypeId = ModelHelper.getContentTypeId(model),
     contentType = contentController.getCachedContentType(contentTypeId),
     field = record.fieldId ? ContentTypeHelper.getField(contentType, record.fieldId) : null;
@@ -375,22 +360,20 @@ export function getRecordField(record: ICERecord): ContentTypeField {
 }
 
 export function isMovable(recordId: number): boolean {
-
   // modeId -> the main/parent model id or a sub model id
   // fieldId -> repeatGroup or array
   const entries = getReferentialEntries(recordId);
   const { field, index } = entries;
 
   return (
-    (field != null) &&
+    field != null &&
     (field.type === 'repeat' || field.type === 'node-selector') &&
-    (field.sortable) &&
+    field.sortable &&
     // `index` must be a valid number. nullish value
     // may mean it's not an item but rather the repeat
     // group or component itself
     notNullOrUndefined(index)
   );
-
 }
 
 /* private */
@@ -406,11 +389,7 @@ export function checkComponentMovability(entries): boolean {
 
   const records = Object.values(registry);
 
-  let
-    parentField,
-    parentModelId,
-    parentCollection,
-    minCount;
+  let parentField, parentModelId, parentCollection, minCount;
 
   // Find the parent field and it's respective container collection
   // The array in which this model is listed on.
@@ -423,7 +402,6 @@ export function checkComponentMovability(entries): boolean {
     if (isNullOrUndefined(record.field)) {
       if (notNullOrUndefined(record.index)) {
         // Collection item record. Cannot be the container.
-
       } else {
         // Is a component...
         // - get model fields
@@ -431,8 +409,7 @@ export function checkComponentMovability(entries): boolean {
         const children = contentController.children[record.modelId];
         if (children && children.includes(entries.modelId)) {
           parentModelId = record.modelId;
-          const
-            containers = findComponentContainerFields(record.contentType.fields),
+          const containers = findComponentContainerFields(record.contentType.fields),
             field = findContainerField(record.model, containers, entries.modelId);
           if (notNullOrUndefined(field)) {
             parentField = field;
@@ -443,7 +420,7 @@ export function checkComponentMovability(entries): boolean {
       }
     } else if (record.field.type === 'node-selector') {
       const value = ModelHelper.value(record.model, record.fieldId);
-      if (value.includes(entries.modelId) || (value === entries.modelId)) {
+      if (value.includes(entries.modelId) || value === entries.modelId) {
         parentField = record.field;
         parentModelId = record.modelId;
         parentCollection = value;
@@ -455,19 +432,18 @@ export function checkComponentMovability(entries): boolean {
   if (!parentField) {
     throw new Error(
       `Unable to find the parent field for instance "${entries.modelId}" of ` +
-      `${entries.contentType.name} component${entries.fieldId ? ` (${entries.fieldId} field)` : ''}. ` +
-      'Did you forget to declare the field when creating the content type?\n' +
-      'Check the state of the model data this could mean the data is corrupted.'
+        `${entries.contentType.name} component${
+          entries.fieldId ? ` (${entries.fieldId} field)` : ''
+        }. ` +
+        'Did you forget to declare the field when creating the content type?\n' +
+        'Check the state of the model data this could mean the data is corrupted.'
     );
   }
 
   const found = forEach(
     records,
     (record) => {
-      if (
-        record.modelId === parentModelId &&
-        record.fieldId === parentField.id
-      ) {
+      if (record.modelId === parentModelId && record.fieldId === parentField.id) {
         return true;
       }
     },
@@ -475,17 +451,13 @@ export function checkComponentMovability(entries): boolean {
   );
 
   if (!found) {
-    const componentName = (
-      `'${entries.contentType.name} ${
-        entries.contentType.name.toLowerCase().includes('component')
-          ? '\''
-          : 'Component\' '
-      }`
-    );
+    const componentName = `'${entries.contentType.name} ${
+      entries.contentType.name.toLowerCase().includes('component') ? "'" : "Component' "
+    }`;
     console.warn(
       `Per definition the ${componentName} is sortable but a drop zone for it was not found. ` +
-      'Did you forget to register the zone? Please initialize the drop zone element(s) of ' +
-      `the ${componentName} with modelId="${parentModelId}" and fieldId="${parentField.id}".`
+        'Did you forget to register the zone? Please initialize the drop zone element(s) of ' +
+        `the ${componentName} with modelId="${parentModelId}" and fieldId="${parentField.id}".`
     );
     return false;
   }
@@ -494,36 +466,32 @@ export function checkComponentMovability(entries): boolean {
 
   if (parentField.type === 'node-selector') {
     return (
-      (
-        parentField.sortable &&
+      (parentField.sortable &&
         // If there are more adjacent items on this zone to be able to
         // move current guy before/after
-        parentCollection.length > 1
-      ) || (
-        // Would moving the guy away from this zone violate it's minCount?
-        ((parentCollection.length - 1) >= minCount) &&
+        parentCollection.length > 1) ||
+      // Would moving the guy away from this zone violate it's minCount?
+      (parentCollection.length - 1 >= minCount &&
         // Does anybody else accept this type of component?
-        getComponentItemReceptacles(entries).length > 0
-      )
+        getComponentItemReceptacles(entries).length > 0)
     );
   } else {
     return (
       // Moving this component would make the parent field value null/blank
       // If the parent field is not required that should be ok
-      !(parentField.required) &&
+      !parentField.required &&
       // Is this guy accepted elsewhere?
       getComponentItemReceptacles(entries).length > 0
     );
   }
-
 }
 
 /* private */
 export function checkRepeatGroupMovability(entries): boolean {
   const { model, field, index } = entries;
   return (
-    (field?.type === 'repeat') &&
-    (field.sortable) &&
+    field?.type === 'repeat' &&
+    field.sortable &&
     // `index` must be a valid number. nullish value
     // may mean it's not a group item but rather the group
     // container
@@ -532,11 +500,15 @@ export function checkRepeatGroupMovability(entries): boolean {
     // zones and doesn't have any adjacent items to move it
     // next to.
     // TODO: What about DnD trashing, though?
-    (ModelHelper.value(model, field.id).length > 1)
+    ModelHelper.value(model, field.id).length > 1
   );
 }
 
-export function findContainerField(model: ContentInstance, fields: ContentTypeField[], modelId: string): ContentTypeField {
+export function findContainerField(
+  model: ContentInstance,
+  fields: ContentTypeField[],
+  modelId: string
+): ContentTypeField {
   return forEach(fields, (field) => {
     const value = ModelHelper.value(model, field.id);
     if (field.type === 'node-selector' && (value === modelId || value.includes(modelId))) {

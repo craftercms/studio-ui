@@ -14,8 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromEvent, interval, Subscription } from 'rxjs';
-import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import { forEach } from './array';
 import {
   Coordinates,
@@ -26,14 +24,7 @@ import {
 import $ from 'jquery';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { RenderTree } from '../models/ContentTree';
-import {
-  DropZone,
-  ElementRecord,
-  HighlightData,
-  ICERecord,
-  ValidationResult
-} from '../models/InContextEditing';
-import ElementRegistry from '../classes/ElementRegistry';
+import { DropZone, ValidationResult } from '../models/InContextEditing';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
 import { CSSProperties } from 'react';
 import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeReceptacle';
@@ -129,15 +120,15 @@ export function getDropMarkerPosition(args: DropMarkerPositionArgs): DropMarkerP
 
   return horizontal
     ? {
-      height: refElementRect.height,
-      top: refElementRect.top,
-      left: before ? refElementRect.left + difference : refElementRect.right + difference
-    }
+        height: refElementRect.height,
+        top: refElementRect.top,
+        left: before ? refElementRect.left + difference : refElementRect.right + difference
+      }
     : {
-      width: refElementRect.width,
-      top: before ? refElementRect.top + difference : refElementRect.bottom + difference,
-      left: refElementRect.left
-    };
+        width: refElementRect.width,
+        top: before ? refElementRect.top + difference : refElementRect.bottom + difference,
+        left: refElementRect.left
+      };
 }
 
 export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
@@ -193,10 +184,10 @@ export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
 }
 
 export function insertDropMarker({
-                                   $dropMarker,
-                                   insertPosition,
-                                   refElement
-                                 }: {
+  $dropMarker,
+  insertPosition,
+  refElement
+}: {
   $dropMarker: JQuery<any>;
   insertPosition: string;
   refElement: HTMLElement | JQuery | string;
@@ -322,25 +313,22 @@ export function getInRectStats(
   };
 }
 
-export function getRelativePointerPositionPercentages(mousePosition: Coordinates, rect: DOMRect): Coordinates {
-
-  const
-    x = (
-      (
-        /* mouse X distance from rect left edge */
-        (mousePosition.x - rect.left) /
+export function getRelativePointerPositionPercentages(
+  mousePosition: Coordinates,
+  rect: DOMRect
+): Coordinates {
+  const x =
+      /* mouse X distance from rect left edge */
+      ((mousePosition.x - rect.left) /
         /* width */
-        rect.width
-      ) * 100
-    ),
-    y = (
-      (
-        /* mouse X distance from rect top edge */
-        (mousePosition.y - rect.top) /
+        rect.width) *
+      100,
+    y =
+      /* mouse X distance from rect top edge */
+      ((mousePosition.y - rect.top) /
         /* height */
-        (rect.height)
-      ) * 100
-    );
+        rect.height) *
+      100;
 
   return { x, y };
 }
@@ -365,7 +353,7 @@ export function addAnimation(
   const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
   $element.addClass(animationClass);
   // @ts-ignore
-  $element.one(END_EVENT, function () {
+  $element.one(END_EVENT, function() {
     $element.removeClass(animationClass);
   });
 }
@@ -390,7 +378,7 @@ export function scrollToNode(node: RenderTree, scrollElement: string): void {
           scrollTop: $element.offset().top - 100
         },
         300,
-        function () {
+        function() {
           addAnimation($element, 'craftercms-contentTree-pulse');
         }
       );
@@ -432,56 +420,17 @@ export function scrollToReceptacle(
   }
 }
 
-export function getHighlighted(dropZones: DropZone[]): LookupTable<HighlightData> {
-  return dropZones.reduce((object, { physicalRecordId: id, validations }) => {
-    object[id] = ElementRegistry.getHoverData(id);
-    object[id].validations = validations;
-    return object;
-  }, {} as LookupTable<HighlightData>);
-}
-
-export function updateDropZoneValidations(dropZone: DropZone, dropZones: DropZone[], validations: LookupTable<ValidationResult>): DropZone[] {
+export function updateDropZoneValidations(
+  dropZone: DropZone,
+  dropZones: DropZone[],
+  validations: LookupTable<ValidationResult>
+): DropZone[] {
   const newDropZone = { ...dropZone };
   let newDropZones = [...dropZones];
   newDropZone.validations = validations;
-  newDropZones = newDropZones.filter(item => item.iceId !== newDropZone.iceId);
+  newDropZones = newDropZones.filter((item) => item.iceId !== newDropZone.iceId);
   newDropZones.push(newDropZone);
   return newDropZones;
-}
-
-export function getDragContextFromReceptacles(
-  receptacles: ICERecord[],
-  validationsLookup?: LookupTable<LookupTable<ValidationResult>>,
-  currentRecord?: ElementRecord
-): { dropZones: any; siblings: any; players: any; containers: any; } {
-  const response = {
-    dropZones: [],
-    siblings: [],
-    players: [],
-    containers: []
-  };
-  receptacles.forEach(({ id }) => {
-    const dropZone = ElementRegistry.compileDropZone(id);
-    dropZone.origin = null;
-    dropZone.origin = currentRecord ? dropZone.children.includes(currentRecord.element) : null;
-    dropZone.validations = validationsLookup?.[id] ?? {};
-    response.dropZones.push(dropZone);
-    response.siblings = [...response.siblings, ...dropZone.children];
-    response.players = [...response.players, ...dropZone.children, dropZone.element];
-    response.containers.push(dropZone.element);
-  });
-
-  return response;
-}
-
-export function getZoneMarkerLabelStyle(rect: DOMRect): CSSProperties {
-  const $body = $('body');
-  return ((rect.top + $body.scrollTop()) <= 0) ? {
-    top: 0,
-    left: '50%',
-    marginLeft: -60,
-    position: 'fixed'
-  } : {};
 }
 
 export function getZoneMarkerStyle(rect: DOMRect, padding: number = 0): CSSProperties {
@@ -489,15 +438,7 @@ export function getZoneMarkerStyle(rect: DOMRect, padding: number = 0): CSSPrope
   return {
     height: rect.height + padding,
     width: rect.width + padding,
-    top: (
-      rect.top +
-      $window.scrollTop() -
-      (padding / 2)
-    ),
-    left: (
-      rect.left +
-      $window.scrollLeft() -
-      (padding / 2)
-    )
+    top: rect.top + $window.scrollTop() - padding / 2,
+    left: rect.left + $window.scrollLeft() - padding / 2
   };
 }

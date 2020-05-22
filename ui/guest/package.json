@@ -9,6 +9,7 @@
     "id": "craftercms.guest"
   },
   "dependencies": {
+    "@craftercms/classes": "^1.2.2",
     "@craftercms/content": "^1.2.2",
     "@craftercms/search": "^1.2.2",
     "@reduxjs/toolkit": "^1.3.6",

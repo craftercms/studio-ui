@@ -24,6 +24,7 @@ import {
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
+  EDIT_MODE_CHANGED,
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
@@ -75,12 +76,14 @@ const audiencesPanelInitialState = {
 };
 
 const guestBase = envInitialState.guestBase;
+const previewLanding = envInitialState.previewLandingBase;
 
 const reducer = createReducer<GlobalState['preview']>({
+  editMode: true,
   // What's shown to the user across the board (url, address bar, etc)
   computedUrl: '',
   // The src of the iframe
-  currentUrl: envInitialState.previewLandingBase,
+  currentUrl: previewLanding,
   hostSize: { width: null, height: null },
   showToolsPanel: false,
   previousTool: null,
@@ -212,7 +215,7 @@ const reducer = createReducer<GlobalState['preview']>({
       // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
       // TODO: Retrieval of guestBase from initialState is not right.
       // currentUrl: payload.__CRAFTERCMS_GUEST_LANDING__
-      //   ? envInitialState.previewLandingBase
+      //   ? previewLanding
       //   : `${origin}${url}`
     };
   },
@@ -480,10 +483,14 @@ const reducer = createReducer<GlobalState['preview']>({
     guest: {
       ...state.guest,
       childrenMap: {
-        ...state.guest.childrenMap,
+        ...state.guest?.childrenMap,
         ...payload
       }
     }
+  }),
+  [EDIT_MODE_CHANGED]: (state, { payload }) => ({
+    ...state,
+    editMode: payload.editMode
   })
 });
 

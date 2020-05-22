@@ -94,6 +94,7 @@ export interface GlobalState {
     version: string;
   };
   preview: {
+    editMode: boolean;
     currentUrl: string;
     computedUrl: string;
     showToolsPanel: boolean;

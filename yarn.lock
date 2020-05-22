@@ -2086,7 +2086,7 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@craftercms/classes@1.2.2":
+"@craftercms/classes@1.2.2", "@craftercms/classes@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@craftercms/classes/-/classes-1.2.2.tgz#260b9161f5fac1213740adfa3a834cf2daf86efd"
   integrity sha512-xIzSiHqm7h6apJZ5uhOTA708AMCIcNnO3+R2mZgYoqfFLKOxFscTfsK4hPHdPfw16wlydoq4qfnEkI6XAg8VJA==

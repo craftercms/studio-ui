@@ -85,11 +85,11 @@ import { useSnackbar } from 'notistack';
 const guestMessages = defineMessages({
   maxCount: {
     id: 'validations.maxCount',
-    defaultMessage: 'The max count is more than allowable maximum of {maxCount}'
+    defaultMessage: 'The max number of items is {maxCount}'
   },
   minCount: {
     id: 'validations.minCount',
-    defaultMessage: 'The min count is less than allowable minimum of {minCount}'
+    defaultMessage: 'The min number of items is {minCount}'
   },
   required: {
     id: 'validations.required',
@@ -97,9 +97,11 @@ const guestMessages = defineMessages({
   },
   maxLength: {
     id: 'validations.maxLength',
-    defaultMessage: 'The max count of {maxLength} characters is reached'
+    defaultMessage: 'The max length ({maxLength}) reached'
   }
 });
+
+const originalDocDomain = document.domain;
 
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
@@ -115,13 +117,16 @@ export function PreviewConcierge(props: any) {
   const { formatMessage } = useIntl();
   const models = guest?.models;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
+  const editMode = useSelection((state) => state.preview.editMode);
 
+  // Guest detection, document domain restoring and misc cleanup.
   useMount(() => {
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
     return () => {
       sub.unsubscribe();
       contentTypes$.complete();
       contentTypes$.unsubscribe();
+      document.domain = originalDocDomain;
     };
   });
 
@@ -138,9 +143,17 @@ export function PreviewConcierge(props: any) {
       const { type, payload } = action;
       switch (type) {
         case GUEST_CHECK_IN: {
-          hostToGuest$.next({ type: HOST_CHECK_IN, payload: { editMode: true } });
+          hostToGuest$.next({ type: HOST_CHECK_IN, payload: { editMode } });
 
           dispatch(checkInGuest(payload));
+
+          if (payload.documentDomain) {
+            try {
+              document.domain = payload.documentDomain;
+            } catch {
+              document.domain = originalDocDomain;
+            }
+          }
 
           if (payload.__CRAFTERCMS_GUEST_LANDING__) {
             nnou(site) && dispatch(changeCurrentUrl('/'));
@@ -413,7 +426,8 @@ export function PreviewConcierge(props: any) {
     models,
     guestBase,
     site,
-    xsrfArgument
+    xsrfArgument,
+    editMode
   ]);
 
   useEffect(() => {

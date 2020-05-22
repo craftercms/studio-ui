@@ -288,3 +288,7 @@ export const fetchPreviewToolsConfigComplete = createAction<PreviewToolsConfig>(
 export const fetchPreviewToolsConfigFailed = createAction<AjaxError>('FETCH_PREVIEW_TOOLS_CONFIG_FAILED');
 
 // endregion
+
+// region Edit Mode
+export const setPreviewEditMode = createAction<{ editMode: boolean }>(EDIT_MODE_CHANGED);
+// endregion

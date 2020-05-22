@@ -19,7 +19,7 @@ import { fromEvent, interval, zip } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
-import ElementRegistry from '../classes/ElementRegistry';
+import elementRegistry from '../classes/ElementRegistry';
 import { GuestContextProvider } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
@@ -77,7 +77,7 @@ interface GuestProps {
   children?: any;
   isAuthoring?: boolean;
   scrollElement?: string;
-  editModeOnIndicatorClass?: string;
+  editModeClass?: string;
 }
 
 function Guest(props: GuestProps) {
@@ -90,7 +90,7 @@ function Guest(props: GuestProps) {
     children,
     documentDomain,
     scrollElement = 'html, body',
-    editModeOnIndicatorClass = 'craftercms-ice-on'
+    editModeClass = 'craftercms-ice-on'
   } = props;
 
   const [snack, setSnack] = useState<Partial<Snack>>();
@@ -100,14 +100,15 @@ function Guest(props: GuestProps) {
   const hasHost = state.hostCheckedIn;
   const draggable = state.draggable;
   const refs = useRef({ contentReady: false });
+  // TODO: Avoid double re-render when draggable changes without coupling to redux on useICE
   const context = useMemo(
     () => ({
       hasHost,
       draggable,
       onEvent(event: Event, dispatcherElementRecordId: number) {
-        if (hasHost && refs.current.contentReady && state.inEditMode) {
+        if (hasHost && status !== EditingStatus.OFF && refs.current.contentReady) {
           const { type } = event;
-          const record = ElementRegistry.get(dispatcherElementRecordId);
+          const record = elementRegistry.get(dispatcherElementRecordId);
           if (isNullOrUndefined(record)) {
             console.error('No record found for dispatcher element');
           } else {
@@ -122,7 +123,7 @@ function Guest(props: GuestProps) {
         return false;
       }
     }),
-    [dispatch, state.inEditMode, hasHost, draggable]
+    [dispatch, hasHost, draggable, status]
   );
 
   // Sets document domain
@@ -138,6 +139,17 @@ function Guest(props: GuestProps) {
     }
   }, [documentDomain]);
 
+  // Add/remove edit on class
+  useEffect(() => {
+    if (status === EditingStatus.OFF) {
+      $('html').removeClass(editModeClass);
+      document.dispatchEvent(new CustomEvent(editModeClass, { detail: false }));
+    } else {
+      $('html').addClass(editModeClass);
+      document.dispatchEvent(new CustomEvent(editModeClass, { detail: true }));
+    }
+  }, [editModeClass, status]);
+
   // Appends the Guest stylesheet
   useEffect(() => {
     const stylesheet = appendStyleSheet(styles);
@@ -148,31 +160,29 @@ function Guest(props: GuestProps) {
 
   // Subscribes to host messages and routes them.
   useEffect(() => {
-    const sub = message$.subscribe(function({ type, payload }) {
+    const sub = message$.subscribe(function(action) {
+      const { type, payload } = action;
       switch (type) {
         case EDIT_MODE_CHANGED:
-          dispatch({
-            type: EDIT_MODE_CHANGED,
-            payload: { inEditMode: payload.inEditMode, editModeOnIndicatorClass }
-          });
+          dispatch(action);
           break;
         case ASSET_DRAG_STARTED:
           dispatch({ type: ASSET_DRAG_STARTED, payload: { asset: payload } });
           break;
         case ASSET_DRAG_ENDED:
-          dragOk(status) && dispatch({ type: ASSET_DRAG_ENDED });
+          dragOk(status) && dispatch(action);
           break;
         case COMPONENT_DRAG_STARTED:
           dispatch({ type: COMPONENT_DRAG_STARTED, payload: { contentType: payload } });
           break;
         case COMPONENT_DRAG_ENDED:
-          dragOk(status) && dispatch({ type: COMPONENT_DRAG_ENDED });
+          dragOk(status) && dispatch(action);
           break;
         case COMPONENT_INSTANCE_DRAG_STARTED:
           dispatch({ type: COMPONENT_INSTANCE_DRAG_STARTED, payload: { instance: payload } });
           break;
         case COMPONENT_INSTANCE_DRAG_ENDED:
-          dragOk(status) && dispatch({ type: COMPONENT_INSTANCE_DRAG_ENDED });
+          dragOk(status) && dispatch(action);
           break;
         case TRASHED:
           dispatch({ type: TRASHED, payload: { iceId: payload } });
@@ -200,32 +210,32 @@ function Guest(props: GuestProps) {
           scrollToReceptacle(
             [payload],
             scrollElement,
-            (id: number) => ElementRegistry.fromICEId(id).element
+            (id: number) => elementRegistry.fromICEId(id).element
           );
           break;
         case CLEAR_HIGHLIGHTED_RECEPTACLES:
-          dispatch({ type: CLEAR_HIGHLIGHTED_RECEPTACLES });
+          dispatch(action);
           break;
         case CONTENT_TREE_FIELD_SELECTED: {
           scrollToNode(payload, scrollElement);
           break;
         }
         case DESKTOP_ASSET_UPLOAD_PROGRESS:
-          dispatch({ type: DESKTOP_ASSET_UPLOAD_PROGRESS, payload: payload });
+          dispatch(action);
           break;
         case DESKTOP_ASSET_UPLOAD_COMPLETE:
-          dispatch({ type: DESKTOP_ASSET_UPLOAD_COMPLETE, payload: payload });
+          dispatch(action);
           break;
       }
     });
     return () => {
       sub.unsubscribe();
     };
-  }, [dispatch, editModeOnIndicatorClass, scrollElement, status]);
+  }, [dispatch, scrollElement, status]);
 
   // Check in & host detection
   useEffect(() => {
-    if (!state.hostCheckedIn) {
+    if (!hasHost) {
       const location = createLocationArgument();
       const site = Cookies.get('crafterSite');
       interval(1000)
@@ -238,18 +248,31 @@ function Guest(props: GuestProps) {
         });
       post(GUEST_CHECK_IN, { location, modelId, path, site, documentDomain });
     }
-  }, [dispatch, modelId, path, state.hostCheckedIn, documentDomain]);
+  }, [dispatch, modelId, path, hasHost, documentDomain]);
+
+  // load dependencies (tinymce)
+  useEffect(() => {
+    if (hasHost && !window.tinymce) {
+      const script = document.createElement('script');
+      script.src = '/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js';
+      script.onload = () => console.log('tinymce loaded');
+      document.head.appendChild(script);
+    }
+  }, [hasHost]);
 
   // Check out (dismount, beforeunload)
   useEffect(() => {
+
     // Notice this is not executed when the iFrame url is changed abruptly.
     // This only triggers when navigation occurs from within the guest page.
     const handler = () => post({ type: GUEST_CHECK_OUT });
     window.addEventListener('beforeunload', handler, false);
+
     return () => {
       post(GUEST_CHECK_OUT);
       window.removeEventListener('beforeunload', handler);
     };
+
   }, []);
 
   // Registers parent zone
@@ -320,11 +343,20 @@ function Guest(props: GuestProps) {
     }
   }, [dispatch, dragContextDropZoneIceId]);
 
+  const draggableItemElemRecId = Object.entries(state.draggable ?? {}).find(
+    ([, ice]) => ice !== false
+  )?.[0];
+
   return (
     <GuestContextProvider value={context}>
       {children}
       {status !== EditingStatus.OFF && (
         <CrafterCMSPortal>
+          {draggableItemElemRecId && (
+            <craftercms-dragged-element>
+              {elementRegistry.get(parseInt(draggableItemElemRecId)).label}
+            </craftercms-dragged-element>
+          )}
           {Object.values(state.uploading).map((highlight: HighlightData) => (
             <AssetUploaderMask key={highlight.id} {...highlight} />
           ))}
@@ -343,12 +375,11 @@ function Guest(props: GuestProps) {
             />
           ))}
           {/* prettier-ignore */}
-          {
-            [
-              EditingStatus.SORTING_COMPONENT,
-              EditingStatus.PLACING_NEW_COMPONENT,
-              EditingStatus.PLACING_DETACHED_COMPONENT
-            ].includes(status) &&
+          {[
+            EditingStatus.SORTING_COMPONENT,
+            EditingStatus.PLACING_NEW_COMPONENT,
+            EditingStatus.PLACING_DETACHED_COMPONENT
+          ].includes(status) &&
             state.dragContext.inZone &&
             !state.dragContext.invalidDrop && (
               <DropMarker
@@ -359,8 +390,7 @@ function Guest(props: GuestProps) {
                 next={state.dragContext.next}
                 coordinates={state.dragContext.coordinates}
               />
-            )
-          }
+            )}
           {snack && (
             <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
               {snack.message}

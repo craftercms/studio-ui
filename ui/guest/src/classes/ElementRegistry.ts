@@ -23,7 +23,9 @@ import {
   DropZone,
   ElementRecord,
   ElementRecordRegistration,
-  HighlightData
+  HighlightData,
+  ICERecord,
+  ValidationResult
 } from '../models/InContextEditing';
 import { RegistryEntry } from '../models/Registry';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
@@ -48,14 +50,13 @@ export function setLabel(record: ElementRecord): void {
   const labels = [];
   const models = contentController.getCachedModels();
   record.iceIds.forEach((iceId) => {
-
     const iceRecord = iceRegistry.recordOf(iceId);
-    const { model, field, fieldId, index, contentType } = iceRegistry.getReferentialEntries(iceRecord);
-
+    const { model, field, fieldId, index, contentType } = iceRegistry.getReferentialEntries(
+      iceRecord
+    );
     if (notNullOrUndefined(field)) {
       if (field.type === 'node-selector') {
         if (notNullOrUndefined(index)) {
-
           let component;
           if (notNullOrUndefined(fieldId) && ContentTypeHelper.isGroupItem(contentType, fieldId)) {
             // Repeat groups with possibly nested node-selector/repeat
@@ -76,7 +77,6 @@ export function setLabel(record: ElementRecord): void {
           } else {
             labels.push(`${field.name}`);
           }
-
         } else {
           labels.push(`${field.name}`);
         }
@@ -86,7 +86,6 @@ export function setLabel(record: ElementRecord): void {
     } else {
       labels.push(`${contentType.name}: ${model.craftercms.label}`);
     }
-
   });
   record.label = labels.join(', ');
 }
@@ -101,11 +100,13 @@ export function register(payload: ElementRecordRegistration): number {
 
   const id = seq++;
   const iceIds = [];
-  const fieldIds = (fieldId == null) ? [] : (
-    Array.isArray(fieldId)
-      ? fieldId
-      : fieldId.split(',').map(str => str.trim())
-  );
+  // prettier-ignore
+  const fieldIds =
+    fieldId == null
+      ? []
+      : Array.isArray(fieldId)
+        ? fieldId
+        : fieldId.split(',').map((str) => str.trim());
 
   // Create/register the physical record
   db[id] = { id, element, modelId, index, label, fieldId: fieldIds, iceIds, complete: false };
@@ -115,18 +116,20 @@ export function register(payload: ElementRecordRegistration): number {
   if (contentController.hasCachedModel(modelId)) {
     completeDeferredRegistration(id);
   } else {
-    contentController.getModel$(modelId).pipe(take(1)).subscribe(() => {
-      completeDeferredRegistration(id);
-    });
+    contentController
+      .getModel$(modelId)
+      .pipe(take(1))
+      .subscribe(() => {
+        completeDeferredRegistration(id);
+      });
   }
 
   return id;
-
 }
 
 export function completeDeferredRegistration(id: number): void {
-
-  const { element, modelId, index, label, fieldId: fieldIds, iceIds } = db[id];
+  const record = db[id];
+  const { element, modelId, index, label, fieldId: fieldIds, iceIds } = record;
 
   if (fieldIds.length > 0) {
     // @ts-ignore TODO: Fix type
@@ -142,7 +145,6 @@ export function completeDeferredRegistration(id: number): void {
   }
 
   db[id].complete = true;
-
 }
 
 export function deregister(id: string | number): ElementRecord {
@@ -161,7 +163,7 @@ export function getDraggable(id: number): number | boolean {
   const record = get(id);
   return forEach(
     record.iceIds,
-    function (iceId): boolean | number {
+    function(iceId): boolean | number {
       if (iceRegistry.isMovable(iceId)) {
         return iceId;
       }
@@ -192,7 +194,6 @@ export function fromICEId(iceId: number): RegistryEntry {
 }
 
 export function compileDropZone(iceId: number): DropZone {
-
   const physicalRecord = fromICEId(iceId);
   const physicalRecordId = physicalRecord.id;
   const element = physicalRecord.element;
@@ -210,11 +211,10 @@ export function compileDropZone(iceId: number): DropZone {
     childrenRects,
     validations: {}
   };
-
 }
 
 export function getSiblingRects(id: number): LookupTable<DOMRect> {
-  let
+  let //
     record = get(id),
     element = record.element,
     nextSibling,
@@ -225,32 +225,25 @@ export function getSiblingRects(id: number): LookupTable<DOMRect> {
   nextSibling = sibling(element as HTMLElement, true);
   prevSibling = sibling(element as HTMLElement, false);
 
-  forEach(
-    Object.values(db),
-    (record) => {
-      if (record.element === nextSibling) {
-        next = record.element.getBoundingClientRect();
-      } else if (record.element === prevSibling) {
-        prev = record.element.getBoundingClientRect();
-      } else if (notNullOrUndefined(next) && notNullOrUndefined(prev)) {
-        return 'break';
-      }
+  forEach(Object.values(db), (record) => {
+    if (record.element === nextSibling) {
+      next = record.element.getBoundingClientRect();
+    } else if (record.element === prevSibling) {
+      prev = record.element.getBoundingClientRect();
+    } else if (notNullOrUndefined(next) && notNullOrUndefined(prev)) {
+      return 'break';
     }
-  );
+  });
 
   return { next, prev };
-
 }
 
 export function fromElement(element: Element): ElementRecord {
-  return forEach(
-    Object.values(db),
-    (record) => {
-      if (record.element === element) {
-        return get(record.id);
-      }
+  return forEach(Object.values(db), (record) => {
+    if (record.element === element) {
+      return get(record.id);
     }
-  );
+  });
 }
 
 export function hasElement(element: Element): boolean {
@@ -265,6 +258,38 @@ export function hasElement(element: Element): boolean {
   );
 }
 
+export function getHighlighted(dropZones: DropZone[]): LookupTable<HighlightData> {
+  return dropZones.reduce((object, { physicalRecordId: id, validations }) => {
+    object[id] = getHoverData(id);
+    object[id].validations = validations;
+    return object;
+  }, {} as LookupTable<HighlightData>);
+}
+
+export function getDragContextFromReceptacles(
+  receptacles: ICERecord[],
+  validationsLookup?: LookupTable<LookupTable<ValidationResult>>,
+  currentRecord?: ElementRecord
+): { dropZones: any; siblings: any; players: any; containers: any } {
+  const response = {
+    dropZones: [],
+    siblings: [],
+    players: [],
+    containers: []
+  };
+  receptacles.forEach(({ id }) => {
+    const dropZone = compileDropZone(id);
+    dropZone.origin = null;
+    dropZone.origin = currentRecord ? dropZone.children.includes(currentRecord.element) : null;
+    dropZone.validations = validationsLookup?.[id] ?? {};
+    response.dropZones.push(dropZone);
+    response.siblings = [...response.siblings, ...dropZone.children];
+    response.players = [...response.players, ...dropZone.children, dropZone.element];
+    response.containers.push(dropZone.element);
+  });
+  return response;
+}
+
 export default {
   get,
   setLabel,
@@ -277,5 +302,7 @@ export default {
   compileDropZone,
   getSiblingRects,
   fromElement,
-  hasElement
+  hasElement,
+  getHighlighted,
+  getDragContextFromReceptacles
 };

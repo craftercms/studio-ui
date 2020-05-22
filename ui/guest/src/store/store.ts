@@ -21,6 +21,8 @@ import epic from './epics/root';
 import reducer from './reducers/root';
 import { Middleware } from 'redux';
 import { GuestState, GuestStore } from './models/GuestStore';
+import { Observable } from 'rxjs';
+import { distinctUntilChanged, pluck, share } from 'rxjs/operators';
 
 let store: GuestStore;
 
@@ -49,3 +51,21 @@ export function createGuestStore(): GuestStore {
 }
 
 export default createGuestStore;
+
+export const state$ = new Observable((subscriber) => {
+  const store = createGuestStore();
+  return store.subscribe(() => {
+    const state = store.getState();
+    subscriber.next(state.models);
+  });
+}).pipe(share());
+
+export const models$ = state$.pipe(
+  pluck('content'),
+  distinctUntilChanged()
+);
+
+export const contentTypes$ = state$.pipe(
+  pluck('contentTypes'),
+  distinctUntilChanged()
+);

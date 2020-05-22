@@ -14,13 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EventHandler, MutableRefObject, SyntheticEvent, useEffect, useRef, useState } from 'react';
+import { EventHandler, MutableRefObject, SyntheticEvent, useEffect, useRef } from 'react';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { useGuestContext } from './components/GuestContext';
 import registry from './classes/ElementRegistry';
 import { nnou, pluckProps } from './utils/object';
 import { ICEProps } from './models/InContextEditing';
 import { getModel$ } from './classes/ContentController';
+
+/* region Typings */
 
 interface ICEHandlers {
   onMouseOver: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
@@ -44,6 +46,8 @@ interface ICEMaterials {
     ref?: (node: HTMLElement) => void;
   };
 }
+
+/* endregion */
 
 const handlerMap = {
   mouseover: 'onMouseOver',

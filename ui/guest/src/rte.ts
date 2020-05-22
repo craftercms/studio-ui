@@ -18,12 +18,17 @@ import { ElementRecord } from './models/InContextEditing';
 import iceRegistry from './classes/ICERegistry';
 import { Editor } from 'tinymce';
 import contentController from './classes/ContentController';
-import { createGuestStore } from './store/store';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
 import { post } from './communicator';
+import { GuestStandardAction } from './store/models/GuestStandardAction';
+import { Observable, Subject } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 
-export function initTinyMCE(record: ElementRecord, validations: Partial<ContentTypeFieldValidations>) {
-  const store = createGuestStore();
+export function initTinyMCE(
+  record: ElementRecord,
+  validations: Partial<ContentTypeFieldValidations>
+): Observable<GuestStandardAction> {
+  const dispatch$ = new Subject<GuestStandardAction>();
   const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
   const plugins = ['paste'];
@@ -43,7 +48,7 @@ export function initTinyMCE(record: ElementRecord, validations: Partial<ContentT
     base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
     suffix: '.min',
     setup(editor: Editor) {
-      editor.on('init', function () {
+      editor.on('init', function() {
         let changed = false;
         let originalContent = getContent();
 
@@ -55,9 +60,10 @@ export function initTinyMCE(record: ElementRecord, validations: Partial<ContentT
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
           if (!e.relatedTarget) {
-            if (validations.required && !getContent().trim()) {
+            if (validations?.required && !getContent().trim()) {
               post({
-                type: 'VALIDATION_MESSAGE', payload: {
+                type: 'VALIDATION_MESSAGE',
+                payload: {
                   id: 'required',
                   level: 'required',
                   values: { field: record.label }
@@ -77,18 +83,19 @@ export function initTinyMCE(record: ElementRecord, validations: Partial<ContentT
         });
 
         editor.on('keydown', (e) => {
-          const char = String.fromCharCode(e.keyCode);
-          if (e.keyCode === 27) {
+          if (e.key === 'Escape') {
             e.stopImmediatePropagation();
             editor.setContent(originalContent);
             cancel();
           } else if (
-            validations.maxLength &&
-            /[a-zA-Z0-9-_ ]/.test(char) &&
+            validations?.maxLength &&
+            // TODO: Check/improve regex
+            /[a-zA-Z0-9-_ ]/.test(String.fromCharCode(e.keyCode)) &&
             getContent().length + 1 > parseInt(validations.maxLength.value)
           ) {
             post({
-              type: 'VALIDATION_MESSAGE', payload: {
+              type: 'VALIDATION_MESSAGE',
+              payload: {
                 id: 'maxLength',
                 level: 'required',
                 values: { maxLength: validations.maxLength.value }
@@ -101,7 +108,6 @@ export function initTinyMCE(record: ElementRecord, validations: Partial<ContentT
 
         function save() {
           const content = getContent();
-
           if (changed) {
             contentController.updateField(record.modelId, field.id, record.index, content);
           }
@@ -116,8 +122,6 @@ export function initTinyMCE(record: ElementRecord, validations: Partial<ContentT
         }
 
         function cancel() {
-          store.dispatch({ type: 'exit_component_inline_edit' });
-
           const content = getContent();
           destroyEditor();
 
@@ -129,8 +133,13 @@ export function initTinyMCE(record: ElementRecord, validations: Partial<ContentT
           if (elementDisplay === 'inline') {
             $(record.element).css('display', '');
           }
+
+          dispatch$.next({ type: 'exit_component_inline_edit' });
+          dispatch$.complete();
+          dispatch$.unsubscribe();
         }
       });
     }
   });
+  return dispatch$.pipe(startWith({ type: 'edit_component_inline' }));
 }

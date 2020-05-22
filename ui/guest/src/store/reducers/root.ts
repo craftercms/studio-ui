@@ -14,7 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ElementRegistry from '../../classes/ElementRegistry';
+import ElementRegistry, {
+  getDragContextFromReceptacles,
+  getHighlighted
+} from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import iceRegistry from '../../classes/ICERegistry';
 import { createReducer } from '@reduxjs/toolkit';
@@ -25,11 +28,7 @@ import { GuestActionTypes } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
 import { EditingStatus } from '../../models/ICEStatus';
 import { deleteProperty, notNullOrUndefined, reversePluckProps } from '../../utils/object';
-import {
-  getDragContextFromReceptacles,
-  getHighlighted,
-  updateDropZoneValidations
-} from '../../utils/dom';
+import { updateDropZoneValidations } from '../../utils/dom';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -56,11 +55,16 @@ const mouseover: GuestReducer = (state, action) => {
   if (state.status === EditingStatus.LISTENING) {
     const highlight = ElementRegistry.getHoverData(record.id);
     const draggable = ElementRegistry.getDraggable(record.id);
-    return {
+    const nextState = {
       ...state,
-      draggable: { [record.id]: draggable },
       highlighted: { [record.id]: highlight }
     };
+    if (draggable !== false) {
+      nextState.draggable = { [record.id]: draggable };
+    } else if (record.id in state.draggable) {
+      nextState.draggable = reversePluckProps(state.draggable, record.id);
+    }
+    return nextState;
   }
   return state;
 };
@@ -443,18 +447,6 @@ const desktop_asset_upload_started: GuestReducer = (state, action) => {
 };
 // endregion
 
-// region edit_mode_changed
-const edit_mode_changed: GuestReducer = (state, action) => {
-  const { inEditMode } = action.payload;
-  const status = inEditMode ? EditingStatus.LISTENING : EditingStatus.OFF;
-  return {
-    ...state,
-    status,
-    inEditMode
-  };
-};
-// endregion
-
 // region clear_highlighted_receptacles
 const clear_highlighted_receptacles: GuestReducer = (state, action) => {
   return {
@@ -599,14 +591,22 @@ const drop_zone_leave: GuestReducer = (state, action) => {
 };
 // endregion
 
+// region set_edit_mode
+const set_edit_mode = (state, action) => ({
+  ...state,
+  status: action.payload.editMode
+    ? EditingStatus.LISTENING
+    : EditingStatus.OFF
+});
+// endregion
+
 const initialState: GuestState = {
   dragContext: null,
   draggable: {},
   editable: {},
   highlighted: {},
   ICE_GUEST_INIT: false,
-  inEditMode: false,
-  status: EditingStatus.LISTENING,
+  status: EditingStatus.OFF,
   uploading: {},
   models: {},
   contentTypes: {},
@@ -635,7 +635,7 @@ const reducerFunctions: {
   mouseleave,
   mouseover,
   move_component: foo,
-  set_edit_mode: (state, action) => ({ ...state, inEditMode: action.payload.inEditMode }),
+  set_edit_mode,
   start_listening,
   add_asset_types: foo,
   click: foo,
@@ -648,7 +648,7 @@ const reducerFunctions: {
   [COMPONENT_DRAG_ENDED]: foo,
   [COMPONENT_INSTANCE_DRAG_ENDED]: foo,
   [DESKTOP_ASSET_DRAG_ENDED]: foo,
-  [EDIT_MODE_CHANGED]: edit_mode_changed,
+  [EDIT_MODE_CHANGED]: set_edit_mode,
   [CONTENT_TYPE_RECEPTACLES_REQUEST]: content_type_receptacles_request,
   [CLEAR_HIGHLIGHTED_RECEPTACLES]: clear_highlighted_receptacles,
   [DESKTOP_ASSET_UPLOAD_STARTED]: desktop_asset_upload_started,
@@ -661,7 +661,7 @@ const reducerFunctions: {
   [HOST_CHECK_IN]: (state, action) => ({
     ...state,
     hostCheckedIn: true,
-    inEditMode: action.payload.editMode
+    status: action.payload.editMode ? EditingStatus.LISTENING : EditingStatus.OFF
   })
 };
 
