@@ -78,6 +78,7 @@
     CrafterCMSNext.system.store.dispatch({
       type: 'SHOW_CONFIRM_DIALOG',
       payload: {
+        // TODO: Translate - Discuss/chose appropriate message.
         title: 'In-context editing',
         body: 'To edit this page using in-context editing, please go to Preview 2. Would you like to go now?',
         onOk: {

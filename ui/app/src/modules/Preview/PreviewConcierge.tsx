@@ -149,6 +149,7 @@ export function PreviewConcierge(props: any) {
         // Legacy sites.
         case 'GUEST_SITE_LOAD':
           enqueueSnackbar(
+            // TODO: Translate - Discuss/chose appropriate message.
             'This page is not using this version of Preview. Go to compatible version?',
             {
               action: (key) => (
