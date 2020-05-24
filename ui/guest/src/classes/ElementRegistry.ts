@@ -17,8 +17,8 @@
 import iceRegistry from './ICERegistry';
 import contentController from './ContentController';
 import { take } from 'rxjs/operators';
-import { ContentTypeHelper } from '../utils/ContentTypeHelper';
-import { ModelHelper } from '../utils/ModelHelper';
+import ContentType from '../utils/contentType';
+import Model from '../utils/model';
 import {
   DropZone,
   ElementRecord,
@@ -58,9 +58,9 @@ export function setLabel(record: ElementRecord): void {
       if (field.type === 'node-selector') {
         if (notNullOrUndefined(index)) {
           let component;
-          if (notNullOrUndefined(fieldId) && ContentTypeHelper.isGroupItem(contentType, fieldId)) {
+          if (notNullOrUndefined(fieldId) && ContentType.isGroupItem(contentType, fieldId)) {
             // Repeat groups with possibly nested node-selector/repeat
-            let aux = ModelHelper.extractCollectionItem(model, fieldId, index);
+            let aux = Model.extractCollectionItem(model, fieldId, index);
             // TODO: Only works for nested node-selector (?)...
             // A nested repeat group would not be a component and `aux` would rather be
             // an object to read the last piece of the `fieldId`
@@ -68,7 +68,7 @@ export function setLabel(record: ElementRecord): void {
             component = models[aux];
           } else {
             // Ok for mono-level node selectors
-            const id = ModelHelper.value(model, field.id)[index];
+            const id = Model.value(model, field.id)[index];
             component = models[id];
           }
 

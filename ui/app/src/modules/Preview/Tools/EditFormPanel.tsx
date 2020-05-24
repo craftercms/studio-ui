@@ -19,7 +19,7 @@ import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
-import { ContentTypeHelper, ModelHelper } from '../../../utils/helpers';
+import { ContentTypeHelper} from '../../../utils/contentType';
 import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../../utils/hooks';
@@ -30,6 +30,7 @@ import { createStyles } from '@material-ui/core';
 import { findParentModelId } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
 import { showEditDialog } from '../../../state/reducers/dialogs/edit';
+import { ModelHelper } from '../../../utils/model';
 
 const translations = defineMessages({
   openComponentForm: {

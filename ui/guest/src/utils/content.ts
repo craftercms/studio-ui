@@ -20,27 +20,6 @@ import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { forEach } from './array';
 
-const propsToRemove = ['rootId', 'crafterSite', 'crafterPublishedDate', 'crafterPublishedDate_dt', 'inheritsFrom_smv'];
-export function preParseSearchResults(source): ContentInstance {
-  Object.entries(source).forEach(([prop, value]) => {
-    if (propsToRemove.includes(prop)) {
-      delete source[prop];
-    } else if (prop.endsWith('_o')) {
-      const collection = value as { item: any | any[] };
-      if (!Array.isArray(collection.item)) {
-        source[prop] = { item: [collection.item] };
-      }
-      source[prop].item.forEach((item, i) => {
-        source[prop].item[i] = preParseSearchResults(item);
-        if (item.component) {
-          source[prop].item[i].component = preParseSearchResults(item.component);
-        }
-      });
-    }
-  });
-  return source;
-}
-
 export function modelsToLookup(models: ContentInstance[]): LookupTable<ContentInstance> {
   const lookup = {};
   models.forEach((model) => {
@@ -99,14 +78,35 @@ export function normalizeModel(model: ContentInstance): ContentInstance {
       if (collection.length) {
         const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
         if (isNodeSelector) {
-          normalized[prop] = collection.map(item => item.craftercms.id);
+          normalized[prop] = collection.map((item) => item.craftercms.id);
         } else {
-          normalized[prop] = collection.map(item => normalizeModel(item));
+          normalized[prop] = collection.map((item) => normalizeModel(item));
         }
       }
     }
   });
   return normalized;
+}
+
+export function denormalizeModel(
+  normalized: ContentInstance,
+  modelLookup: LookupTable<ContentInstance>
+): ContentInstance {
+  const model = { ...normalized };
+  Object.entries(model).forEach(([prop, value]) => {
+    if (prop.endsWith('_o')) {
+      const collection: string[] = value;
+      if (collection.length) {
+        const isNodeSelector = typeof collection[0] === 'string';
+        if (isNodeSelector) {
+          model[prop] = collection.map((item) =>
+            denormalizeModel(modelLookup[item], modelLookup)
+          );
+        }
+      }
+    }
+  });
+  return model;
 }
 
 /**
@@ -118,7 +118,7 @@ export function createChildModelIdList(model: ContentInstance): string[] {
   Object.entries(model).forEach(([prop, value]) => {
     if (prop.endsWith('_o') && Array.isArray(value)) {
       const collection: ContentInstance[] = value;
-      forEach(collection, item => {
+      forEach(collection, (item) => {
         if ('craftercms' in item && item.craftercms.id !== null) {
           // Node selector
           children.push(item.craftercms.id);
@@ -136,12 +136,12 @@ export function createChildModelIdList(model: ContentInstance): string[] {
                   // with that model as the argument
                   return 'break';
                 }
-              })
+              });
             }
           });
         }
       });
     }
-  })
+  });
   return children;
 }

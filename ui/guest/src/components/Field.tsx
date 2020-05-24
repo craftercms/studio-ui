@@ -19,6 +19,7 @@ import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { PropsWithChildren, ElementType } from 'react';
 import { useICE } from '../hooks';
+import { value as getModelValue } from '../utils/model';
 
 type FieldProps<P = {}> = PropsWithChildren<
   P & {
@@ -29,10 +30,44 @@ type FieldProps<P = {}> = PropsWithChildren<
   }
 >;
 
-export default function Field<P = {}>(props: FieldProps<P>) {
-  const { model, fieldId, index, component = 'div', ...other } = props;
-  const { props: ice } = useICE({ model, fieldId, index });
+export function Field<P = {}>(props: FieldProps<P>) {
+  const { fieldId, index, component = 'div', ...other } = props;
+  const { props: ice, model } = useICE({ model: props.model, fieldId, index });
   const Component = component as ComponentType<P>;
   const passDownProps = other as P;
-  return <Component {...passDownProps} {...ice} />;
+  return <Component {...passDownProps} {...ice} model={model} />;
+}
+
+export default Field;
+
+export function Img(props) {
+  const { props: ice, model } = useICE(props);
+  return <img src={getModelValue(model, props.fieldId)} alt="" {...ice} />;
+}
+
+export function RenderField<P = {}>(props: FieldProps<P>) {
+  const { fieldId, index, component = 'div', ...other } = props;
+  const { props: ice, model } = useICE({ model: props.model, fieldId, index });
+  const Component = component as ComponentType<P>;
+  const passDownProps = other as P;
+  return (
+    <Component
+      {...passDownProps}
+      {...ice}
+      children={getModelValue(model, props.fieldId)}
+    />
+  );
+}
+
+export function Model<P = {}>(props: FieldProps<P>) {
+  const { component = 'div', ...other } = props;
+  const { props: ice, model } = useICE({
+    model: props.model,
+    fieldId: null,
+    index: null,
+    noRef: true
+  });
+  const Component = component as ComponentType<P>;
+  const passDownProps = other as P;
+  return <Component {...passDownProps} {...ice} model={model} />;
 }

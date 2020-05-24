@@ -3293,7 +3293,7 @@
               path: uri
             },
             onContentTypeSelected: {
-              type: 'LEGACY_DIALOG_CALLBACK',
+              type: 'DISPATCH_DOM_EVENT',
               payload: { id: contentDialogTypeSelectedId }
             }
           }
@@ -3308,7 +3308,7 @@
               payload: {
                 ...response.output,
                 onSaveSuccess: {
-                  type: 'LEGACY_DIALOG_CALLBACK',
+                  type: 'DISPATCH_DOM_EVENT',
                   payload: { id: eventIdSuccess }
                 }
               }

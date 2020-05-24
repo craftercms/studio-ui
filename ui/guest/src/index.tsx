@@ -24,14 +24,13 @@ import AssetUploaderMask from './components/AssetUploaderMask';
 import { GuestContextProvider, useGuestContext } from './components/GuestContext';
 import ZoneMarker from './components/ZoneMarker';
 import Spinner from './components/Spinner';
-import Field from './components/Field';
-import { useICE } from './hooks';
 import ContentType from './components/ContentType';
 
+export * from './components/Field';
+export * from './hooks';
+
 export {
-  useICE,
   Guest,
-  Field,
   Spinner,
   GuestProxy,
   ZoneMarker,

@@ -628,7 +628,7 @@ export default function (props: WidgetProps) {
 
   const onItemClicked = (item: SandboxItem) => {
     if (item.previewUrl) {
-      window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
+      window.location.href = `/studio/preview/#/?page=${item.previewUrl}&site=${site}`;
     }
   };
 

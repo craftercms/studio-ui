@@ -22,7 +22,7 @@ import $ from 'jquery';
 import contentController from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
-import { ContentTypeHelper } from '../utils/ContentTypeHelper';
+import ContentType from '../utils/contentType';
 import { message$, post } from '../communicator';
 import { Operation } from '../models/Operations';
 import {
@@ -346,7 +346,7 @@ export default function GuestProxy() {
           const updatedField: JQuery<any> = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`);
           const model = contentController.getCachedModel(modelId);
           const contentType = contentController.getCachedContentType(model.craftercms.contentTypeId);
-          const fieldType = ContentTypeHelper.getField(contentType, fieldId).type;
+          const fieldType = ContentType.getField(contentType, fieldId).type;
 
           if (fieldType === 'image') {
             const tagName = updatedField.eq(index).prop('tagName').toLowerCase();

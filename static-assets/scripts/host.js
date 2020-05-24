@@ -68,6 +68,31 @@
     amplify.publish(cstopic('GUEST_CHECKIN'), params);
   });
 
+  communicator.subscribe(Topics.GUEST_CHECK_IN, function(data) {
+    communicator.addTargetWindow({
+      origin: origin,
+      window: getEngineWindow().contentWindow
+    });
+    communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
+    const goToPreview2 = 'iceGoToPreview2';
+    CrafterCMSNext.system.store.dispatch({
+      type: 'SHOW_CONFIRM_DIALOG',
+      payload: {
+        title: 'In-context editing',
+        body: 'To edit this page using in-context editing, please go to Preview 2. Would you like to go now?',
+        onOk: {
+          type: 'DISPATCH_DOM_EVENT',
+          payload: { id: goToPreview2 }
+        },
+        onCancel: { type: 'CLOSE_CONFIRM_DIALOG' }
+      }
+    });
+    CrafterCMSNext.createLegacyCallbackListener(goToPreview2, () => {
+      const state = CrafterCMSNext.system.store.getState();
+      window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
+    });
+  });
+
   // Opens studio form on pencil click
   communicator.subscribe(Topics.ICE_ZONE_ON, function(message, scope) {
     var subscribeCallback = function(_message) {
@@ -90,12 +115,24 @@
     }
     var isWrite = false;
     var par = [];
-    var currentPath = message.itemId ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
+    var currentPath = message.itemId
+      ? message.itemId
+      : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
     var cachePermissionsKey =
-        CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_permissions',
+        CStudioAuthoringContext.site +
+        '_' +
+        currentPath +
+        '_' +
+        CStudioAuthoringContext.user +
+        '_permissions',
       isPermissionCached = cache.get(cachePermissionsKey),
       cacheContentKey =
-        CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_content',
+        CStudioAuthoringContext.site +
+        '_' +
+        currentPath +
+        '_' +
+        CStudioAuthoringContext.user +
+        '_content',
       isContentCached = cache.get(cacheContentKey);
     var isLockOwner = function(lockOwner) {
       if (lockOwner != '' && lockOwner != null && CStudioAuthoringContext.user != lockOwner) {
@@ -126,7 +163,11 @@
     var editPermsCallback = {
       success: function(response) {
         if (!isPermissionCached) {
-          cache.set(cachePermissionsKey, response.permissions, CStudioAuthoring.Constants.CACHE_TIME_PERMISSION);
+          cache.set(
+            cachePermissionsKey,
+            response.permissions,
+            CStudioAuthoring.Constants.CACHE_TIME_PERMISSION
+          );
         }
         isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
         if (!isWrite) {
@@ -146,7 +187,11 @@
           var getContentItemsCb = {
             success: function(contentTO) {
               if (!isContentCached) {
-                cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
+                cache.set(
+                  cacheContentKey,
+                  contentTO.item,
+                  CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM
+                );
               }
               isLockOwner(contentTO.item.lockOwner);
               CStudioAuthoring.Operations.performSimpleIceEdit(
@@ -189,7 +234,11 @@
       response.permissions = isPermissionCached;
       editPermsCallback.success(response);
     } else {
-      CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, currentPath, editPermsCallback);
+      CStudioAuthoring.Service.getUserPermissions(
+        CStudioAuthoringContext.site,
+        currentPath,
+        editPermsCallback
+      );
     }
   });
 
@@ -374,7 +423,13 @@
   });
 
   communicator.subscribe(Topics.SAVE_DRAG_AND_DROP, function(message) {
-    amplify.publish(cstopic('SAVE_DRAG_AND_DROP'), message.isNew, message.zones, message.compPath, message.conComp);
+    amplify.publish(
+      cstopic('SAVE_DRAG_AND_DROP'),
+      message.isNew,
+      message.zones,
+      message.compPath,
+      message.conComp
+    );
   });
 
   communicator.subscribe(Topics.INIT_DRAG_AND_DROP, function(message) {
@@ -471,14 +526,16 @@
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function(message) {
     $('#acn-ice-tools-container img').attr(
       'src',
-      CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png'
+      CStudioAuthoringContext.authoringAppBaseUri +
+        '/static-assets/themes/cstudioTheme/images/edit_off.png'
     );
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function(message) {
     $('#acn-ice-tools-container img').attr(
       'src',
-      CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png'
+      CStudioAuthoringContext.authoringAppBaseUri +
+        '/static-assets/themes/cstudioTheme/images/edit.png'
     );
   });
 

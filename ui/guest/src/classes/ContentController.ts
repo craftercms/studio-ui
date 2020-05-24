@@ -15,8 +15,8 @@
  */
 
 import { BehaviorSubject, NEVER, Observable, Subject } from 'rxjs';
-import { filter, map, pluck, share, switchMap, take, tap } from 'rxjs/operators';
-import { ModelHelper } from '../utils/ModelHelper';
+import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
+import Model from '../utils/model';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../communicator';
 import uuid from 'uuid/v4';
@@ -45,12 +45,11 @@ import {
   getParentModelId
 } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
-import { parseDescriptor } from '@craftercms/content';
+import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
 import {
   createChildModelIdList,
   modelsToLookup,
-  normalizeModelsLookup,
-  preParseSearchResults
+  normalizeModelsLookup
 } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
 
@@ -67,43 +66,43 @@ if (process.env.NODE_ENV === 'development') {
 const operations$ = new Subject<Operation>();
 const operations = operations$.asObservable();
 
-/* private */
-const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
-  /*'modelId': { ...modelData }*/
-});
-
-/* private */
-const modelsObs$ = _models$.asObservable().pipe(
-  filter((objects) => Object.keys(objects).length > 0),
-  share()
-);
-
-/* private */
-const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
-  /*...*/
-});
-
-/* private */
-const contentTypesObs$ = _contentTypes$.asObservable().pipe(
-  filter((objects) => Object.keys(objects).length > 0),
-  share()
-);
-
 export const children = {
   /* [id]: [id, id, id] */
 };
 
 const modelsRequested = {};
 
+// region Internal models$ and contentTypes
+
+// Share operator makes the behaviour subject's behaviour go away. New subscribers
+// don't receive the latest value as soon as they subscribe. Would need to multicast
+// to be able to continue using share
+
+const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
+  /*'modelId': { ...modelData }*/
+});
+const modelsObs$ = _models$.asObservable().pipe(
+  filter((objects) => Object.keys(objects).length > 0)
+);
+
+const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
+  /*...*/
+});
+const contentTypesObs$ = _contentTypes$.asObservable().pipe(
+  filter((objects) => Object.keys(objects).length > 0)
+);
+
+// endregion
+
 function computeChildren(model: ContentInstance): void {
   let childIds = [];
-  const modelId = ModelHelper.prop(model, 'id');
+  const modelId = Model.prop(model, 'id');
 
-  const contentTypeId = ModelHelper.getContentTypeId(model);
+  const contentTypeId = Model.getContentTypeId(model);
   const contentType = getCachedContentType(contentTypeId);
 
   findComponentContainerFields(contentType.fields).forEach((field) => {
-    const value = ModelHelper.value(model, field.id);
+    const value = Model.value(model, field.id);
     if (value != null) {
       if (field.type === 'node-selector') {
         childIds = childIds.concat(value);
@@ -117,6 +116,8 @@ function computeChildren(model: ContentInstance): void {
   children[modelId] = childIds.length ? childIds : null;
 }
 
+// region Models
+
 export function getModel(modelId: string): Promise<ContentInstance> {
   return getModel$(modelId).toPromise();
 }
@@ -128,25 +129,9 @@ export function getModel$(modelId: string): Observable<ContentInstance> {
   );
 }
 
-export function getContentType(contentTypeId: string): Promise<ContentType> {
-  return getContentType$(contentTypeId).toPromise();
-}
-
-export function getContentType$(contentTypeId: string): Observable<ContentType> {
-  !hasCachedContentType(contentTypeId) && fetchContentType(contentTypeId);
-  return contentTypesObs$.pipe(
-    filter((contentTypes) => contentTypeId in contentTypes),
-    map((contentTypes) => contentTypes[contentTypeId])
-  );
-}
-
 export function models$(modelId?: string): Observable<LookupTable<ContentInstance>> {
   modelId && !hasCachedModel(modelId) && fetchModel(modelId);
   return modelsObs$;
-}
-
-export function contentTypes$(): Observable<LookupTable<ContentType>> {
-  return contentTypesObs$;
 }
 
 export function hasCachedModel(modelId: string): boolean {
@@ -161,6 +146,106 @@ export function getCachedModels(): LookupTable<ContentInstance> {
   return _models$.value;
 }
 
+const fetching$ = new BehaviorSubject<boolean>(false);
+
+function fetchModel(modelId: string): void {
+  if (!(modelId in modelsRequested)) {
+    modelsRequested[modelId] = true;
+    fetching$
+      .pipe(
+        filter((isFetching) => !isFetching),
+        switchMap(() => _models$.pipe(pluck(modelId), take(1))),
+        switchMap((model) => {
+          if (isNullOrUndefined(model)) {
+            return fetchById(modelId);
+          } else {
+            // Model was already fetched, discard repeated request.
+            return NEVER;
+          }
+        }),
+        take(1)
+      )
+      .subscribe(modelResponseReceived, (e) => console.log('Model fetch has failed...', e));
+  }
+}
+
+function modelResponseReceived(responseModels: LookupTable<ContentInstance>): void {
+  const currentModels = _models$.value;
+  const normalizedModels = normalizeModelsLookup(responseModels);
+
+  Object.entries(responseModels).forEach(([id, model]) => {
+    children[id] = createChildModelIdList(model);
+    children[id].forEach((modelId) => {
+      modelsRequested[modelId] = true;
+    });
+    if (children[id].length === 0) {
+      children[id] = null;
+    }
+  });
+
+  post(GUEST_MODELS_RECEIVED, normalizedModels);
+  post(CHILDREN_MAP_UPDATE, children);
+
+  _models$.next(Object.assign({}, currentModels, normalizedModels));
+
+  fetching$.next(false);
+}
+
+function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
+  fetching$.next(true);
+  return search(
+    createQuery('elasticsearch', {
+      query: {
+        bool: {
+          filter: [
+            {
+              bool: {
+                should: {
+                  multi_match: {
+                    query: id,
+                    fields: ['*objectId']
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }),
+    // TODO: Remove hardcoded url
+    crafterConf.getConfig()
+  ).pipe(
+    tap(
+      ({ total }) =>
+        total === 0 && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)
+    ),
+    map<any, ContentInstance[]>(({ hits }) =>
+      hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))
+    ),
+    map(modelsToLookup)
+  );
+}
+
+// endregion
+
+// region Content Types
+
+export function getContentType(contentTypeId: string): Promise<ContentType> {
+  return getContentType$(contentTypeId).toPromise();
+}
+
+export function getContentType$(contentTypeId: string): Observable<ContentType> {
+  !hasCachedContentType(contentTypeId) && fetchContentType(contentTypeId);
+  return contentTypesObs$.pipe(
+    filter((contentTypes) => contentTypeId in contentTypes),
+    map((contentTypes) => contentTypes[contentTypeId])
+  );
+}
+
+export function contentTypes$(): Observable<LookupTable<ContentType>> {
+  return contentTypesObs$;
+}
+
 export function hasCachedContentType(contentTypeId: string): boolean {
   return getCachedContentType(contentTypeId) != null;
 }
@@ -173,6 +258,26 @@ export function getCachedContentTypes(): LookupTable<ContentType> {
   return _contentTypes$.value;
 }
 
+function fetchContentType(contentTypeId: string): boolean {
+  return false;
+}
+
+function contentTypesResponseReceived(responseContentTypes: ContentType[]): void;
+function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>): void;
+function contentTypesResponseReceived(
+  responseContentTypes: LookupTable<ContentType> | ContentType[]
+): void {
+  if (Array.isArray(responseContentTypes)) {
+    (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
+  }
+
+  const currentContentTypes = _contentTypes$.value;
+
+  _contentTypes$.next(Object.assign({}, currentContentTypes, responseContentTypes));
+}
+
+// endregion
+
 // region Operations
 
 export function updateField(
@@ -183,20 +288,37 @@ export function updateField(
 ): void {
   const models = getCachedModels();
   const model = { ...models[modelId] };
+  const parentModelId = getParentModelId(modelId, models, children);
+  const parentModels = [];
 
-  ModelHelper.value(model, fieldId, value);
+  Model.value(model, fieldId, value);
 
-  _models$.next({
+  // TODO: Add this to other ops.
+  // Propagate the update up the model tree for
+  // reference based UI rendering libraries.
+  const modelsToUpdate = { [modelId]: model };
+  if (parentModelId) {
+    let currentID = parentModelId;
+    while (currentID) {
+      parentModels.push(currentID);
+      currentID = getParentModelId(currentID, models, children);
+    }
+  }
+  parentModels.forEach((id) => (modelsToUpdate[id] = models[id]));
+
+  // Update the model cache
+  /*_models$.next({
     ...models,
-    [modelId]: model
-  });
+    ...modelsToUpdate
+  });*/
 
+  // Post the update to studio to persist it
   post(UPDATE_FIELD_VALUE_OPERATION, {
     modelId,
     fieldId,
     index,
     value,
-    parentModelId: getParentModelId(modelId, models, children)
+    parentModelId
   });
 
   operations$.next({
@@ -213,19 +335,19 @@ export function insertItem(
 ): void {
   const models = getCachedModels();
   const model = models[modelId];
-  const collection = ModelHelper.value(model, fieldId);
+  const collection = Model.value(model, fieldId);
   const result = collection.slice(0);
 
   // Insert in desired position
   result.splice(index, 0, item);
 
-  _models$.next({
+  /*_models$.next({
     ...models,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });
+  });*/
 
   post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
 
@@ -295,14 +417,14 @@ export function insertComponent(
     }
   });
 
-  _models$.next({
+  /*_models$.next({
     ...models,
     [instance.craftercms.id]: instance,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });
+  });*/
 
   children[modelId]?.push(instance.craftercms.id);
 
@@ -338,14 +460,14 @@ export function insertInstance(
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
-  _models$.next({
+  /*_models$.next({
     ...models,
     [instance.craftercms.id]: instance,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });
+  });*/
 
   post(INSERT_INSTANCE_OPERATION, {
     modelId,
@@ -381,13 +503,13 @@ export function sortItem(
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
-  _models$.next({
+  /*_models$.next({
     ...models,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });
+  });*/
 
   post(SORT_ITEM_OPERATION, {
     modelId,
@@ -431,8 +553,8 @@ export function moveItem(
 
   const currentModel = models[originalModelId];
   const currentCollection = symmetricOriginal
-    ? ModelHelper.extractCollection(currentModel, originalFieldId, originalIndex)
-    : ModelHelper.extractCollectionItem(currentModel, originalFieldId, originalIndex);
+    ? Model.extractCollection(currentModel, originalFieldId, originalIndex)
+    : Model.extractCollectionItem(currentModel, originalFieldId, originalIndex);
   // Remove item from original collection
   const currentResult = currentCollection
     .slice(0, originalIndexParsed)
@@ -440,8 +562,8 @@ export function moveItem(
 
   const targetModel = models[targetModelId];
   const targetCollection = symmetricTarget
-    ? ModelHelper.extractCollection(targetModel, targetFieldId, targetIndex)
-    : ModelHelper.extractCollectionItem(targetModel, targetFieldId, targetIndex);
+    ? Model.extractCollection(targetModel, targetFieldId, targetIndex)
+    : Model.extractCollectionItem(targetModel, targetFieldId, targetIndex);
   // Insert item in target collection @ the desired position
   const targetResult = targetCollection.slice(0);
 
@@ -456,7 +578,7 @@ export function moveItem(
   const getFieldItem = (model, field, index) => {
     let item;
     if (symmetricOriginal) {
-      item = ModelHelper.extractCollectionItem(
+      item = Model.extractCollectionItem(
         model,
         removeLastPiece(`${field}`),
         removeLastPiece(`${index}`)
@@ -481,7 +603,7 @@ export function moveItem(
     newTargetModel[targetFieldId] = targetResult;
   }
 
-  _models$.next(
+  /*_models$.next(
     originalModelId === targetModelId
       ? {
           ...models,
@@ -492,7 +614,7 @@ export function moveItem(
           [originalModelId]: newOriginalModel,
           [targetModelId]: newTargetModel
         }
-  );
+  );*/
 
   post(MOVE_ITEM_OPERATION, {
     originalModelId,
@@ -518,18 +640,18 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
   const models = getCachedModels();
   const model = models[modelId];
   const collection = isStringIndex
-    ? ModelHelper.extractCollection(model, fieldId, index)
-    : ModelHelper.value(model, fieldId);
+    ? Model.extractCollection(model, fieldId, index)
+    : Model.value(model, fieldId);
 
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
-  _models$.next({
+  /*_models$.next({
     ...models,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });
+  });*/
 
   post(DELETE_ITEM_OPERATION, {
     modelId,
@@ -547,107 +669,10 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
 // endregion
 
-const fetching$ = new BehaviorSubject<boolean>(false);
-
-function fetchModel(modelId: string): void {
-  if (!(modelId in modelsRequested)) {
-    modelsRequested[modelId] = true;
-    fetching$
-      .pipe(
-        filter((isFetching) => !isFetching),
-        switchMap(() => _models$.pipe(pluck(modelId), take(1))),
-        switchMap((model) => {
-          if (isNullOrUndefined(model)) {
-            return fetchById(modelId);
-          } else {
-            // Model was already fetched, discard repeated request.
-            return NEVER;
-          }
-        }),
-        take(1)
-      )
-      .subscribe(modelResponseReceived, (e) => console.log('Model fetch has failed...', e));
-  }
-}
-
-function fetchContentType(contentTypeId: string): boolean {
-  return false;
-}
-
-function modelResponseReceived(responseModels: LookupTable<ContentInstance>): void {
-  const currentModels = _models$.value;
-  const normalizedModels = normalizeModelsLookup(responseModels);
-
-  Object.entries(responseModels).forEach(([id, model]) => {
-    children[id] = createChildModelIdList(model);
-    children[id].forEach((modelId) => {
-      modelsRequested[modelId] = true;
-    });
-    if (children[id].length === 0) {
-      children[id] = null;
-    }
-  });
-
-  post(GUEST_MODELS_RECEIVED, normalizedModels);
-  post(CHILDREN_MAP_UPDATE, children);
-
-  _models$.next(Object.assign({}, currentModels, normalizedModels));
-
-  fetching$.next(false);
-}
-
-function contentTypesResponseReceived(responseContentTypes: ContentType[]): void;
-function contentTypesResponseReceived(responseContentTypes: LookupTable<ContentType>): void;
-function contentTypesResponseReceived(
-  responseContentTypes: LookupTable<ContentType> | ContentType[]
-): void {
-  if (Array.isArray(responseContentTypes)) {
-    (responseContentTypes as LookupTable) = createLookupTable(responseContentTypes);
-  }
-
-  const currentContentTypes = _contentTypes$.value;
-
-  _contentTypes$.next(Object.assign({}, currentContentTypes, responseContentTypes));
-}
-
-function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
-  fetching$.next(true);
-  return search(
-    createQuery('elasticsearch', {
-      query: {
-        bool: {
-          filter: [
-            {
-              bool: {
-                should: {
-                  multi_match: {
-                    query: id,
-                    fields: ['*objectId']
-                  }
-                }
-              }
-            }
-          ]
-        }
-      }
-    }),
-    // TODO: Remove hardcoded url
-    crafterConf.getConfig()
-  ).pipe(
-    tap(
-      ({ total }) =>
-        total === 0 && console.log(`[ContentController/fetchById] Model with id ${id} not found.`)
-    ),
-    map<any, ContentInstance[]>(({ hits }) =>
-      hits.map(({ _source }) => parseDescriptor(preParseSearchResults(_source)))
-    ),
-    map(modelsToLookup)
-  );
-}
-
-fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) => {
-  contentTypesResponseReceived(data.payload);
-});
+// Listen for host content type updates
+fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) =>
+  contentTypesResponseReceived(data.payload)
+);
 
 export default {
   children,

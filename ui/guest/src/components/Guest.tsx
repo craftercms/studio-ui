@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { fromEvent, interval, zip } from 'rxjs';
+import { fromEvent, interval, zip, merge } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
@@ -236,26 +236,33 @@ function Guest(props: GuestProps) {
   // Check in & host detection
   useEffect(() => {
     if (!hasHost) {
+
+      // prettier-ignore
+      interval(1000).pipe(
+        takeUntil(
+          merge(fromTopic(HOST_CHECK_IN), fromTopic('LEGACY_CHECK_IN')).pipe(
+            tap(dispatch),
+            take(1)
+          )
+        ),
+        take(1)
+      ).subscribe(() => setSnack({
+        duration: 8000,
+        message: 'In-context editing is disabled: page running out of Crafter CMS frame.'
+      }));
+
       const location = createLocationArgument();
       const site = Cookies.get('crafterSite');
-      interval(1000)
-        .pipe(takeUntil(fromTopic(HOST_CHECK_IN).pipe(tap(dispatch), take(1))), take(1))
-        .subscribe(() => {
-          setSnack({
-            duration: 8000,
-            message: 'In-context editing is disabled: page running out of Crafter CMS frame.'
-          });
-        });
       post(GUEST_CHECK_IN, { location, modelId, path, site, documentDomain });
     }
   }, [dispatch, modelId, path, hasHost, documentDomain]);
 
-  // load dependencies (tinymce)
+  // Load dependencies (tinymce)
   useEffect(() => {
     if (hasHost && !window.tinymce) {
       const script = document.createElement('script');
       script.src = '/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js';
-      script.onload = () => console.log('tinymce loaded');
+      // script.onload = () => ...;
       document.head.appendChild(script);
     }
   }, [hasHost]);
@@ -391,12 +398,12 @@ function Guest(props: GuestProps) {
                 coordinates={state.dragContext.coordinates}
               />
             )}
-          {snack && (
-            <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
-              {snack.message}
-            </SnackBar>
-          )}
         </CrafterCMSPortal>
+      )}
+      {snack && (
+        <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
+          {snack.message}
+        </SnackBar>
       )}
     </GuestContextProvider>
   );

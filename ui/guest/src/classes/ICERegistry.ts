@@ -16,8 +16,8 @@
 
 import contentController from './ContentController';
 import { DEFAULT_RECORD_DATA } from '../utils/util';
-import { ContentTypeHelper } from '../utils/ContentTypeHelper';
-import { ModelHelper } from '../utils/ModelHelper';
+import contentTypeUtils from '../utils/contentType';
+import Model from '../utils/model';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import {
   ContentType,
@@ -95,7 +95,7 @@ export function register(registration: ICERecordRegistration): number {
   } else if (
     notNullOrUndefined(data.fieldId) &&
     isNullOrUndefined(data.index) &&
-    ContentTypeHelper.isGroupItem(getReferentialEntries(data).contentType, data.fieldId)
+    contentTypeUtils.isGroupItem(getReferentialEntries(data).contentType, data.fieldId)
   ) {
     throw new Error(
       'Group item registration requires the index within the collection that contains the item to be supplied. ' +
@@ -214,13 +214,13 @@ export function getRecordReceptacles(id: number): ICERecord[] {
   } else if (field.type === 'node-selector') {
     // Get content type of item
     const models = contentController.getCachedModels();
-    const id = ModelHelper.extractCollectionItem(model, fieldId, index);
+    const id = Model.extractCollectionItem(model, fieldId, index);
     // @ts-ignore TODO: Fix type
     const nestedModel = models[id];
-    const contentType = ModelHelper.getContentTypeId(nestedModel);
+    const contentType = Model.getContentTypeId(nestedModel);
     return getContentTypeReceptacles(contentType).map((rec) => rec);
   } else if (field.type === 'repeat') {
-    // const item = ModelHelper.extractCollectionItem(model, fieldId, index);
+    // const item = Model.extractCollectionItem(model, fieldId, index);
     return getRepeatGroupItemReceptacles(record);
   } else {
     console.error('[ICERegistry/getRecordReceptacles] Unhandled path');
@@ -263,13 +263,13 @@ export function getContentTypeReceptacles(contentType: string | ContentType): IC
         // holder (node-selector).
         return (
           // Check that the field in question is a node-selector
-          ContentTypeHelper.isComponentHolder(_contentType, fieldId) &&
+          contentTypeUtils.isComponentHolder(_contentType, fieldId) &&
           // If it is an array, it is a receptacle, otherwise it's an item:
           // If it is a node selector, it may be an item of the node selector or a node
           // selector itself. Node selectors themselves will be arrays. If it's a value of the
           // node selector it would be a string representing an id of a model held by the node
           // selector.
-          Array.isArray(ModelHelper.extractCollectionItem(model, fieldId, index))
+          Array.isArray(Model.extractCollectionItem(model, fieldId, index))
         );
       }
     } else {
@@ -289,7 +289,7 @@ export function runReceptaclesValidations(
       field: { validations },
       model
     } = getReferentialEntries(record);
-    const collection = ModelHelper.extractCollectionItem(model, fieldId, index);
+    const collection = Model.extractCollectionItem(model, fieldId, index);
     Object.keys(validations).forEach((key) => {
       const validation = validations[key];
       switch (validation.id) {
@@ -342,10 +342,10 @@ export function runValidation(
 
 export function getReferentialEntries(record: number | ICERecord): ReferentialEntries {
   record = typeof record === 'object' ? record : recordOf(record);
-  const model = contentController.getCachedModel(record.modelId),
-    contentTypeId = ModelHelper.getContentTypeId(model),
-    contentType = contentController.getCachedContentType(contentTypeId),
-    field = record.fieldId ? ContentTypeHelper.getField(contentType, record.fieldId) : null;
+  const model = contentController.getCachedModel(record.modelId)
+  const contentTypeId = Model.getContentTypeId(model);
+  const contentType = contentController.getCachedContentType(contentTypeId);
+  const field = record.fieldId ? contentTypeUtils.getField(contentType, record.fieldId) : null;
   return {
     model,
     field,
@@ -413,13 +413,13 @@ export function checkComponentMovability(entries): boolean {
             field = findContainerField(record.model, containers, entries.modelId);
           if (notNullOrUndefined(field)) {
             parentField = field;
-            parentCollection = ModelHelper.prop(record.model, field.id);
+            parentCollection = Model.prop(record.model, field.id);
             break;
           }
         }
       }
     } else if (record.field.type === 'node-selector') {
-      const value = ModelHelper.value(record.model, record.fieldId);
+      const value = Model.value(record.model, record.fieldId);
       if (value.includes(entries.modelId) || value === entries.modelId) {
         parentField = record.field;
         parentModelId = record.modelId;
@@ -500,7 +500,7 @@ export function checkRepeatGroupMovability(entries): boolean {
     // zones and doesn't have any adjacent items to move it
     // next to.
     // TODO: What about DnD trashing, though?
-    ModelHelper.value(model, field.id).length > 1
+    Model.value(model, field.id).length > 1
   );
 }
 
@@ -510,7 +510,7 @@ export function findContainerField(
   modelId: string
 ): ContentTypeField {
   return forEach(fields, (field) => {
-    const value = ModelHelper.value(model, field.id);
+    const value = Model.value(model, field.id);
     if (field.type === 'node-selector' && (value === modelId || value.includes(modelId))) {
       return field;
     } else if (field.type === 'repeatGroup') {

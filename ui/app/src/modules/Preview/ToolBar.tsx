@@ -51,6 +51,7 @@ import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { palette } from '../../styles/theme';
+import { useSnackbar } from 'notistack';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -60,6 +61,14 @@ const translations = defineMessages({
   toggleEditMode: {
     id: 'previewToolbar.toggleEditMode',
     defaultMessage: 'Toggle edit mode'
+  },
+  editModeOn: {
+    id: 'previewToolbar.editModeOn',
+    defaultMessage: 'Edit mode switched on'
+  },
+  editModeOff: {
+    id: 'previewToolbar.editModeOff',
+    defaultMessage: 'Edit mode switched off'
   }
 });
 
@@ -243,13 +252,8 @@ export default function ToolBar() {
   const sitesTable = useSelection<LookupTable<Site>>((state) => state.sites.byId);
   const editMode = useSelection((state) => state.preview.editMode);
   const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
-  const { previewLandingBase } = useEnv();
   const { computedUrl, showToolsPanel } = usePreviewState();
-
-  let addressBarUrl = computedUrl;
-  if (addressBarUrl === previewLandingBase) {
-    addressBarUrl = '';
-  }
+  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <AppBar position="static" color="default">
@@ -266,7 +270,15 @@ export default function ToolBar() {
             <EditSwitch
               color="default"
               checked={editMode}
-              onChange={(e) => dispatch(setPreviewEditMode({ editMode: e.target.checked }))}
+              onChange={(e) => {
+                // prettier-ignore
+                enqueueSnackbar(formatMessage(
+                  e.target.checked
+                    ? translations.editModeOn
+                    : translations.editModeOff
+                ));
+                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+              }}
             />
           </Tooltip>
         </section>
@@ -274,7 +286,7 @@ export default function ToolBar() {
           <AddressBar
             site={site ?? ''}
             sites={sites}
-            url={addressBarUrl}
+            url={computedUrl}
             onSiteChange={(site) => dispatch(changeSite(site))}
             onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
             onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
