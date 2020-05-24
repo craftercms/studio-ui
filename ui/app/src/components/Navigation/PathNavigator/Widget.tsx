@@ -33,7 +33,7 @@ import {
   useActiveSiteId,
   useMount,
   useSpreadState,
-  useLogicResource
+  useLogicResource, useEnv
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
 import ContentLocalizationDialog from '../../Dialogs/ContentLocalizationDialog';
@@ -342,6 +342,7 @@ export default function (props: WidgetProps) {
 
   const classes = useStyles({});
   const site = useActiveSiteId();
+  const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -628,7 +629,7 @@ export default function (props: WidgetProps) {
 
   const onItemClicked = (item: SandboxItem) => {
     if (item.previewUrl) {
-      window.location.href = `/studio/preview/#/?page=${item.previewUrl}&site=${site}`;
+      window.location.href = `${authoringBase}/preview/#/?page=${item.previewUrl}&site=${site}`;
     }
   };
 
