@@ -27,9 +27,6 @@ interface BaseItem {
   disabled: boolean;
   localeCode: string;
   translationSourceId: string;
-  submitted: boolean;
-  scheduled: boolean;
-  deleted: boolean;
 }
 
 interface SandboxEnvProps {
