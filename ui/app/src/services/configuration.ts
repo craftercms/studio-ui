@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get } from '../utils/ajax';
-import { map, pluck } from 'rxjs/operators';
+import { errorSelectorApi1, get } from '../utils/ajax';
+import { catchError, map, pluck } from 'rxjs/operators';
 import { forkJoin, Observable } from 'rxjs';
 import {
   extractLocalizedElements,
@@ -325,9 +325,10 @@ export function getHistory(site: string, path: string, environment: string, modu
 }
 
 export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {
-   return get(`/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`).pipe(
-     pluck('response')
-   )
+  return get(`/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export default {
