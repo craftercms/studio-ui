@@ -116,7 +116,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           const e = unwrapEvent<DragEvent>(event);
           e.dataTransfer.setData('text/plain', `${record.id}`);
           const image = document.querySelector('craftercms-dragged-element');
-          e.dataTransfer.setDragImage(image, 0, 0);
+          e.dataTransfer.setDragImage(image, 20, 20);
           return initializeDragSubjects(state$);
         }
         return NEVER;

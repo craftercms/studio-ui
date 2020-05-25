@@ -108,9 +108,9 @@ const defaults: GuestStyleSheetConfig = {
   zoneLabelZIndex: 1010,
   zoneLabelTextColor: '#00270b',
   zoneLabelBackground:
-    'linear-gradient(to bottom, rgba(48,219,91,0.8) 0%, Zrgba(52,199,89,0.8) 100%)',
+    'linear-gradient(to bottom, rgba(48,219,91,0.8) 0%, rgba(52,199,89,0.8) 100%)',
   zoneMarkerZIndex: 1010,
-  zoneMarkerOutlineColor: '',
+  zoneMarkerOutlineColor: palette.green.main,
   inlineTextEditorOutlineColor: palette.blue.tint,
   inlineTextEditorFocusOutlineColor: palette.blue.main,
   validationMandatoryColor: palette.red.main,
