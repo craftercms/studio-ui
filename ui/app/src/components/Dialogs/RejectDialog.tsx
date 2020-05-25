@@ -42,7 +42,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
-import { palette } from '../../styles/theme';
+import palette from '../../styles/palette';
 import { fetchDependencies } from '../../services/dependencies';
 import { reject } from '../../services/publishing';
 import { ApiResponse } from '../../models/ApiResponse';

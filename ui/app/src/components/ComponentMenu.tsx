@@ -20,8 +20,8 @@ import { PopoverOrigin } from '@material-ui/core/Popover';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
-import { useSelection } from '../utils/hooks';
-import { getSandboxItem } from '../services/content';
+import { useActiveSiteId, useSelection } from '../utils/hooks';
+import { fetchWorkflowAffectedItems, getSandboxItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
@@ -34,8 +34,8 @@ import {
   showDependenciesDialog,
   showHistoryDialog,
   showPublishDialog,
-  showWorkflowCancellationDialog,
-  showRejectDialog
+  showRejectDialog,
+  showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
 import { showEditDialog } from '../state/reducers/dialogs/edit';
 import { batchActions } from '../state/actions/misc';
