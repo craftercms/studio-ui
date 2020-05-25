@@ -2889,11 +2889,13 @@ var nodeOpen = false,
       rejectContent: function (site, contentItems) {
         const eventIdSuccess = 'rejectDialogSuccess'
 
+        const sandboxItems = CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(contentItems);
+
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_REJECT_DIALOG',
           payload: {
             open: true,
-            items: contentItems,
+            items: sandboxItems,
             onRejectSuccess: {
               type: 'BATCH_ACTIONS',
               payload: [
