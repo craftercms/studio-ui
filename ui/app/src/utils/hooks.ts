@@ -30,7 +30,7 @@ import { nnou } from './object';
 import { Resource } from '../models/Resource';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ContentType } from '../models/ContentType';
+import ContentType from '../models/ContentType';
 import { MinimizedDialog } from '../models/MinimizedDialog';
 import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialogs';
 import { fetchSystemVersion } from '../state/actions/env';

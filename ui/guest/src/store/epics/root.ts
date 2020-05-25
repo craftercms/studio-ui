@@ -27,7 +27,7 @@ import {
   withLatestFrom
 } from 'rxjs/operators';
 import { not } from '../../utils/util';
-import { post } from '../../communicator';
+import { post } from '../../utils/communicator';
 import iceRegistry from '../../classes/ICERegistry';
 import { dragOk, unwrapEvent } from '../util';
 import contentController from '../../classes/ContentController';
@@ -39,7 +39,7 @@ import {
   escape$,
   initializeDragSubjects
 } from '../subjects';
-import { initTinyMCE } from '../../rte';
+import { initTinyMCE } from '../../controls/rte';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -55,6 +55,7 @@ import {
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  EditingStatus,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
@@ -62,7 +63,6 @@ import {
 } from '../../constants';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState, GuestStateObservable } from '../models/GuestStore';
-import { EditingStatus } from '../../models/ICEStatus';
 import {
   isNullOrUndefined,
   notNullOrUndefined,
@@ -116,7 +116,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
           const e = unwrapEvent<DragEvent>(event);
           e.dataTransfer.setData('text/plain', `${record.id}`);
           const image = document.querySelector('craftercms-dragged-element');
-          e.dataTransfer.setDragImage(image, 0, 0);
+          e.dataTransfer.setDragImage(image, 20, 20);
           return initializeDragSubjects(state$);
         }
         return NEVER;

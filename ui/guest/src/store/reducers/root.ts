@@ -26,7 +26,6 @@ import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord } from '../../models/InContextEditing';
 import { GuestActionTypes } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { EditingStatus } from '../../models/ICEStatus';
 import { deleteProperty, notNullOrUndefined, reversePluckProps } from '../../utils/object';
 import { updateDropZoneValidations } from '../../utils/dom';
 import {
@@ -44,6 +43,7 @@ import {
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   DESKTOP_ASSET_UPLOAD_STARTED,
   EDIT_MODE_CHANGED,
+  EditingStatus,
   HOST_CHECK_IN,
   TRASHED
 } from '../../constants';

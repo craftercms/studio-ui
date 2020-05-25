@@ -46,7 +46,6 @@ import IFrame from '../../components/IFrame';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { History, Location } from 'history';
 import { getContent } from '../../services/content';
-import { palette } from '../../styles/theme';
 import SearchBar from '../../components/Controls/SearchBar';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
@@ -54,6 +53,7 @@ import { isEditableAsset } from '../../utils/content';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import DialogHeader from '../../components/Dialogs/DialogHeader';
+import palette from '../../styles/palette';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {

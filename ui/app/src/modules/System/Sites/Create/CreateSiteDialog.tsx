@@ -49,7 +49,7 @@ import {
   fetchBlueprints as fetchMarketplaceBlueprints
 } from '../../../../services/marketplace';
 import gitLogo from '../../../../assets/git-logo.svg';
-import { backgroundColor, palette } from '../../../../styles/theme';
+import { backgroundColor} from '../../../../styles/theme';
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/Controls/SearchBar';
@@ -60,6 +60,7 @@ import DialogFooter from '../../../../components/Dialogs/DialogFooter';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
+import palette from '../../../../styles/palette';
 
 const messages = defineMessages({
   privateBlueprints: {

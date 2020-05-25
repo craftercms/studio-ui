@@ -18,7 +18,7 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { isNullOrUndefined, notNullOrUndefined } from './object';
-import { ModelHelper } from './ModelHelper';
+import Model from './model';
 import { forEach } from './array';
 import { popPiece } from './string';
 
@@ -39,7 +39,7 @@ export function findComponentContainerFields(fields: LookupTable<ContentTypeFiel
 }
 
 export function getParentModelId(modelId: string, models: LookupTable<ContentInstance>, children: LookupTable<ContentInstance>): string {
-  return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
+  return isNullOrUndefined(Model.prop(models[modelId], 'path'))
     ? findParentModelId(modelId, children, models)
     : null;
 }
@@ -61,7 +61,7 @@ function findParentModelId(modelId: string, childrenMap: LookupTable<ContentInst
   return notNullOrUndefined(parentId)
     // If it has a path, it is not embedded and hence the parent
     // Otherwise, need to keep looking.
-    ? notNullOrUndefined(ModelHelper.prop(models[parentId], 'path'))
+    ? notNullOrUndefined(Model.prop(models[parentId], 'path'))
       ? parentId
       : findParentModelId(parentId, childrenMap, models)
     // No parent found for this model
@@ -78,6 +78,6 @@ export function getCollectionWithoutItemAtIndex(collection: string[], index: str
 export function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
   const isStringIndex = typeof index === 'string';
   return isStringIndex
-    ? ModelHelper.extractCollection(model, fieldId, index)
-    : ModelHelper.value(model, fieldId);
+    ? Model.extractCollection(model, fieldId, index)
+    : Model.value(model, fieldId);
 }

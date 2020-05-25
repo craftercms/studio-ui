@@ -27,7 +27,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getTimezones } from '../../utils/datetime';
 import FormControl from '@material-ui/core/FormControl';
 import { nnou, nou } from '../../utils/object';
-import { palette } from '../../styles/theme';
+import palette from '../../styles/palette';
 
 const translations = defineMessages({
   datePlaceholder: {

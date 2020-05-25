@@ -17,7 +17,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
-import { palette } from '../../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import CloseIconRounded from '@material-ui/icons/CloseRounded';
 import ArrowBack from '@material-ui/icons/ArrowBackIosRounded';
@@ -28,6 +27,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import Action, { ActionIcon } from './DialogHeaderAction';
+import palette from '../../styles/palette';
 
 const dialogTitleStyles = makeStyles((theme) =>
   createStyles({

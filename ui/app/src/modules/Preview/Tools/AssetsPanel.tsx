@@ -43,9 +43,9 @@ import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import UploadIcon from '@material-ui/icons/Publish';
 import { nnou, pluckProps } from '../../../utils/object';
-import { palette } from '../../../styles/theme';
 import { uploadDataUrl } from '../../../services/content';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
+import palette from '../../../styles/palette';
 
 const translations = defineMessages({
   assetsPanel: {

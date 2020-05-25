@@ -20,7 +20,7 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import Divider from '@material-ui/core/Divider';
-import { palette } from '../../../styles/theme';
+import palette from '../../../styles/palette';
 
 const useStyles = makeStyles((theme) => ({
   defaultCard: {

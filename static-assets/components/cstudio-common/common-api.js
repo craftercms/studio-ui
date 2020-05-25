@@ -726,7 +726,7 @@ var nodeOpen = false,
               type: 'BATCH_ACTIONS',
               payload: [
                 {
-                  type: 'LEGACY_DIALOG_CALLBACK',
+                  type: 'DISPATCH_DOM_EVENT',
                   payload: { id: eventIdSuccess }
                 },
                 { type: 'CLOSE_DELETE_DIALOG' }
@@ -798,7 +798,7 @@ var nodeOpen = false,
                   type: 'BATCH_ACTIONS',
                   payload: [
                     {
-                      type: 'LEGACY_DIALOG_CALLBACK',
+                      type: 'DISPATCH_DOM_EVENT',
                       payload: { id: eventIdOnClose }
                     },
                     { type: 'CLOSE_HISTORY_DIALOG' }
@@ -835,7 +835,7 @@ var nodeOpen = false,
               type: 'BATCH_ACTIONS',
               payload: [
                 {
-                  type: 'LEGACY_DIALOG_CALLBACK',
+                  type: 'DISPATCH_DOM_EVENT',
                   payload: { id: eventIdSuccess }
                 },
                 { type: 'CLOSE_PUBLISH_DIALOG' }
@@ -875,7 +875,7 @@ var nodeOpen = false,
               type: 'BATCH_ACTIONS',
               payload: [
                 {
-                  type: 'LEGACY_DIALOG_CALLBACK',
+                  type: 'DISPATCH_DOM_EVENT',
                   payload: { id: eventIdSuccess }
                 },
                 { type: 'CLOSE_PUBLISH_DIALOG' }
@@ -2543,7 +2543,7 @@ var nodeOpen = false,
                     type: 'BATCH_ACTIONS',
                     payload: [
                       {
-                        type: 'LEGACY_DIALOG_CALLBACK',
+                        type: 'DISPATCH_DOM_EVENT',
                         payload: { id: eventIdSuccess }
                       },
                       { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }

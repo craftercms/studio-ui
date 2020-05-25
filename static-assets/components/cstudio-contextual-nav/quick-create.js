@@ -83,7 +83,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           payload: {
             ...payload,
             onSaveSuccess: {
-              type: 'LEGACY_DIALOG_CALLBACK',
+              type: 'DISPATCH_DOM_EVENT',
               payload: { id: editDialogSuccess }
             }
           }
@@ -122,7 +122,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
             item: previewItem,
             compact: false,
             onContentTypeSelected: {
-              type: 'LEGACY_DIALOG_CALLBACK',
+              type: 'DISPATCH_DOM_EVENT',
               payload: { id: contentTypeSelected }
             }
           }

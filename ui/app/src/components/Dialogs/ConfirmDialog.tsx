@@ -77,6 +77,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
     </Dialog>
   );
 }
+
 function ConfirmDialogWrapper(props: ConfirmDialogProps) {
   const {
     onOk,

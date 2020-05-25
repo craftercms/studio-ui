@@ -22,7 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
-import { palette } from '../../styles/theme';
+import palette from '../../styles/palette';
 
 const useStyles = makeStyles(() => ({
   menuPaper: {

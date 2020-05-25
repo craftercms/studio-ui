@@ -14,15 +14,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export enum EditingStatus {
-  OFF = 'OFF',
-  LISTENING = 'LISTENING',
-  SORTING_COMPONENT = 'SORTING_COMPONENT',
-  PLACING_NEW_COMPONENT = 'PLACING_NEW_COMPONENT',
-  PLACING_DETACHED_COMPONENT = 'PLACING_DETACHED_COMPONENT',
-  PLACING_DETACHED_ASSET = 'PLACING_DETACHED_ASSET',
-  EDITING_COMPONENT = 'EDITING_COMPONENT',
-  EDITING_COMPONENT_INLINE = 'EDITING_COMPONENT_INLINE',
-  UPLOAD_ASSET_FROM_DESKTOP = 'UPLOAD_ASSET_FROM_DESKTOP',
-  SHOW_RECEPTACLES = 'SHOW_RECEPTACLES'
-}
+import $ from 'jquery';
+import { message$, post } from './utils/communicator';
+import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './constants';
+import { createLocationArgument } from './utils/util';
+
+message$.subscribe(function ({ type, payload }) {
+  switch (type) {
+    case NAVIGATION_REQUEST: {
+      window.location.href = payload.url;
+      break;
+    }
+  }
+});
+
+const location = createLocationArgument();
+
+post(GUEST_CHECK_IN, { location, __CRAFTERCMS_GUEST_LANDING__: true });
+
+setTimeout(() => {
+  $('img').fadeIn();
+}, 700);
+
+window.onbeforeunload = () => {
+  post(GUEST_CHECK_OUT);
+};

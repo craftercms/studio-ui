@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { fromEvent, interval, zip } from 'rxjs';
+import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import { fromEvent, interval, merge, zip } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
@@ -24,8 +24,8 @@ import { GuestContextProvider } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
 import DropMarker from './DropMarker';
-import { appendStyleSheet } from '../styles';
-import { fromTopic, message$, post } from '../communicator';
+import { appendStyleSheet, GuestStyleConfig } from '../styles/styles';
+import { fromTopic, message$, post } from '../utils/communicator';
 import Cookies from 'js-cookie';
 import { HighlightData } from '../models/InContextEditing';
 import AssetUploaderMask from './AssetUploaderMask';
@@ -45,6 +45,7 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   EDIT_MODE_CHANGED,
+  EditingStatus,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   HOST_CHECK_IN,
@@ -57,7 +58,6 @@ import { createGuestStore } from '../store/store';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
-import { EditingStatus } from '../models/ICEStatus';
 import { isNullOrUndefined, nnou } from '../utils/object';
 import { scrollToNode, scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
@@ -68,29 +68,27 @@ import { createLocationArgument } from '../utils/util';
 // import tinymce from 'tinymce';
 
 const initialDocumentDomain = document.domain;
+const editModeClass = 'craftercms-ice-on';
 
-interface GuestProps {
+type GuestProps = PropsWithChildren<{
   modelId: string;
   documentDomain?: string;
   path?: string;
-  styles?: any;
-  children?: any;
+  styleConfig?: GuestStyleConfig;
   isAuthoring?: boolean;
   scrollElement?: string;
-  editModeClass?: string;
-}
+}>;
 
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
   const {
     path,
-    styles,
+    styleConfig,
     modelId,
     children,
     documentDomain,
-    scrollElement = 'html, body',
-    editModeClass = 'craftercms-ice-on'
+    scrollElement = 'html, body'
   } = props;
 
   const [snack, setSnack] = useState<Partial<Snack>>();
@@ -148,15 +146,15 @@ function Guest(props: GuestProps) {
       $('html').addClass(editModeClass);
       document.dispatchEvent(new CustomEvent(editModeClass, { detail: true }));
     }
-  }, [editModeClass, status]);
+  }, [status]);
 
   // Appends the Guest stylesheet
   useEffect(() => {
-    const stylesheet = appendStyleSheet(styles);
+    const stylesheet = appendStyleSheet(styleConfig);
     return () => {
       stylesheet.detach();
     };
-  }, [styles]);
+  }, [styleConfig]);
 
   // Subscribes to host messages and routes them.
   useEffect(() => {
@@ -236,26 +234,33 @@ function Guest(props: GuestProps) {
   // Check in & host detection
   useEffect(() => {
     if (!hasHost) {
+
+      // prettier-ignore
+      interval(1000).pipe(
+        takeUntil(
+          merge(fromTopic(HOST_CHECK_IN), fromTopic('LEGACY_CHECK_IN')).pipe(
+            tap(dispatch),
+            take(1)
+          )
+        ),
+        take(1)
+      ).subscribe(() => setSnack({
+        duration: 8000,
+        message: 'In-context editing is disabled: page running out of Crafter CMS frame.'
+      }));
+
       const location = createLocationArgument();
       const site = Cookies.get('crafterSite');
-      interval(1000)
-        .pipe(takeUntil(fromTopic(HOST_CHECK_IN).pipe(tap(dispatch), take(1))), take(1))
-        .subscribe(() => {
-          setSnack({
-            duration: 8000,
-            message: 'In-context editing is disabled: page running out of Crafter CMS frame.'
-          });
-        });
       post(GUEST_CHECK_IN, { location, modelId, path, site, documentDomain });
     }
   }, [dispatch, modelId, path, hasHost, documentDomain]);
 
-  // load dependencies (tinymce)
+  // Load dependencies (tinymce)
   useEffect(() => {
     if (hasHost && !window.tinymce) {
       const script = document.createElement('script');
       script.src = '/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js';
-      script.onload = () => console.log('tinymce loaded');
+      // script.onload = () => ...;
       document.head.appendChild(script);
     }
   }, [hasHost]);
@@ -391,12 +396,12 @@ function Guest(props: GuestProps) {
                 coordinates={state.dragContext.coordinates}
               />
             )}
-          {snack && (
-            <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
-              {snack.message}
-            </SnackBar>
-          )}
         </CrafterCMSPortal>
+      )}
+      {snack && (
+        <SnackBar open={true} onClose={() => setSnack(null)} {...snack}>
+          {snack.message}
+        </SnackBar>
       )}
     </GuestContextProvider>
   );
@@ -410,6 +415,6 @@ export default function(props: GuestProps) {
       <Guest {...props} />
     </Provider>
   ) : (
-    children
+    children as JSX.Element
   );
 }

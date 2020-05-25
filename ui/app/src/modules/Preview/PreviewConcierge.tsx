@@ -98,6 +98,10 @@ const guestMessages = defineMessages({
   maxLength: {
     id: 'validations.maxLength',
     defaultMessage: 'The max length ({maxLength}) reached'
+  },
+  yes: {
+    id: 'words.yes',
+    defaultMessage: 'Yes'
   }
 });
 
@@ -106,9 +110,9 @@ const originalDocDomain = document.domain;
 export function PreviewConcierge(props: any) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, selectedTool, currentUrl } = usePreviewState();
+  const { guest, selectedTool, currentUrl, computedUrl } = usePreviewState();
   const contentTypes = useContentTypeList();
-  const { guestBase, xsrfArgument } = useSelection((state) => state.env);
+  const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
   const assets = useSelection((state) => state.preview.assets);
   const contentTypeComponents = useSelection((state) => state.preview.components);
@@ -142,6 +146,27 @@ export function PreviewConcierge(props: any) {
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
       const { type, payload } = action;
       switch (type) {
+        // Legacy sites.
+        case 'GUEST_SITE_LOAD':
+          enqueueSnackbar(
+            // TODO: Translate - Discuss/chose appropriate message.
+            'This page is not using this version of Preview. Go to compatible version?',
+            {
+              action: (key) => (
+                <Button
+                  key={key}
+                  size="small"
+                  color="secondary"
+                  onClick={() => {
+                    window.location.href = `${authoringBase}/preview/#/?page=${computedUrl}&site=${site}`;
+                  }}
+                >
+                  {formatMessage(guestMessages.yes)}
+                </Button>
+              )
+            }
+          );
+          break;
         case GUEST_CHECK_IN: {
           hostToGuest$.next({ type: HOST_CHECK_IN, payload: { editMode } });
 
@@ -206,7 +231,7 @@ export function PreviewConcierge(props: any) {
           ).subscribe(
             () => {
               let ifrm = document.createElement('iframe');
-              ifrm.setAttribute('src', `${guestBase}${currentUrl}`);
+              ifrm.setAttribute('src', `${currentUrl}`);
               ifrm.style.width = '0';
               ifrm.style.height = '0';
               document.body.appendChild(ifrm);
@@ -500,7 +525,14 @@ function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
   return interval(1500)
     .pipe(
       take(1),
-      takeUntil(guestToHost$.pipe(filter(({ type }) => type === GUEST_CHECK_IN)))
+      takeUntil(
+        guestToHost$.pipe(
+          filter(({ type }) =>
+            type === GUEST_CHECK_IN ||
+            type === 'GUEST_SITE_LOAD'
+          )
+        )
+      )
     )
     .subscribe(() => {
       enqueueSnackbar(

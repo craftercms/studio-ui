@@ -22,8 +22,8 @@ import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTiltedRi
 import { Typography } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { palette } from '../../../styles/theme';
 import { DRAWER_WIDTH } from '../previewContext';
+import palette from '../../../styles/palette';
 
 const useStyles = makeStyles((theme) => createStyles({
   rubbishBin: {

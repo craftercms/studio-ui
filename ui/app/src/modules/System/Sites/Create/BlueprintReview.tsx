@@ -26,7 +26,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { palette } from '../../../../styles/theme';
+import palette from '../../../../styles/palette';
 
 const useStyles = makeStyles((theme: Theme) => ({
   review: {

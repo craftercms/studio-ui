@@ -19,7 +19,6 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { palette } from '../../../styles/theme';
 import { Variant } from '@material-ui/core/styles/createTypography';
 import { SandboxItem } from '../../../models/Item';
 import InsertDriveFileRoundedIcon from '@material-ui/icons/InsertDriveFileRounded';
@@ -46,6 +45,7 @@ import {
 } from '../../../utils/path';
 import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin, Observable } from 'rxjs';
+import palette from '../../../styles/palette';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {

@@ -26,9 +26,9 @@ import { MediaItem } from '../models/Search';
 import FormGroup from '@material-ui/core/FormGroup';
 import Checkbox from '@material-ui/core/Checkbox';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
-import { palette } from '../styles/theme';
 import cardTitleStyles from '../styles/card';
 import { defineMessages, useIntl } from 'react-intl';
+import palette from '../styles/palette';
 
 const translations = defineMessages({
   options: {

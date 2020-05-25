@@ -14,28 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from 'jquery';
-import { message$, post } from './communicator';
-import { GUEST_CHECK_IN, GUEST_CHECK_OUT, NAVIGATION_REQUEST } from './constants';
-import { createLocationArgument } from './utils/util';
+import jss, { StyleSheet } from 'jss';
+import preset from 'jss-preset-default';
+import stylesheet, { GuestStyleSheetConfig } from './stylesheet';
 
-message$.subscribe(function ({ type, payload }) {
-  switch (type) {
-    case NAVIGATION_REQUEST: {
-      window.location.href = payload.url;
-      break;
-    }
-  }
-});
+export interface GuestStyleConfig extends GuestStyleSheetConfig {}
 
-const location = createLocationArgument();
+export function appendStyleSheet(config?: GuestStyleConfig): StyleSheet {
+  jss.setup(preset());
 
-post(GUEST_CHECK_IN, { location, __CRAFTERCMS_GUEST_LANDING__: true });
+  const sheet: StyleSheet = jss.createStyleSheet(stylesheet(config));
 
-setTimeout(() => {
-  $('img').fadeIn();
-}, 700);
+  sheet.attach();
 
-window.onbeforeunload = () => {
-  post(GUEST_CHECK_OUT);
-};
+  return sheet;
+}

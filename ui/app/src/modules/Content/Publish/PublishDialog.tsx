@@ -41,9 +41,9 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { palette } from '../../../styles/theme';
 import { ApiResponse } from '../../../models/ApiResponse';
 import Dialog from '@material-ui/core/Dialog';
+import palette from '../../../styles/palette';
 
 // region Typings
 

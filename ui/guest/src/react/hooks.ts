@@ -14,15 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EventHandler, MutableRefObject, SyntheticEvent, useEffect, useRef } from 'react';
+import { EventHandler, MutableRefObject, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { useGuestContext } from './components/GuestContext';
-import registry from './classes/ElementRegistry';
-import { nnou, pluckProps } from './utils/object';
-import { ICEProps } from './models/InContextEditing';
-import { getModel$ } from './classes/ContentController';
+import { useGuestContext } from './GuestContext';
+import registry from '../classes/ElementRegistry';
+import { nnou, nou, pluckProps } from '../utils/object';
+import { ICEProps } from '../models/InContextEditing';
+import { getModel$, models$ } from '../classes/ContentController';
+import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
+import { denormalizeModel } from '../utils/content';
+import Model from '../utils/model';
 
-/* region Typings */
+// region Typings
 
 interface ICEHandlers {
   onMouseOver: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
@@ -39,15 +42,21 @@ interface ICEHandlers {
 interface UseICEProps extends Omit<ICEProps, 'modelId'>, Partial<ICEHandlers> {
   ref?: (node: HTMLElement) => void | MutableRefObject<HTMLElement>;
   model: ContentInstance;
+  noRef?: boolean;
 }
 
 interface ICEMaterials {
+  model: ContentInstance;
   props: Partial<ICEHandlers> & {
     ref?: (node: HTMLElement) => void;
   };
 }
 
-/* endregion */
+interface UseModelProps extends Omit<ICEProps, 'modelId'> {
+  model: ContentInstance;
+}
+
+// endregion
 
 const handlerMap = {
   mouseover: 'onMouseOver',
@@ -61,6 +70,25 @@ const handlerMap = {
   dblclick: 'onDoubleClick'
 };
 
+function bypassICE(props: UseICEProps): ICEMaterials {
+  return {
+    model: props.model,
+    props: pluckProps(
+      props,
+      'ref',
+      'onMouseOver',
+      'onMouseLeave',
+      'onDragStart',
+      'onDragOver',
+      'onDragLeave',
+      'onDrop',
+      'onDragEnd',
+      'onClick',
+      'onDoubleClick'
+    )
+  };
+}
+
 export function useICE(props: UseICEProps): ICEMaterials {
   const context = useGuestContext();
   const inAuthoring = Boolean(context) && Boolean(context.hasHost);
@@ -68,10 +96,7 @@ export function useICE(props: UseICEProps): ICEMaterials {
   const elementRef = useRef<HTMLElement>();
   const elementRegistryId = useRef<number>();
   const refTimeout = useRef<any>();
-
-  useEffect(() => {
-    inAuthoring && getModel$(props.model.craftercms.id).subscribe();
-  }, [inAuthoring, props.model.craftercms.id]);
+  const model = useHotReloadModel(props);
 
   if (inAuthoring) {
     // prettier-ignore
@@ -121,8 +146,9 @@ export function useICE(props: UseICEProps): ICEMaterials {
       }
     };
     return {
+      model,
       props: {
-        ref,
+        ...(props.noRef !== true ? { ref } : {}),
         ...(isDraggable ? { draggable: true } : {}),
         onMouseOver: handler,
         onMouseLeave: handler,
@@ -136,27 +162,45 @@ export function useICE(props: UseICEProps): ICEMaterials {
       }
     };
   } else {
-    return {
-      props: pluckProps(
-        props,
-        'ref',
-        'onMouseOver',
-        'onMouseLeave',
-        'onDragStart',
-        'onDragOver',
-        'onDragLeave',
-        'onDrop',
-        'onDragEnd',
-        'onClick',
-        'onDoubleClick'
-      )
-    };
+    return bypassICE(props);
   }
+}
+
+export function useHotReloadModel(props: UseModelProps): any {
+  const context = useGuestContext();
+  const inAuthoring = Boolean(context) && Boolean(context.hasHost);
+  const [model, setModel] = useState(props.model);
+  useEffect(() => {
+    if (inAuthoring) {
+      const s = getModel$(props.model.craftercms.id)
+        .pipe(
+          distinctUntilChanged((prev, next) => {
+            if (nou(props.fieldId)) {
+              return prev === next;
+            } /*if (nnou(props.index) && nnou(props.fieldId)) {
+              return prev[props.fieldId] === next[props.fieldId];
+            } else*/ else {
+              return prev[props.fieldId] === next[props.fieldId];
+            }
+          }),
+          withLatestFrom(models$()),
+          map(([model, models]) => denormalizeModel(model, models))
+        )
+        .subscribe(setModel);
+      return () => s.unsubscribe();
+    }
+  }, [inAuthoring, props.fieldId, props.model.craftercms.id]);
+  return model;
+}
+
+export function useFieldValue(props: UseModelProps): any {
+  const { model, fieldId } = props;
+  return Model.value(model, fieldId);
 }
 
 // TODO: Future authoring-less version of the hooks for live
 // if (process.env.NODE_ENV === 'craftercms_live') {
-//   export { noop as useICE }
+//   export { bypassICE as useICE }
 // } else {
 //   export { useICE }
 // }

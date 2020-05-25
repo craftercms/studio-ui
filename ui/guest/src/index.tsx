@@ -16,22 +16,21 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Guest from './components/Guest';
-import GuestProxy from './components/GuestProxy';
-import DropMarker from './components/DropMarker';
-import CrafterCMSPortal from './components/CrafterCMSPortal';
-import AssetUploaderMask from './components/AssetUploaderMask';
-import { GuestContextProvider, useGuestContext } from './components/GuestContext';
-import ZoneMarker from './components/ZoneMarker';
-import Spinner from './components/Spinner';
-import Field from './components/Field';
-import { useICE } from './hooks';
-import ContentType from './components/ContentType';
+import Guest from './react/Guest';
+import GuestProxy from './react/GuestProxy';
+import DropMarker from './react/DropMarker';
+import CrafterCMSPortal from './react/CrafterCMSPortal';
+import AssetUploaderMask from './react/AssetUploaderMask';
+import { GuestContextProvider, useGuestContext } from './react/GuestContext';
+import ZoneMarker from './react/ZoneMarker';
+import Spinner from './react/Spinner';
+import ContentType from './react/ContentType';
+
+export * from './react/Field';
+export * from './react/hooks';
 
 export {
-  useICE,
   Guest,
-  Field,
   Spinner,
   GuestProxy,
   ZoneMarker,
