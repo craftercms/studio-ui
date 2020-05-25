@@ -16,14 +16,14 @@
 
 import { EventHandler, MutableRefObject, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
-import { useGuestContext } from './components/GuestContext';
-import registry from './classes/ElementRegistry';
-import { nnou, nou, pluckProps } from './utils/object';
-import { ICEProps } from './models/InContextEditing';
-import { getModel$, models$ } from './classes/ContentController';
+import { useGuestContext } from './GuestContext';
+import registry from '../classes/ElementRegistry';
+import { nnou, nou, pluckProps } from '../utils/object';
+import { ICEProps } from '../models/InContextEditing';
+import { getModel$, models$ } from '../classes/ContentController';
 import { distinctUntilChanged, map, withLatestFrom } from 'rxjs/operators';
-import { denormalizeModel } from './utils/content';
-import Model from './utils/model';
+import { denormalizeModel } from '../utils/content';
+import Model from '../utils/model';
 
 // region Typings
 

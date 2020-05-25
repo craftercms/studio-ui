@@ -27,7 +27,7 @@ import {
   withLatestFrom
 } from 'rxjs/operators';
 import { not } from '../../utils/util';
-import { post } from '../../communicator';
+import { post } from '../../utils/communicator';
 import iceRegistry from '../../classes/ICERegistry';
 import { dragOk, unwrapEvent } from '../util';
 import contentController from '../../classes/ContentController';
@@ -39,7 +39,7 @@ import {
   escape$,
   initializeDragSubjects
 } from '../subjects';
-import { initTinyMCE } from '../../rte';
+import { initTinyMCE } from '../../controls/rte';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,

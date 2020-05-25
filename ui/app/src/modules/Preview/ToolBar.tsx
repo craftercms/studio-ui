@@ -50,8 +50,8 @@ import { changeSite } from '../../state/reducers/sites';
 import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { palette } from '../../styles/theme';
 import { useSnackbar } from 'notistack';
+import palette from '../../styles/palette';
 
 const translations = defineMessages({
   openToolsPanel: {

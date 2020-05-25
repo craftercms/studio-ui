@@ -18,8 +18,8 @@ import React from 'react';
 import MuiDialogActions, { DialogActionsProps } from '@material-ui/core/DialogActions';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { palette } from '../../styles/theme';
 import clsx from 'clsx';
+import palette from '../../styles/palette';
 
 const styles = makeStyles(() =>
   createStyles({

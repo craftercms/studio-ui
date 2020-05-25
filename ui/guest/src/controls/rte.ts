@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementRecord } from './models/InContextEditing';
-import iceRegistry from './classes/ICERegistry';
+import { ElementRecord } from '../models/InContextEditing';
+import iceRegistry from '../classes/ICERegistry';
 import { Editor } from 'tinymce';
-import contentController from './classes/ContentController';
+import contentController from '../classes/ContentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
-import { post } from './communicator';
-import { GuestStandardAction } from './store/models/GuestStandardAction';
+import { post } from '../utils/communicator';
+import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 

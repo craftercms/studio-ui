@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { fromEvent, interval, zip, merge } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
@@ -24,8 +24,8 @@ import { GuestContextProvider } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
 import ZoneMarker from './ZoneMarker';
 import DropMarker from './DropMarker';
-import { appendStyleSheet } from '../styles';
-import { fromTopic, message$, post } from '../communicator';
+import { appendStyleSheet, GuestStyleConfig } from '../styles/styles';
+import { fromTopic, message$, post } from '../utils/communicator';
 import Cookies from 'js-cookie';
 import { HighlightData } from '../models/InContextEditing';
 import AssetUploaderMask from './AssetUploaderMask';
@@ -68,29 +68,27 @@ import { createLocationArgument } from '../utils/util';
 // import tinymce from 'tinymce';
 
 const initialDocumentDomain = document.domain;
+const editModeClass = 'craftercms-ice-on';
 
-interface GuestProps {
+type GuestProps = PropsWithChildren<{
   modelId: string;
   documentDomain?: string;
   path?: string;
-  styles?: any;
-  children?: any;
+  styleConfig?: GuestStyleConfig;
   isAuthoring?: boolean;
   scrollElement?: string;
-  editModeClass?: string;
-}
+}>;
 
 function Guest(props: GuestProps) {
   // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
   const {
     path,
-    styles,
+    styleConfig,
     modelId,
     children,
     documentDomain,
-    scrollElement = 'html, body',
-    editModeClass = 'craftercms-ice-on'
+    scrollElement = 'html, body'
   } = props;
 
   const [snack, setSnack] = useState<Partial<Snack>>();
@@ -148,15 +146,15 @@ function Guest(props: GuestProps) {
       $('html').addClass(editModeClass);
       document.dispatchEvent(new CustomEvent(editModeClass, { detail: true }));
     }
-  }, [editModeClass, status]);
+  }, [status]);
 
   // Appends the Guest stylesheet
   useEffect(() => {
-    const stylesheet = appendStyleSheet(styles);
+    const stylesheet = appendStyleSheet(styleConfig);
     return () => {
       stylesheet.detach();
     };
-  }, [styles]);
+  }, [styleConfig]);
 
   // Subscribes to host messages and routes them.
   useEffect(() => {

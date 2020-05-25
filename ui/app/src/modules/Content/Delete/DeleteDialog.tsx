@@ -30,7 +30,6 @@ import StandardAction from '../../../models/StandardAction';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
-import { palette } from '../../../styles/theme';
 import { Resource } from '../../../models/Resource';
 import TextField from '@material-ui/core/TextField';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
@@ -40,6 +39,7 @@ import DialogFooter from '../../../components/Dialogs/DialogFooter';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
+import palette from '../../../styles/palette';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;

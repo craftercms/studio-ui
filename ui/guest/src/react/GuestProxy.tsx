@@ -23,7 +23,7 @@ import contentController from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import ContentType from '../utils/contentType';
-import { message$, post } from '../communicator';
+import { message$, post } from '../utils/communicator';
 import { Operation } from '../models/Operations';
 import {
   COMPONENT_INSTANCE_HTML_REQUEST,

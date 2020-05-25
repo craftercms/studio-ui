@@ -18,7 +18,7 @@ import React, { ComponentType } from 'react';
 import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { PropsWithChildren, ElementType } from 'react';
-import { useICE } from '../hooks';
+import { useICE } from './hooks';
 import { value as getModelValue } from '../utils/model';
 
 type FieldProps<P = {}> = PropsWithChildren<

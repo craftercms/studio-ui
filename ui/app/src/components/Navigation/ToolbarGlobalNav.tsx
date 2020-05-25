@@ -22,7 +22,6 @@ import GlobalNav from './GlobalNav';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { palette } from '../../styles/theme';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
@@ -30,6 +29,7 @@ import { getLogoutInfoURL, logout } from '../../services/auth';
 import Cookies from 'js-cookie';
 import GlobalState from '../../models/GlobalState';
 import { useEnv, useMount, useSelection } from '../../utils/hooks';
+import palette from '../../styles/palette';
 
 const useStyles = makeStyles(() => ({
   avatarClickable: {

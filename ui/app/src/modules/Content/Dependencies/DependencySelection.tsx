@@ -33,8 +33,8 @@ import {
 } from '../Publish/PublishDialog';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
-import { palette } from '../../../styles/theme';
 import clsx from 'clsx';
+import palette from '../../../styles/palette';
 
 interface DependencySelectionProps {
   items: SandboxItem[];

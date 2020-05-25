@@ -20,7 +20,6 @@ import { PopoverOrigin } from '@material-ui/core/Popover';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
-import { palette } from '../styles/theme';
 import { useActiveSiteId, useSelection } from '../utils/hooks';
 import { fetchWorkflowAffectedItems, getSandboxItem } from '../services/content';
 import { popPiece } from '../utils/string';
@@ -39,6 +38,7 @@ import {
 } from '../state/actions/dialogs';
 import { showEditDialog } from '../state/reducers/dialogs/edit';
 import { batchActions } from '../state/actions/misc';
+import palette from '../styles/palette';
 
 const useStyles = makeStyles(() => createStyles({
   separator: {

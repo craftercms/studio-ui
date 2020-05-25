@@ -32,7 +32,7 @@ import InputBase from '@material-ui/core/InputBase';
 import Link from '@material-ui/core/Link';
 import DateTimePicker from '../../../components/Controls/DateTimePicker';
 import moment from 'moment';
-import { palette } from '../../../styles/theme';
+import palette from '../../../styles/palette';
 
 const messages = defineMessages({
   emailLabel: {

@@ -18,7 +18,7 @@ import { BehaviorSubject, NEVER, Observable, Subject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import Model from '../utils/model';
 import Cookies from 'js-cookie';
-import { fromTopic, post } from '../communicator';
+import { fromTopic, post } from '../utils/communicator';
 import uuid from 'uuid/v4';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';

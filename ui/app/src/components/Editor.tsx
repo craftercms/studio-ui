@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { palette } from '../styles/theme';
+import palette from '../styles/palette';
 
 const useStyles = makeStyles(() => ({
   previewEditor: {

@@ -18,11 +18,11 @@ import React, { useState } from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
-import { palette } from '../../styles/theme';
 import SearchIcon from '@material-ui/icons/SearchRounded';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
+import palette from '../../styles/palette';
 
 const useStyles = makeStyles((theme: Theme) => ({
   search: {

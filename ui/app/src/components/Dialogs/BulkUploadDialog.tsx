@@ -41,7 +41,6 @@ import DialogHeader from './DialogHeader';
 import Button from '@material-ui/core/Button';
 import { getBulkUploadUrl } from '../../services/content';
 import { LookupTable } from '../../models/LookupTable';
-import { palette } from '../../styles/theme';
 import { bytesToSize } from '../../utils/string';
 import { useMinimizeDialog, useSpreadState, useSubject } from '../../utils/hooks';
 import clsx from 'clsx';
@@ -53,6 +52,7 @@ import DialogBody from './DialogBody';
 import { minimizeDialog, updateDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { useDispatch } from 'react-redux';
 import { ProgressBar } from '../SystemStatus/ProgressBar';
+import palette from '../../styles/palette';
 
 const translations = defineMessages({
   title: {

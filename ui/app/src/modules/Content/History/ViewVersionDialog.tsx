@@ -21,7 +21,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { useUnmount, useLogicResource } from '../../../utils/hooks';
 import { FancyFormattedDate } from './VersionList';
-import { palette } from '../../../styles/theme';
 import StandardAction from '../../../models/StandardAction';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -39,6 +38,7 @@ import DialogHeader, {
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { Resource } from '../../../models/Resource';
 import Dialog from '@material-ui/core/Dialog';
+import palette from '../../../styles/palette';
 
 const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {

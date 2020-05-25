@@ -42,7 +42,6 @@ import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import { EntityState } from '../../../models/EntityState';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import Typography from '@material-ui/core/Typography';
-import { palette } from '../../../styles/theme';
 import { LookupTable } from '../../../models/LookupTable';
 import { Resource } from '../../../models/Resource';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -52,6 +51,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
+import palette from '../../../styles/palette';
 
 const translations = defineMessages({
   backToSelectRevision: {

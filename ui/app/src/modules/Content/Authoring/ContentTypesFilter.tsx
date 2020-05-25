@@ -17,13 +17,13 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
-import { palette } from '../../../styles/theme';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import palette from '../../../styles/palette';
 
 const useStyles = makeStyles((theme) => ({
   menu: {
