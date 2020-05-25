@@ -85,7 +85,7 @@ const reducer = createReducer<GlobalState['preview']>({
   // The src of the iframe
   currentUrl: previewLanding,
   hostSize: { width: null, height: null },
-  showToolsPanel: false,
+  showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : false,
   previousTool: null,
   // Don't change/commit the tool you're working with. Use your .env.development to set it
   selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,

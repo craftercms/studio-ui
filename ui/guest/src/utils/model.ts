@@ -37,7 +37,6 @@ export function value(model: ContentInstance, fieldId: string, newValue?: unknow
     fieldId = cleanFieldId;
   }
   if (newValue !== undefined) {
-    debugger
     setProperty(model, fieldId, newValue);
   }
   return retrieveProperty(model, fieldId);

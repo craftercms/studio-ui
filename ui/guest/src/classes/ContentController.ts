@@ -307,10 +307,10 @@ export function updateField(
   parentModels.forEach((id) => (modelsToUpdate[id] = models[id]));
 
   // Update the model cache
-  /*_models$.next({
+  _models$.next({
     ...models,
     ...modelsToUpdate
-  });*/
+  });
 
   // Post the update to studio to persist it
   post(UPDATE_FIELD_VALUE_OPERATION, {
@@ -341,13 +341,13 @@ export function insertItem(
   // Insert in desired position
   result.splice(index, 0, item);
 
-  /*_models$.next({
+  _models$.next({
     ...models,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });*/
+  });
 
   post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
 
@@ -417,14 +417,14 @@ export function insertComponent(
     }
   });
 
-  /*_models$.next({
+  _models$.next({
     ...models,
     [instance.craftercms.id]: instance,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });*/
+  });
 
   children[modelId]?.push(instance.craftercms.id);
 
@@ -460,14 +460,14 @@ export function insertInstance(
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
 
-  /*_models$.next({
+  _models$.next({
     ...models,
     [instance.craftercms.id]: instance,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });*/
+  });
 
   post(INSERT_INSTANCE_OPERATION, {
     modelId,
@@ -503,13 +503,13 @@ export function sortItem(
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
 
-  /*_models$.next({
+  _models$.next({
     ...models,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });*/
+  });
 
   post(SORT_ITEM_OPERATION, {
     modelId,
@@ -603,7 +603,7 @@ export function moveItem(
     newTargetModel[targetFieldId] = targetResult;
   }
 
-  /*_models$.next(
+  _models$.next(
     originalModelId === targetModelId
       ? {
           ...models,
@@ -614,7 +614,7 @@ export function moveItem(
           [originalModelId]: newOriginalModel,
           [targetModelId]: newTargetModel
         }
-  );*/
+  );
 
   post(MOVE_ITEM_OPERATION, {
     originalModelId,
@@ -645,13 +645,13 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
   const result = collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 
-  /*_models$.next({
+  _models$.next({
     ...models,
     [modelId]: {
       ...model,
       [fieldId]: result
     }
-  });*/
+  });
 
   post(DELETE_ITEM_OPERATION, {
     modelId,
