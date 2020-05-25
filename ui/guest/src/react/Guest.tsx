@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
-import { fromEvent, interval, zip, merge } from 'rxjs';
+import { fromEvent, interval, merge, zip } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
@@ -45,6 +45,7 @@ import {
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
   EDIT_MODE_CHANGED,
+  EditingStatus,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   HOST_CHECK_IN,
@@ -57,7 +58,6 @@ import { createGuestStore } from '../store/store';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
-import { EditingStatus } from '../models/ICEStatus';
 import { isNullOrUndefined, nnou } from '../utils/object';
 import { scrollToNode, scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
@@ -415,6 +415,6 @@ export default function(props: GuestProps) {
       <Guest {...props} />
     </Provider>
   ) : (
-    children
+    children as JSX.Element
   );
 }

@@ -55,6 +55,7 @@ import {
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_STARTED,
+  EditingStatus,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
@@ -62,7 +63,6 @@ import {
 } from '../../constants';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState, GuestStateObservable } from '../models/GuestStore';
-import { EditingStatus } from '../../models/ICEStatus';
 import {
   isNullOrUndefined,
   notNullOrUndefined,

@@ -15,7 +15,7 @@
  */
 
 import { SyntheticEvent } from 'react';
-import { EditingStatus } from '../models/ICEStatus';
+import { EditingStatus } from '../constants';
 
 export function dragOk(status): boolean {
   return [
