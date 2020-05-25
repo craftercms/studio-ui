@@ -53,9 +53,10 @@ const plugins = [
         'hydrate',
         'render',
         'unmountComponentAtNode',
-        'flushSync'
+        'flushSync',
+        'unstable_batchedUpdates'
       ],
-      'react-is': ['isValidElementType', 'ForwardRef'],
+      'react-is': ['isValidElementType', 'ForwardRef', 'isContextConsumer'],
       'prop-types': ['elementType'],
       'react': [
         'Children',
@@ -90,24 +91,28 @@ const plugins = [
   }),
   copy({
     targets: [
-      { src: 'dist/*.umd.js', dest: '../app/public' },
-      { src: 'dist/*.umd.js', dest: '../../static-assets/scripts' }
+      { src: 'build/*.umd.js', dest: '../app/public' },
+      { src: 'build/*.umd.js', dest: '../../static-assets/scripts' }
     ],
     hook: 'writeBundle'
   })
 ];
 
-const external = [];
+const globals = {
+  // '@craftercms/content': 'craftercms.content',
+  // '@craftercms/search': 'craftercms.search'
+};
 
-const globals = {};
+const external = Object.keys(globals);
 
 const baseConfig = {
   // TODO: Without @babel/preset-env this error doesn't occur.
   // Addresses rollup's this replaced to undefined
-  // context: 'this'
+  context: 'this'
 };
 
 export default [
+
   /* UMD build */
   {
     input,
@@ -115,40 +120,29 @@ export default [
     plugins,
     output: {
       sourcemap: 'inline',
-      name: 'craftercms-guest',
-      file: pkg.browser,
+      name: 'craftercms.guest',
+      file: 'build/craftercms-guest.umd.js',
       format: 'umd',
       amd: { id: pkg.craftercms.id },
       globals
     },
     ...baseConfig
   },
+
   /* UMD build for preview landing controller */
   {
-    input: 'src/index.preview.ts',
+    input: 'src/preview.ts',
     external,
     plugins,
     output: {
       sourcemap: 'inline',
-      name: 'preview-landing',
-      file: 'dist/preview-landing.umd.js',
+      name: 'craftercms.previewLanding',
+      file: 'build/preview-landing.umd.js',
       format: 'umd',
-      amd: { id: 'org.craftercms.previewLanding' },
+      amd: { id: 'craftercms.previewLanding' },
       globals
     },
     ...baseConfig
   }
-];
 
-/*
-// CommonJS & ES module build
-{
-  input,
-  external,
-  plugins,
-  output: [
-    { file: pkg.main, format: 'cjs' },
-    { file: pkg.module, format: 'es' }
-  ]
-}
-*/
+];

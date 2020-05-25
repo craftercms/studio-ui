@@ -20,7 +20,7 @@ import { ignoreElements, tap } from 'rxjs/operators';
 export default [
   (action$) =>
     action$.pipe(
-      ofType('LEGACY_DIALOG_CALLBACK'),
+      ofType('DISPATCH_DOM_EVENT'),
       tap(({ payload }) => {
         let event = new CustomEvent(payload.id, { detail: payload });
         document.dispatchEvent(event);

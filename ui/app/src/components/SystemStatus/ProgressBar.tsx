@@ -3,7 +3,7 @@ import React from 'react';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { Theme } from '@material-ui/core';
 import createStyles from '@material-ui/styles/createStyles';
-import { palette } from '../../styles/theme';
+import palette from '../../styles/palette';
 
 const progressBarStyles = makeStyles((theme: Theme) => createStyles({
   progressBar: {

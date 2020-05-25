@@ -73,6 +73,10 @@
       Topics: {
         'ALL': '*',
 
+        // PageBuilder
+        GUEST_CHECK_IN: 'GUEST_CHECK_IN',
+        LEGACY_CHECK_IN: 'LEGACY_CHECK_IN',
+
         'GUEST_CHECKIN': 'GUEST_CHECKIN',
         'GUEST_CHECKOUT': 'GUEST_CHECKOUT',
         'GUEST_SITE_LOAD': 'GUEST_SITE_LOAD',

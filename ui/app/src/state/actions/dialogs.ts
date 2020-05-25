@@ -25,6 +25,7 @@ import { PublishDialogStateProps } from '../../modules/Content/Publish/PublishDi
 import { DeleteDialogStateProps } from '../../modules/Content/Delete/DeleteDialog';
 import { NewContentDialogStateProps } from '../../modules/Content/Authoring/NewContentDialog';
 import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies/DependenciesDialog';
+import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 
 //region History
@@ -80,6 +81,11 @@ export const showDependenciesDialog = createAction<Partial<DependenciesDialogSta
 export const closeDependenciesDialog = createAction<StandardAction>('CLOSE_DEPENDENCIES_DIALOG');
 export const dependenciesDialogClosed = createAction('DEPENDENCIES_DIALOG_CLOSED');
 // endregion
+
+// region Workflow Cancellation
+export const showWorkflowCancellationDialog = createAction<Partial<WorkflowCancellationDialogStateProps>>('SHOW_WORKFLOW_CANCELLATION_DIALOG');
+export const closeWorkflowCancellationDialog = createAction<StandardAction>('CLOSE_WORKFLOW_CANCELLATION_DIALOG');
+export const workflowCancellationDialogClosed = createAction('WORKFLOW_CANCELLATION_DIALOG_CLOSED');
 
 // region Reject
 export const showRejectDialog = createAction<Partial<RejectDialogStateProps>>('SHOW_REJECT_DIALOG');

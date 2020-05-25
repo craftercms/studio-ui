@@ -38,8 +38,8 @@ import TextField from '@material-ui/core/TextField';
 import { ElasticParams, Facet, Filter as FilterType } from '../../models/Search';
 import CheckIcon from '@material-ui/icons/Check';
 import { LookupTable } from '../../models/LookupTable';
-import { palette } from '../../styles/theme';
 import { nnou } from '../../utils/object';
+import palette from '../../styles/palette';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {

@@ -839,6 +839,10 @@ const rteControlMessages = defineMessages({
   requiredField: {
     id: 'rteControlMessages.requiredField',
     defaultMessage: 'Field is Required'
+  },
+  incompatibleDatasource: {
+    id: 'rteControlMessages.incompatibleDatasource',
+    defaultMessage: 'The data source configured for browse is not compatible with the Rich Text Editor. Please contact your administrator.'
   }
 });
 

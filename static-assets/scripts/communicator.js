@@ -120,21 +120,16 @@
     }
 
     Communicator.prototype = {
-      addOrigin: addOrigin,
-
-      addTargetWindow: addTargetWindow,
-
-      removeTargetWindow: removeTargetWindow,
-
+      addOrigin,
+      addTargetWindow,
+      removeTargetWindow,
       isAllowedOrigin: isAllowedOrigin,
-
-      publish: publish,
+      publish,
       pub: publish,
-
-      subscribe: subscribe,
+      subscribe,
       on: subscribe,
-
-      unsubscribe: unsubscribe
+      unsubscribe,
+      dispatch
     };
 
     /*public*/
@@ -186,7 +181,8 @@
         hasWindow = false,
         targetWindows = this.getTargetWindows();
 
-      for (i = 0; !hasWindow && i < targetWindows.length; ++i) hasWindow = targetWindow === targetWindows[i];
+      for (i = 0; !hasWindow && i < targetWindows.length; ++i)
+        hasWindow = targetWindow === targetWindows[i];
 
       if (!hasWindow) targetWindows.push(targetWindow);
 
@@ -235,12 +231,22 @@
       }
     }
 
+    function dispatch(action) {
+      var targetWindows = this.getTargetWindows();
+      for (var i = 0, l = targetWindows.length; i < l; ++i) {
+        targetWindows[i].window.postMessage(action, targetWindows[i].origin);
+      }
+    }
+
     /*private*/
     function receiveMessage(event) {
       if (this.isAllowedOrigin(event.origin)) {
         var data = event.data;
-        if (data != null && typeof data === 'object' && 'topic' in data) {
-          doLocalPublish(data.topic, data.scope, data.message);
+        if (data != null && typeof data === 'object') {
+          if ('topic' in data)
+            doLocalPublish(data.topic, data.scope, data.message);
+          else if ('type' in data && 'payload' in data)
+            doLocalPublish(data.type, null, data.payload);
         }
       }
     }
@@ -254,7 +260,10 @@
     function doLocalPublish(topic, scope, message) {
       amplify.publish(ALL_TOPICS, topic, message, scope);
       amplify.publish(topic, message, scope);
-      amplify.publish(getScopeSpecificTopic(topic, scope), message, scope);
+      if (scope) {
+        const scoped = getScopeSpecificTopic(topic, scope);
+        amplify.publish(scoped, message, scope);
+      }
     }
 
     Communicator.SCOPE_LOCAL = SCOPE_LOCAL;

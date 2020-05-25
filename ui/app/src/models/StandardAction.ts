@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface StandardAction<T = any> {
-  type: string;
-  payload?: T;
+export interface StandardAction<PayloadType = any, ActionType extends string = any> {
+  type: ActionType;
+  payload?: PayloadType;
 }
 
 export default StandardAction;

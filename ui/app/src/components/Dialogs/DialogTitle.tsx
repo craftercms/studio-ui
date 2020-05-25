@@ -15,12 +15,12 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import { palette } from '../../styles/theme';
 import MuiDialogTitle from '@material-ui/core/DialogTitle/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
+import palette from '../../styles/palette';
 
 const dialogTitleStyles = makeStyles(() => ({
   titleRoot: {

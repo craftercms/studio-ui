@@ -15,14 +15,16 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { map, switchMap } from 'rxjs/operators';
+import { ignoreElements, map, switchMap, tap } from 'rxjs/operators';
 import {
   fetchPreviewToolsConfig,
   fetchPreviewToolsConfigComplete,
-  fetchPreviewToolsConfigFailed
+  fetchPreviewToolsConfigFailed,
+  setPreviewEditMode
 } from '../actions/preview';
 import { getPreviewToolsConfig } from '../../services/configuration';
 import { catchAjaxError } from '../../utils/ajax';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 
 export default [
   // region fetchPreviewToolsConfig
@@ -35,6 +37,14 @@ export default [
           catchAjaxError(fetchPreviewToolsConfigFailed)
         )
       )
-    )
+    ),
+  // endregion
+  // region setPreviewEditMode
+  (action$) =>
+    action$.pipe(
+      ofType(setPreviewEditMode.type),
+      tap((action) => getHostToGuestBus().next(action)),
+      ignoreElements()
+    ),
   // endregion
 ] as Epic[];

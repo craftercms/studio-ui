@@ -26,6 +26,7 @@ import publish from './publish';
 import dependencies from './dependencies';
 import deleteDialog from './delete';
 import edit from './edit';
+import workflowCancellation from './workflowCancellation';
 import reject from './reject';
 
 export default combineReducers({
@@ -40,5 +41,6 @@ export default combineReducers({
   dependencies,
   delete: deleteDialog,
   edit,
+  workflowCancellation,
   reject
 });

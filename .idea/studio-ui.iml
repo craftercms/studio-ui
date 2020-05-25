@@ -13,8 +13,8 @@
       <excludeFolder url="file://$MODULE_DIR$/ui/app/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/ui/app/build" />
       <excludeFolder url="file://$MODULE_DIR$/ui/app/build_tsc" />
-      <excludeFolder url="file://$MODULE_DIR$/ui/guest-ts" />
-      <excludeFolder url="file://$MODULE_DIR$/ui/guest/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/guest/build" />
+      <excludeFolder url="file://$MODULE_DIR$/ui/guest/build_tsc" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

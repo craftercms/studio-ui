@@ -16,14 +16,38 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Guest } from './components/Guest';
-import { GuestProxy } from './components/GuestProxy';
+import Guest from './react/Guest';
+import GuestProxy from './react/GuestProxy';
+import DropMarker from './react/DropMarker';
+import CrafterCMSPortal from './react/CrafterCMSPortal';
+import AssetUploaderMask from './react/AssetUploaderMask';
+import { GuestContextProvider, useGuestContext } from './react/GuestContext';
+import ZoneMarker from './react/ZoneMarker';
+import Spinner from './react/Spinner';
+import ContentType from './react/ContentType';
 
-const guestProxyElement = document.createElement('craftercms-guest-proxy');
+export * from './react/Field';
+export * from './react/hooks';
 
-ReactDOM.render(
-  <Guest modelId="8d7f21fa-5e09-00aa-8340-853b7db302da">
-    <GuestProxy />
-  </Guest>,
-  guestProxyElement
-);
+export {
+  Guest,
+  Spinner,
+  GuestProxy,
+  ZoneMarker,
+  DropMarker,
+  ContentType,
+  CrafterCMSPortal,
+  AssetUploaderMask,
+  GuestContextProvider,
+  useGuestContext
+};
+
+export function initPageBuilder({ modelId, path }) {
+  const guestProxyElement = document.createElement('craftercms-guest-proxy');
+  ReactDOM.render(
+    <Guest modelId={modelId} path={path} isAuthoring>
+      <GuestProxy />
+    </Guest>,
+    guestProxyElement
+  );
+}

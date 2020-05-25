@@ -16,7 +16,6 @@
 
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { palette } from '../../../styles/theme';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
 import List from '@material-ui/core/List';
@@ -29,6 +28,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import { Resource } from '../../../models/Resource';
 import { LegacyVersion } from '../../../models/Version';
 import clsx from 'clsx';
+import palette from '../../../styles/palette';
 
 const versionListStyles = makeStyles(() =>
   createStyles({

@@ -134,7 +134,7 @@ export function HostUI(props: HostPropsUI) {
 
     const hostToGuestSubscription = postMessage$.subscribe((action) => {
       const contentWindow = iframeRef.current.contentWindow;
-      contentWindow.postMessage(action, origin);
+      contentWindow.postMessage(action, '*');
       broadcastChannel && broadcastChannel.postMessage(action);
     });
 
@@ -182,7 +182,7 @@ export default function Host() {
   return (
     <div className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}>
       <HostUI
-        url={`${guestBase}${currentUrl}`}
+        url={currentUrl}
         site={site}
         width={hostSize.width}
         origin={guestBase}

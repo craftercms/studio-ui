@@ -37,10 +37,11 @@ import babel from './babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
 import { jssPreset, makeStyles, Theme } from '@material-ui/core/styles';
-import { generateClassName, palette, theme } from '../styles/theme';
+import { generateClassName, theme } from '../styles/theme';
 import createStore, { CrafterCMSStore } from '../state/store';
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { GenerateId } from 'jss';
+import palette from '../styles/palette';
 
 const ErrorState = lazy(() => import('../components/SystemStatus/ErrorState'));
 

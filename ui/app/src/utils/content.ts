@@ -80,16 +80,17 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem[]): SandboxItem[];
 export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
   if (Array.isArray(item)) {
     // If no internalName then skipping (e.g. level descriptors)
-    return item.flatMap(i => i.internalName ? [parseLegacyItemToSandBoxItem(i)] : []);
+    return item.flatMap(i => i.internalName || i.name ? [parseLegacyItemToSandBoxItem(i)] : []);
   }
+
   return {
-    id: item.uri,
-    label: item.internalName,
-    path: item.uri,
+    id: item.uri ?? item.path,
+    label: item.internalName ?? item.name,
+    path: item.uri ?? item.path,
     localeCode: 'en',
     contentTypeId: item.contentType,
     // Assuming folders aren't navigable
-    previewUrl: item.uri.includes('index.xml') ? (item.browserUri || '/') : null,
+    previewUrl: item.uri?.includes('index.xml') ? (item.browserUri || '/') : null,
     systemType: item.asset ? 'asset' : item.component ? 'component' : item.folder ? 'folder' : item.page ? 'page' : null,
     mimeType: null,
     state: null,

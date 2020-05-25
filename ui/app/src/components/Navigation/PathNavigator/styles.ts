@@ -15,7 +15,7 @@
  */
 
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { palette } from '../../../styles/theme';
+import palette from '../../../styles/palette';
 
 const flagColor = 'rgba(255, 59, 48, 0.5)';
 export const useStyles = makeStyles((theme) =>

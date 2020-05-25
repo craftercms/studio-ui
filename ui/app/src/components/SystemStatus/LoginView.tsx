@@ -36,7 +36,6 @@ import { LogInForm } from './LoginForm';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { getProductLanguages } from '../../services/configuration';
-import { palette } from '../../styles/theme';
 import WarningRounded from '@material-ui/icons/WarningRounded';
 import { parse } from 'query-string';
 import { getCurrentLocale } from '../CrafterCMSNextBridge';
@@ -49,6 +48,7 @@ import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
 import clsx from 'clsx';
 import { filter } from 'rxjs/operators';
 import { useDebouncedInput, useMount } from '../../utils/hooks';
+import palette from '../../styles/palette';
 
 setRequestForgeryToken();
 

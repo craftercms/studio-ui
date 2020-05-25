@@ -23,7 +23,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { palette } from '../../styles/theme';
 import {
   usePreviewState,
   useQuickCreateListResource,
@@ -43,6 +42,7 @@ import QuickCreateItem from '../../models/content/QuickCreateItem';
 import { Resource } from '../../models/Resource';
 import Suspencified from '../../components/SystemStatus/Suspencified';
 import { getSimplifiedVersion } from '../../utils/string';
+import palette from '../../styles/palette';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -273,7 +273,7 @@ export default function() {
       showNewContentDialog({
         item: currentPreview,
         compact: false,
-        onContentTypeSelected: showEditDialog()
+        onContentTypeSelected: showEditDialog({})
       })
     );
   };

@@ -17,7 +17,6 @@
 import React, { ElementType, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { palette } from '../../styles/theme';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -45,6 +44,7 @@ import { useDispatch } from 'react-redux';
 import { camelize, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite, fetchSites } from '../../state/reducers/sites';
 import { fetchSystemVersion } from '../../state/actions/env';
+import palette from '../../styles/palette';
 
 const tileStyles = makeStyles(() =>
   createStyles({

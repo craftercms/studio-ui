@@ -35,7 +35,6 @@ import {
 import StandardAction from '../../../models/StandardAction';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
-import { palette } from '../../../styles/theme';
 import { Resource } from '../../../models/Resource';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -61,6 +60,7 @@ import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 import { ApiResponse } from '../../../models/ApiResponse';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
+import palette from '../../../styles/palette';
 
 const assetsTypes = {
   'all-deps': {

@@ -14,16 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useReducer, useState, Fragment } from 'react';
+import React, { Fragment, useCallback, useReducer, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
-import {
-  copy,
-  cut,
-  getChildrenByPath,
-  getPages,
-  paste
-} from '../../../services/content';
+import { copy, cut, getChildrenByPath, getPages, paste } from '../../../services/content';
 import { getTargetLocales } from '../../../services/translation';
 import { LegacyItem, SandboxItem } from '../../../models/Item';
 import clsx from 'clsx';
@@ -31,9 +25,10 @@ import { LookupTable } from '../../../models/LookupTable';
 import ContextMenu, { SectionItem } from '../../ContextMenu';
 import {
   useActiveSiteId,
+  useEnv,
+  useLogicResource,
   useMount,
-  useSpreadState,
-  useLogicResource
+  useSpreadState
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
 import ContentLocalizationDialog from '../../Dialogs/ContentLocalizationDialog';
@@ -53,7 +48,7 @@ import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import { fetchItemVersions } from '../../../state/reducers/versions';
 import { showDependenciesDialog, showHistoryDialog } from '../../../state/actions/dialogs';
-import ContentLoader from "react-content-loader"
+import ContentLoader from 'react-content-loader';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -342,6 +337,7 @@ export default function (props: WidgetProps) {
 
   const classes = useStyles({});
   const site = useActiveSiteId();
+  const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -528,7 +524,7 @@ export default function (props: WidgetProps) {
       }
       case 'history': {
         dispatch(fetchItemVersions({ rootPath: path, item: menu.activeItem }));
-        dispatch(showHistoryDialog());
+        dispatch(showHistoryDialog({}));
         setMenu({
           activeItem: null,
           anchorEl: null
@@ -628,7 +624,7 @@ export default function (props: WidgetProps) {
 
   const onItemClicked = (item: SandboxItem) => {
     if (item.previewUrl) {
-      window.location.href = `/studio/preview#/?page=${item.previewUrl}&site=${site}`;
+      window.location.href = `${authoringBase}/preview/#/?page=${item.previewUrl}&site=${site}`;
     }
   };
 
