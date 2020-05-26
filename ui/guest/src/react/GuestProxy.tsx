@@ -46,7 +46,12 @@ export default function GuestProxy() {
 
   const state = useSelector<GuestState, GuestState>(state => state);
   const { onEvent } = useGuestContext();
-  const { current: persistence } = useRef({ draggable: null });
+  const { current: persistence } = useRef({ draggable: null, onEvent });
+  const persistenceOnEvent = useRef(onEvent);
+
+  useEffect(() => {
+    persistenceOnEvent.current = onEvent;
+  }, [onEvent]);
 
   useEffect(() => {
 
@@ -153,7 +158,7 @@ export default function GuestProxy() {
     const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
       let record = ElementRegistry.fromElement(e.currentTarget as Element);
       if (notNullOrUndefined(record)) {
-        onEvent(e, record.id);
+        persistenceOnEvent.current(e, record.id);
       }
     };
 
@@ -391,7 +396,7 @@ export default function GuestProxy() {
         .off('dblclick', '[data-craftercms-model-id]', handler);
     };
 
-  }, [onEvent]);
+  }, []);
 
   useEffect(() => {
 
