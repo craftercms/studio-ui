@@ -3491,15 +3491,6 @@ var nodeOpen = false,
         });
       },
 
-      getHistoryView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/history.html',
-          callback,
-          true,
-          true
-        );
-      },
-
       getRequestDeleteView: function (callback) {
         CSA.Service.getViewCommon(
           '{base}/static-assets/components/cstudio-dialogs-templates/request-delete.html',
