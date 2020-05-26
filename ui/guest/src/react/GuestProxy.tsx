@@ -130,7 +130,7 @@ export default function GuestProxy() {
         modelId,
         fieldId,
         index: fieldId.includes('.')
-          ? removeLastPiece(targetIndex as string)
+          ? parseInt(removeLastPiece(targetIndex as string))
           : null
       });
       return $(ElementRegistry.fromICEId(dropZoneId).element);
