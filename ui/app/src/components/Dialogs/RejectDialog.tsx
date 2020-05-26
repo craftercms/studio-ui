@@ -43,7 +43,6 @@ import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import palette from '../../styles/palette';
-import { fetchDependencies } from '../../services/dependencies';
 import { reject } from '../../services/publishing';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fetchCannedMessage } from '../../services/configuration';
@@ -368,28 +367,16 @@ function RejectDialogWrapper(props: RejectDialogProps) {
   };
 
   const onReject = () => {
-    fetchDependencies(siteId, checkedItems).subscribe(
-      (response) => {
-        // api being used in legacy (/studio/api/1/services/api/1/dependency/get-dependencies.json)
-        // returns only softDependencies
-        const deps = response.softDependencies;
+    setApiState({ ...apiState, submitting: true });
 
-        setApiState({ ...apiState, submitting: true });
-
-        reject(siteId, deps, checkedItems, rejectionReason, rejectionComment).subscribe(
-          () => {
-            setApiState({ error: null, submitting: false });
-            onRejectSuccess?.();
-            onDismiss?.();
-          },
-          (error) => {
-            setApiState({ error: null, submitting: false });
-            setApiState({ error });
-          }
-        );
+    reject(siteId, checkedItems, rejectionReason, rejectionComment).subscribe(
+      () => {
+        setApiState({ error: null, submitting: false });
+        onRejectSuccess?.();
+        onDismiss?.();
       },
       (error) => {
-        setApiState({ error });
+        setApiState({ error, submitting: false });
       }
     );
   };
