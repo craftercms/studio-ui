@@ -379,11 +379,11 @@ export function scrollToNode(node: RenderTree, scrollElement: string): void {
         },
         300,
         function() {
-          addAnimation($element, 'craftercms-contentTree-pulse');
+          addAnimation($element, 'craftercms-content-tree-locate');
         }
       );
     } else {
-      addAnimation($element, 'craftercms-contentTree-pulse');
+      addAnimation($element, 'craftercms-content-tree-locate');
     }
   }
 }

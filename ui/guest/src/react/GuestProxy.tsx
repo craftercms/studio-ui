@@ -92,7 +92,7 @@ export default function GuestProxy() {
         collection.slice(newIndex).forEach((el, i) => {
           const elementNewIndex = appendIndex(originalNewIndex, i);
           if (originalNewIndex === elementNewIndex && type === 'insert') {
-            addAnimation($(el), 'craftercms-contentTree-pulse');
+            addAnimation($(el), 'craftercms-content-tree-locate');
           }
           $(el).attr('data-craftercms-index', elementNewIndex);
           const pr = ElementRegistry.fromElement(el);
@@ -116,7 +116,8 @@ export default function GuestProxy() {
           const elementNewIndex = appendIndex(index, i);
           $(el).attr('data-craftercms-index', elementNewIndex);
           if (originalOldIndex === elementNewIndex) {
-            addAnimation($(el), 'craftercms-contentTree-pulse');
+            console.log('que paso aqui?');
+            addAnimation($(el), 'craftercms-content-tree-locate');
           }
           const pr = ElementRegistry.fromElement(el);
           pr && ElementRegistry.deregister(pr.id);
@@ -274,7 +275,7 @@ export default function GuestProxy() {
             });
           });
 
-          addAnimation($(moveTargetPhyRecord.element), 'craftercms-contentTree-pulse');
+          addAnimation($(moveTargetPhyRecord.element), 'craftercms-content-tree-locate');
 
           break;
 
