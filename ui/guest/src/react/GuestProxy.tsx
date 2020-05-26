@@ -296,14 +296,27 @@ export default function GuestProxy() {
           insertElement($spinner, $daddy, targetIndex);
 
           message$.pipe(
-            filter((e) => (e.type === 'COMPONENT_HTML_RESPONSE') && (e.payload.id === instance.craftercms.id)),
+            filter((e) => (e.type === 'INSERT_OPERATION_COMPLETE') && (e.payload.instance.craftercms.id === instance.craftercms.id)),
             take(1)
           ).subscribe(function ({ payload }) {
-            $spinner.remove();
-            const $component = $(payload.response);
-            insertElement($component, $daddy, targetIndex);
-            updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
-            $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
+            const { modelId, fieldId, targetIndex, currentUrl } = payload;
+            let ifrm = document.createElement('iframe');
+            ifrm.setAttribute('src', `${currentUrl}`);
+            ifrm.style.width = '0';
+            ifrm.style.height = '0';
+            document.body.appendChild(ifrm);
+
+            ifrm.onload = function () {
+              $spinner.remove();
+              const htmlString = ifrm.contentWindow.document.documentElement.querySelector(
+                `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
+              );
+              const $component = $(htmlString?.outerHTML);
+              insertElement($component, $daddy, targetIndex);
+              updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
+              $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
+              ifrm.remove();
+            };
           });
 
           break;
