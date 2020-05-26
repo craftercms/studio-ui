@@ -35,6 +35,7 @@ import {
 import {
   isNullOrUndefined,
   notNullOrUndefined,
+  nou,
   pluckProps,
   reversePluckProps
 } from '../utils/object';
@@ -147,17 +148,18 @@ export function deregister(id: number): ICERecord {
 
 export function exists(data: Partial<ICEProps>): number {
   const records = Object.values(registry);
+  // prettier-ignore
   return forEach(
     records,
     (record, i) => {
       if (
-        record.modelId === data.modelId &&
-        // Using == to avoid false negatives with null/undefined
-        // eslint-disable-next-line eqeqeq
-        record.fieldId == data.fieldId &&
-        // Using == to avoid false negatives with '1'/1
-        // eslint-disable-next-line eqeqeq
-        record.index == data.index
+        record.modelId === data.modelId && (
+          (nou(record.fieldId) && nou(data.fieldId)) ||
+          (record.fieldId === data.fieldId)
+        ) && (
+          (nou(record.index) && nou(data.index)) ||
+          (record.index === data.index)
+        )
       ) {
         return record.id;
       }
