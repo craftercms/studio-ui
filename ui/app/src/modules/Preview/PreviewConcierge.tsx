@@ -175,9 +175,11 @@ export function PreviewConcierge(props: any) {
           if (payload.documentDomain) {
             try {
               document.domain = payload.documentDomain;
-            } catch {
-              document.domain = originalDocDomain;
+            } catch (e) {
+              console.error(e);
             }
+          } else if (document.domain !== originalDocDomain) {
+            document.domain = originalDocDomain;
           }
 
           if (payload.__CRAFTERCMS_GUEST_LANDING__) {
