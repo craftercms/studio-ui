@@ -143,13 +143,6 @@
 
   Loader.addModule({
     type: 'js',
-    name: 'template-history',
-    path: 'components/cstudio-templates/history.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: emptyArray
-  });
-
-  Loader.addModule({
-    type: 'js',
     name: 'viewcontroller-base',
     path: 'components/cstudio-view-controllers/base.js?version=' + CStudioAuthoring.UIBuildId,
     requires: emptyArray
@@ -181,13 +174,6 @@
     name: 'viewcontroller-in-context-edit',
     path: 'components/cstudio-view-controllers/in-context-edit.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base', 'component-templateagent', 'template-incontextedit']
-  });
-
-  Loader.addModule({
-    type: 'js',
-    name: 'viewcontroller-history',
-    path: 'components/cstudio-view-controllers/history.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: ['viewcontroller-base', 'component-templateagent', 'template-history']
   });
 
   Loader.addModule({
