@@ -217,13 +217,23 @@ export default function GuestProxy() {
           ] = op.args;
 
           const targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
-          const currentDropZoneICEId = iceRegistry.exists({ modelId, fieldId, index: null });
+          const currentDropZoneICEId = iceRegistry.exists(
+            {
+              modelId,
+              fieldId,
+              index: fieldId.includes('.')
+                ? parseInt(removeLastPiece(index as string))
+                : null
+            }
+          );
           const currentDropZonePhyRecord = ElementRegistry.fromICEId(currentDropZoneICEId);
 
           const targetDropZoneICEId = iceRegistry.exists({
             modelId: targetModelId,
             fieldId: targetFieldId,
-            index: null
+            index: targetFieldId.includes('.')
+              ? parseInt(removeLastPiece(targetIndex as string))
+              : null
           });
           const targetDropZonePhyRecord = ElementRegistry.fromICEId(targetDropZoneICEId);
 
