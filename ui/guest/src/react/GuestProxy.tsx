@@ -116,7 +116,6 @@ export default function GuestProxy() {
           const elementNewIndex = appendIndex(index, i);
           $(el).attr('data-craftercms-index', elementNewIndex);
           if (originalOldIndex === elementNewIndex) {
-            console.log('que paso aqui?');
             addAnimation($(el), 'craftercms-content-tree-locate');
           }
           const pr = ElementRegistry.fromElement(el);
