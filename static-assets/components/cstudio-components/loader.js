@@ -150,20 +150,6 @@
 
   Loader.addModule({
     type: 'js',
-    name: 'template-approve',
-    path: 'components/cstudio-templates/approve.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: emptyArray
-  });
-
-  Loader.addModule({
-    type: 'js',
-    name: 'template-dependencies',
-    path: 'components/cstudio-templates/dependencies.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: emptyArray
-  });
-
-  Loader.addModule({
-    type: 'js',
     name: 'viewcontroller-base',
     path: 'components/cstudio-view-controllers/base.js?version=' + CStudioAuthoring.UIBuildId,
     requires: emptyArray
@@ -212,33 +198,6 @@
 
   Loader.addModule({
     type: 'js',
-    name: 'viewcontroller-approve',
-    path: 'components/cstudio-view-controllers/approve.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: [
-      'viewcontroller-base',
-      'publish-util',
-      'component-templateagent',
-      'jquery-datetimepicker',
-      'jquery-momentjs'
-    ]
-  });
-
-  Loader.addModule({
-    type: 'js',
-    name: 'viewcontroller-dependencies',
-    path: 'components/cstudio-view-controllers/dependencies.js?version=' + CStudioAuthoring.UIBuildIds,
-    requires: [
-      'viewcontroller-base',
-      'component-templateagent',
-      'template-approve',
-      'template-dependencies',
-      'jquery-datetimepicker',
-      'jquery-momentjs'
-    ]
-  });
-
-  Loader.addModule({
-    type: 'js',
     name: 'dialog-bulkupload',
     path: 'components/cstudio-dialogs/bulk-upload.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['component-dropbox']
@@ -256,13 +215,6 @@
     name: 'viewcontroller-cancel-workflow',
     path: 'components/cstudio-view-controllers/cancel-workflow.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base', 'template-cancel-workflow']
-  });
-
-  Loader.addModule({
-    type: 'js',
-    name: 'viewcontroller-requestpublish',
-    path: 'components/cstudio-view-controllers/request-publish.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: ['viewcontroller-base', 'publish-util', 'jquery-datetimepicker', 'jquery-momentjs']
   });
 
   Loader.addModule({
