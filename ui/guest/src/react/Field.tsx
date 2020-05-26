@@ -20,6 +20,7 @@ import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { PropsWithChildren, ElementType } from 'react';
 import { useICE } from './hooks';
 import { value as getModelValue } from '../utils/model';
+import { setProperty } from '../utils/object';
 
 type FieldProps<P = {}> = PropsWithChildren<
   P & {
@@ -45,18 +46,28 @@ export function Img(props) {
   return <img src={getModelValue(model, props.fieldId)} alt="" {...ice} />;
 }
 
-export function RenderField<P = {}>(props: FieldProps<P>) {
-  const { fieldId, index, component = 'div', ...other } = props;
+type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
+  target?: string;
+  format?: (value: V) => F;
+};
+
+export function RenderField<P = {}>(props: RenderFieldProps<P>) {
+  const {
+    fieldId,
+    index,
+    component = 'div',
+    target = 'children',
+    format = (value) => value,
+    ...other
+  } = props;
   const { props: ice, model } = useICE({ model: props.model, fieldId, index });
   const Component = component as ComponentType<P>;
-  const passDownProps = other as P;
-  return (
-    <Component
-      {...passDownProps}
-      {...ice}
-      children={getModelValue(model, props.fieldId)}
-    />
-  );
+  const finalProps = setProperty(
+    Object.assign({}, other, ice),
+    target,
+    format(getModelValue(model, props.fieldId))
+  ) as P;
+  return <Component {...finalProps} />;
 }
 
 export function Model<P = {}>(props: FieldProps<P>) {

@@ -70,7 +70,11 @@ export function deleteProperty<T, P extends keyof T>(object: T, prop: P): Omit<T
   return object;
 }
 
-export function setProperty(object: object, prop: string, value: any): boolean {
+export function setProperty<
+  T extends object = {},
+  K extends string = string,
+  V extends any = any
+>(object: T, prop: K, value: V): T {
   if (object) {
     const props = prop.split('.');
     const propToSet = props.pop();
@@ -80,9 +84,8 @@ export function setProperty(object: object, prop: string, value: any): boolean {
       target = retrieveProperty(object, props.join('.'));
     }
     target[propToSet] = value;
-    return true;
   }
-  return false;
+  return object;
 }
 
 export function createLookupTable<T>(list: T[], idProp: string = 'id'): LookupTable<T> {
