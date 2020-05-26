@@ -15,6 +15,7 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import $ from 'jquery';
 import { fromEvent, interval, merge, zip } from 'rxjs';
 import { filter, share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
@@ -132,7 +133,7 @@ function Guest(props: GuestProps) {
       } catch (e) {
         console.error(e);
       }
-    } else {
+    } else if (document.domain !== initialDocumentDomain) {
       document.domain = initialDocumentDomain;
     }
   }, [documentDomain]);

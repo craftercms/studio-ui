@@ -45,10 +45,14 @@ const useStyles = makeStyles((theme) => createStyles({
   rubbishIcon: {
     width: '100%',
     height: '50%',
-    color: palette.white
+    color: palette.white,
+    pointerEvents: 'none'
   },
   rubbishIconHover: {
     transform: ''
+  },
+  rubbishLabel: {
+    pointerEvents: 'none'
   }
 }));
 
@@ -96,7 +100,7 @@ export default function RubbishBin(props: any) {
             ? <DeleteRoundedTilted className={classes.rubbishIcon} />
             : <DeleteRounded className={classes.rubbishIcon} />
         }
-        <Typography variant="caption">
+        <Typography variant="caption" className={classes.rubbishLabel}>
           {
             (trashed) ? (
               <FormattedMessage
