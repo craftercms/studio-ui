@@ -129,13 +129,6 @@
 
   Loader.addModule({
     type: 'js',
-    name: 'template-delete',
-    path: 'components/cstudio-templates/delete.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: emptyArray
-  });
-
-  Loader.addModule({
-    type: 'js',
     name: 'template-incontextedit',
     path: 'components/cstudio-templates/in-context-edit.js?version=' + CStudioAuthoring.UIBuildId,
     requires: emptyArray
@@ -160,13 +153,6 @@
     name: 'viewcontroller-submitfordelete',
     path: 'components/cstudio-view-controllers/submit-for-delete.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-basedelete', 'component-templateagent', 'template-submitfordelete']
-  });
-
-  Loader.addModule({
-    type: 'js',
-    name: 'viewcontroller-delete',
-    path: 'components/cstudio-view-controllers/delete.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: ['viewcontroller-basedelete', 'component-templateagent', 'template-delete']
   });
 
   Loader.addModule({
