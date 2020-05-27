@@ -360,7 +360,7 @@ function Guest(props: GuestProps) {
         <CrafterCMSPortal>
           {draggableItemElemRecId && (
             <craftercms-dragged-element>
-              {elementRegistry.get(parseInt(draggableItemElemRecId)).label}
+              {elementRegistry.get(parseInt(draggableItemElemRecId))?.label}
             </craftercms-dragged-element>
           )}
           {Object.values(state.uploading).map((highlight: HighlightData) => (

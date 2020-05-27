@@ -705,7 +705,7 @@ export function insertComponent(
     doc => {
 
       const id = instance.craftercms.id;
-      const path = shared ? getComponentPath(id, instance.craftercms.contentTypeId) : null;
+      const path = shared ? instance.craftercms.path ? instance.craftercms.path : getComponentPath(id, instance.craftercms.contentTypeId) : null;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
       const newItem = doc.createElement('item');
@@ -762,8 +762,7 @@ export function insertInstance(
     modelId,
     parentModelId,
     doc => {
-
-      const path = getComponentPath(instance.craftercms.id, instance.craftercms.contentTypeId);
+      const path = instance.craftercms.path;
 
       const newItem = doc.createElement('item');
 
