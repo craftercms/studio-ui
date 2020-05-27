@@ -115,13 +115,6 @@
 
   Loader.addModule({
     type: 'js',
-    name: 'component-dropbox',
-    path: 'components/cstudio-components/dropbox.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: emptyArray
-  });
-
-  Loader.addModule({
-    type: 'js',
     name: 'template-incontextedit',
     path: 'components/cstudio-templates/in-context-edit.js?version=' + CStudioAuthoring.UIBuildId,
     requires: emptyArray
@@ -136,29 +129,9 @@
 
   Loader.addModule({
     type: 'js',
-    name: 'viewcontroller-basedelete',
-    path: 'components/cstudio-view-controllers/base-delete.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: ['viewcontroller-base']
-  });
-
-  Loader.addModule({
-    type: 'js',
     name: 'viewcontroller-in-context-edit',
     path: 'components/cstudio-view-controllers/in-context-edit.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base', 'component-templateagent', 'template-incontextedit']
-  });
-
-  Loader.addModule({
-    type: 'js',
-    name: 'publish-util',
-    path: 'components/cstudio-view-controllers/publish-util.js?version=' + CStudioAuthoring.UIBuildId
-  });
-
-  Loader.addModule({
-    type: 'js',
-    name: 'dialog-bulkupload',
-    path: 'components/cstudio-dialogs/bulk-upload.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: ['component-dropbox']
   });
 
   Loader.addModule({
