@@ -2970,28 +2970,6 @@ var nodeOpen = false,
         //document.dispatchEvent(eventNS);
       },
 
-      /**
-       * Login
-       */
-      loginDialog: function (cb) {
-        CStudioAuthoring.Module.requireModule(
-          'login-dialog',
-          '/static-assets/components/cstudio-dialogs/login-dialog.js',
-          {
-            cb: cb
-          },
-          {
-            moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-              dialogClass.showDialog(moduleConfig.cb);
-            }
-          }
-        );
-
-        var moduleConfig = {
-          cb: cb
-        };
-      },
-
       uploadAsset: function (site, path, isUploadOverwrite, uploadCb, fileTypes) {
         CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb, fileTypes);
       },
