@@ -46,7 +46,12 @@ export default function GuestProxy() {
 
   const state = useSelector<GuestState, GuestState>(state => state);
   const { onEvent } = useGuestContext();
-  const { current: persistence } = useRef({ draggable: null });
+  const { current: persistence } = useRef({ draggable: null, onEvent });
+  const persistenceOnEvent = useRef(onEvent);
+
+  useEffect(() => {
+    persistenceOnEvent.current = onEvent;
+  }, [onEvent]);
 
   useEffect(() => {
 
@@ -87,7 +92,7 @@ export default function GuestProxy() {
         collection.slice(newIndex).forEach((el, i) => {
           const elementNewIndex = appendIndex(originalNewIndex, i);
           if (originalNewIndex === elementNewIndex && type === 'insert') {
-            addAnimation($(el), 'craftercms-contentTree-pulse');
+            addAnimation($(el), 'craftercms-content-tree-locate');
           }
           $(el).attr('data-craftercms-index', elementNewIndex);
           const pr = ElementRegistry.fromElement(el);
@@ -111,7 +116,7 @@ export default function GuestProxy() {
           const elementNewIndex = appendIndex(index, i);
           $(el).attr('data-craftercms-index', elementNewIndex);
           if (originalOldIndex === elementNewIndex) {
-            addAnimation($(el), 'craftercms-contentTree-pulse');
+            addAnimation($(el), 'craftercms-content-tree-locate');
           }
           const pr = ElementRegistry.fromElement(el);
           pr && ElementRegistry.deregister(pr.id);
@@ -125,7 +130,7 @@ export default function GuestProxy() {
         modelId,
         fieldId,
         index: fieldId.includes('.')
-          ? removeLastPiece(targetIndex as string)
+          ? parseInt(removeLastPiece(targetIndex as string))
           : null
       });
       return $(ElementRegistry.fromICEId(dropZoneId).element);
@@ -153,7 +158,7 @@ export default function GuestProxy() {
     const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
       let record = ElementRegistry.fromElement(e.currentTarget as Element);
       if (notNullOrUndefined(record)) {
-        onEvent(e, record.id);
+        persistenceOnEvent.current(e, record.id);
       }
     };
 
@@ -212,13 +217,23 @@ export default function GuestProxy() {
           ] = op.args;
 
           const targetIndexParsed = (typeof targetIndex === 'number') ? targetIndex : parseInt(popPiece(targetIndex));
-          const currentDropZoneICEId = iceRegistry.exists({ modelId, fieldId, index: null });
+          const currentDropZoneICEId = iceRegistry.exists(
+            {
+              modelId,
+              fieldId,
+              index: fieldId.includes('.')
+                ? parseInt(removeLastPiece(index as string))
+                : null
+            }
+          );
           const currentDropZonePhyRecord = ElementRegistry.fromICEId(currentDropZoneICEId);
 
           const targetDropZoneICEId = iceRegistry.exists({
             modelId: targetModelId,
             fieldId: targetFieldId,
-            index: null
+            index: targetFieldId.includes('.')
+              ? parseInt(removeLastPiece(targetIndex as string))
+              : null
           });
           const targetDropZonePhyRecord = ElementRegistry.fromICEId(targetDropZoneICEId);
 
@@ -259,7 +274,7 @@ export default function GuestProxy() {
             });
           });
 
-          addAnimation($(moveTargetPhyRecord.element), 'craftercms-contentTree-pulse');
+          addAnimation($(moveTargetPhyRecord.element), 'craftercms-content-tree-locate');
 
           break;
 
@@ -296,14 +311,27 @@ export default function GuestProxy() {
           insertElement($spinner, $daddy, targetIndex);
 
           message$.pipe(
-            filter((e) => (e.type === 'COMPONENT_HTML_RESPONSE') && (e.payload.id === instance.craftercms.id)),
+            filter((e) => (e.type === 'INSERT_OPERATION_COMPLETE') && (e.payload.instance.craftercms.id === instance.craftercms.id)),
             take(1)
           ).subscribe(function ({ payload }) {
-            $spinner.remove();
-            const $component = $(payload.response);
-            insertElement($component, $daddy, targetIndex);
-            updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
-            $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
+            const { modelId, fieldId, targetIndex, currentUrl } = payload;
+            let ifrm = document.createElement('iframe');
+            ifrm.setAttribute('src', `${currentUrl}`);
+            ifrm.style.width = '0';
+            ifrm.style.height = '0';
+            document.body.appendChild(ifrm);
+
+            ifrm.onload = function () {
+              $spinner.remove();
+              const htmlString = ifrm.contentWindow.document.documentElement.querySelector(
+                `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
+              );
+              const $component = $(htmlString?.outerHTML);
+              insertElement($component, $daddy, targetIndex);
+              updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
+              $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
+              ifrm.remove();
+            };
           });
 
           break;
@@ -378,7 +406,7 @@ export default function GuestProxy() {
         .off('dblclick', '[data-craftercms-model-id]', handler);
     };
 
-  }, [onEvent]);
+  }, []);
 
   useEffect(() => {
 
