@@ -3491,24 +3491,6 @@ var nodeOpen = false,
         });
       },
 
-      getRequestDeleteView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/request-delete.html',
-          callback,
-          true,
-          true
-        );
-      },
-
-      getSubmitForDeleteView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/submit-for-delete.html',
-          callback,
-          true,
-          true
-        );
-      },
-
       getSchedulingPolicyView: function (callback) {
         var srv = CStudioAuthoring.Service,
           url = srv._formatURL(
