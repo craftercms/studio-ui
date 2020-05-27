@@ -122,13 +122,6 @@
 
   Loader.addModule({
     type: 'js',
-    name: 'template-submitfordelete',
-    path: 'components/cstudio-templates/submit-for-delete.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: emptyArray
-  });
-
-  Loader.addModule({
-    type: 'js',
     name: 'template-incontextedit',
     path: 'components/cstudio-templates/in-context-edit.js?version=' + CStudioAuthoring.UIBuildId,
     requires: emptyArray
@@ -146,13 +139,6 @@
     name: 'viewcontroller-basedelete',
     path: 'components/cstudio-view-controllers/base-delete.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base']
-  });
-
-  Loader.addModule({
-    type: 'js',
-    name: 'viewcontroller-submitfordelete',
-    path: 'components/cstudio-view-controllers/submit-for-delete.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: ['viewcontroller-basedelete', 'component-templateagent', 'template-submitfordelete']
   });
 
   Loader.addModule({
@@ -187,13 +173,6 @@
     name: 'viewcontroller-cancel-workflow',
     path: 'components/cstudio-view-controllers/cancel-workflow.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['viewcontroller-base', 'template-cancel-workflow']
-  });
-
-  Loader.addModule({
-    type: 'js',
-    name: 'viewcontroller-requestdelete',
-    path: 'components/cstudio-view-controllers/request-delete.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: ['viewcontroller-base']
   });
 
   Loader.addModule({
