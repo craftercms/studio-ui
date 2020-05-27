@@ -2844,46 +2844,6 @@ var nodeOpen = false,
       /* submit content moved up, next to approveCommon */
 
       /**
-       * approve content
-       */
-      approveContent: function (site, contentItems) {
-        CStudioAuthoring.Module.requireModule(
-          'dialog-approve',
-          '/static-assets/components/cstudio-dialogs/go-live.js',
-          {
-            contentItems: contentItems,
-            site: site
-          },
-          {
-            moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-              // in preview, this function undefined raises error -- unlike dashboard
-              dialogClass.showDialog && dialogClass.showDialog(moduleConfig.site, moduleConfig.contentItems);
-            }
-          }
-        );
-      },
-
-      /**
-       * approve-schedule content
-       */
-      approveScheduleContent: function (site, contentItems) {
-        CStudioAuthoring.Module.requireModule(
-          'dialog-schedule-to-go-live',
-          '/static-assets/components/cstudio-dialogs/schedule-to-go-live.js',
-          {
-            contentItems: contentItems,
-            site: site
-          },
-          {
-            moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-              // in preview, this function undefined raises error -- unlike dashboard
-              dialogClass.showDialog && dialogClass.showDialog(moduleConfig.site, moduleConfig.contentItems);
-            }
-          }
-        );
-      },
-
-      /**
        * reject content
        */
       rejectContent: function (site, contentItems) {
