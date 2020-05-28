@@ -25,7 +25,8 @@
     passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
     usersAdminMessages = i18n.messages.usersAdminMessages,
     groupsAdminMessages = i18n.messages.groupsAdminMessages,
-    publishingMessages = i18n.messages.publishingMessages;
+    publishingMessages = i18n.messages.publishingMessages,
+    words = i18n.messages.words;
 
   app.service('adminService', [
     '$http',
@@ -702,7 +703,7 @@
           }
         }
 
-        var replaceChars = { ',': ', ', _: ' ' };
+        var replaceChars = { ',': ', ', '_': ' ' };
         audit.actionsInputVal = audit.actions.toString().replace(/,|_/g, function (match) {
           return replaceChars[match];
         });
@@ -2235,7 +2236,9 @@
         mergeStrategy: 'none',
         repoMessages: {
           pendingCommit: formatMessage(repoMessages.pendingCommit),
-          unstagedFiles: formatMessage(repoMessages.unstagedFiles)
+          unstagedFiles: formatMessage(repoMessages.unstagedFiles),
+          unreachableRemote: (name) => formatMessage(repoMessages.unreachableRemote, { name }),
+          reason: formatMessage(words.reason)
         }
       };
 
@@ -2256,6 +2259,19 @@
       repositories.getFileName = function (filePath) {
         return filePath.substr(filePath.lastIndexOf('/') + 1);
       };
+
+      function repositoriesReceived(data) {
+        const reachable = [], unreachable = [];
+        data.remotes.forEach((remote) => {
+          if (remote.reachable) {
+            reachable.push(remote);
+          } else {
+            unreachable.push(remote);
+          }
+        });
+        repositories.repositories = Object.assign({}, data, { reachable, unreachable });
+        repositories.spinnerOverlay && repositories.spinnerOverlay.close();
+      }
 
       this.init = function () {
         $scope.showError = function (error) {
@@ -2312,12 +2328,7 @@
 
         adminService
           .getRepositories(repositories)
-          .success(function (data) {
-            repositories.repositories = data;
-            if (repositories.spinnerOverlay) {
-              repositories.spinnerOverlay.close();
-            }
-          })
+          .success(repositoriesReceived)
           .error(function (error) {
             $scope.showError(error.response);
           });
@@ -2345,10 +2356,7 @@
             $scope.hideModal();
             adminService
               .getRepositories(repositories)
-              .success(function (data) {
-                repositories.repositories = data;
-                repositories.spinnerOverlay.close();
-              })
+              .success(repositoriesReceived)
               .error(function (error) {
                 $scope.showError(error.response);
                 repositories.spinnerOverlay.close();

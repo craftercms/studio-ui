@@ -223,6 +223,10 @@ const reposAdminMessages = defineMessages({
   unstagedFiles: {
     id: 'reposAdmin.unstagedFilesMessage',
     defaultMessage: 'There are unstaged files in your repository.'
+  },
+  unreachableRemote: {
+    id: 'reposAdmin.unreachableRemote',
+    defaultMessage: 'Remote "{name}" is currently unreachable.'
   }
 });
 
@@ -417,6 +421,10 @@ const words = defineMessages({
   upload: {
     id: 'words.upload',
     defaultMessage: 'Upload'
+  },
+  reason: {
+    id: 'words.reason',
+    defaultMessage: 'Reason'
   }
 });
 
