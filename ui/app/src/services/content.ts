@@ -216,9 +216,7 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
             (contentType.type === query.type) &&
             (contentType.name !== '/component/level-descriptor')
           ))
-          : response.filter((contentType) => (
-            contentType.name !== '/component/level-descriptor'
-          ))
+          : response
       ).map(parseLegacyContentType)
     ),
     switchMap((contentTypes) => zip(

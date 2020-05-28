@@ -29,9 +29,9 @@ import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
 import {
   useActiveSiteId,
+  useLogicResource,
   usePreviewGuest,
-  useSelection,
-  useLogicResource
+  useSelection
 } from '../../../utils/hooks';
 import { ContentType, ContentTypeField } from '../../../models/ContentType';
 import Page from '../../../components/Icons/Page';
@@ -213,7 +213,7 @@ function getChildren(
 ) {
   let children = [];
   Object.keys(model).forEach((fieldName) => {
-    if (fieldName === 'craftercms') return;
+    if (fieldName === 'craftercms' || fieldName.endsWith('_raw')) return;
     const { type, name } = contentType.fields[fieldName];
     let subChildren = [];
     if (type === 'node-selector') {
