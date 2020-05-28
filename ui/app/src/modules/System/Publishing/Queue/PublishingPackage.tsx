@@ -126,7 +126,7 @@ const translations = defineMessages({
   },
   status: {
     id: 'publishingDashboard.status',
-    defaultMessage: 'Status is {state} for {environment} environment'
+    defaultMessage: 'Status is {state} for {environment} target'
   },
   comment: {
     id: 'publishingDashboard.comment',
