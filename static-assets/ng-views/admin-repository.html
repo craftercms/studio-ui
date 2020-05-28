@@ -94,9 +94,14 @@
             </td>
           </tr>
           <tr ng-repeat="repo in repositories.repositories.unreachable track by $index">
-            <td colspan="7">
+            <td colspan="6">
               <h5>{{repositories.repoMessages.unreachableRemote(repo.name)}}</h5>
               <p>{{repositories.repoMessages.reason}}: {{repo.unreachableReason}}</p>
+            </td>
+            <td>
+              <a ng-click="removeRepo(repo)" class="btn btn-sm remove">
+                <i class="fa fa-trash-o" title="Remove"></i>
+              </a>
             </td>
           </tr>
           </tbody>
