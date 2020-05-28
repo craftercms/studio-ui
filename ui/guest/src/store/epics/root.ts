@@ -236,12 +236,13 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                     record: reversePluckProps(record, 'element')
                   });
                   aImg.src = event.target.result;
-                  //With this setTimeout the uploaderMask has the new imageDropZone Rects;
+                  // Timeout gives the browser a chance to render the image so later rect 
+                  // calculations are working with the updated paint.
                   setTimeout(() => {
                     stream$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload: { record } });
                     stream$.complete();
                     stream$.unsubscribe();
-                  }, 0);
+                  });
                 })(record.element as HTMLImageElement);
                 reader.readAsDataURL(file);
                 return stream$
