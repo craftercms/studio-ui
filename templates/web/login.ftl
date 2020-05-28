@@ -41,8 +41,8 @@
 <#include "/templates/web/common/js-next-scripts.ftl" />
 <script>
   CrafterCMSNext.render('#root', 'Login', {
-      passwordRequirementsRegex: '${passwordRequirementsRegex}'
-    });
+    passwordRequirementsRegex: '${passwordRequirementsRegex}'
+  });
 </script>
 </body>
 </html>
