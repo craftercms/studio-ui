@@ -96,6 +96,9 @@ const treeItemStyles = makeStyles((theme) =>
       paddingLeft: '8px',
       '&.padded': {
         paddingLeft: '15px'
+      },
+      '&.root': {
+        paddingLeft: 0
       }
     },
     treeItemGroup: {},
@@ -133,6 +136,7 @@ interface RenderTree {
   embeddedParentPath?: string;
   fieldId?: string;
   index?: string | number;
+  rootPath?: boolean;
 }
 
 interface Data {
@@ -214,6 +218,8 @@ function getChildren(
   let children = [];
   Object.keys(model).forEach((fieldName) => {
     if (fieldName === 'craftercms' || fieldName.endsWith('_raw')) return;
+    const contentTypeField = getContentTypeField(contentType, fieldName, contentTypes);
+    if (!contentTypeField) return;
     const { type, name } = getContentTypeField(contentType, fieldName, contentTypes);
     let subChildren = [];
     if (type === 'node-selector') {
@@ -264,8 +270,8 @@ function getChildren(
   return children;
 }
 
-function getContentTypeField(contentType: ContentType, fieldName: string, contentTypes: LookupTable<ContentType>) {
-  return contentType.fields[fieldName] ?? contentTypes['/component/level-descriptor'].fields[fieldName];
+function getContentTypeField(contentType: ContentType, fieldName: string, contentTypes: LookupTable<ContentType>): ContentTypeField {
+  return contentType.fields[fieldName] ?? contentTypes['/component/level-descriptor'].fields[fieldName] ?? null;
 }
 
 interface TreeItemCustomInterface {
@@ -332,11 +338,13 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       icon={node.type === 'component' && <ChevronRightIcon onClick={() => handleClick(node)} />}
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(node)}>
-          {node.id.includes(rootPrefix) && handlePrevious ? (
-            <ChevronLeftIcon onClick={(e) => handlePrevious(e)} />
-          ) : (
-            <Icon className={classes.icon} />
-          )}
+          {
+            !node.rootPath && node.id.includes(rootPrefix) && handlePrevious ? (
+              <ChevronLeftIcon onClick={(e) => handlePrevious(e)} />
+            ) : (
+              <Icon className={classes.icon} />
+            )
+          }
           <p>{node.name}</p>
           {over && (node.type === 'component' || node.id.includes(rootPrefix)) && (
             <IconButton
@@ -356,7 +364,8 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
         label: classes.treeItemLabelRoot,
         content: clsx(
           classes.treeItemContent,
-          !node.children?.length && node.type === 'component' && 'padded'
+          !node.children?.length && node.type === 'component' && 'padded',
+          node.id.includes(rootPrefix) && 'root'
         ),
         expanded: classes.treeItemExpanded,
         group: classes.treeItemGroup,
@@ -401,7 +410,8 @@ export default function ContentTree() {
         name: parent.craftercms.label,
         children: getChildren(parent, contentType, guest.models, contentTypesBranch.byId),
         type: contentType.type,
-        modelId: parent.craftercms.id
+        modelId: parent.craftercms.id,
+        rootPath: true
       };
       setData({
         previous: [],
