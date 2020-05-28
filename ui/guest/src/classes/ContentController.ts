@@ -46,12 +46,9 @@ import {
 } from '../utils/ice';
 import { createQuery, search } from '@craftercms/search';
 import { parseDescriptor, preParseSearchResults } from '@craftercms/content';
-import {
-  createChildModelIdList,
-  modelsToLookup,
-  normalizeModelsLookup
-} from '../utils/content';
+import { createChildModelIdList, modelsToLookup, normalizeModelsLookup } from '../utils/content';
 import { crafterConf } from '@craftercms/classes';
+import { getDefaultValue } from '../utils/contentType';
 
 if (process.env.NODE_ENV === 'development') {
   // TODO: Notice
@@ -357,6 +354,8 @@ export function insertItem(
   });
 }
 
+const systemProps = ['fileName', 'internalName'];
+
 export function insertComponent(
   modelId: string,
   fieldId: string,
@@ -399,7 +398,9 @@ export function insertComponent(
           break;
         }
         default:
-          instance[id] = field.defaultValue;
+          if (!systemProps.includes(field.id)) {
+            instance[id] = getDefaultValue(field);
+          }
       }
     });
   }

@@ -1112,6 +1112,8 @@ var nodeOpen = false,
           searchUrl += '&query=' + searchContext.query;
         }
 
+        searchUrl += '&searchId=';
+
         const filters = searchContext.filters;
         if (!jQuery.isEmptyObject(searchContext.filters)) {
           searchUrl += `#/?filters=${encodeURIComponent(JSON.stringify(filters))}`;
@@ -1120,7 +1122,7 @@ var nodeOpen = false,
         var childSearch = null;
 
         if (
-          !searchId ||
+          searchId == '' ||
           searchId == null ||
           searchId == 'undefined' ||
           !CStudioAuthoring.ChildSearchManager.searches[searchId]
@@ -1128,7 +1130,7 @@ var nodeOpen = false,
           childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
           childSearch.openInSameWindow = openInSameWindow;
           searchId = CStudioAuthoring.Utils.generateUUID();
-
+          searchUrl = searchUrl.replace('&searchId=', '&searchId=' + searchId);
           childSearch.searchId = searchId;
           childSearch.searchUrl = searchUrl;
           childSearch.saveCallback = callback;

@@ -31,7 +31,7 @@ import { post } from '../../utils/communicator';
 import iceRegistry from '../../classes/ICERegistry';
 import { dragOk, unwrapEvent } from '../util';
 import contentController from '../../classes/ContentController';
-import { merge, NEVER, of } from 'rxjs';
+import { merge, NEVER, of, Subject } from 'rxjs';
 import {
   clearAndListen$,
   destroyDragSubjects,
@@ -226,6 +226,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
               if (dragContext.inZone) {
                 const file = unwrapEvent<DragEvent>(event).dataTransfer.files[0];
+                const stream$ = new Subject();
                 const reader = new FileReader();
                 reader.onload = ((aImg: HTMLImageElement) => (event) => {
                   post(DESKTOP_ASSET_DROP, {
@@ -235,10 +236,16 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                     record: reversePluckProps(record, 'element')
                   });
                   aImg.src = event.target.result;
+                  // Timeout gives the browser a chance to render the image so later rect 
+                  // calculations are working with the updated paint.
+                  setTimeout(() => {
+                    stream$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload: { record } });
+                    stream$.complete();
+                    stream$.unsubscribe();
+                  });
                 })(record.element as HTMLImageElement);
                 reader.readAsDataURL(file);
-
-                return of({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload: { record } });
+                return stream$
               }
               break;
             }

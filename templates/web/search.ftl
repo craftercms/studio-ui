@@ -60,21 +60,28 @@
 </head>
 
 <body>
-    <section class="cstudio-search"></section>
+<section class="cstudio-search"></section>
 
-    <div id="cstudio-command-controls-container"></div>
+<div id="cstudio-command-controls-container"></div>
 
-    <script id="hb-command-controls" type="text/x-handlebars-template">
-      <div id="cstudio-command-controls">
-        <div id="submission-controls" class="cstudio-form-controls-button-container">
-          <input id="formSaveButton" type="button" class="cstudio-search-btn cstudio-button btn btn-primary" value="Add Selection">
-          <input id="formCancelButton" type="button" class="cstudio-search-btn cstudio-button btn btn-default" value="Cancel">
-        </div>
-      </div>
-    </script>
+<script id="hb-command-controls" type="text/x-handlebars-template">
+  <div id="cstudio-command-controls">
+    <div id="submission-controls" class="cstudio-form-controls-button-container">
+      <input
+              id="formSaveButton" type="button"
+              class="cstudio-search-btn cstudio-button btn btn-primary" value="Add Selection"
+              disabled
+      >
+      <input
+              id="formCancelButton" type="button"
+              class="cstudio-search-btn cstudio-button btn btn-default" value="Cancel"
+      >
+    </div>
+  </div>
+</script>
 
-    <script type="text/javascript">
-      CStudioSearch.init();
-    </script>
+<script type="text/javascript">
+  CStudioSearch.init();
+</script>
 </body>
 </html>
