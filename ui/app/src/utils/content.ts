@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LegacyItem, SandboxItem } from '../models/Item';
+import { BaseItem, DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 
 export function isEditableAsset(path: string) {
   return (
@@ -75,6 +75,24 @@ export function isImage(path: string) {
   );
 }
 
+export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
+  return {
+    id: item.uri ?? item.path,
+    label: item.internalName ?? item.name,
+    contentTypeId: item.contentType,
+    path: item.uri ?? item.path,
+    // Assuming folders aren't navigable
+    previewUrl: item.uri?.includes('index.xml') ? (item.browserUri || '/') : null,
+    systemType: item.asset ? 'asset' : item.component ? 'component' : item.folder ? 'folder' : item.page ? 'page' : null,
+    mimeType: null,
+    state: null,
+    lockOwner: null,
+    disabled: null,
+    localeCode: 'en',
+    translationSourceId: null
+  };
+}
+
 export function parseLegacyItemToSandBoxItem(item: LegacyItem): SandboxItem;
 export function parseLegacyItemToSandBoxItem(item: LegacyItem[]): SandboxItem[];
 export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): SandboxItem | SandboxItem[] {
@@ -84,19 +102,7 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
   }
 
   return {
-    id: item.uri ?? item.path,
-    label: item.internalName ?? item.name,
-    path: item.uri ?? item.path,
-    localeCode: 'en',
-    contentTypeId: item.contentType,
-    // Assuming folders aren't navigable
-    previewUrl: item.uri?.includes('index.xml') ? (item.browserUri || '/') : null,
-    systemType: item.asset ? 'asset' : item.component ? 'component' : item.folder ? 'folder' : item.page ? 'page' : null,
-    mimeType: null,
-    state: null,
-    lockOwner: null,
-    disabled: null,
-    translationSourceId: null,
+    ...parseLegacyItemToBaseItem(item),
     creator: null,
     createdDate: null,
     modifier: null,
@@ -106,7 +112,29 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
   };
 }
 
+export function parseLegacyItemToDetailedItem(item: LegacyItem): DetailedItem;
+export function parseLegacyItemToDetailedItem(item: LegacyItem[]): DetailedItem[];
+export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): DetailedItem | DetailedItem[] {
+  if (Array.isArray(item)) {
+    // If no internalName then skipping (e.g. level descriptors)
+    return item.flatMap(i => i.internalName || i.name ? [parseLegacyItemToDetailedItem(i)] : []);
+  }
+
+  return {
+    ...parseLegacyItemToBaseItem(item),
+    sandbox: null,
+    staging: null,
+    live: {
+      lastScheduledDate: item.scheduledDate,
+      lastPublishedDate: item.publishedDate,
+      publisher: item.user,
+      commitId: null
+    }
+  };
+}
+
 export default {
   isEditableAsset,
-  parseLegacyItemToSandBoxItem
+  parseLegacyItemToSandBoxItem,
+  parseLegacyItemToDetailedItem
 };

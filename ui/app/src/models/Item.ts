@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface BaseItem {
+export interface BaseItem {
   id: string;
   label: string;
   contentTypeId: string;
