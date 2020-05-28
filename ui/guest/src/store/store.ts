@@ -36,9 +36,14 @@ export function createGuestStore(): GuestStore {
     GuestState
   >();
   const middleware = [
-    ...getDefaultMiddleware<GuestState, { thunk: boolean; serializableCheck: boolean }>({
+    ...getDefaultMiddleware<GuestState, any>({
       thunk: false,
-      serializableCheck: false
+      // serializable is not good companion while we have
+      // non-serializable values on the state (elements).
+      serializableCheck: false,
+      // immutable is causing max stack issues, probably also due
+      // to the non-serializable values on the state.
+      immutableCheck: false
     }),
     epicMiddleware
   ];

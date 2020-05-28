@@ -32,11 +32,17 @@ type FieldProps<P = {}> = PropsWithChildren<
 >;
 
 export function Field<P = {}>(props: FieldProps<P>) {
-  const { fieldId, index, component = 'div', ...other } = props;
-  const { props: ice, model } = useICE({ model: props.model, fieldId, index });
+  const { model: modelProp, fieldId, index, component = 'div', ...other } = props;
+  const { props: ice, model } = useICE({ model: modelProp, fieldId, index });
   const Component = component as ComponentType<P>;
-  const passDownProps = other as P;
-  return <Component {...passDownProps} {...ice} model={model} />;
+  const passDownProps = {
+    ...other,
+    ...ice,
+    // If the component is an html element, the model would end up write as an
+    // attribute model="[object Object]".
+    ...(typeof component === 'string' ? {} : { model })
+  } as P;
+  return <Component {...passDownProps} />;
 }
 
 export default Field;
@@ -53,6 +59,7 @@ type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
 
 export function RenderField<P = {}>(props: RenderFieldProps<P>) {
   const {
+    model: modelProp,
     fieldId,
     index,
     component = 'div',
@@ -60,14 +67,14 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
     format = (value) => value,
     ...other
   } = props;
-  const { props: ice, model } = useICE({ model: props.model, fieldId, index });
+  const { props: ice, model } = useICE({ model: modelProp, fieldId, index });
   const Component = component as ComponentType<P>;
-  const finalProps = setProperty(
+  const passDownProps = setProperty(
     Object.assign({}, other, ice),
     target,
     format(getModelValue(model, props.fieldId))
   ) as P;
-  return <Component {...finalProps} />;
+  return <Component {...passDownProps} />;
 }
 
 export function Model<P = {}>(props: FieldProps<P>) {

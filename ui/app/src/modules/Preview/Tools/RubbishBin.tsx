@@ -24,6 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { DRAWER_WIDTH } from '../previewContext';
 import palette from '../../../styles/palette';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => createStyles({
   rubbishBin: {
@@ -42,14 +43,14 @@ const useStyles = makeStyles((theme) => createStyles({
     color: palette.white,
     zIndex: theme.zIndex.drawer
   },
+  rubbishBinHover: {
+    background: palette.red.main
+  },
   rubbishIcon: {
     width: '100%',
     height: '50%',
     color: palette.white,
     pointerEvents: 'none'
-  },
-  rubbishIconHover: {
-    transform: ''
   },
   rubbishLabel: {
     pointerEvents: 'none'
@@ -70,7 +71,7 @@ export default function RubbishBin(props: any) {
     <Grow in={props.open}>
       <Paper
         elevation={2}
-        className={classes.rubbishBin}
+        className={clsx(classes.rubbishBin, over && classes.rubbishBinHover)}
         onDragOver={(e) => {
           e.preventDefault();
         }}

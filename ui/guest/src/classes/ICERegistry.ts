@@ -75,7 +75,7 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
 let rid = 0;
 
 /* private */
-let registry: LookupTable<ICERecord> = {
+const registry: LookupTable<ICERecord> = {
   /* [id]: { modelId, fieldId, index } */
 };
 

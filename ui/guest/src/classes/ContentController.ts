@@ -50,15 +50,15 @@ import { createChildModelIdList, modelsToLookup, normalizeModelsLookup } from '.
 import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '../utils/contentType';
 
-if (process.env.NODE_ENV === 'development') {
-  // TODO: Notice
-  // Not so sure about this assumption. Maybe best to just leave it up to the consumer
-  // app to set the crafter URL via `crafterConf` if it wants something different?
-  (crafterConf.getConfig().baseUrl === '') && crafterConf.configure({
-    baseUrl: 'http://localhost:8080',
-    site: Cookies.get('crafterSite')
-  });
-}
+// if (process.env.NODE_ENV === 'development') {
+// TODO: Notice
+// Not so sure about this assumption. Maybe best to just leave it up to the consumer
+// app to set the crafter URL via `crafterConf` if it wants something different?
+(crafterConf.getConfig().baseUrl === '') && crafterConf.configure({
+  baseUrl: (window.location.hostname === 'localhost') ? 'http://localhost:8080' : window.location.origin,
+  site: Cookies.get('crafterSite')
+});
+// }
 
 const operations$ = new Subject<Operation>();
 const operations = operations$.asObservable();
@@ -277,6 +277,21 @@ function contentTypesResponseReceived(
 
 // region Operations
 
+// To propagate the update up the model tree for
+// reference based UI rendering libraries.
+function collectReferrers(modelId) {
+  const models = getCachedModels();
+  const parentModels = [];
+  const modelsToUpdate = {  };
+  let currentID = getParentModelId(modelId, models, children);
+  while (currentID) {
+    parentModels.push(currentID);
+    currentID = getParentModelId(currentID, models, children);
+  }
+  parentModels.forEach((id) => (modelsToUpdate[id] = { ...models[id] }));
+  return modelsToUpdate;
+}
+
 export function updateField(
   modelId: string,
   fieldId: string,
@@ -286,27 +301,15 @@ export function updateField(
   const models = getCachedModels();
   const model = { ...models[modelId] };
   const parentModelId = getParentModelId(modelId, models, children);
-  const parentModels = [];
+  const modelsToUpdate = collectReferrers(modelId);
 
   Model.value(model, fieldId, value);
-
-  // TODO: Add this to other ops.
-  // Propagate the update up the model tree for
-  // reference based UI rendering libraries.
-  const modelsToUpdate = { [modelId]: model };
-  if (parentModelId) {
-    let currentID = parentModelId;
-    while (currentID) {
-      parentModels.push(currentID);
-      currentID = getParentModelId(currentID, models, children);
-    }
-  }
-  parentModels.forEach((id) => (modelsToUpdate[id] = models[id]));
 
   // Update the model cache
   _models$.next({
     ...models,
-    ...modelsToUpdate
+    ...modelsToUpdate,
+    [modelId]: model
   });
 
   // Post the update to studio to persist it
@@ -331,7 +334,7 @@ export function insertItem(
   item: ContentInstance
 ): void {
   const models = getCachedModels();
-  const model = models[modelId];
+  const model = { ...models[modelId] };
   const collection = Model.value(model, fieldId);
   const result = collection.slice(0);
 
@@ -368,8 +371,8 @@ export function insertComponent(
   }
 
   const models = getCachedModels();
-  const model = models[modelId];
-  const result = getCollection(model, fieldId, targetIndex);
+  const model = { ...models[modelId] };
+  const result = getCollection(model, fieldId, targetIndex).concat();
 
   // Create Item
   // const now = new Date().toISOString();
@@ -454,9 +457,9 @@ export function insertInstance(
   instance: ContentInstance
 ): void {
   const models = getCachedModels();
-  const model = models[modelId];
+  const model = { ...models[modelId] };
 
-  const result = getCollection(model, fieldId, targetIndex);
+  const result = getCollection(model, fieldId, targetIndex).concat();
 
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
@@ -493,7 +496,7 @@ export function sortItem(
   targetIndex: number | string
 ): void {
   const models = getCachedModels();
-  const model = models[modelId];
+  const model = { ...models[modelId] };
   const currentIndexParsed =
     typeof currentIndex === 'number' ? currentIndex : parseInt(popPiece(currentIndex));
   const targetIndexParsed =

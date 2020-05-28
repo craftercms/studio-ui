@@ -40,7 +40,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, useEnv, usePreviewState, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';

@@ -236,7 +236,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                     record: reversePluckProps(record, 'element')
                   });
                   aImg.src = event.target.result;
-                  // Timeout gives the browser a chance to render the image so later rect 
+                  // Timeout gives the browser a chance to render the image so later rect
                   // calculations are working with the updated paint.
                   setTimeout(() => {
                     stream$.next({ type: DESKTOP_ASSET_UPLOAD_STARTED, payload: { record } });
@@ -403,7 +403,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   },
   // endregion
 
-  // region trashDrop
+  // region TRASHED
   (action$: ActionsObservable<GuestStandardAction<{ iceId: number }>>) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side

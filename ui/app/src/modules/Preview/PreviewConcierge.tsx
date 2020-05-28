@@ -431,9 +431,11 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     };
   }, [
+    authoringBase,
     contentTypes$,
     contentTypes,
     currentUrl,
+    computedUrl,
     dispatch,
     enqueueSnackbar,
     formatMessage,
