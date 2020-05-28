@@ -214,7 +214,7 @@ function getChildren(
   let children = [];
   Object.keys(model).forEach((fieldName) => {
     if (fieldName === 'craftercms' || fieldName.endsWith('_raw')) return;
-    const { type, name } = contentType.fields[fieldName];
+    const { type, name } = getContentTypeField(contentType, fieldName, contentTypes);
     let subChildren = [];
     if (type === 'node-selector') {
       model[fieldName].forEach((id: string, i: number) => {
@@ -262,6 +262,10 @@ function getChildren(
     });
   });
   return children;
+}
+
+function getContentTypeField(contentType: ContentType, fieldName: string, contentTypes: LookupTable<ContentType>) {
+  return contentType.fields[fieldName] ?? contentTypes['/component/level-descriptor'].fields[fieldName];
 }
 
 interface TreeItemCustomInterface {

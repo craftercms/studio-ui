@@ -265,7 +265,7 @@ export function fetchContentType(site: string, contentTypeId: string): Observabl
   );
 }
 
-const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
+const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label', 'locale'];
 
 export function fetchById(site: string, id: string): Observable<any> {
   return post(
