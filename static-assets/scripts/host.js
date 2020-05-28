@@ -68,13 +68,22 @@
     amplify.publish(cstopic('GUEST_CHECKIN'), params);
   });
 
+  // Preview 2 check in
+  let previewNextCheckInNotification = false;
   communicator.subscribe(Topics.GUEST_CHECK_IN, function(data) {
+    if (!previewNextCheckInNotification) {
+      // Avoid recurrently showing the notification over and
+      // over as long as the page is not refreshed
+      previewNextCheckInNotification = true;
     communicator.addTargetWindow({
       origin: origin,
       window: getEngineWindow().contentWindow
     });
-    communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
-    const goToPreview2 = 'iceGoToPreview2';
+      const eventId = 'iceGoToPreview2';
+      CrafterCMSNext.createLegacyCallbackListener(eventId, () => {
+        const state = CrafterCMSNext.system.store.getState();
+        window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
+      });
     CrafterCMSNext.system.store.dispatch({
       type: 'SHOW_CONFIRM_DIALOG',
       payload: {
@@ -83,15 +92,13 @@
         body: 'To edit this page using in-context editing, please go to Preview 2. Would you like to go now?',
         onOk: {
           type: 'DISPATCH_DOM_EVENT',
-          payload: { id: goToPreview2 }
+            payload: { id: eventId }
         },
         onCancel: { type: 'CLOSE_CONFIRM_DIALOG' }
       }
     });
-    CrafterCMSNext.createLegacyCallbackListener(goToPreview2, () => {
-      const state = CrafterCMSNext.system.store.getState();
-      window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
-    });
+    }
+    communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
   });
 
   // Opens studio form on pencil click

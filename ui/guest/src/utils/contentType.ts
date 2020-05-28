@@ -69,6 +69,23 @@ export function getFieldsByType(contentType: ContentType, fieldType): ContentTyp
   return Object.values(contentType.fields).filter((field) => field.type === fieldType);
 }
 
+export function getDefaultValue(field: ContentTypeField): string {
+  if (field.defaultValue) {
+    return field.defaultValue;
+  } else {
+    switch (field.type) {
+      case 'image':
+        // TODO use validation width, height
+        return 'https://via.placeholder.com/150';
+      case 'text':
+      case 'html':
+        // TODO use lorem generator
+        // TODO use maxLenght validation
+        return 'Donec id elit non mi porta gravida at eget metus. Donec ullamcorper nulla non metus auctor fringilla. Cras mattis consectetur purus sit amet fermentum. Vestibulum id ligula porta felis euismod semper.';
+    }
+  }
+}
+
 export default {
   getRelatedContentTypeIds,
   isGroupItem,
@@ -78,4 +95,4 @@ export default {
   getField,
   getFields,
   getFieldsByType
-}
+};

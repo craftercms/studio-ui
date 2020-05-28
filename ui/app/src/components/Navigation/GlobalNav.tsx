@@ -220,7 +220,7 @@ const globalNavUrlMapping = {
   'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool',
   'preview': '/next/preview',
   'about': '#/about-us',
-  'legacy.preview': '/preview',
+  'legacy.preview': '/preview/',
   'siteConfig': '/site-config',
   'search': '/search',
   'siteDashboard': '/site-dashboard'

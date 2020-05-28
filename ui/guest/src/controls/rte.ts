@@ -40,6 +40,8 @@ export function initTinyMCE(
   window.tinymce.init({
     mode: 'none',
     target: record.element,
+    // For some reason this is not working.
+    // body_class: 'craftercms-rich-text-editor',
     plugins,
     paste_as_text: true,
     toolbar: false,

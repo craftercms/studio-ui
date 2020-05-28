@@ -19,7 +19,6 @@ import { JssStyle, Styles } from 'jss';
 
 export type GuestRules =
   // Attributes
-  | '[data-craftercms-model-id][contentEditable="true"]'
   | '[draggable="true"]'
   // Elements
   | 'craftercms-asset-uploader-mask-container'
@@ -36,6 +35,7 @@ export type GuestRules =
   | '.craftercms-content-tree-locate'
   | '.craftercms-zone-marker-label__multi-mode'
   | '.craftercms-ice-on'
+| '.mce-content-body'
   // Keyframes
   | '@keyframes craftercms-uploader-mask-animation'
   | '@keyframes craftercms-placeholder-animation'
@@ -46,17 +46,6 @@ type AllRules = { [key in GuestRules]: any };
 
 const getAllGuestRules: () => string[] = (() => {
   const rules: AllRules = {
-    '.craftercms-content-tree-locate': undefined,
-    '.craftercms-ice-on': undefined,
-    '.craftercms-placeholder-spinner': undefined,
-    '.craftercms-required-validation-failed': undefined,
-    '.craftercms-suggestion-validation-failed': undefined,
-    '.craftercms-zone-marker-label__multi-mode': undefined,
-    '@keyframes craftercms-content-tree-locate-animation': undefined,
-    '@keyframes craftercms-placeholder-animation': undefined,
-    '@keyframes craftercms-placeholder-inner-animation': undefined,
-    '@keyframes craftercms-uploader-mask-animation': undefined,
-    '[data-craftercms-model-id][contentEditable="true"]': undefined,
     '[draggable="true"]': undefined,
     'craftercms-asset-uploader-mask': undefined,
     'craftercms-asset-uploader-mask-container': undefined,
@@ -64,7 +53,18 @@ const getAllGuestRules: () => string[] = (() => {
     'craftercms-drop-marker': undefined,
     'craftercms-snackbar': undefined,
     'craftercms-zone-marker': undefined,
-    'craftercms-zone-marker-label': undefined
+    'craftercms-zone-marker-label': undefined,
+    '.craftercms-content-tree-locate': undefined,
+    '.craftercms-ice-on': undefined,
+    '.craftercms-placeholder-spinner': undefined,
+    '.craftercms-required-validation-failed': undefined,
+    '.craftercms-suggestion-validation-failed': undefined,
+    '.craftercms-zone-marker-label__multi-mode': undefined,
+    '.mce-content-body': undefined,
+    '@keyframes craftercms-content-tree-locate-animation': undefined,
+    '@keyframes craftercms-placeholder-animation': undefined,
+    '@keyframes craftercms-placeholder-inner-animation': undefined,
+    '@keyframes craftercms-uploader-mask-animation': undefined
   };
   return Object.keys(rules);
 });
@@ -145,14 +145,6 @@ export default function(config: GuestStyleSheetConfig): Styles<'@global'> {
   const { overrides, global, other } = collectRules(config.styles);
   const styles: Record<GuestRules, JssStyle> = {
     // Attributes
-    '[data-craftercms-model-id][contentEditable="true"]': {
-      outlineOffset: 5,
-      outline: `2px solid ${config.inlineTextEditorOutlineColor}`,
-      '&:focus': {
-        outline: `5px solid ${config.inlineTextEditorFocusOutlineColor}`
-      },
-      ...overrides['[data-craftercms-model-id][contentEditable="true"]']
-    },
     '[draggable="true"]': {
       cursor: 'move !important',
       ...overrides['[draggable="true"]']
@@ -282,6 +274,7 @@ export default function(config: GuestStyleSheetConfig): Styles<'@global'> {
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
       overflow: 'hidden',
+      position: 'absolute',
       ...overrides['craftercms-dragged-element']
     },
     // Classes
@@ -313,20 +306,28 @@ export default function(config: GuestStyleSheetConfig): Styles<'@global'> {
     },
     '.craftercms-zone-marker-label__multi-mode': {
       background: config.zoneMarkerOutlineColor,
-      top: 1010,
+      top: 0,
       left: 'auto',
-      right: 1010,
-      minWidth: 1010,
-      marginLeft: 1010,
+      right: 0,
+      minWidth: 0,
+      marginLeft: 0,
       position: 'absolute',
       padding: '2px 10px',
-      borderRadius: 1010,
+      borderRadius: 0,
       boxShadow: 'none',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
       ...overrides['.craftercms-zone-marker-label__multi-mode']
     },
     '.craftercms-ice-on': overrides['.craftercms-ice-on'],
+    '.mce-content-body': {
+      outlineOffset: 5,
+      outline: `2px solid ${config.inlineTextEditorOutlineColor}`,
+      '&:focus': {
+        outline: `5px solid ${config.inlineTextEditorFocusOutlineColor}`
+      },
+      ...overrides['[data-craftercms-model-id][contentEditable="true"]']
+    },
     // Keyframes
     '@keyframes craftercms-uploader-mask-animation': overrides['@keyframes craftercms-uploader-mask-animation'] ?? {
       '0%': {

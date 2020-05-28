@@ -232,10 +232,9 @@ function Guest(props: GuestProps) {
     };
   }, [dispatch, scrollElement, status]);
 
-  // Check in & host detection
+  // Host detection
   useEffect(() => {
     if (!hasHost) {
-
       // prettier-ignore
       interval(1000).pipe(
         takeUntil(
@@ -249,12 +248,8 @@ function Guest(props: GuestProps) {
         duration: 8000,
         message: 'In-context editing is disabled: page running out of Crafter CMS frame.'
       }));
-
-      const location = createLocationArgument();
-      const site = Cookies.get('crafterSite');
-      post(GUEST_CHECK_IN, { location, modelId, path, site, documentDomain });
     }
-  }, [dispatch, modelId, path, hasHost, documentDomain]);
+  }, [dispatch, hasHost]);
 
   // Load dependencies (tinymce)
   useEffect(() => {
@@ -281,18 +276,26 @@ function Guest(props: GuestProps) {
 
   }, []);
 
-  // Registers parent zone
+  // Registers parent zone, checkin, checkout (when model is changed)
   useEffect(() => {
+
+    const location = createLocationArgument();
+    const site = Cookies.get('crafterSite');
+    post(GUEST_CHECK_IN, { location, modelId, path, site, documentDomain });
+
     const iceId = iceRegistry.register({ modelId });
-    zip(contentController.models$(modelId), contentController.contentTypes$())
-      .pipe(take(1))
-      .subscribe(() => {
-        refs.current.contentReady = true;
-      });
+    // prettier-ignore
+    zip(
+      contentController.models$(modelId),
+      contentController.contentTypes$()
+    ).pipe(take(1)).subscribe(() => (refs.current.contentReady = true));
+
     return () => {
+      post(GUEST_CHECK_OUT);
       iceRegistry.deregister(iceId);
     };
-  }, [modelId, path]);
+
+  }, [documentDomain, modelId, path]);
 
   // Listen for desktop asset drag & drop
   useEffect(() => {

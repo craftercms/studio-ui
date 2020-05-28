@@ -41,6 +41,7 @@ interface ConfirmDialogBaseProps {
   open: boolean;
   title?: string;
   body?: string;
+  hideBackdrop?: boolean;
   disableEnforceFocus?: boolean;
   disableEscapeKeyDown?: boolean;
   disableBackdropClick?: boolean;
@@ -72,6 +73,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       disableEscapeKeyDown={props.disableEscapeKeyDown}
       disableBackdropClick={props.disableBackdropClick}
       disableEnforceFocus={props.disableEnforceFocus}
+      hideBackdrop={props.hideBackdrop}
     >
       <ConfirmDialogWrapper {...props} />
     </Dialog>
