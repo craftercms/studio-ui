@@ -99,7 +99,7 @@ export interface RejectDialogStateProps extends RejectDialogBaseProps {
 const useStyles = makeStyles(() =>
   createStyles({
     itemsList: {
-      border: '1px solid #D8D8DC',
+      border: `1px solid ${palette.gray.light5}`,
       backgroundColor: palette.white,
       padding: 0,
       height: '100%'
@@ -232,21 +232,21 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value as string)}
                 >
-                  <MenuItem key={'NotApproved'} value={'NotApproved'}>
+                  <MenuItem value="NotApproved">
                     <FormattedMessage id="rejectDialog.notApproved" defaultMessage="Not Approved" />
                   </MenuItem>
-                  <MenuItem key={'IB'} value={'IB'}>
+                  <MenuItem value="IB">
                     <FormattedMessage
                       id="rejectDialog.incorrectBranding" defaultMessage="Incorrect Branding"
                     />
                   </MenuItem>
-                  <MenuItem key={'Typos'} value={'Typos'}>
+                  <MenuItem value="Typos">
                     <FormattedMessage id="rejectDialog.typos" defaultMessage="Typos" />
                   </MenuItem>
-                  <MenuItem key={'BrokenLinks'} value={'BrokenLinks'}>
+                  <MenuItem value="BrokenLinks">
                     <FormattedMessage id="rejectDialog.brokenLinks" defaultMessage="Broken Links" />
                   </MenuItem>
-                  <MenuItem key={'NSOA'} value={'NSOA'}>
+                  <MenuItem value="NSOA">
                     <FormattedMessage
                       id="rejectDialog.nsoa" defaultMessage="Needs Section Owner's Approval"
                     />
