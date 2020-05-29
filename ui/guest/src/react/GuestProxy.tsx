@@ -40,7 +40,7 @@ import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { popPiece, removeLastPiece } from '../utils/string';
-import { addAnimation } from '../utils/dom';
+import { addAnimation, getElementFromICEProps } from '../utils/dom';
 
 export default function GuestProxy() {
 
@@ -123,17 +123,6 @@ export default function GuestProxy() {
           registerElement(el);
         });
       }
-    };
-
-    const getDropZoneElement = (modelId: string, fieldId: string, targetIndex: string | number): JQuery<Element> => {
-      const dropZoneId = iceRegistry.exists({
-        modelId,
-        fieldId,
-        index: fieldId.includes('.')
-          ? parseInt(removeLastPiece(targetIndex as string))
-          : null
-      });
-      return $(ElementRegistry.fromICEId(dropZoneId).element);
     };
 
     const insertElement = ($element: JQuery<any>, $daddy: JQuery<any>, targetIndex: string | number): void => {
@@ -306,7 +295,7 @@ export default function GuestProxy() {
             </svg>
           `);
 
-          const $daddy = getDropZoneElement(modelId, fieldId, targetIndex);
+          const $daddy = getElementFromICEProps(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 
@@ -345,7 +334,7 @@ export default function GuestProxy() {
             </svg>
           `);
 
-          const $daddy = getDropZoneElement(modelId, fieldId, targetIndex);
+          const $daddy = getElementFromICEProps(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 

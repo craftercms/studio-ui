@@ -28,6 +28,9 @@ import { DropZone, ValidationResult } from '../models/InContextEditing';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
 import { CSSProperties } from 'react';
 import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeReceptacle';
+import iceRegistry from '../classes/ICERegistry';
+import { removeLastPiece } from './string';
+import ElementRegistry from '../classes/ElementRegistry';
 
 // Regular click gets triggered even after loooong mouse downs or
 // when mousing-down and dragging cursor - without actually being on
@@ -120,15 +123,15 @@ export function getDropMarkerPosition(args: DropMarkerPositionArgs): DropMarkerP
 
   return horizontal
     ? {
-        height: refElementRect.height,
-        top: refElementRect.top,
-        left: before ? refElementRect.left + difference : refElementRect.right + difference
-      }
+      height: refElementRect.height,
+      top: refElementRect.top,
+      left: before ? refElementRect.left + difference : refElementRect.right + difference
+    }
     : {
-        width: refElementRect.width,
-        top: before ? refElementRect.top + difference : refElementRect.bottom + difference,
-        left: refElementRect.left
-      };
+      width: refElementRect.width,
+      top: before ? refElementRect.top + difference : refElementRect.bottom + difference,
+      left: refElementRect.left
+    };
 }
 
 export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
@@ -184,10 +187,10 @@ export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
 }
 
 export function insertDropMarker({
-  $dropMarker,
-  insertPosition,
-  refElement
-}: {
+                                   $dropMarker,
+                                   insertPosition,
+                                   refElement
+                                 }: {
   $dropMarker: JQuery<any>;
   insertPosition: string;
   refElement: HTMLElement | JQuery | string;
@@ -319,10 +322,10 @@ export function getRelativePointerPositionPercentages(
 ): Coordinates {
   const x =
       /* mouse X distance from rect left edge */
-      ((mousePosition.x - rect.left) /
-        /* width */
-        rect.width) *
-      100,
+    ((mousePosition.x - rect.left) /
+      /* width */
+      rect.width) *
+    100,
     y =
       /* mouse X distance from rect top edge */
       ((mousePosition.y - rect.top) /
@@ -333,7 +336,7 @@ export function getRelativePointerPositionPercentages(
   return { x, y };
 }
 
-export function isElementInView(element: Element | JQuery, fullyInView?: boolean): boolean {
+export function isElementInView(element: Element | JQuery<Element>, fullyInView?: boolean): boolean {
   const pageTop = $(window).scrollTop();
   const pageBottom = pageTop + $(window).height();
   const elementTop = $(element).offset().top;
@@ -353,24 +356,27 @@ export function addAnimation(
   const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
   $element.addClass(animationClass);
   // @ts-ignore
-  $element.one(END_EVENT, function() {
+  $element.one(END_EVENT, function () {
     $element.removeClass(animationClass);
   });
 }
 
+export function getElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
+  const recordId = iceRegistry.exists({
+    modelId: modelId,
+    fieldId: fieldId,
+    index: fieldId.includes('.')
+      ? parseInt(removeLastPiece(index as string))
+      : null
+  });
+
+  return $(ElementRegistry.fromICEId(recordId).element);
+}
+
 export function scrollToNode(node: RenderTree, scrollElement: string): void {
-  let $element: JQuery;
-  if (node.index !== undefined) {
-    $element = $(
-      `[data-craftercms-model-id="${node.parentId || node.modelId}"][data-craftercms-field-id="${
-        node.fieldId
-      }"][data-craftercms-index="${node.index}"]`
-    );
-  } else {
-    $element = $(
-      `[data-craftercms-model-id="${node.modelId}"][data-craftercms-field-id="${node.fieldId}"]:not([data-craftercms-index])`
-    );
-  }
+
+  const $element = getElementFromICEProps(node.parentId || node.modelId, node.fieldId, node.index);
+
   if ($element.length) {
     if (!isElementInView($element)) {
       $(scrollElement).animate(
@@ -378,7 +384,7 @@ export function scrollToNode(node: RenderTree, scrollElement: string): void {
           scrollTop: $element.offset().top - 100
         },
         300,
-        function() {
+        function () {
           addAnimation($element, 'craftercms-content-tree-locate');
         }
       );
