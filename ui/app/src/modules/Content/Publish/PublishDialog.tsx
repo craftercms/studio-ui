@@ -19,7 +19,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchPublishingChannels } from '../../../services/content';
 import { goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
-import { DetailedItem, SandboxItem } from '../../../models/Item';
+import { BaseItem, DetailedItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
@@ -44,6 +44,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ApiResponse } from '../../../models/ApiResponse';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
+import LookupTable from '../../../models/LookupTable';
 
 // region Typings
 
@@ -145,10 +146,9 @@ const submitMessages = defineMessages({
   }
 });
 
-export const checkState = (items: SandboxItem[] | DetailedItem[]) => {
-  // @ts-ignore
+export const checkState: <T extends BaseItem = BaseItem>(items: T[]) => LookupTable<boolean> = (items) => {
   return (items || []).reduce(
-    (table: any, item) => {
+    (table: LookupTable<boolean>, item) => {
       table[item.path] = true;
       return table;
     },

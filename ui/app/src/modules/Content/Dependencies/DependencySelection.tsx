@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { DetailedItem, SandboxItem } from '../../../models/Item';
+import { BaseItem, SandboxItem } from '../../../models/Item';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FormattedMessage } from 'react-intl';
@@ -36,11 +36,11 @@ import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
 
-interface DependencySelectionProps {
-  items: DetailedItem[];
+interface DependencySelectionProps<T extends BaseItem = BaseItem> {
+  items: T[];
   siteId?: string;      // for dependencySelectionDelete
   onChange?: Function;  // for dependencySelectionDelete
-  checked: DetailedItem[];
+  checked: T[];
   setChecked: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
@@ -53,10 +53,10 @@ interface DependencySelectionProps {
   disabled?: boolean;
 }
 
-interface SelectionListProps {
+interface SelectionListProps<T extends BaseItem = BaseItem> {
   title: any;
   subtitle?: any;
-  items?: SandboxItem[] | DetailedItem[];
+  items?: T[];
   uris?: [];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
@@ -410,8 +410,7 @@ function SelectionList(props: SelectionListProps) {
         items &&
         <List className={classes.selectionList}>
           {
-            // @ts-ignore
-            items.map((item: SandboxItem | DetailedItem) => {
+            items.map((item) => {
               const labelId = `checkbox-list-label-${item.path}`;
 
               return (
