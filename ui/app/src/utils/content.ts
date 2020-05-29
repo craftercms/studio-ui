@@ -15,6 +15,7 @@
  */
 
 import { LegacyItem, SandboxItem } from '../models/Item';
+import { getStateMapFromLegacyItem } from './state';
 
 export function isEditableAsset(path: string) {
   return (
@@ -83,12 +84,6 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     return item.flatMap(i => i.internalName || i.name ? [parseLegacyItemToSandBoxItem(i)] : []);
   }
 
-  const state =
-    item.isSubmitted ? 5
-      : item.isScheduled ? 6
-      : item.isDeleted ? 2
-        : 0;
-
   return {
     id: item.uri ?? item.path,
     label: item.internalName ?? item.name,
@@ -99,7 +94,8 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     previewUrl: item.uri?.includes('index.xml') ? (item.browserUri || '/') : null,
     systemType: item.asset ? 'asset' : item.component ? 'component' : item.folder ? 'folder' : item.page ? 'page' : null,
     mimeType: null,
-    state,
+    state: null,
+    stateMap: getStateMapFromLegacyItem(item),
     lockOwner: null,
     disabled: null,
     translationSourceId: null,

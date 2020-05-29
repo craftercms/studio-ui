@@ -224,7 +224,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           </MenuItem>
         }
         {
-          (item && (item.state === 5 || item.state === 6 || item.state === 2)) &&
+          (item && (item.stateMap.submitted || item.stateMap.scheduled || item.stateMap.deleted)) &&
           <MenuItem onClick={() => handleEdit('reject')}>
             <FormattedMessage
               id="previewToolBar.menu.reject"
