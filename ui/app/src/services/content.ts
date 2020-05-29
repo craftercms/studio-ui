@@ -53,11 +53,11 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { LegacyItem, SandboxItem } from '../models/Item';
+import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import { parseLegacyItemToSandBoxItem } from '../utils/content';
+import { parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
@@ -88,6 +88,12 @@ export function getLegacyItem(site: string, path: string): Observable<LegacyItem
 export function getSandboxItem(site: string, path: string): Observable<SandboxItem> {
   return getLegacyItem(site, path).pipe(
     map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem)
+  );
+}
+
+export function getDetailedItem(site: string, path: string): Observable<DetailedItem> {
+  return getLegacyItem(site, path).pipe(
+    map<LegacyItem, DetailedItem>(parseLegacyItemToDetailedItem)
   );
 }
 
@@ -1258,6 +1264,7 @@ export default {
   getContent,
   getLegacyItem,
   getSandboxItem,
+  getDetailedItem,
   getDOM,
   getChildrenByPath,
   copy,

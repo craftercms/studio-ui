@@ -21,7 +21,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import { useActiveSiteId, useSelection } from '../utils/hooks';
-import { fetchWorkflowAffectedItems, getSandboxItem } from '../services/content';
+import { fetchWorkflowAffectedItems, getDetailedItem, getSandboxItem } from '../services/content';
 import { popPiece } from '../utils/string';
 import { LookupTable } from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
@@ -68,16 +68,28 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
 
-  const [item, setItem] = useState(null);
+  const [sandboxItem, setSandboxItem] = useState(null);
+  const [detailedItem, setDetailedItem] = useState(null);
 
   // Effect used to open the publish Dialog
   useEffect(() => {
-    if (modelId && models && anchorEl && item === null) {
+    if (modelId && models && anchorEl && sandboxItem === null) {
       let path = models[modelId].craftercms.path;
       if (embeddedParentPath) path = models[parentId].craftercms.path;
       getSandboxItem(site, path).subscribe(
         (item) => {
-          setItem(item);
+          setSandboxItem(item);
+        },
+        (response) => {
+          dispatch(showErrorDialog({
+            error: response
+          }));
+        }
+      );
+
+      getDetailedItem(site, path).subscribe(
+        (item) => {
+          setDetailedItem(item);
         },
         (response) => {
           dispatch(showErrorDialog({
@@ -86,41 +98,41 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, site, embeddedParentPath, parentId, dispatch, item, anchorEl]);
+  }, [models, modelId, site, embeddedParentPath, parentId, dispatch, sandboxItem, anchorEl]);
 
   const handleEdit = (type: string) => {
     handleClose();
     switch (type) {
       case 'schedule': {
         dispatch(showPublishDialog({
-          items: [item],
+          items: [detailedItem],
           scheduling: 'custom'
         }));
         break;
       }
       case 'publish': {
         dispatch(showPublishDialog({
-          items: [item],
+          items: [detailedItem],
           scheduling: 'now'
         }));
         break;
       }
       case 'history': {
         dispatch(batchActions([
-          fetchItemVersions({ item: item }),
+          fetchItemVersions({ item: sandboxItem }),
           showHistoryDialog({})
         ]));
         break;
       }
       case 'dependencies' : {
         dispatch(showDependenciesDialog({
-          item: item
+          item: sandboxItem
         }));
         break;
       }
       case 'delete': {
         dispatch(showDeleteDialog({
-          items: [item],
+          items: [sandboxItem],
           onSuccess: closeDeleteDialog()
         }));
         break;
@@ -140,7 +152,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
               src,
               type,
               inProgress: true,
-              showController: !embeddedParentPath && contentTypesBranch.byId?.[item.contentTypeId]?.type === 'page',
+              showController: !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page',
               itemModel: models[modelId],
               embeddedParentPath
             };
@@ -199,7 +211,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          (item && !item?.lockOwner && !item?.isLive) &&
+          (sandboxItem && !sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
           <MenuItem onClick={() => handleEdit('schedule')}>
             <FormattedMessage
               id="previewToolBar.menu.schedule"
@@ -208,7 +220,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           </MenuItem>
         }
         {
-          (item && !item?.lockOwner && !item?.isLive) &&
+          (sandboxItem && !sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
           <MenuItem onClick={() => handleEdit('publish')}>
             <FormattedMessage
               id="previewToolBar.menu.publish"
@@ -247,7 +259,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           />
         </MenuItem>
         {
-          item && !embeddedParentPath && contentTypesBranch.byId?.[item.contentTypeId]?.type === 'page' &&
+          sandboxItem && !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page' &&
           <MenuItem onClick={() => handleEdit('controller')}>
             <FormattedMessage
               id="previewToolBar.menu.editController"
