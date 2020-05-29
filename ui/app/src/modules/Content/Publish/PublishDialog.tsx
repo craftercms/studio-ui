@@ -531,7 +531,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
         scheduledDateTime: moment(items[0].live.lastScheduledDate).format()
       });
     }
-  }, [items]);
+  }, [items, setDialog]);
 
   const handleSubmit = () => {
     const data = {
