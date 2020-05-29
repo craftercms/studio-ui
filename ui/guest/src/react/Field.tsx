@@ -54,7 +54,7 @@ export function Img(props) {
 
 type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
   target?: string;
-  format?: (value: V) => F;
+  format?: (value: V, fieldId: string) => F;
 };
 
 export function RenderField<P = {}>(props: RenderFieldProps<P>) {
@@ -69,16 +69,22 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
   } = props;
   const { props: ice, model } = useICE({ model: modelProp, fieldId, index });
   const Component = component as ComponentType<P>;
-  const passDownProps = setProperty(
-    Object.assign({}, other, ice),
-    target,
-    format(getModelValue(model, props.fieldId))
-  ) as P;
+  const passDownProps = Object.assign({}, other, ice) as P;
+  const fields = fieldId.replace(/\s/g, '').split(',');
+  const targets = target.replace(/\s/g, '').split(',');
+  targets.forEach((target, index) => {
+    const fieldId = fields[index];
+    setProperty(
+      passDownProps as {},
+      target,
+      format(getModelValue(model, fieldId), fieldId)
+    );
+  });
   return <Component {...passDownProps} />;
 }
 
 export function Model<P = {}>(props: FieldProps<P>) {
-  const { component = 'div', ...other } = props;
+  const { model: modelProp, component = 'div', ...other } = props;
   const { props: ice, model } = useICE({
     model: props.model,
     fieldId: null,
@@ -86,6 +92,10 @@ export function Model<P = {}>(props: FieldProps<P>) {
     noRef: true
   });
   const Component = component as ComponentType<P>;
-  const passDownProps = other as P;
-  return <Component {...passDownProps} {...ice} model={model} />;
+  const passDownProps = {
+    ...other,
+    ...ice,
+    ...(typeof component === 'string' ? {} : { model })
+  } as P;
+  return <Component {...passDownProps} />;
 }

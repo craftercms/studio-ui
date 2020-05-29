@@ -2255,18 +2255,19 @@
       };
 
       $scope.removeRepo = function(repo) {
-        var deleteRepo = function() {
+        var deleteRepo = function () {
           var currentRepo = {};
           currentRepo.siteId = repositories.site;
           currentRepo.remoteName = repo.name;
-
           adminService
             .deleteRepository(currentRepo)
             .success(function(data) {
-              var index = repositories.repositories.remotes.indexOf(repo);
-              if (index !== -1) {
-                repositories.repositories.remotes.splice(index, 1);
-              }
+              repositories.repositories.reachable = repositories.repositories.reachable.filter(
+                r => r !== repo
+              );
+              repositories.repositories.unreachable = repositories.repositories.unreachable.filter(
+                r => r !== repo
+              );
               $scope.notification(
                 "'" + repo.name + "' " + $translate.instant('admin.repositories.REPO_DELETED') + '.',
                 '',
