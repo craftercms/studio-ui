@@ -29,10 +29,10 @@ import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import { isNavigable } from './utils';
 
 interface BreadcrumbsProps {
-  keyword: string;
+  keyword?: string;
   breadcrumb: SandboxItem[];
   onMenu?(element: Element): void;
-  onSearch(keyword: string): void;
+  onSearch?(keyword: string): void;
   onCrumbSelected(breadcrumb: SandboxItem): void;
 }
 
@@ -53,7 +53,7 @@ export default function (props: BreadcrumbsProps) {
 
   return (
     <section className={clsx(classes.breadcrumbs, classes.widgetSection)}>
-      {showSearch ? (
+      {showSearch && onSearch ? (
         <SearchBar
           autoFocus
           onChange={onChange}
@@ -111,13 +111,16 @@ export default function (props: BreadcrumbsProps) {
                 <MoreVertIcon />
               </IconButton>
             }
-            <IconButton
-              aria-label="search"
-              className={clsx(classes.iconButton)}
-              onClick={() => setShowSearch(true)}
-            >
-              <SearchRoundedIcon />
-            </IconButton>
+            {
+              onSearch &&
+              <IconButton
+                aria-label="search"
+                className={clsx(classes.iconButton)}
+                onClick={() => setShowSearch(true)}
+              >
+                <SearchRoundedIcon />
+              </IconButton>
+            }
           </div>
         </>
       )}
