@@ -40,7 +40,7 @@ import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { popPiece, removeLastPiece } from '../utils/string';
-import { addAnimation, getElementFromICEProps } from '../utils/dom';
+import { addAnimation, getParentElementFromICEProps } from '../utils/dom';
 
 export default function GuestProxy() {
 
@@ -295,7 +295,7 @@ export default function GuestProxy() {
             </svg>
           `);
 
-          const $daddy = getElementFromICEProps(modelId, fieldId, targetIndex);
+          const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 
@@ -334,7 +334,7 @@ export default function GuestProxy() {
             </svg>
           `);
 
-          const $daddy = getElementFromICEProps(modelId, fieldId, targetIndex);
+          const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 

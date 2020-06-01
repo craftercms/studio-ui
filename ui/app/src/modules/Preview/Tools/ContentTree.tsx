@@ -503,7 +503,8 @@ export default function ContentTree() {
   const resource = useLogicResource<Data, Data>(data, {
     shouldResolve: (source) => Boolean(source.selected),
     shouldReject: () => false,
-    shouldRenew: (source, resource) => resource.complete,
+    shouldRenew: (source, resource) =>
+      source.previous.length && resource.complete && source.expanded.length === 1,
     resultSelector: (source) => source,
     errorSelector: null
   });

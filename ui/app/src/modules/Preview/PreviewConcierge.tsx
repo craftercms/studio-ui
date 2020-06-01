@@ -102,6 +102,10 @@ const guestMessages = defineMessages({
   yes: {
     id: 'words.yes',
     defaultMessage: 'Yes'
+  },
+  registerNotFound: {
+    id: 'register.notFound',
+    defaultMessage: '{name} is not visible or was not registered by developers'
   }
 });
 

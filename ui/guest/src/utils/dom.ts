@@ -31,6 +31,7 @@ import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeR
 import iceRegistry from '../classes/ICERegistry';
 import { removeLastPiece } from './string';
 import ElementRegistry from '../classes/ElementRegistry';
+import { post } from './communicator';
 
 // Regular click gets triggered even after loooong mouse downs or
 // when mousing-down and dragging cursor - without actually being on
@@ -365,19 +366,29 @@ export function getElementFromICEProps(modelId: string, fieldId: string, index: 
   const recordId = iceRegistry.exists({
     modelId: modelId,
     fieldId: fieldId,
+    index: index
+  });
+
+  return (recordId === -1) ? null : $(ElementRegistry.fromICEId(recordId).element);
+}
+
+export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
+  const recordId = iceRegistry.exists({
+    modelId: modelId,
+    fieldId: fieldId,
     index: fieldId.includes('.')
       ? parseInt(removeLastPiece(index as string))
       : null
   });
 
-  return $(ElementRegistry.fromICEId(recordId).element);
+  return (recordId === -1) ? null : $(ElementRegistry.fromICEId(recordId).element);
 }
 
 export function scrollToNode(node: RenderTree, scrollElement: string): void {
 
   const $element = getElementFromICEProps(node.parentId || node.modelId, node.fieldId, node.index);
 
-  if ($element.length) {
+  if ($element && $element.length) {
     if (!isElementInView($element)) {
       $(scrollElement).animate(
         {
@@ -391,6 +402,11 @@ export function scrollToNode(node: RenderTree, scrollElement: string): void {
     } else {
       addAnimation($element, 'craftercms-content-tree-locate');
     }
+  } else {
+    post({
+      type: 'VALIDATION_MESSAGE',
+      payload: { id: 'registerNotFound', level: 'suggestion', values: { name: node.name } }
+    });
   }
 }
 
