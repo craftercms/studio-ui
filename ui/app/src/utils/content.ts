@@ -15,6 +15,7 @@
  */
 
 import { LegacyItem, SandboxItem } from '../models/Item';
+import { getStateMapFromLegacyItem } from './state';
 
 export function isEditableAsset(path: string) {
   return (
@@ -94,6 +95,7 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     systemType: item.asset ? 'asset' : item.component ? 'component' : item.folder ? 'folder' : item.page ? 'page' : null,
     mimeType: null,
     state: null,
+    stateMap: getStateMapFromLegacyItem(item),
     lockOwner: null,
     disabled: null,
     translationSourceId: null,

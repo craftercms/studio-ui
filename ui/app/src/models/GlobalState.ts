@@ -39,6 +39,7 @@ import { CompareVersionsDialogStateProps } from '../modules/Content/History/Comp
 import { VersionsStateProps } from './Version';
 import QuickCreateItem from './content/QuickCreateItem';
 import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/WorkflowCancellationDialog';
+import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -133,6 +134,7 @@ export interface GlobalState {
     delete: DeleteDialogStateProps;
     edit: EmbeddedLegacyEditorsStateProps;
     workflowCancellation: WorkflowCancellationDialogStateProps;
+    reject: RejectDialogStateProps;
   };
 }
 
