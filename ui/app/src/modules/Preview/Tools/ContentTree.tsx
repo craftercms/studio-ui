@@ -420,7 +420,7 @@ export default function ContentTree() {
         expanded: [`${rootPrefix}${parent.craftercms.id}`]
       });
     }
-  }, [contentTypesBranch, data.selected, guest]);
+  }, [contentTypesBranch, data, data.selected, guest]);
 
   useEffect(() => {
     if (site) {
