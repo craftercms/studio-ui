@@ -422,6 +422,17 @@ export default function ContentTree() {
     }
   }, [contentTypesBranch, data.selected, guest]);
 
+  useEffect(() => {
+    if (site) {
+      setData({
+        previous: [],
+        selected: null,
+        nodeLookup: null,
+        expanded: []
+      });
+    }
+  }, [site]);
+
   const handleClick = (node: RenderTree) => {
     if (node.type === 'component' && !node.id.includes(rootPrefix)) {
       let model = guest.models[node.modelId];

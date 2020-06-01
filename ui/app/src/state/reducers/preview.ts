@@ -75,6 +75,17 @@ const audiencesPanelInitialState = {
   applied: false
 };
 
+const componentsInitialState = createEntityState({
+  page: [],
+  query: {
+    keywords: '',
+    offset: 0,
+    limit: 10,
+    type: 'Component'
+  },
+  contentTypeFilter: ''
+}) as PagedEntityState<ContentInstance>;
+
 const guestBase = envInitialState.guestBase;
 const previewLanding = envInitialState.previewLandingBase;
 
@@ -103,16 +114,7 @@ const reducer = createReducer<GlobalState['preview']>({
     }
   }) as PagedEntityState<MediaItem>,
   audiencesPanel: audiencesPanelInitialState,
-  components: createEntityState({
-    page: [],
-    query: {
-      keywords: '',
-      offset: 0,
-      limit: 10,
-      type: 'Component'
-    },
-    contentTypeFilter: ''
-  }) as PagedEntityState<ContentInstance>,
+  components: componentsInitialState,
   receptacles: {
     selectedContentType: null,
     byId: null
@@ -302,7 +304,8 @@ const reducer = createReducer<GlobalState['preview']>({
     let nextState = {
       ...state,
       tools: null,
-      audiencesPanel: audiencesPanelInitialState
+      audiencesPanel: audiencesPanelInitialState,
+      components: componentsInitialState
     };
 
     // TODO: If there's a guest it would have checked out?
