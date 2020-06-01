@@ -368,8 +368,8 @@ export function getElementFromICEProps(modelId: string, fieldId: string, index: 
     fieldId: fieldId,
     index: index
   });
-
-  return (recordId === -1) ? null : $(ElementRegistry.fromICEId(recordId).element);
+  
+  return (recordId === -1 || !ElementRegistry.fromICEId(recordId)) ? null : $(ElementRegistry.fromICEId(recordId).element);
 }
 
 export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {

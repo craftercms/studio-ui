@@ -48,6 +48,11 @@ import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
 import ComponentMenu from '../../../components/ComponentMenu';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
 import { Resource } from '../../../models/Resource';
+import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
+import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
+import Typography from '@material-ui/core/Typography';
+import palette from '../../../styles/palette';
+import Link from '@material-ui/core/Link';
 
 const rootPrefix = '{root}_';
 
@@ -68,6 +73,25 @@ const useStyles = makeStyles((theme) =>
       '& > li > ul': {
         marginLeft: '0px'
       }
+    },
+    breadcrumbs: {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    breadcrumbsList: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '9px 12px',
+      '& li': {
+        lineHeight: 1
+      }
+    },
+    breadcrumbsSeparator: {
+      margin: '0 2px'
+    },
+    breadcrumbsTypography: {
+      fontWeight: 'bold',
+      color: palette.gray.medium4
     }
   })
 );
@@ -144,6 +168,7 @@ interface Data {
   previous: Array<string>;
   nodeLookup: LookupTable<RenderTree>;
   expanded: Array<string>;
+  breadcrumbs?: Array<string>;
 }
 
 function getNodeSelectorChildren(
@@ -398,14 +423,15 @@ export default function ContentTree() {
     previous: [],
     selected: null,
     nodeLookup: null,
-    expanded: []
+    expanded: [],
+    breadcrumbs: []
   });
 
   useEffect(() => {
     if (guest?.modelId && guest.models && contentTypesBranch.byId && data.selected === null) {
       let parent = guest.models[guest.modelId];
       let contentType = contentTypesBranch.byId[parent.craftercms.contentTypeId];
-      let data: RenderTree = {
+      let root: RenderTree = {
         id: `${rootPrefix}${parent.craftercms.id}`,
         name: parent.craftercms.label,
         children: getChildren(parent, contentType, guest.models, contentTypesBranch.byId),
@@ -416,8 +442,9 @@ export default function ContentTree() {
       setData({
         previous: [],
         selected: parent.craftercms.id,
-        nodeLookup: hierarchicalToLookupTable(data),
-        expanded: [`${rootPrefix}${parent.craftercms.id}`]
+        nodeLookup: hierarchicalToLookupTable(root),
+        expanded: [`${rootPrefix}${parent.craftercms.id}`],
+        breadcrumbs: []
       });
     }
   }, [contentTypesBranch, data, data.selected, guest]);
@@ -428,7 +455,8 @@ export default function ContentTree() {
         previous: [],
         selected: null,
         nodeLookup: null,
-        expanded: []
+        expanded: [],
+        breadcrumbs: []
       });
     }
   }, [site]);
@@ -457,7 +485,8 @@ export default function ContentTree() {
           ...data.nodeLookup,
           ...hierarchicalToLookupTable(nodeData)
         },
-        expanded: [`${rootPrefix}${model.craftercms.id}`]
+        expanded: [`${rootPrefix}${model.craftercms.id}`],
+        breadcrumbs: data.breadcrumbs.length ? [...data.breadcrumbs, nodeData.id] : [`${rootPrefix}${data.selected}`, nodeData.id]
       });
     }
   };
@@ -476,11 +505,35 @@ export default function ContentTree() {
 
     let previousArray = [...data.previous];
     let previous = previousArray.pop();
+    let breadcrumbsArray = [...data.breadcrumbs];
+    breadcrumbsArray.pop();
+
     setData({
       ...data,
       selected: previous,
       previous: previousArray,
-      expanded: [`${rootPrefix}${previous}`]
+      expanded: [`${rootPrefix}${previous}`],
+      breadcrumbs: breadcrumbsArray.length === 1 ? [] : breadcrumbsArray
+    });
+  };
+
+  const handleBreadCrumbClick = (event, node?: RenderTree) => {
+    event.stopPropagation();
+    if (!data.previous.length) return null;
+
+    let nodeIdWithoutPrefix = node.id.replace(rootPrefix, '');
+
+    let previousArray = [...data.previous];
+    let breadcrumbsArray = [...data.breadcrumbs];
+    previousArray = data.previous.slice(0, previousArray.indexOf(nodeIdWithoutPrefix));
+    breadcrumbsArray = data.breadcrumbs.slice(0, breadcrumbsArray.indexOf(node.id) + 1);
+
+    setData({
+      ...data,
+      selected: nodeIdWithoutPrefix,
+      previous: previousArray,
+      expanded: [node.id],
+      breadcrumbs: breadcrumbsArray.length === 1 ? [] : breadcrumbsArray
     });
   };
 
@@ -531,6 +584,42 @@ export default function ContentTree() {
         onNodeToggle={handleChange}
       >
         <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
+          {
+            data.breadcrumbs &&
+            <MuiBreadcrumbs
+              maxItems={2}
+              aria-label="Breadcrumbs"
+              separator={<NavigateNextIcon fontSize="small" />}
+              classes={{
+                ol: classes.breadcrumbsList,
+                separator: classes.breadcrumbsSeparator
+              }}
+            >
+              {data.breadcrumbs.map((id, i: number) =>
+                (id === `${rootPrefix}${data.selected}`) ? (
+                  <Typography
+                    key={data.nodeLookup[id].id}
+                    variant="subtitle2"
+                    className={classes.breadcrumbsTypography}
+                    children={data.nodeLookup[id].name}
+                  />
+                ) : (
+                  <Link
+                    key={data.nodeLookup[id].id}
+                    color="inherit"
+                    component="button"
+                    variant="subtitle2"
+                    underline="always"
+                    TypographyClasses={{
+                      root: classes.breadcrumbsTypography
+                    }}
+                    onClick={(e) => handleBreadCrumbClick(e, data.nodeLookup[id])}
+                    children={data.nodeLookup[id].name}
+                  />
+                )
+              )}
+            </MuiBreadcrumbs>
+          }
           <TreeItemCustom
             nodeId={`${rootPrefix}${data.selected}`}
             resource={resource}
