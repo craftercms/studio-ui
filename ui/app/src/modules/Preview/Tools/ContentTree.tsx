@@ -24,7 +24,6 @@ import TreeView from '@material-ui/lab/TreeView';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeftRounded';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import TreeItem from '@material-ui/lab/TreeItem';
 import {
@@ -53,6 +52,8 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
 import Typography from '@material-ui/core/Typography';
 import palette from '../../../styles/palette';
 import Link from '@material-ui/core/Link';
+import { useDispatch } from 'react-redux';
+import { createBackHandler } from './EditFormPanel';
 
 const rootPrefix = '{root}_';
 
@@ -81,7 +82,7 @@ const useStyles = makeStyles((theme) =>
     breadcrumbsList: {
       display: 'flex',
       alignItems: 'center',
-      padding: '9px 12px',
+      padding: '9px 6px 0px 6px',
       '& li': {
         lineHeight: 1
       }
@@ -169,7 +170,6 @@ interface RenderTree {
 
 interface Data {
   selected: string;
-  previous: Array<string>;
   nodeLookup: LookupTable<RenderTree>;
   expanded: Array<string>;
   breadcrumbs?: Array<string>;
@@ -309,15 +309,13 @@ interface TreeItemCustomInterface {
 
   handleScroll?(node: RenderTree): void;
 
-  handlePrevious?(e: any): void;
-
   handleClick?(node: RenderTree): void;
 
   handleOptions?(e: any, modelId: string, parentId: string, embeddedParentPath: string): void;
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
-  const { resource, nodeId, handleScroll, handlePrevious, handleClick, handleOptions } = props;
+  const { resource, nodeId, handleScroll, handleClick, handleOptions } = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
@@ -367,13 +365,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       icon={node.type === 'component' && <ChevronRightIcon onClick={() => handleClick(node)} />}
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(node)}>
-          {
-            !node.rootPath && node.id.includes(rootPrefix) && handlePrevious ? (
-              <ChevronLeftIcon onClick={(e) => handlePrevious(e)} />
-            ) : (
-              <Icon className={classes.icon} />
-            )
-          }
+          <Icon className={classes.icon} />
           <p>{node.name}</p>
           {over && (node.type === 'component' || node.id.includes(rootPrefix)) && (
             <IconButton
@@ -413,6 +405,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
 
 export default function ContentTree() {
   const classes = useStyles({});
+  const dispatch = useDispatch();
   const guest = usePreviewGuest();
   const { formatMessage } = useIntl();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
@@ -425,7 +418,6 @@ export default function ContentTree() {
     anchorEl: null
   });
   const [data, setData] = React.useState<Data>({
-    previous: [],
     selected: null,
     nodeLookup: null,
     expanded: [],
@@ -445,7 +437,6 @@ export default function ContentTree() {
         rootPath: true
       };
       setData({
-        previous: [],
         selected: parent.craftercms.id,
         nodeLookup: hierarchicalToLookupTable(root),
         expanded: [`${rootPrefix}${parent.craftercms.id}`],
@@ -457,14 +448,26 @@ export default function ContentTree() {
   useEffect(() => {
     if (site) {
       setData({
-        previous: [],
         selected: null,
         nodeLookup: null,
         expanded: [],
         breadcrumbs: []
       });
     }
-  }, [site]);
+    return () => {
+      createBackHandler(dispatch)();
+    };
+  }, [dispatch, site]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.keyCode === 27) {
+        createBackHandler(dispatch)();
+      }
+    };
+    document.addEventListener('keydown', handler, false);
+    return () => document.removeEventListener('keydown', handler, false);
+  }, [dispatch]);
 
   const handleClick = (node: RenderTree) => {
     if (node.type === 'component' && !node.id.includes(rootPrefix)) {
@@ -484,7 +487,6 @@ export default function ContentTree() {
       };
 
       setData({
-        previous: [...data.previous, data.selected],
         selected: model.craftercms.id,
         nodeLookup: {
           ...data.nodeLookup,
@@ -504,39 +506,18 @@ export default function ContentTree() {
     return;
   };
 
-  const handlePrevious = (event: React.ChangeEvent<{}>) => {
-    event.stopPropagation();
-    if (!data.previous.length) return null;
-
-    let previousArray = [...data.previous];
-    let previous = previousArray.pop();
-    let breadcrumbsArray = [...data.breadcrumbs];
-    breadcrumbsArray.pop();
-
-    setData({
-      ...data,
-      selected: previous,
-      previous: previousArray,
-      expanded: [`${rootPrefix}${previous}`],
-      breadcrumbs: breadcrumbsArray.length === 1 ? [] : breadcrumbsArray
-    });
-  };
-
   const handleBreadCrumbClick = (event, node?: RenderTree) => {
     event.stopPropagation();
-    if (!data.previous.length) return null;
+    if (!data.breadcrumbs.length) return null;
 
     let nodeIdWithoutPrefix = node.id.replace(rootPrefix, '');
 
-    let previousArray = [...data.previous];
     let breadcrumbsArray = [...data.breadcrumbs];
-    previousArray = data.previous.slice(0, previousArray.indexOf(nodeIdWithoutPrefix));
     breadcrumbsArray = data.breadcrumbs.slice(0, breadcrumbsArray.indexOf(node.id) + 1);
 
     setData({
       ...data,
       selected: nodeIdWithoutPrefix,
-      previous: previousArray,
       expanded: [node.id],
       breadcrumbs: breadcrumbsArray.length === 1 ? [] : breadcrumbsArray
     });
@@ -573,7 +554,7 @@ export default function ContentTree() {
     shouldResolve: (source) => Boolean(source.selected),
     shouldReject: () => false,
     shouldRenew: (source, resource) =>
-      source.previous.length && resource.complete && source.expanded.length === 1,
+      source.breadcrumbs.length && resource.complete && source.expanded.length === 1,
     resultSelector: (source) => source,
     errorSelector: null
   });
@@ -629,7 +610,6 @@ export default function ContentTree() {
             nodeId={`${rootPrefix}${data.selected}`}
             resource={resource}
             handleScroll={handleScroll}
-            handlePrevious={handlePrevious}
             handleClick={handleClick}
             handleOptions={handleOptions}
           />

@@ -60,7 +60,7 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { isNullOrUndefined, nnou } from '../utils/object';
-import { scrollToNode, scrollToReceptacle } from '../utils/dom';
+import { scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
 import { createLocationArgument } from '../utils/util';
@@ -159,32 +159,32 @@ function Guest(props: GuestProps) {
 
   // Subscribes to host messages and routes them.
   useEffect(() => {
-    const sub = message$.subscribe(function(action) {
+    const sub = message$.subscribe(function (action) {
       const { type, payload } = action;
       switch (type) {
         case EDIT_MODE_CHANGED:
           dispatch(action);
           break;
         case ASSET_DRAG_STARTED:
-          dispatch({ type: ASSET_DRAG_STARTED, payload: { asset: payload } });
+          dispatch({ type, payload: { asset: payload } });
           break;
         case ASSET_DRAG_ENDED:
           dragOk(status) && dispatch(action);
           break;
         case COMPONENT_DRAG_STARTED:
-          dispatch({ type: COMPONENT_DRAG_STARTED, payload: { contentType: payload } });
+          dispatch({ type, payload: { contentType: payload } });
           break;
         case COMPONENT_DRAG_ENDED:
           dragOk(status) && dispatch(action);
           break;
         case COMPONENT_INSTANCE_DRAG_STARTED:
-          dispatch({ type: COMPONENT_INSTANCE_DRAG_STARTED, payload: { instance: payload } });
+          dispatch({ type, payload: { instance: payload } });
           break;
         case COMPONENT_INSTANCE_DRAG_ENDED:
           dragOk(status) && dispatch(action);
           break;
         case TRASHED:
-          dispatch({ type: TRASHED, payload: { iceId: payload } });
+          dispatch({ type, payload: { iceId: payload } });
           break;
         case CLEAR_SELECTED_ZONES:
           clearAndListen$.next();
@@ -200,7 +200,7 @@ function Guest(props: GuestProps) {
         }
         case CONTENT_TYPE_RECEPTACLES_REQUEST: {
           dispatch({
-            type: CONTENT_TYPE_RECEPTACLES_REQUEST,
+            type,
             payload: { contentTypeId: payload }
           });
           break;
@@ -216,7 +216,17 @@ function Guest(props: GuestProps) {
           dispatch(action);
           break;
         case CONTENT_TREE_FIELD_SELECTED: {
-          scrollToNode(payload, scrollElement);
+          dispatch({
+            type,
+            payload: {
+              iceProps: {
+                modelId: payload.parentId || payload.modelId,
+                fieldId: payload.fieldId,
+                index: payload.index
+              },
+              scrollElement
+            }
+          });
           break;
         }
         case DESKTOP_ASSET_UPLOAD_PROGRESS:
@@ -389,17 +399,17 @@ function Guest(props: GuestProps) {
             EditingStatus.PLACING_NEW_COMPONENT,
             EditingStatus.PLACING_DETACHED_COMPONENT
           ].includes(status) &&
-            state.dragContext.inZone &&
-            !state.dragContext.invalidDrop && (
-              <DropMarker
-                onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
-                dropZone={state.dragContext.dropZone}
-                over={state.dragContext.over}
-                prev={state.dragContext.prev}
-                next={state.dragContext.next}
-                coordinates={state.dragContext.coordinates}
-              />
-            )}
+          state.dragContext.inZone &&
+          !state.dragContext.invalidDrop && (
+            <DropMarker
+              onDropPosition={(payload) => dispatch({ type: 'set_drop_position', payload })}
+              dropZone={state.dragContext.dropZone}
+              over={state.dragContext.over}
+              prev={state.dragContext.prev}
+              next={state.dragContext.next}
+              coordinates={state.dragContext.coordinates}
+            />
+          )}
         </CrafterCMSPortal>
       )}
       {snack && (
@@ -411,7 +421,7 @@ function Guest(props: GuestProps) {
   );
 }
 
-export default function(props: GuestProps) {
+export default function (props: GuestProps) {
   const { isAuthoring, children } = props;
   const store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   return isAuthoring ? (

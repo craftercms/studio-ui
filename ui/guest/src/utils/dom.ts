@@ -23,8 +23,7 @@ import {
 } from '../models/Positioning';
 import $ from 'jquery';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import { RenderTree } from '../models/ContentTree';
-import { DropZone, ValidationResult } from '../models/InContextEditing';
+import { DropZone, ICEProps, ValidationResult } from '../models/InContextEditing';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
 import { CSSProperties } from 'react';
 import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeReceptacle';
@@ -363,8 +362,8 @@ export function addAnimation(
   });
 }
 
-export function scrollToNode(node: RenderTree, scrollElement: string): void {
-  const $element = getElementFromICEProps(node.parentId || node.modelId, node.fieldId, node.index);
+export function scrollToIceProps(iceProps: ICEProps, scrollElement: string, animate: boolean = false): void {
+  const $element = getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index);
 
   if ($element && $element.length) {
     if (!isElementInView($element)) {
@@ -374,10 +373,11 @@ export function scrollToNode(node: RenderTree, scrollElement: string): void {
         },
         300,
         function () {
-          addAnimation($element, 'craftercms-content-tree-locate');
+          if (animate) addAnimation($element, 'craftercms-content-tree-locate');
+
         }
       );
-    } else {
+    } else if (animate) {
       addAnimation($element, 'craftercms-content-tree-locate');
     }
   } else {
