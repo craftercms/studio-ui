@@ -14,14 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * File: history.js
- * Component ID: templateholder-history
- * @author: Roy Art
- * @date: 10.01.2011
- **/
-(function() {
-  CStudioAuthoring.register('TemplateHolder.History', {});
+import { LegacyItem } from '../models/Item';
 
-  CStudioAuthoring.Env.ModuleMap.map('template-history', CStudioAuthoring.TemplateHolder.History);
-})();
+export function getStateMapFromLegacyItem(item: LegacyItem) {
+  return {
+    ...item.isDeleted && { deleted: true },
+    ...item.isSubmitted && { submitted: true },
+    ...item.isScheduled && { scheduled: true }
+  };
+}

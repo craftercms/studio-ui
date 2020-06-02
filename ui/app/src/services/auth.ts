@@ -82,7 +82,7 @@ export function setPassword(
 }
 
 export function validatePasswordResetToken(token: string): Observable<boolean> {
-  return get(`/studio/api/1/services/api/1/user/validate-token.json?token=${token}`).pipe(
+  return get(`/studio/api/2/users/validate_token?token=${token}`).pipe(
     mapTo(true),
     catchError((error) => {
       if (error.status === 401)

@@ -28,6 +28,7 @@ import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
 import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
+import RejectDialog from '../Dialogs/RejectDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -234,6 +235,17 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.workflowCancellation.onClosed, dispatch)}
         onDismiss={createCallback(state.workflowCancellation.onDismiss, dispatch)}
         onContinue={createCallback(state.workflowCancellation.onContinue, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Reject */}
+      <RejectDialog
+        open={state.reject.open}
+        items={state.reject.items}
+        onClose={createCallback(state.reject.onClose, dispatch)}
+        onClosed={createCallback(state.reject.onClosed, dispatch)}
+        onDismiss={createCallback(state.reject.onDismiss, dispatch)}
+        onRejectSuccess={createCallback(state.reject.onRejectSuccess, dispatch)}
       />
       {/* endregion */}
     </Suspense>
