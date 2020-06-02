@@ -247,7 +247,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                   });
                 })(record.element as HTMLImageElement);
                 reader.readAsDataURL(file);
-                return stream$
+                return stream$;
               }
               break;
             }
@@ -535,18 +535,25 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     );
   },
   // endregion
-  (action$: ActionsObservable<GuestStandardAction<{ iceProps: ICEProps, scrollElement: string }>>) => {
+  (action$: ActionsObservable<GuestStandardAction<{ iceProps: ICEProps, scrollElement: string, name: string }>>) => {
     return action$.pipe(
       ofType(CONTENT_TREE_FIELD_SELECTED),
       switchMap((action) => {
-        const { iceProps, scrollElement } = action.payload;
-        scrollToIceProps(iceProps, scrollElement);
-        return escape$.pipe(
-          takeUntil(clearAndListen$),
-          tap(() => post(CLEAR_SELECTED_ZONES)),
-          map(() => ({ type: 'start_listening' })),
-          take(1)
-        );
+        const { iceProps, scrollElement, name } = action.payload;
+        if (scrollToIceProps(iceProps, scrollElement)) {
+          return escape$.pipe(
+            takeUntil(clearAndListen$),
+            tap(() => post(CLEAR_SELECTED_ZONES)),
+            map(() => ({ type: 'start_listening' })),
+            take(1)
+          );
+        } else {
+          post({
+            type: 'VALIDATION_MESSAGE',
+            payload: { id: 'registerNotFound', level: 'suggestion', values: { name } }
+          });
+          return NEVER;
+        }
       })
     );
   }

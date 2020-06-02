@@ -224,7 +224,8 @@ function Guest(props: GuestProps) {
                 fieldId: payload.fieldId,
                 index: payload.index
               },
-              scrollElement
+              scrollElement,
+              name: payload.name
             }
           });
           break;

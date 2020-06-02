@@ -336,13 +336,15 @@ const ice_zone_selected: GuestReducer = (state, action) => {
 const content_tree_field_selected: GuestReducer = (state, action) => {
   const { iceProps } = action.payload;
   const iceId = iceRegistry.exists(iceProps);
+  if (iceId === -1) return;
   const registryEntry = ElementRegistry.fromICEId(iceId);
+  if (!registryEntry) return;
   const highlight = ElementRegistry.getHoverData(registryEntry.id);
-  // checkfor draggable
+
   return {
     ...state,
     status: EditingStatus.SELECTED_CONTENT_TREE_FIELD,
-    draggable: {},
+    draggable: iceRegistry.isMovable(iceId) ? { [registryEntry.id]: iceId } : {},
     highlighted: { [registryEntry.id]: highlight }
   };
 };

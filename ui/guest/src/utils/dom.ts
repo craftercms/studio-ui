@@ -28,7 +28,6 @@ import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util
 import { CSSProperties } from 'react';
 import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeReceptacle';
 import { getElementFromICEProps } from '../classes/ElementRegistry';
-import { post } from './communicator';
 
 // Regular click gets triggered even after loooong mouse downs or
 // when mousing-down and dragging cursor - without actually being on
@@ -362,7 +361,7 @@ export function addAnimation(
   });
 }
 
-export function scrollToIceProps(iceProps: ICEProps, scrollElement: string, animate: boolean = false): void {
+export function scrollToIceProps(iceProps: ICEProps, scrollElement: string, animate: boolean = false): JQuery<Element> {
   const $element = getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index);
 
   if ($element && $element.length) {
@@ -380,12 +379,9 @@ export function scrollToIceProps(iceProps: ICEProps, scrollElement: string, anim
     } else if (animate) {
       addAnimation($element, 'craftercms-content-tree-locate');
     }
-  } else {
-    post({
-      type: 'VALIDATION_MESSAGE',
-      payload: { id: 'registerNotFound', level: 'suggestion', values: { name: node.name } }
-    });
   }
+
+  return $element;
 }
 
 export function scrollToReceptacle(
