@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext } from './GuestContext';
-import ElementRegistry from '../classes/ElementRegistry';
+import ElementRegistry, { getParentElementFromICEProps } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery';
 import contentController from '../classes/ContentController';
@@ -40,7 +40,7 @@ import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { popPiece, removeLastPiece } from '../utils/string';
-import { addAnimation, getParentElementFromICEProps } from '../utils/dom';
+import { addAnimation } from '../utils/dom';
 
 export default function GuestProxy() {
 

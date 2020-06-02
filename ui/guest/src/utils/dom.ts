@@ -28,9 +28,7 @@ import { DropZone, ValidationResult } from '../models/InContextEditing';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
 import { CSSProperties } from 'react';
 import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeReceptacle';
-import iceRegistry from '../classes/ICERegistry';
-import { removeLastPiece } from './string';
-import ElementRegistry from '../classes/ElementRegistry';
+import { getElementFromICEProps } from '../classes/ElementRegistry';
 import { post } from './communicator';
 
 // Regular click gets triggered even after loooong mouse downs or
@@ -337,7 +335,10 @@ export function getRelativePointerPositionPercentages(
   return { x, y };
 }
 
-export function isElementInView(element: Element | JQuery<Element>, fullyInView?: boolean): boolean {
+export function isElementInView(
+  element: Element | JQuery<Element>,
+  fullyInView?: boolean
+): boolean {
   const pageTop = $(window).scrollTop();
   const pageBottom = pageTop + $(window).height();
   const elementTop = $(element).offset().top;
@@ -362,30 +363,7 @@ export function addAnimation(
   });
 }
 
-export function getElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
-  const recordId = iceRegistry.exists({
-    modelId: modelId,
-    fieldId: fieldId,
-    index: index
-  });
-  
-  return (recordId === -1 || !ElementRegistry.fromICEId(recordId)) ? null : $(ElementRegistry.fromICEId(recordId).element);
-}
-
-export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
-  const recordId = iceRegistry.exists({
-    modelId: modelId,
-    fieldId: fieldId,
-    index: fieldId.includes('.')
-      ? parseInt(removeLastPiece(index as string))
-      : null
-  });
-
-  return (recordId === -1) ? null : $(ElementRegistry.fromICEId(recordId).element);
-}
-
 export function scrollToNode(node: RenderTree, scrollElement: string): void {
-
   const $element = getElementFromICEProps(node.parentId || node.modelId, node.fieldId, node.index);
 
   if ($element && $element.length) {
