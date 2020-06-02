@@ -14,10 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, Fragment, PropsWithChildren, ElementType } from 'react';
 import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
-import { PropsWithChildren, ElementType } from 'react';
 import { useICE } from './hooks';
 import { value as getModelValue } from '../utils/model';
 import { setProperty } from '../utils/object';
@@ -54,7 +53,7 @@ export function Img(props) {
 
 type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
   target?: string;
-  format?: (value: V) => F;
+  format?: (value: V, fieldId: string) => F;
 };
 
 export function RenderField<P = {}>(props: RenderFieldProps<P>) {
@@ -69,23 +68,20 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
   } = props;
   const { props: ice, model } = useICE({ model: modelProp, fieldId, index });
   const Component = component as ComponentType<P>;
-  const passDownProps = setProperty(
-    Object.assign({}, other, ice),
-    target,
-    format(getModelValue(model, props.fieldId))
-  ) as P;
+  const passDownProps = Object.assign({}, other, ice) as P;
+  const fields = fieldId.replace(/\s/g, '').split(',');
+  const targets = target.replace(/\s/g, '').split(',');
+  targets.forEach((target, index) => {
+    const fieldId = fields[index];
+    setProperty(passDownProps as {}, target, format(getModelValue(model, fieldId), fieldId));
+  });
   return <Component {...passDownProps} />;
 }
 
 export function Model<P = {}>(props: FieldProps<P>) {
-  const { component = 'div', ...other } = props;
-  const { props: ice, model } = useICE({
-    model: props.model,
-    fieldId: null,
-    index: null,
-    noRef: true
-  });
+  const { model, fieldId, index, component = Fragment, ...other } = props;
+  useICE({ model, fieldId: null, index: null, noRef: true });
   const Component = component as ComponentType<P>;
   const passDownProps = other as P;
-  return <Component {...passDownProps} {...ice} model={model} />;
+  return <Component {...passDownProps} />;
 }

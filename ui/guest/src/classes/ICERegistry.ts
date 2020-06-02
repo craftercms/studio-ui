@@ -75,9 +75,7 @@ const validationChecks: { [key in ValidationKeys]: Function } = {
 let rid = 0;
 
 /* private */
-const registry: LookupTable<ICERecord> = {
-  /* [id]: { modelId, fieldId, index } */
-};
+const registry: Map<number, ICERecord> = new Map();
 
 export function register(registration: ICERecordRegistration): number {
   // For consistency, set `fieldId` and `index` props
@@ -114,7 +112,7 @@ export function register(registration: ICERecordRegistration): number {
     // times would set things off. The alternative was
     // having slave records.
 
-    const record = recordOf(id);
+    const record = getById(id);
 
     record.refCount++;
 
@@ -132,44 +130,44 @@ export function register(registration: ICERecordRegistration): number {
       );
     }
 
-    registry[record.id] = record;
+    registry.set(record.id, record);
 
     return record.id;
   }
 }
 
 export function deregister(id: number): ICERecord {
-  const record = registry[id];
-  if (id in registry && --record.refCount === 0) {
-    delete registry[id];
+  const record = registry.get(id);
+  if (record) {
+    try {
+      if (record.refCount === 1) {
+        registry.delete(id);
+      } else {
+        registry.get(id).refCount--;
+      }
+    } catch (e) {
+      console.error(`Error de-registering ${record.fieldId}`, record, e);
+    }
   }
-  return record;
+  return null;
 }
 
 export function exists(data: Partial<ICEProps>): number {
-  const records = Object.values(registry);
-  // prettier-ignore
-  return forEach(
-    records,
-    (record, i) => {
-      if (
-        record.modelId === data.modelId && (
-          (nou(record.fieldId) && nou(data.fieldId)) ||
-          (record.fieldId === data.fieldId)
-        ) && (
-          (nou(record.index) && nou(data.index)) ||
-          (record.index === data.index)
-        )
-      ) {
-        return record.id;
-      }
-    },
-    -1
-  );
+  for (const [, record] of registry) {
+    if (
+      record.modelId === data.modelId &&
+      ((nou(record.fieldId) && nou(data.fieldId)) || record.fieldId === data.fieldId) &&
+      ((nou(record.index) && nou(data.index)) || record.index === data.index)
+    ) {
+      return record.id;
+    }
+  }
+  return -1;
 }
 
-export function recordOf(id: number | string): ICERecord {
-  return registry[id];
+export function getById(id: number | string): ICERecord {
+  id = typeof id === 'string' ? parseInt(id) : id;
+  return registry.get(id);
 }
 
 export function isRepeatGroup(id): boolean {
@@ -197,17 +195,17 @@ export function isRepeatGroupItem(id: number): boolean {
 
 export function getMediaReceptacles(type: string): ICERecord[] {
   const receptacles = [];
-  forEach(Object.values(registry), (record: ICERecord) => {
+  for (const [, record] of registry) {
     const entries = getReferentialEntries(record);
     if (entries.field && entries.field.type === type) {
       receptacles.push(record);
     }
-  });
+  }
   return receptacles;
 }
 
 export function getRecordReceptacles(id: number): ICERecord[] {
-  const record = recordOf(id);
+  const record = getById(id);
   const { index, field, fieldId, model } = getReferentialEntries(record);
   if (isNullOrUndefined(index)) {
     // Can't move something that's not part of a collection.
@@ -232,13 +230,17 @@ export function getRecordReceptacles(id: number): ICERecord[] {
 
 export function getRepeatGroupItemReceptacles(record: ICERecord): ICERecord[] {
   const entries = getReferentialEntries(record);
-  return Object.values(registry)
-    .filter((rec) => isNullOrUndefined(rec.index) && rec.fieldId === record.fieldId)
-    .filter((rec) => {
-      const es = getReferentialEntries(rec);
-      return es.contentTypeId === entries.contentTypeId;
-    })
-    .map((rec) => rec);
+  const receptacles = [];
+  const records = registry.values();
+  for (const item of records) {
+    if (isNullOrUndefined(item.index) && item.fieldId === record.fieldId) {
+      const es = getReferentialEntries(item);
+      if (es.contentTypeId === entries.contentTypeId) {
+        receptacles.push(item);
+      }
+    }
+  }
+  return receptacles;
 }
 
 export function getComponentItemReceptacles(record: ICERecord): number[] {
@@ -248,7 +250,7 @@ export function getComponentItemReceptacles(record: ICERecord): number[] {
 
 export function getContentTypeReceptacles(contentType: string | ContentType): ICERecord[] {
   const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
-  return Object.values(registry).filter((record) => {
+  return Array.from(registry.values()).filter((record) => {
     const { fieldId, index } = record;
     if (notNullOrUndefined(fieldId)) {
       const { field, contentType: _contentType, model } = getReferentialEntries(record);
@@ -329,7 +331,7 @@ export function runValidation(
   validationId: ValidationKeys,
   args?: unknown[]
 ): ValidationResult {
-  const record = recordOf(iceId);
+  const record = getById(iceId);
   let {
     field: { validations }
   } = getReferentialEntries(record);
@@ -343,8 +345,8 @@ export function runValidation(
 }
 
 export function getReferentialEntries(record: number | ICERecord): ReferentialEntries {
-  record = typeof record === 'object' ? record : recordOf(record);
-  const model = contentController.getCachedModel(record.modelId)
+  record = typeof record === 'object' ? record : getById(record);
+  const model = contentController.getCachedModel(record.modelId);
   const contentTypeId = Model.getContentTypeId(model);
   const contentType = contentController.getCachedContentType(contentTypeId);
   const field = record.fieldId ? contentTypeUtils.getField(contentType, record.fieldId) : null;
@@ -389,7 +391,7 @@ export function checkComponentMovability(entries): boolean {
     return false;
   }
 
-  const records = Object.values(registry);
+  const records = Array.from(registry.values());
 
   let parentField, parentModelId, parentCollection, minCount;
 
@@ -525,7 +527,7 @@ export default {
   register,
   deregister,
   exists,
-  recordOf,
+  getById,
   isRepeatGroup,
   isRepeatGroupItem,
   getMediaReceptacles,
