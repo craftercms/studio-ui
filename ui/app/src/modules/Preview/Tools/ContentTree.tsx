@@ -113,6 +113,9 @@ const treeItemStyles = makeStyles((theme) =>
       '&:focus > .MuiTreeItem-content': {
         '& .MuiTreeItem-label': {
           backgroundColor: 'inherit'
+        },
+        '& .MuiTreeItem-label:hover': {
+          backgroundColor: 'rgba(0, 0, 0, 0.04)'
         }
       }
     },
@@ -127,6 +130,7 @@ const treeItemStyles = makeStyles((theme) =>
     },
     treeItemGroup: {},
     treeItemExpanded: {},
+    treeItemSelected: {},
     treeItemLabelRoot: {},
     treeItemLabel: {
       display: 'flex',
@@ -393,6 +397,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
           node.id.includes(rootPrefix) && 'root'
         ),
         expanded: classes.treeItemExpanded,
+        selected: classes.treeItemSelected,
         group: classes.treeItemGroup,
         iconContainer: node.id.includes(rootPrefix)
           ? classes.displayNone
@@ -585,7 +590,7 @@ export default function ContentTree() {
       >
         <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
           {
-            data.breadcrumbs &&
+            Boolean(data.breadcrumbs.length) &&
             <MuiBreadcrumbs
               maxItems={2}
               aria-label="Breadcrumbs"
