@@ -78,6 +78,14 @@ const audiencesPanelInitialState = {
 const guestBase = envInitialState.guestBase;
 const previewLanding = envInitialState.previewLandingBase;
 
+function cleanseUrl(url: string) {
+  const clean = url || '/';
+  if (!clean.startsWith('/')) {
+    return `/${clean}`;
+  }
+  return clean;
+}
+
 const reducer = createReducer<GlobalState['preview']>({
   editMode: true,
   // What's shown to the user across the board (url, address bar, etc)
@@ -293,8 +301,8 @@ const reducer = createReducer<GlobalState['preview']>({
       ? state
       : {
         ...state,
-        computedUrl: payload,
-        currentUrl: `${guestBase}${payload}`
+        computedUrl: cleanseUrl(payload),
+        currentUrl: `${guestBase}${cleanseUrl(payload)}`
       }
   ),
   [changeSite.type]: (state, { payload }) => {

@@ -50,7 +50,7 @@ export function setLabel(record: ElementRecord): void {
   const labels = [];
   const models = contentController.getCachedModels();
   record.iceIds.forEach((iceId) => {
-    const iceRecord = iceRegistry.recordOf(iceId);
+    const iceRecord = iceRegistry.getById(iceId);
     const { model, field, fieldId, index, contentType } = iceRegistry.getReferentialEntries(
       iceRecord
     );
@@ -151,9 +151,7 @@ export function deregister(id: string | number): ElementRecord {
   const record = db[id];
   if (notNullOrUndefined(record)) {
     const { iceIds } = record;
-    iceIds.forEach((iceId) => {
-      iceRegistry.deregister(iceId);
-    });
+    iceIds.forEach((iceId) => iceRegistry.deregister(iceId));
     delete db[id];
   }
   return record;

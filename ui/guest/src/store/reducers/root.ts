@@ -245,7 +245,7 @@ const dragstart: GuestReducer = (state, action) => {
         containers,
         inZone: false,
         targetIndex: null,
-        dragged: iceRegistry.recordOf(iceId)
+        dragged: iceRegistry.getById(iceId)
       }
     };
   } else {

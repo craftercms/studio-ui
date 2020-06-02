@@ -172,7 +172,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             case EditingStatus.PLACING_DETACHED_ASSET: {
               const { dropZone } = dragContext;
               if (dropZone && dragContext.inZone) {
-                const record = iceRegistry.recordOf(dropZone.iceId);
+                const record = iceRegistry.getById(dropZone.iceId);
                 contentController.updateField(
                   record.modelId,
                   record.fieldId,
@@ -192,7 +192,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             case EditingStatus.PLACING_NEW_COMPONENT: {
               if (notNullOrUndefined(dragContext.targetIndex)) {
                 const { targetIndex, contentType, dropZone } = dragContext;
-                const record = iceRegistry.recordOf(dropZone.iceId);
+                const record = iceRegistry.getById(dropZone.iceId);
 
                 setTimeout(() => {
                   contentController.insertComponent(
@@ -209,7 +209,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
             case EditingStatus.PLACING_DETACHED_COMPONENT: {
               if (notNullOrUndefined(dragContext.targetIndex)) {
                 const { targetIndex, instance, dropZone } = dragContext;
-                const record = iceRegistry.recordOf(dropZone.iceId);
+                const record = iceRegistry.getById(dropZone.iceId);
 
                 setTimeout(() => {
                   contentController.insertInstance(
@@ -411,7 +411,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       ofType(TRASHED),
       tap((action) => {
         const { iceId } = action.payload;
-        let { modelId, fieldId, index } = iceRegistry.recordOf(iceId);
+        let { modelId, fieldId, index } = iceRegistry.getById(iceId);
         contentController.deleteItem(modelId, fieldId, index);
       }),
       ignoreElements()
@@ -555,7 +555,7 @@ const moveComponent = (dragContext) => {
     );
   }
 
-  const containerRecord = iceRegistry.recordOf(originDropZone.iceId);
+  const containerRecord = iceRegistry.getById(originDropZone.iceId);
 
   // Determine whether the component is to be sorted or moved.
   if (currentDZ === originDropZone.element) {
@@ -586,7 +586,7 @@ const moveComponent = (dragContext) => {
   } else {
     // Different drop zone: Move identified
 
-    const rec = iceRegistry.recordOf(dropZone.iceId);
+    const rec = iceRegistry.getById(dropZone.iceId);
 
     // Chrome didn't trigger the dragend event
     // without the set timeout.
