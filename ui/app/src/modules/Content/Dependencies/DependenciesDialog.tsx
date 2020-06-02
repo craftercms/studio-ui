@@ -375,13 +375,13 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                     <FormattedMessage
                       id="dependenciesDialog.emptyDependantsMessage"
                       defaultMessage={'{itemName} has no dependencies'}
-                      values={{ itemName: item?.['label'] }}
+                      values={{ itemName: item?.label }}
                     />
                   ) : (
                     <FormattedMessage
                       id="dependenciesDialog.emptyDependenciesMessage"
                       defaultMessage={'Nothing depends on {itemName}'}
-                      values={{ itemName: item?.['label'] }}
+                      values={{ itemName: item?.label }}
                     />
                   )
               ),
