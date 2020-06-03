@@ -343,7 +343,7 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
 
   return {
     ...state,
-    status: EditingStatus.SELECTED_CONTENT_TREE_FIELD,
+    status: EditingStatus.SELECT_FIELD,
     draggable: iceRegistry.isMovable(iceId) ? { [registryEntry.id]: iceId } : {},
     highlighted: { [registryEntry.id]: highlight }
   };

@@ -246,7 +246,7 @@ function getChildren(
 ) {
   let children = [];
   Object.keys(model).forEach((fieldName) => {
-    if (fieldName === 'craftercms' || fieldName.endsWith('_raw')) return;
+    if (fieldName === 'craftercms') return;
     const contentTypeField = getContentTypeField(contentType, fieldName, contentTypes);
     if (!contentTypeField) return;
     const { type, name } = getContentTypeField(contentType, fieldName, contentTypes);
