@@ -442,27 +442,6 @@ export default function ContentTree() {
   const modelId = guest?.modelId;
 
   useEffect(() => {
-    if (modelId && models && byId && data.selected === null) {
-      let parent = models[modelId];
-      let contentType = byId[parent.craftercms.contentTypeId];
-      let root: RenderTree = {
-        id: `${rootPrefix}${parent.craftercms.id}`,
-        name: parent.craftercms.label,
-        children: getChildren(parent, contentType, models, byId),
-        type: contentType.type,
-        modelId: parent.craftercms.id,
-        rootPath: true
-      };
-      setData({
-        selected: parent.craftercms.id,
-        nodeLookup: hierarchicalToLookupTable(root),
-        expanded: [`${rootPrefix}${parent.craftercms.id}`],
-        breadcrumbs: []
-      });
-    }
-  }, [byId, data, data.selected, hostToHost$, modelId, models]);
-
-  useEffect(() => {
     const sub = hostToHost$.subscribe((action) => {
       if (action.type === SORT_ITEM_OPERATION_COMPLETE) {
         setData(initialData);
@@ -478,6 +457,29 @@ export default function ContentTree() {
       sub.unsubscribe();
     };
   }, [dispatch, hostToHost$, site]);
+
+  useEffect(() => {
+    if (modelId && models && byId && data.selected === null) {
+      console.log('here');
+      let parent = models[modelId];
+      let contentType = byId[parent.craftercms.contentTypeId];
+      let root: RenderTree = {
+        id: `${rootPrefix}${parent.craftercms.id}`,
+        name: parent.craftercms.label,
+        children: getChildren(parent, contentType, models, byId),
+        type: contentType.type,
+        modelId: parent.craftercms.id,
+        rootPath: true
+      };
+
+      setData({
+        selected: parent.craftercms.id,
+        nodeLookup: hierarchicalToLookupTable(root),
+        expanded: [`${rootPrefix}${parent.craftercms.id}`],
+        breadcrumbs: []
+      });
+    }
+  }, [byId, data, data.selected, hostToHost$, modelId, models]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -575,9 +577,11 @@ export default function ContentTree() {
   const resource = useLogicResource<Data, Data>(data, {
     shouldResolve: (source) => Boolean(source.selected),
     shouldReject: () => false,
-    shouldRenew: (source, resource) =>
-      source.breadcrumbs.length && resource.complete && source.expanded.length === 1,
-    resultSelector: (source) => source,
+    shouldRenew: (source, resource) => {
+      //return Boolean(source.breadcrumbs.length && resource.complete && source.expanded.length === 1);
+      return resource.complete;
+    },
+    resultSelector: (source) =>  source,
     errorSelector: null
   });
 
