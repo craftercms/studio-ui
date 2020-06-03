@@ -20,6 +20,7 @@ import {
   filter,
   ignoreElements,
   map,
+  mapTo,
   switchMap,
   take,
   takeUntil,
@@ -340,10 +341,6 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
   },
   // endregion
 
-  // region computed_dragover
-  // (action$: Action$, state$: State$) => {},
-  // endregion
-
   // region Desktop Asset Upload (Complete)
   (action$: ActionsObservable<GuestStandardAction<{ path: string, record: ElementRecord }>>) => {
     return action$.pipe(
@@ -413,8 +410,13 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
         contentController.deleteItem(modelId, fieldId, index);
+        post({ type: INSTANCE_DRAG_ENDED });
       }),
-      ignoreElements()
+      // There's a raise condition where sometimes the dragend is
+      // fired and sometimes is not upon dropping on the rubbish bin.
+      // Manually firing here may incur in double firing of computed_dragend
+      // in those occasions.
+      mapTo({ type: 'computed_dragend' })
     );
   },
   // endregion

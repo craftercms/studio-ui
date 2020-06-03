@@ -226,6 +226,8 @@
     function sendMessage(message, targetWindows) {
       !targetWindows && (targetWindows = this.getTargetWindows());
 
+      message.meta = { craftercms: true, source: 'legacy' };
+
       for (var i = 0, l = targetWindows.length; i < l; ++i) {
         targetWindows[i].window.postMessage(message, targetWindows[i].origin);
       }
