@@ -19,7 +19,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
-import PasswordTextField from '../PasswordTextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import React, { CSSProperties, PropsWithChildren, useEffect, useReducer, useState } from 'react';
@@ -34,6 +33,8 @@ import { isBlank } from '../../utils/string';
 import Typography from '@material-ui/core/Typography';
 import OpenInNewRounded from '@material-ui/icons/OpenInNewRounded';
 import { setRequestForgeryToken } from '../../utils/auth';
+import { LogInForm } from './LoginForm';
+import { ClassNameMap } from '@material-ui/styles/withStyles';
 
 const translations = defineMessages({
   sessionExpired: {
@@ -51,7 +52,7 @@ const translations = defineMessages({
 });
 
 const useStyles = makeStyles((theme) => createStyles({
-  input: {
+  username: {
     marginBottom: theme.spacing(2)
   },
   actions: {
@@ -69,7 +70,8 @@ const useStyles = makeStyles((theme) => createStyles({
   ssoAction: {
     textAlign: 'center',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    marginTop: theme.spacing(1)
   }
 }));
 
@@ -86,7 +88,7 @@ export default function AuthMonitor() {
       error: null,
       isFetching: false,
       username: '',
-      authType: 'SAML'
+      authType: 'DB'
     },
     (state) => {
       let context: any;
@@ -97,16 +99,16 @@ export default function AuthMonitor() {
         context = window.CStudioAuthoringContext;
         user.username = context.user;
       } else {
-        context = JSON.parse(document.querySelector('#user').innerHTML);
-        user.username = context.username;
+        context = JSON.parse(document.querySelector('#user')?.innerHTML ?? null);
+        user.username = context?.username;
       }
-      user.authType = context.authenticationType;
+      user.authType = context?.authenticationType;
       return { ...state, ...user };
     }
   );
   const [password, setPassword] = useState<string>('');
   const [logoutUrl, setLogoutUrl] = useState(authoringUrl);
-  const isSSO = (authType.toLowerCase() !== 'db');
+  const isSSO = (authType?.toLowerCase() !== 'db');
   const [ssoButtonClicked, setSSOButtonClicked] = useState(false);
   const styles: CSSProperties = isFetching ? { visibility: 'hidden' } : {};
 
@@ -174,6 +176,19 @@ export default function AuthMonitor() {
     }
   }, [active]);
 
+  useEffect(() => {
+    if (!username) {
+      setState({ isFetching: false });
+      me().subscribe((user) => {
+        setState({
+          isFetching: false,
+          username: user.username,
+          authType: user.authType
+        })
+      });
+    }
+  }, [username]);
+
   return (
     <Dialog
       open={!active}
@@ -209,6 +224,7 @@ export default function AuthMonitor() {
               {
                 isSSO ? (
                   <SSOForm
+                    classes={classes}
                     authoringUrl={authoringUrl}
                     username={username}
                     onSubmit={onSubmit}
@@ -217,6 +233,7 @@ export default function AuthMonitor() {
                   />
                 ) : (
                   <LogInForm
+                    classes={classes}
                     username={username}
                     isFetching={isFetching}
                     onSubmit={onSubmit}
@@ -257,11 +274,18 @@ type SSOFormProps = PropsWithChildren<{
   onSubmit: (e: any) => any;
   ssoButtonClicked: boolean;
   onSetSSOButtonClicked: Function;
+  classes?: ClassNameMap<any>;
 }>;
 
 function SSOForm(props: SSOFormProps) {
-  const { username, onSubmit, authoringUrl, ssoButtonClicked, onSetSSOButtonClicked } = props;
-  const classes = useStyles({});
+  const {
+    username,
+    onSubmit,
+    authoringUrl,
+    ssoButtonClicked,
+    onSetSSOButtonClicked,
+    classes
+  } = props;
   const onOpenLogin = () => {
     window.open(
       `${authoringUrl}/login/resume`,
@@ -277,20 +301,20 @@ function SSOForm(props: SSOFormProps) {
         disabled
         type="email"
         value={username}
-        className={classes.input}
+        className={classes?.input}
         label={
-          <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username"/>
+          <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username" />
         }
       />
-      <section className={classes.ssoAction}>
+      <section className={classes?.ssoAction}>
         <Button
           type="button"
           color="primary"
           variant={ssoButtonClicked ? 'outlined' : 'contained'}
           onClick={onOpenLogin}
-          endIcon={<OpenInNewRounded/>}
+          endIcon={<OpenInNewRounded />}
         >
-          <FormattedMessage id="authMonitor.openSSOLoginButtonLabel" defaultMessage="Open Login Form"/>
+          <FormattedMessage id="authMonitor.openSSOLoginButtonLabel" defaultMessage="Open Login Form" />
         </Button>
         <Typography variant="caption">
           <FormattedMessage
@@ -302,50 +326,6 @@ function SSOForm(props: SSOFormProps) {
           />
         </Typography>
       </section>
-    </form>
-  );
-}
-
-type LogInForm = PropsWithChildren<{
-  username: string;
-  password: string;
-  isFetching: boolean;
-  onSubmit: (e: any) => any;
-  onSetPassword: Function;
-}>;
-
-function LogInForm(props: LogInForm) {
-  const { username, onSubmit, isFetching, onSetPassword, password } = props;
-  const classes = useStyles({});
-  return (
-    <form onSubmit={onSubmit}>
-      <TextField
-        fullWidth
-        disabled
-        type="email"
-        value={username}
-        className={classes.input}
-        label={
-          <FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username"/>
-        }
-      />
-      <PasswordTextField
-        fullWidth
-        autoFocus
-        value={password}
-        onChange={(e: any) => onSetPassword(e.target.value)}
-        label={
-          <FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password"/>
-        }
-      />
-      {/* This button is just to have the form submit when pressing enter. */}
-      <Button
-        children=""
-        type="submit"
-        onClick={onSubmit}
-        disabled={isFetching}
-        style={{ display: 'none' }}
-      />
     </form>
   );
 }

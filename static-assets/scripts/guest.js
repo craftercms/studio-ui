@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,19 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-crafterDefine('guest', [
-  'crafter', 'jquery', 'communicator', 'ice-overlay',
-], function (crafter, $, Communicator, ICEOverlay) {
+crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], function (
+  crafter,
+  $,
+  Communicator,
+  ICEOverlay
+) {
   'use strict';
 
   $.noConflict(true);
 
   if (!window.location.origin) {
-    window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+    window.location.origin =
+      window.location.protocol +
+      '//' +
+      window.location.hostname +
+      (window.location.port ? ':' + window.location.port : '');
   }
 
-  var
-    Topics = crafter.studio.preview.Topics,
+  var Topics = crafter.studio.preview.Topics,
     Constants = { TIME_RESIZE: 500, TIME_SCROLL: 250 },
     communicator,
     origin,
@@ -54,34 +59,36 @@ crafterDefine('guest', [
   }
 
   function init(config) {
-
     origin = config.hostOrigin;
 
-    communicator = new Communicator({
-      window: window.parent,
-      origin: origin
-    }, origin);
+    communicator = new Communicator(
+      {
+        window: window.parent,
+        origin: origin
+      },
+      origin
+    );
 
     communicator.on(Topics.START_DRAG_AND_DROP, function (message) {
       crafterRequire(['dnd-controller'], function (DnDController) {
-
-        (typeof dndController === 'undefined') && (dndController = new DnDController({
-          communicator: communicator
-        }));
+        typeof dndController === 'undefined' &&
+          (dndController = new DnDController({
+            communicator: communicator
+          }));
 
         dndController.start(message.components, message.contentModel, message.browse);
 
         var translation = message.translation;
         var elements = $('[data-translation]');
         elements.each(function () {
-          var translationAttr = $(this).attr("data-translation");
-          if (translationAttr == "done") {
+          var translationAttr = $(this).attr('data-translation');
+          if (translationAttr == 'done') {
             $(this).html(translation.done);
           }
-          if (translationAttr == "components") {
+          if (translationAttr == 'components') {
             $(this).html(translation.components);
           }
-          if (translationAttr == "addComponent") {
+          if (translationAttr == 'addComponent') {
             $(this).html(translation.addComponent);
           }
         });
@@ -90,10 +97,10 @@ crafterDefine('guest', [
 
     communicator.on(Topics.DND_COMPONENTS_PANEL_OFF, function (message) {
       crafterRequire(['dnd-controller'], function (DnDController) {
-
-        (typeof dndController === 'undefined') && (dndController = new DnDController({
-          communicator: communicator
-        }));
+        typeof dndController === 'undefined' &&
+          (dndController = new DnDController({
+            communicator: communicator
+          }));
 
         dndController.done();
       });
@@ -101,19 +108,18 @@ crafterDefine('guest', [
 
     communicator.on(Topics.DND_CREATE_BROWSE_COMP, function (message) {
       crafterRequire(['pointer-controller'], function (pointerController) {
-
-        (typeof pointerControllerVar === 'undefined') && (pointerControllerVar = new pointerController({
-          communicator: communicator
-        }));
+        typeof pointerControllerVar === 'undefined' &&
+          (pointerControllerVar = new pointerController({
+            communicator: communicator
+          }));
 
         pointerControllerVar.start(message.component, message.initialContentModel);
-
       });
     });
 
     communicator.on(Topics.REFRESH_PREVIEW, function (message) {
       window.location.reload();
-    })
+    });
 
     communicator.on(Topics.ICE_TOOLS_OFF, function (message) {
       iceToolsOn = false;
@@ -129,7 +135,9 @@ crafterDefine('guest', [
     communicator.on(Topics.REPAINT_PENCILS, repaintPencils);
 
     communicator.on(Topics.ICE_TOOLS_REGIONS, function (message) {
-      var elt = document.querySelectorAll('[data-studio-ice' + message.label + '="' + message.region + '"]')[0];
+      var elt = document.querySelectorAll(
+        '[data-studio-ice' + message.label + '="' + message.region + '"]'
+      )[0];
       if (elt) {
         elt.scrollIntoView();
         window.scrollBy(0, -150);
@@ -140,7 +148,7 @@ crafterDefine('guest', [
           }, 1000);
         }, 500);
       } else {
-        alert("Region " + message.region + " could not be found");
+        alert('Region ' + message.region + ' could not be found');
       }
     });
 
@@ -164,23 +172,23 @@ crafterDefine('guest', [
     communicator.publish(Topics.IS_REVIEWER);
 
     // ICE zone highlighting on hover
-    $document.on('mouseover', '.studio-ice-indicator', function (e) {
-
-      var $i = $(this),
+    $document
+      .on('mouseover', '.studio-ice-indicator', function (e) {
+        var $i = $(this),
           $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger')));
 
-      initOverlay($e);
-
-    }).on('mouseout', '.studio-ice-indicator', function (e) {
-      overlay.hide();
-    });
+        initOverlay($e);
+      })
+      .on('mouseout', '.studio-ice-indicator', function (e) {
+        overlay.hide();
+      });
 
     // Event on pencil click, publishes ICE_ZONE_ON, which opens the form
     $document.on('click', '.studio-ice-indicator', function (e) {
-      let pencilClasses =  'fa-pencil icon-yellow';
+      let pencilClasses = 'fa-pencil icon-yellow';
       let spinnerClases = 'fa-spinner fa-spin icon-default';
 
-      if($(e.target).hasClass(spinnerClases)) return false;
+      if ($(e.target).hasClass(spinnerClases)) return false;
 
       $(e.target).removeClass(pencilClasses);
       $(e.target).addClass(spinnerClases);
@@ -211,7 +219,6 @@ crafterDefine('guest', [
       props.scrollLeft = $window.scrollLeft();
 
       communicator.publish(Topics.ICE_ZONE_ON, props);
-
     });
 
     $(window).resize(function (e) {
@@ -222,28 +229,27 @@ crafterDefine('guest', [
       clearSetTimeout(Constants.TIME_SCROLL);
     });
 
-    loadCss(config.hostOrigin + crafter.join(
-      '/',
-      config.studioContext,
-      config.studioStaticAssets,
-      'styles',
-      'guest.css'
-    ));
+    loadCss(
+      config.hostOrigin +
+        crafter.join('/', config.studioContext, config.studioStaticAssets, 'styles', 'guest.css')
+    );
 
-    if (!$('link[href*=\'font-awesome\']').length) {
-      loadCss(config.hostOrigin + crafter.join(
-        '/',
-        config.studioContext,
-        config.studioStaticAssets,
-        'themes',
-        'cstudioTheme',
-        'css',
-        'font-awesome.min.css'
-      ));
+    if (!$("link[href*='font-awesome']").length) {
+      loadCss(
+        config.hostOrigin +
+          crafter.join(
+            '/',
+            config.studioContext,
+            config.studioStaticAssets,
+            'themes',
+            'cstudioTheme',
+            'css',
+            'font-awesome.min.css'
+          )
+      );
     }
 
     setRegionsCookie();
-
   }
 
   function iceRepaint() {
@@ -254,7 +260,7 @@ crafterDefine('guest', [
     if (!message) {
       iceToolsOn && initICERegions();
     } else {
-      iceToolsOn = (!!message.iceOn) && (message.componentsOn != 'true');
+      iceToolsOn = !!message.iceOn && message.componentsOn != 'true';
       if (
         // TODO: REFACTOR
         // !!(window.parent.sessionStorage.getItem('ice-on')) &&
@@ -267,20 +273,18 @@ crafterDefine('guest', [
   }
 
   function loadCss(url) {
-    var link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
+    var link = document.createElement('link');
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
     link.href = url;
-    document.getElementsByTagName("head")[0].appendChild(link);
+    document.getElementsByTagName('head')[0].appendChild(link);
   }
 
   function setRegionsCookie() {
-
-    var
-      elts = document.querySelectorAll('[data-studio-ice]'),
+    var elts = document.querySelectorAll('[data-studio-ice]'),
       regions = [];
     if (elts.length > 0) {
-      for (var i = 0; i <= (elts.length) - 1; i++) {
+      for (var i = 0; i <= elts.length - 1; i++) {
         regions.push({
           id: elts[i].getAttribute('data-studio-ice'),
           formId: elts[i].getAttribute('data-studio-ice'),
@@ -290,14 +294,13 @@ crafterDefine('guest', [
     }
 
     communicator.publish(Topics.RESET_ICE_TOOLS_CONTENT, JSON.stringify(regions));
-
   }
 
   // Rendering of a single pencil based on an element
   function renderICESection(elem) {
     const $elem = $(elem),
-          position = $elem.offset(),
-          iceRef = $elem.data('studioIce') + '-' + count++;
+      position = $elem.offset(),
+      iceRef = $elem.data('studioIce') + '-' + count++;
 
     $elem.attr('data-studio-ice-target', iceRef);
 
@@ -305,17 +308,22 @@ crafterDefine('guest', [
     const compElement = $("[data-studio-ice-target='" + iceRef + "']");
     // if element exists -> set flag true to avoid re-rendering
     $('.studio-ice-indicator').each(function () {
-      if ($(this).data("studioIceTrigger") == iceRef) {
+      if ($(this).data('studioIceTrigger') == iceRef) {
         flag = true;
       }
     });
 
     if (!flag && compElement.is(':visible')) {
-      const aux = $(crafter.String('<i class="studio-ice-indicator fa fa-pencil f18 icon-yellow" data-studio-ice-trigger="%@"></i>').fmt(iceRef))
-        .css({
-          top: position.top,
-          left: position.left
-        });
+      const aux = $(
+        crafter
+          .String(
+            '<i class="studio-ice-indicator fa fa-pencil f18 icon-yellow" data-studio-ice-trigger="%@"></i>'
+          )
+          .fmt(iceRef)
+      ).css({
+        top: position.top,
+        left: position.left
+      });
       aux.appendTo('body');
     }
   }
@@ -329,8 +337,11 @@ crafterDefine('guest', [
       // Renders a single pencil based on the element's props.
       renderICESection(elems[i]);
 
-      if (elems[i].getAttribute("data-studio-ice-label")) {
-        elems[i].setAttribute("data-studio-ice-label", elems[i].getAttribute("data-studio-ice-label").replace(/ /g, "__"));
+      if (elems[i].getAttribute('data-studio-ice-label')) {
+        elems[i].setAttribute(
+          'data-studio-ice-label',
+          elems[i].getAttribute('data-studio-ice-label').replace(/ /g, '__')
+        );
       }
     }
   }
@@ -353,7 +364,7 @@ crafterDefine('guest', [
       height,
       boxSizing = window.getComputedStyle(elt[0], ':before').getPropertyValue('box-sizing');
 
-    if (boxSizing == "border-box") {
+    if (boxSizing == 'border-box') {
       width = elt.outerWidth();
       height = elt.outerHeight();
     } else {
@@ -380,5 +391,4 @@ crafterDefine('guest', [
   function resizeProcess() {
     communicator.publish(Topics.IS_REVIEWER, true);
   }
-
 });

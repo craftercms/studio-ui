@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,28 +18,29 @@
  * File: dependencies.js
  * Component ID: templateholder-dependencies
  **/
-(function(){
+(function () {
+  CStudioAuthoring.register('TemplateHolder.Dependencies', {
+    ITEM_ROW: [
+      '<tr>',
+      '<td class="name large">',
+      '<div class="in">',
+      '<span id="{index}" class="toggleDependencies ttOpen parent-div-widget" style="margin-right:17px; margin-bottom: -2px; float: left;"></span>',
+      '<span style="overflow:hidden; display: block;">{internalName} {uri}</span></div>',
+      '</td>',
+      '<td class="text-right schedule medium">{scheduledDate}</td>',
+      '</tr>'
+    ].join(''),
+    SUBITEM_ROW: [
+      '<tr class="{index}">',
+      '<td style="width:3%; min-width: 270px;">{internalName}</td>',
+      '<td class="name large" title="{uri}"><div class="in">{uri}</div></td>',
+      '<td class="small" style="text-align: right;"><a href="javascript:" data-url="{uri}" class="editLink {hidden}">Edit</a></td>',
+      '</tr>'
+    ].join('')
+  });
 
-    CStudioAuthoring.register("TemplateHolder.Dependencies", {
-        ITEM_ROW: [
-            '<tr>',
-                '<td class="name large">',
-                    '<div class="in">',
-                        '<span id="{index}" class="toggleDependencies ttOpen parent-div-widget" style="margin-right:17px; margin-bottom: -2px; float: left;"></span>',
-                        '<span style="overflow:hidden; display: block;">{internalName} {uri}</span></div>',
-                '</td>',
-                '<td class="text-right schedule medium">{scheduledDate}</td>',
-            '</tr>'
-        ].join(""),
-        SUBITEM_ROW: [
-            '<tr class="{index}">',
-                '<td style="width:3%; min-width: 270px;">{internalName}</td>',
-                '<td class="name large" title="{uri}"><div class="in">{uri}</div></td>',
-                '<td class="small" style="text-align: right;"><a href="javascript:" data-url="{uri}" class="editLink {hidden}">Edit</a></td>',
-            '</tr>'
-        ].join("")
-    });
-
-    CStudioAuthoring.Env.ModuleMap.map("template-dependencies", CStudioAuthoring.TemplateHolder.Dependencies);
-
+  CStudioAuthoring.Env.ModuleMap.map(
+    'template-dependencies',
+    CStudioAuthoring.TemplateHolder.Dependencies
+  );
 })();

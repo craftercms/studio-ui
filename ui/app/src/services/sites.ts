@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,13 +16,34 @@
 
 import { get, post } from "../utils/ajax";
 import { Site } from "../models/Site";
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { PaginationOptions } from '../models/Search';
+import { PagedArray } from '../models/PagedArray';
 
 export function fetchBlueprints() {
   return get('/studio/api/2/sites/available_blueprints');
 }
 
-export function fetchSites() {
-  return get('/studio/api/2/users/me/sites');
+export function fetchSites(paginationOptions?: PaginationOptions): Observable<PagedArray<Site>> {
+  const options: PaginationOptions = Object.assign({
+    limit: 100,
+    offset: 0
+  }, paginationOptions || {});
+  return get(`/studio/api/2/users/me/sites?limit=${options.limit}&offset=${options.offset}`).pipe(
+    map(({ response }) => Object.assign(
+      response.sites.map((site: any) => ({
+        id: site.siteId,
+        name: site.siteId,
+        description: site.desc
+      })),
+      {
+        limit: response.limit,
+        offset: response.offset,
+        total: response.total
+      }
+    ))
+  );
 }
 
 export function createSite(site: Site) {

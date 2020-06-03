@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,19 +23,17 @@ CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
  * Submit to go live
  */
 CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWebDAVDialog || {
-
   formatMessage: CrafterCMSNext.i18n.intl.formatMessage,
   messages: CrafterCMSNext.i18n.messages.words,
 
-	/**
-	 * initialize module
-	 */
-  initialize: function (config) {
-  },
+  /**
+   * initialize module
+   */
+  initialize: function (config) {},
 
-	/**
-	 * show dialog
-	 */
+  /**
+   * show dialog
+   */
   showDialog: function (site, path, profileId, serviceUri, callback, fileTypes) {
     this._self = this;
 
@@ -50,52 +47,59 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
     this.uploadingFile = false;
     this.dialog = this.createDialog(path, site, profileId, serviceUri);
     this.dialog.show();
-    document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
+    document.getElementById('cstudio-wcm-popup-div_h').style.display = 'none';
 
     if (window.frameElement) {
-      var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+      var id = window.frameElement.getAttribute('id').split('-editor-')[1];
       var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
       var setFormSizeVal = typeof setFormSize === 'function' ? setFormSize : parent.setFormSize;
       var formSize = getFormSizeVal(id);
       if (formSize < 320) {
         setFormSizeVal(320, id);
-        $($(".studio-ice-container-" + id, parent.document)[0]).attr('data-decrease', true);
+        $($('.studio-ice-container-' + id, parent.document)[0]).attr('data-decrease', true);
       }
     }
   },
 
-	/**
-	 * hide dialog
-	 */
+  /**
+   * hide dialog
+   */
   closeDialog: function () {
     this.dialog.destroy();
   },
 
   /**
- * create dialog
- */
+   * create dialog
+   */
   createDialog: function (path, site, profileId, serviceUri) {
     var me = this;
-    YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
+    YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
-    var newdiv = YDom.get("cstudio-wcm-popup-div");
+    var newdiv = YDom.get('cstudio-wcm-popup-div');
     if (newdiv == undefined) {
-      newdiv = document.createElement("div");
+      newdiv = document.createElement('div');
       document.body.appendChild(newdiv);
     }
 
-    var divIdName = "cstudio-wcm-popup-div";
-    newdiv.setAttribute("id", divIdName);
-    newdiv.className = "yui-pe-content";
-    newdiv.innerHTML = '<div class="contentTypePopupInner" id="upload-popup-inner">' +
+    var divIdName = 'cstudio-wcm-popup-div';
+    newdiv.setAttribute('id', divIdName);
+    newdiv.className = 'yui-pe-content';
+    newdiv.innerHTML =
+      '<div class="contentTypePopupInner" id="upload-popup-inner">' +
       '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
       '<div class="contentTypePopupHeader">Upload</div> ' +
       '<div><form id="asset_upload_form">' +
       '<div class="contentTypeOuter">' +
       '<div id="uploadContainer"></div>' +
-      '<div><table><tr><td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
-      '<td><input type="hidden" name="path" value="' + path + '"/></td></tr>' +
-      '<td><input type="hidden" name="profileId" value="' + profileId + '"/></td></tr>' +
+      '<div><table><tr><td><input type="hidden" name="siteId" value="' +
+      site +
+      '"/></td>' +
+      '<td><input type="hidden" name="path" value="' +
+      path +
+      '"/></td></tr>' +
+      '<td><input type="hidden" name="profileId" value="' +
+      profileId +
+      '"/></td></tr>' +
       '</table></div>' +
       '</div>' +
       '<div class="contentTypePopupBtn"> ' +
@@ -104,98 +108,100 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
       '</div> ' +
       '</div>';
 
-    document.getElementById("upload-popup-inner").style.width = "350px";
-    document.getElementById("upload-popup-inner").style.height = "180px";
+    document.getElementById('upload-popup-inner').style.width = '350px';
+    document.getElementById('upload-popup-inner').style.height = '180px';
 
     // Instantiate the Dialog
-    upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
-      {
-        width: "410px",
-        height: "255px",
-        effect: {
-          effect: YAHOO.widget.ContainerEffect.FADE,
-          duration: 0.25
-        },
-        fixedcenter: true,
-        visible: false,
-        modal: true,
-        close: false,
-        constraintoviewport: true,
-        underlay: "none"
-      });
+    upload_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
+      width: '410px',
+      height: '255px',
+      effect: {
+        effect: YAHOO.widget.ContainerEffect.FADE,
+        duration: 0.25
+      },
+      fixedcenter: true,
+      visible: false,
+      modal: true,
+      close: false,
+      constraintoviewport: true,
+      underlay: 'none'
+    });
 
     // Render the Dialog
     upload_dialog.render();
 
-    var filenameInput = document.getElementById("uploadFileNameId");
-    YAHOO.util.Event.addListener(filenameInput, "change", this.uploadFileEvent);
+    var filenameInput = document.getElementById('uploadFileNameId');
+    YAHOO.util.Event.addListener(filenameInput, 'change', this.uploadFileEvent);
 
     var eventParams = {
       self: this
     };
 
-    YAHOO.util.Event.addListener("uploadButton", "click", this.uploadPopupSubmit, eventParams);
-    YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
+    YAHOO.util.Event.addListener('uploadButton', 'click', this.uploadPopupSubmit, eventParams);
+    YAHOO.util.Event.addListener('uploadCancelButton', 'click', this.uploadPopupCancel);
 
-    $("body").on("keyup", "#cstudio-wcm-popup-div", function (e) {
-      if (e.keyCode === 27 && !me.uploadingFile) {	// esc
+    $('body').on('keyup', '#cstudio-wcm-popup-div', function (e) {
+      if (e.keyCode === 27 && !me.uploadingFile) {
+        // esc
         me.closeDialog();
-        $("#cstudio-wcm-popup-div").off("keyup");
+        $('#cstudio-wcm-popup-div').off('keyup');
       }
     });
 
     var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
-    url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
+    url +=
+      '&' +
+      CStudioAuthoringContext.xsrfParameterName +
+      '=' +
+      CrafterCMSNext.util.auth.getRequestForgeryToken();
 
-    CrafterCMSNext.render(
-      document.getElementById('uploadContainer'),
-      'SingleFileUpload',
-      {
-        formTarget: '#asset_upload_form',
-        url: url,
-        fileTypes: me.fileTypes,
-        onUploadStart: function() {
-          me.uploadingFile = true;
-          $('#uploadCancelButton').attr('disabled', true);
-        },
-        onComplete: function (result) {
-          let item = result.successful[0].response.body.item,
-              uploaded = item.url ? item.url : item;    // Will return only url
+    CrafterCMSNext.render(document.getElementById('uploadContainer'), 'SingleFileUpload', {
+      formTarget: '#asset_upload_form',
+      url: url,
+      fileTypes: me.fileTypes,
+      onUploadStart: function () {
+        me.uploadingFile = true;
+        $('#uploadCancelButton').attr('disabled', true);
+      },
+      onComplete: function (result) {
+        let item = result.successful[0].response.body.item,
+          uploaded = item.url ? item.url : item; // Will return only url
 
-          $('#uploadCancelButton').attr('disabled', false);
-          me.uploadingFile = false;
+        $('#uploadCancelButton').attr('disabled', false);
+        me.uploadingFile = false;
 
-          me.callback.success(uploaded);
-          CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
-        },
-        onError: function(file, error, response) {
-          const res = response.body.response,
-            errorMsg = `${res.message}. ${res.remedialAction}`;
+        me.callback.success(uploaded);
+        CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
+      },
+      onError: function (file, error, response) {
+        const res = response.body.response,
+          errorMsg = `${res.message}. ${res.remedialAction}`;
 
-          me.uploadingFile = false;
-          $('#uploadCancelButton').attr('disabled', false);
+        me.uploadingFile = false;
+        $('#uploadCancelButton').attr('disabled', false);
 
-          CStudioAuthoring.Operations.showSimpleDialog(
-            "uploadErrorDialog",
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            me.formatMessage(me.messages.notification),
-            errorMsg,
-            [{
+        CStudioAuthoring.Operations.showSimpleDialog(
+          'uploadErrorDialog',
+          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+          me.formatMessage(me.messages.notification),
+          errorMsg,
+          [
+            {
               text: 'OK',
-              handler:function(){
+              handler: function () {
                 this.destroy();
                 callback.failure(response);
               },
-              isDefault:false
-            }],
-            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog',
-            null,
-            100104
-          );
-        }
+              isDefault: false
+            }
+          ],
+          YAHOO.widget.SimpleDialog.ICON_BLOCK,
+          'studioDialog',
+          null,
+          100104
+        );
       }
-    );
+    });
 
     return upload_dialog;
   },
@@ -204,27 +210,26 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
    * event fired when the uploadFileNameId is changed
    */
   uploadFileEvent: function (event) {
-    var uploadButton = document.getElementById("uploadButton");
-    if (this.value != "") {
+    var uploadButton = document.getElementById('uploadButton');
+    if (this.value != '') {
       uploadButton.disabled = false;
     } else {
       uploadButton.disabled = true;
     }
-
   },
 
-	/**
-	 * event fired when the ok is pressed - checks if the file already exists and has edit permission or not
-	 * by using the getPermissions Service call
-	 */
+  /**
+   * event fired when the ok is pressed - checks if the file already exists and has edit permission or not
+   * by using the getPermissions Service call
+   */
   uploadPopupSubmit: function (event, args) {
     var path = args.self.path;
-    var filename = document.getElementById("uploadFileNameId").value.replace('C:\\fakepath\\', "");
-    if (filename.split("\\").length > 1) {
-      filename = filename.split("\\")[filename.split("\\").length - 1];
+    var filename = document.getElementById('uploadFileNameId').value.replace('C:\\fakepath\\', '');
+    if (filename.split('\\').length > 1) {
+      filename = filename.split('\\')[filename.split('\\').length - 1];
     }
     var basePath = path;
-    path = basePath + "/" + filename;
+    path = basePath + '/' + filename;
 
     CStudioAuthoring.Dialogs.UploadWebDAVDialog.uploadFile(args);
 
@@ -232,8 +237,8 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
   },
 
   /**
-  * upload file when upload pressed
-  */
+   * upload file when upload pressed
+   */
   uploadFile: function (args) {
     var serviceUri = CStudioAuthoring.Service.createServiceUri(args.self.serviceUri);
 
@@ -247,18 +252,18 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
             errorString += r.errors[i];
           }
           CStudioAuthoring.Operations.showSimpleDialog(
-            "error-dialog",
+            'error-dialog',
             CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            "Notification",
+            'Notification',
             errorString,
             null,
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            "studioDialog"
+            'studioDialog'
           );
         } else {
           CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
           if (r.fileExtension) {
-            r.fileExtension = r.fileExtension.substring(r.fileExtension.lastIndexOf(".") + 1);
+            r.fileExtension = r.fileExtension.substring(r.fileExtension.lastIndexOf('.') + 1);
           }
           args.self.callback.success(r);
         }
@@ -268,15 +273,18 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
     //the second argument of setForm is crucial,
     //which tells Connection Manager this is an file upload form
     YAHOO.util.Connect.setForm('asset_upload_form', true);
-    serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
+    serviceUri +=
+      '&' +
+      CStudioAuthoringContext.xsrfParameterName +
+      '=' +
+      CrafterCMSNext.util.auth.getRequestForgeryToken();
     YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
   },
 
-	/**
-	 *
-	 */
+  /**
+   *
+   */
   overwritePopupSubmit: function (event, args) {
-
     var callback = {
       success: function (response) {
         var serviceUri = CStudioAuthoring.Service.createServiceUri(args.self.serviceUri);
@@ -286,15 +294,14 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
             var r = eval('(' + o.responseText + ')');
             if (r.success) {
               CStudioAuthoring.Operations.showSimpleDialog(
-                "upload-dialog",
+                'upload-dialog',
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                "Notification",
+                'Notification',
                 r.message,
                 null,
                 YAHOO.widget.SimpleDialog.ICON_INFO,
-                "success studioDialog"
+                'success studioDialog'
               );
-
             } else {
               CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
               args.self.callback.success(r);
@@ -305,36 +312,39 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         //the second argument of setForm is crucial,
         //which tells Connection Manager this is an file upload form
         YAHOO.util.Connect.setForm('asset_upload_form', true);
-        serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
+        serviceUri +=
+          '&' +
+          CStudioAuthoringContext.xsrfParameterName +
+          '=' +
+          CrafterCMSNext.util.auth.getRequestForgeryToken();
         YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
       },
 
-      failure: function () {
-      }
+      failure: function () {}
     };
 
     CStudioAuthoring.Service.deleteContentForPathService(args.self.site, args.self.path, callback);
-
   },
 
-	/**
-	 * event fired when the ok is pressed
-	 */
+  /**
+   * event fired when the ok is pressed
+   */
   uploadPopupCancel: function (event) {
     CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
     if (window.frameElement) {
-      var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-      if ($('#ice-body').length > 0 && $($(".studio-ice-container-" + id, parent.document)[0]).height() > 212 &&
-        $($(".studio-ice-container-" + id, parent.document)[0]).attr('data-decrease')) {
-
-        $($(".studio-ice-container-" + id, parent.document)[0]).height(212);
+      var id = window.frameElement.getAttribute('id').split('-editor-')[1];
+      if (
+        $('#ice-body').length > 0 &&
+        $($('.studio-ice-container-' + id, parent.document)[0]).height() > 212 &&
+        $($('.studio-ice-container-' + id, parent.document)[0]).attr('data-decrease')
+      ) {
+        $($('.studio-ice-container-' + id, parent.document)[0]).height(212);
       }
     }
-
   }
-
-
 };
 
-CStudioAuthoring.Module.moduleLoaded("upload-webdav-dialog", CStudioAuthoring.Dialogs.UploadWebDAVDialog);
-
+CStudioAuthoring.Module.moduleLoaded(
+  'upload-webdav-dialog',
+  CStudioAuthoring.Dialogs.UploadWebDAVDialog
+);

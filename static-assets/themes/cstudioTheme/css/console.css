@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -193,6 +192,14 @@ body, tbody {
 .content-type-tools-panel-icon {
   padding-right: 5px;
   cursor: pointer;
+}
+
+.content-types--controls--search-input {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  border: 1px solid #C5D6E2;
+  border-style: none none solid;
 }
 
 #widgets-container, #datasources-container {
@@ -503,6 +510,10 @@ body, tbody {
   color: #BBBBBB;
 }
 
+.property-label + input.invalid {
+  border: 1px solid #efa48a;
+}
+
 .property-label + div {
   float: left;
   width: 55%;
@@ -697,7 +708,7 @@ body, tbody {
 
 }
 
-.deleteControl {
+.deleteControl, .switch-filename {
   float: right;
   height: 30px;
   left: 10px;
@@ -710,6 +721,17 @@ body, tbody {
 .fa.deleteControl {
   font-size: 25px;
   color: #e84646;
+}
+
+.switch-filename {
+  font-size: 15px;
+  color: white !important;
+  background-color: #7e9dbb;
+  border-radius: 15px;
+  padding: 3px;
+  height: 22px;
+  width: 22px;
+  left: 2px;
 }
 
 .property-wrapper .date-options li {
@@ -811,7 +833,7 @@ body, tbody {
 }
 
 .configuration-window #content-area {
-  padding-bottom: 41px;
+  padding-bottom: 30px;
   overflow: hidden;
 }
 

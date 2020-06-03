@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,7 +38,7 @@ export function translateElements(
         Array.isArray(message) ? message.join('') : message
       );
     }
-  })
+  });
 }
 
 const approveDialogMessages = defineMessages({
@@ -92,7 +91,7 @@ const usersAdminMessages = defineMessages({
 
 });
 
-const passwordRequirementMessages = defineMessages({
+export const passwordRequirementMessages = defineMessages({
   hasNumbers: {
     id: 'passwordRequirement.hasNumbers',
     defaultMessage: 'Must contain at least one number'
@@ -137,9 +136,25 @@ const passwordRequirementMessages = defineMessages({
     id: 'passwordRequirement.invalidPassword',
     defaultMessage: 'Requirements are not met'
   },
+  notBlank: {
+    id: 'passwordRequirement.noBlank',
+    defaultMessage: 'Must not be blank'
+  },
+  validationPassing: {
+    id: 'passwordRequirement.validationPassing',
+    defaultMessage: 'Validation passing'
+  },
   fulfillAllReqErrorMessage: {
     id: 'passwordRequirement.fulfillAllReqErrorMessage',
     defaultMessage: 'Please fulfill all password requirements.'
+  },
+  unnamedGroup: {
+    id: 'passwordRequirement.unnamedGroup',
+    defaultMessage: 'Condition not described'
+  },
+  passwordConfirmationMismatch: {
+    id: 'passwordRequirement.passwordConfirmationMismatch',
+    defaultMessage: 'Passwords don\'t match'
   }
 });
 
@@ -209,27 +224,31 @@ const reposAdminMessages = defineMessages({
     id: 'reposAdmin.unstagedFilesMessage',
     defaultMessage: 'There are unstaged files in your repository.'
   },
+  unreachableRemote: {
+    id: 'reposAdmin.unreachableRemote',
+    defaultMessage: 'Remote "{name}" is currently unreachable.'
+  }
 });
 
 const sharedContentDSMessages = defineMessages({
   sharedContent: {
     id: 'sharedContentDS.sharedContent',
     defaultMessage: 'Shared Content'
-  },
+  }
 });
 
 const embeddedContentDSMessages = defineMessages({
   embeddedContent: {
     id: 'embeddedContentDS.embeddedContent',
     defaultMessage: 'Embedded Content'
-  },
+  }
 });
 
 const childContentDSMessages = defineMessages({
   childContent: {
     id: 'childContentDS.childContent',
     defaultMessage: 'Child Content (Deprecated)'
-  },
+  }
 });
 
 const contentTypesMessages = defineMessages({
@@ -332,6 +351,14 @@ const contentTypesMessages = defineMessages({
   insertExpressionMessage: {
     id: 'siteConfig.insertExpressionMessage',
     defaultMessage: 'Insert Expression'
+  },
+  switchToMessage: {
+    id: 'siteConfig.switchToMessage',
+    defaultMessage: 'Switch to {type}'
+  },
+  invalidNumber: {
+    id: 'siteConfig.invalidNumber',
+    defaultMessage: '"{value}" is not a valid number.'
   }
 });
 
@@ -386,6 +413,18 @@ const words = defineMessages({
   no: {
     id: 'words.no',
     defaultMessage: 'No'
+  },
+  browse: {
+    id: 'words.browse',
+    defaultMessage: 'Browse'
+  },
+  upload: {
+    id: 'words.upload',
+    defaultMessage: 'Upload'
+  },
+  reason: {
+    id: 'words.reason',
+    defaultMessage: 'Reason'
   }
 });
 
@@ -436,7 +475,7 @@ const siteComponentDSMessages = defineMessages({
   }
 });
 
-const codeEditorMessages = defineMessages( {
+const codeEditorMessages = defineMessages({
   confirm: {
     id: 'codeEditor.confirm',
     defaultMessage: 'Confirm Close'
@@ -447,7 +486,7 @@ const codeEditorMessages = defineMessages( {
   }
 });
 
-const globalConfigMessages = defineMessages( {
+const globalConfigMessages = defineMessages({
   title: {
     id: 'globalConfig.title',
     defaultMessage: 'Global Config'
@@ -540,7 +579,7 @@ const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
     defaultMessage: 'Draft Save Completed'
-  },
+  }
 });
 
 const dragAndDropMessages = defineMessages({
@@ -561,7 +600,7 @@ const dragAndDropMessages = defineMessages({
     defaultMessage: 'Moving components out of an embedded drop zone component is not supported yet. Please use the forms to edit content.'
   },
   embeddedComponentsDeleteChildNotSupported: {
-    id:'dragAndDropMessages.embeddedComponentsDeleteChildNotSupported',
+    id: 'dragAndDropMessages.embeddedComponentsDeleteChildNotSupported',
     defaultMessage: 'Deleting components from an embedded drop zone component is not supported yet. Please use the forms to edit content.'
   },
   contentTypeNotFound: {
@@ -573,7 +612,7 @@ const dragAndDropMessages = defineMessages({
     defaultMessage: 'Path is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   },
   objectIdNotFound: {
-    id:'dragAndDropMessages.objectIdNotFound',
+    id: 'dragAndDropMessages.objectIdNotFound',
     defaultMessage: 'Object id is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   }
 });
@@ -617,6 +656,13 @@ const checkboxGroupControlMessages = defineMessages({
   readonly: {
     id: 'checkboxGroupControl.readonly',
     defaultMessage: 'Read Only'
+  }
+});
+
+const transcodedVideoPickerControlMessages = defineMessages({
+  label: {
+    id: 'transcodedVideoPickerControl.label',
+    defaultMessage: 'Transcoded Video'
   }
 });
 
@@ -703,7 +749,44 @@ const adminConfigurationMessages = defineMessages({
   pendingEncryptions: {
     id: 'adminConfigurations.pendingEncryptions',
     defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t}' +
-                    'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
+      'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
+  },
+  encryptHintPt1: {
+    id: 'adminConfigurations.encryptHinPt1',
+    defaultMessage: 'To encrypt the content of a tag, (1) mark the desired tags for encryption, then (2) click on the "Encrypt Marked" button.'
+  },
+  encryptHintPt2: {
+    id: 'adminConfigurations.encryptHinPt2',
+    defaultMessage: '(1) Mark your tags for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
+  },
+  encryptHintPt3: {
+    id: 'adminConfigurations.encryptHinPt3',
+    defaultMessage: 'Example: {lt}accessKey encrypted=""{gt}AKIAIOSFODNN7EXAMPLE{lt}/accessKey{gt}'
+  },
+  encryptHintPt4: {
+    id: 'adminConfigurations.encryptHinPt4',
+    defaultMessage: '(2) Click on the <bold>`Encrypt Marked`</bold> button. Once the process completes, your tag should now look like:'
+  },
+  encryptHintPt5: {
+    id: 'adminConfigurations.encryptHinPt5',
+    // eslint-disable-next-line no-template-curly-in-string
+    defaultMessage: '{lt}accessKey encrypted="true"{gt}${lc}enc:xeJW23SomeEncryptedValuesListedHere{rc}{lt}/accessKey{gt}'
+  },
+  encryptHintPt6: {
+    id: 'adminConfigurations.encryptHinPt6',
+    defaultMessage: 'Remember:'
+  },
+  encryptHintPt7: {
+    id: 'adminConfigurations.encryptHinPt7',
+    defaultMessage: 'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).'
+  },
+  encryptHintPt8: {
+    id: 'adminConfigurations.encryptHinPt8',
+    defaultMessage: 'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML.'
+  },
+  encryptHintPt9: {
+    id: 'adminConfigurations.encryptHinPt9',
+    defaultMessage: 'Do not manipulate encryption results manually.'
   }
 });
 
@@ -734,6 +817,57 @@ const encryptToolMessages = defineMessages({
   }
 });
 
+const fileNameControlMessages = defineMessages({
+  urlChangeWaring: {
+    id: 'fileNameControl.urlChangeWarning',
+    defaultMessage: 'Changing this value may result in broken references and links.'
+  },
+  viewReferences: {
+    id: 'fileNameControl.viewReferences',
+    defaultMessage: 'To view the content that references this content, click '
+  }
+});
+
+const rteControlMessages = defineMessages({
+  escapeScripts: {
+    id: 'rteControlMessages.escapeScripts',
+    defaultMessage: 'Escape Scripts'
+  },
+  requiredField: {
+    id: 'rteControlMessages.requiredField',
+    defaultMessage: 'Field is Required'
+  },
+  incompatibleDatasource: {
+    id: 'rteControlMessages.incompatibleDatasource',
+    defaultMessage: 'The data source configured for browse is not compatible with the Rich Text Editor. Please contact your administrator.'
+  }
+});
+
+const ossAttribution = defineMessages({
+  attribution: {
+    id: 'aboutView.attribution',
+    defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+  }
+});
+
+const dashboardWidgetsMessages = defineMessages({
+  publishingTarget: {
+    id: 'dashboardWidgetsMessages.publishingTarget',
+    defaultMessage: 'Publishing Target'
+  }
+});
+
+const bulkUploadConfirmDialogMessages = defineMessages({
+  title: {
+    id: 'bulkUploadConfirmDialogMessages.title',
+    defaultMessage: 'Upload in progress'
+  },
+  description: {
+    id: 'bulkUploadConfirmDialogMessages.description',
+    defaultMessage: 'There is still a bulk upload in progress. Only one bulk upload can be executed at the same time.'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -758,7 +892,13 @@ export default {
   dragAndDropMessages,
   internalNameControlMessages,
   checkboxGroupControlMessages,
+  transcodedVideoPickerControlMessages,
   globalMenuMessages,
   adminConfigurationMessages,
-  encryptToolMessages
+  encryptToolMessages,
+  fileNameControlMessages,
+  rteControlMessages,
+  ossAttribution,
+  dashboardWidgetsMessages,
+  bulkUploadConfirmDialogMessages
 };

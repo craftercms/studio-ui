@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,12 +15,12 @@
  */
 
 (function () {
-
   const i18n = CrafterCMSNext.i18n,
-        formatMessage = i18n.intl.formatMessage,
-        internalNameControlMessages = i18n.messages.internalNameControlMessages;
+    formatMessage = i18n.intl.formatMessage,
+    internalNameControlMessages = i18n.messages.internalNameControlMessages;
 
-  CStudioForms.Controls.InternalName = CStudioForms.Controls.InternalName ||
+  CStudioForms.Controls.InternalName =
+    CStudioForms.Controls.InternalName ||
     function (id, form, owner, properties, constraints, readonly) {
       this.owner = owner;
       this.owner.registerField(this);
@@ -32,18 +31,17 @@
       this.patternErrEl = null;
       this.countEl = null;
       this.required = true;
-      this.value = "_not-set";
+      this.value = '_not-set';
       this.form = form;
-      this.id = "internal-name";
+      this.id = 'internal-name';
       this.readonly = readonly;
 
       return this;
-    }
+    };
 
   YAHOO.extend(CStudioForms.Controls.InternalName, CStudioForms.CStudioFormField, {
-
     getFixedId: function () {
-      return "internal-name";
+      return 'internal-name';
     },
 
     getLabel: function () {
@@ -56,32 +54,32 @@
       var validationExist = false;
       var validationResult = true;
       if (obj.required) {
-        if (obj.inputEl.value == "") {
-          obj.setError("required", "Field is Required");
+        if (obj.inputEl.value == '') {
+          obj.setError('required', 'Field is Required');
           validationExist = true;
           validationResult = false;
         } else {
-          obj.clearError("required");
+          obj.clearError('required');
           //validationExist = true;
         }
       }
 
-      if ((!validationExist && obj.inputEl.value != "") || validationExist && validationResult) {
+      if ((!validationExist && obj.inputEl.value != '') || (validationExist && validationResult)) {
         for (var i = 0; i < obj.constraints.length; i++) {
           var constraint = obj.constraints[i];
           if (constraint.name == 'pattern') {
             var regex = constraint.value;
-            if (regex != "") {
+            if (regex != '') {
               if (obj.inputEl.value.match(regex)) {
                 // only when there is no other validation mark it as passed
-                obj.clearError("pattern");
+                obj.clearError('pattern');
                 YAHOO.util.Dom.removeClass(obj.patternErrEl, 'on');
                 validationExist = true;
               } else {
                 if (obj.inputEl.value != '') {
                   YAHOO.util.Dom.addClass(obj.patternErrEl, 'on');
                 }
-                obj.setError("pattern", "The value entered is not allowed in this field.");
+                obj.setError('pattern', 'The value entered is not allowed in this field.');
                 validationExist = true;
                 validationResult = false;
               }
@@ -100,7 +98,7 @@
 
     _onChangeVal: function (evt, obj) {
       obj.edited = true;
-      if(this._onChange){
+      if (this._onChange) {
         this._onChange(evt, obj);
       }
     },
@@ -112,11 +110,11 @@
      */
     count: function (evt, countEl, el) {
       // 'this' is the input box
-      el = (el) ? el : this;
+      el = el ? el : this;
       var text = el.value;
 
-      var charCount = ((text.length) ? text.length : ((el.textLength) ? el.textLength : 0));
-      var maxlength = (el.maxlength && el.maxlength != '') ? el.maxlength : -1;
+      var charCount = text.length ? text.length : el.textLength ? el.textLength : 0;
+      var maxlength = el.maxlength && el.maxlength != '' ? el.maxlength : -1;
 
       if (maxlength != -1) {
         if (charCount > el.maxlength) {
@@ -126,15 +124,22 @@
             charCount = el.maxlength;
           }
 
-
-          if (evt && evt != null
-            && evt.keyCode != 8 && evt.keyCode != 46 && evt.keyCode != 37
-            && evt.keyCode != 38 && evt.keyCode != 39 && evt.keyCode != 40	// arrow keys
-            && evt.keyCode != 88 && evt.keyCode != 86) {					// allow backspace and
+          if (
+            evt &&
+            evt != null &&
+            evt.keyCode != 8 &&
+            evt.keyCode != 46 &&
+            evt.keyCode != 37 &&
+            evt.keyCode != 38 &&
+            evt.keyCode != 39 &&
+            evt.keyCode != 40 && // arrow keys
+            evt.keyCode != 88 &&
+            evt.keyCode != 86
+          ) {
+            // allow backspace and
             // delete key and arrow keys (37-40)
             // 86 -ctrl-v, 90-ctrl-z,
-            if (evt)
-              YAHOO.util.Event.stopEvent(evt);
+            if (evt) YAHOO.util.Event.stopEvent(evt);
           }
         }
       }
@@ -151,29 +156,34 @@
       // you should be able to override it -- but most of the time it wil be the same
       containerEl.id = this.id;
 
-      var titleEl = document.createElement("span");
+      var titleEl = document.createElement('span');
 
       YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
       titleEl.innerHTML = config.title;
 
-      var controlWidgetContainerEl = document.createElement("div");
+      var controlWidgetContainerEl = document.createElement('div');
       YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
 
-      var validEl = document.createElement("span");
+      var validEl = document.createElement('span');
       YAHOO.util.Dom.addClass(validEl, 'validation-hint');
       YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
       controlWidgetContainerEl.appendChild(validEl);
 
-      var inputEl = document.createElement("input");
+      var inputEl = document.createElement('input');
       this.inputEl = inputEl;
       YAHOO.util.Dom.addClass(inputEl, 'datum');
       YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
-      inputEl.value = (this.value = "_not-set") ? config.defaultValue : this.value;
+      inputEl.value = (this.value = '_not-set') ? config.defaultValue : this.value;
       controlWidgetContainerEl.appendChild(inputEl);
 
-      YAHOO.util.Event.on(inputEl, 'focus', function (evt, context) {
-        context.form.setFocusedField(context)
-      }, this);
+      YAHOO.util.Event.on(
+        inputEl,
+        'focus',
+        function (evt, context) {
+          context.form.setFocusedField(context);
+        },
+        this
+      );
 
       YAHOO.util.Event.on(inputEl, 'change', this._onChangeVal, this);
       YAHOO.util.Event.on(inputEl, 'blur', this._onChange, this);
@@ -181,15 +191,15 @@
       for (var i = 0; i < config.properties.length; i++) {
         var prop = config.properties[i];
 
-        if (prop.name == "size") {
+        if (prop.name == 'size') {
           inputEl.size = prop.value;
         }
 
-        if (prop.name == "maxlength") {
+        if (prop.name == 'maxlength') {
           inputEl.maxlength = prop.value;
         }
 
-        if (prop.name == "readonly" && prop.value == "true") {
+        if (prop.name == 'readonly' && prop.value == 'true') {
           this.readonly = true;
         }
       }
@@ -198,14 +208,14 @@
         inputEl.disabled = true;
       }
 
-      var countEl = document.createElement("div");
+      var countEl = document.createElement('div');
       YAHOO.util.Dom.addClass(countEl, 'char-count');
       YAHOO.util.Dom.addClass(countEl, 'cstudio-form-control-input-count');
       controlWidgetContainerEl.appendChild(countEl);
       this.countEl = countEl;
 
-      var patternErrEl = document.createElement("div");
-      patternErrEl.innerHTML = "The value entered is not allowed in this field.";
+      var patternErrEl = document.createElement('div');
+      patternErrEl.innerHTML = 'The value entered is not allowed in this field.';
       YAHOO.util.Dom.addClass(patternErrEl, 'cstudio-form-control-input-url-err');
       controlWidgetContainerEl.appendChild(patternErrEl);
       this.patternErrEl = patternErrEl;
@@ -216,7 +226,7 @@
 
       this.renderHelp(config, controlWidgetContainerEl);
 
-      var descriptionEl = document.createElement("span");
+      var descriptionEl = document.createElement('span');
       YAHOO.util.Dom.addClass(descriptionEl, 'description');
       YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
       descriptionEl.innerHTML = config.description;
@@ -239,22 +249,33 @@
     },
 
     getName: function () {
-      return "internal-name";
+      return 'internal-name';
     },
 
     getSupportedProperties: function () {
       return [
-        {label: formatMessage(internalNameControlMessages.displaySize), name: "size", type: "int", defaultValue: "50"},
-        {label: formatMessage(internalNameControlMessages.maxLength), name: "maxlength", type: "int", defaultValue: "50"},
+        {
+          label: formatMessage(internalNameControlMessages.displaySize),
+          name: 'size',
+          type: 'int',
+          defaultValue: '50'
+        },
+        {
+          label: formatMessage(internalNameControlMessages.maxLength),
+          name: 'maxlength',
+          type: 'int',
+          defaultValue: '50'
+        }
       ];
     },
 
     getSupportedConstraints: function () {
       return [];
     }
-
   });
 
-  CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-internal-name", CStudioForms.Controls.InternalName);
-
+  CStudioAuthoring.Module.moduleLoaded(
+    'cstudio-forms-controls-internal-name',
+    CStudioForms.Controls.InternalName
+  );
 })();

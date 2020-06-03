@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,245 +17,261 @@
 /* global CStudioAuthoring, CStudioAuthoringContext, CStudioForms, YAHOO, aceEditor, tinymce2 */
 
 CStudioAuthoring.Module.requireModule(
-	'ace',
-	'/static-assets/components/cstudio-common/ace/ace.js', {}, {
-	moduleLoaded: function() {
+  'ace',
+  '/static-assets/components/cstudio-common/ace/ace.js',
+  {},
+  {
+    moduleLoaded: function () {
+      CStudioAuthoring.Utils.addJavascript(
+        '/static-assets/components/cstudio-common/ace/ext-language_tools.js'
+      );
+      CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
 
-		CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/ace/ext-language_tools.js");
-		CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
+      var YDom = YAHOO.util.Dom,
+        componentSelector = '.crComponent',
+        buttonStateArr;
 
-		var YDom = YAHOO.util.Dom,
-			componentSelector = '.crComponent',
-			buttonStateArr;
+      CStudioForms.Controls.RTE.EditHTML = CStudioForms.Controls.RTE.EditHTML || {
+        init: function (ed, url) {
+          var t = this;
 
-		CStudioForms.Controls.RTE.EditHTML = CStudioForms.Controls.RTE.EditHTML || {
-			init: function(ed, url) {
-				var t = this;
+          ed.addButton('edithtml', {
+            title: 'Edit Code',
+            image:
+              CStudioAuthoringContext.authoringAppBaseUri +
+              '/static-assets/themes/cstudioTheme/images/icons/code-edit.gif',
+            onclick: function (e) {
+              if (!this.controlManager.get('edithtml').active) {
+                // Enable code view
+                this.controlManager.setActive('edithtml', true);
+                t.enableCodeView(ed);
+              } else {
+                // Disable code view
+                this.controlManager.setActive('edithtml', false);
+                t.disableCodeView(ed);
+              }
+            }
+          });
+        },
 
-				ed.addButton('edithtml', {
-					title: 'Edit Code',
-					image: CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/icons/code-edit.gif',
-					onclick: function(e) {
+        resizeCodeView: function (editor, defaults) {
+          var rteControl = editor.contextControl,
+            cmWidth = rteControl.containerEl.clientWidth - rteControl.codeModeXreduction;
 
-						if (!this.controlManager.get('edithtml').active) {
-							// Enable code view
-							this.controlManager.setActive('edithtml', true);
-							t.enableCodeView(ed);
-						} else {
-							// Disable code view
-							this.controlManager.setActive('edithtml', false);
-							t.disableCodeView(ed);
-						}
-					}
-				});
-			},
+          // Reset the inline styles
+          defaults.forEach(function (el) {
+            for (var style in el.styles) {
+              el.element.style[style] = el.styles[style];
+            }
+          });
 
-			resizeCodeView: function(editor, defaults) {
-				var rteControl = editor.contextControl,
-					cmWidth = rteControl.containerEl.clientWidth - rteControl.codeModeXreduction;
+          var editorContainer = editor.codeView.container;
+          editorContainer.style.width = cmWidth + 'px';
+          editorContainer.style.height = 100 + 'px';
+          editor.codeView.resize();
 
-				// Reset the inline styles
-				defaults.forEach(function(el) {
-					for (var style in el.styles) {
-						el.element.style[style] = el.styles[style];
-					}
-				});
+          editor.contextControl.resizeCodeView(editor.codeView);
+        },
 
-				var editorContainer = editor.codeView.container;
-				editorContainer.style.width = cmWidth + "px";
-				editorContainer.style.height = 100 + "px";
-				editor.codeView.resize();
+        /*
+         * Look for all the components in the editor's content. Detach each component body from the DOM (so it's not visible in code mode)
+         * and attach it to the component root element as a DOM attribute. When switching back to text mode, the component body will be
+         * re-attached where it was
+         *
+         * @param editor
+         * @param componentSelector : css selector used to look for all components in the editor
+         */
+        collapseComponents: function collapseComponents(editor, componentSelector) {
+          var componentsArr = YAHOO.util.Selector.query(componentSelector, editor.getBody());
 
-				editor.contextControl.resizeCodeView(editor.codeView);
-			},
+          editor['data-components'] = {};
 
-			/*
-			 * Look for all the components in the editor's content. Detach each component body from the DOM (so it's not visible in code mode)
-			 * and attach it to the component root element as a DOM attribute. When switching back to text mode, the component body will be
-			 * re-attached where it was
-			 *
-			 * @param editor
-			 * @param componentSelector : css selector used to look for all components in the editor
-			 */
-			collapseComponents: function collapseComponents(editor, componentSelector) {
-				var componentsArr = YAHOO.util.Selector.query(componentSelector, editor.getBody());
+          componentsArr.forEach(function (component) {
+            editor['data-components'][component.id] = Array.prototype.slice.call(
+              component.childNodes
+            ); // Copy children and store them in an attribute
+            component.innerHTML = 'DYNAMIC COMPONENT';
+          });
+        },
 
-				editor['data-components'] = {};
+        extendComponents: function extendComponents(editor, componentSelector) {
+          var componentsArr = YAHOO.util.Selector.query(componentSelector, editor.getBody());
 
-				componentsArr.forEach(function(component) {
-					editor['data-components'][component.id] = Array.prototype.slice.call(component.childNodes); // Copy children and store them in an attribute
-					component.innerHTML = 'DYNAMIC COMPONENT';
-				});
-			},
+          componentsArr.forEach(function (component) {
+            component.innerHTML = ''; // Replace any existing content with the original component content
+            // The user may have changed the component id so test to see if the component ID exists
+            if (editor['data-components'][component.id]) {
+              editor['data-components'][component.id].forEach(function (child) {
+                component.appendChild(child); // restore component children
+              });
+            }
+          });
+          delete editor['data-components'];
+        },
 
-			extendComponents: function extendComponents(editor, componentSelector) {
-				var componentsArr = YAHOO.util.Selector.query(componentSelector, editor.getBody());
+        getEditorControlsStates: function getEditorControlsStates(editor) {
+          var buttonStateArr = [],
+            edControls = editor.controlManager.controls,
+            buttonObj;
+          for (var b in edControls) {
+            // Filter out any inherited properties (e.g. prototype) and more complex controls that include controls themselves
+            if (edControls.hasOwnProperty(b) && !edControls[b].controls && !/_edithtml/.test(b)) {
+              buttonObj = {
+                id: b,
+                isDisabled: edControls[b].isDisabled()
+              };
+              buttonStateArr.push(buttonObj);
+            }
+          }
+          return buttonStateArr;
+        },
 
-				componentsArr.forEach(function(component) {
-					component.innerHTML = ''; // Replace any existing content with the original component content
-					// The user may have changed the component id so test to see if the component ID exists
-					if (editor['data-components'][component.id]) {
-						editor['data-components'][component.id].forEach(function(child) {
-							component.appendChild(child); // restore component children
-						});
-					}
-				});
-				delete editor['data-components'];
-			},
+        disableTextControls: function disableTextControls(editor, controlsArr) {
+          var edControls = editor.controlManager.controls;
+          controlsArr.forEach(function (controlObj) {
+            if (!controlObj.isDisabled) {
+              edControls[controlObj.id].setDisabled(true);
+            }
+          });
+        },
 
-			getEditorControlsStates: function getEditorControlsStates(editor) {
-				var buttonStateArr = [],
-					edControls = editor.controlManager.controls,
-					buttonObj;
-				for (var b in edControls) {
+        enableTextControls: function enableTextControls(editor, controlsArr) {
+          var edControls = editor.controlManager.controls;
+          controlsArr.forEach(function (controlObj) {
+            if (!controlObj.isDisabled) {
+              edControls[controlObj.id].setDisabled(false);
+            }
+          });
+        },
 
-					// Filter out any inherited properties (e.g. prototype) and more complex controls that include controls themselves
-					if (edControls.hasOwnProperty(b) && !edControls[b].controls && !/_edithtml/.test(b)) {
-						buttonObj = {
-							id: b,
-							isDisabled: edControls[b].isDisabled()
-						};
-						buttonStateArr.push(buttonObj);
-					}
-				}
-				return buttonStateArr;
-			},
+        enableCodeView: function enableCodeView(editor) {
+          var rteControl = editor.contextControl,
+            rteContainer = YAHOO.util.Selector.query(
+              '.cstudio-form-control-rte-container',
+              rteControl.containerEl,
+              true
+            );
 
-			disableTextControls: function disableTextControls(editor, controlsArr) {
-				var edControls = editor.controlManager.controls;
-				controlsArr.forEach(function(controlObj) {
-					if (!controlObj.isDisabled) {
-						edControls[controlObj.id].setDisabled(true);
-					}
-				});
-			},
+          // A meta node used to dispatch an artificial event. The reason to use a meta node is because it is VERY unlikely
+          // that any buttons will ever respond to changes on a node of this kind.
+          var metaNode = document.createElement('meta');
 
-			enableTextControls: function enableTextControls(editor, controlsArr) {
-				var edControls = editor.controlManager.controls;
-				controlsArr.forEach(function(controlObj) {
-					if (!controlObj.isDisabled) {
-						edControls[controlObj.id].setDisabled(false);
-					}
-				});
-			},
+          editor.onDeactivate.dispatch(editor, null); // Fire tinymce2 handlers for onDeactivate
 
-			enableCodeView: function enableCodeView(editor) {
-				var rteControl = editor.contextControl,
-					rteContainer = YAHOO.util.Selector.query('.cstudio-form-control-rte-container', rteControl.containerEl, true);
+          // Clear any selections on the text editor, then dispatch an artificial event so all buttons go back to their
+          // default state before saving their state. Then, when we restore the buttons' state (when we go back to text mode),
+          // we'll have their default state again!
+          rteControl.clearTextEditorSelection();
+          editor.onNodeChange.dispatch(editor, editor.controlManager, metaNode, true, editor);
 
-				// A meta node used to dispatch an artificial event. The reason to use a meta node is because it is VERY unlikely 
-				// that any buttons will ever respond to changes on a node of this kind.
-				var metaNode = document.createElement('meta');
+          buttonStateArr = this.getEditorControlsStates(editor);
+          this.disableTextControls(editor, buttonStateArr);
+          YDom.replaceClass(rteControl.containerEl, 'text-mode', 'code-mode');
+          this.collapseComponents(editor, componentSelector);
+          editor.codeTextArea.value = editor.getContent();
 
-				editor.onDeactivate.dispatch(editor, null); // Fire tinymce2 handlers for onDeactivate
+          if (!editor.codeView) {
+            var mode = 'ace/mode/html';
 
-				// Clear any selections on the text editor, then dispatch an artificial event so all buttons go back to their 
-				// default state before saving their state. Then, when we restore the buttons' state (when we go back to text mode),
-				// we'll have their default state again!
-				rteControl.clearTextEditorSelection();
-				editor.onNodeChange.dispatch(editor, editor.controlManager, metaNode, true, editor);
+            editor.codeView = ace.edit(editor.codeTextArea);
+            editor.codeView.session.setMode(mode);
+            editor.codeView.setOptions({
+              showPrintMargin: false,
+              fontSize: '14px'
+            });
 
-				buttonStateArr = this.getEditorControlsStates(editor);
-				this.disableTextControls(editor, buttonStateArr);
-				YDom.replaceClass(rteControl.containerEl, 'text-mode', 'code-mode');
-				this.collapseComponents(editor, componentSelector);
-				editor.codeTextArea.value = editor.getContent();
+            editor.codeView.on('focus', function () {
+              rteControl.form.setFocusedField(rteControl);
+            });
 
-				if (!editor.codeView) {
-					var mode = "ace/mode/html";
+            editor.codeView.on('change', function () {
+              rteControl.edited = true;
+            });
+          } else {
+            editor.codeView.setValue(editor.codeTextArea.value);
+            // Set the cursor to the beginning of the code editor; this will clear any text selection in
+            // codeView -if there's any
+            editor.codeView.selection.moveTo(0, 0);
+            editor.codeView.clearSelection(); // This will remove the highlight over the text
+          }
+          // We resize codeView each time in case the user has resized the window
+          this.resizeCodeView(editor, [
+            {
+              element: rteContainer,
+              styles: {
+                maxWidth: 'none',
+                width: 'auto',
+                marginLeft: 'auto'
+              }
+            },
+            {
+              element: YDom.get(editor.id + '_tbl'),
+              styles: {
+                width: 'auto',
+                height: 'auto'
+              }
+            }
+          ]);
+          editor.codeView.focus();
+          rteControl.scrollToTopOfElement(rteControl.containerEl, 30);
+          try {
+            editor.codeView.onChange();
+          } catch (err) {}
+        },
 
-					editor.codeView = ace.edit(editor.codeTextArea);
-					editor.codeView.session.setMode(mode);
-					editor.codeView.setOptions({
-						showPrintMargin: false,
-						fontSize: "14px"
-					});
+        disableCodeView: function (editor) {
+          var rteControl = editor.contextControl,
+            rteContainer = YAHOO.util.Selector.query(
+              '.cstudio-form-control-rte-container',
+              rteControl.containerEl,
+              true
+            );
 
-					editor.codeView.on("focus", function(){
-						rteControl.form.setFocusedField(rteControl);						
-					});
+          editor.setContent(editor.codeView.getValue());
+          this.extendComponents(editor, componentSelector);
+          rteControl.resizeTextView(rteControl.containerEl, rteControl.rteWidth, {
+            'rte-container': rteContainer,
+            'rte-table': YDom.get(editor.id + '_tbl')
+          });
+          YDom.replaceClass(rteControl.containerEl, 'code-mode', 'text-mode');
+          this.enableTextControls(editor, buttonStateArr);
+          editor.getWin().scrollTo(0, 0); // Scroll to the top of the editor window
 
-					editor.codeView.on("change", function(){
-						rteControl.edited = true;
-					});
+          rteControl.clearTextEditorSelection();
 
-				} else {
-					editor.codeView.setValue(editor.codeTextArea.value);
-					// Set the cursor to the beginning of the code editor; this will clear any text selection in
-					// codeView -if there's any
-					editor.codeView.selection.moveTo(0, 0);
-					editor.codeView.clearSelection(); // This will remove the highlight over the text
-				}
-				// We resize codeView each time in case the user has resized the window
-				this.resizeCodeView(editor, [{
-					'element': rteContainer,
-					'styles': {
-						'maxWidth': 'none',
-						'width': 'auto',
-						'marginLeft': 'auto'
-					}
-				}, {
-					'element': YDom.get(editor.id + '_tbl'),
-					'styles': {
-						'width': 'auto',
-						'height': 'auto'
-					}
-				}]);
-				editor.codeView.focus();
-				rteControl.scrollToTopOfElement(rteControl.containerEl, 30);
-                try{
-                    editor.codeView.onChange()
-                }catch(err){
+          editor.contentWindow.frameElement.focus();
+          tinymce2.activeEditor.getBody().focus();
 
-                }
-			},
+          //iefix - when an element with focus disappears programatically focus does not work unless another item is focused
+          $(editor.codeTextArea).show().focus();
+          $('#mce_0_ifr').contents().find('body').focus();
+          $(editor.codeTextArea).hide();
 
-			disableCodeView: function(editor) {
-				var rteControl = editor.contextControl,
-					rteContainer = YAHOO.util.Selector.query('.cstudio-form-control-rte-container', rteControl.containerEl, true);
+          rteControl.scrollToTopOfElement(rteControl.containerEl, 30);
+        },
 
-				editor.setContent(editor.codeView.getValue());
-				this.extendComponents(editor, componentSelector);
-				rteControl.resizeTextView(rteControl.containerEl, rteControl.rteWidth, {
-					'rte-container': rteContainer,
-					'rte-table': YDom.get(editor.id + '_tbl')
-				});
-				YDom.replaceClass(rteControl.containerEl, 'code-mode', 'text-mode');
-				this.enableTextControls(editor, buttonStateArr);
-				editor.getWin().scrollTo(0, 0); // Scroll to the top of the editor window
+        createControl: function (n, cm) {
+          return null;
+        },
 
-				rteControl.clearTextEditorSelection();
+        getInfo: function () {
+          return {
+            longname: 'Crafter Studio Edit Code',
+            author: 'Crafter Software',
+            authorurl: 'http://www.craftercms.org',
+            infourl: 'http://www.craftercms.org',
+            version: '1.0'
+          };
+        }
+      };
 
-				editor.contentWindow.frameElement.focus();
-				tinymce2.activeEditor.getBody().focus();
+      tinymce2.create('tinymce2.plugins.CStudioEditHTMLPlugin', CStudioForms.Controls.RTE.EditHTML);
+      tinymce2.PluginManager.add('edithtml', tinymce2.plugins.CStudioEditHTMLPlugin);
 
-				//iefix - when an element with focus disappears programatically focus does not work unless another item is focused
-				$(editor.codeTextArea).show().focus();
-				$("#mce_0_ifr").contents().find('body').focus();
-				$(editor.codeTextArea).hide();
-
-				rteControl.scrollToTopOfElement(rteControl.containerEl, 30);
-			},
-
-			createControl: function(n, cm) {
-				return null;
-			},
-
-			getInfo: function() {
-				return {
-					longname: 'Crafter Studio Edit Code',
-					author: 'Crafter Software',
-					authorurl: 'http://www.craftercms.org',
-					infourl: 'http://www.craftercms.org',
-					version: '1.0'
-				};
-			}
-		};
-
-		tinymce2.create('tinymce2.plugins.CStudioEditHTMLPlugin', CStudioForms.Controls.RTE.EditHTML);
-		tinymce2.PluginManager.add('edithtml', tinymce2.plugins.CStudioEditHTMLPlugin);
-
-		CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-rte-edit-html', CStudioForms.Controls.RTE.EditHTML);
-
-	}
-});
+      CStudioAuthoring.Module.moduleLoaded(
+        'cstudio-forms-controls-rte-edit-html',
+        CStudioForms.Controls.RTE.EditHTML
+      );
+    }
+  }
+);

@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,15 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addJavascript("/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js");
-CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-forms/forms-engine.js");
+CStudioAuthoring.Utils.addJavascript(
+  '/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js'
+);
+CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-forms/forms-engine.js');
 
 var initRegCookie;
 /**
  * editor tools
  */
 CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
-
   initialized: false,
 
   /**
@@ -46,25 +46,24 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
 
     var callback = function (isRev) {
       if (!isRev) {
-
         wrapper = document.createElement('div');
-        buttonEl = document.createElement("button");
-        pencilIcon = document.createElement("span");
-        labelEl = document.createElement("span");
+        buttonEl = document.createElement('button');
+        pencilIcon = document.createElement('span');
+        labelEl = document.createElement('span');
         YDom.addClass(wrapper, 'form-group ice-toogle');
         YDom.addClass(buttonEl, 'btn btn-default btn-block');
         YDom.addClass(labelEl, 'acn-ptools-ice-label');
 
-        iceOn = !!(sessionStorage.getItem('ice-on'));   // cast string value to a boolean
+        iceOn = !!sessionStorage.getItem('ice-on'); // cast string value to a boolean
 
-        YDom.addClass(pencilIcon, "fa fa-pencil f18");
+        YDom.addClass(pencilIcon, 'fa fa-pencil f18');
 
         if (iceOn) {
-          YDom.addClass(pencilIcon, "icon-yellow");
-          labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOff");
+          YDom.addClass(pencilIcon, 'icon-yellow');
+          labelEl.innerHTML = CMgs.format(previewLangBundle, 'inContextEditOff');
         } else {
-          YDom.addClass(pencilIcon, "icon-default");
-          labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOn");
+          YDom.addClass(pencilIcon, 'icon-default');
+          labelEl.innerHTML = CMgs.format(previewLangBundle, 'inContextEditOn');
         }
 
         buttonEl.appendChild(pencilIcon);
@@ -73,7 +72,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         container.appendChild(wrapper);
 
         buttonEl.onclick = function () {
-          var iceOn = !!(sessionStorage.getItem('ice-on'));   // cast string value to a boolean
+          var iceOn = !!sessionStorage.getItem('ice-on'); // cast string value to a boolean
           if (!iceOn) {
             CStudioAuthoring.IceTools.turnEditOn();
           } else {
@@ -82,16 +81,15 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         };
 
         wrapper = document.createElement('div');
-        var regionSelectEl = document.createElement("select");
+        var regionSelectEl = document.createElement('select');
 
-        YDom.addClass(wrapper, "form-group");
-        YDom.addClass(regionSelectEl, "form-control");
+        YDom.addClass(wrapper, 'form-group');
+        YDom.addClass(regionSelectEl, 'form-control');
 
         wrapper.appendChild(regionSelectEl);
         container.appendChild(wrapper);
 
         initRegCookie = function () {
-
           try {
             var regions = JSON.parse(sessionStorage.getItem('ice-tools-content')) || [];
 
@@ -100,12 +98,16 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             }
 
             if (regions.length > 0) {
-
-              regionSelectEl.options[0] = new Option(CMgs.format(previewLangBundle, "jumpToRegion"), "0", true, false);
+              regionSelectEl.options[0] = new Option(
+                CMgs.format(previewLangBundle, 'jumpToRegion'),
+                '0',
+                true,
+                false
+              );
               for (var i = 0; i < regions.length; i++) {
-                var label = (regions[i].label)
-                  ? regions[i].label.replace(/__/g, " ")
-                  : regions[i].id.replace(/__/g, " ");
+                var label = regions[i].label
+                  ? regions[i].label.replace(/__/g, ' ')
+                  : regions[i].id.replace(/__/g, ' ');
                 regionSelectEl.options[i + 1] = new Option(label, '' + (i + 1), false, false);
               }
 
@@ -114,27 +116,30 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                 if (selectedIndex != 0) {
                   var region = regions[selectedIndex - 1];
                   if (region.label) {
-                    amplify.publish(cstopic('ICE_TOOLS_REGIONS'), { label: '-label', region: region.label });
+                    amplify.publish(cstopic('ICE_TOOLS_REGIONS'), {
+                      label: '-label',
+                      region: region.label
+                    });
                   } else {
                     amplify.publish(cstopic('ICE_TOOLS_REGIONS'), { label: '', region: region.id });
                   }
                 }
               };
             } else {
-              regionSelectEl.options[0] = new Option("No Regions", "0", true, false);
+              regionSelectEl.options[0] = new Option('No Regions', '0', true, false);
             }
           } catch (err) {
             if (window.console && window.console.log) {
               console.log(err);
             }
           }
-        }
+        };
       }
 
       var checkRenderingTemplates = function (renderingTemplates) {
         var noTemplate = true;
         for (var x = 0; x < renderingTemplates.length; x++) {
-          if (renderingTemplates[x].uri != "") {
+          if (renderingTemplates[x].uri != '') {
             noTemplate = false;
           }
         }
@@ -142,13 +147,13 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
       };
 
       wrapper = document.createElement('div');
-      YDom.addClass(wrapper, "edit-code template");
-      var templateButtonEl = document.createElement("button");
-      var templateIconEl = document.createElement("i");
-      var templateLabelEl = document.createElement("span");
+      YDom.addClass(wrapper, 'edit-code template');
+      var templateButtonEl = document.createElement('button');
+      var templateIconEl = document.createElement('i');
+      var templateLabelEl = document.createElement('span');
 
       YDom.addClass(templateIconEl, 'fa fa-code f14');
-      templateLabelEl.innerHTML = CMgs.format(previewLangBundle, "editTemplate");
+      templateLabelEl.innerHTML = CMgs.format(previewLangBundle, 'editTemplate');
 
       // YDom.addClass(wrapper, 'form-group');
       YDom.addClass(templateButtonEl, 'btn btn-default btn-block');
@@ -156,20 +161,20 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
 
       templateButtonEl.appendChild(templateIconEl);
       templateButtonEl.appendChild(templateLabelEl);
-      wrapper.style.marginleft = "4px";
+      wrapper.style.marginleft = '4px';
       wrapper.appendChild(templateButtonEl);
 
       container.appendChild(wrapper);
 
       wrapper = document.createElement('div');
-      YDom.addClass(wrapper, "edit-code");
-      var controllerButtonEl = document.createElement("button");
-      var controllerIconEl = document.createElement("i");
-      var controllerLabelEl = document.createElement("span");
+      YDom.addClass(wrapper, 'edit-code');
+      var controllerButtonEl = document.createElement('button');
+      var controllerIconEl = document.createElement('i');
+      var controllerLabelEl = document.createElement('span');
 
       //controllerImageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/icons/code-edit.gif";
       YDom.addClass(controllerIconEl, 'fa fa-code f14');
-      controllerLabelEl.innerHTML = CMgs.format(previewLangBundle, "editController");
+      controllerLabelEl.innerHTML = CMgs.format(previewLangBundle, 'editController');
 
       // YDom.addClass(wrapper, 'form-group');
       YDom.addClass(controllerButtonEl, 'btn btn-default btn-block');
@@ -182,8 +187,11 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
       container.appendChild(wrapper);
 
       templateButtonEl.onclick = function () {
-
-        if (!checkRenderingTemplates(CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates)) {
+        if (
+          !checkRenderingTemplates(
+            CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates
+          )
+        ) {
           var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0],
             renderingTemplate = selectedContent.renderingTemplates[0].uri,
             contentType = selectedContent.contentType;
@@ -193,50 +201,62 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
           // 			"-" + CStudioAuthoringContext.channel + ".ftl";
           // }
 
-          CStudioAuthoring.Operations.openTemplateEditor(renderingTemplate, "default", {
-            success: function () {
-              CStudioAuthoring.Operations.refreshPreview();
+          CStudioAuthoring.Operations.openTemplateEditor(
+            renderingTemplate,
+            'default',
+            {
+              success: function () {
+                CStudioAuthoring.Operations.refreshPreview();
+              },
+              failure: function () {}
             },
-            failure: function () {
-            }
-          }, contentType, null);
+            contentType,
+            null
+          );
         } else {
-          var dialogEl = document.getElementById("errNoTemplAssoc");
+          var dialogEl = document.getElementById('errNoTemplAssoc');
           if (!dialogEl) {
-            var dialog = new YAHOO.widget.SimpleDialog("errNoTemplAssoc",
-              {
-                width: "400px",
-                fixedcenter: true,
-                visible: false,
-                draggable: false,
-                close: false,
-                modal: true,
-                text: CMgs.format(formsLangBundle, "noTemplatesAssoc") + " " + CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName,
-                icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                constraintoviewport: true,
-                buttons: [{
-                  text: CMgs.format(formsLangBundle, "ok"), handler: function () {
+            var dialog = new YAHOO.widget.SimpleDialog('errNoTemplAssoc', {
+              width: '400px',
+              fixedcenter: true,
+              visible: false,
+              draggable: false,
+              close: false,
+              modal: true,
+              text:
+                CMgs.format(formsLangBundle, 'noTemplatesAssoc') +
+                ' ' +
+                CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName,
+              icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+              constraintoviewport: true,
+              buttons: [
+                {
+                  text: CMgs.format(formsLangBundle, 'ok'),
+                  handler: function () {
                     this.hide();
-                  }, isDefault: false
-                }]
-              });
-            dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                  },
+                  isDefault: false
+                }
+              ]
+            });
+            dialog.setHeader(CMgs.format(formsLangBundle, 'cancelDialogHeader'));
             dialog.render(document.body);
-            dialogEl = document.getElementById("errNoTemplAssoc");
+            dialogEl = document.getElementById('errNoTemplAssoc');
             dialogEl.dialog = dialog;
           }
-          dialogEl.className += (' studioDialog');
+          dialogEl.className += ' studioDialog';
           dialogEl.dialog.show();
         }
       };
 
       controllerButtonEl.onclick = function () {
         if (CStudioAuthoring.SelectedContent.getSelectedContent()[0].contentType) {
-          var contentType = CStudioAuthoring.SelectedContent.getSelectedContent()[0].contentType.split("/");
-          var path = "/scripts/pages/" + contentType[contentType.length - 1] + ".groovy";
+          var contentType = CStudioAuthoring.SelectedContent.getSelectedContent()[0].contentType.split(
+            '/'
+          );
+          var path = '/scripts/pages/' + contentType[contentType.length - 1] + '.groovy';
 
           (function (controllerName) {
-
             var getContentItemCb = {
               success: function (contentTO) {
                 var flag = true;
@@ -247,7 +267,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                 }
 
                 (function (flag) {
-                  CStudioAuthoring.Operations.openTemplateEditor(path, "default", {
+                  CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
                     success: function () {
                       if (CStudioAuthoringContext.isPreview) {
                         CStudioAuthoring.Operations.refreshPreview();
@@ -257,47 +277,51 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                           success: function (contentTOItem) {
                             eventYS.parent = false;
                             eventYS.data = contentTOItem.item;
-                            eventYS.typeAction = "";
+                            eventYS.typeAction = '';
                             document.dispatchEvent(eventYS);
                           },
-                          failure: function () {
-
-                          }
+                          failure: function () {}
                         };
 
-                        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, "/scripts/pages/", callback, false, false);
+                        CStudioAuthoring.Service.lookupContentItem(
+                          CStudioAuthoringContext.site,
+                          '/scripts/pages/',
+                          callback,
+                          false,
+                          false
+                        );
                       }
                     },
-                    failure: function () {
-                    }
+                    failure: function () {}
                   });
                 })(flag);
               },
-              failure: function () {
-
-              }
+              failure: function () {}
             };
 
-            CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, "/scripts/pages/", 1, "default", getContentItemCb);
-
-
-          })(contentType[contentType.length - 1] + ".groovy");
-
+            CStudioAuthoring.Service.lookupSiteContent(
+              CStudioAuthoringContext.site,
+              '/scripts/pages/',
+              1,
+              'default',
+              getContentItemCb
+            );
+          })(contentType[contentType.length - 1] + '.groovy');
         } else {
           var CMgs = CStudioAuthoring.Messages;
-          var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+          var langBundle = CMgs.getBundle('forms', CStudioAuthoringContext.lang);
           CStudioAuthoring.Operations.showSimpleDialog(
-            "loadModelError-dialog",
+            'loadModelError-dialog',
             CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(langBundle, "notification"),
-            CMgs.format(langBundle, "controllerError"),
+            CMgs.format(langBundle, 'notification'),
+            CMgs.format(langBundle, 'controllerError'),
             null,
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            "studioDialog"
+            'studioDialog'
           );
         }
       };
-      var contextNavImg = YDom.get("acn-ice-tools-image");
+      var contextNavImg = YDom.get('acn-ice-tools-image');
       var cstopic = crafter.studio.preview.cstopic;
 
       CStudioAuthoring.Module.requireModule(
@@ -306,47 +330,43 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         {},
         {
           moduleLoaded: function () {
-
             CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function onIceToolsOffEvent() {
-              YDom.removeClass(pencilIcon, "icon-yellow");
-              YDom.addClass(pencilIcon, "icon-default");
-              YDom.removeClass(contextNavImg, "icon-yellow");
-              YDom.addClass(contextNavImg, "icon-default");
-              labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOn");
+              YDom.removeClass(pencilIcon, 'icon-yellow');
+              YDom.addClass(pencilIcon, 'icon-default');
+              YDom.removeClass(contextNavImg, 'icon-yellow');
+              YDom.addClass(contextNavImg, 'icon-default');
+              labelEl.innerHTML = CMgs.format(previewLangBundle, 'inContextEditOn');
 
               amplify.publish(cstopic('ICE_TOOLS_OFF'));
-
             });
 
             CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function onIceToolsOnEvent() {
-              YDom.removeClass(pencilIcon, "icon-default");
-              YDom.addClass(pencilIcon, "icon-yellow");
-              YDom.removeClass(contextNavImg, "icon-default");
-              YDom.addClass(contextNavImg, "icon-yellow");
+              YDom.removeClass(pencilIcon, 'icon-default');
+              YDom.addClass(pencilIcon, 'icon-yellow');
+              YDom.removeClass(contextNavImg, 'icon-default');
+              YDom.addClass(contextNavImg, 'icon-yellow');
               YDom.replaceClass(containerEl.parentNode, 'contracted', 'expanded');
-              labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOff");
+              labelEl.innerHTML = CMgs.format(previewLangBundle, 'inContextEditOff');
 
               amplify.publish(cstopic('ICE_TOOLS_ON'));
-
             });
-
           }
-        });
+        }
+      );
 
       if (iceOn) {
         CStudioAuthoring.IceTools.turnEditOn();
       }
 
       // Create the event
-      var event = new CustomEvent("name-of-event", { "detail": "Example of an event" });
+      var event = new CustomEvent('name-of-event', { detail: 'Example of an event' });
 
       // Dispatch/Trigger/Fire the event
       document.dispatchEvent(event);
-
     };
 
     CStudioAuthoring.Utils.isReviewer(callback);
   }
 };
 
-CStudioAuthoring.Module.moduleLoaded("ice-tools-panel", CStudioAuthoring.IceToolsPanel);
+CStudioAuthoring.Module.moduleLoaded('ice-tools-panel', CStudioAuthoring.IceToolsPanel);

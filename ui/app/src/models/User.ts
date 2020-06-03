@@ -31,3 +31,7 @@ export interface Credentials {
   username: string;
   password: string;
 }
+
+export interface LegacyUser extends Omit<User, 'authType'> {
+  authenticationType: string;
+}

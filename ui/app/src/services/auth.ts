@@ -14,17 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
-import { map, pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { Credentials, User } from '../models/User';
+import { CONTENT_TYPE_JSON, get, post, postJSON } from '../utils/ajax';
+import { catchError, map, mapTo, pluck } from 'rxjs/operators';
+import { Observable, of, OperatorFunction } from 'rxjs';
+import { Credentials, LegacyUser, User } from '../models/User';
+import { AjaxError } from 'rxjs/ajax';
+
+const mapToUser: OperatorFunction<LegacyUser, User> = map<LegacyUser, User>((user) => ({
+  ...user,
+  authType: user.authenticationType
+}));
 
 export function getLogoutInfoURL(): Observable<{ logoutUrl: string }> {
   return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
 }
 
-export function logout() {
-  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON);
+export function logout(): Observable<boolean> {
+  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON).pipe(
+    mapTo(true)
+  );
 }
 
 export function login(credentials: Credentials): Observable<User> {
@@ -32,7 +40,7 @@ export function login(credentials: Credentials): Observable<User> {
     '/studio/api/1/services/api/1/security/login.json',
     credentials,
     CONTENT_TYPE_JSON
-  ).pipe(pluck('response'));
+  ).pipe(pluck('response'), mapToUser);
 }
 
 export function validateSession(): Observable<boolean> {
@@ -42,8 +50,59 @@ export function validateSession(): Observable<boolean> {
 }
 
 export function me(): Observable<User> {
-  return get('/studio/api/2/users/me.json').pipe(
-    pluck('response', 'authenticatedUser')
+  return get('/studio/api/2/users/me.json').pipe(pluck('response', 'authenticatedUser'), mapToUser);
+}
+
+interface ApiResponse {
+  code: number;
+  message: string;
+  remedialAction: string;
+  documentationUrl: string;
+}
+
+export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
+  return get(`/studio/api/2/users/forgot_password?username=${username}`).pipe(
+    pluck('response', 'response'),
+    catchError((error: AjaxError) => {
+      // eslint-disable-next-line no-throw-literal
+      throw error.response?.response ?? error;
+    })
+  );
+}
+
+export function setPassword(
+  token: string,
+  password: string,
+  confirmation: string = password
+): Observable<User> {
+  return password !== confirmation
+    ? of('Password and confirmation mismatch').pipe(
+        map((msg) => {
+          throw new Error(msg);
+        })
+      )
+    : postJSON(`/studio/api/2/users/set_password`, {
+        token,
+        new: password
+      }).pipe(
+        map(({ response }) => {
+          if (response.user == null) {
+            throw new Error('Expired or incorrect token');
+          }
+          return response.user;
+        })
+      );
+}
+
+export function validatePasswordResetToken(token: string): Observable<boolean> {
+  return get(`/studio/api/2/users/validate_token?token=${token}`).pipe(
+    mapTo(true),
+    catchError((error) => {
+      if (error.status === 401)
+        return of(false);
+      else
+        throw new Error(error.response)
+    })
   );
 }
 
@@ -52,5 +111,8 @@ export default {
   logout,
   login,
   validateSession,
-  me
-}
+  sendPasswordRecovery,
+  me,
+  setPassword,
+  validatePasswordResetToken
+};

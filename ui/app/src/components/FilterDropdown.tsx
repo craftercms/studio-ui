@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,19 +15,20 @@
  */
 
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import Button from "@material-ui/core/Button";
-import React, { useState } from "react";
+import Button from '@material-ui/core/Button';
+import React, { useState } from 'react';
 import Popover from '@material-ui/core/Popover';
-import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
-import { defineMessages, useIntl } from "react-intl";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "@material-ui/core/Radio";
-import { CurrentFilters } from "../models/publishing";
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import { defineMessages, useIntl } from 'react-intl';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
+import { CurrentFilters } from '../models/publishing';
 import SearchIcon from '@material-ui/icons/Search';
-import { Theme } from "@material-ui/core";
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   formControl: {
     width: '100%',
-    padding: '5px 15px 20px 15px',
+    padding: '5px 15px 20px 15px'
   },
   search: {
     width: '100%',
@@ -77,8 +77,8 @@ const messages: any = defineMessages({
     defaultMessage: 'Path Expression'
   },
   environment: {
-    id: 'publishingDashboard.environment',
-    defaultMessage: 'Environment'
+    id: 'dashboardWidgetsMessages.publishingTarget',
+    defaultMessage: 'Publishing Target'
   },
   state: {
     id: 'publishingDashboard.state',
@@ -125,9 +125,9 @@ interface FilterDropdownProps {
 export default function FilterDropdown(props: FilterDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
-  const {text, className, handleFilterChange, handleEnterKey, currentFilters, filters} = props;
+  const { text, className, handleFilterChange, handleEnterKey, currentFilters, filters } = props;
   const [path, setPath] = useState('');
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -146,23 +146,23 @@ export default function FilterDropdown(props: FilterDropdownProps) {
   return (
     <div>
       <Button variant="outlined" onClick={handleClick} className={className}>
-        {text} <ArrowDropDownIcon/>
+        {text} <ArrowDropDownIcon />
       </Button>
       <Popover
-        id="simple-menu"
+        id="publishingFilterDropdown"
         anchorEl={anchorEl}
         getContentAnchorEl={null}
-        classes={{paper: classes.paper}}
+        classes={{ paper: classes.paper }}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
       >
         <section>
@@ -173,15 +173,15 @@ export default function FilterDropdown(props: FilterDropdownProps) {
           </header>
           <div className={classes.body}>
             <div className={classes.searchIcon}>
-              <SearchIcon/>
+              <SearchIcon />
             </div>
             <TextField
               id="path"
               name="path"
               className={classes.searchTextField}
-              InputLabelProps={{shrink: true}}
+              InputLabelProps={{ shrink: true }}
               fullWidth
-              placeholder={"e.g. /SOME/PATH/*"}
+              placeholder={'e.g. /SOME/PATH/*'}
               onChange={(event) => setPath(event.target.value)}
               onKeyPress={(event) => onKeyPress(event, path)}
               value={path}
@@ -195,16 +195,27 @@ export default function FilterDropdown(props: FilterDropdownProps) {
             </Typography>
           </header>
           <div className={classes.formControl}>
-            <RadioGroup aria-label="environment" name="environment"
-                        value={currentFilters.environment} onChange={handleFilterChange}>
-              <FormControlLabel value={""} control={<Radio color="primary"/>}
-                                label={formatMessage(messages.all)}/>
+            <RadioGroup
+              aria-label={formatMessage(messages.environment)}
+              name="environment"
+              value={currentFilters.environment}
+              onChange={handleFilterChange}
+            >
+              <FormControlLabel
+                value=""
+                control={<Radio color="primary" />}
+                label={formatMessage(messages.all)}
+              />
               {
                 filters.environments &&
-                filters.environments.map((filter: string, index: number) => {
-                  return <FormControlLabel key={index} value={filter} control={<Radio color="primary"/>}
-                                           label={filter}/>
-                })
+                filters.environments.map((filter: string, index: number) =>
+                  <FormControlLabel
+                    key={index}
+                    value={filter}
+                    control={<Radio color="primary" />}
+                    label={filter}
+                  />
+                )
               }
             </RadioGroup>
           </div>
@@ -216,20 +227,36 @@ export default function FilterDropdown(props: FilterDropdownProps) {
             </Typography>
           </header>
           <div className={classes.formControl}>
-            <RadioGroup aria-label="state" name="state"
-                        value={currentFilters.state} onChange={handleFilterChange}>
-              <FormControlLabel value={""} control={<Radio color="primary"/>}
-                                label={formatMessage(messages.all)}/>
+            <FormGroup>
+              <FormControlLabel
+                value=""
+                label={formatMessage(messages.all)}
+                control={
+                  <Checkbox
+                    color="primary"
+                    value=""
+                    checked={currentFilters.state.length === filters.states.length || currentFilters.state.length === 0}
+                    onChange={handleFilterChange}
+                  />
+                }
+              />
               {
                 filters.states.map((filter: string, index: number) => {
                   return <FormControlLabel
                     key={index}
                     value={filter}
-                    control={<Radio color="primary"/>}
-                    label={formatMessage(messages[filter])}/>
+                    control={
+                      <Checkbox
+                        color="primary"
+                        value={filter}
+                        checked={currentFilters.state.includes(filter)}
+                        onChange={handleFilterChange}
+                      />
+                    }
+                    label={formatMessage(messages[filter])} />
                 })
               }
-            </RadioGroup>
+            </FormGroup>
           </div>
         </section>
       </Popover>

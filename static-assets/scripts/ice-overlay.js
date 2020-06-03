@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,35 +15,32 @@
  */
 
 crafterDefine('ice-overlay', ['crafter', 'jquery', 'animator'], function (crafter, $, Animator) {
-    'use strict';
+  'use strict';
 
-    function ICEOverlay() {
+  function ICEOverlay() {
+    var $overlay = $('<div class="studio-ice-overlay" style="display: none;"></div>');
+    $overlay.appendTo('body');
 
-        var $overlay = $('<div class="studio-ice-overlay" style="display: none;"></div>');
-        $overlay.appendTo('body');
+    this.animator = new Animator($overlay);
 
-        this.animator = new Animator($overlay);
-
-        this.getElement = function () {
-            return $overlay;
-        }
-
-    }
-
-    ICEOverlay.prototype = {
-        show: showOverlay,
-        hide: hideOverlay
+    this.getElement = function () {
+      return $overlay;
     };
+  }
 
-    function showOverlay(props) {
-        this.getElement().css(props);
-        this.animator.fadeIn();
-    }
+  ICEOverlay.prototype = {
+    show: showOverlay,
+    hide: hideOverlay
+  };
 
-    function hideOverlay() {
-        this.animator.fadeOut();
-    }
+  function showOverlay(props) {
+    this.getElement().css(props);
+    this.animator.fadeIn();
+  }
 
-    return ICEOverlay;
+  function hideOverlay() {
+    this.animator.fadeOut();
+  }
 
+  return ICEOverlay;
 });

@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,12 +15,12 @@
  */
 
 (function () {
-
   const i18n = CrafterCMSNext.i18n,
-        formatMessage = i18n.intl.formatMessage,
-        numericInputControlMessages = i18n.messages.numericInputControlMessages;
+    formatMessage = i18n.intl.formatMessage,
+    numericInputControlMessages = i18n.messages.numericInputControlMessages;
 
-  CStudioForms.Controls.numericInput = CStudioForms.Controls.numericInput ||
+  CStudioForms.Controls.numericInput =
+    CStudioForms.Controls.numericInput ||
     function (id, form, owner, properties, constraints, readonly) {
       this.owner = owner;
       this.owner.registerField(this);
@@ -32,20 +31,19 @@
       this.patternErrEl = null;
       this.countEl = null;
       this.required = false;
-      this.value = "_not-set";
+      this.value = '_not-set';
       this.form = form;
       this.id = id;
       this.readonly = readonly;
-      this.supportedPostFixes = ["_i", "_l", "_f", "_d"];
+      this.supportedPostFixes = ['_i', '_l', '_f', '_d'];
       this.inputTimeout = null;
 
       return this;
-    }
+    };
 
   YAHOO.extend(CStudioForms.Controls.numericInput, CStudioForms.CStudioFormField, {
-
     getLabel: function () {
-      return CMgs.format(langBundle, "numericInput");
+      return CMgs.format(langBundle, 'numericInput');
     },
 
     _onChange: function (evt, obj) {
@@ -54,32 +52,32 @@
       var validationExist = false;
       var validationResult = true;
       if (obj.required) {
-        if (obj.inputEl.value == "") {
-          obj.setError("required", "Field is Required");
+        if (obj.inputEl.value == '') {
+          obj.setError('required', 'Field is Required');
           validationExist = true;
           validationResult = false;
         } else {
-          obj.clearError("required");
+          obj.clearError('required');
           validationExist = true;
         }
       }
 
-      if ((!validationExist && obj.inputEl.value != "") || validationExist && validationResult) {
+      if ((!validationExist && obj.inputEl.value != '') || (validationExist && validationResult)) {
         for (var i = 0; i < obj.constraints.length; i++) {
           var constraint = obj.constraints[i];
           if (constraint.name == 'pattern') {
             var regex = constraint.value;
-            if (regex != "") {
+            if (regex != '') {
               if (obj.inputEl.value.match(regex)) {
                 // only when there is no other validation mark it as passed
-                obj.clearError("pattern");
+                obj.clearError('pattern');
                 YAHOO.util.Dom.removeClass(obj.patternErrEl, 'on');
                 validationExist = true;
               } else {
                 if (obj.inputEl.value != '') {
                   YAHOO.util.Dom.addClass(obj.patternErrEl, 'on');
                 }
-                obj.setError("pattern", "The value entered is not allowed in this field.");
+                obj.setError('pattern', 'The value entered is not allowed in this field.');
                 validationExist = true;
                 validationResult = false;
               }
@@ -113,9 +111,9 @@
       clearTimeout(this.inputTimeout);
 
       this.inputTimeout = setTimeout(function () {
-        const element = (el) ? el : self,
-              max = element.maxValue,
-              min = element.minValue;
+        const element = el ? el : self,
+          max = element.maxValue,
+          min = element.minValue;
 
         if (max != null && max !== '' && parseFloat(self.value) > max) {
           self.value = max;
@@ -130,51 +128,56 @@
       // you should be able to override it -- but most of the time it wil be the same
       containerEl.id = this.id;
 
-      var titleEl = document.createElement("span");
+      var titleEl = document.createElement('span');
 
       YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
       titleEl.innerHTML = config.title;
 
-      var controlWidgetContainerEl = document.createElement("div");
+      var controlWidgetContainerEl = document.createElement('div');
       YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
 
-      var validEl = document.createElement("span");
+      var validEl = document.createElement('span');
       YAHOO.util.Dom.addClass(validEl, 'validation-hint');
       YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
       controlWidgetContainerEl.appendChild(validEl);
 
-      var inputEl = document.createElement("input");
-      inputEl.setAttribute("type", "number");
+      var inputEl = document.createElement('input');
+      inputEl.setAttribute('type', 'number');
       this.inputEl = inputEl;
       YAHOO.util.Dom.addClass(inputEl, 'datum');
       YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
-      inputEl.value = (this.value = "_not-set") ? config.defaultValue : this.value;
+      inputEl.value = (this.value = '_not-set') ? config.defaultValue : this.value;
       controlWidgetContainerEl.appendChild(inputEl);
 
-      YAHOO.util.Event.on(inputEl, 'focus', function (evt, context) {
-        context.form.setFocusedField(context)
-      }, this);
+      YAHOO.util.Event.on(
+        inputEl,
+        'focus',
+        function (evt, context) {
+          context.form.setFocusedField(context);
+        },
+        this
+      );
       YAHOO.util.Event.on(inputEl, 'change', this._onChangeVal, this);
       YAHOO.util.Event.on(inputEl, 'blur', this._onChange, this);
 
       for (var i = 0; i < config.properties.length; i++) {
         var prop = config.properties[i];
 
-        if (prop.name == "size") {
+        if (prop.name == 'size') {
           inputEl.size = prop.value;
         }
 
-        if (prop.name == "maxValue") {
+        if (prop.name == 'maxValue') {
           inputEl.maxValue = prop.value;
-          inputEl.setAttribute("max", prop.value);
+          inputEl.setAttribute('max', prop.value);
         }
 
-        if (prop.name == "minValue") {
+        if (prop.name == 'minValue') {
           inputEl.minValue = prop.value;
-          inputEl.setAttribute("min", prop.value);
+          inputEl.setAttribute('min', prop.value);
         }
 
-        if (prop.name == "readonly" && prop.value == "true") {
+        if (prop.name == 'readonly' && prop.value == 'true') {
           this.readonly = true;
         }
       }
@@ -183,14 +186,14 @@
         inputEl.disabled = true;
       }
 
-      var countEl = document.createElement("div");
+      var countEl = document.createElement('div');
       YAHOO.util.Dom.addClass(countEl, 'char-count');
       YAHOO.util.Dom.addClass(countEl, 'cstudio-form-control-input-count');
       controlWidgetContainerEl.appendChild(countEl);
       this.countEl = countEl;
 
-      var patternErrEl = document.createElement("div");
-      patternErrEl.innerHTML = "The value entered is not allowed in this field.";
+      var patternErrEl = document.createElement('div');
+      patternErrEl.innerHTML = 'The value entered is not allowed in this field.';
       YAHOO.util.Dom.addClass(patternErrEl, 'cstudio-form-control-input-url-err');
       controlWidgetContainerEl.appendChild(patternErrEl);
       this.patternErrEl = patternErrEl;
@@ -201,7 +204,7 @@
 
       this.renderHelp(config, controlWidgetContainerEl);
 
-      var descriptionEl = document.createElement("span");
+      var descriptionEl = document.createElement('span');
       YAHOO.util.Dom.addClass(descriptionEl, 'description');
       YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
       descriptionEl.innerHTML = config.description;
@@ -222,37 +225,49 @@
       this.count(null, this.countEl, this.inputEl);
       this._onChange(null, this);
       this.edited = false;
-
     },
 
     getName: function () {
-      return "numeric-input";
+      return 'numeric-input';
     },
 
     getSupportedProperties: function () {
       return [
-        {label: CMgs.format(langBundle, "displaySize"), name: "size", type: "int", defaultValue: "50"},
-        {label: formatMessage(numericInputControlMessages.maximun), name: "maxValue", type: "float"},
-        {label: formatMessage(numericInputControlMessages.minimun), name: "minValue", type: "float"},
-        {label: CMgs.format(langBundle, "readonly"), name: "readonly", type: "boolean"},
-        {label: "Tokenize for Indexing", name: "tokenize", type: "boolean", defaultValue: "false"}
+        {
+          label: CMgs.format(langBundle, 'displaySize'),
+          name: 'size',
+          type: 'int',
+          defaultValue: '50'
+        },
+        {
+          label: formatMessage(numericInputControlMessages.maximun),
+          name: 'maxValue',
+          type: 'float'
+        },
+        {
+          label: formatMessage(numericInputControlMessages.minimun),
+          name: 'minValue',
+          type: 'float'
+        },
+        { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
+        { label: 'Tokenize for Indexing', name: 'tokenize', type: 'boolean', defaultValue: 'false' }
       ];
     },
 
     getSupportedConstraints: function () {
       return [
-        {label: CMgs.format(langBundle, "required"), name: "required", type: "boolean"},
-        {label: CMgs.format(langBundle, "matchPattern"), name: "pattern", type: "string"}
+        { label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' },
+        { label: CMgs.format(langBundle, 'matchPattern'), name: 'pattern', type: 'string' }
       ];
     },
 
     getSupportedPostFixes: function () {
       return this.supportedPostFixes;
     }
-
   });
 
-
-  CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-numeric-input", CStudioForms.Controls.numericInput);
-
+  CStudioAuthoring.Module.moduleLoaded(
+    'cstudio-forms-controls-numeric-input',
+    CStudioForms.Controls.numericInput
+  );
 })();

@@ -197,7 +197,8 @@
         "PUBLISHED": "Publizieren",
         "STOP_PUBLISHER":"Publizieren anhalten",
         "START_PUBLISHER":"Publizieren starten",
-        "REMOVE_CLUSTER_NODE":"Cluster-Node entfernen"
+        "REMOVE_CLUSTER_NODE":"Cluster-Node entfernen",
+        "CANCEL_PUBLISHING_PACKAGE":"Veröffentlichungspaket abbrechen"
       },
       "USER": "Nutzer",
       "CONTENT": "Element",
@@ -247,7 +248,7 @@
         "BULKPUBLISH": "Massen-Publizierung",
         "PATHPUBLISH": "Pfad, der publiziert werden soll",
         "PATHEXAMPLE": "(z.B. /site/website/about/index.xml)",
-        "PUBLISHINGENVIRONMENT": "Umgebung",
+        "PUBLISHINGENVIRONMENT": "Veröffentlichungsziel",
         "PUBLISHINGSUBMISSIONCOMMENT": "Submission Kommentar",
         "PUBLISH": "Publizieren",
         "PATH":"Pfad",

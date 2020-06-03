@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,64 +16,73 @@
  *
  */
 
-CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float = CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float ||  function(fieldName, containerEl)  {
-  this.fieldName = fieldName;
-  this.containerEl = containerEl;
-  return this;
-}
+CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float =
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float ||
+  function (fieldName, containerEl) {
+    this.fieldName = fieldName;
+    this.containerEl = containerEl;
+    this.lastValidValue = '';
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
+    return this;
+  };
 
-YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float, CStudioAdminConsole.Tool.ContentTypes.PropertyType, {
-  render: function(value, updateFn) {
-    var _self = this;
-    var containerEl = this.containerEl;
-    var valueEl = document.createElement("input");
-    YAHOO.util.Dom.addClass(valueEl, "content-type-property-sheet-property-value");
-    containerEl.appendChild(valueEl);
-    valueEl.value = value;
-    valueEl.fieldName = this.fieldName;
+YAHOO.extend(
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float,
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType,
+  {
+    render: function (value, updateFn) {
+      var _self = this;
+      var containerEl = this.containerEl;
+      var valueEl = document.createElement('input');
+      YAHOO.util.Dom.addClass(valueEl, 'content-type-property-sheet-property-value');
+      containerEl.appendChild(valueEl);
+      valueEl.value = value;
+      this.lastValidValue = value;
+      valueEl.fieldName = this.fieldName;
 
-    var validFn = function(evt, el) {
-
-      if (evt && evt != null) {
-        var charCode = (evt.which) ? evt.which : evt.keyCode
-
-        if(!_self.isNumberKey(charCode)) {
-          if(evt)
-            YAHOO.util.Event.stopEvent(evt);
+      $(valueEl).on('blur', function (e) {
+        const currentValue = this.value;
+        const isNumber = /^[+-]?\d+(\.\d+)?$/;
+        const isValid = (currentValue.match(isNumber) !== null) || currentValue === '';
+        const $element = $(this);
+        if (isValid) {
+          _self.lastValidValue = currentValue;
+          $element.removeClass('invalid');
+          if (updateFieldFn) {
+            updateFieldFn(e, this);
+          }
+        } else {
+          $element.addClass('invalid');
+          this.value = _self.lastValidValue;
+          CStudioAuthoring.Utils.showNotification(
+            _self.formatMessage(_self.contentTypesMessages.invalidNumber, { value: currentValue }),
+            'top',
+            'right',
+            'error',
+            48,
+            'int-property'
+          );
         }
+      });
+
+      if (updateFn) {
+        var updateFieldFn = function (event, el) {
+          updateFn(event, el);
+          CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+        };
       }
-    };
 
-    YAHOO.util.Event.on(valueEl, 'keydown', validFn, valueEl);
+      this.valueEl = valueEl;
+    },
 
-    if(updateFn) {
-      var updateFieldFn = function(event, el) {
-        updateFn(event, el);
-        CStudioAdminConsole.Tool.ContentTypes.visualization.render();
-      };
-
-      YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
+    getValue: function () {
+      return this.valueEl.value;
     }
-
-    this.valueEl = valueEl;
-  },
-
-  getValue: function() {
-    return this.valueEl.value;
-  },
-
-  isNumberKey: function(charCode) {
-    // subtract sign (keyboard = 189, keyboard = 173 (firefox), numeric pad = 109)
-    const isSubtractSign = (charCode === 109 || charCode === 189 || charCode === 173);
-
-    // decimal sign (keyboard = 190, numeric pad = 110)
-    const isDecimalSign = (charCode === 190 || charCode === 110);
-
-    // charCode < 48 or > 57 = not numbers
-    // charCode 43 = execute
-    return !(charCode != 43 && charCode > 31 && (charCode < 48 || charCode > 57) && !isSubtractSign && !isDecimalSign);
   }
+);
 
-});
-
-CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-content-types-proptype-float", CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-console-tools-content-types-proptype-float',
+  CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float
+);

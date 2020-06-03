@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,12 +28,13 @@ import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
 import { forkJoin, fromEvent, Subject } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { filter, map, take, debounceTime } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import babel from '../utils/babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
+import { makeStyles, jssPreset } from '@material-ui/core/styles';
 
 /**
  *
@@ -69,6 +69,7 @@ interface CodebaseBridge {
     translateElements: Function;
   }
   services: object;
+  mui: object;
 }
 
 export function updateIntl(nextIntl: IntlShape) {
@@ -91,24 +92,34 @@ export function createCodebaseBridge() {
       Subject,
       fromEvent,
       forkJoin,
-      operators: { filter, map, take }
+      operators: { filter, map, take, debounceTime }
     },
 
     components: {
+      ErrorState: lazy(() => import('../components/ErrorState')),
+      CrafterCMSNextBridge,
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
       DependencySelection: lazy(() => import('../components/DependencySelection')),
       DependencySelectionDelete: lazy(() => (
         import('../components/DependencySelection')
-        .then(module => ({
-          default: module.DependencySelectionDelete
-        }))
+          .then(module => ({
+            default: module.DependencySelectionDelete
+          }))
       )),
       CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../components/PublishingQueue')),
       EncryptTool: lazy(() => import('../components/EncryptTool')),
-      AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor'))
+      AuthMonitor: lazy(() => import('../components/SystemStatus/AuthMonitor')),
+      Login: lazy(() => import('../pages/Login')),
+      BulkUpload: lazy(() => import('../components/BulkUpload')),
+      ConfirmDialog: lazy(() => import('../components/ConfirmDialog'))
+    },
+
+    mui: {
+      makeStyles,
+      jssPreset
     },
 
     assets: {

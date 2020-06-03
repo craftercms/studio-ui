@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,12 +23,12 @@ CStudioForms.Datasources.EmbeddedContent = function (id, form, properties, const
   this.contentType = '';
   this.flattened = true;
   const i18n = CrafterCMSNext.i18n;
-  this.formatMessage = i18n.intl.formatMessage,
-  this.embeddedContentDSMessages = i18n.messages.embeddedContentDSMessages;
+  (this.formatMessage = i18n.intl.formatMessage),
+    (this.embeddedContentDSMessages = i18n.messages.embeddedContentDSMessages);
 
   for (var i = 0; i < properties.length; i++) {
     if (properties[i].name === 'contentType') {
-      this.contentType = (Array.isArray(properties[i].value)) ? '' : properties[i].value;
+      this.contentType = Array.isArray(properties[i].value) ? '' : properties[i].value;
     }
   }
 
@@ -45,25 +44,29 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
       control.containerEl.removeChild(addContainerEl);
     }
 
-    if (_self.contentType === "") {
+    if (_self.contentType === '') {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
         CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES,
-        false, {
+        false,
+        {
           success: function (contentTO, editorId, name, value) {
             control.insertItem(name, value, null, null, _self.id);
             control._renderItems();
           },
-          failure: function () {
-          }
-        }, true, true,
-        contentType => (contentType.type === 'component' && contentType.name !== '/component/level-descriptor'));
+          failure: function () {}
+        },
+        true,
+        true,
+        (contentType) =>
+          contentType.type === 'component' && contentType.name !== '/component/level-descriptor'
+      );
     } else {
       CStudioAuthoring.Operations.openContentWebForm(
         _self.contentType,
         null,
         null,
-        "",
+        '',
         false,
         false,
         {
@@ -71,20 +74,18 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
             control.insertItem(name, value, null, null, _self.id);
             control._renderItems();
           },
-          failure: function () {
-          }
+          failure: function () {}
         },
-        [
-          { name: "childForm", value: "true" }
-        ],
+        [{ name: 'childForm', value: 'true' }],
         null,
-        true);
+        true
+      );
     }
   },
 
   add: function (control, onlyAppend) {
     var CMgs = CStudioAuthoring.Messages;
-    var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
+    var langBundle = CMgs.getBundle('contentTypes', CStudioAuthoringContext.lang);
 
     var _self = this;
     var addContainerEl = control.addContainerEl || null;
@@ -99,27 +100,32 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     }
 
     if (!addContainerEl && onlyAppend) {
-      addContainerEl = document.createElement("div");
+      addContainerEl = document.createElement('div');
       control.containerEl.appendChild(addContainerEl);
       YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
       control.addContainerEl = addContainerEl;
-      control.addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
-      control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
+      control.addContainerEl.style.left = control.addButtonEl.offsetLeft + 'px';
+      control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + 'px';
     }
 
     if (onlyAppend) {
-      addContainerEl.create = document.createElement("div");
+      addContainerEl.create = document.createElement('div');
       addContainerEl.appendChild(addContainerEl.create);
       YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
 
-      var createEl = document.createElement("div");
+      var createEl = document.createElement('div');
       YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-      createEl.innerHTML = CMgs.format(langBundle, "createNew") + " - " + newElTitle;
+      createEl.innerHTML = CMgs.format(langBundle, 'createNew') + ' - ' + newElTitle;
       control.addContainerEl.create.appendChild(createEl);
       var addContainerEl = control.addContainerEl;
-      YAHOO.util.Event.on(createEl, 'click', function () {
-        _self.createElementAction(control, _self, addContainerEl, onlyAppend);
-      }, createEl);
+      YAHOO.util.Event.on(
+        createEl,
+        'click',
+        function () {
+          _self.createElementAction(control, _self, addContainerEl, onlyAppend);
+        },
+        createEl
+      );
     } else {
       _self.createElementAction(control, _self);
     }
@@ -130,8 +136,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     CStudioForms.communication.sendAndAwait(key, (message) => {
       const contentType = CStudioForms.communication
         .parseDOM(message.payload)
-        .querySelector('content-type')
-        .innerHTML;
+        .querySelector('content-type').innerHTML;
       CStudioAuthoring.Operations.performSimpleIceEdit(
         { contentType: contentType, uri: key },
         null, // field
@@ -154,23 +159,23 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
   },
 
   getInterface: function () {
-    return "item";
+    return 'item';
   },
 
   getName: function () {
-    return "embedded-content";
+    return 'embedded-content';
   },
 
   getSupportedProperties: function () {
-    return [
-      { label: CMgs.format(langBundle, "contentType"), name: "contentType", type: "string" }
-    ];
+    return [{ label: CMgs.format(langBundle, 'contentType'), name: 'contentType', type: 'string' }];
   },
 
   getSupportedConstraints: function () {
     return [];
   }
-
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-embedded-content", CStudioForms.Datasources.EmbeddedContent);
+CStudioAuthoring.Module.moduleLoaded(
+  'cstudio-forms-controls-embedded-content',
+  CStudioForms.Datasources.EmbeddedContent
+);

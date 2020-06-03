@@ -1,10 +1,9 @@
 /*
- * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,33 +18,34 @@ var YDom = YAHOO.util.Dom;
 var YEvent = YAHOO.util.Event;
 
 CStudioAuthoring.ContextualNav.UserDashboard = CStudioAuthoring.ContextualNav.UserDashboard || {
+  /**
+   * initialize module
+   */
+  initialize: function (config) {
+    if (config.name == 'user-dashboard') {
+      this.initialized = true;
+      var dropdownInnerEl = config.containerEl;
 
-	/**
-	 * initialize module
-	 */
-	initialize: function(config) {
+      var parentFolderEl = document.createElement('div');
+      parentFolderEl.style.paddingTop = '8px';
+      var parentFolderLinkEl = document.createElement('a');
+      parentFolderEl.appendChild(parentFolderLinkEl);
+      YDom.addClass(parentFolderLinkEl, 'acn-userdash');
+      parentFolderLinkEl.style =
+        "background: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat scroll 0 -941px rgba(0, 0, 0, 0); padding-left:19px";
 
-		if(config.name == "user-dashboard") {
+      parentFolderLinkEl.id = 'user-dashboard';
+      parentFolderLinkEl.innerHTML = 'User Dashboard';
+      parentFolderLinkEl.onclick = function () {
+        document.location = CStudioAuthoringContext.authoringAppBaseUri + '/user-dashboard';
+      };
 
-			this.initialized = true;	
-			var dropdownInnerEl = config.containerEl;
+      dropdownInnerEl.appendChild(parentFolderEl);
+    }
+  }
+};
 
-			var parentFolderEl = document.createElement("div");
-			parentFolderEl.style.paddingTop = "8px";
-			var parentFolderLinkEl = document.createElement("a");
-			parentFolderEl.appendChild(parentFolderLinkEl);
-			YDom.addClass(parentFolderLinkEl, "acn-userdash");
-			parentFolderLinkEl.style = "background: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat scroll 0 -941px rgba(0, 0, 0, 0); padding-left:19px";
-
-			parentFolderLinkEl.id = "user-dashboard";
-			parentFolderLinkEl.innerHTML = "User Dashboard";
-			parentFolderLinkEl.onclick = function() {
-				document.location = CStudioAuthoringContext.authoringAppBaseUri + "/user-dashboard";
-			};
-			
-			dropdownInnerEl.appendChild(parentFolderEl);
-		}
-	}
-}
-
-CStudioAuthoring.Module.moduleLoaded("user-dashboard", CStudioAuthoring.ContextualNav.UserDashboard);
+CStudioAuthoring.Module.moduleLoaded(
+  'user-dashboard',
+  CStudioAuthoring.ContextualNav.UserDashboard
+);
