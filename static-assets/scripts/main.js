@@ -247,11 +247,6 @@
             }
           }
         })
-        .state('home.sites.create', {
-          url: '/create',
-          templateUrl: '/studio/static-assets/ng-views/create-site.html',
-          controller: 'SiteCtrl'
-        })
         .state('home.sites.site', {
           url: '/:siteId',
           templateUrl: '/studio/static-assets/ng-views/site.html',

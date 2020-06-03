@@ -2846,64 +2846,38 @@ var nodeOpen = false,
       /* submit content moved up, next to approveCommon */
 
       /**
-       * approve content
-       */
-      approveContent: function (site, contentItems) {
-        CStudioAuthoring.Module.requireModule(
-          'dialog-approve',
-          '/static-assets/components/cstudio-dialogs/go-live.js',
-          {
-            contentItems: contentItems,
-            site: site
-          },
-          {
-            moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-              // in preview, this function undefined raises error -- unlike dashboard
-              dialogClass.showDialog && dialogClass.showDialog(moduleConfig.site, moduleConfig.contentItems);
-            }
-          }
-        );
-      },
-
-      /**
-       * approve-schedule content
-       */
-      approveScheduleContent: function (site, contentItems) {
-        CStudioAuthoring.Module.requireModule(
-          'dialog-schedule-to-go-live',
-          '/static-assets/components/cstudio-dialogs/schedule-to-go-live.js',
-          {
-            contentItems: contentItems,
-            site: site
-          },
-          {
-            moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-              // in preview, this function undefined raises error -- unlike dashboard
-              dialogClass.showDialog && dialogClass.showDialog(moduleConfig.site, moduleConfig.contentItems);
-            }
-          }
-        );
-      },
-
-      /**
        * reject content
        */
       rejectContent: function (site, contentItems) {
-        var submitDialogCb = {
-          moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-            dialogClass.showDialog && dialogClass.showDialog(moduleConfig.site, moduleConfig.contentItems);
+        const eventIdSuccess = 'rejectDialogSuccess'
+
+        const sandboxItems = CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(contentItems);
+
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_REJECT_DIALOG',
+          payload: {
+            open: true,
+            items: sandboxItems,
+            onRejectSuccess: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'LEGACY_DIALOG_CALLBACK',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_REJECT_DIALOG' }
+              ]
+            }
           }
-        };
-        var moduleConfig = {
-          contentItems: contentItems,
-          site: site
-        };
-        CStudioAuthoring.Module.requireModule(
-          'dialog-reject',
-          '/static-assets/components/cstudio-dialogs/reject.js',
-          moduleConfig,
-          submitDialogCb
-        );
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+          if (CStudioAuthoringContext.isPreview) {
+            CStudioAuthoring.Operations.refreshPreview();
+          }
+          eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
+          document.dispatchEvent(eventNS);
+        });
       },
 
       /**
@@ -2970,28 +2944,6 @@ var nodeOpen = false,
         //document.body.appendChild(tempMask);
         //window.location.reload(true);
         //document.dispatchEvent(eventNS);
-      },
-
-      /**
-       * Login
-       */
-      loginDialog: function (cb) {
-        CStudioAuthoring.Module.requireModule(
-          'login-dialog',
-          '/static-assets/components/cstudio-dialogs/login-dialog.js',
-          {
-            cb: cb
-          },
-          {
-            moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
-              dialogClass.showDialog(moduleConfig.cb);
-            }
-          }
-        );
-
-        var moduleConfig = {
-          cb: cb
-        };
       },
 
       uploadAsset: function (site, path, isUploadOverwrite, uploadCb, fileTypes) {
@@ -3491,69 +3443,6 @@ var nodeOpen = false,
           method: 'GET',
           defaultPostHeader: true
         });
-      },
-
-      getHistoryView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/history.html',
-          callback,
-          true,
-          true
-        );
-      },
-
-      getApproveView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/approve.html',
-          callback,
-          true,
-          true
-        );
-      },
-
-      getDependenciesView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/dependencies.html',
-          callback,
-          true,
-          true
-        );
-      },
-
-      getRequestPublishView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/request-publish.html',
-          callback,
-          true,
-          true
-        );
-      },
-
-      getRequestDeleteView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/request-delete.html',
-          callback,
-          true,
-          true
-        );
-      },
-
-      getSubmitForDeleteView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/submit-for-delete.html',
-          callback,
-          true,
-          true
-        );
-      },
-
-      getDeleteView: function (callback) {
-        CSA.Service.getViewCommon(
-          '{base}/static-assets/components/cstudio-dialogs-templates/delete.html',
-          callback,
-          true,
-          true
-        );
       },
 
       getSchedulingPolicyView: function (callback) {

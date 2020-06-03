@@ -14,10 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ComponentType, Fragment, PropsWithChildren, ElementType } from 'react';
 import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
-import { PropsWithChildren, ElementType } from 'react';
 import { useICE } from './hooks';
 import { value as getModelValue } from '../utils/model';
 import { setProperty } from '../utils/object';
@@ -74,28 +73,15 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
   const targets = target.replace(/\s/g, '').split(',');
   targets.forEach((target, index) => {
     const fieldId = fields[index];
-    setProperty(
-      passDownProps as {},
-      target,
-      format(getModelValue(model, fieldId), fieldId)
-    );
+    setProperty(passDownProps as {}, target, format(getModelValue(model, fieldId), fieldId));
   });
   return <Component {...passDownProps} />;
 }
 
 export function Model<P = {}>(props: FieldProps<P>) {
-  const { model: modelProp, component = 'div', ...other } = props;
-  const { props: ice, model } = useICE({
-    model: props.model,
-    fieldId: null,
-    index: null,
-    noRef: true
-  });
+  const { model, fieldId, index, component = Fragment, ...other } = props;
+  useICE({ model, fieldId: null, index: null, noRef: true });
   const Component = component as ComponentType<P>;
-  const passDownProps = {
-    ...other,
-    ...ice,
-    ...(typeof component === 'string' ? {} : { model })
-  } as P;
+  const passDownProps = other as P;
   return <Component {...passDownProps} />;
 }

@@ -275,6 +275,7 @@ export default function(config: GuestStyleSheetConfig): Styles<'@global'> {
       textOverflow: 'ellipsis',
       overflow: 'hidden',
       position: 'absolute',
+      top: -100,
       ...overrides['craftercms-dragged-element']
     },
     // Classes
