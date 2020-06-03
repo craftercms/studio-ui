@@ -19,10 +19,10 @@ import { SandboxItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import {
   useActiveSiteId,
-  useUnmount,
+  useLogicResource,
   useSelection,
   useSpreadState,
-  useLogicResource
+  useUnmount
 } from '../../../utils/hooks';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import {
@@ -375,13 +375,13 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                     <FormattedMessage
                       id="dependenciesDialog.emptyDependantsMessage"
                       defaultMessage={'{itemName} has no dependencies'}
-                      values={{ itemName: item?.['internalName'] }}
+                      values={{ itemName: item?.label }}
                     />
                   ) : (
                     <FormattedMessage
                       id="dependenciesDialog.emptyDependenciesMessage"
                       defaultMessage={'Nothing depends on {itemName}'}
-                      values={{ itemName: item?.['internalName'] }}
+                      values={{ itemName: item?.label }}
                     />
                   )
               ),

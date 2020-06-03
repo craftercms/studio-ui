@@ -102,6 +102,10 @@ const guestMessages = defineMessages({
   yes: {
     id: 'words.yes',
     defaultMessage: 'Yes'
+  },
+  registerNotFound: {
+    id: 'register.notFound',
+    defaultMessage: '{name} is not visible or was not registered by developers'
   }
 });
 
@@ -449,10 +453,8 @@ export function PreviewConcierge(props: any) {
   useEffect(() => {
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        assets.isFetching === null &&
-          site &&
-          assets.error === null &&
-          dispatch(fetchAssetsPanelItems({}));
+        site &&
+        dispatch(fetchAssetsPanelItems({}));
         break;
       case 'craftercms.ice.audiences':
         if (
@@ -461,27 +463,22 @@ export function PreviewConcierge(props: any) {
           nou(audiencesPanel.model) &&
           nou(audiencesPanel.error)
         ) {
+          //TODO: Jose Vega re-render when this panel is opened and site is changed;
           dispatch(fetchAudiencesPanelFormDefinition());
         }
         break;
       case 'craftercms.ice.browseComponents':
         contentTypeComponents.contentTypeFilter &&
-          contentTypeComponents.isFetching === null &&
-          site &&
-          contentTypeComponents.error === null &&
-          dispatch(fetchComponentsByContentType());
+        site &&
+        dispatch(fetchComponentsByContentType());
         break;
     }
   }, [
-    assets.error,
-    assets.isFetching,
     audiencesPanel.contentType,
     audiencesPanel.error,
     audiencesPanel.isFetching,
     audiencesPanel.model,
     contentTypeComponents.contentTypeFilter,
-    contentTypeComponents.error,
-    contentTypeComponents.isFetching,
     dispatch,
     selectedTool,
     site

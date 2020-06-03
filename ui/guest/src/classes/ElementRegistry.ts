@@ -32,6 +32,8 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { isNullOrUndefined, notNullOrUndefined } from '../utils/object';
 import { forEach } from '../utils/array';
 import { getChildArrangement, sibling } from '../utils/dom';
+import { removeLastPiece } from '../utils/string';
+import $ from 'jquery';
 
 let seq = 0;
 
@@ -288,6 +290,27 @@ export function getDragContextFromReceptacles(
   return response;
 }
 
+export function getElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
+  const recordId = iceRegistry.exists({
+    modelId: modelId,
+    fieldId: fieldId,
+    index: index
+  });
+
+  return (recordId === -1 || !fromICEId(recordId)) ? null : $(fromICEId(recordId).element);
+}
+export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
+  const recordId = iceRegistry.exists({
+    modelId: modelId,
+    fieldId: fieldId,
+    index: fieldId.includes('.')
+      ? parseInt(removeLastPiece(index as string))
+      : null
+  });
+
+  return (recordId === -1) ? null : $(fromICEId(recordId).element);
+}
+
 export default {
   get,
   setLabel,
@@ -302,5 +325,7 @@ export default {
   fromElement,
   hasElement,
   getHighlighted,
-  getDragContextFromReceptacles
+  getDragContextFromReceptacles,
+  getElementFromICEProps,
+  getParentElementFromICEProps
 };
