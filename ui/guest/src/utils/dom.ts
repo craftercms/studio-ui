@@ -361,7 +361,11 @@ export function addAnimation(
   });
 }
 
-export function scrollToIceProps(iceProps: ICEProps, scrollElement: string, animate: boolean = false): JQuery<Element> {
+export function scrollToIceProps(
+  iceProps: ICEProps,
+  scrollElement: string,
+  animate: boolean = false
+): JQuery<Element> {
   const $element = getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index);
 
   if ($element && $element.length) {
@@ -373,7 +377,6 @@ export function scrollToIceProps(iceProps: ICEProps, scrollElement: string, anim
         300,
         function () {
           if (animate) addAnimation($element, 'craftercms-content-tree-locate');
-
         }
       );
     } else if (animate) {
