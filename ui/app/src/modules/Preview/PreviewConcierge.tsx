@@ -43,6 +43,7 @@ import {
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
+  INSERT_OPERATION_COMPLETE,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
@@ -51,6 +52,7 @@ import {
   setContentTypeReceptacles,
   setItemBeingDragged,
   SORT_ITEM_OPERATION,
+  SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
@@ -214,6 +216,10 @@ export function PreviewConcierge(props: any) {
             parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
+              hostToHost$.next({
+                type: SORT_ITEM_OPERATION_COMPLETE,
+                payload
+              });
               enqueueSnackbar('Sort operation completed.');
             },
             (error) => {
@@ -237,7 +243,7 @@ export function PreviewConcierge(props: any) {
           ).subscribe(
             () => {
               hostToGuest$.next({
-                type: 'INSERT_OPERATION_COMPLETE',
+                type: INSERT_OPERATION_COMPLETE,
                 payload: { ...payload, currentUrl }
               });
               enqueueSnackbar('Insert component operation completed.');
