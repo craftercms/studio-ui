@@ -36,6 +36,7 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
@@ -245,7 +246,7 @@ const dragstart: GuestReducer = (state, action) => {
         containers,
         inZone: false,
         targetIndex: null,
-        dragged: iceRegistry.recordOf(iceId)
+        dragged: iceRegistry.getById(iceId)
       }
     };
   } else {
@@ -327,6 +328,24 @@ const ice_zone_selected: GuestReducer = (state, action) => {
     status: EditingStatus.EDITING_COMPONENT,
     draggable: {},
     highlighted: { [record.id]: highlight }
+  };
+};
+// endregion
+
+// region content_tree_field_selected
+const content_tree_field_selected: GuestReducer = (state, action) => {
+  const { iceProps } = action.payload;
+  const iceId = iceRegistry.exists(iceProps);
+  if (iceId === -1) return;
+  const registryEntry = ElementRegistry.fromICEId(iceId);
+  if (!registryEntry) return;
+  const highlight = ElementRegistry.getHoverData(registryEntry.id);
+
+  return {
+    ...state,
+    status: EditingStatus.SELECT_FIELD,
+    draggable: iceRegistry.isMovable(iceId) ? { [registryEntry.id]: iceId } : {},
+    highlighted: { [registryEntry.id]: highlight }
   };
 };
 // endregion
@@ -658,6 +677,7 @@ const reducerFunctions: {
   [COMPONENT_INSTANCE_DRAG_STARTED]: host_instance_drag_started,
   [DESKTOP_ASSET_DRAG_STARTED]: desktop_asset_drag_started,
   [ASSET_DRAG_STARTED]: asset_drag_started,
+  [CONTENT_TREE_FIELD_SELECTED]: content_tree_field_selected,
   [HOST_CHECK_IN]: (state, action) => ({
     ...state,
     hostCheckedIn: true,

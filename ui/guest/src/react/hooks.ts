@@ -17,7 +17,7 @@
 import { EventHandler, MutableRefObject, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { useGuestContext } from './GuestContext';
-import registry from '../classes/ElementRegistry';
+import { deregister, register } from '../classes/ElementRegistry';
 import { nnou, nou, pluckProps } from '../utils/object';
 import { ICEProps } from '../models/InContextEditing';
 import { getModel$, models$ } from '../classes/ContentController';
@@ -95,8 +95,14 @@ export function useICE(props: UseICEProps): ICEMaterials {
   const { onEvent, draggable } = context ?? {};
   const elementRef = useRef<HTMLElement>();
   const elementRegistryId = useRef<number>();
-  const refTimeout = useRef<any>();
   const model = useHotReloadModel(props);
+
+  useEffect(() => {
+    return () => {
+      nnou(elementRegistryId.current) && deregister(elementRegistryId.current);
+      elementRegistryId.current = null;
+    };
+  }, []);
 
   if (inAuthoring) {
     // prettier-ignore
@@ -113,29 +119,24 @@ export function useICE(props: UseICEProps): ICEMaterials {
         props[handlerMap[event.type]]?.();
       }
     };
+    // During React update cycles, it may momentarily set the ref to
+    // null and then back to the previous element. We're only paying attention
+    // to the times that there is an element. Final de-registration occurs
+    // at the unmount time.
     const ref: ICEMaterials['props']['ref'] = (node) => {
       if (node) {
-        clearTimeout(refTimeout.current);
         if (elementRef.current !== node) {
+          // Deregister
+          deregister(elementRegistryId.current);
+          // Register
           elementRef.current = node;
-          elementRegistryId.current = registry.register({
+          elementRegistryId.current = register({
             element: elementRef.current,
             modelId: props.model.craftercms.id,
             fieldId: props.fieldId,
             index: props.index
           });
         }
-      } else {
-        // During React update cycles, it may momentarily set the ref to
-        // null and then back to the previous element. The timeout avoids going
-        // through the internal registration cycles multiple times when these quick
-        // calls occur but there's nothing to change internally.
-        clearTimeout(refTimeout.current);
-        elementRegistryId.current &&
-          (refTimeout.current = setTimeout(() => {
-            elementRegistryId.current && registry.deregister(elementRegistryId.current);
-            elementRegistryId.current = null;
-          }, 50));
       }
       if (props.ref) {
         if (typeof props.ref === 'function') {
@@ -147,8 +148,8 @@ export function useICE(props: UseICEProps): ICEMaterials {
     };
     return {
       model,
-      props: {
-        ...(props.noRef !== true ? { ref } : {}),
+      props: props.noRef !== true ? {
+        ref,
         ...(isDraggable ? { draggable: true } : {}),
         onMouseOver: handler,
         onMouseLeave: handler,
@@ -159,7 +160,7 @@ export function useICE(props: UseICEProps): ICEMaterials {
         onDragEnd: handler,
         onClick: handler,
         onDoubleClick: handler
-      }
+      } : null
     };
   } else {
     return bypassICE(props);
@@ -180,7 +181,11 @@ export function useHotReloadModel(props: UseModelProps): any {
             } /*if (nnou(props.index) && nnou(props.fieldId)) {
               return prev[props.fieldId] === next[props.fieldId];
             } else*/ else {
-              return prev[props.fieldId] === next[props.fieldId];
+              // Accounting for multiple (comma separated) fields
+              return !props.fieldId
+                .replace(/\s/g, '')
+                .split(',')
+                .some((field) => prev[field] !== next[field]);
             }
           }),
           withLatestFrom(models$()),

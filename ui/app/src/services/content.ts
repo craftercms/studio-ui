@@ -222,9 +222,7 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
             (contentType.type === query.type) &&
             (contentType.name !== '/component/level-descriptor')
           ))
-          : response.filter((contentType) => (
-            contentType.name !== '/component/level-descriptor'
-          ))
+          : response
       ).map(parseLegacyContentType)
     ),
     switchMap((contentTypes) => zip(
@@ -273,7 +271,7 @@ export function fetchContentType(site: string, contentTypeId: string): Observabl
   );
 }
 
-const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label'];
+const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label', 'locale'];
 
 export function fetchById(site: string, id: string): Observable<any> {
   return post(
@@ -575,7 +573,7 @@ function bestGuessParse(value: any) {
   } else if (!isNaN(parseFloat(value))) {
     return parseFloat(value);
   } else {
-    return value
+    return value;
   }
 }
 
@@ -807,8 +805,7 @@ export function sortItem(
     parentModelId,
     doc => {
       const item = extractNode(doc, fieldId, currentIndex);
-      let newIndex = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) + 1 : targetIndex + 1;
-      insertCollectionItem(doc, fieldId, targetIndex, item, newIndex);
+      insertCollectionItem(doc, fieldId, targetIndex, item, currentIndex);
     }
   );
 }
@@ -1072,9 +1069,20 @@ function getComponentPath(id: string, contentType: string) {
   return `${pathBase}/${id}.xml`;
 }
 
-function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node, newIndex?: number): void {
+function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node, currentIndex?: number): void {
   let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
-  let index = newIndex || ((typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex);
+  let index = ((typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex);
+
+  //If currentIndex it means the op is a 'sort', and the index(targetIndex) needs to plus 1 or no
+  if (nnou(currentIndex)) {
+    let currentIndexParsed = (typeof currentIndex === 'string') ? parseInt(popPiece(currentIndex)) : currentIndex;
+    let targetIndexParsed = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
+    if (currentIndexParsed > targetIndexParsed) {
+      index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
+    } else {
+      index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) + 1 : targetIndex + 1;
+    }
+  }
 
   if (nou(fieldNode)) {
     fieldNode = doc.createElement(fieldId);

@@ -40,6 +40,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
+import Grid from '@material-ui/core/Grid';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -97,7 +98,6 @@ const translations = defineMessages({
 const deleteDialogStyles = makeStyles((theme) =>
   createStyles({
     submissionCommentField: {
-      marginTop: '20px',
       '& .MuiTextField-root': {
         width: '100%'
       }
@@ -115,6 +115,9 @@ const deleteDialogStyles = makeStyles((theme) =>
       maxHeight: '586px',
       height: '100vh',
       padding: 0
+    },
+    depsContainer: {
+      minHeight: '350px'
     }
   })
 );
@@ -126,30 +129,37 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
 
   return (
     <>
-      <DependencySelectionDelete
-        items={items}
-        resultItems={deleteDependencies}
-        onChange={onSelectionChange}
-      />
-      <form className={classes.submissionCommentField} noValidate autoComplete="off">
-        <TextField
-          label={
-            <FormattedMessage
-              id="deleteDialog.submissionCommentLabel"
-              defaultMessage="Submission Comment"
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={7} md={7} lg={7} xl={7} className={classes.depsContainer}>
+          <DependencySelectionDelete
+            items={items}
+            resultItems={deleteDependencies}
+            onChange={onSelectionChange}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
+          <form className={classes.submissionCommentField} noValidate autoComplete="off">
+            <TextField
+              label={
+                <FormattedMessage
+                  id="deleteDialog.submissionCommentLabel"
+                  defaultMessage="Submission Comment"
+                />
+              }
+              multiline
+              rows="4"
+              defaultValue={submissionComment}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSubmissionComment(e.target.value);
+              }}
+              InputProps={{
+                className: classes.textField
+              }}
             />
-          }
-          multiline
-          rows="4"
-          defaultValue={submissionComment}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setSubmissionComment(e.target.value);
-          }}
-          InputProps={{
-            className: classes.textField
-          }}
-        />
-      </form>
+          </form>
+        </Grid>
+      </Grid>
     </>
   );
 }

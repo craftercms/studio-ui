@@ -64,34 +64,6 @@
   }
 }
 
-.quick-create {
-  .dropdown-menu {
-    padding-top: 0px;
-    .title {
-      padding: 5px 20px 5px;
-      margin-bottom: 5px;
-      border-bottom: 1px solid #e7e7e7;
-      text-align: center;
-      text-transform: uppercase;
-      font-size: 10px;
-      font-weight: bold;
-      background-color: var(--craftercms-light0);
-      position: relative;
-    }
-    .quickCreateEmpty {
-      padding: 20px 18px;
-      text-align: center;
-      .fa {
-        display: block;
-        text-align: center;
-        padding-bottom: 10px;
-        color: #444;
-        font-size: 15px;
-      }
-    }
-  }
-}
-
 .nav-container.nav-link .nav-icon {
   margin-right: 4px;
 }

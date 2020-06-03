@@ -23,11 +23,11 @@ import {
 } from '../models/Positioning';
 import $ from 'jquery';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
-import { RenderTree } from '../models/ContentTree';
-import { DropZone, ValidationResult } from '../models/InContextEditing';
+import { DropZone, ICEProps, ValidationResult } from '../models/InContextEditing';
 import { HORIZONTAL, TOLERANCE_PERCENTS, VERTICAL, X_AXIS, Y_AXIS } from './util';
 import { CSSProperties } from 'react';
 import { ContentTypeReceptacle } from '@craftercms/studio-ui/models/ContentTypeReceptacle';
+import { getElementFromICEProps } from '../classes/ElementRegistry';
 
 // Regular click gets triggered even after loooong mouse downs or
 // when mousing-down and dragging cursor - without actually being on
@@ -100,23 +100,23 @@ export function getDropMarkerPosition(args: DropMarkerPositionArgs): DropMarkerP
     : // Account for whether the previous rect inline with current rect...
     // Only matters when working with horizontally laid-out elements
     horizontal && nextOrPrevRect.top !== refElementRect.top
-      ? 0
-      : // Calculate the middle point between the two adjacent rects.
-      // This avoids the drop marker moving by millimeters when switching from
-      // inserting after nodes[i] to before node[i+1]
-      before
-        ? // Inserting before
-        horizontal
-          ? // Smaller number fronted to obtain a negative
-            // value since wish to subtract from the position
-          (prevRect.right - refElementRect.left) / 2
-          : (prevRect.bottom - refElementRect.top) / 2
-        : // Inserting after
-        horizontal
-          ? // Bigger number fronted to obtain a positive
-            // value to add to the position
-          (nextRect.left - refElementRect.right) / 2
-          : (nextRect.top - refElementRect.bottom) / 2;
+    ? 0
+    : // Calculate the middle point between the two adjacent rects.
+    // This avoids the drop marker moving by millimeters when switching from
+    // inserting after nodes[i] to before node[i+1]
+    before
+    ? // Inserting before
+      horizontal
+      ? // Smaller number fronted to obtain a negative
+        // value since wish to subtract from the position
+        (prevRect.right - refElementRect.left) / 2
+      : (prevRect.bottom - refElementRect.top) / 2
+    : // Inserting after
+    horizontal
+    ? // Bigger number fronted to obtain a positive
+      // value to add to the position
+      (nextRect.left - refElementRect.right) / 2
+    : (nextRect.top - refElementRect.bottom) / 2;
 
   return horizontal
     ? {
@@ -333,7 +333,10 @@ export function getRelativePointerPositionPercentages(
   return { x, y };
 }
 
-export function isElementInView(element: Element | JQuery, fullyInView?: boolean): boolean {
+export function isElementInView(
+  element: Element | JQuery<Element>,
+  fullyInView?: boolean
+): boolean {
   const pageTop = $(window).scrollTop();
   const pageBottom = pageTop + $(window).height();
   const elementTop = $(element).offset().top;
@@ -358,20 +361,14 @@ export function addAnimation(
   });
 }
 
-export function scrollToNode(node: RenderTree, scrollElement: string): void {
-  let $element: JQuery;
-  if (node.index !== undefined) {
-    $element = $(
-      `[data-craftercms-model-id="${node.parentId || node.modelId}"][data-craftercms-field-id="${
-        node.fieldId
-      }"][data-craftercms-index="${node.index}"]`
-    );
-  } else {
-    $element = $(
-      `[data-craftercms-model-id="${node.modelId}"][data-craftercms-field-id="${node.fieldId}"]:not([data-craftercms-index])`
-    );
-  }
-  if ($element.length) {
+export function scrollToIceProps(
+  iceProps: ICEProps,
+  scrollElement: string,
+  animate: boolean = false
+): JQuery<Element> {
+  const $element = getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index);
+
+  if ($element && $element.length) {
     if (!isElementInView($element)) {
       $(scrollElement).animate(
         {
@@ -379,13 +376,15 @@ export function scrollToNode(node: RenderTree, scrollElement: string): void {
         },
         300,
         function() {
-          addAnimation($element, 'craftercms-content-tree-locate');
+          if (animate) addAnimation($element, 'craftercms-content-tree-locate');
         }
       );
-    } else {
+    } else if (animate) {
       addAnimation($element, 'craftercms-content-tree-locate');
     }
   }
+
+  return $element;
 }
 
 export function scrollToReceptacle(

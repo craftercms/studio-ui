@@ -15,8 +15,10 @@
  */
 
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
-import { Observable } from 'rxjs';
-import { catchError, pluck } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { catchError, pluck, switchMap } from 'rxjs/operators';
+import { LegacyItem } from '../models/Item';
+import { fetchDependencies } from './dependencies';
 
 export function fetchPackages(siteId: string, filters: any) {
   let queryS = new URLSearchParams(filters).toString();
@@ -52,6 +54,36 @@ export function goLive(siteId: string, user: string, data): Observable<any> {
   ).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
+  );
+}
+
+export function reject(siteId: string, items: string[], reason: string, submissionComment: string): Observable<{
+  commitId: string,
+  invalidateCache: boolean,
+  item: LegacyItem,
+  message: string,
+  status: number,
+  success: boolean
+}> {
+  return forkJoin({
+    dependencies: fetchDependencies(siteId, items)
+  }).pipe(
+    switchMap(({ dependencies }) =>
+      postJSON(
+        `/studio/api/1/services/api/1/workflow/reject.json?site=${siteId}`,
+        {
+          // api being used in legacy (/studio/api/1/services/api/1/dependency/get-dependencies.json)
+          // returns only hardDependencies
+          dependencies: dependencies.hardDependencies,
+          items,
+          reason,
+          submissionComment
+        }
+      ).pipe(
+        pluck('response'),
+        catchError(errorSelectorApi1)
+      )
+    )
   );
 }
 

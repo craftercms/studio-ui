@@ -30,10 +30,13 @@ import {
   selectTool
 } from '../../../state/actions/preview';
 import { useSelectorResource } from '../../../utils/hooks';
-import { nnou } from '../../../utils/object';
+import { nnou, reversePluckProps } from '../../../utils/object';
 import { DraggablePanelListItem } from './DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
-import { PropsWithResource, SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import {
+  PropsWithResource,
+  SuspenseWithEmptyState
+} from '../../../components/SystemStatus/Suspencified';
 import { EntityState } from '../../../models/EntityState';
 
 const translations = defineMessages({
@@ -57,7 +60,7 @@ export default function ComponentsPanel() {
       shouldResolve: (source) => !source.isFetching && nnou(source.byId),
       shouldReject: (source) => nnou(source.error),
       errorSelector: (source) => source.error,
-      resultSelector: (source) => Object.values(source.byId)
+      resultSelector: (source) => Object.values(reversePluckProps(source.byId, '/component/level-descriptor'))
     }
   );
 

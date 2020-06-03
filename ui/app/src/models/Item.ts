@@ -14,6 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+type States = 'new' | 'modified' | 'deleted' | 'userLocked' | 'systemProcessing' | 'inWorkflow' |
+  'scheduled' | 'staged' | 'live' | 'translationUpToDate' | 'translationPending' | 'translationInProgress';
+
 export interface BaseItem {
   id: string;
   label: string;
@@ -23,6 +26,7 @@ export interface BaseItem {
   systemType: string;
   mimeType: string;
   state: number;
+  stateMap: { [key in States]?: boolean };
   lockOwner: string;
   disabled: boolean;
   localeCode: string;
