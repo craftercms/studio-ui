@@ -27,6 +27,7 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
@@ -81,7 +82,8 @@ export type GuestActionTypes =
   | typeof EDIT_MODE_CHANGED
   | typeof CLEAR_HIGHLIGHTED_RECEPTACLES
   | typeof CONTENT_TYPE_RECEPTACLES_REQUEST
-  | typeof HOST_CHECK_IN;
+  | typeof HOST_CHECK_IN
+  | typeof CONTENT_TREE_FIELD_SELECTED;
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;

@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext } from './GuestContext';
-import ElementRegistry from '../classes/ElementRegistry';
+import ElementRegistry, { getParentElementFromICEProps } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery';
 import contentController from '../classes/ContentController';
@@ -123,17 +123,6 @@ export default function GuestProxy() {
           registerElement(el);
         });
       }
-    };
-
-    const getDropZoneElement = (modelId: string, fieldId: string, targetIndex: string | number): JQuery<Element> => {
-      const dropZoneId = iceRegistry.exists({
-        modelId,
-        fieldId,
-        index: fieldId.includes('.')
-          ? parseInt(removeLastPiece(targetIndex as string))
-          : null
-      });
-      return $(ElementRegistry.fromICEId(dropZoneId).element);
     };
 
     const insertElement = ($element: JQuery<any>, $daddy: JQuery<any>, targetIndex: string | number): void => {
@@ -306,7 +295,7 @@ export default function GuestProxy() {
             </svg>
           `);
 
-          const $daddy = getDropZoneElement(modelId, fieldId, targetIndex);
+          const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 
@@ -345,7 +334,7 @@ export default function GuestProxy() {
             </svg>
           `);
 
-          const $daddy = getDropZoneElement(modelId, fieldId, targetIndex);
+          const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
 
           insertElement($spinner, $daddy, targetIndex);
 

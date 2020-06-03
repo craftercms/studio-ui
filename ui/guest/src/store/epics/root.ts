@@ -48,6 +48,7 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DRAG_ENDED,
@@ -69,8 +70,9 @@ import {
   pluckProps,
   reversePluckProps
 } from '../../utils/object';
-import { ElementRecord } from '../../models/InContextEditing';
+import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import ElementRegistry from '../../classes/ElementRegistry';
+import { scrollToIceProps } from '../../utils/dom';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
   function multiEventPropagationStopperEpic(
@@ -245,7 +247,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
                   });
                 })(record.element as HTMLImageElement);
                 reader.readAsDataURL(file);
-                return stream$
+                return stream$;
               }
               break;
             }
@@ -531,7 +533,32 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         return NEVER;
       })
     );
+  },
+  // endregion
+  (action$: ActionsObservable<GuestStandardAction<{ iceProps: ICEProps, scrollElement: string, name: string }>>) => {
+    return action$.pipe(
+      ofType(CONTENT_TREE_FIELD_SELECTED),
+      switchMap((action) => {
+        const { iceProps, scrollElement, name } = action.payload;
+        if (scrollToIceProps(iceProps, scrollElement)) {
+          return escape$.pipe(
+            takeUntil(clearAndListen$),
+            tap(() => post(CLEAR_SELECTED_ZONES)),
+            map(() => ({ type: 'start_listening' })),
+            take(1)
+          );
+        } else {
+          post({
+            type: 'VALIDATION_MESSAGE',
+            payload: { id: 'registerNotFound', level: 'suggestion', values: { name } }
+          });
+          return NEVER;
+        }
+      })
+    );
   }
+  // region ice_zone_selected
+
   // endregion
 
 ]);
