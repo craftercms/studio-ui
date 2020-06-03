@@ -120,7 +120,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       }
       case 'reject': {
         dispatch(showRejectDialog({
-          items: [item]
+          items: [sandboxItem]
         }));
         break;
       }
@@ -236,7 +236,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           </MenuItem>
         }
         {
-          (item && (item.stateMap.submitted || item.stateMap.scheduled || item.stateMap.deleted)) &&
+          (sandboxItem && (sandboxItem.stateMap.submitted || sandboxItem.stateMap.scheduled || sandboxItem.stateMap.deleted)) &&
           <MenuItem onClick={() => handleEdit('reject')}>
             <FormattedMessage
               id="previewToolBar.menu.reject"
