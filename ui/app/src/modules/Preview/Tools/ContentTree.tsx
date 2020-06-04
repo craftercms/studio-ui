@@ -43,6 +43,7 @@ import ContentInstance from '../../../models/ContentInstance';
 import RepeatGroup from '../../../components/Icons/RepeatGroup';
 import { hierarchicalToLookupTable } from '../../../utils/object';
 import {
+  CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_FIELD_SELECTED,
   SORT_ITEM_OPERATION_COMPLETE
 } from '../../../state/actions/preview';
@@ -56,7 +57,6 @@ import Typography from '@material-ui/core/Typography';
 import palette from '../../../styles/palette';
 import Link from '@material-ui/core/Link';
 import { useDispatch } from 'react-redux';
-import { createBackHandler } from './EditFormPanel';
 
 const rootPrefix = '{root}_';
 
@@ -423,6 +423,13 @@ const initialData: Data = {
   renew: true
 };
 
+function createBackHandler(dispatch) {
+  const hostToGuest$ = getHostToGuestBus();
+  return () => {
+    hostToGuest$.next({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED });
+  };
+}
+
 export default function ContentTree() {
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
@@ -546,7 +553,8 @@ export default function ContentTree() {
       ...data,
       selected: nodeIdWithoutPrefix,
       expanded: [node.id],
-      breadcrumbs: breadcrumbsArray.length === 1 ? [] : breadcrumbsArray
+      breadcrumbs: breadcrumbsArray.length === 1 ? [] : breadcrumbsArray,
+      renew: true
     });
   };
 

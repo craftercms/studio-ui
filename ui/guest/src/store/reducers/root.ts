@@ -31,6 +31,7 @@ import { updateDropZoneValidations } from '../../utils/dom';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
+  CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CLEAR_HIGHLIGHTED_RECEPTACLES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
@@ -348,6 +349,16 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
     highlighted: { [registryEntry.id]: highlight }
   };
 };
+
+const clear_content_tree_field_selected: GuestReducer = (state) => {
+  return {
+    ...state,
+    status: EditingStatus.LISTENING,
+    draggable: {},
+    highlighted: {}
+  };
+};
+
 // endregion
 
 // region dblclick
@@ -678,6 +689,7 @@ const reducerFunctions: {
   [DESKTOP_ASSET_DRAG_STARTED]: desktop_asset_drag_started,
   [ASSET_DRAG_STARTED]: asset_drag_started,
   [CONTENT_TREE_FIELD_SELECTED]: content_tree_field_selected,
+  [CLEAR_CONTENT_TREE_FIELD_SELECTED]: clear_content_tree_field_selected,
   [HOST_CHECK_IN]: (state, action) => ({
     ...state,
     hostCheckedIn: true,

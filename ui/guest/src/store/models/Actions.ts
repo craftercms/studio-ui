@@ -22,6 +22,7 @@ import GuestReducer from './GuestReducer';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
+  CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CLEAR_HIGHLIGHTED_RECEPTACLES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
@@ -83,7 +84,8 @@ export type GuestActionTypes =
   | typeof CLEAR_HIGHLIGHTED_RECEPTACLES
   | typeof CONTENT_TYPE_RECEPTACLES_REQUEST
   | typeof HOST_CHECK_IN
-  | typeof CONTENT_TREE_FIELD_SELECTED;
+  | typeof CONTENT_TREE_FIELD_SELECTED
+  | typeof CLEAR_CONTENT_TREE_FIELD_SELECTED;
 
 export type MouseEventAction = GuestStandardAction<{
   event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;

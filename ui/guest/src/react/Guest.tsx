@@ -33,6 +33,7 @@ import AssetUploaderMask from './AssetUploaderMask';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
+  CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CLEAR_HIGHLIGHTED_RECEPTACLES,
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
@@ -230,6 +231,10 @@ function Guest(props: GuestProps) {
           });
           break;
         }
+        case CLEAR_CONTENT_TREE_FIELD_SELECTED:
+          clearAndListen$.next();
+          dispatch({ type});
+          break;
         case DESKTOP_ASSET_UPLOAD_PROGRESS:
           dispatch(action);
           break;
