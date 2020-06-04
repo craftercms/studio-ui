@@ -89,7 +89,7 @@ const contentTypesObs$ = _contentTypes$.asObservable().pipe(
   filter((objects) => Object.keys(objects).length > 0)
 );
 
-_models$.subscribe((models) => {
+modelsObs$.subscribe((models) => {
   if (Object.keys(models).length) {
     post(GUEST_MODELS_RECEIVED, models);
   }
