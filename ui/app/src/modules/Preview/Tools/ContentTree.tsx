@@ -37,10 +37,10 @@ import Page from '../../../components/Icons/Page';
 import ContentTypeFieldIcon from '../../../components/Icons/ContentTypeField';
 import Component from '../../../components/Icons/Component';
 import NodeSelector from '../../../components/Icons/NodeSelector';
+import RepeatGroupItem from '../../../components/Icons/RepeatGroupItem';
 import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
 import RepeatGroup from '../../../components/Icons/RepeatGroup';
-import { iconWithStrokeAndFill } from '../../../styles/icon';
 import { hierarchicalToLookupTable } from '../../../utils/object';
 import {
   CONTENT_TREE_FIELD_SELECTED,
@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme) =>
 const treeItemStyles = makeStyles((theme) =>
   createStyles({
     icon: {
-      ...iconWithStrokeAndFill
+      //...iconWithStrokeAndFill
     },
     displayNone: {
       display: 'none'
@@ -351,6 +351,8 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       Icon = Component;
     } else if (node.type === 'repeat') {
       Icon = RepeatGroup;
+    } else if (node.type === 'item') {
+      Icon = RepeatGroupItem;
     } else {
       Icon = ContentTypeFieldIcon;
     }
