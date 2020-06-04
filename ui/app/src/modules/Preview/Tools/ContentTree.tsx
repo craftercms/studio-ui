@@ -102,9 +102,7 @@ const useStyles = makeStyles((theme) =>
 
 const treeItemStyles = makeStyles((theme) =>
   createStyles({
-    icon: {
-      //...iconWithStrokeAndFill
-    },
+    icon: {},
     displayNone: {
       display: 'none'
     },
