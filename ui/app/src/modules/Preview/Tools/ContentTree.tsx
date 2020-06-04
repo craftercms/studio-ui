@@ -451,26 +451,41 @@ export default function ContentTree() {
   const models = guest?.models;
   const modelId = guest?.modelId;
 
+  //effect to refresh the contentTree if the sort op complete
   useEffect(() => {
     const sub = hostToHost$.subscribe((action) => {
       if (action.type === SORT_ITEM_OPERATION_COMPLETE) {
-        setData(initialData);
+        setData({
+          selected: null,
+          nodeLookup: null,
+          expanded: data.expanded,
+          breadcrumbs: [],
+          renew: true
+        });
       }
     });
-
-    if (site) {
-      setData(initialData);
-    }
 
     return () => {
       sub.unsubscribe();
     };
-  }, [dispatch, hostToHost$, site]);
+  }, [data.expanded, dispatch, hostToHost$, site]);
+
+  // effect to refresh the contentTree if the site changes;
+  useEffect(() => {
+    if (site) {
+      setData(initialData);
+    }
+  }, [site]);
 
   useEffect(() => {
-    if (modelId && models && byId && data.selected === null) {
+    if (modelId && models && byId) {
       let parent = models[modelId];
       let contentType = byId[parent.craftercms.contentTypeId];
+
+      if (data.nodeLookup && data.nodeLookup[`${rootPrefix}${parent.craftercms.id}`]) {
+        return;
+      }
+
       let root: RenderTree = {
         id: `${rootPrefix}${parent.craftercms.id}`,
         name: parent.craftercms.label,
@@ -483,12 +498,12 @@ export default function ContentTree() {
       setData({
         selected: parent.craftercms.id,
         nodeLookup: hierarchicalToLookupTable(root),
-        expanded: [`${rootPrefix}${parent.craftercms.id}`],
+        expanded: [...data.expanded, `${rootPrefix}${parent.craftercms.id}`],
         breadcrumbs: [],
         renew: true
       });
     }
-  }, [byId, data, data.selected, hostToHost$, modelId, models]);
+  }, [byId, data.expanded, data.nodeLookup, hostToHost$, modelId, models]);
 
   useEffect(() => {
     const handler = (e) => {
