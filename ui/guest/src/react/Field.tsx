@@ -30,6 +30,18 @@ type FieldProps<P = {}> = PropsWithChildren<
   }
 >;
 
+type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
+  target?: string;
+  format?: (value: V, fieldId: string) => F;
+};
+
+type ModelProps<P = {}> = PropsWithChildren<
+  P & {
+    model: ContentInstance;
+    component?: ElementType<P>;
+  }
+>;
+
 export function Field<P = {}>(props: FieldProps<P>) {
   const { model: modelProp, fieldId, index, component = 'div', ...other } = props;
   const { props: ice, model } = useICE({ model: modelProp, fieldId, index });
@@ -43,18 +55,6 @@ export function Field<P = {}>(props: FieldProps<P>) {
   } as P;
   return <Component {...passDownProps} />;
 }
-
-export default Field;
-
-export function Img(props) {
-  const { props: ice, model } = useICE(props);
-  return <img src={getModelValue(model, props.fieldId)} alt="" {...ice} />;
-}
-
-type RenderFieldProps<P, V = any, F = V> = FieldProps<P> & {
-  target?: string;
-  format?: (value: V, fieldId: string) => F;
-};
 
 export function RenderField<P = {}>(props: RenderFieldProps<P>) {
   const {
@@ -78,10 +78,12 @@ export function RenderField<P = {}>(props: RenderFieldProps<P>) {
   return <Component {...passDownProps} />;
 }
 
-export function Model<P = {}>(props: FieldProps<P>) {
-  const { model, fieldId, index, component = Fragment, ...other } = props;
+export function Model<P = {}>(props: ModelProps<P>) {
+  const { model, component = Fragment, ...other } = props;
   useICE({ model, fieldId: null, index: null, noRef: true });
   const Component = component as ComponentType<P>;
   const passDownProps = other as P;
   return <Component {...passDownProps} />;
 }
+
+export default Field;
