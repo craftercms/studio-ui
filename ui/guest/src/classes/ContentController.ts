@@ -89,11 +89,7 @@ const contentTypesObs$ = _contentTypes$.asObservable().pipe(
   filter((objects) => Object.keys(objects).length > 0)
 );
 
-modelsObs$.subscribe((models) => {
-  if (Object.keys(models).length) {
-    post(GUEST_MODELS_RECEIVED, models);
-  }
-})
+modelsObs$.subscribe((models) => post(GUEST_MODELS_RECEIVED, models))
 
 // endregion
 
