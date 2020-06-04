@@ -233,7 +233,7 @@ function Guest(props: GuestProps) {
         }
         case CLEAR_CONTENT_TREE_FIELD_SELECTED:
           clearAndListen$.next();
-          dispatch({ type});
+          dispatch({ type });
           break;
         case DESKTOP_ASSET_UPLOAD_PROGRESS:
           dispatch(action);

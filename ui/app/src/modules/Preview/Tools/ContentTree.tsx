@@ -45,6 +45,7 @@ import { hierarchicalToLookupTable } from '../../../utils/object';
 import {
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_FIELD_SELECTED,
+  selectTool,
   SORT_ITEM_OPERATION_COMPLETE
 } from '../../../state/actions/preview';
 import { DRAWER_WIDTH, getHostToGuestBus, getHostToHostBus } from '../previewContext';
@@ -462,7 +463,6 @@ export default function ContentTree() {
     }
 
     return () => {
-      createBackHandler(dispatch)();
       sub.unsubscribe();
     };
   }, [dispatch, hostToHost$, site]);
@@ -499,6 +499,11 @@ export default function ContentTree() {
     document.addEventListener('keydown', handler, false);
     return () => document.removeEventListener('keydown', handler, false);
   }, [dispatch]);
+
+  const onBack = () => {
+    createBackHandler(dispatch)();
+    dispatch(selectTool());
+  };
 
   const handleClick = (node: RenderTree) => {
     if (node.type === 'component' && !node.id.includes(rootPrefix)) {
@@ -594,7 +599,7 @@ export default function ContentTree() {
   });
 
   return (
-    <ToolPanel title={translations.contentTree}>
+    <ToolPanel title={translations.contentTree} onBack={onBack}>
       <TreeView
         className={classes.root}
         defaultCollapseIcon={<ExpandMoreIcon className="toggle" />}
