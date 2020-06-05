@@ -64,7 +64,7 @@ const styles = makeStyles(() => createStyles({
   }
 }));
 
-export function createBackHandler(dispatch) {
+function createBackHandler(dispatch) {
   const hostToGuest$ = getHostToGuestBus();
   return () => {
     dispatch(clearSelectForEdit());
