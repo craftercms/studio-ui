@@ -381,7 +381,8 @@ const clear_content_tree_field_selected: GuestReducer = (state) => {
     ...state,
     status: EditingStatus.LISTENING,
     draggable: {},
-    highlighted: {}
+    highlighted: {},
+    elementSelector: null
   };
 };
 

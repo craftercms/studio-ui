@@ -290,6 +290,7 @@ export default function(config: GuestStyleSheetConfig): Styles<'@global'> {
       color: palette.black,
       display: 'flex',
       alignItems: 'center',
+      zIndex: 2,
       '& .disable': {
         pointerEvents: 'none',
         opacity: '0.5'
