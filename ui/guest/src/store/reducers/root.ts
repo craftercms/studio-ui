@@ -38,6 +38,7 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TREE_FIELD_CHANGE_ELEMENT,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
@@ -351,9 +352,27 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
     draggable: iceRegistry.isMovable(iceId) ? { [registryEntries[0].id]: iceId } : {},
     highlighted: { [registryEntries[0].id]: highlight },
     elementSelector: registryEntries.length > 1 ? {
+      iceId,
       currentElement: 0,
       registryEntryIds: registryEntries.map(entry => entry.id)
     } : null
+  };
+};
+
+const content_tree_field_change_element: GuestReducer = (state, action) => {
+  const { type } = action.payload;
+  let nextElem = type === 'next' ? state.elementSelector.currentElement + 1 : state.elementSelector.currentElement - 1;
+  let id = state.elementSelector.registryEntryIds[nextElem];
+  const highlight = ElementRegistry.getHoverData(state.elementSelector.registryEntryIds[nextElem]);
+
+  return {
+    ...state,
+    draggable: iceRegistry.isMovable(state.elementSelector.iceId) ? { [id]: state.elementSelector.iceId } : {},
+    highlighted: { [id]: highlight },
+    elementSelector: {
+      ...state.elementSelector,
+      currentElement: nextElem
+    }
   };
 };
 
@@ -696,6 +715,7 @@ const reducerFunctions: {
   [DESKTOP_ASSET_DRAG_STARTED]: desktop_asset_drag_started,
   [ASSET_DRAG_STARTED]: asset_drag_started,
   [CONTENT_TREE_FIELD_SELECTED]: content_tree_field_selected,
+  [CONTENT_TREE_FIELD_CHANGE_ELEMENT]: content_tree_field_change_element,
   [CLEAR_CONTENT_TREE_FIELD_SELECTED]: clear_content_tree_field_selected,
   [HOST_CHECK_IN]: (state, action) => ({
     ...state,

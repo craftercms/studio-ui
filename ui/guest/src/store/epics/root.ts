@@ -49,6 +49,7 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TREE_FIELD_CHANGE_ELEMENT,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
@@ -72,8 +73,8 @@ import {
   reversePluckProps
 } from '../../utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
-import ElementRegistry from '../../classes/ElementRegistry';
-import { scrollToIceProps } from '../../utils/dom';
+import ElementRegistry, { get } from '../../classes/ElementRegistry';
+import { scrollToElement, scrollToIceProps } from '../../utils/dom';
 
 const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combineEpics.apply(this, [
   function multiEventPropagationStopperEpic(
@@ -536,6 +537,8 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
     );
   },
   // endregion
+
+  // region content_tree_field_selected
   (action$: ActionsObservable<GuestStandardAction<{ iceProps: ICEProps, scrollElement: string, name: string }>>) => {
     return action$.pipe(
       ofType(CONTENT_TREE_FIELD_SELECTED),
@@ -556,7 +559,22 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         }
       })
     );
+  },
+
+  (action$: ActionsObservable<GuestStandardAction<{ type: string, scrollElement: string }>>, state$: GuestStateObservable) => {
+    return action$.pipe(
+      ofType(CONTENT_TREE_FIELD_CHANGE_ELEMENT),
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        const { scrollElement } = action.payload;
+        let registryEntryId = state.elementSelector.registryEntryIds[state.elementSelector.currentElement];
+        scrollToElement(get(registryEntryId).element, scrollElement);
+      }),
+      ignoreElements()
+    );
   }
+  // endregion
+
   // region ice_zone_selected
 
   // endregion

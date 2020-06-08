@@ -58,6 +58,7 @@ export interface GuestState {
   models: LookupTable<ContentInstance>;
   contentTypes: LookupTable<ContentType>;
   elementSelector?: {
+    iceId: number;
     currentElement: number;
     registryEntryIds: number[];
   }

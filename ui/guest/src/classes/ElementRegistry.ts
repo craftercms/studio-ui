@@ -320,14 +320,14 @@ export function getDragContextFromReceptacles(
   return response;
 }
 
-export function getElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
+export function getElementFromICEProps(modelId: string, fieldId: string, index: string | number): Element {
   const recordId = iceRegistry.exists({
     modelId: modelId,
     fieldId: fieldId,
     index: index
   });
 
-  return (recordId === -1 || !fromICEId(recordId)) ? null : $(fromICEId(recordId).element);
+  return (recordId === -1 || !fromICEId(recordId)) ? null : fromICEId(recordId).element;
 }
 export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
   const recordId = iceRegistry.exists({
