@@ -1117,6 +1117,14 @@ var nodeOpen = false,
         const filters = searchContext.filters;
         if (!jQuery.isEmptyObject(searchContext.filters)) {
           searchUrl += `#/?filters=${encodeURIComponent(JSON.stringify(filters))}`;
+
+          if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
+            searchUrl += '&path=' + encodeURIComponent(searchContext.path);
+          }
+        } else {
+          if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
+            searchUrl += '#/?path=' + encodeURIComponent(searchContext.path);
+          }
         }
 
         var childSearch = null;
