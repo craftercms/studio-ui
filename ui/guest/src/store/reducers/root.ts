@@ -16,7 +16,8 @@
 
 import ElementRegistry, {
   getDragContextFromReceptacles,
-  getHighlighted
+  getHighlighted,
+  getRegistriesFromICEId
 } from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import iceRegistry from '../../classes/ICERegistry';
@@ -338,15 +339,21 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
   const { iceProps } = action.payload;
   const iceId = iceRegistry.exists(iceProps);
   if (iceId === -1) return;
-  const registryEntry = ElementRegistry.fromICEId(iceId);
-  if (!registryEntry) return;
-  const highlight = ElementRegistry.getHoverData(registryEntry.id);
+  const registryEntries = getRegistriesFromICEId(iceId);
+  if (!registryEntries) {
+    return;
+  }
 
+  const highlight = ElementRegistry.getHoverData(registryEntries[0].id);
   return {
     ...state,
     status: EditingStatus.SELECT_FIELD,
-    draggable: iceRegistry.isMovable(iceId) ? { [registryEntry.id]: iceId } : {},
-    highlighted: { [registryEntry.id]: highlight }
+    draggable: iceRegistry.isMovable(iceId) ? { [registryEntries[0].id]: iceId } : {},
+    highlighted: { [registryEntries[0].id]: highlight },
+    elementSelector: registryEntries.length > 1 ? {
+      currentElement: 0,
+      registryEntryIds: registryEntries.map(entry => entry.id)
+    } : null
   };
 };
 

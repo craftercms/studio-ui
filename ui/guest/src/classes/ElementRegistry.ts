@@ -107,8 +107,8 @@ export function register(payload: ElementRecordRegistration): number {
     fieldId == null
       ? []
       : Array.isArray(fieldId)
-        ? fieldId
-        : fieldId.split(',').map((str) => str.trim());
+      ? fieldId
+      : fieldId.split(',').map((str) => str.trim());
 
   // Create/register the physical record
   db[id] = { id, element, modelId, index, label, fieldId: fieldIds, iceIds, complete: false };
@@ -131,18 +131,23 @@ export function register(payload: ElementRecordRegistration): number {
 
 export function completeDeferredRegistration(id: number): void {
   const record = db[id];
-  const { element, modelId, index, label, fieldId: fieldIds, iceIds } = record;
+  const { modelId, index, fieldId: fieldIds, iceIds } = record;
 
   if (fieldIds.length > 0) {
-    // @ts-ignore TODO: Fix type
     fieldIds.forEach((fieldId) => {
       const iceId = iceRegistry.register({ modelId, index, fieldId });
-      registry[iceId] = { id, element, modelId, index, label, fieldId, iceId };
+      if (!registry[iceId]) {
+        registry[iceId] = [];
+      }
+      registry[iceId].push(record.id);
       iceIds.push(iceId);
     });
   } else {
     const iceId = iceRegistry.register({ modelId, index });
-    registry[iceId] = { id, element, modelId, index, label, fieldId: undefined, iceId };
+    if (!registry[iceId]) {
+      registry[iceId] = [];
+    }
+    registry[iceId].push(record.id);
     iceIds.push(iceId);
   }
 
@@ -155,6 +160,7 @@ export function deregister(id: string | number): ElementRecord {
     const { iceIds } = record;
     iceIds.forEach((iceId) => iceRegistry.deregister(iceId));
     delete db[id];
+    //TODO: delete from registry;
   }
   return record;
 }
@@ -163,7 +169,7 @@ export function getDraggable(id: number): number | boolean {
   const record = get(id);
   return forEach(
     record.iceIds,
-    function(iceId): boolean | number {
+    function (iceId): boolean | number {
       if (iceRegistry.isMovable(iceId)) {
         return iceId;
       }
@@ -186,11 +192,35 @@ export function getRect(id: number): DOMRect {
   return get(id).element.getBoundingClientRect();
 }
 
+export function fromRecord(record: ElementRecord, iceId: number): RegistryEntry {
+  if (!record) {
+    return null;
+  }
+  const { id, element, label, modelId, index, fieldId: fieldIds } = record;
+  return { id, element, modelId, index, label, fieldId: fieldIds[0], iceId };
+}
+
 export function fromICEId(iceId: number): RegistryEntry {
-  return registry[iceId];
-  // return Object.values(db).find(({ iceIds }) => {
-  //   return iceIds.includes(iceId);
-  // });
+  const record = db[registry[iceId][0]];
+  return fromRecord(record, iceId);
+}
+
+export function getRegistriesFromICEId(iceId: number): RegistryEntry[] {
+  const recordsIds = registry[iceId];
+  const registries = [];
+  if (recordsIds.length > 1) {
+    recordsIds.forEach(recordId => {
+      let record = db[recordId];
+      let registry = fromRecord(record, iceId);
+      if (registry) {
+        registries.push(registry);
+      }
+    });
+    return registries.length > 0 ? registries : null;
+  } else {
+    let registry = fromICEId(iceId);
+    return registry ? [registry] : null;
+  }
 }
 
 export function compileDropZone(iceId: number): DropZone {

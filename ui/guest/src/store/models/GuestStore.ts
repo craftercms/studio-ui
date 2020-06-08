@@ -57,6 +57,10 @@ export interface GuestState {
   uploading: LookupTable;
   models: LookupTable<ContentInstance>;
   contentTypes: LookupTable<ContentType>;
+  elementSelector: {
+    currentElement: number;
+    registryEntryIds: number[];
+  }
 }
 
 export type GuestStateObservable = StateObservable<GuestState>;

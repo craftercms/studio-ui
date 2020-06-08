@@ -143,6 +143,7 @@ const treeItemStyles = makeStyles((theme) =>
       '& p': {
         marginTop: 0,
         marginLeft: '5px',
+        marginRight: '5px',
         overflow: 'hidden',
         display: '-webkit-box',
         '-webkit-line-clamp': 1,
@@ -168,7 +169,6 @@ export interface RenderTree {
   embeddedParentPath?: string;
   fieldId?: string;
   index?: string | number;
-  rootPath?: boolean;
 }
 
 interface Data {
@@ -319,16 +319,18 @@ function getContentTypeField(
 interface TreeItemCustomInterface {
   nodeLookup: LookupTable<RenderTree>;
   node: RenderTree;
+  isRootChild?: boolean;
 
   handleScroll?(node: RenderTree): void;
 
   handleClick?(node: RenderTree): void;
 
   handleOptions?(e: any, modelId: string, parentId: string, embeddedParentPath: string): void;
+
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
-  const { nodeLookup, node, handleScroll, handleClick, handleOptions } = props;
+  const { nodeLookup, node, handleScroll, handleClick, handleOptions, isRootChild } = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
@@ -410,7 +412,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
         label: classes.treeItemLabelRoot,
         content: clsx(
           classes.treeItemContent,
-          isPageOrComponent(node.type) && 'padded',
+          (isPageOrComponent(node.type) && !isRootChild) && 'padded',
           isRoot(node.id) && 'root'
         ),
         expanded: classes.treeItemExpanded,
@@ -422,8 +424,11 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       }}
     >
       {node.children?.map((childNodeId, i) => (
-        <TreeItemCustom {...props} key={String(childNodeId) + i}
-                        node={nodeLookup[String(childNodeId)]}
+        <TreeItemCustom
+          {...props}
+          key={String(childNodeId) + i}
+          node={nodeLookup[String(childNodeId)]}
+          isRootChild={node.type === 'root' ? true : false}
         />
       ))}
     </TreeItem>
@@ -486,27 +491,26 @@ export default function ContentTree() {
   // }, [data.expanded, dispatch, hostToHost$, site]);
 
   // effect to refresh the contentTree if the site changes;
-  // useEffect(() => {
-  //   if (site) {
-  //     setData(initialData);
-  //   }
-  // }, [site]);
+  useEffect(() => {
+    if (site) {
+      processedModels.current = {};
+    }
+  }, [site]);
 
   useEffect(() => {
     if (models && byId) {
       let _nodeLookup = {};
       let shouldSetState = false;
       Object.values(models).forEach((model) => {
-        if (!processedModels.current[model.craftercms.id]) {
+        let contentType = byId[model.craftercms.contentTypeId];
+        if (!processedModels.current[model.craftercms.id] && contentType) {
           processedModels.current[model.craftercms.id] = true;
-          let contentType = byId[model.craftercms.contentTypeId];
           let node: RenderTree = {
             id: model.craftercms.id,
             name: model.craftercms.label,
             children: [],
             type: contentType.type,
-            modelId: model.craftercms.id,
-            fieldId: contentType.id
+            modelId: model.craftercms.id
           };
           shouldSetState = true;
           _nodeLookup[node.id] = node;
@@ -555,10 +559,14 @@ export default function ContentTree() {
   };
 
   const handleScroll = (node: RenderTree) => {
-    //need index and modelId, fieldName;
     hostToGuest$.next({
       type: CONTENT_TREE_FIELD_SELECTED,
-      payload: node
+      payload: {
+        name: node.name,
+        modelId: node.parentId || node.modelId,
+        fieldId: node.fieldId ?? null,
+        index: node.index ?? null
+      }
     });
     return;
   };
@@ -608,7 +616,7 @@ export default function ContentTree() {
   const resource = useLogicResource<boolean, any>({ models, byId }, {
     shouldResolve: (source) => Boolean(source.models && source.byId),
     shouldReject: () => false,
-    shouldRenew: () => false,
+    shouldRenew: () => !Object.keys(processedModels.current).length && resource.complete,
     resultSelector: () => true,
     errorSelector: null
   });
