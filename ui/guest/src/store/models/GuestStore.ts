@@ -57,7 +57,7 @@ export interface GuestState {
   uploading: LookupTable;
   models: LookupTable<ContentInstance>;
   contentTypes: LookupTable<ContentType>;
-  elementSelector: {
+  elementSelector?: {
     currentElement: number;
     registryEntryIds: number[];
   }
