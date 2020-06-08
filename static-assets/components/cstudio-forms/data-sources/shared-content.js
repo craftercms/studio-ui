@@ -166,7 +166,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       searchInProgress: false,
       view: 'grid',
       lastSelectedFilterSelector: '',
-      mode: 'select', // open search not in default but in select mode,
+      mode: 'select' // open search not in default but in select mode,
     };
 
     if (this.type) {
