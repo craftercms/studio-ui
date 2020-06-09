@@ -45,7 +45,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
 import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
 import RepeatGroup from '../../../components/Icons/RepeatGroup';
-import { hierarchicalToLookupTable } from '../../../utils/object';
+import { findParentModelId, hierarchicalToLookupTable } from '../../../utils/object';
 import {
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_FIELD_SELECTED,
@@ -325,7 +325,7 @@ interface TreeItemCustomInterface {
 
   handleClick?(node: RenderTree): void;
 
-  handleOptions?(e: any, modelId: string, parentId: string, embeddedParentPath: string): void;
+  handleOptions?(e: any, node: RenderTree): void;
 
 }
 
@@ -399,7 +399,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
               className={classes.options}
               onMouseOver={(e) => setOverState(e, true)}
               onClick={(e) =>
-                handleOptions(e, node.modelId, node.parentId, node.embeddedParentPath)
+                handleOptions(e, node)
               }
             >
               <MoreVertIcon />
@@ -453,7 +453,6 @@ export default function ContentTree() {
   const site = useActiveSiteId();
   const [optionsMenu, setOptionsMenu] = React.useState({
     modelId: null,
-    parentId: null,
     embeddedParentPath: null,
     anchorEl: null
   });
@@ -468,6 +467,7 @@ export default function ContentTree() {
 
   const byId = contentTypesBranch?.byId;
   const models = guest?.models;
+  const childrenMap = guest?.childrenMap;
 
   const processedModels = useRef({});
 
@@ -597,15 +597,17 @@ export default function ContentTree() {
 
   const handleOptions = (
     event: any,
-    modelId: string,
-    parentId: string,
-    embeddedParentPath: string
+    node: RenderTree
   ) => {
     event.stopPropagation();
+
+    const parentModelId = findParentModelId(node.modelId, childrenMap, models);
+    const path = models[node.modelId].craftercms.path;
+    const embeddedParentPath = !path && parentModelId ? models[parentModelId].craftercms.path : null;
+
     setOptionsMenu({
       ...optionsMenu,
-      modelId,
-      parentId,
+      modelId: node.modelId,
       embeddedParentPath,
       anchorEl: event.currentTarget.parentElement
     });
@@ -657,7 +659,6 @@ interface ContentTreeUI {
   resource: Resource<any>;
   optionsMenu: {
     modelId: string;
-    parentId: string;
     embeddedParentPath: string;
     anchorEl: Element;
   };
@@ -666,7 +667,7 @@ interface ContentTreeUI {
   handleScroll(node: RenderTree): void;
   handleClick(node: RenderTree): void;
   handleClose(): void;
-  handleOptions?(e: any, modelId: string, parentId: string, embeddedParentPath: string): void;
+  handleOptions?(e: any, node: RenderTree): void;
   handleBreadCrumbClick(event, node?: RenderTree): void;
   nodeLookup: any;
   selected: any;
@@ -757,7 +758,6 @@ function ContentTreeUI(props: ContentTreeUI) {
         handleClose={handleClose}
         site={site}
         modelId={optionsMenu.modelId}
-        parentId={optionsMenu.parentId}
         embeddedParentPath={optionsMenu.embeddedParentPath}
         anchorOrigin={{
           vertical: 'top',

@@ -52,7 +52,6 @@ interface ComponentMenuProps {
   anchorEl: Element;
   site: string;
   modelId: string;
-  parentId?: string;
   embeddedParentPath?: string;
   anchorOrigin?: PopoverOrigin;
 
@@ -61,7 +60,7 @@ interface ComponentMenuProps {
 
 export default function ComponentMenu(props: ComponentMenuProps) {
   const classes = useStyles();
-  const { anchorEl, site, modelId, parentId, handleClose, embeddedParentPath = null, anchorOrigin = undefined } = props;
+  const { anchorEl, site, modelId, handleClose, embeddedParentPath = null, anchorOrigin = undefined } = props;
   const models = useSelection<LookupTable<ContentInstance>>(state => state.preview.guest?.models);
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const authoringBase = useSelection<string>(state => state.env.authoringBase);
@@ -71,11 +70,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   const [item, setItem] = useState(null);
 
-  // Effect used to open the publish Dialog
   useEffect(() => {
     if (modelId && models && anchorEl && item === null) {
       let path = models[modelId].craftercms.path;
-      if (embeddedParentPath) path = models[parentId].craftercms.path;
+      if (embeddedParentPath) path = embeddedParentPath;
       getSandboxItem(site, path).subscribe(
         (item) => {
           setItem(item);
@@ -87,7 +85,10 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }
       );
     }
-  }, [models, modelId, site, embeddedParentPath, parentId, dispatch, item, anchorEl]);
+    return () => {
+      if (anchorEl === null) setItem(null);
+    };
+  }, [models, modelId, site, embeddedParentPath, dispatch, item, anchorEl]);
 
   const handleEdit = (type: string) => {
     handleClose();
