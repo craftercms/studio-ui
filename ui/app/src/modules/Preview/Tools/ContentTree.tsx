@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
@@ -49,6 +49,7 @@ import { findParentModelId, hierarchicalToLookupTable } from '../../../utils/obj
 import {
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_FIELD_SELECTED,
+  DELETE_ITEM_OPERATION_COMPLETE,
   selectTool,
   SORT_ITEM_OPERATION_COMPLETE
 } from '../../../state/actions/preview';
@@ -458,25 +459,82 @@ export default function ContentTree() {
 
   const [nodeLookup, setNodeLookup] = useSpreadState<any>({});
 
-  const byId = contentTypesBranch?.byId;
+  const ContentTypesById = contentTypesBranch?.byId;
   const models = guest?.models;
   const childrenMap = guest?.childrenMap;
 
   const processedModels = useRef({});
 
-  //effect to refresh the contentTree if the sort op complete
+  const updateNode = useCallback((modelId: string, fieldId: string, nodeId: string) => {
+    const model = models[modelId];
+    const children = [];
+
+    // TODO: IF deleted op, optional: remove deleted id from nodeLookup
+
+    if (nodeLookup[nodeId].type === 'node-selector') {
+      model[fieldId].forEach((id: string, i: number) => {
+        let itemContentTypeName = ContentTypesById[models[id].craftercms.contentTypeId].name;
+        children.push(
+          getNodeSelectorChildren(
+            models[id],
+            model.craftercms.id,
+            models[id].craftercms.path ? null : model.craftercms.path,
+            itemContentTypeName,
+            fieldId,
+            i
+          )
+        );
+      });
+      const updatedNode = {
+        ...nodeLookup[nodeId],
+        children: children.map((node: RenderTree) => node.id)
+      };
+      setNodeLookup({ [nodeId]: updatedNode, ...hierarchicalToLookupTable(children) });
+    } else if (nodeLookup[nodeId].type === 'page') {
+      const contentType = ContentTypesById[model.craftercms.contentTypeId];
+      const rootNode = {
+        ...nodeLookup[nodeId],
+        children: getChildren(model, contentType, models, ContentTypesById)
+      };
+
+      setNodeLookup({ ...hierarchicalToLookupTable(rootNode) });
+    }
+
+  }, [ContentTypesById, models, nodeLookup, setNodeLookup]);
+
+  const updateRoot = useCallback((modelId: string, fieldId: string, index: string | number, update: Function) => {
+    processedModels.current = {};
+    Object.values(models).forEach((model) => {
+      processedModels.current[model.craftercms.id] = true;
+    });
+    update();
+  }, [models]);
+
+  //effect to refresh the contentTree if the models are updated
   useEffect(() => {
     const sub = hostToHost$.subscribe((action) => {
-      if (action.type === SORT_ITEM_OPERATION_COMPLETE) {
-        console.log(action.payload);
-        console.log(state);
+      switch (action.type) {
+        case DELETE_ITEM_OPERATION_COMPLETE:
+        case SORT_ITEM_OPERATION_COMPLETE: {
+          const { modelId, fieldId, index } = action.payload;
+          if (state.expanded.includes(`${modelId}_${fieldId}`)) {
+            updateNode(modelId, fieldId, `${modelId}_${fieldId}`);
+          } else if (state.selected.includes(modelId)) {
+            updateNode(modelId, fieldId, `${rootPrefix}${modelId}`);
+          } else if (
+            state.selected === 'root' &&
+            action.type === DELETE_ITEM_OPERATION_COMPLETE
+          ) {
+            updateRoot(modelId, fieldId, index, () => setState({ ...state }));
+          }
+        }
       }
     });
 
     return () => {
       sub.unsubscribe();
     };
-  }, [dispatch, hostToHost$, state]);
+  }, [dispatch, hostToHost$, state, updateNode]);
 
   // effect to refresh the contentTree if the site changes;
   useEffect(() => {
@@ -486,11 +544,11 @@ export default function ContentTree() {
   }, [site]);
 
   useEffect(() => {
-    if (models && byId) {
+    if (models && ContentTypesById) {
       let _nodeLookup = {};
       let shouldSetState = false;
       Object.values(models).forEach((model) => {
-        let contentType = byId[model.craftercms.contentTypeId];
+        let contentType = ContentTypesById[model.craftercms.contentTypeId];
         if (!processedModels.current[model.craftercms.id] && contentType) {
           processedModels.current[model.craftercms.id] = true;
           let node: RenderTree = {
@@ -508,7 +566,7 @@ export default function ContentTree() {
         setNodeLookup(_nodeLookup);
       }
     }
-  }, [byId, models, setNodeLookup]);
+  }, [ContentTypesById, models, setNodeLookup]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -528,12 +586,12 @@ export default function ContentTree() {
   const handleClick = (node: RenderTree) => {
     if ((node.type === 'component' || node.type === 'page') && !node.id.includes(rootPrefix)) {
       let model = models[node.modelId];
-      let contentType = byId[model.craftercms.contentTypeId];
+      let contentType = ContentTypesById[model.craftercms.contentTypeId];
 
       const rootNode = {
         ...node,
         id: `${rootPrefix}${node.id}`,
-        children: getChildren(model, contentType, models, byId)
+        children: getChildren(model, contentType, models, ContentTypesById)
       };
 
       setNodeLookup({ ...hierarchicalToLookupTable(rootNode) });
@@ -603,7 +661,7 @@ export default function ContentTree() {
 
   const handleClose = () => setOptionsMenu({ ...optionsMenu, anchorEl: null });
 
-  const resource = useLogicResource<boolean, any>({ models, byId }, {
+  const resource = useLogicResource<boolean, any>({ models, byId: ContentTypesById }, {
     shouldResolve: (source) => Boolean(source.models && source.byId),
     shouldReject: () => false,
     shouldRenew: () => !Object.keys(processedModels.current).length && resource.complete,
