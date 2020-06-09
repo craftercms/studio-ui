@@ -372,7 +372,9 @@ export function scrollToIceProps(
 export function scrollToElement(element: Element, scrollElement: string, animate: boolean = false): JQuery<Element> {
   const $element = $(element);
 
-  if (!isElementInView($element)) {
+  if (!element) {
+    return null;
+  } else if (!isElementInView($element)) {
     $(scrollElement).animate(
       {
         scrollTop: $element.offset().top - 100

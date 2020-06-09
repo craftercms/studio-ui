@@ -201,14 +201,17 @@ export function fromRecord(record: ElementRecord, iceId: number): RegistryEntry 
 }
 
 export function fromICEId(iceId: number): RegistryEntry {
-  const record = db[registry[iceId][0]];
+  const record = db[registry[iceId]?.[0]];
   return fromRecord(record, iceId);
 }
 
 export function getRegistriesFromICEId(iceId: number): RegistryEntry[] {
   const recordsIds = registry[iceId];
   const registries = [];
-  if (recordsIds.length > 1) {
+
+  if (!recordsIds) {
+    return null;
+  } else if (recordsIds.length > 1) {
     recordsIds.forEach(recordId => {
       let record = db[recordId];
       let registry = fromRecord(record, iceId);

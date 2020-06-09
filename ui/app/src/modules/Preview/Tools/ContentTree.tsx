@@ -49,7 +49,8 @@ import { findParentModelId, hierarchicalToLookupTable } from '../../../utils/obj
 import {
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TREE_FIELD_SELECTED,
-  selectTool
+  selectTool,
+  SORT_ITEM_OPERATION_COMPLETE
 } from '../../../state/actions/preview';
 import { DRAWER_WIDTH, getHostToGuestBus, getHostToHostBus } from '../previewContext';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
@@ -169,14 +170,6 @@ export interface RenderTree {
   embeddedParentPath?: string;
   fieldId?: string;
   index?: string | number;
-}
-
-interface Data {
-  selected: string;
-  nodeLookup: LookupTable<RenderTree>;
-  expanded: Array<string>;
-  breadcrumbs?: Array<string>;
-  renew: boolean;
 }
 
 function getNodeSelectorChildren(
@@ -472,23 +465,18 @@ export default function ContentTree() {
   const processedModels = useRef({});
 
   //effect to refresh the contentTree if the sort op complete
-  // useEffect(() => {
-  //   const sub = hostToHost$.subscribe((action) => {
-  //     if (action.type === SORT_ITEM_OPERATION_COMPLETE) {
-  //       setData({
-  //         selected: null,
-  //         nodeLookup: null,
-  //         expanded: data.expanded,
-  //         breadcrumbs: [],
-  //         renew: true
-  //       });
-  //     }
-  //   });
-  //
-  //   return () => {
-  //     sub.unsubscribe();
-  //   };
-  // }, [data.expanded, dispatch, hostToHost$, site]);
+  useEffect(() => {
+    const sub = hostToHost$.subscribe((action) => {
+      if (action.type === SORT_ITEM_OPERATION_COMPLETE) {
+        console.log(action.payload);
+        console.log(state);
+      }
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [dispatch, hostToHost$, state]);
 
   // effect to refresh the contentTree if the site changes;
   useEffect(() => {
