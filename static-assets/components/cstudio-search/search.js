@@ -358,6 +358,7 @@
     var view = CStudioAuthoring.Utils.getQueryVariable(queryString, 'view');
     var mode = CStudioAuthoring.Utils.getQueryVariable(queryString, 'mode');
     var query = CStudioAuthoring.Utils.getQueryVariable(queryString, 'query');
+    var path = CStudioAuthoring.Utils.getQueryVariable(queryString, 'path');
     if (sortBy === '_score') {
       searchContext.sortOrder = 'desc';
     }
@@ -369,6 +370,7 @@
     searchContext.itemsPerPage = itemsPerPage ? itemsPerPage : searchContext.itemsPerPage;
     searchContext.mode = mode ? mode : searchContext.mode;
     searchContext.query = query ? query : searchContext.query;
+    searchContext.path = path ? path : searchContext.path;
 
     $.each(urlParams, function (key, value) {
       var processedKey, processedValue;
@@ -548,7 +550,8 @@
       offset: (searchContext.currentPage - 1) * searchContext.itemsPerPage,
       limit: searchContext.itemsPerPage,
       sortBy: searchContext.sortBy,
-      sortOrder: searchContext.sortOrder
+      sortOrder: searchContext.sortOrder,
+      path: searchContext.path
     };
 
     if (!jQuery.isEmptyObject(searchContext.filters)) {

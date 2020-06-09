@@ -1177,6 +1177,10 @@ var nodeOpen = false,
           });
         }
 
+        if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
+          searchUrl += '&path=' + encodeURIComponent(searchContext.path);
+        }
+
         var childSearch = null;
 
         if (
