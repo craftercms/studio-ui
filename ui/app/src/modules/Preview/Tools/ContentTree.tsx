@@ -454,7 +454,7 @@ export default function ContentTree() {
   const [state, setState] = React.useState<any>({
     selected: `root`,
     expanded: ['root'],
-    breadcrumbs: []
+    breadcrumbs: ['root']
   });
 
   const [nodeLookup, setNodeLookup] = useSpreadState<any>({});
@@ -534,7 +534,7 @@ export default function ContentTree() {
     return () => {
       sub.unsubscribe();
     };
-  }, [dispatch, hostToHost$, state, updateNode]);
+  }, [dispatch, hostToHost$, state, updateNode, updateRoot]);
 
   // effect to refresh the contentTree if the site changes;
   useEffect(() => {
@@ -599,7 +599,7 @@ export default function ContentTree() {
       setState({
         selected: node.id,
         expanded: [`${rootPrefix}${node.id}`],
-        breadcrumbs: ['root', node.id]
+        breadcrumbs: [...state.breadcrumbs, node.id]
       });
     }
   };
@@ -620,15 +620,14 @@ export default function ContentTree() {
   const handleBreadCrumbClick = (event, node?: RenderTree) => {
     event.stopPropagation();
     if (!state.breadcrumbs.length) return null;
-
     let breadcrumbsArray = [...state.breadcrumbs];
-    breadcrumbsArray = state.breadcrumbs.slice(0, breadcrumbsArray.indexOf(node.id) + 1);
+    breadcrumbsArray = breadcrumbsArray.slice(0, breadcrumbsArray.indexOf(node.id) + 1);
 
     setState({
       ...state,
       selected: node.id,
-      expanded: [node.id],
-      breadcrumbs: breadcrumbsArray.length === 1 ? [] : breadcrumbsArray
+      expanded: node.id === 'root' ? [node.id] : [`${rootPrefix}${node.id}`],
+      breadcrumbs: breadcrumbsArray
     });
   };
 
@@ -757,7 +756,7 @@ function ContentTreeUI(props: ContentTreeUI) {
 
   return (
     <>
-      {Boolean(breadcrumbs.length) && (
+      {Boolean(breadcrumbs.length > 1) && (
         <MuiBreadcrumbs
           maxItems={2}
           aria-label="Breadcrumbs"
