@@ -829,7 +829,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(item)),
+            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToDetailedItem(item)),
             scheduling,
             onSuccess: {
               type: 'BATCH_ACTIONS',
@@ -870,7 +870,7 @@ var nodeOpen = false,
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
             open: true,
-            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(item)),
+            items: items.map(item => CrafterCMSNext.util.content.parseLegacyItemToDetailedItem(item)),
             onSuccess: {
               type: 'BATCH_ACTIONS',
               payload: [
@@ -1117,6 +1117,14 @@ var nodeOpen = false,
         const filters = searchContext.filters;
         if (!jQuery.isEmptyObject(searchContext.filters)) {
           searchUrl += `#/?filters=${encodeURIComponent(JSON.stringify(filters))}`;
+
+          if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
+            searchUrl += '&path=' + encodeURIComponent(searchContext.path);
+          }
+        } else {
+          if (!CStudioAuthoring.Utils.isEmpty(searchContext.path)) {
+            searchUrl += '#/?path=' + encodeURIComponent(searchContext.path);
+          }
         }
 
         var childSearch = null;

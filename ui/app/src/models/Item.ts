@@ -17,7 +17,7 @@
 type States = 'new' | 'modified' | 'deleted' | 'userLocked' | 'systemProcessing' | 'inWorkflow' |
   'scheduled' | 'staged' | 'live' | 'translationUpToDate' | 'translationPending' | 'translationInProgress';
 
-interface BaseItem {
+export interface BaseItem {
   id: string;
   label: string;
   contentTypeId: string;

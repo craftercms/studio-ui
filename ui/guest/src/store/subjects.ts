@@ -34,6 +34,8 @@ export const escape$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
   filter((e) => e.key === 'Escape')
 );
 
+let active = false;
+
 let dragover$: Subject<{
   event: DragEvent | SyntheticEvent | JQueryMouseEventObject | Event;
   record: ElementRecord;
@@ -47,11 +49,15 @@ const getScrolling = () => scrolling$;
 export { getDragOver as dragover$, getScrolling as scrolling$ };
 
 export function initializeDragSubjects(state$: GuestStateObservable) {
+  if (!active) {
 
-  killSignal$ = new Subject();
-  dragover$ = new Subject();
-  scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
+    active = true;
 
+    killSignal$ = new Subject();
+    dragover$ = new Subject();
+    scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
+
+  }
   return merge(
     dragover$.pipe(
       throttleTime(100),
@@ -72,18 +78,22 @@ export function initializeDragSubjects(state$: GuestStateObservable) {
       map(() => ({ type: 'scrolling_stopped' }))
     )
   );
-
 }
 
 export function destroyDragSubjects() {
-  // scrolling$ is terminated by killSignal$
-  killSignal$.next();
-  killSignal$.complete();
-  killSignal$.unsubscribe();
-  killSignal$ = null;
+  if (active) {
 
-  dragover$.complete();
-  dragover$.unsubscribe();
-  dragover$ = null;
+    active = false;
 
+    // scrolling$ is terminated by killSignal$
+    killSignal$.next();
+    killSignal$.complete();
+    killSignal$.unsubscribe();
+    killSignal$ = null;
+
+    dragover$.complete();
+    dragover$.unsubscribe();
+    dragover$ = null;
+
+  }
 }

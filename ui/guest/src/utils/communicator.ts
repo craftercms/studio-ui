@@ -21,8 +21,7 @@ import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 const useBroadcastChannel = window.parent === window && window.BroadcastChannel !== undefined;
 if (window.parent === window && window.BroadcastChannel === undefined) {
   console.warn(
-    `Browser does not support BroadcastChannel API. ` +
-    `Communication with host will be impaired.`
+    `Browser does not support BroadcastChannel API. ` + `Communication with host will be impaired.`
   );
 }
 
@@ -39,11 +38,13 @@ export const message$: Observable<StandardAction> = fromEvent<MessageEvent>(
   share()
 );
 
+const meta = { craftercms: true, source: 'guest' };
+const prepareAction = (type, payload) =>
+  typeof type === 'object' ? { ...type, meta } : { type, payload, meta };
+
 export const post = useBroadcastChannel
-  ? (type, payload?) =>
-      broadcastChannel.postMessage(typeof type === 'object' ? type : { type, payload })
-  : (type, payload?) =>
-      window.parent.postMessage(typeof type === 'object' ? type : { type, payload }, '*');
+  ? (type, payload?) => broadcastChannel.postMessage(prepareAction(type, payload))
+  : (type, payload?) => window.parent.postMessage(prepareAction(type, payload), '*');
 
 export function fromTopic(type: string): Observable<StandardAction> {
   return message$.pipe(filter((e) => e.type === type));

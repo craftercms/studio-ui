@@ -30,9 +30,9 @@ import ContentTypesFilter from './ContentTypesFilter';
 import {
   useActiveSiteId,
   useDebouncedInput,
-  useUnmount,
+  useLogicResource,
   useSelection,
-  useLogicResource
+  useUnmount
 } from '../../../utils/hooks';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../components/Dialogs/DialogFooter';
@@ -225,7 +225,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   const contentTypesUrl = `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types`;
   const defaultPrevImgUrl =
     '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  const path = previewItem?.path.replace(/[^/]*$/, '');
+  const path = previewItem?.path.endsWith('.xml') ? previewItem.path.replace(/[^/]*$/, '') : previewItem?.path;
   const contentTypesFilters = [
     {
       label: formatMessage(translations.contentTypeAllLabel),
