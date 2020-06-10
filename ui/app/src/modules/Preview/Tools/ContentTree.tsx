@@ -745,7 +745,7 @@ function ContentTreeUI(props: ContentTreeUI) {
   if (selected === 'root') {
     node = {
       id: 'root',
-      name: 'root',
+      name: 'On this page...',
       children: rootChildren,
       type: 'root',
       modelId: 'root'
