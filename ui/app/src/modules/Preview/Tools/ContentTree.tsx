@@ -785,7 +785,7 @@ function ContentTreeUI(props: ContentTreeUI) {
                   root: classes.breadcrumbsTypography
                 }}
                 onClick={(e) => handleBreadCrumbClick(e, id === 'root' ? { id: 'root' } : nodeLookup[id])}
-                children={id === 'root' ? 'root' : nodeLookup[id].name}
+                children={id === 'root' ? <Root /> : nodeLookup[id].name}
               />
             )
           )}
