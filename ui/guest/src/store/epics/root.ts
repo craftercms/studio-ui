@@ -44,6 +44,7 @@ import { initTinyMCE } from '../../controls/rte';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
+  CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
@@ -545,8 +546,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         if (scrollToIceProps(iceProps, scrollElement)) {
           return escape$.pipe(
             takeUntil(clearAndListen$),
-            tap(() => post(CLEAR_SELECTED_ZONES)),
-            map(() => ({ type: 'start_listening' })),
+            map(() => ({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED })),
             take(1)
           );
         } else {

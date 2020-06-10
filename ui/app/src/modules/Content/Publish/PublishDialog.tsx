@@ -19,15 +19,15 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { fetchPublishingChannels } from '../../../services/content';
 import { goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
-import { SandboxItem } from '../../../models/Item';
+import { BaseItem, DetailedItem } from '../../../models/Item';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import {
   useActiveSiteId,
-  useUnmount,
+  useLogicResource,
   useSpreadState,
-  useLogicResource
+  useUnmount
 } from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
 import { Resource } from '../../../models/Resource';
@@ -44,11 +44,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { ApiResponse } from '../../../models/ApiResponse';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
+import LookupTable from '../../../models/LookupTable';
 
 // region Typings
 
 type ApiState = { error: ApiResponse, submitting: boolean };
-type Source = { items: SandboxItem[]; publishingChannels: any[]; apiState: ApiState; };
+type Source = { items: DetailedItem[]; publishingChannels: any[]; apiState: ApiState; };
 type Return = Omit<Source, 'apiState'>;
 
 export interface DependenciesResultObject {
@@ -58,7 +59,7 @@ export interface DependenciesResultObject {
 
 interface PublishDialogContentUIProps {
   resource: Resource<any>;
-  checkedItems: SandboxItem[];
+  checkedItems: DetailedItem[];
   setCheckedItems: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
@@ -89,7 +90,7 @@ interface PublishDialogUIProps {
   setDialog: any;
   title: string;
   subtitle?: string;
-  checkedItems: SandboxItem[];
+  checkedItems: DetailedItem[];
   setCheckedItems: Function;
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
@@ -106,7 +107,7 @@ interface PublishDialogUIProps {
 
 interface PublishDialogBaseProps {
   open: boolean;
-  items?: SandboxItem[];
+  items?: DetailedItem[];
   scheduling?: string;
 }
 
@@ -145,9 +146,9 @@ const submitMessages = defineMessages({
   }
 });
 
-export const checkState = (items: SandboxItem[]) => {
+export const checkState: <T extends BaseItem = BaseItem>(items: T[]) => LookupTable<boolean> = (items) => {
   return (items || []).reduce(
-    (table: any, item) => {
+    (table: LookupTable<boolean>, item) => {
       table[item.path] = true;
       return table;
     },
@@ -169,7 +170,7 @@ export const updateCheckedList = (path: string[], isChecked: boolean, checked: a
   return nextChecked;
 };
 
-export const selectAllDeps = (setChecked: Function, items: SandboxItem[]) => {
+export const selectAllDeps = (setChecked: Function, items: DetailedItem[]) => {
   setChecked(items.map(i => i.path), true);
 };
 
@@ -256,7 +257,7 @@ function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     apiState
   } = props;
 
-  const { items, publishingChannels }: { items: SandboxItem[], publishingChannels: any } = resource.read();
+  const { items, publishingChannels }: { items: DetailedItem[], publishingChannels: any } = resource.read();
 
   return (
     <>
@@ -522,6 +523,15 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   useEffect(() => {
     setCheckedItems(checkState(items));
   }, [items, setCheckedItems]);
+
+  useEffect(() => {
+    if (items.length === 1 && items[0].live.lastScheduledDate) {
+      setDialog({
+        scheduling: 'custom',
+        scheduledDateTime: moment(items[0].live.lastScheduledDate).format()
+      });
+    }
+  }, [items, setDialog]);
 
   const handleSubmit = () => {
     const data = {

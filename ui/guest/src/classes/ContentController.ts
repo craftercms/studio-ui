@@ -89,6 +89,8 @@ const contentTypesObs$ = _contentTypes$.asObservable().pipe(
   filter((objects) => Object.keys(objects).length > 0)
 );
 
+modelsObs$.subscribe((models) => post(GUEST_MODELS_RECEIVED, models))
+
 // endregion
 
 function computeChildren(model: ContentInstance): void {
@@ -180,7 +182,6 @@ function modelResponseReceived(responseModels: LookupTable<ContentInstance>): vo
     }
   });
 
-  post(GUEST_MODELS_RECEIVED, normalizedModels);
   post(CHILDREN_MAP_UPDATE, children);
 
   _models$.next(Object.assign({}, currentModels, normalizedModels));
@@ -412,14 +413,6 @@ export function insertComponent(
 
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
-
-  post(GUEST_MODELS_RECEIVED, {
-    [instance.craftercms.id]: instance,
-    [modelId]: {
-      ...model,
-      [fieldId]: result
-    }
-  });
 
   _models$.next({
     ...models,

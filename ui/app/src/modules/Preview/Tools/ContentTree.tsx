@@ -37,13 +37,18 @@ import Page from '../../../components/Icons/Page';
 import ContentTypeFieldIcon from '../../../components/Icons/ContentTypeField';
 import Component from '../../../components/Icons/Component';
 import NodeSelector from '../../../components/Icons/NodeSelector';
+import RepeatGroupItem from '../../../components/Icons/RepeatGroupItem';
 import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
 import RepeatGroup from '../../../components/Icons/RepeatGroup';
-import { iconWithStrokeAndFill } from '../../../styles/icon';
 import { hierarchicalToLookupTable } from '../../../utils/object';
-import { CONTENT_TREE_FIELD_SELECTED } from '../../../state/actions/preview';
-import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
+import {
+  CLEAR_CONTENT_TREE_FIELD_SELECTED,
+  CONTENT_TREE_FIELD_SELECTED,
+  selectTool,
+  SORT_ITEM_OPERATION_COMPLETE
+} from '../../../state/actions/preview';
+import { DRAWER_WIDTH, getHostToGuestBus, getHostToHostBus } from '../previewContext';
 import ComponentMenu from '../../../components/ComponentMenu';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
 import { Resource } from '../../../models/Resource';
@@ -53,7 +58,6 @@ import Typography from '@material-ui/core/Typography';
 import palette from '../../../styles/palette';
 import Link from '@material-ui/core/Link';
 import { useDispatch } from 'react-redux';
-import { createBackHandler } from './EditFormPanel';
 
 const rootPrefix = '{root}_';
 
@@ -99,9 +103,7 @@ const useStyles = makeStyles((theme) =>
 
 const treeItemStyles = makeStyles((theme) =>
   createStyles({
-    icon: {
-      ...iconWithStrokeAndFill
-    },
+    icon: {},
     displayNone: {
       display: 'none'
     },
@@ -173,6 +175,7 @@ interface Data {
   nodeLookup: LookupTable<RenderTree>;
   expanded: Array<string>;
   breadcrumbs?: Array<string>;
+  renew: boolean;
 }
 
 function getNodeSelectorChildren(
@@ -299,12 +302,20 @@ function getChildren(
   return children;
 }
 
-function getContentTypeField(contentType: ContentType, fieldName: string, contentTypes: LookupTable<ContentType>): ContentTypeField {
-  return contentType.fields[fieldName] ?? contentTypes['/component/level-descriptor'].fields[fieldName] ?? null;
+function getContentTypeField(
+  contentType: ContentType,
+  fieldName: string,
+  contentTypes: LookupTable<ContentType>
+): ContentTypeField {
+  return (
+    contentType.fields[fieldName] ??
+    contentTypes['/component/level-descriptor'].fields[fieldName] ??
+    null
+  );
 }
 
 interface TreeItemCustomInterface {
-  resource: Resource<Data>;
+  nodeLookup: LookupTable<RenderTree>;
   nodeId?: string;
 
   handleScroll?(node: RenderTree): void;
@@ -315,11 +326,11 @@ interface TreeItemCustomInterface {
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
-  const { resource, nodeId, handleScroll, handleClick, handleOptions } = props;
+  const { nodeLookup, nodeId, handleScroll, handleClick, handleOptions } = props;
   const classes = treeItemStyles({});
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
-  const node = resource.read().nodeLookup[nodeId];
+  const node = nodeLookup[nodeId];
   const isMounted = useRef(null);
   let Icon;
 
@@ -339,6 +350,8 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       Icon = Component;
     } else if (node.type === 'repeat') {
       Icon = RepeatGroup;
+    } else if (node.type === 'item') {
+      Icon = RepeatGroupItem;
     } else {
       Icon = ContentTypeFieldIcon;
     }
@@ -403,13 +416,29 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   );
 }
 
+const initialData: Data = {
+  selected: null,
+  nodeLookup: null,
+  expanded: [],
+  breadcrumbs: [],
+  renew: true
+};
+
+function createBackHandler(dispatch) {
+  const hostToGuest$ = getHostToGuestBus();
+  return () => {
+    hostToGuest$.next({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED });
+  };
+}
+
 export default function ContentTree() {
-  const classes = useStyles({});
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
+  const classes = useStyles({});
   const { formatMessage } = useIntl();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const hostToGuest$ = getHostToGuestBus();
+  const hostToHost$ = getHostToHostBus();
   const site = useActiveSiteId();
   const [optionsMenu, setOptionsMenu] = React.useState({
     modelId: null,
@@ -417,47 +446,64 @@ export default function ContentTree() {
     embeddedParentPath: null,
     anchorEl: null
   });
-  const [data, setData] = React.useState<Data>({
-    selected: null,
-    nodeLookup: null,
-    expanded: [],
-    breadcrumbs: []
-  });
+  const [data, setData] = React.useState<Data>(initialData);
+  const byId = contentTypesBranch?.byId;
+  const models = guest?.models;
+  const modelId = guest?.modelId;
+
+  //effect to refresh the contentTree if the sort op complete
+  useEffect(() => {
+    const sub = hostToHost$.subscribe((action) => {
+      if (action.type === SORT_ITEM_OPERATION_COMPLETE) {
+        setData({
+          selected: null,
+          nodeLookup: null,
+          expanded: data.expanded,
+          breadcrumbs: [],
+          renew: true
+        });
+      }
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [data.expanded, dispatch, hostToHost$, site]);
+
+  // effect to refresh the contentTree if the site changes;
+  useEffect(() => {
+    if (site) {
+      setData(initialData);
+    }
+  }, [site]);
 
   useEffect(() => {
-    if (guest?.modelId && guest.models && contentTypesBranch.byId && data.selected === null) {
-      let parent = guest.models[guest.modelId];
-      let contentType = contentTypesBranch.byId[parent.craftercms.contentTypeId];
+    if (modelId && models && byId) {
+      let parent = models[modelId];
+      let contentType = byId[parent.craftercms.contentTypeId];
+
+      if (data.nodeLookup && data.nodeLookup[`${rootPrefix}${parent.craftercms.id}`]) {
+        return;
+      }
+
       let root: RenderTree = {
         id: `${rootPrefix}${parent.craftercms.id}`,
         name: parent.craftercms.label,
-        children: getChildren(parent, contentType, guest.models, contentTypesBranch.byId),
+        children: getChildren(parent, contentType, models, byId),
         type: contentType.type,
         modelId: parent.craftercms.id,
         rootPath: true
       };
+
       setData({
         selected: parent.craftercms.id,
         nodeLookup: hierarchicalToLookupTable(root),
-        expanded: [`${rootPrefix}${parent.craftercms.id}`],
-        breadcrumbs: []
+        expanded: [...data.expanded, `${rootPrefix}${parent.craftercms.id}`],
+        breadcrumbs: [],
+        renew: true
       });
     }
-  }, [contentTypesBranch, data, data.selected, guest]);
-
-  useEffect(() => {
-    if (site) {
-      setData({
-        selected: null,
-        nodeLookup: null,
-        expanded: [],
-        breadcrumbs: []
-      });
-    }
-    return () => {
-      createBackHandler(dispatch)();
-    };
-  }, [dispatch, site]);
+  }, [byId, data.expanded, data.nodeLookup, hostToHost$, modelId, models]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -469,15 +515,20 @@ export default function ContentTree() {
     return () => document.removeEventListener('keydown', handler, false);
   }, [dispatch]);
 
+  const onBack = () => {
+    createBackHandler(dispatch)();
+    dispatch(selectTool());
+  };
+
   const handleClick = (node: RenderTree) => {
     if (node.type === 'component' && !node.id.includes(rootPrefix)) {
-      let model = guest.models[node.modelId];
-      let contentType = contentTypesBranch.byId[model.craftercms.contentTypeId];
+      let model = models[node.modelId];
+      let contentType = byId[model.craftercms.contentTypeId];
       const { type, modelId, name, index, fieldId, parentId, embeddedParentPath } = node;
       const nodeData = {
         id: `${rootPrefix}${model.craftercms.id}`,
         name,
-        children: getChildren(model, contentType, guest.models, contentTypesBranch.byId),
+        children: getChildren(model, contentType, models, byId),
         type,
         modelId,
         index,
@@ -493,7 +544,10 @@ export default function ContentTree() {
           ...hierarchicalToLookupTable(nodeData)
         },
         expanded: [`${rootPrefix}${model.craftercms.id}`],
-        breadcrumbs: data.breadcrumbs.length ? [...data.breadcrumbs, nodeData.id] : [`${rootPrefix}${data.selected}`, nodeData.id]
+        breadcrumbs: data.breadcrumbs.length
+          ? [...data.breadcrumbs, nodeData.id]
+          : [`${rootPrefix}${data.selected}`, nodeData.id],
+        renew: true
       });
     }
   };
@@ -519,7 +573,8 @@ export default function ContentTree() {
       ...data,
       selected: nodeIdWithoutPrefix,
       expanded: [node.id],
-      breadcrumbs: breadcrumbsArray.length === 1 ? [] : breadcrumbsArray
+      breadcrumbs: breadcrumbsArray.length === 1 ? [] : breadcrumbsArray,
+      renew: true
     });
   };
 
@@ -528,7 +583,7 @@ export default function ContentTree() {
       event.target.classList.contains('toggle') ||
       event.target.parentElement.classList.contains('toggle')
     ) {
-      setData({ ...data, expanded: [...nodes] });
+      setData({ ...data, expanded: [...nodes], renew: false });
     }
   };
 
@@ -553,14 +608,13 @@ export default function ContentTree() {
   const resource = useLogicResource<Data, Data>(data, {
     shouldResolve: (source) => Boolean(source.selected),
     shouldReject: () => false,
-    shouldRenew: (source, resource) =>
-      source.breadcrumbs.length && resource.complete && source.expanded.length === 1,
+    shouldRenew: (source, resource) => source.renew && resource.complete,
     resultSelector: (source) => source,
     errorSelector: null
   });
 
   return (
-    <ToolPanel title={translations.contentTree}>
+    <ToolPanel title={translations.contentTree} onBack={onBack}>
       <TreeView
         className={classes.root}
         defaultCollapseIcon={<ExpandMoreIcon className="toggle" />}
@@ -570,63 +624,113 @@ export default function ContentTree() {
         onNodeToggle={handleChange}
       >
         <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
-          {
-            Boolean(data.breadcrumbs.length) &&
-            <MuiBreadcrumbs
-              maxItems={2}
-              aria-label="Breadcrumbs"
-              separator={<NavigateNextIcon fontSize="small" />}
-              classes={{
-                ol: classes.breadcrumbsList,
-                separator: classes.breadcrumbsSeparator
-              }}
-            >
-              {data.breadcrumbs.map((id, i: number) =>
-                (id === `${rootPrefix}${data.selected}`) ? (
-                  <Typography
-                    key={data.nodeLookup[id].id}
-                    variant="subtitle2"
-                    className={classes.breadcrumbsTypography}
-                    children={data.nodeLookup[id].name}
-                  />
-                ) : (
-                  <Link
-                    key={data.nodeLookup[id].id}
-                    color="inherit"
-                    component="button"
-                    variant="subtitle2"
-                    underline="always"
-                    TypographyClasses={{
-                      root: classes.breadcrumbsTypography
-                    }}
-                    onClick={(e) => handleBreadCrumbClick(e, data.nodeLookup[id])}
-                    children={data.nodeLookup[id].name}
-                  />
-                )
-              )}
-            </MuiBreadcrumbs>
-          }
-          <TreeItemCustom
-            nodeId={`${rootPrefix}${data.selected}`}
-            resource={resource}
-            handleScroll={handleScroll}
+          <ContentTreeUI
+            handleBreadCrumbClick={handleBreadCrumbClick}
             handleClick={handleClick}
+            handleClose={handleClose}
+            handleScroll={handleScroll}
+            optionsMenu={optionsMenu}
+            rootPrefix={rootPrefix}
+            site={site}
             handleOptions={handleOptions}
+            resource={resource}
           />
         </Suspencified>
-        <ComponentMenu
-          anchorEl={optionsMenu.anchorEl}
-          handleClose={handleClose}
-          site={site}
-          modelId={optionsMenu.modelId}
-          parentId={optionsMenu.parentId}
-          embeddedParentPath={optionsMenu.embeddedParentPath}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: DRAWER_WIDTH - 60
-          }}
-        />
       </TreeView>
     </ToolPanel>
+  );
+}
+
+interface ContentTreeUI {
+  resource: Resource<Data>;
+  optionsMenu: {
+    modelId: string;
+    parentId: string;
+    embeddedParentPath: string;
+    anchorEl: Element;
+  };
+  site: string;
+  rootPrefix: string;
+  handleScroll(node: RenderTree): void;
+  handleClick(node: RenderTree): void;
+  handleClose(): void;
+  handleOptions?(e: any, modelId: string, parentId: string, embeddedParentPath: string): void;
+  handleBreadCrumbClick(event, node?: RenderTree): void;
+}
+
+function ContentTreeUI(props: ContentTreeUI) {
+  const {
+    resource,
+    handleScroll,
+    handleClick,
+    handleOptions,
+    handleClose,
+    handleBreadCrumbClick,
+    optionsMenu,
+    site,
+    rootPrefix
+  } = props;
+  const classes = useStyles({});
+
+  const data = resource.read();
+  const { breadcrumbs, nodeLookup, selected } = data;
+
+  return (
+    <>
+      {Boolean(breadcrumbs.length) && (
+        <MuiBreadcrumbs
+          maxItems={2}
+          aria-label="Breadcrumbs"
+          separator={<NavigateNextIcon fontSize="small" />}
+          classes={{
+            ol: classes.breadcrumbsList,
+            separator: classes.breadcrumbsSeparator
+          }}
+        >
+          {breadcrumbs.map((id, i: number) =>
+            id === `${rootPrefix}${selected}` ? (
+              <Typography
+                key={nodeLookup[id].id}
+                variant="subtitle2"
+                className={classes.breadcrumbsTypography}
+                children={nodeLookup[id].name}
+              />
+            ) : (
+              <Link
+                key={nodeLookup[id].id}
+                color="inherit"
+                component="button"
+                variant="subtitle2"
+                underline="always"
+                TypographyClasses={{
+                  root: classes.breadcrumbsTypography
+                }}
+                onClick={(e) => handleBreadCrumbClick(e, nodeLookup[id])}
+                children={nodeLookup[id].name}
+              />
+            )
+          )}
+        </MuiBreadcrumbs>
+      )}
+      <TreeItemCustom
+        nodeId={`${rootPrefix}${selected}`}
+        nodeLookup={nodeLookup}
+        handleScroll={handleScroll}
+        handleClick={handleClick}
+        handleOptions={handleOptions}
+      />
+      <ComponentMenu
+        anchorEl={optionsMenu.anchorEl}
+        handleClose={handleClose}
+        site={site}
+        modelId={optionsMenu.modelId}
+        parentId={optionsMenu.parentId}
+        embeddedParentPath={optionsMenu.embeddedParentPath}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: DRAWER_WIDTH - 60
+        }}
+      />
+    </>
   );
 }
