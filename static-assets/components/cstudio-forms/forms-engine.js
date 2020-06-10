@@ -3106,13 +3106,14 @@ var CStudioForms =
         }
 
         // Add valid fields from form sections
-        function getValidFields(section) {
+        function getValidFields(section, isRepeat) {
           section.fields.forEach(field => {
-            validFields.push(field.id);
+            let fieldId = isRepeat? `${section.id}.${field.id}` : field.id;
+            validFields.push(fieldId);
             let fieldInstruction = { tokenize: false };
-            fieldInstructions[field.id] = fieldInstruction;
+            fieldInstructions[fieldId] = fieldInstruction;
             let fieldList = { list: false };
-            fieldLists[field.id] = fieldList;
+            fieldLists[fieldId] = fieldList;
 
             field.properties.forEach(property => {
               try {
@@ -3135,7 +3136,7 @@ var CStudioForms =
             if (field.type === 'repeat' || field.type === 'node-selector') {
               fieldList.list = true;
               if(field.fields){
-                getValidFields(field);
+                getValidFields(field, true);
               }
             }
           })
@@ -3228,39 +3229,35 @@ var CStudioForms =
         return output;
       },
 
-      recursiveRetrieveItemValues: function (item, output, key, fieldInstructions) {
-        for (var j = 0; j < item.length; j++) {
-          var repeatItem = item[j];
+      recursiveRetrieveItemValues: function(item, output, key, fieldInstructions) {
+        item.forEach(repeatItem => {
           let attributes;
           attributes = repeatItem.datasource ? `datasource=\"${repeatItem.datasource}\"` : '';
           if (repeatItem.inline) {
             attributes += ` inline=\"${repeatItem.inline}\"`;
           }
           output += `\t<item ${attributes}>`;
-          for (var repeatKey in repeatItem) {
-            if (repeatKey !== 'datasource' && repeatKey !== 'inline' && repeatKey !== 'component') {
-              var repeatValue = item[j][repeatKey],
-                isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
+          for (var fieldName in repeatItem) {
+            if (fieldName !== 'datasource' && fieldName !== 'inline' && fieldName !== 'component') {
+              var repeatValue = repeatItem[fieldName],
+                isRemote = CStudioRemote[key] && fieldName === 'url' ? true : false,
                 isArray = Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1,
-                isTokenized = fieldInstructions[repeatKey]?.tokenize === true,
+                isTokenized = fieldInstructions[`${key}.${fieldName}`]?.tokenize === true,
                 repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${isTokenized ? 'tokenized="true"' : ''}`;
-
-              output += '\t<' + repeatKey + repeatAttr + '>';
+              output += '\t<' + fieldName + repeatAttr + '>';
               if (isArray) {
                 output = this.recursiveRetrieveItemValues(repeatValue, output, key, fieldInstructions);
               } else {
                 output += this.escapeXml(repeatValue);
               }
-              output += '</' + repeatKey + '>\r\n';
-            } else if (repeatItem.inline === 'true' && repeatKey === 'inline') {
-              const objId = item[j]['key'];
-              output +=
-                (FlattenerState[objId] ? FlattenerState[objId] : `<component id="${objId}"/>`) +
-                '\n';
+              output += '</' + fieldName + '>\r\n';
+            } else if (repeatItem.inline === 'true' && fieldName === 'inline') {
+              const objId = repeatItem['key'];
+              output += (FlattenerState[objId] ? FlattenerState[objId] : `<component id="${objId}"/>`) + '\n';
             }
           }
           output += '\t</item>';
-        }
+        })
         return output;
       },
 
