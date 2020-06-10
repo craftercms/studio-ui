@@ -3015,20 +3015,17 @@ var CStudioForms =
         }
 
         // Add valid fields from form sections
-        for (var i = formSections.length - 1; i >= 0; i--) {
-          section = formSections[i];
 
-          for (var j = section.fields.length - 1; j >= 0; j--) {
-            var field = section.fields[j];
-            validFields.push(section.fields[j].id);
-            var fieldInstruction = { tokenize: false };
+        function getValidFields(section) {
+          section.fields.forEach(field => {
+            validFields.push(field.id);
+            let fieldInstruction = { tokenize: false };
             fieldInstructions[field.id] = fieldInstruction;
-            var fieldList = { list: false };
+            let fieldList = { list: false };
             fieldLists[field.id] = fieldList;
 
-            for (var p = 0; p < field.properties.length; p++) {
+            field.properties.forEach(property => {
               try {
-                var property = field.properties[p];
                 if (property.name == 'tokenize' && property.value == 'true') {
                   fieldInstruction.tokenize = true;
                 }
@@ -3043,12 +3040,20 @@ var CStudioForms =
                   'studioDialog'
                 );
               }
-            }
+            })
+
             if (field.type === 'repeat' || field.type === 'node-selector') {
               fieldList.list = true;
+              if(field.fields){
+                getValidFields(field);
+              }
             }
-          }
+          })
         }
+
+        formSections.forEach( section => {
+          getValidFields(section)
+        })
 
         // Add valid fields from form config
         if (formConfig && formConfig.customFields) {
@@ -3105,7 +3110,7 @@ var CStudioForms =
           if (fieldRe.test(validFieldsStr)) {
             if (isModelItemArray) {
               output += '\t<' + key + attributes.join(' ') + '>';
-              output = this.recursiveRetrieveItemValues(modelItem, output, key);
+              output = this.recursiveRetrieveItemValues(modelItem, output, key, fieldInstructions);
               output += '</' + key + '>\r\n';
             } else {
               output += '\t<' + key + ' ' + attributes.join(' ') + ' >';
@@ -3133,7 +3138,7 @@ var CStudioForms =
         return output;
       },
 
-      recursiveRetrieveItemValues: function(item, output, key) {
+      recursiveRetrieveItemValues: function(item, output, key, fieldInstructions) {
         for (var j = 0; j < item.length; j++) {
           var repeatItem = item[j];
           let attributes;
@@ -3147,11 +3152,11 @@ var CStudioForms =
               var repeatValue = item[j][repeatKey],
                 isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
                 isArray = Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1,
-                repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''}`;
-
+                isTokenized = fieldInstructions[repeatKey]?.tokenize === true,
+                repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${isTokenized ? 'tokenized="true"' : ''}`;
               output += '\t<' + repeatKey + repeatAttr + '>';
               if (isArray) {
-                output = this.recursiveRetrieveItemValues(repeatValue, output, key);
+                output = this.recursiveRetrieveItemValues(repeatValue, output, key, fieldInstructions);
               } else {
                 output += this.escapeXml(repeatValue);
               }
