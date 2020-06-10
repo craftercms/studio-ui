@@ -25,7 +25,7 @@
     "noEmit": false,
     "declaration": true,
     "declarationMap": false,
-    "sourceMap": true,
+    "sourceMap": false,
     "paths": {
       "@craftercms/studio-ui": ["./ui/app/src"],
       "@craftercms/studio-ui/*": ["./ui/app/src/*"],
