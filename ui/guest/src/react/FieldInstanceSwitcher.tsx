@@ -16,14 +16,14 @@
 
 import React from 'react';
 
-interface ElementSelector {
+interface FieldInstanceSwitcherProps {
   currentElement: number;
   registryEntryIds: number[];
   onNext(): void;
   onPrev(): void;
 }
 
-export default function ElementSelector(props: ElementSelector) {
+export default function FieldInstanceSwitcher(props: FieldInstanceSwitcherProps) {
   const {
     onNext,
     onPrev,
@@ -31,7 +31,7 @@ export default function ElementSelector(props: ElementSelector) {
     currentElement
   } = props;
   return (
-    <craftercms-element-selector>
+    <craftercms-field-instance-switcher>
       <span>{currentElement + 1}/{registryEntryIds.length}</span>
       <i onClick={onPrev} className={currentElement === 0 ? 'disable' : ''}>
         <svg focusable="false" viewBox="0 0 24 24" aria-hidden="true">
@@ -49,7 +49,7 @@ export default function ElementSelector(props: ElementSelector) {
           ></path>
         </svg>
       </i>
-    </craftercms-element-selector>
+    </craftercms-field-instance-switcher>
   );
 }
 

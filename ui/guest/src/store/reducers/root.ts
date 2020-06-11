@@ -38,7 +38,7 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_SWITCH_FIELD,
+  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
@@ -351,7 +351,7 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
     status: EditingStatus.SELECT_FIELD,
     draggable: iceRegistry.isMovable(iceId) ? { [registryEntries[0].id]: iceId } : {},
     highlighted: { [registryEntries[0].id]: highlight },
-    elementSelector: registryEntries.length > 1 ? {
+    fieldSwitcher: registryEntries.length > 1 ? {
       iceId,
       currentElement: 0,
       registryEntryIds: registryEntries.map(entry => entry.id)
@@ -361,16 +361,16 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
 
 const content_tree_switch_field: GuestReducer = (state, action) => {
   const { type } = action.payload;
-  let nextElem = type === 'next' ? state.elementSelector.currentElement + 1 : state.elementSelector.currentElement - 1;
-  let id = state.elementSelector.registryEntryIds[nextElem];
-  const highlight = ElementRegistry.getHoverData(state.elementSelector.registryEntryIds[nextElem]);
+  let nextElem = type === 'next' ? state.fieldSwitcher.currentElement + 1 : state.fieldSwitcher.currentElement - 1;
+  let id = state.fieldSwitcher.registryEntryIds[nextElem];
+  const highlight = ElementRegistry.getHoverData(state.fieldSwitcher.registryEntryIds[nextElem]);
 
   return {
     ...state,
-    draggable: iceRegistry.isMovable(state.elementSelector.iceId) ? { [id]: state.elementSelector.iceId } : {},
+    draggable: iceRegistry.isMovable(state.fieldSwitcher.iceId) ? { [id]: state.fieldSwitcher.iceId } : {},
     highlighted: { [id]: highlight },
-    elementSelector: {
-      ...state.elementSelector,
+    fieldSwitcher: {
+      ...state.fieldSwitcher,
       currentElement: nextElem
     }
   };
@@ -382,7 +382,7 @@ const clear_content_tree_field_selected: GuestReducer = (state) => {
     status: EditingStatus.LISTENING,
     draggable: {},
     highlighted: {},
-    elementSelector: null
+    fieldSwitcher: null
   };
 };
 
@@ -716,7 +716,7 @@ const reducerFunctions: {
   [DESKTOP_ASSET_DRAG_STARTED]: desktop_asset_drag_started,
   [ASSET_DRAG_STARTED]: asset_drag_started,
   [CONTENT_TREE_FIELD_SELECTED]: content_tree_field_selected,
-  [CONTENT_TREE_SWITCH_FIELD]: content_tree_switch_field,
+  [CONTENT_TREE_SWITCH_FIELD_INSTANCE]: content_tree_switch_field,
   [CLEAR_CONTENT_TREE_FIELD_SELECTED]: clear_content_tree_field_selected,
   [HOST_CHECK_IN]: (state, action) => ({
     ...state,
