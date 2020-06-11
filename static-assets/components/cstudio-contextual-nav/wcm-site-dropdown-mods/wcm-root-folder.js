@@ -1047,12 +1047,15 @@
             nodeSpan.appendChild(childOpen);
           }
 
-          nodeSpan.innerHTML += treeNodeTO.label;
-          nodeSpan.setAttribute('title', treeNodeTO.title);
-          nodeSpan.className =
-            treeNodeTO.style + ' yui-resize-label treenode-label over-effect-set';
-
-          nodeSpan.className = highlight ? nodeSpan.className + ' highlighted' : nodeSpan.className;
+          nodeSpan.innerHTML += treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label;
+          const tooltip = treeNodeTO.statusObj.deleted
+            ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound, { path: treeNodeTO.path })}</div>`
+            : treeNodeTO.title;
+          nodeSpan.setAttribute('title', tooltip);
+          nodeSpan.className = `
+            ${treeNodeTO.style} yui-resize-label treenode-label over-effect-set
+            ${treeNodeTO.statusObj.deleted && 'warning'} ${highlight && 'highlighted'}
+          `;
 
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
