@@ -40,7 +40,7 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_FIELD_CHANGE_ELEMENT,
+  CONTENT_TREE_SWITCH_FIELD,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
@@ -391,11 +391,11 @@ function Guest(props: GuestProps) {
             state.elementSelector &&
             <ElementSelector
               onNext={() => dispatch({
-                type: CONTENT_TREE_FIELD_CHANGE_ELEMENT,
+                type: CONTENT_TREE_SWITCH_FIELD,
                 payload: { type: 'next', scrollElement }
               })}
               onPrev={() => dispatch({
-                type: CONTENT_TREE_FIELD_CHANGE_ELEMENT,
+                type: CONTENT_TREE_SWITCH_FIELD,
                 payload: { type: 'prev', scrollElement }
               })}
               registryEntryIds={state.elementSelector.registryEntryIds}

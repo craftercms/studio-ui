@@ -50,7 +50,7 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_FIELD_CHANGE_ELEMENT,
+  CONTENT_TREE_SWITCH_FIELD,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
@@ -565,7 +565,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
 
   (action$: ActionsObservable<GuestStandardAction<{ type: string, scrollElement: string }>>, state$: GuestStateObservable) => {
     return action$.pipe(
-      ofType(CONTENT_TREE_FIELD_CHANGE_ELEMENT),
+      ofType(CONTENT_TREE_SWITCH_FIELD),
       withLatestFrom(state$),
       tap(([action, state]) => {
         const { scrollElement } = action.payload;
