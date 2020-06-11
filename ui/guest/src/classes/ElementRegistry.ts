@@ -158,7 +158,14 @@ export function deregister(id: string | number): ElementRecord {
   const record = db[id];
   if (notNullOrUndefined(record)) {
     const { iceIds } = record;
-    iceIds.forEach((iceId) => iceRegistry.deregister(iceId));
+    iceIds.forEach((iceId) => {
+      if(registry[iceId].length === 1) {
+        delete registry[iceId];
+      } else if (registry[iceId].length > 1) {
+        registry[iceId].splice(registry[iceId].indexOf(record.id), 1);
+      }
+      iceRegistry.deregister(iceId)
+    });
     delete db[id];
     //TODO: delete from registry;
   }
