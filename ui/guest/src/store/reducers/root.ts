@@ -17,7 +17,7 @@
 import ElementRegistry, {
   getDragContextFromReceptacles,
   getHighlighted,
-  getRegistriesFromICEId
+  getRecordsFromIceId
 } from '../../classes/ElementRegistry';
 import { dragOk } from '../util';
 import iceRegistry from '../../classes/ICERegistry';
@@ -340,7 +340,7 @@ const content_tree_field_selected: GuestReducer = (state, action) => {
   const { iceProps } = action.payload;
   const iceId = iceRegistry.exists(iceProps);
   if (iceId === -1) return;
-  const registryEntries = getRegistriesFromICEId(iceId);
+  const registryEntries = getRecordsFromIceId(iceId);
   if (!registryEntries) {
     return;
   }

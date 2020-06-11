@@ -212,9 +212,9 @@ export function fromICEId(iceId: number): RegistryEntry {
   return fromRecord(record, iceId);
 }
 
-export function getRegistriesFromICEId(iceId: number): RegistryEntry[] {
+export function getRecordsFromIceId(iceId: number): RegistryEntry[] {
   const recordsIds = registry[iceId];
-  const registries = [];
+  const records = [];
 
   if (!recordsIds) {
     return null;
@@ -223,10 +223,10 @@ export function getRegistriesFromICEId(iceId: number): RegistryEntry[] {
       let record = db[recordId];
       let registry = fromRecord(record, iceId);
       if (registry) {
-        registries.push(registry);
+        records.push(registry);
       }
     });
-    return registries.length > 0 ? registries : null;
+    return records.length > 0 ? records : null;
   } else {
     let registry = fromICEId(iceId);
     return registry ? [registry] : null;
