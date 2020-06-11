@@ -72,6 +72,10 @@ const translations = defineMessages({
   loading: {
     id: 'previewContentTreeTool.loading',
     defaultMessage: 'Loading'
+  },
+  onThisPage: {
+    id: 'previewContentTreeTool.onThisPage',
+    defaultMessage: 'On this page...'
   }
 });
 
@@ -737,6 +741,7 @@ function ContentTreeUI(props: ContentTreeUI) {
     rootChildren
   } = props;
   const classes = useStyles({});
+  const { formatMessage } = useIntl();
 
   resource.read();
 
@@ -745,7 +750,7 @@ function ContentTreeUI(props: ContentTreeUI) {
   if (selected === 'root') {
     node = {
       id: 'root',
-      name: 'On this page...',
+      name: formatMessage(translations.onThisPage),
       children: rootChildren,
       type: 'root',
       modelId: 'root'
