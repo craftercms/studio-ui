@@ -657,31 +657,6 @@
           return true;
         });
 
-        instance.contextMenuId = 'ContextmenuWrapper' + counter++;
-        var oContextMenu = new YAHOO.widget.ContextMenu(instance.contextMenuId, {
-          container: 'acn-context-menu',
-          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
-          shadow: true,
-          lazyload: true,
-          hidedelay: 700,
-          showdelay: 0,
-          classname: 'wcm-root-folder-context-menu',
-          zIndex: 100
-        });
-
-        this.manualContextMenu(tree, function(tree, target) {
-          self.onTriggerContextMenu(tree, tree.oContextMenu, target);
-        });
-
-        oContextMenu.subscribe(
-          'beforeShow',
-          function(e) {
-            Self.onTriggerContextMenu(tree, this);
-          },
-          tree,
-          false
-        );
-
         if (uniquePath) {
           nodeOpen = true;
           self.treePaths.push(tree.id);
@@ -777,8 +752,6 @@
             );
           })(tree, instance);
         }
-
-        tree.oContextMenu = oContextMenu;
 
         tree.draw();
         if (Object.prototype.toString.call(instance.path) === '[object Array]') {
@@ -1167,8 +1140,6 @@
 
           $(tree.oContextMenu.element).on('contextmenu-rendered', function() {
             let $contextMenu = $('#' + tree.oContextMenu.id);
-
-            $contextMenu.css('visibility', 'visible');
             $contextMenu.css('left', offsetLeft + 'px');
             $contextMenu.css('top', offsetTop + 'px');
           });
@@ -1177,7 +1148,8 @@
           let $contextMenu = $('#' + tree.oContextMenu.id);
           if ($contextMenu.length === 0) {
             let $contextMenuContainer = $('#acn-context-menu');
-
+            $contextMenu.css('left', offsetLeft + 'px');
+            $contextMenu.css('top', offsetTop + 'px');
             $contextMenuContainer.append(tree.oContextMenu.element);
           }
 
@@ -1298,6 +1270,46 @@
               var cont = j == 0 ? 0 : counter[key][j] + 1;
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
+
+          var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
+            container: 'acn-context-menu',
+            trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
+            shadow: true,
+            lazyload: true,
+            hidedelay: 700,
+            showdelay: 0,
+            classname: 'wcm-root-folder-context-menu',
+            zIndex: 100
+          });
+
+          oContextMenu.subscribe(
+            'beforeShow',
+            function (e) {
+              tree.oContextMenu.clearContent('');
+              if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
+                Self.onTriggerContextMenu(tree, this);
+              }
+            },
+            tree,
+            false
+          );
+
+          oContextMenu.subscribe(
+            'beforeHide',
+            function (e) {
+              this.manualTrigger = false;
+            },
+            tree,
+            false
+          );
+
+          tree.oContextMenu = oContextMenu;
+
+          this.manualContextMenu(tree, function(tree, target) {
+            self.onTriggerContextMenu(tree, tree.oContextMenu, target);
+            tree.oContextMenu.show();
+          });
+
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
           YDom.addClass(label, 'loading');
@@ -2163,7 +2175,6 @@
                 }
               }
               if (root && instance) {
-                var __self = this;
                 setTimeout(function() {
                   __self.openLatest(instance);
                 }, 100);
