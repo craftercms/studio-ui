@@ -198,7 +198,7 @@ export function getRect(id: number): DOMRect {
   return get(id).element.getBoundingClientRect();
 }
 
-export function fromRecord(record: ElementRecord, iceId: number): RegistryEntry {
+export function createIntermediateElementRecord(record: ElementRecord, iceId: number): RegistryEntry {
   if (!record) {
     return null;
   }
@@ -208,7 +208,7 @@ export function fromRecord(record: ElementRecord, iceId: number): RegistryEntry 
 
 export function fromICEId(iceId: number): RegistryEntry {
   const record = db[registry[iceId]?.[0]];
-  return fromRecord(record, iceId);
+  return createIntermediateElementRecord(record, iceId);
 }
 
 export function getRecordsFromIceId(iceId: number): RegistryEntry[] {
@@ -220,7 +220,7 @@ export function getRecordsFromIceId(iceId: number): RegistryEntry[] {
   } else if (recordsIds.length > 1) {
     recordsIds.forEach(recordId => {
       let record = db[recordId];
-      let registry = fromRecord(record, iceId);
+      let registry = createIntermediateElementRecord(record, iceId);
       if (registry) {
         records.push(registry);
       }
@@ -336,7 +336,17 @@ export function getElementFromICEProps(modelId: string, fieldId: string, index: 
     index: index
   });
 
-  return (recordId === -1 || !fromICEId(recordId)) ? null : fromICEId(recordId).element;
+  if(recordId === -1) {
+    const registryEntry = fromICEId(recordId)
+    if(registryEntry) {
+      return registryEntry.element
+    } else {
+      return null
+    }
+  } else {
+    return null
+  }
+
 }
 export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
   const recordId = iceRegistry.exists({
