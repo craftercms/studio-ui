@@ -28,7 +28,7 @@ export type GuestRules =
   | 'craftercms-snackbar'
   | 'craftercms-dragged-element'
   | 'craftercms-asset-uploader-mask'
-  | 'craftercms-element-selector'
+  | 'craftercms-field-instance-switcher'
   // Classes
   | '.craftercms-required-validation-failed'
   | '.craftercms-suggestion-validation-failed'
@@ -52,7 +52,7 @@ const getAllGuestRules: () => string[] = (() => {
     'craftercms-asset-uploader-mask-container': undefined,
     'craftercms-dragged-element': undefined,
     'craftercms-drop-marker': undefined,
-    'craftercms-element-selector': undefined,
+    'craftercms-field-instance-switcher': undefined,
     'craftercms-snackbar': undefined,
     'craftercms-zone-marker': undefined,
     'craftercms-zone-marker-label': undefined,
@@ -280,7 +280,7 @@ export default function(config: GuestStyleSheetConfig): Styles<'@global'> {
       top: -100,
       ...overrides['craftercms-dragged-element']
     },
-    'craftercms-element-selector': {
+    'craftercms-field-instance-switcher': {
       position: 'fixed',
       bottom: '10px',
       right: '10px',

@@ -336,7 +336,7 @@ export function getElementFromICEProps(modelId: string, fieldId: string, index: 
     index: index
   });
 
-  if(recordId === -1) {
+  if(recordId !== -1) {
     const registryEntry = fromICEId(recordId)
     if(registryEntry) {
       return registryEntry.element

@@ -546,6 +546,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       ofType(CONTENT_TREE_FIELD_SELECTED),
       switchMap((action) => {
         const { iceProps, scrollElement, name } = action.payload;
+
         if (scrollToIceProps(iceProps, scrollElement)) {
           return escape$.pipe(
             takeUntil(clearAndListen$),
@@ -569,7 +570,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
       withLatestFrom(state$),
       tap(([action, state]) => {
         const { scrollElement } = action.payload;
-        let registryEntryId = state.elementSelector.registryEntryIds[state.elementSelector.currentElement];
+        let registryEntryId = state.fieldSwitcher.registryEntryIds[state.fieldSwitcher.currentElement];
         scrollToElement(get(registryEntryId).element, scrollElement);
       }),
       ignoreElements()
