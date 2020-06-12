@@ -167,7 +167,6 @@ export function deregister(id: string | number): ElementRecord {
       iceRegistry.deregister(iceId)
     });
     delete db[id];
-    //TODO: delete from registry;
   }
   return record;
 }
