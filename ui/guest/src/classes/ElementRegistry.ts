@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import iceRegistry from './ICERegistry';
+import iceRegistry, { getById } from './ICERegistry';
 import contentController from './ContentController';
 import { take } from 'rxjs/operators';
 import ContentType from '../utils/contentType';
@@ -202,8 +202,8 @@ export function createIntermediateElementRecord(record: ElementRecord, iceId: nu
   if (!record) {
     return null;
   }
-  const { id, element, label, modelId, index, fieldId: fieldIds } = record;
-  return { id, element, modelId, index, label, fieldId: fieldIds[0], iceId };
+  const { id, element, label, modelId, index } = record;
+  return { id, element, modelId, index, label, fieldId: getById(iceId).fieldId, iceId };
 }
 
 export function fromICEId(iceId: number): RegistryEntry {
