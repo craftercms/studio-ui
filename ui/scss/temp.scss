@@ -392,7 +392,21 @@ div#acn-active-content {
   .treenode-label {
     margin: 0 0 5px 0;
 
+    &.warning {
+      color: #a2830f !important;
+      .status-icon {
+        color: #d1a70b;
+        .fa {
+          color: #d1a70b;
+        }
+      }
+    }
+
     .highlighted {
+      font-weight: bold;
+    }
+
+    &.highlighted {
       font-weight: bold;
     }
   }
