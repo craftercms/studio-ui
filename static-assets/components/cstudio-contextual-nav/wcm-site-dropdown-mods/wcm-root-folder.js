@@ -1069,7 +1069,7 @@
       /**
        *
        */
-      manualContextMenu: function(tree, callback) {
+      manualContextMenu: function(tree) {
         const $treeParent = $('#' + tree.id).parent(),
           $dropdownMenu = $('#acn-dropdown-menu').parent();
 
@@ -1092,10 +1092,12 @@
                 .closest('.ygtvitem')[0]
                 .getBoundingClientRect().top - 48;
 
-          $contextMenuEllipsis.show();
-          $contextMenuEllipsis.attr('data-tree', tree.id);
-          $contextMenuEllipsis.data('target', target);
-          $contextMenuEllipsis.css('top', top);
+          if(!$(target).hasClass('deleted-lock')) {
+            $contextMenuEllipsis.show();
+            $contextMenuEllipsis.attr('data-tree', tree.id);
+            $contextMenuEllipsis.data('target', target);
+            $contextMenuEllipsis.css('top', top);
+          }
 
           $sidebarHighlight.show();
           $sidebarHighlight.css('top', top - 2);
@@ -1138,22 +1140,14 @@
           const offsetLeft = e.clientX;
           const offsetTop = e.clientY - 50;
 
-          $(tree.oContextMenu.element).on('contextmenu-rendered', function() {
-            let $contextMenu = $('#' + tree.oContextMenu.id);
-            $contextMenu.css('left', offsetLeft + 'px');
-            $contextMenu.css('top', offsetTop + 'px');
-          });
-
-          // // If context menu hasn't been initialized, create it
           let $contextMenu = $('#' + tree.oContextMenu.id);
           if ($contextMenu.length === 0) {
             let $contextMenuContainer = $('#acn-context-menu');
-            $contextMenu.css('left', offsetLeft + 'px');
-            $contextMenu.css('top', offsetTop + 'px');
             $contextMenuContainer.append(tree.oContextMenu.element);
           }
 
-          callback(tree, target);
+          self.onTriggerContextMenu(tree, tree.oContextMenu, target , { offsetLeft, offsetTop });
+          tree.oContextMenu.show();
         });
       },
 
@@ -1285,6 +1279,12 @@
           oContextMenu.subscribe(
             'beforeShow',
             function (e) {
+              if(this.manualTrigger) {
+                let $contextMenu = $('#' + tree.oContextMenu.id);
+                $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
+                $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
+              }
+
               tree.oContextMenu.clearContent('');
               if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
                 Self.onTriggerContextMenu(tree, this);
@@ -1305,10 +1305,7 @@
 
           tree.oContextMenu = oContextMenu;
 
-          this.manualContextMenu(tree, function(tree, target) {
-            self.onTriggerContextMenu(tree, tree.oContextMenu, target);
-            tree.oContextMenu.show();
-          });
+          this.manualContextMenu(tree);
 
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
@@ -3132,8 +3129,8 @@
       /**
        * load context menu
        */
-      onTriggerContextMenu: function(tree, p_aArgs, target) {
-        var isManualTrigger = target ? true : false,
+      onTriggerContextMenu: function(tree, p_aArgs, target, position) {
+        var isManualTrigger = target ? position : false,
           target = target ? target : p_aArgs.contextEventTarget;
 
         p_aArgs.manualTrigger = isManualTrigger;
