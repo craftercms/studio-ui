@@ -142,7 +142,7 @@ export function PreviewConcierge(props: any) {
   // Post content types
   useEffect(() => {
     contentTypes && contentTypes$.next(contentTypes);
-  });
+  }, [contentTypes, contentTypes$]);
 
   useEffect(() => {
     const hostToGuest$ = getHostToGuestBus();
