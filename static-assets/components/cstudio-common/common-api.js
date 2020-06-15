@@ -8353,7 +8353,7 @@ var nodeOpen = false,
           statusClass = workflowIcons.live + ' live';
         } else if (statusObj.deleted) {
           //deleted
-          statusClass = workflowIcons.deleted + ' deleted';
+          statusClass = workflowIcons.deleted;
         } else if (statusObj.inProgress) {
           //edited
           statusClass = workflowIcons.edited + ' edited';
@@ -8386,7 +8386,7 @@ var nodeOpen = false,
             icon: {}
           };
 
-        if (treeNodeTO.isAsset || 'unknown' === treeNodeTO.contentType) {
+        if ((treeNodeTO.isAsset || 'unknown' === treeNodeTO.contentType) && treeNodeTO.mimeType) {
           //assets - when outside from static assets folder isAsset
           //         is false, so on unknown it's considered an asset
           var mimetype = treeNodeTO.mimeType;

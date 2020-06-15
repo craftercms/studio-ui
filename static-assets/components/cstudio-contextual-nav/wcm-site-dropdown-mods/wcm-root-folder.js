@@ -661,27 +661,6 @@
           return true;
         });
 
-        instance.contextMenuId = 'ContextmenuWrapper' + counter++;
-        var oContextMenu = new YAHOO.widget.ContextMenu(instance.contextMenuId, {
-          container: 'acn-context-menu',
-          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
-          shadow: true,
-          lazyload: true,
-          hidedelay: 700,
-          showdelay: 0,
-          classname: 'wcm-root-folder-context-menu',
-          zIndex: 100
-        });
-
-        oContextMenu.subscribe(
-          'beforeShow',
-          function () {
-            Self.onTriggerContextMenu(tree, this);
-          },
-          tree,
-          false
-        );
-
         if (uniquePath) {
           nodeOpen = true;
           self.treePaths.push(tree.id);
@@ -1045,12 +1024,14 @@
             nodeSpan.appendChild(childOpen);
           }
 
-          nodeSpan.innerHTML += treeNodeTO.label;
-          nodeSpan.setAttribute('title', treeNodeTO.title);
-          nodeSpan.className =
-            treeNodeTO.style + ' yui-resize-label treenode-label over-effect-set';
-
-          nodeSpan.className = highlight ? nodeSpan.className + ' highlighted' : nodeSpan.className;
+          nodeSpan.innerHTML += treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label;
+          const tooltip = treeNodeTO.statusObj.deleted
+            ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound, { path: treeNodeTO.path })}</div>`
+            : treeNodeTO.title;
+          nodeSpan.setAttribute('title', tooltip);
+          nodeSpan.className = `${treeNodeTO.style} yui-resize-label treenode-label over-effect-set ${
+            treeNodeTO.statusObj.deleted && 'warning'
+          } ${highlight && 'highlighted'}`;
 
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
@@ -1206,6 +1187,32 @@
               var cont = j == 0 ? 0 : counter[key][j] + 1;
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
+
+          var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
+            container: 'acn-context-menu',
+            trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
+            shadow: true,
+            lazyload: true,
+            hidedelay: 700,
+            showdelay: 0,
+            classname: 'wcm-root-folder-context-menu',
+            zIndex: 100
+          });
+
+          oContextMenu.subscribe(
+            'beforeShow',
+            function (e) {
+              tree.oContextMenu.clearContent('');
+              if (!tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
+                Self.onTriggerContextMenu(tree, this);
+              }
+            },
+            tree,
+            false
+          );
+
+          tree.oContextMenu = oContextMenu;
+
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
           YDom.addClass(label, 'loading');
