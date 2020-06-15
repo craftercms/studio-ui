@@ -1029,10 +1029,9 @@
             ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound, { path: treeNodeTO.path })}</div>`
             : treeNodeTO.title;
           nodeSpan.setAttribute('title', tooltip);
-          nodeSpan.className = `
-            ${treeNodeTO.style} yui-resize-label treenode-label over-effect-set
-            ${treeNodeTO.statusObj.deleted && 'warning'} ${highlight && 'highlighted'}
-          `;
+          nodeSpan.className = `${treeNodeTO.style} yui-resize-label treenode-label over-effect-set ${
+            treeNodeTO.statusObj.deleted && 'warning'
+          } ${highlight && 'highlighted'}`;
 
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
