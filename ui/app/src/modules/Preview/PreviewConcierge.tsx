@@ -121,7 +121,6 @@ export function PreviewConcierge(props: any) {
   const contentTypes = useContentTypeList();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site });
-  const assets = useSelection((state) => state.preview.assets);
   const contentTypeComponents = useSelection((state) => state.preview.components);
   const audiencesPanel = useSelection((state) => state.preview.audiencesPanel);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -144,7 +143,7 @@ export function PreviewConcierge(props: any) {
   // Post content types
   useEffect(() => {
     contentTypes && contentTypes$.next(contentTypes);
-  });
+  }, [contentTypes, contentTypes$]);
 
   useEffect(() => {
     const hostToGuest$ = getHostToGuestBus();

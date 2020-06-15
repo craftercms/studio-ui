@@ -95,12 +95,16 @@ export function denormalizeModel(
   const model = { ...normalized };
   Object.entries(model).forEach(([prop, value]) => {
     if (prop.endsWith('_o')) {
-      const collection: string[] = value;
+      const collection: any[] = value;
       if (collection.length) {
         const isNodeSelector = typeof collection[0] === 'string';
         if (isNodeSelector) {
           model[prop] = collection.map((item) =>
             denormalizeModel(modelLookup[item], modelLookup)
+          );
+        } else {
+          model[prop] = collection.map((item) =>
+            denormalizeModel(item, modelLookup)
           );
         }
       }

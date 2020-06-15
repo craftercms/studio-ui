@@ -345,6 +345,7 @@
   "usersAdmin.lastName": "성",
   "usersAdmin.maxLengthError": "{field} 은 {size} 자보다 길 수 없습니다",
   "usersAdmin.userName": "사용자 이름",
+  "wcmRootFolder.pathNotFound": " {path} 폴더를 찾을 수 없습니다.",
   "words.browse": "검색",
   "words.cancel": "취소",
   "words.clear": "명확한",

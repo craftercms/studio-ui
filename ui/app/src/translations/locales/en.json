@@ -345,6 +345,7 @@
   "usersAdmin.lastName": "Last Name",
   "usersAdmin.maxLengthError": "{field} can't be longer than {size} characters",
   "usersAdmin.userName": "User Name",
+  "wcmRootFolder.pathNotFound": "Folder {path} not found.",
   "words.browse": "Browse",
   "words.cancel": "Cancel",
   "words.clear": "Clear",
