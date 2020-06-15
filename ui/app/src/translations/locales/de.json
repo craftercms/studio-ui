@@ -345,6 +345,7 @@
   "usersAdmin.lastName": "Nachname",
   "usersAdmin.maxLengthError": "{field} darf nicht länger als {size} Zeichen sein",
   "usersAdmin.userName": "Nutzername",
+  "wcmRootFolder.pathNotFound": "Ordner {path} nicht gefunden.",
   "words.browse": "Durchsuche",
   "words.cancel": "Stornieren",
   "words.clear": "klar",
