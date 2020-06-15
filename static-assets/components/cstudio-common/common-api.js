@@ -269,7 +269,7 @@ var nodeOpen = false,
         processing: 'fa-spinner fa-spin',
         locked: 'fa-lock',
         neverpublished: 'fa-plus',
-        deleted: 'fa-exclamation-triangle',
+        deleted: 'fa-ban',
         scheduled: 'fa-clock-o',
         inworkflow: 'fa-flag',
         edited: 'fa-pencil'
