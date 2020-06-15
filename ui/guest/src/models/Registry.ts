@@ -18,7 +18,7 @@ export interface RegistryEntry {
   id: number;
   element: Element;
   modelId: string;
-  index: number;
+  index: number | string;
   label: string;
   fieldId: string;
   iceId: number;

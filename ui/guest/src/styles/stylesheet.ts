@@ -28,6 +28,7 @@ export type GuestRules =
   | 'craftercms-snackbar'
   | 'craftercms-dragged-element'
   | 'craftercms-asset-uploader-mask'
+  | 'craftercms-field-instance-switcher'
   // Classes
   | '.craftercms-required-validation-failed'
   | '.craftercms-suggestion-validation-failed'
@@ -35,7 +36,7 @@ export type GuestRules =
   | '.craftercms-content-tree-locate'
   | '.craftercms-zone-marker-label__multi-mode'
   | '.craftercms-ice-on'
-| '.mce-content-body'
+  | '.mce-content-body'
   // Keyframes
   | '@keyframes craftercms-uploader-mask-animation'
   | '@keyframes craftercms-placeholder-animation'
@@ -51,6 +52,7 @@ const getAllGuestRules: () => string[] = (() => {
     'craftercms-asset-uploader-mask-container': undefined,
     'craftercms-dragged-element': undefined,
     'craftercms-drop-marker': undefined,
+    'craftercms-field-instance-switcher': undefined,
     'craftercms-snackbar': undefined,
     'craftercms-zone-marker': undefined,
     'craftercms-zone-marker-label': undefined,
@@ -277,6 +279,37 @@ export default function(config: GuestStyleSheetConfig): Styles<'@global'> {
       position: 'absolute',
       top: -100,
       ...overrides['craftercms-dragged-element']
+    },
+    'craftercms-field-instance-switcher': {
+      position: 'fixed',
+      bottom: '10px',
+      right: '10px',
+      backgroundColor: palette.white,
+      boxShadow: '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)',
+      padding: '10px 14px',
+      color: palette.black,
+      display: 'flex',
+      alignItems: 'center',
+      zIndex: 2,
+      '& .disable': {
+        pointerEvents: 'none',
+        opacity: '0.5'
+      },
+      '& i': {
+        display: 'inherit',
+        padding: '2px',
+        cursor: 'pointer'
+      },
+      '& svg': {
+        fill: 'currentColor',
+        width: '1em',
+        height: '1em',
+        display: 'inline-block',
+        fontSize: '1.5rem',
+        transition: 'fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+        flexShrink: 0,
+        userSelect: 'none'
+      }
     },
     // Classes
     '.craftercms-required-validation-failed': {

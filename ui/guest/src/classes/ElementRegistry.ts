@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import iceRegistry from './ICERegistry';
+import iceRegistry, { getById } from './ICERegistry';
 import contentController from './ContentController';
 import { take } from 'rxjs/operators';
 import ContentType from '../utils/contentType';
@@ -107,8 +107,8 @@ export function register(payload: ElementRecordRegistration): number {
     fieldId == null
       ? []
       : Array.isArray(fieldId)
-        ? fieldId
-        : fieldId.split(',').map((str) => str.trim());
+      ? fieldId
+      : fieldId.split(',').map((str) => str.trim());
 
   // Create/register the physical record
   db[id] = { id, element, modelId, index, label, fieldId: fieldIds, iceIds, complete: false };
@@ -131,18 +131,23 @@ export function register(payload: ElementRecordRegistration): number {
 
 export function completeDeferredRegistration(id: number): void {
   const record = db[id];
-  const { element, modelId, index, label, fieldId: fieldIds, iceIds } = record;
+  const { modelId, index, fieldId: fieldIds, iceIds } = record;
 
   if (fieldIds.length > 0) {
-    // @ts-ignore TODO: Fix type
     fieldIds.forEach((fieldId) => {
       const iceId = iceRegistry.register({ modelId, index, fieldId });
-      registry[iceId] = { id, element, modelId, index, label, fieldId, iceId };
+      if (!registry[iceId]) {
+        registry[iceId] = [];
+      }
+      registry[iceId].push(record.id);
       iceIds.push(iceId);
     });
   } else {
     const iceId = iceRegistry.register({ modelId, index });
-    registry[iceId] = { id, element, modelId, index, label, fieldId: undefined, iceId };
+    if (!registry[iceId]) {
+      registry[iceId] = [];
+    }
+    registry[iceId].push(record.id);
     iceIds.push(iceId);
   }
 
@@ -153,7 +158,14 @@ export function deregister(id: string | number): ElementRecord {
   const record = db[id];
   if (notNullOrUndefined(record)) {
     const { iceIds } = record;
-    iceIds.forEach((iceId) => iceRegistry.deregister(iceId));
+    iceIds.forEach((iceId) => {
+      if(registry[iceId].length === 1) {
+        delete registry[iceId];
+      } else if (registry[iceId].length > 1) {
+        registry[iceId].splice(registry[iceId].indexOf(record.id), 1);
+      }
+      iceRegistry.deregister(iceId)
+    });
     delete db[id];
   }
   return record;
@@ -163,7 +175,7 @@ export function getDraggable(id: number): number | boolean {
   const record = get(id);
   return forEach(
     record.iceIds,
-    function(iceId): boolean | number {
+    function (iceId): boolean | number {
       if (iceRegistry.isMovable(iceId)) {
         return iceId;
       }
@@ -186,11 +198,38 @@ export function getRect(id: number): DOMRect {
   return get(id).element.getBoundingClientRect();
 }
 
+export function createIntermediateElementRecord(record: ElementRecord, iceId: number): RegistryEntry {
+  if (!record) {
+    return null;
+  }
+  const { id, element, label, modelId, index } = record;
+  return { id, element, modelId, index, label, fieldId: getById(iceId).fieldId, iceId };
+}
+
 export function fromICEId(iceId: number): RegistryEntry {
-  return registry[iceId];
-  // return Object.values(db).find(({ iceIds }) => {
-  //   return iceIds.includes(iceId);
-  // });
+  const record = db[registry[iceId]?.[0]];
+  return createIntermediateElementRecord(record, iceId);
+}
+
+export function getRecordsFromIceId(iceId: number): RegistryEntry[] {
+  const recordsIds = registry[iceId];
+  const records = [];
+
+  if (!recordsIds) {
+    return null;
+  } else if (recordsIds.length > 1) {
+    recordsIds.forEach(recordId => {
+      let record = db[recordId];
+      let registry = createIntermediateElementRecord(record, iceId);
+      if (registry) {
+        records.push(registry);
+      }
+    });
+    return records.length > 0 ? records : null;
+  } else {
+    let registry = fromICEId(iceId);
+    return registry ? [registry] : null;
+  }
 }
 
 export function compileDropZone(iceId: number): DropZone {
@@ -290,14 +329,24 @@ export function getDragContextFromReceptacles(
   return response;
 }
 
-export function getElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
+export function getElementFromICEProps(modelId: string, fieldId: string, index: string | number): Element {
   const recordId = iceRegistry.exists({
     modelId: modelId,
     fieldId: fieldId,
     index: index
   });
 
-  return (recordId === -1 || !fromICEId(recordId)) ? null : $(fromICEId(recordId).element);
+  if(recordId !== -1) {
+    const registryEntry = fromICEId(recordId)
+    if(registryEntry) {
+      return registryEntry.element
+    } else {
+      return null
+    }
+  } else {
+    return null
+  }
+
 }
 export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): JQuery<Element> {
   const recordId = iceRegistry.exists({
