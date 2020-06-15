@@ -657,31 +657,6 @@
           return true;
         });
 
-        instance.contextMenuId = 'ContextmenuWrapper' + counter++;
-        var oContextMenu = new YAHOO.widget.ContextMenu(instance.contextMenuId, {
-          container: 'acn-context-menu',
-          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
-          shadow: true,
-          lazyload: true,
-          hidedelay: 700,
-          showdelay: 0,
-          classname: 'wcm-root-folder-context-menu',
-          zIndex: 100
-        });
-
-        this.manualContextMenu(tree, function(tree, target) {
-          self.onTriggerContextMenu(tree, tree.oContextMenu, target);
-        });
-
-        oContextMenu.subscribe(
-          'beforeShow',
-          function(e) {
-            Self.onTriggerContextMenu(tree, this);
-          },
-          tree,
-          false
-        );
-
         if (uniquePath) {
           nodeOpen = true;
           self.treePaths.push(tree.id);
@@ -777,8 +752,6 @@
             );
           })(tree, instance);
         }
-
-        tree.oContextMenu = oContextMenu;
 
         tree.draw();
         if (Object.prototype.toString.call(instance.path) === '[object Array]') {
@@ -1047,12 +1020,14 @@
             nodeSpan.appendChild(childOpen);
           }
 
-          nodeSpan.innerHTML += treeNodeTO.label;
-          nodeSpan.setAttribute('title', treeNodeTO.title);
-          nodeSpan.className =
-            treeNodeTO.style + ' yui-resize-label treenode-label over-effect-set';
-
-          nodeSpan.className = highlight ? nodeSpan.className + ' highlighted' : nodeSpan.className;
+          nodeSpan.innerHTML += treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label;
+          const tooltip = treeNodeTO.statusObj.deleted
+            ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound, { path: treeNodeTO.path })}</div>`
+            : treeNodeTO.title;
+          nodeSpan.setAttribute('title', tooltip);
+          nodeSpan.className = `${treeNodeTO.style} yui-resize-label treenode-label over-effect-set ${
+            treeNodeTO.statusObj.deleted && 'warning'
+          } ${highlight && 'highlighted'}`;
 
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
@@ -1093,7 +1068,7 @@
       /**
        *
        */
-      manualContextMenu: function(tree, callback) {
+      manualContextMenu: function(tree) {
         const $treeParent = $('#' + tree.id).parent(),
           $dropdownMenu = $('#acn-dropdown-menu').parent();
 
@@ -1116,10 +1091,12 @@
                 .closest('.ygtvitem')[0]
                 .getBoundingClientRect().top - 48;
 
-          $contextMenuEllipsis.show();
-          $contextMenuEllipsis.attr('data-tree', tree.id);
-          $contextMenuEllipsis.data('target', target);
-          $contextMenuEllipsis.css('top', top);
+          if(!$(target).hasClass('deleted-lock')) {
+            $contextMenuEllipsis.show();
+            $contextMenuEllipsis.attr('data-tree', tree.id);
+            $contextMenuEllipsis.data('target', target);
+            $contextMenuEllipsis.css('top', top);
+          }
 
           $sidebarHighlight.show();
           $sidebarHighlight.css('top', top - 2);
@@ -1162,23 +1139,14 @@
           const offsetLeft = e.clientX;
           const offsetTop = e.clientY - 50;
 
-          $(tree.oContextMenu.element).on('contextmenu-rendered', function() {
-            let $contextMenu = $('#' + tree.oContextMenu.id);
-
-            $contextMenu.css('visibility', 'visible');
-            $contextMenu.css('left', offsetLeft + 'px');
-            $contextMenu.css('top', offsetTop + 'px');
-          });
-
-          // // If context menu hasn't been initialized, create it
           let $contextMenu = $('#' + tree.oContextMenu.id);
           if ($contextMenu.length === 0) {
             let $contextMenuContainer = $('#acn-context-menu');
-
             $contextMenuContainer.append(tree.oContextMenu.element);
           }
 
-          callback(tree, target);
+          self.onTriggerContextMenu(tree, tree.oContextMenu, target , { offsetLeft, offsetTop });
+          tree.oContextMenu.show();
         });
       },
 
@@ -1295,6 +1263,49 @@
               var cont = j == 0 ? 0 : counter[key][j] + 1;
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
+
+          var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
+            container: 'acn-context-menu',
+            trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
+            shadow: true,
+            lazyload: true,
+            hidedelay: 700,
+            showdelay: 0,
+            classname: 'wcm-root-folder-context-menu',
+            zIndex: 100
+          });
+
+          oContextMenu.subscribe(
+            'beforeShow',
+            function (e) {
+              if(this.manualTrigger) {
+                let $contextMenu = $('#' + tree.oContextMenu.id);
+                $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
+                $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
+              }
+
+              tree.oContextMenu.clearContent('');
+              if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
+                Self.onTriggerContextMenu(tree, this);
+              }
+            },
+            tree,
+            false
+          );
+
+          oContextMenu.subscribe(
+            'beforeHide',
+            function (e) {
+              this.manualTrigger = false;
+            },
+            tree,
+            false
+          );
+
+          tree.oContextMenu = oContextMenu;
+
+          this.manualContextMenu(tree);
+
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
           YDom.addClass(label, 'loading');
@@ -2160,7 +2171,6 @@
                 }
               }
               if (root && instance) {
-                var __self = this;
                 setTimeout(function() {
                   __self.openLatest(instance);
                 }, 100);
@@ -3118,8 +3128,8 @@
       /**
        * load context menu
        */
-      onTriggerContextMenu: function(tree, p_aArgs, target) {
-        var isManualTrigger = target ? true : false,
+      onTriggerContextMenu: function(tree, p_aArgs, target, position) {
+        var isManualTrigger = target ? position : false,
           target = target ? target : p_aArgs.contextEventTarget;
 
         p_aArgs.manualTrigger = isManualTrigger;

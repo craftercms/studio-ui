@@ -40,6 +40,7 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
+  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TREE_FIELD_SELECTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
@@ -65,6 +66,7 @@ import { scrollToReceptacle } from '../utils/dom';
 import { dragOk } from '../store/util';
 import SnackBar, { Snack } from './SnackBar';
 import { createLocationArgument } from '../utils/util';
+import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -385,6 +387,22 @@ function Guest(props: GuestProps) {
           {Object.values(state.uploading).map((highlight: HighlightData) => (
             <AssetUploaderMask key={highlight.id} {...highlight} />
           ))}
+          {
+            state.fieldSwitcher &&
+            <FieldInstanceSwitcher
+              onNext={() => dispatch({
+                type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
+                payload: { type: 'next', scrollElement }
+              })}
+              onPrev={() => dispatch({
+                type: CONTENT_TREE_SWITCH_FIELD_INSTANCE,
+                payload: { type: 'prev', scrollElement }
+              })}
+              registryEntryIds={state.fieldSwitcher.registryEntryIds}
+              currentElement={state.fieldSwitcher.currentElement}
+            />
+          }
+
           {Object.values(state.highlighted).map((highlight: HighlightData, index, array) => (
             <ZoneMarker
               key={highlight.id}

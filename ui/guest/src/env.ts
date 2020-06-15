@@ -32,6 +32,7 @@ declare global {
       'craftercms-asset-uploader-mask': CrafterCMSCustomElementProps;
       'craftercms-snackbar': CrafterCMSCustomElementProps;
       'craftercms-dragged-element': CrafterCMSCustomElementProps;
+      'craftercms-field-instance-switcher': CrafterCMSCustomElementProps;
     }
   }
 }

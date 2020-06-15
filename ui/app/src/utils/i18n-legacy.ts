@@ -941,6 +941,13 @@ const receptaclesMessages = defineMessages({
   }
 });
 
+const wcmRootFolder = defineMessages({
+  pathNotFound: {
+    id: 'wcmRootFolder.pathNotFound',
+    defaultMessage: 'Folder {path} not found.'
+  },
+})
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -976,5 +983,6 @@ export default {
   dashboardWidgetsMessages,
   bulkUploadConfirmDialogMessages,
   embeddedLegacyFormMessages,
-  receptaclesMessages
+  receptaclesMessages,
+  wcmRootFolder
 };

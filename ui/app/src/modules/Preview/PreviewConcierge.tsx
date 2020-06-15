@@ -27,6 +27,7 @@ import {
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
+  DELETE_ITEM_OPERATION_COMPLETE,
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   DESKTOP_ASSET_UPLOAD_PROGRESS,
@@ -319,6 +320,10 @@ export function PreviewConcierge(props: any) {
             parentModelId ? models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
+              hostToHost$.next({
+                type: DELETE_ITEM_OPERATION_COMPLETE,
+                payload
+              });
               enqueueSnackbar('Delete operation completed.');
             },
             (error) => {

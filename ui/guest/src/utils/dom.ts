@@ -366,22 +366,26 @@ export function scrollToIceProps(
   scrollElement: string,
   animate: boolean = false
 ): JQuery<Element> {
-  const $element = getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index);
+  return scrollToElement(getElementFromICEProps(iceProps.modelId, iceProps.fieldId, iceProps.index), scrollElement, animate);
+}
 
-  if ($element && $element.length) {
-    if (!isElementInView($element)) {
-      $(scrollElement).animate(
-        {
-          scrollTop: $element.offset().top - 100
-        },
-        300,
-        function() {
-          if (animate) addAnimation($element, 'craftercms-content-tree-locate');
-        }
-      );
-    } else if (animate) {
-      addAnimation($element, 'craftercms-content-tree-locate');
-    }
+export function scrollToElement(element: Element, scrollElement: string, animate: boolean = false): JQuery<Element> {
+  const $element = $(element);
+
+  if (!element) {
+    return null;
+  } else if (!isElementInView($element)) {
+    $(scrollElement).animate(
+      {
+        scrollTop: $element.offset().top - 100
+      },
+      300,
+      function () {
+        if (animate) addAnimation($element, 'craftercms-content-tree-locate');
+      }
+    );
+  } else if (animate) {
+    addAnimation($element, 'craftercms-content-tree-locate');
   }
 
   return $element;
