@@ -376,58 +376,6 @@ var storage = CStudioAuthoring.Storage;
         return true;
       });
 
-      var contextMenu = new YAHOO.widget.ContextMenu(contextMenuId, {
-        container: 'acn-context-menu',
-        trigger: 'acn-dropdown-menu-wrapper',
-        shadow: false,
-        lazyload: true,
-        zIndex: 1030
-      });
-
-      tree.oContextMenu = contextMenu;
-
-      CStudioAuthoring.ContextualNav.WcmRootFolder.manualContextMenu(tree, function (tree, target, offsetLeft, offsetTop) {
-        CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(
-          tree,
-          tree.oContextMenu,
-          tree.oContextMenu.id,
-          target,
-          { offsetLeft, offsetTop }
-        );
-        tree.oContextMenu.show();
-      });
-
-      if (instance.IsContentMenuCreated == false) {
-        instance.IsContentMenuCreated = true;
-        contextMenu.subscribe(
-          'beforeShow',
-          function() {
-            if (this.manualTrigger) {
-              let $contextMenu = $('#' + tree.oContextMenu.id);
-              $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
-              $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
-            } else {
-              CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(
-                tree,
-                this,
-                contextMenuId
-              );
-            }
-          },
-          tree,
-          false
-        );
-
-        contextMenu.subscribe(
-          'beforeHide',
-          function (e) {
-            this.manualTrigger = false;
-          },
-          tree,
-          false
-        );
-      }
-
       //if(uniquePath) {
       var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
       nodeOpen = true;
@@ -492,21 +440,6 @@ var storage = CStudioAuthoring.Storage;
       })(tree, instance);
       //}
 
-      contextMenu.subscribe(
-        'show',
-        function() {
-          if (!this.manualTrigger && !YDom.isAncestor(tree.id, this.contextEventTarget)) {
-            this.hide();
-          }
-          var idTree = tree.id.toString().replace(/-/g, '');
-          RootFolder().myTree = RootFolder().myTreePages[idTree];
-        },
-        tree,
-        false
-      );
-
-
-      //tree.oContextMenu = contextMenu;
       tree.draw();
 
       if (Object.prototype.toString.call(instance.path) === '[object Array]') {
@@ -937,8 +870,70 @@ var storage = CStudioAuthoring.Storage;
             return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
           };
 
+        var contextMenuPrefix = 'ContextMenu-';
+        var contextMenuId = contextMenuPrefix + tree.id;
 
-        //tree weas c
+        var contextMenu = new YAHOO.widget.ContextMenu(contextMenuId, {
+          container: 'acn-context-menu',
+          trigger: 'acn-dropdown-menu-wrapper',
+          shadow: false,
+          lazyload: true,
+          zIndex: 1030
+        });
+
+        CStudioAuthoring.ContextualNav.WcmRootFolder.manualContextMenu(tree, function (tree, target, offsetLeft, offsetTop) {
+          CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(
+            tree,
+            tree.oContextMenu,
+            tree.oContextMenu.id,
+            target,
+            { offsetLeft, offsetTop }
+          );
+          tree.oContextMenu.show();
+        });
+
+        contextMenu.subscribe(
+          'beforeShow',
+          function () {
+            if (this.manualTrigger) {
+              let $contextMenu = $('#' + tree.oContextMenu.id);
+              $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
+              $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
+            } else {
+              CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(
+                tree,
+                this,
+                contextMenuId
+              );
+            }
+          },
+          tree,
+          false
+        );
+
+        contextMenu.subscribe(
+          'beforeHide',
+          function (e) {
+            this.manualTrigger = false;
+          },
+          tree,
+          false
+        );
+
+        contextMenu.subscribe(
+          'show',
+          function () {
+            if (!this.manualTrigger && !YDom.isAncestor(tree.id, this.contextEventTarget)) {
+              this.hide();
+            }
+            var idTree = tree.id.toString().replace(/-/g, '');
+            RootFolder().myTree = RootFolder().myTreePages[idTree];
+          },
+          tree,
+          false
+        );
+
+        tree.oContextMenu = contextMenu;
 
         var YSelector = YAHOO.util.Selector.query;
         var label = instance.rootFolderEl.previousElementSibling;
