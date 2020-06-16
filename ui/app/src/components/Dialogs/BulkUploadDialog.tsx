@@ -631,7 +631,10 @@ export default function (props: BulkUploadProps) {
   const cancelRequestObservable$ = useSubject<void>();
 
   const onStatusChange = useCallback((status: DropZoneStatus) => {
-    setDropZoneStatus(status);
+    setDropZoneStatus({
+      ...status,
+      progress: percentageCalculator(status.uploadedFiles, status.files)
+    });
     if (minimized) {
       dispatch(updateDialog({ id, status }));
     }
