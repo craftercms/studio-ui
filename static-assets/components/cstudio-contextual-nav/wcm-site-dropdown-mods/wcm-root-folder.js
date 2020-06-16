@@ -344,6 +344,9 @@
         var pathFlag = true;
 
         var tree = (instance.tree = new YAHOO.widget.TreeView(treeEl));
+
+        tree = this.initializeContextMenu(tree, instance);
+
         tree.setDynamicLoad(this.onLoadNodeDataOnClick);
         /*tree.subscribe("collapse", function(node) {this.collapseTree});
                 tree.subscribe("expand", function(node) {this.expandTree});*/
@@ -1065,6 +1068,55 @@
         return treeNode;
       },
 
+      initializeContextMenu(tree, instance) {
+        var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
+          container: 'acn-context-menu',
+          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
+          shadow: true,
+          lazyload: true,
+          hidedelay: 700,
+          showdelay: 0,
+          classname: 'wcm-root-folder-context-menu',
+          zIndex: 100
+        });
+
+        oContextMenu.subscribe(
+          'beforeShow',
+          function (e) {
+            if (this.manualTrigger) {
+              let $contextMenu = $('#' + tree.oContextMenu.id);
+              $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
+              $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
+            }
+
+            tree.oContextMenu.clearContent('');
+            if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
+              Self.onTriggerContextMenu(tree, this);
+            }
+          },
+          tree,
+          false
+        );
+
+        oContextMenu.subscribe(
+          'beforeHide',
+          function (e) {
+            this.manualTrigger = false;
+          },
+          tree,
+          false
+        );
+
+        tree.oContextMenu = oContextMenu;
+
+        this.manualContextMenu(tree, (tree, target, offsetLeft, offsetTop) => {
+          self.onTriggerContextMenu(tree, tree.oContextMenu, target, { offsetLeft, offsetTop });
+          tree.oContextMenu.show();
+        });
+
+        return tree;
+      },
+
       /**
        *
        */
@@ -1263,50 +1315,7 @@
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
 
-          var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
-            container: 'acn-context-menu',
-            trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
-            shadow: true,
-            lazyload: true,
-            hidedelay: 700,
-            showdelay: 0,
-            classname: 'wcm-root-folder-context-menu',
-            zIndex: 100
-          });
-
-          oContextMenu.subscribe(
-            'beforeShow',
-            function (e) {
-              if(this.manualTrigger) {
-                let $contextMenu = $('#' + tree.oContextMenu.id);
-                $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
-                $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
-              }
-
-              tree.oContextMenu.clearContent('');
-              if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
-                Self.onTriggerContextMenu(tree, this);
-              }
-            },
-            tree,
-            false
-          );
-
-          oContextMenu.subscribe(
-            'beforeHide',
-            function (e) {
-              this.manualTrigger = false;
-            },
-            tree,
-            false
-          );
-
-          tree.oContextMenu = oContextMenu;
-
-          this.manualContextMenu(tree, (tree, target, offsetLeft, offsetTop) => {
-            self.onTriggerContextMenu(tree, tree.oContextMenu, target, { offsetLeft, offsetTop });
-            tree.oContextMenu.show();
-          });
+          tree = this.initializeContextMenu(tree, instance);
 
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
@@ -2174,7 +2183,7 @@
               }
               if (root && instance) {
                 setTimeout(function() {
-                  __self.openLatest(instance);
+                  CStudioAuthoring.ContextualNav.WcmRootFolder.openLatest(instance);
                 }, 100);
               }
             }
