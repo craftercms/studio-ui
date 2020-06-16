@@ -1068,7 +1068,7 @@
       /**
        *
        */
-      manualContextMenu: function(tree) {
+      manualContextMenu: function (tree, callback) {
         const $treeParent = $('#' + tree.id).parent(),
           $dropdownMenu = $('#acn-dropdown-menu').parent();
 
@@ -1145,8 +1145,7 @@
             $contextMenuContainer.append(tree.oContextMenu.element);
           }
 
-          self.onTriggerContextMenu(tree, tree.oContextMenu, target , { offsetLeft, offsetTop });
-          tree.oContextMenu.show();
+          callback(tree, target, offsetLeft, offsetTop);
         });
       },
 
@@ -1304,13 +1303,16 @@
 
           tree.oContextMenu = oContextMenu;
 
-          this.manualContextMenu(tree);
+          this.manualContextMenu(tree, (tree, target, offsetLeft, offsetTop) => {
+            self.onTriggerContextMenu(tree, tree.oContextMenu, target, { offsetLeft, offsetTop });
+            tree.oContextMenu.show();
+          });
 
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
           YDom.addClass(label, 'loading');
-          var doCall = function(n, j, key) {
-            Self.onLoadNodeDataOnClick(n, function() {
+          var doCall = function (n, j, key) {
+            Self.onLoadNodeDataOnClick(n, function () {
               n.loadComplete();
 
               if (n.expanded && n.data.style.match(/\bfolder\b/)) {
@@ -2699,9 +2701,6 @@
                   this.args.render();
                   menuId.removeChild(d);
 
-                  if (this.args.manualTrigger) {
-                    $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
-                  }
                 },
                 failure: function() {},
                 args: p_aArgs,
@@ -2715,11 +2714,8 @@
               CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
 
               p_aArgs.render();
-              menuId.removeChild(d);
 
-              if (this.args.manualTrigger) {
-                $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
-              }
+              menuId.removeChild(d);
             } else if (!isWrite) {
               p_aArgs.addItems([menuItems.viewOption]);
 
@@ -2791,9 +2787,6 @@
               p_aArgs.render();
               menuId.removeChild(d);
 
-              if (this.args.manualTrigger) {
-                $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
-              }
             } else {
               if (isComponent == true || isLevelDescriptor == true || isTaxonomy == true) {
                 if (formPath == '' || formPath == undefined) {
@@ -3066,9 +3059,6 @@
 
                   this.args.render(); // Render the site dropdown's context menu
 
-                  if (this.args.manualTrigger) {
-                    $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
-                  }
                 },
                 failure: function() {},
                 args: p_aArgs,

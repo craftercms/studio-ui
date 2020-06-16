@@ -7783,7 +7783,7 @@ var nodeOpen = false,
           statusClass = workflowIcons.live + ' live';
         } else if (statusObj.deleted) {
           //deleted
-          statusClass = workflowIcons.deleted;
+          statusClass = workflowIcons.deleted + ' deleted';
         } else if (statusObj.inProgress) {
           //edited
           statusClass = workflowIcons.edited + ' edited';

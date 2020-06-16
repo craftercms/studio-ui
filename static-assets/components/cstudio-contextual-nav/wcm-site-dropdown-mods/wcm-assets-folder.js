@@ -384,13 +384,17 @@ var storage = CStudioAuthoring.Storage;
         zIndex: 1030
       });
 
-      CStudioAuthoring.ContextualNav.WcmRootFolder.manualContextMenu(tree, function(tree, target) {
+      tree.oContextMenu = contextMenu;
+
+      CStudioAuthoring.ContextualNav.WcmRootFolder.manualContextMenu(tree, function (tree, target, offsetLeft, offsetTop) {
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(
           tree,
           tree.oContextMenu,
           tree.oContextMenu.id,
-          target
+          target,
+          { offsetLeft, offsetTop }
         );
+        tree.oContextMenu.show();
       });
 
       if (instance.IsContentMenuCreated == false) {
@@ -398,11 +402,26 @@ var storage = CStudioAuthoring.Storage;
         contextMenu.subscribe(
           'beforeShow',
           function() {
-            CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(
-              tree,
-              this,
-              contextMenuId
-            );
+            if (this.manualTrigger) {
+              let $contextMenu = $('#' + tree.oContextMenu.id);
+              $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
+              $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
+            } else {
+              CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(
+                tree,
+                this,
+                contextMenuId
+              );
+            }
+          },
+          tree,
+          false
+        );
+
+        contextMenu.subscribe(
+          'beforeHide',
+          function (e) {
+            this.manualTrigger = false;
           },
           tree,
           false
@@ -476,7 +495,7 @@ var storage = CStudioAuthoring.Storage;
       contextMenu.subscribe(
         'show',
         function() {
-          if (!YDom.isAncestor(tree.id, this.contextEventTarget)) {
+          if (!this.manualTrigger && !YDom.isAncestor(tree.id, this.contextEventTarget)) {
             this.hide();
           }
           var idTree = tree.id.toString().replace(/-/g, '');
@@ -486,7 +505,8 @@ var storage = CStudioAuthoring.Storage;
         false
       );
 
-      tree.oContextMenu = contextMenu;
+
+      //tree.oContextMenu = contextMenu;
       tree.draw();
 
       if (Object.prototype.toString.call(instance.path) === '[object Array]') {
@@ -907,20 +927,24 @@ var storage = CStudioAuthoring.Storage;
           k = {},
           pathTrace = {},
           rooth = {},
-          updatePathTrace = function(j, key) {
+          updatePathTrace = function (j, key) {
             var appendedPath = paths[key] && paths[key][j] ? paths[key][j][counter[key][j]++] : '';
             appendedPath = appendedPath !== '' ? '/' + appendedPath : '';
             return (pathTrace[key][j] = pathTrace[key][j] + appendedPath);
           },
-          nextPathTrace = function(j, key) {
+          nextPathTrace = function (j, key) {
             var cont = j == 0 ? 0 : counter[key][j] + 1;
             return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
           };
+
+
+        //tree weas c
+
         var YSelector = YAHOO.util.Selector.query;
         var label = instance.rootFolderEl.previousElementSibling;
         YDom.addClass(label, 'loading');
-        var doCall = function(n, j, key) {
-          CStudioAuthoring.ContextualNav.WcmAssetsFolder.onLoadNodeDataOnClick(n, function() {
+        var doCall = function (n, j, key) {
+          CStudioAuthoring.ContextualNav.WcmAssetsFolder.onLoadNodeDataOnClick(n, function () {
             n.loadComplete();
 
             var WcmAssets = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
@@ -1352,8 +1376,8 @@ var storage = CStudioAuthoring.Storage;
       return toolTip;
     },
 
-    onTriggerContextMenu: function(tree, p_aArgs, contextMenuId, target) {
-      var isManualTrigger = target ? true : false,
+    onTriggerContextMenu: function (tree, p_aArgs, contextMenuId, target, position) {
+      var isManualTrigger = target ? position : false,
         target = target ? target : p_aArgs.contextEventTarget;
 
       p_aArgs.manualTrigger = isManualTrigger;
