@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ReplayIcon from '@material-ui/icons/Replay';
 import Card from '@material-ui/core/Card';
@@ -26,7 +26,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Typography from '@material-ui/core/Typography';
-import { Core, ProgressBar as UppyProgressBar, XHRUpload } from 'uppy';
+import { Core, XHRUpload } from 'uppy';
 
 import getDroppedFiles from '@uppy/utils/lib/getDroppedFiles';
 import toArray from '@uppy/utils/lib/toArray';
@@ -40,13 +40,15 @@ import { getBulkUploadUrl } from '../services/content';
 import { LookupTable } from '../models/LookupTable';
 import { palette } from '../styles/theme';
 import { bytesToSize } from '../utils/string';
-import { useSpreadState } from '../utils/hooks';
+import { useSpreadState, useSubject } from '../utils/hooks';
 import clsx from 'clsx';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import RemoveRoundedIcon from '@material-ui/icons/RemoveRounded';
 import AddRoundedIcon from '@material-ui/icons/AddRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import Paper from '@material-ui/core/Paper';
+import { interval, Observable } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 
 const translations = defineMessages({
   title: {
@@ -73,6 +75,10 @@ const translations = defineMessages({
     id: 'words.browse',
     defaultMessage: 'Browse'
   },
+  cancelAll: {
+    id: 'bulkUpload.cancelAll',
+    defaultMessage: 'Cancel all'
+  },
   filesProgression: {
     id: 'bulkUpload.filesProgression',
     defaultMessage: '{start}/{end}'
@@ -88,7 +94,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     backgroundColor: palette.gray.light0
   },
   dragZone: {
-    height: '200px',
+    height: '300px',
     border: `2px dashed ${palette.gray.medium2}`,
     backgroundColor: palette.white,
     borderRadius: '7px',
@@ -99,7 +105,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     cursor: 'pointer',
     '&.hasFiles': {
       height: '100%',
-      minHeight: '200px',
+      minHeight: '300px',
       padding: '15px',
       justifyContent: 'start',
       cursor: 'inherit'
@@ -124,8 +130,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     width: '100%',
     bottom: '52px',
     left: 0,
-    '& .uppy-ProgressBar-inner': {
-      backgroundColor: palette.blue.tint
+    '&.hidden': {
+      display: 'none'
     }
   },
   sectionTitle: {
@@ -146,8 +152,11 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   browseText: {
     color: palette.blue.main
   },
-  status: {
+  cancelBtn: {
     marginRight: 'auto'
+  },
+  status: {
+    marginLeft: 'auto'
   },
   minimized: {
     display: 'none'
@@ -188,6 +197,8 @@ const UppyItemStyles = makeStyles((theme: Theme) => createStyles({
     height: '48px'
   }
 }));
+
+const uppy = Core({ debug: false, autoProceed: true });
 
 interface UppyFile {
   source: string;
@@ -240,12 +251,15 @@ function UppyItem(props: UppyItemProps) {
     <Card className={classes.cardRoot}>
       {
         file.preview &&
-        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia}/>
+        <CardMedia title={file.id} image={file.preview} className={classes.cardMedia} />
       }
       <CardContent className={classes.cardContentRoot}>
         <div className={classes.cardContent}>
           <div className={classes.cardContentText}>
-            <Typography variant="body2" className={clsx(file.progress.status === 'failed' && classes.textFailed)}>
+            <Typography
+              variant="body2"
+              className={clsx(file.progress.status === 'failed' && classes.textFailed)}
+            >
               {file.name}
             </Typography>
             <Typography variant="caption" className={classes.caption}>
@@ -254,23 +268,26 @@ function UppyItem(props: UppyItemProps) {
           </div>
           {
             file.progress.status === 'failed' &&
-            <IconButton onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              handleRetry(event, file)
-            }} className={classes.iconRetry}>
-              <ReplayIcon/>
+            <IconButton
+              onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                handleRetry(event, file);
+              }} className={classes.iconRetry}
+            >
+              <ReplayIcon />
             </IconButton>
           }
         </div>
-        <ProgressBar status={file.progress.status} progress={file.progress.percentage}/>
+        <ProgressBar status={file.progress.status} progress={file.progress.percentage} />
       </CardContent>
     </Card>
-  )
+  );
 }
 
 interface DropZoneProps {
   path: string;
   site: string;
   maxSimultaneousUploads: number;
+  cancelRequestObservable$: Observable<any>
 
   onStatusChange(status: any): void;
 }
@@ -278,17 +295,16 @@ interface DropZoneProps {
 const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
-  const generalProgress = useRef(null);
-  const { onStatusChange, path, site, maxSimultaneousUploads } = props;
+  const { onStatusChange, path, site, maxSimultaneousUploads, cancelRequestObservable$ } = props;
   const { formatMessage } = useIntl();
-  const [filesPerPath, setFilesPerPath] = useState<LookupTable<any>>(null);
+  const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
-  const uppy = useMemo(() => Core({ debug: false, autoProceed: true }), []);
   const [uploadedFiles, setUploadedFiles] = useState(0);
+  const [totalFiles, setTotalFiles] = useState(null);
 
   const retryFileUpload = (file: UppyFile) => {
-    uppy.retryUpload(file.id)
+    uppy.retryUpload(file.id);
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
@@ -320,7 +336,13 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   };
 
   function addFiles(files: File[]) {
-    files.map((file: any) =>
+    setTotalFiles(totalFiles + files.length);
+    onStatusChange({ status: 'adding', files: totalFiles + files.length });
+    interval(50).pipe(
+      takeUntil(cancelRequestObservable$),
+      take(files.length)
+    ).subscribe(index => {
+      const file: File & { relativePath?: string } = files[index];
       checkFileExist(file) && uppy.addFile({
         name: file.name,
         type: file.type,
@@ -328,12 +350,12 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         meta: {
           relativePath: file.relativePath || null
         }
-      })
-    )
+      });
+    });
   }
 
   function checkFileExist(newFile: File) {
-    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type)
+    return !uppy.getFiles().some((file) => file.name === newFile.name && file.type === newFile.type);
   }
 
   function removeDragData(event: React.DragEvent<HTMLElement>) {
@@ -345,32 +367,49 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   }
 
   useEffect(() => {
-    if (dndRef.current && generalProgress.current) {
-      uppy.use(XHRUpload, {
-        endpoint: getBulkUploadUrl(site, path),
-        formData: true,
-        fieldName: 'file',
-        limit: maxSimultaneousUploads
-      }).use(UppyProgressBar, {
-        target: generalProgress.current,
-        hideAfterFinish: true
-      }).setMeta({ site });
+    if (cancelRequestObservable$) {
+      const subs = cancelRequestObservable$.subscribe(() => {
+        uppy.cancelAll();
+        let successFiles = { ...files };
+        let count = 0;
+        Object.values(files).forEach((file: UppyFile) => {
+          if (file?.progress?.percentage < 100) {
+            successFiles[file.id] = null;
+          } else {
+            count++;
+          }
+        });
+        setFiles(successFiles);
+        setTotalFiles(count);
+        setUploadedFiles(count);
+        onStatusChange({ status: 'complete', uploadedFiles: count, files: count });
+      });
+      return () => subs.unsubscribe();
     }
+  }, [cancelRequestObservable$, files, onStatusChange, setFiles]);
+
+  useEffect(() => {
+    uppy.use(XHRUpload, {
+      endpoint: getBulkUploadUrl(site, path),
+      formData: true,
+      fieldName: 'file',
+      limit: maxSimultaneousUploads
+    }).setMeta({ site });
     return () => {
       // https://uppy.io/docs/uppy/#uppy-close
       uppy.reset();
       uppy.close();
     };
-  }, [formatMessage, maxSimultaneousUploads, path, site, uppy]);
+  }, [maxSimultaneousUploads, path, site]);
 
   useEffect(() => {
     const handleUploadProgress = (file: UppyFile, progress: any) => {
-      const newFile = uppy.getFile(file.id) as UppyFile;
+      const newFile = { ...file, preview: uppy.getFile(file.id).preview };
       newFile.progress.bytesUploaded = progress.bytesUploaded;
       newFile.progress.bytesTotal = progress.bytesTotal;
       newFile.progress.percentage = Math.floor(parseInt((progress.bytesUploaded / progress.bytesTotal * 100).toFixed(2)));
       setFiles({ [file.id]: newFile });
-      onStatusChange({ status: 'uploading', progress: uppy.getState().totalProgress });
+      onStatusChange({ status: 'uploading' });
     };
 
     const handleUploadError = (file: UppyFile) => {
@@ -387,10 +426,14 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         const reader = new FileReader();
         reader.onload = function (e) {
           file.preview = e.target.result;
-          uppy.setFileState(file.id, { preview: e.target.result });
-          setFiles({ [file.id]: file });
+          try {
+            uppy.setFileState(file.id, { preview: e.target.result });
+            setFiles({ [file.id]: file });
+          } catch (error) {
+            console.error(error);
+          }
         };
-        reader.readAsDataURL(file.data)
+        reader.readAsDataURL(file.data);
       } else {
         setFiles({ [file.id]: file });
       }
@@ -404,45 +447,49 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       uppy.off('file-added', handleFileAdded);
       uppy.off('upload-error', handleUploadError);
       uppy.off('upload-progress', handleUploadProgress);
-    }
+    };
 
-  }, [filesPerPath, onStatusChange, path, setFiles, setFilesPerPath, uppy]);
+  }, [filesPerPath, onStatusChange, path, setFiles]);
 
   useEffect(() => {
     const handleUploadSuccess = () => {
       setUploadedFiles(uploadedFiles + 1);
-      onStatusChange({ uploadedFiles: uploadedFiles + 1 })
+      onStatusChange({ uploadedFiles: uploadedFiles + 1 });
     };
 
     const handleComplete = () => {
-      if (uppy.getState().totalProgress === 100) {
-        onStatusChange({ status: 'complete', progress: uppy.getState().totalProgress });
-      } else {
-        onStatusChange({ status: 'failed', progress: uppy.getState().totalProgress });
+      if (uploadedFiles === totalFiles) {
+        onStatusChange({ status: 'complete', progress: 100 });
       }
+    };
+
+    const handleError = () => {
+      onStatusChange({ status: 'failed' });
     };
 
     uppy.on('upload-success', handleUploadSuccess);
     uppy.on('complete', handleComplete);
+    uppy.on('error', handleError);
     return () => {
       uppy.off('upload-success', handleUploadSuccess);
       uppy.off('complete', handleComplete);
-    }
-  }, [onStatusChange, uploadedFiles, uppy]);
+      uppy.off('error', handleError);
+    };
+  }, [onStatusChange, totalFiles, uploadedFiles]);
 
   useEffect(() => {
-    if (files) {
+    if (files !== null) {
       let filesPerPath: any = {};
       Object.values(files).forEach((file: UppyFile) => {
+        if (!file) return;
         if (!filesPerPath[file.meta.path]) {
           filesPerPath[file.meta.path] = [];
         }
-        filesPerPath[file.meta.path].push(file.id)
+        filesPerPath[file.meta.path].push(file.id);
       });
-      setFilesPerPath(filesPerPath);
-      onStatusChange({ files: Object.keys(files).length })
+      setFilesPerPath(Object.keys(filesPerPath).length ? filesPerPath : null);
     }
-  }, [onStatusChange, files]);
+  }, [files, onStatusChange]);
 
   return (
     <>
@@ -464,19 +511,24 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
                 {
                   files &&
                   filesPerPath[fileId].map((id: string) =>
-                    files[id] && <UppyItem file={files[id]} key={id} retryFileUpload={retryFileUpload}/>
+                    files[id] &&
+                    <UppyItem file={files[id]} key={id} retryFileUpload={retryFileUpload} />
                   )
                 }
               </div>
             )
           ) : (
             <>
-              <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')}/>
+              <GetAppIcon className={clsx(classes.uploadIcon, dragOver && 'over')} />
               <Typography variant="subtitle1">
                 {
                   formatMessage(
                     translations.dropHere,
-                    { span: browse => <span key="browse" className={classes.browseText}>{browse}</span> }
+                    {
+                      span: browse => <span
+                        key="browse" className={classes.browseText}
+                      >{browse}</span>
+                    }
                   )
                 }
               </Typography>
@@ -493,9 +545,11 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         multiple={true}
         onChange={handleInputChange}
       />
-      <section ref={generalProgress} className={classes.generalProgress}/>
+      <section className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}>
+        <ProgressBar progress={percentageCalculator(uploadedFiles, totalFiles)} />
+      </section>
     </>
-  )
+  );
 });
 
 const minimizedBarStyles = makeStyles((theme: Theme) => createStyles({
@@ -539,14 +593,13 @@ function MinimizedBar(props: any) {
       }
       {onMaximized ? (
         <IconButton aria-label="close" onClick={onMaximized}>
-          <AddRoundedIcon/>
+          <AddRoundedIcon />
         </IconButton>
       ) : null}
-      <ProgressBar status={status.status} progress={status.progress}/>
+      <ProgressBar status={status.status} progress={status.progress} />
     </Paper>
-  )
+  );
 }
-
 
 const progressBarStyles = makeStyles((theme: Theme) => createStyles({
   progressBar: {
@@ -582,7 +635,14 @@ function ProgressBar(props: any) {
         style={{ width: `${progress}%` }}
       />
     </div>
-  )
+  );
+}
+
+export interface DropZoneStatus {
+  status?: string;
+  files?: number;
+  uploadedFiles?: number;
+  progress?: number;
 }
 
 export default function BulkUpload(props: any) {
@@ -596,14 +656,24 @@ export default function BulkUpload(props: any) {
     progress: 0
   });
   const inputRef = useRef(null);
+  const cancelRef = useRef(null);
   const [minimized, setMinimized] = useState(!open);
 
-  const onStatusChange = useCallback((status: any) => {
-    setDropZoneStatus(status)
+  const onStatusChange = useCallback((status: DropZoneStatus) => {
+    setDropZoneStatus({
+      ...status,
+      progress: percentageCalculator(status.uploadedFiles, status.files)
+    });
   }, [setDropZoneStatus]);
+
+  const cancelRequestObservable$ = useSubject<void>();
 
   const onBrowse = () => {
     inputRef.current.click();
+  };
+
+  const onCancel = () => {
+    cancelRequestObservable$.next();
   };
 
   const onMinimized = () => {
@@ -621,7 +691,7 @@ export default function BulkUpload(props: any) {
 
   useEffect(() => {
     const handleBeforeUpload = () => {
-      return formatMessage(translations.uploadInProgress)
+      return formatMessage(translations.uploadInProgress);
     };
     if (dropZoneStatus.status === 'uploading') {
       window.onbeforeunload = handleBeforeUpload;
@@ -630,7 +700,7 @@ export default function BulkUpload(props: any) {
     }
     return () => {
       window.onbeforeunload = null;
-    }
+    };
   }, [dropZoneStatus.status, formatMessage]);
 
   return (
@@ -657,6 +727,8 @@ export default function BulkUpload(props: any) {
         className={clsx(minimized && classes.minimized)}
         onDrop={preventWrongDrop}
         onDragOver={preventWrongDrop}
+        fullWidth
+        maxWidth={'sm'}
       >
         <DialogHeader
           title={formatMessage(translations.title)}
@@ -671,9 +743,24 @@ export default function BulkUpload(props: any) {
             site={site}
             maxSimultaneousUploads={maxSimultaneousUploads}
             ref={inputRef}
+            cancelRequestObservable$={cancelRequestObservable$}
           />
         </DialogContent>
         <DialogActions>
+          {
+            dropZoneStatus.status === 'uploading' &&
+            <Button
+              id="cancelBtn"
+              onClick={onCancel}
+              variant="contained"
+              color="default"
+              ref={cancelRef}
+              className={classes.cancelBtn}
+            >
+              {formatMessage(translations.cancelAll)}
+            </Button>
+
+          }
           {
             dropZoneStatus.files &&
             <Typography variant="caption" className={classes.status}>
@@ -685,37 +772,19 @@ export default function BulkUpload(props: any) {
               )}
             </Typography>
           }
-          {
-            dropZoneStatus.status === 'idle' ? (
-              <Button
-                onClick={() => onClose(dropZoneStatus)}
-                variant="contained"
-                color='default'
-              >
-                {formatMessage(translations.close)}
-              </Button>
-            ) : (
-              <>
-                <Button
-                  onClick={onBrowse}
-                  variant="contained"
-                  color='default'
-                >
-                  {formatMessage(translations.browse)}
-                </Button>
-                <Button
-                  onClick={() => onClose(dropZoneStatus)}
-                  disabled={dropZoneStatus.status === 'uploading'}
-                  variant="contained"
-                  color='primary'
-                >
-                  {formatMessage(translations.done)}
-                </Button>
-              </>
-            )
-          }
+          <Button
+            onClick={onBrowse}
+            variant="contained"
+            color="primary"
+          >
+            {formatMessage(translations.browse)}
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
-  )
+  );
+}
+
+function percentageCalculator(number: number, total: number): number {
+  return Math.round(number / total * 100);
 }
