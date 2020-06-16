@@ -34,9 +34,6 @@ import XHRUpload from '@uppy/xhr-upload';
 import getDroppedFiles from '@uppy/utils/lib/getDroppedFiles';
 import toArray from '@uppy/utils/lib/toArray';
 
-import '@uppy/progress-bar/src/style.scss';
-import '@uppy/drag-drop/src/style.scss';
-
 import DialogHeader from './DialogHeader';
 import Button from '@material-ui/core/Button';
 import { getBulkUploadUrl } from '../../services/content';
@@ -136,9 +133,6 @@ const useStyles = makeStyles(() => createStyles({
     width: '100%',
     bottom: '52px',
     left: 0,
-    '& .uppy-ProgressBar-inner': {
-      backgroundColor: palette.blue.tint
-    },
     '&.hidden': {
       display: 'none'
     }
