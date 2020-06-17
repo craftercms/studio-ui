@@ -56,12 +56,43 @@ export function getTargetLocales(site: string, path: string): Observable<any> {
 }
 
 export function markForTranslation(site: string, path: string, locale: string) {
-  return post('/studio/api/2/translation/mark_for_translation_by_path', { siteId: site, path: [path], locales: [locale] }, {
+  return post('/studio/api/2/translation/mark_for_translation_by_path', {
+    siteId: site,
+    path: [path],
+    locales: [locale]
+  }, {
     'Content-Type': 'application/json'
-  })
+  });
+}
+
+export function getSupportedLocales(site: string): Observable<any> {
+  ///studio/api/2/translation/get_supported_locales
+  const response = {
+    response: {},
+    items: [
+      {
+        code: 'en',
+        label: 'English'
+      },
+      {
+        code: 'es',
+        label: 'Spanish'
+      },
+      {
+        code: 'fr',
+        label: 'French'
+      }
+    ]
+  };
+
+  return new Observable((observer: Observer<any>) => {
+    observer.next(response);
+    observer.complete();
+  });
 }
 
 export default {
   getTargetLocales,
-  markForTranslation
+  markForTranslation,
+  getSupportedLocales
 };
