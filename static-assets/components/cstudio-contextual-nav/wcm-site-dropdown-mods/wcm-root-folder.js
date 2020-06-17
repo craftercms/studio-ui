@@ -344,6 +344,9 @@
         var pathFlag = true;
 
         var tree = (instance.tree = new YAHOO.widget.TreeView(treeEl));
+
+        tree = this.initializeContextMenu(tree, instance);
+
         tree.setDynamicLoad(this.onLoadNodeDataOnClick);
         /*tree.subscribe("collapse", function(node) {this.collapseTree});
                 tree.subscribe("expand", function(node) {this.expandTree});*/
@@ -1065,10 +1068,59 @@
         return treeNode;
       },
 
+      initializeContextMenu(tree, instance) {
+        var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
+          container: 'acn-context-menu',
+          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
+          shadow: true,
+          lazyload: true,
+          hidedelay: 700,
+          showdelay: 0,
+          classname: 'wcm-root-folder-context-menu',
+          zIndex: 100
+        });
+
+        oContextMenu.subscribe(
+          'beforeShow',
+          function (e) {
+            if (this.manualTrigger) {
+              let $contextMenu = $('#' + tree.oContextMenu.id);
+              $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
+              $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
+            }
+
+            tree.oContextMenu.clearContent('');
+            if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
+              Self.onTriggerContextMenu(tree, this);
+            }
+          },
+          tree,
+          false
+        );
+
+        oContextMenu.subscribe(
+          'beforeHide',
+          function (e) {
+            this.manualTrigger = false;
+          },
+          tree,
+          false
+        );
+
+        tree.oContextMenu = oContextMenu;
+
+        this.manualContextMenu(tree, (tree, target, offsetLeft, offsetTop) => {
+          self.onTriggerContextMenu(tree, tree.oContextMenu, target, { offsetLeft, offsetTop });
+          tree.oContextMenu.show();
+        });
+
+        return tree;
+      },
+
       /**
        *
        */
-      manualContextMenu: function(tree) {
+      manualContextMenu: function (tree, callback) {
         const $treeParent = $('#' + tree.id).parent(),
           $dropdownMenu = $('#acn-dropdown-menu').parent();
 
@@ -1145,8 +1197,7 @@
             $contextMenuContainer.append(tree.oContextMenu.element);
           }
 
-          self.onTriggerContextMenu(tree, tree.oContextMenu, target , { offsetLeft, offsetTop });
-          tree.oContextMenu.show();
+          callback(tree, target, offsetLeft, offsetTop);
         });
       },
 
@@ -1264,53 +1315,13 @@
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
 
-          var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
-            container: 'acn-context-menu',
-            trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
-            shadow: true,
-            lazyload: true,
-            hidedelay: 700,
-            showdelay: 0,
-            classname: 'wcm-root-folder-context-menu',
-            zIndex: 100
-          });
-
-          oContextMenu.subscribe(
-            'beforeShow',
-            function (e) {
-              if(this.manualTrigger) {
-                let $contextMenu = $('#' + tree.oContextMenu.id);
-                $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
-                $contextMenu.css('top', this.manualTrigger.offsetTop + 'px');
-              }
-
-              tree.oContextMenu.clearContent('');
-              if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
-                Self.onTriggerContextMenu(tree, this);
-              }
-            },
-            tree,
-            false
-          );
-
-          oContextMenu.subscribe(
-            'beforeHide',
-            function (e) {
-              this.manualTrigger = false;
-            },
-            tree,
-            false
-          );
-
-          tree.oContextMenu = oContextMenu;
-
-          this.manualContextMenu(tree);
+          tree = this.initializeContextMenu(tree, instance);
 
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
           YDom.addClass(label, 'loading');
-          var doCall = function(n, j, key) {
-            Self.onLoadNodeDataOnClick(n, function() {
+          var doCall = function (n, j, key) {
+            Self.onLoadNodeDataOnClick(n, function () {
               n.loadComplete();
 
               if (n.expanded && n.data.style.match(/\bfolder\b/)) {
@@ -2172,7 +2183,7 @@
               }
               if (root && instance) {
                 setTimeout(function() {
-                  __self.openLatest(instance);
+                  CStudioAuthoring.ContextualNav.WcmRootFolder.openLatest(instance);
                 }, 100);
               }
             }
@@ -2699,9 +2710,6 @@
                   this.args.render();
                   menuId.removeChild(d);
 
-                  if (this.args.manualTrigger) {
-                    $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
-                  }
                 },
                 failure: function() {},
                 args: p_aArgs,
@@ -2715,11 +2723,8 @@
               CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
 
               p_aArgs.render();
-              menuId.removeChild(d);
 
-              if (this.args.manualTrigger) {
-                $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
-              }
+              menuId.removeChild(d);
             } else if (!isWrite) {
               p_aArgs.addItems([menuItems.viewOption]);
 
@@ -2791,9 +2796,6 @@
               p_aArgs.render();
               menuId.removeChild(d);
 
-              if (this.args.manualTrigger) {
-                $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
-              }
             } else {
               if (isComponent == true || isLevelDescriptor == true || isTaxonomy == true) {
                 if (formPath == '' || formPath == undefined) {
@@ -3066,9 +3068,6 @@
 
                   this.args.render(); // Render the site dropdown's context menu
 
-                  if (this.args.manualTrigger) {
-                    $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
-                  }
                 },
                 failure: function() {},
                 args: p_aArgs,
