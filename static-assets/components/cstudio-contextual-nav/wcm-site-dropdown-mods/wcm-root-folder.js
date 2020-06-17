@@ -344,6 +344,9 @@
         var pathFlag = true;
 
         var tree = (instance.tree = new YAHOO.widget.TreeView(treeEl));
+
+        tree = this.initializeContextMenu(tree, instance);
+
         tree.setDynamicLoad(this.onLoadNodeDataOnClick);
         /*tree.subscribe("collapse", function(node) {this.collapseTree});
                 tree.subscribe("expand", function(node) {this.expandTree});*/
@@ -1188,30 +1191,7 @@
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
 
-          var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
-            container: 'acn-context-menu',
-            trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
-            shadow: true,
-            lazyload: true,
-            hidedelay: 700,
-            showdelay: 0,
-            classname: 'wcm-root-folder-context-menu',
-            zIndex: 100
-          });
-
-          oContextMenu.subscribe(
-            'beforeShow',
-            function (e) {
-              tree.oContextMenu.clearContent('');
-              if (!tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
-                Self.onTriggerContextMenu(tree, this);
-              }
-            },
-            tree,
-            false
-          );
-
-          tree.oContextMenu = oContextMenu;
+          tree = this.initializeContextMenu(tree, instance);
 
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
@@ -3022,6 +3002,35 @@
           false,
           false
         );
+      },
+
+      initializeContextMenu: function (tree, instance) {
+        var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
+          container: 'acn-context-menu',
+          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
+          shadow: true,
+          lazyload: true,
+          hidedelay: 700,
+          showdelay: 0,
+          classname: 'wcm-root-folder-context-menu',
+          zIndex: 100
+        });
+
+        oContextMenu.subscribe(
+          'beforeShow',
+          function (e) {
+            tree.oContextMenu.clearContent('');
+            if (!tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
+              Self.onTriggerContextMenu(tree, this);
+            }
+          },
+          tree,
+          false
+        );
+
+        tree.oContextMenu = oContextMenu;
+
+        return tree;
       },
 
       /**

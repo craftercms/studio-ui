@@ -394,11 +394,8 @@ div#acn-active-content {
 
     &.warning {
       color: #a2830f !important;
-      .status-icon {
-        color: #d1a70b;
-        .fa {
-          color: #d1a70b;
-        }
+      .status-icon .deleted {
+        color: #d1a70b !important;
       }
     }
 
