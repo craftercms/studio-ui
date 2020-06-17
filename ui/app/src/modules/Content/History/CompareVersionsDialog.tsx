@@ -17,7 +17,7 @@
 import StandardAction from '../../../models/StandardAction';
 import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { useUnmount, useLogicResource } from '../../../utils/hooks';
+import { useLogicResource, useUnmount } from '../../../utils/hooks';
 import { FancyFormattedDate, VersionList } from './VersionList';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import ApiResponse from '../../../models/ApiResponse';
@@ -38,20 +38,13 @@ import {
 import { useDispatch } from 'react-redux';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import ContentType, { ContentTypeField } from '../../../models/ContentType';
+import ContentType from '../../../models/ContentType';
 import { EntityState } from '../../../models/EntityState';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import Typography from '@material-ui/core/Typography';
-import { LookupTable } from '../../../models/LookupTable';
-import { Resource } from '../../../models/Resource';
-import ListItemText from '@material-ui/core/ListItemText';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
-import palette from '../../../styles/palette';
+import { CompareVersions, CompareVersionsResource } from './CompareVersions';
 
 const translations = defineMessages({
   backToSelectRevision: {
@@ -274,102 +267,3 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
   );
 }
 
-const CompareVersionsStyles = makeStyles(() =>
-  createStyles({
-    compareBoxHeader: {
-      display: 'flex',
-      justifyContent: 'space-around'
-    },
-    compareBoxHeaderItem: {
-      flexBasis: '50%',
-      margin: '0 10px 10px 10px',
-      '& .blackText': {
-        color: palette.black
-      }
-    },
-    compareVersionsContent: {
-      background: palette.white
-    },
-    root: {
-      margin: 0,
-      '&.Mui-expanded': {
-        margin: 0,
-        borderBottom: `1px solid rgba(0,0,0,0.12)`
-      }
-    },
-    bold: {
-      fontWeight: 600
-    }
-  })
-);
-
-interface CompareVersionsResource {
-  a: any;
-  b: any;
-  contentTypes: LookupTable<ContentType>;
-}
-
-interface CompareVersionsProps {
-  resource: Resource<CompareVersionsResource>;
-}
-
-function CompareVersions(props: CompareVersionsProps) {
-  const classes = CompareVersionsStyles({});
-  const { a, b, contentTypes } = props.resource.read();
-  const values = Object.values(contentTypes[a.contentTypeId].fields) as ContentTypeField[];
-
-  return (
-    <>
-      <section className={classes.compareBoxHeader}>
-        <div className={classes.compareBoxHeaderItem}>
-          <ListItemText
-            primary={<FancyFormattedDate date={a.lastModifiedDate} />}
-            secondary={
-              <FormattedMessage
-                id="historyDialog.versionNumber"
-                defaultMessage="Version: <span>{versionNumber}</span>"
-                values={{
-                  versionNumber: a.versionNumber,
-                  span: (msg) => <span className="blackText">{msg}</span>
-                }}
-              />
-            }
-          />
-        </div>
-        <div className={classes.compareBoxHeaderItem}>
-          <ListItemText
-            primary={<FancyFormattedDate date={b.lastModifiedDate} />}
-            secondary={
-              <FormattedMessage
-                id="historyDialog.versionNumber"
-                defaultMessage="Version: <span>{versionNumber}</span>"
-                values={{
-                  versionNumber: b.versionNumber,
-                  span: (msg) => <span className="blackText">{msg}</span>
-                }}
-              />
-            }
-          />
-        </div>
-      </section>
-      <section className={classes.compareVersionsContent}>
-        {contentTypes &&
-        values.map((field) => (
-          <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>
-                <span className={classes.bold}>{field.id} </span>({field.name})
-              </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada
-                lacus ex, sit amet blandit leo lobortis eget.
-              </Typography>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
-        ))}
-      </section>
-    </>
-  );
-}

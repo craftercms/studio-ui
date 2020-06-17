@@ -133,8 +133,8 @@ function parseElementByContentType(element: Element, field: ContentTypeField, co
       element.querySelectorAll(':scope > item').forEach((item) => {
         const key = getInnerHtml(item.querySelector('key'));
         const component = item.querySelector('component');
-        parseContentXML(component ? wrapElementInAuxDocument(component) : null, key, contentTypesLookup, instanceLookup);
-        array.push(objectIdFromPath(key));
+        const instanceLK = parseContentXML(component ? wrapElementInAuxDocument(component) : null, key, contentTypesLookup, instanceLookup);
+        array.push(instanceLK[objectIdFromPath(key)]);
       });
       return array;
     }
@@ -1196,6 +1196,30 @@ export function getVersion(site: string, path: string, versionNumber: string): O
     });
     observer.complete();
   });
+}
+
+export function getVersions(site: string, path: string, versionNumbers: string[], contentTypes: LookupTable<ContentType>): Observable<any> {
+  return getContentInstance(site, path, contentTypes).pipe(
+    map(response => {
+      return [
+        {
+          ...response,
+          ['title_t']: 'testeo',
+          ['craftercms']: {
+            ...response.craftercms,
+            versionNumber: versionNumbers[0]
+          }
+        },
+        {
+          ...response,
+          ['craftercms']: {
+            ...response.craftercms,
+            versionNumber: versionNumbers[1]
+          }
+        }
+      ];
+    })
+  );
 }
 
 export function getChildrenByPath(site: string, path: string, options?: GetChildrenOptions): Observable<GetChildrenResponse> {
