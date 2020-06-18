@@ -16,9 +16,13 @@
 
 (function () {
 
-  // function formatMessage(id) {
-  //   return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.receptaclesMessages[id]);
-  // }
+  function formatMessage(id) {
+    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.localeSelectorControlMessages[id]);
+  }
+
+  function formatLanguageMessage(id) {
+    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.languages[id]);
+  }
 
   CStudioForms.Controls.LocaleSelector = function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
@@ -38,15 +42,14 @@
 
   YAHOO.extend(CStudioForms.Controls.LocaleSelector, CStudioForms.CStudioFormField, {
     getLabel: function () {
-      // TODO: i18n
-      return 'Locale Selector';
+      return formatMessage('label');
     },
 
     validate: function (obj) {
       if (obj.inputEl) obj.value = obj.inputEl.value;
       if (obj.required) {
         if (obj.value == '') {
-          obj.setError('required', 'Field is Required');
+          obj.setError('required', formatMessage('requiredError'));
           obj.renderValidation(true, false);
         } else {
           obj.clearError('required');
@@ -83,8 +86,7 @@
       var keyValueList = null;
 
       CrafterCMSNext.services.translation.getSupportedLocales(CStudioAuthoringContext.site).subscribe(
-        ({ items }) => {
-          keyValueList = items;
+        ({ localeCodes }) => {
           var titleEl = document.createElement('span');
 
           YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
@@ -139,11 +141,11 @@
             _self.controlWidgetContainerEl.inputEl.add(optionElEmpty);
           }
 
-          if (keyValueList) {
-            keyValueList.forEach(item => {
+          if (localeCodes) {
+            localeCodes.forEach(localeCode => {
               var optionEl = document.createElement('option');
-              optionEl.text = item.label;
-              optionEl.value = item.code;
+              optionEl.text = formatLanguageMessage(localeCode);
+              optionEl.value = localeCode;
               _self.controlWidgetContainerEl.inputEl.add(optionEl);
             });
           }
