@@ -1212,6 +1212,15 @@ export function getVersions(site: string, path: string, versionNumbers: string[]
         },
         {
           ...response,
+          ['hero_image_s']: 'https://via.placeholder.com/300',
+          ['features_o']: [
+            ...response['features_o'],
+            {
+              ...response['features_o'][0],
+              ['craftercms']: { ...response['features_o'][0].craftercms, dateModified: Date.now() }
+            }
+          ],
+          ['hero_title_html']: '<h2>Simply Editorial</h2>',
           ['craftercms']: {
             ...response.craftercms,
             versionNumber: versionNumbers[1]
