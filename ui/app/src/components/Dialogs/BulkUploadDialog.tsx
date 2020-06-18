@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Observable } from 'rxjs';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { interval, Observable } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
@@ -28,14 +29,10 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
 import Core from '@uppy/core';
-import UppyProgressBar from '@uppy/progress-bar';
 import XHRUpload from '@uppy/xhr-upload';
 
 import getDroppedFiles from '@uppy/utils/lib/getDroppedFiles';
 import toArray from '@uppy/utils/lib/toArray';
-
-import '@uppy/progress-bar/src/style.scss';
-import '@uppy/drag-drop/src/style.scss';
 
 import DialogHeader from './DialogHeader';
 import Button from '@material-ui/core/Button';
@@ -99,7 +96,7 @@ const useStyles = makeStyles(() => createStyles({
     flexDirection: 'row'
   },
   dragZone: {
-    height: '200px',
+    height: '300px',
     width: '100%',
     border: `2px dashed ${palette.gray.medium2}`,
     backgroundColor: palette.white,
@@ -111,7 +108,7 @@ const useStyles = makeStyles(() => createStyles({
     cursor: 'pointer',
     '&.hasFiles': {
       height: '100%',
-      minHeight: '200px',
+      minHeight: '300px',
       padding: '15px',
       justifyContent: 'start',
       cursor: 'inherit'
@@ -136,9 +133,6 @@ const useStyles = makeStyles(() => createStyles({
     width: '100%',
     bottom: '52px',
     left: 0,
-    '& .uppy-ProgressBar-inner': {
-      backgroundColor: palette.blue.tint
-    },
     '&.hidden': {
       display: 'none'
     }
@@ -203,6 +197,8 @@ const UppyItemStyles = makeStyles(() => createStyles({
     height: '48px'
   }
 }));
+
+const uppy = Core({ debug: false, autoProceed: true });
 
 interface UppyFile {
   source: string;
@@ -289,7 +285,7 @@ function UppyItem(props: UppyItemProps) {
             </IconButton>
           }
           {
-            file.progress.percentage === 'failed' &&
+            file.progress.status === 'failed' &&
             <IconButton
               onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
                 handleRetry(event, file);
@@ -317,14 +313,13 @@ interface DropZoneProps {
 const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   const classes = useStyles({});
   const dndRef = useRef(null);
-  const generalProgress = useRef(null);
   const { onStatusChange, path, site, maxSimultaneousUploads, cancelRequestObservable$ } = props;
   const { formatMessage } = useIntl();
-  const [filesPerPath, setFilesPerPath] = useState<LookupTable<any>>(null);
+  const [filesPerPath, setFilesPerPath] = useState<LookupTable<string[]>>(null);
   const [files, setFiles] = useSpreadState<LookupTable<UppyFile>>(null);
   const [dragOver, setDragOver] = useState(null);
-  const uppy = useMemo(() => Core({ debug: false, autoProceed: true }), []);
   const [uploadedFiles, setUploadedFiles] = useState(0);
+  const [totalFiles, setTotalFiles] = useState(null);
 
   const retryFileUpload = (file: UppyFile) => {
     uppy.retryUpload(file.id);
@@ -364,7 +359,13 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
   };
 
   function addFiles(files: File[]) {
-    files.map((file: any) =>
+    setTotalFiles(totalFiles + files.length);
+    onStatusChange({ status: 'adding', files: totalFiles + files.length });
+    interval(50).pipe(
+      takeUntil(cancelRequestObservable$),
+      take(files.length)
+    ).subscribe(index => {
+      const file: File & { relativePath?: string } = files[index];
       checkFileExist(file) && uppy.addFile({
         name: file.name,
         type: file.type,
@@ -372,8 +373,8 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         meta: {
           relativePath: file.relativePath || null
         }
-      })
-    );
+      });
+    });
   }
 
   function checkFileExist(newFile: File) {
@@ -393,45 +394,44 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       const subs = cancelRequestObservable$.subscribe(() => {
         uppy.cancelAll();
         let successFiles = { ...files };
+        let count = 0;
         Object.values(files).forEach((file: UppyFile) => {
-          if (file.progress.percentage < 100) {
+          if (file?.progress?.percentage < 100) {
             successFiles[file.id] = null;
+          } else {
+            count++;
           }
         });
         setFiles(successFiles);
-        onStatusChange({ status: 'complete' });
+        setTotalFiles(count);
+        onStatusChange({ status: 'complete', files: count });
       });
       return () => subs.unsubscribe();
     }
-  }, [cancelRequestObservable$, files, onStatusChange, setFiles, uppy]);
+  }, [cancelRequestObservable$, files, onStatusChange, setFiles]);
 
   useEffect(() => {
-    if (generalProgress.current) {
-      uppy.use(XHRUpload, {
-        endpoint: getBulkUploadUrl(site, path),
-        formData: true,
-        fieldName: 'file',
-        limit: maxSimultaneousUploads
-      }).use(UppyProgressBar, {
-        target: generalProgress.current,
-        hideAfterFinish: true
-      }).setMeta({ site });
-    }
+    uppy.use(XHRUpload, {
+      endpoint: getBulkUploadUrl(site, path),
+      formData: true,
+      fieldName: 'file',
+      limit: maxSimultaneousUploads
+    }).setMeta({ site });
     return () => {
       // https://uppy.io/docs/uppy/#uppy-close
       uppy.reset();
       uppy.close();
     };
-  }, [maxSimultaneousUploads, path, site, uppy]);
+  }, [maxSimultaneousUploads, path, site]);
 
   useEffect(() => {
     const handleUploadProgress = (file: UppyFile, progress: any) => {
-      const newFile = uppy.getFile(file.id) as UppyFile;
+      const newFile = { ...file, preview: uppy.getFile(file.id).preview };
       newFile.progress.bytesUploaded = progress.bytesUploaded;
       newFile.progress.bytesTotal = progress.bytesTotal;
       newFile.progress.percentage = Math.floor(parseInt((progress.bytesUploaded / progress.bytesTotal * 100).toFixed(2)));
       setFiles({ [file.id]: newFile });
-      onStatusChange({ status: 'uploading', progress: uppy.getState().totalProgress });
+      onStatusChange({ status: 'uploading' });
     };
 
     const handleUploadError = (file: UppyFile) => {
@@ -448,8 +448,12 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         const reader = new FileReader();
         reader.onload = function (e) {
           file.preview = e.target.result;
-          uppy.setFileState(file.id, { preview: e.target.result });
-          setFiles({ [file.id]: file });
+          try {
+            uppy.setFileState(file.id, { preview: e.target.result });
+            setFiles({ [file.id]: file });
+          } catch (error) {
+            console.error(error);
+          }
         };
         reader.readAsDataURL(file.data);
       } else {
@@ -467,7 +471,7 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
       uppy.off('upload-progress', handleUploadProgress);
     };
 
-  }, [filesPerPath, onStatusChange, path, setFiles, uppy]);
+  }, [filesPerPath, onStatusChange, path, setFiles]);
 
   useEffect(() => {
     const handleUploadSuccess = () => {
@@ -476,39 +480,36 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
     };
 
     const handleComplete = () => {
-      if (uppy.getState().totalProgress === 100) {
-        onStatusChange({ status: 'complete', progress: uppy.getState().totalProgress });
-      } else {
-        onStatusChange({ status: 'failed', progress: uppy.getState().totalProgress });
+      if (uploadedFiles === totalFiles) {
+        onStatusChange({ status: 'complete', progress: 100 });
       }
+    };
+
+    const handleError = () => {
+      onStatusChange({ status: 'failed' });
     };
 
     uppy.on('upload-success', handleUploadSuccess);
     uppy.on('complete', handleComplete);
+    uppy.on('error', handleError);
     return () => {
       uppy.off('upload-success', handleUploadSuccess);
       uppy.off('complete', handleComplete);
+      uppy.off('error', handleError);
     };
-  }, [onStatusChange, uploadedFiles, uppy]);
+  }, [onStatusChange, totalFiles, uploadedFiles]);
 
   useEffect(() => {
     if (files !== null) {
       let filesPerPath: any = {};
-      let count = 0;
       Object.values(files).forEach((file: UppyFile) => {
         if (!file) return;
         if (!filesPerPath[file.meta.path]) {
           filesPerPath[file.meta.path] = [];
         }
         filesPerPath[file.meta.path].push(file.id);
-        count++;
       });
       setFilesPerPath(Object.keys(filesPerPath).length ? filesPerPath : null);
-      if (count) {
-        onStatusChange({ files: count });
-      } else {
-        onStatusChange(initialDropZoneStatus);
-      }
     }
   }, [files, onStatusChange]);
 
@@ -569,10 +570,9 @@ const DropZone = React.forwardRef((props: DropZoneProps, ref: any) => {
         multiple={true}
         onChange={handleInputChange}
       />
-      <section
-        ref={generalProgress}
-        className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}
-      />
+      <section className={clsx(classes.generalProgress, !filesPerPath && 'hidden')}>
+        <ProgressBar progress={percentageCalculator(uploadedFiles, totalFiles)} />
+      </section>
     </>
   );
 });
@@ -631,7 +631,10 @@ export default function (props: BulkUploadProps) {
   const cancelRequestObservable$ = useSubject<void>();
 
   const onStatusChange = useCallback((status: DropZoneStatus) => {
-    setDropZoneStatus(status);
+    setDropZoneStatus({
+      ...status,
+      progress: percentageCalculator(status.uploadedFiles, status.files)
+    });
     if (minimized) {
       dispatch(updateDialog({ id, status }));
     }
@@ -673,6 +676,8 @@ export default function (props: BulkUploadProps) {
       onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
       onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
       onClose={() => onClose(dropZoneStatus)}
+      fullWidth
+      maxWidth={'sm'}
     >
       <DialogHeader
         title={formatMessage(translations.title)}
@@ -729,4 +734,8 @@ export default function (props: BulkUploadProps) {
       }
     </Dialog>
   );
+}
+
+function percentageCalculator(number: number, total: number): number {
+  return Math.round(number / total * 100);
 }
