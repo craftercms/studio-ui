@@ -20,24 +20,21 @@
   //   return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.receptaclesMessages[id]);
   // }
 
-  CStudioForms.Controls.LocaleSelector =
-    CStudioForms.Controls.LocaleSelector ||
-    function (id, form, owner, properties, constraints, readonly) {
-      this.owner = owner;
-      this.owner.registerField(this);
-      this.errors = [];
-      this.properties = properties;
-      this.constraints = constraints;
-      this.inputEl = null;
-      this.countEl = null;
-      this.required = false;
-      this.value = '_not-set';
-      this.form = form;
-      this.id = id;
-      this.readonly = readonly;
-
-      return this;
-    };
+  CStudioForms.Controls.LocaleSelector = function (id, form, owner, properties, constraints, readonly) {
+    this.owner = owner;
+    this.owner.registerField(this);
+    this.errors = [];
+    this.properties = properties;
+    this.constraints = constraints;
+    this.inputEl = null;
+    this.countEl = null;
+    this.required = false;
+    this.value = '_not-set';
+    this.form = form;
+    this.id = id;
+    this.readonly = readonly;
+    return this;
+  };
 
   YAHOO.extend(CStudioForms.Controls.LocaleSelector, CStudioForms.CStudioFormField, {
     getLabel: function () {
