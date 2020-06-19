@@ -16,12 +16,10 @@
 
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
 import Typography from '@material-ui/core/Typography';
-import DialogTitle from './DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
@@ -32,12 +30,13 @@ import { markForTranslation } from '../../services/translation';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import palette from '../../styles/palette';
+import { useActiveSiteId } from '../../utils/hooks';
+import DialogBody from './DialogBody';
+import DialogHeader from './DialogHeader';
+import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
+import { SandboxItem } from '../../models/Item';
 
 const translations = defineMessages({
-  title: {
-    id: 'contentLocalization.title',
-    defaultMessage: 'Content Localization'
-  },
   mark: {
     id: 'contentLocalization.mark',
     defaultMessage: 'Mark for Translation'
@@ -82,9 +81,8 @@ const translations = defineMessages({
 
 const useStyles = makeStyles((theme) =>
   createStyles({
-    dialogContentRoot: {
-      padding: theme.spacing(2),
-      backgroundColor: palette.gray.light0
+    singleItemSelector: {
+      marginBottom: '10px'
     },
     contentLocalizationRoot: {
       background: palette.white,
@@ -237,7 +235,8 @@ function ContextSelectionOptionsOverlay(props: ContextSelectionOptionsOverlayPro
 interface ContentLocalizationDialogProps {
   open: boolean;
   locales: any;
-  site: string;
+  rootPath: string;
+  item: SandboxItem;
 
   onClose?(): void;
 }
@@ -246,8 +245,10 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const classes = useStyles({});
-  const { open, onClose, locales, site } = props;
+  const { open, onClose, locales, item, rootPath } = props;
   const [selected, setSelected] = useState([]);
+  const [openSelector, setOpenSelector] = useState(false);
+  const site = useActiveSiteId();
   const [menu, setMenu] = useState({
     activeItem: null,
     anchorEl: null
@@ -321,12 +322,25 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth>
-      <DialogTitle
-        title={formatMessage(translations.title)}
-        subtitle={'breadcrumb'}
-        onClose={onClose}
+      <DialogHeader
+        title={
+          <FormattedMessage id="contentLocalization.title" defaultMessage="Content Localization" />
+        }
+        onDismiss={onClose}
       />
-      <DialogContent dividers classes={{ root: classes.dialogContentRoot }}>
+      <DialogBody>
+        <SingleItemSelector
+          label="Item"
+          classes={{ root: classes.singleItemSelector }}
+          open={openSelector}
+          onClose={() => setOpenSelector(false)}
+          onDropdownClick={() => setOpenSelector(!openSelector)}
+          rootPath={rootPath}
+          selectedItem={item}
+          onItemClicked={(item) => {
+            setOpenSelector(false);
+          }}
+        />
         <section className={classes.contentLocalizationRoot}>
           {selected.length > 0 ? (
             <ContextSelectionOptionsOverlay
@@ -376,7 +390,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
             </div>
           ))}
         </section>
-      </DialogContent>
+      </DialogBody>
       <ContextMenu
         anchorEl={menu.anchorEl}
         open={Boolean(menu.anchorEl)}

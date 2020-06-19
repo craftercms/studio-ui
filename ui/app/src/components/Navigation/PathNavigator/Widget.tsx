@@ -725,10 +725,11 @@ export default function (props: WidgetProps) {
       )}
       {translationDialog && (
         <ContentLocalizationDialog
+          item={state.items[state.rootPath]}
+          rootPath={state.rootPath}
           locales={translationDialog}
           open={true}
           onClose={onTranslationDialogClose}
-          site={site}
         />
       )}
     </section>
