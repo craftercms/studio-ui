@@ -28,13 +28,14 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
 import Typography from '@material-ui/core/Typography';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Resource } from '../../../models/Resource';
 import { useMount } from '../../../utils/hooks';
 import * as monaco from 'monaco-editor';
 import Chip from '@material-ui/core/Chip';
 import clsx from 'clsx';
 import Paper from '@material-ui/core/Paper';
+import EmptyState from '../../../components/SystemStatus/EmptyState';
 
 const CompareVersionsStyles = makeStyles(() =>
   createStyles({
@@ -140,16 +141,24 @@ const ContentInstanceComponentsStyles = makeStyles(() =>
 
 const translations = defineMessages({
   changed: {
-    id: 'compare.component.status.changed',
+    id: 'words.changed',
     defaultMessage: 'Changed'
   },
   unchanged: {
-    id: 'compare.component.status.unchanged',
+    id: 'words.unchanged',
     defaultMessage: 'Unchanged'
   },
   deleted: {
-    id: 'compare.component.status.deleted',
+    id: 'words.deleted',
     defaultMessage: 'Deleted'
+  },
+  empty: {
+    id: 'words.empty',
+    defaultMessage: 'Empty'
+  },
+  noItems: {
+    id: 'compare.component.status.noItems',
+    defaultMessage: 'No items'
   }
 });
 
@@ -228,6 +237,7 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
   const classes = CompareVersionsStyles({});
   const { a, b, field } = props;
   const [unChanged, setUnChanged] = useState(false);
+  const { formatMessage } = useIntl();
   let contentA = a[field.id];
   let contentB = b[field.id];
 
@@ -253,13 +263,20 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
   });
 
   return (
-    <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
+    <ExpansionPanel
+      key={field.id} classes={{ root: classes.root }} TransitionProps={{ mountOnEnter: true }}
+    >
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>
           <span className={classes.bold}>{field.id} </span>({field.name})
         </Typography>
         {
-          unChanged && <Chip label="Unchanged" className={classes.unchangedChip} />
+          unChanged &&
+          <Chip label={formatMessage(translations.unchanged)} className={classes.unchangedChip} />
+        }
+        {
+          field.type === 'node-selector' && !contentA.length && !contentB.length &&
+          <Chip label={formatMessage(translations.empty)} className={classes.unchangedChip} />
         }
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
@@ -290,7 +307,7 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
           )
         }
         {
-          (field.type === 'node-selector' && field.id === 'features_o') &&
+          (field.type === 'node-selector') &&
           <ContentInstanceComponents contentA={contentA} contentB={contentB} />
         }
       </ExpansionPanelDetails>
@@ -310,7 +327,7 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const [status, setStatus] = useState<any>({});
   const { formatMessage } = useIntl();
 
-  useMount(() => {
+  useEffect(() => {
     let itemStatus = {};
     let merged = {};
     contentA.forEach((itemA, index: number) => {
@@ -331,25 +348,30 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
     });
     setMergeContent(Object.values(merged));
     setStatus(itemStatus);
-  });
+  }, [contentA, contentB]);
 
   return (
     <section className={classes.componentsWrapper}>
       {
-        mergeContent.map((item, index) =>
-          <div
-            className={clsx(classes.component, status[index] ?? '')}
-            key={item.craftercms.id}
-          >
-            <Typography> {item.craftercms.label ?? item.craftercms.id}</Typography>
-            {
-              status[index] && status[index] !== 'new' &&
-              <Typography className={classes.status}>
-                {formatMessage(translations[status[index]])}
-              </Typography>
-            }
-          </div>
-        )}
+        mergeContent.length ? (
+          mergeContent.map((item, index) =>
+            <div
+              className={clsx(classes.component, status[index] ?? '')}
+              key={item.craftercms.id}
+            >
+              <Typography> {item.craftercms.label ?? item.craftercms.id}</Typography>
+              {
+                status[index] && status[index] !== 'new' &&
+                <Typography className={classes.status}>
+                  {formatMessage(translations[status[index]])}
+                </Typography>
+              }
+            </div>
+          )
+        ) : (
+          <EmptyState title={formatMessage(translations.noItems)} />
+        )
+      }
     </section>
   );
 }
@@ -364,15 +386,19 @@ function MonacoWrapper(props: MonacoWrapperProps) {
   const { contentA, contentB } = props;
   const ref = useRef();
 
-  useMount(() => {
+  useEffect(() => {
     const originalModel = monaco.editor.createModel(contentA, 'text/plain');
     const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
-    const diffEditor = monaco.editor.createDiffEditor(ref.current);
+    const diffEditor = monaco.editor.createDiffEditor(ref.current, {
+      scrollbar: {
+        alwaysConsumeMouseWheel: false
+      }
+    });
     diffEditor.setModel({
       original: originalModel,
       modified: modifiedModel
     });
-  });
+  }, [contentA, contentB]);
 
   return (
     <div ref={ref} className={classes.monacoWrapper} />
