@@ -113,7 +113,9 @@ const ContentInstanceComponentsStyles = makeStyles(() =>
       },
       '&.new': {
         color: palette.green.shade,
-        backgroundColor: palette.green.highlight
+        backgroundColor: palette.green.highlight,
+        width: '50%',
+        marginLeft: 'auto'
       },
       '&.changed': {
         color: palette.yellow.shade,
@@ -121,7 +123,9 @@ const ContentInstanceComponentsStyles = makeStyles(() =>
       },
       '&.deleted': {
         color: palette.red.shade,
-        backgroundColor: palette.red.highlight
+        backgroundColor: palette.red.highlight,
+        width: '50%',
+        marginRight: 'auto'
       },
       '&:last-child': {
         marginBottom: 0
@@ -286,7 +290,7 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
           )
         }
         {
-          (field.type === 'node-selector') &&
+          (field.type === 'node-selector' && field.id === 'features_o') &&
           <ContentInstanceComponents contentA={contentA} contentB={contentB} />
         }
       </ExpansionPanelDetails>
@@ -303,41 +307,45 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const { contentA, contentB } = props;
   const classes = ContentInstanceComponentsStyles({});
   const [mergeContent, setMergeContent] = useState([]);
-  const [status, setStatus] = useState<LookupTable<string>>({});
+  const [status, setStatus] = useState<any>({});
   const { formatMessage } = useIntl();
 
   useMount(() => {
     let itemStatus = {};
-    if (contentA.length === contentB.length) {
-      contentA.forEach((itemA, index: number) => {
-        const itemB = contentB[index];
-        if (itemA.craftercms.id === itemB.craftercms.id) {
-          itemStatus[itemA.craftercms.id] = itemA.craftercms.dateModified !== itemB.craftercms.dateModified ? 'changed' : 'unchanged';
-        } else {
-          itemStatus[itemA.craftercms.id] = 'deleted';
-        }
-
-      });
-      setMergeContent(contentA);
-    } else {
-      setMergeContent(contentA);
-    }
+    let merged = {};
+    contentA.forEach((itemA, index: number) => {
+      const itemB = contentB[index];
+      if (!itemB || itemA.craftercms.id !== itemB.craftercms.id) {
+        itemStatus[index] = 'deleted';
+      } else {
+        itemStatus[index] = itemA.craftercms.dateModified !== itemB.craftercms.dateModified ? 'changed' : 'unchanged';
+      }
+      merged[index] = itemA;
+    });
+    contentB.forEach((itemB, index: number) => {
+      const itemA = contentA[index];
+      if (!itemA || (itemB.craftercms.id !== itemA.craftercms.id)) {
+        itemStatus[index] = 'new';
+      }
+      merged[index] = itemB;
+    });
+    setMergeContent(Object.values(merged));
     setStatus(itemStatus);
   });
 
   return (
     <section className={classes.componentsWrapper}>
       {
-        mergeContent.map((item) =>
+        mergeContent.map((item, index) =>
           <div
-            className={clsx(classes.component, status[item.craftercms.id] ?? '')}
+            className={clsx(classes.component, status[index] ?? '')}
             key={item.craftercms.id}
           >
             <Typography> {item.craftercms.label ?? item.craftercms.id}</Typography>
             {
-              status[item.craftercms.id] &&
+              status[index] && status[index] !== 'new' &&
               <Typography className={classes.status}>
-                {formatMessage(translations[status[item.craftercms.id]])}
+                {formatMessage(translations[status[index]])}
               </Typography>
             }
           </div>

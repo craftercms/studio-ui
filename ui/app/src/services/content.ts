@@ -1205,6 +1205,17 @@ export function getVersions(site: string, path: string, versionNumbers: string[]
         {
           ...response,
           ['title_t']: 'testeo',
+          ['features_o']: [
+            {
+              ...response['features_o'][0],
+              ['craftercms']: {
+                ...response['features_o'][0].craftercms,
+                dateModified: Date.now(),
+                id: 'asd1232'
+              }
+            },
+            ...response['features_o']
+          ],
           ['craftercms']: {
             ...response.craftercms,
             versionNumber: versionNumbers[0]
@@ -1214,10 +1225,22 @@ export function getVersions(site: string, path: string, versionNumbers: string[]
           ...response,
           ['hero_image_s']: 'https://via.placeholder.com/300',
           ['features_o']: [
+            {
+              ...response['features_o'][0],
+              ['craftercms']: {
+                ...response['features_o'][0].craftercms,
+                dateModified: Date.now() + 1,
+                id: 'asd1232'
+              }
+            },
             ...response['features_o'],
             {
               ...response['features_o'][0],
-              ['craftercms']: { ...response['features_o'][0].craftercms, dateModified: Date.now() }
+              ['craftercms']: {
+                ...response['features_o'][0].craftercms,
+                dateModified: Date.now(),
+                id: 'asd1234'
+              }
             }
           ],
           ['hero_title_html']: '<h2>Simply Editorial</h2>',
