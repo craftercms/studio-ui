@@ -238,6 +238,7 @@ interface ContentLocalizationDialogProps {
   rootPath: string;
   item: SandboxItem;
 
+  onItemChange?(item: SandboxItem): void;
   onClose?(): void;
 }
 
@@ -245,7 +246,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const classes = useStyles({});
-  const { open, onClose, locales, item, rootPath } = props;
+  const { open, onClose, locales, item, rootPath, onItemChange } = props;
   const [selected, setSelected] = useState([]);
   const [openSelector, setOpenSelector] = useState(false);
   const site = useActiveSiteId();
@@ -338,6 +339,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
           rootPath={rootPath}
           selectedItem={item}
           onItemClicked={(item) => {
+            onItemChange(item);
             setOpenSelector(false);
           }}
         />

@@ -26,7 +26,7 @@ export function getItemLocales(site: string, path: string): Observable<any> {
   }).pipe(
     map(({ item, locales }) => ({
       item,
-      locales
+      locales: locales.items
     }))
   );
 }

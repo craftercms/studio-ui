@@ -18,7 +18,7 @@ import React, { Fragment, useCallback, useReducer, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { copy, cut, getChildrenByPath, getPages, paste } from '../../../services/content';
-import { getItemLocales } from '../../../services/translation';
+import { getTargetLocales } from '../../../services/translation';
 import { LegacyItem, SandboxItem } from '../../../models/Item';
 import clsx from 'clsx';
 import { LookupTable } from '../../../models/LookupTable';
@@ -393,6 +393,24 @@ export default function (props: WidgetProps) {
   const onSelectItem = (item: SandboxItem, checked: boolean) =>
     exec(checked ? itemChecked(item) : itemUnchecked(item));
 
+  const translationDialogItemChange = (item: SandboxItem) => {
+    getTargetLocales(site, item.path).subscribe(
+      (response) => {
+        setTranslationDialog({
+          item,
+          locales: response.locales
+        });
+      },
+      (response) => {
+        dispatch(
+          showErrorDialog({
+            error: response
+          })
+        );
+      }
+    );
+  };
+
   const onMenuItemClicked = (section: SectionItem) => {
     switch (section.id) {
       case 'select': {
@@ -496,21 +514,7 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'translation': {
-        getItemLocales(site, menu.activeItem.path).subscribe(
-          (response) => {
-            setTranslationDialog({
-              item: response.item,
-              locales: response.locales.items
-            });
-          },
-          (response) => {
-            dispatch(
-              showErrorDialog({
-                error: response
-              })
-            );
-          }
-        );
+        translationDialogItemChange(menu.activeItem);
         setMenu({
           activeItem: null,
           anchorEl: null
@@ -735,6 +739,7 @@ export default function (props: WidgetProps) {
           rootPath={state.rootPath}
           locales={translationDialog.locales}
           open={true}
+          onItemChange={translationDialogItemChange}
           onClose={onTranslationDialogClose}
         />
       )}
