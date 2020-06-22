@@ -18,7 +18,7 @@ import React, { Fragment, useCallback, useReducer, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { copy, cut, getChildrenByPath, getPages, paste } from '../../../services/content';
-import { getTargetLocales } from '../../../services/translation';
+import { getItemLocales } from '../../../services/translation';
 import { LegacyItem, SandboxItem } from '../../../models/Item';
 import clsx from 'clsx';
 import { LookupTable } from '../../../models/LookupTable';
@@ -369,7 +369,10 @@ export default function (props: WidgetProps) {
     activeItem: null
   });
   const [copyDialog, setCopyDialog] = useState(null);
-  const [translationDialog, setTranslationDialog] = useState(null);
+  const [translationDialog, setTranslationDialog] = useState({
+    item: null,
+    locales: null
+  });
 
   useMount(() => {
     exec(fetchPath(path));
@@ -493,9 +496,12 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'translation': {
-        getTargetLocales(site, menu.activeItem.path).subscribe(
+        getItemLocales(site, menu.activeItem.path).subscribe(
           (response) => {
-            setTranslationDialog(response.items);
+            setTranslationDialog({
+              item: response.item,
+              locales: response.locales.items
+            });
           },
           (response) => {
             dispatch(
@@ -725,9 +731,9 @@ export default function (props: WidgetProps) {
       )}
       {translationDialog && (
         <ContentLocalizationDialog
-          item={state.items[state.rootPath]}
+          item={translationDialog.item}
           rootPath={state.rootPath}
-          locales={translationDialog}
+          locales={translationDialog.locales}
           open={true}
           onClose={onTranslationDialogClose}
         />
