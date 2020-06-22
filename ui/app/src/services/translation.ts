@@ -15,8 +15,8 @@
  */
 
 import { Observable, Observer } from 'rxjs';
-import { post } from '../utils/ajax';
-import { TranslationConfig } from '../models/Translation';
+import { postJSON } from '../utils/ajax';
+import Translation from '../models/Translation';
 
 export function getTargetLocales(site: string, path: string): Observable<any> {
   ///studio/api/2/translation/list_target_locales
@@ -57,7 +57,7 @@ export function getTargetLocales(site: string, path: string): Observable<any> {
 }
 
 export function markForTranslation(site: string, path: string, locale: string) {
-  return post('/studio/api/2/translation/mark_for_translation_by_path', {
+  return postJSON('/studio/api/2/translation/mark_for_translation_by_path', {
     siteId: site,
     path: [path],
     locales: [locale]
@@ -66,11 +66,11 @@ export function markForTranslation(site: string, path: string, locale: string) {
   });
 }
 
-export function getSupportedLocales(site: string): Observable<TranslationConfig> {
+export function getSupportedLocales(site: string): Observable<Translation> {
   ///studio/api/2/translation/get_supported_locales
   const response = {
     localeCodes: ['en_us', 'es_cr', 'fr_fr'],
-    defaultLocalecode: 'en-us'
+    defaultLocaleCode: 'en-us'
   };
 
   return new Observable((observer: Observer<any>) => {
