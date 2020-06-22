@@ -156,8 +156,8 @@ const translations = defineMessages({
     id: 'words.empty',
     defaultMessage: 'Empty'
   },
-  noItems: {
-    id: 'compare.component.status.noItems',
+  noItemsStatus: {
+    id: 'compareVersionsDialog.noItemsStatus',
     defaultMessage: 'No items'
   }
 });
@@ -369,7 +369,7 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
             </div>
           )
         ) : (
-          <EmptyState title={formatMessage(translations.noItems)} />
+          <EmptyState title={formatMessage(translations.noItemsStatus)} />
         )
       }
     </section>
