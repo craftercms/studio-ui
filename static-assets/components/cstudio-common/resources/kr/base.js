@@ -535,6 +535,7 @@ CStudioAuthoring.Messages.registerBundle('search', 'kr', {
   videos: '비디오',
   width: '폭',
   height: '신장',
+  path: '통로',
   'content-type': '컨텐츠 타입',
   'mime-type': 'MIME 유형',
   'last-edit-date': '마지막 편집 날짜',

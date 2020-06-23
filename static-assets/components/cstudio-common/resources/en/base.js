@@ -584,6 +584,7 @@ CStudioAuthoring.Messages.registerBundle('search', 'en', {
   videos: 'Videos',
   width: 'Width',
   height: 'Height',
+  path: 'Path',
   'content-type': 'Content Type',
   'mime-type': 'MIME Type',
   'last-edit-date': 'Last Edit Date',
