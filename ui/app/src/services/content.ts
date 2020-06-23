@@ -133,8 +133,8 @@ function parseElementByContentType(element: Element, field: ContentTypeField, co
       element.querySelectorAll(':scope > item').forEach((item) => {
         const key = getInnerHtml(item.querySelector('key'));
         const component = item.querySelector('component');
-        parseContentXML(component ? wrapElementInAuxDocument(component) : null, key, contentTypesLookup, instanceLookup);
-        array.push(objectIdFromPath(key));
+        const instanceLK = parseContentXML(component ? wrapElementInAuxDocument(component) : null, key, contentTypesLookup, instanceLookup);
+        array.push(instanceLK[objectIdFromPath(key)]);
       });
       return array;
     }
@@ -1196,6 +1196,62 @@ export function getVersion(site: string, path: string, versionNumber: string): O
     });
     observer.complete();
   });
+}
+
+export function getVersions(site: string, path: string, versionNumbers: string[], contentTypes: LookupTable<ContentType>): Observable<any> {
+  return getContentInstance(site, path, contentTypes).pipe(
+    map(response => {
+      return [
+        {
+          ...response,
+          ['title_t']: 'testeo',
+          ['features_o']: [
+            {
+              ...response['features_o'][0],
+              ['craftercms']: {
+                ...response['features_o'][0].craftercms,
+                dateModified: Date.now(),
+                id: 'asd1232'
+              }
+            },
+            ...response['features_o']
+          ],
+          ['craftercms']: {
+            ...response.craftercms,
+            versionNumber: versionNumbers[0]
+          }
+        },
+        {
+          ...response,
+          ['hero_image_s']: 'https://via.placeholder.com/300',
+          ['features_o']: [
+            {
+              ...response['features_o'][0],
+              ['craftercms']: {
+                ...response['features_o'][0].craftercms,
+                dateModified: Date.now() + 1,
+                id: 'asd1232'
+              }
+            },
+            ...response['features_o'],
+            {
+              ...response['features_o'][0],
+              ['craftercms']: {
+                ...response['features_o'][0].craftercms,
+                dateModified: Date.now(),
+                id: 'asd1234'
+              }
+            }
+          ],
+          ['hero_title_html']: '<h2>Simply Editorial</h2>',
+          ['craftercms']: {
+            ...response.craftercms,
+            versionNumber: versionNumbers[1]
+          }
+        }
+      ];
+    })
+  );
 }
 
 export function getChildrenByPath(site: string, path: string, options?: GetChildrenOptions): Observable<GetChildrenResponse> {

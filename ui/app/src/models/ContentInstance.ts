@@ -22,6 +22,7 @@ export interface ContentInstanceSystemProps {
   dateCreated: string;
   dateModified: string;
   contentTypeId: string;
+  versionNumber?: string; // TODO: remove this;
 }
 
 export interface ContentInstance {
