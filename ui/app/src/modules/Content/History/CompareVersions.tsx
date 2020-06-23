@@ -31,7 +31,6 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import React, { useEffect, useRef, useState } from 'react';
 import { Resource } from '../../../models/Resource';
 import { useMount } from '../../../utils/hooks';
-import * as monaco from 'monaco-editor';
 import Chip from '@material-ui/core/Chip';
 import clsx from 'clsx';
 import Paper from '@material-ui/core/Paper';
@@ -387,17 +386,19 @@ function MonacoWrapper(props: MonacoWrapperProps) {
   const ref = useRef();
 
   useEffect(() => {
-    const originalModel = monaco.editor.createModel(contentA, 'text/plain');
-    const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
-    const diffEditor = monaco.editor.createDiffEditor(ref.current, {
-      scrollbar: {
-        alwaysConsumeMouseWheel: false
-      }
-    });
-    diffEditor.setModel({
-      original: originalModel,
-      modified: modifiedModel
-    });
+    if (ref.current) {
+      // const originalModel = monaco.editor.createModel(contentA, 'text/plain');
+      // const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
+      // const diffEditor = monaco.editor.createDiffEditor(ref.current, {
+      //   scrollbar: {
+      //     alwaysConsumeMouseWheel: false
+      //   }
+      // });
+      // diffEditor.setModel({
+      //   original: originalModel,
+      //   modified: modifiedModel
+      // });
+    }
   }, [contentA, contentB]);
 
   return (
