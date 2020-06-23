@@ -75,8 +75,6 @@ export function markForTranslation(site: string, path: string, locale: string) {
     siteId: site,
     path: [path],
     locales: [locale]
-  }, {
-    'Content-Type': 'application/json'
   });
 }
 
