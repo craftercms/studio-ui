@@ -369,7 +369,10 @@ export default function (props: WidgetProps) {
     activeItem: null
   });
   const [copyDialog, setCopyDialog] = useState(null);
-  const [translationDialog, setTranslationDialog] = useState(null);
+  const [translationDialog, setTranslationDialog] = useState({
+    item: null,
+    locales: null
+  });
 
   useMount(() => {
     exec(fetchPath(path));
@@ -389,6 +392,24 @@ export default function (props: WidgetProps) {
 
   const onSelectItem = (item: SandboxItem, checked: boolean) =>
     exec(checked ? itemChecked(item) : itemUnchecked(item));
+
+  const translationDialogItemChange = (item: SandboxItem) => {
+    getTargetLocales(site, item.path).subscribe(
+      (response) => {
+        setTranslationDialog({
+          item,
+          locales: response.locales
+        });
+      },
+      (response) => {
+        dispatch(
+          showErrorDialog({
+            error: response
+          })
+        );
+      }
+    );
+  };
 
   const onMenuItemClicked = (section: SectionItem) => {
     switch (section.id) {
@@ -493,18 +514,7 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'translation': {
-        getTargetLocales(site, menu.activeItem.path).subscribe(
-          (response) => {
-            setTranslationDialog(response.items);
-          },
-          (response) => {
-            dispatch(
-              showErrorDialog({
-                error: response
-              })
-            );
-          }
-        );
+        translationDialogItemChange(menu.activeItem);
         setMenu({
           activeItem: null,
           anchorEl: null
@@ -725,10 +735,12 @@ export default function (props: WidgetProps) {
       )}
       {translationDialog && (
         <ContentLocalizationDialog
-          locales={translationDialog}
+          item={translationDialog.item}
+          rootPath={state.rootPath}
+          locales={translationDialog.locales}
           open={true}
+          onItemChange={translationDialogItemChange}
           onClose={onTranslationDialogClose}
-          site={site}
         />
       )}
     </section>
