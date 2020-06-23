@@ -124,6 +124,26 @@
                                 </div>
                             </div>
 
+                            <div class="panel panel-default">
+                              <div class="panel-heading" role="tab" id="headingPath">
+                                <h4 class="panel-title">
+                                  <a class="path-header-label" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsePath"
+                                     aria-expanded="true" aria-controls="collapsePath">
+                                    <#-- data-trans="path">     TODO: add translation -->
+                                    Path
+                                    <i class="fa fa-check-circle selected hide ml5" aria-hidden="true"></i>
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="collapsePath" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingPath">
+                                <div class="panel-body">
+                                  <li class="filter-item" filter-name="path">
+                                    <input class="filter-path" id="filterPath" type="text" name="path" style="padding: 5px; border-radius: 4px; width: 100%; border: 1px solid #bbb;">    <#-- TODO: move to styles -->
+                                    <button type="button" class="btn btn-primary apply-path mt5">Go</button>
+                                  </li>
+                                </div>
+                              </div>
+                            </div>
                         </ul>
                     </div>
                 </div>
