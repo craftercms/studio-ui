@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface Translation {
+export interface TranslationConfig {
   localeCodes: string[];
   defaultLocaleCode: string;
 }
 
-export default Translation;
+export default TranslationConfig;

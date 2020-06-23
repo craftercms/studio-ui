@@ -16,7 +16,7 @@
 
 import { Observable, Observer } from 'rxjs';
 import { postJSON } from '../utils/ajax';
-import Translation from '../models/Translation';
+import TranslationConfig from '../models/Translation';
 
 export function getTargetLocales(site: string, path: string): Observable<any> {
   ///studio/api/2/translation/list_target_locales
@@ -66,7 +66,7 @@ export function markForTranslation(site: string, path: string, locale: string) {
   });
 }
 
-export function getSupportedLocales(site: string): Observable<Translation> {
+export function getSupportedLocales(site: string): Observable<TranslationConfig> {
   ///studio/api/2/translation/get_supported_locales
   const response = {
     localeCodes: ['en_us', 'es_cr', 'fr_fr'],
