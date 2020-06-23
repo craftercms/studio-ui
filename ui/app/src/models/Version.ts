@@ -16,6 +16,7 @@
 
 import { LegacyItem, SandboxItem } from './Item';
 import ApiResponse from './ApiResponse';
+import ContentInstance from './ContentInstance';
 
 export interface LegacyVersion {
   lastModifiedDate: string;
@@ -36,7 +37,7 @@ export interface FetchContentVersion {
 }
 
 export interface CompareVersionsBranch {
-  compareVersions: string[];
+  compareVersions: ContentInstance[];
   isFetching: Boolean;
   error: ApiResponse;
 }

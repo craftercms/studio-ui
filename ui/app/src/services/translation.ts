@@ -14,9 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Observable, Observer } from 'rxjs';
+import { forkJoin, Observable, Observer } from 'rxjs';
 import { postJSON } from '../utils/ajax';
+import { map } from 'rxjs/operators';
+import { getSandboxItem } from './content';
 import TranslationConfig from '../models/Translation';
+
+export function getItemLocales(site: string, path: string): Observable<any> {
+  return forkJoin({
+    item: getSandboxItem(site, path),
+    locales: getTargetLocales(site, path)
+  }).pipe(
+    map(({ item, locales }) => ({
+      item,
+      locales: locales.items
+    }))
+  );
+}
 
 export function getTargetLocales(site: string, path: string): Observable<any> {
   ///studio/api/2/translation/list_target_locales
@@ -80,6 +94,7 @@ export function getSupportedLocales(site: string): Observable<TranslationConfig>
 }
 
 export default {
+  getItemLocales,
   getTargetLocales,
   markForTranslation,
   getSupportedLocales
