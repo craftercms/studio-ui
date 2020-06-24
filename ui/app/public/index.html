@@ -30,8 +30,16 @@
     href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css"
     rel="stylesheet"
   >
+  <link
+    href="/js/monaco/vs/editor/editor.main.css"
+    rel="stylesheet"
+  >
 </head>
 <body>
+<script>var require = { paths: { 'vs': '/js/monaco/vs' } };</script>
+<script src="/js/monaco/vs/loader.js"></script>
+<script src="/js/monaco/vs/editor/editor.main.nls.js"></script>
+<script src="/js/monaco/vs/editor/editor.main.js"></script>
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div id="studioSPARoot"></div>
 <!-- !!!Don't put anything bellow the placeholder script!!! -->

@@ -387,17 +387,19 @@ function MonacoWrapper(props: MonacoWrapperProps) {
 
   useEffect(() => {
     if (ref.current) {
-      // const originalModel = monaco.editor.createModel(contentA, 'text/plain');
-      // const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
-      // const diffEditor = monaco.editor.createDiffEditor(ref.current, {
-      //   scrollbar: {
-      //     alwaysConsumeMouseWheel: false
-      //   }
-      // });
-      // diffEditor.setModel({
-      //   original: originalModel,
-      //   modified: modifiedModel
-      // });
+      // @ts-ignore
+      const monaco = window.monaco;
+      const originalModel = monaco.editor.createModel(contentA, 'text/plain');
+      const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
+      const diffEditor = monaco.editor.createDiffEditor(ref.current, {
+        scrollbar: {
+          alwaysConsumeMouseWheel: false
+        }
+      });
+      diffEditor.setModel({
+        original: originalModel,
+        modified: modifiedModel
+      });
     }
   }, [contentA, contentB]);
 
