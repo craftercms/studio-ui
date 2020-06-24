@@ -28,6 +28,10 @@ import { green, red } from '@material-ui/core/colors';
 import { setRequestForgeryToken } from '../utils/auth';
 import { useSpreadState } from '../utils/hooks';
 
+interface EncryptToolProps {
+  site: string;
+}
+
 const messages = defineMessages({
   pageTitle: {
     id: 'encryptTool.pageTitle',
@@ -127,7 +131,7 @@ function SnackbarContentWrapper(props: any) {
   );
 }
 
-const EncryptTool = () => {
+const EncryptTool = (props: EncryptToolProps) => {
   const classes = useStyles({});
   const inputRef = useRef();
   const [text, setText] = useState('');
