@@ -576,7 +576,8 @@
               setRequestForgeryToken();
               forkJoin(
                 items.map(({ tag, text }) =>
-                  security.encrypt(text, CStudioAuthoringContext.site).pipe(map((text) => ({ tag, text }))))
+                  security.encrypt(text, CStudioAuthoringContext.site).pipe(map((text) => ({ tag, text })))
+                )
               ).subscribe(
                 (encrypted) => {
                   encrypted.forEach(({ text, tag }) => {
