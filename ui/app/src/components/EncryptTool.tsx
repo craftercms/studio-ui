@@ -152,7 +152,7 @@ const EncryptTool = (props: EncryptToolProps) => {
       setRequestForgeryToken();
       setFetching(true);
       setResult(null);
-      encryptService(text).subscribe(
+      encryptService(text, props.site).subscribe(
         (encryptedText) => {
           setFetching(false);
           setText('');
