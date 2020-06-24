@@ -118,14 +118,17 @@
               const type = currentField.type,
                 controls = this.config.controls.control,
                 postfixes = CStudioAdminConsole.getPostfixes(type, controls);
-              for (var k = 0; k < postfixes.length; k++) {
-                if (currentField.id.indexOf(postfixes[k]) > -1) {
-                  postfixesFlag = true;
-                  break;
+
+              if (postfixes) {
+                for (var k = 0; k < postfixes.length; k++) {
+                  if (currentField.id.indexOf(postfixes[k]) > -1) {
+                    postfixesFlag = true;
+                    break;
+                  }
                 }
-              }
-              if (!postfixesFlag && postfixes.length > 0) {
-                postfixError.push({ title: currentField.title, type: currentField.type });
+                if (!postfixesFlag && postfixes.length > 0) {
+                  postfixError.push({ title: currentField.title, type: currentField.type });
+                }
               }
             }
 
@@ -1439,13 +1442,24 @@
         var dd = new DragAndDropDecorator(fieldContainerEl);
         var tar = new YAHOO.util.DDTarget(fieldContainerEl);
 
-        var fieldClickFn = function(evt) {
+        (function (fieldContainerEl) {
+          // Retrieve control file, loadModule from common-api.js does not identify if file doesn't
+          // exist, since it uses 'addJavascript', that adds a text/javascript script into the
+          // document.
+          $.get(`/studio/static-assets/components/cstudio-forms/controls/${field.type}.js`)
+            .fail(function () {
+              $(fieldContainerEl)
+                .append(`<span class="control-not-available">${formatMessage(contentTypesMessages.controlNotAvailable)}</span>`);
+            });
+        }(fieldContainerEl));
+
+        var fieldClickFn = function (evt) {
           fieldEvent = true;
           formItemSelectedEvent.fire(this);
           YAHOO.util.Event.stopEvent(evt);
         };
 
-        var fieldSelectedFn = function(evt, selectedEl) {
+        var fieldSelectedFn = function (evt, selectedEl) {
           var listeningEl = arguments[2];
 
           if (selectedEl[0] != listeningEl) {
