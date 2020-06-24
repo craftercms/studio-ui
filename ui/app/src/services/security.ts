@@ -18,8 +18,8 @@ import { postJSON } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
-export function encrypt(text: string): Observable<string> {
-  return postJSON(`/studio/api/2/security/encrypt.json`, { text }).pipe(
+export function encrypt(text: string, site: string = ''): Observable<string> {
+  return postJSON(`/studio/api/2/security/encrypt.json`, { text, siteId: site }).pipe(
     map(({ response }) => response.item)
   );
 }
