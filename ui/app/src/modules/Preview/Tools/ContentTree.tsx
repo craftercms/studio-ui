@@ -110,7 +110,9 @@ const useStyles = makeStyles((theme) =>
 
 const treeItemStyles = makeStyles((theme) =>
   createStyles({
-    icon: {},
+    icon: {
+      color: palette.teal.main
+    },
     displayNone: {
       display: 'none'
     },
