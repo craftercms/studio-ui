@@ -952,6 +952,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   confTabEngineSiteConfigurationDesc: 'Konfigurationsdatei für Crafter Engine',
   confTabEngineSiteAppContextConfiguration: 'Crafter Engine Application Context',
   confTabEngineSiteAppContextConfigurationDesc: 'ApplicationContext Datei für Crafter Engine',
+  confTabTranslationConf: 'Übersetzungskonfiguration',
+  confTabTranslationConfDesc: 'Definiert unterstützte Sprachen und Resolver',
 
   /* Image */
   constraintsError: 'Das Bild entspricht nicht den geforderten Maßen',
