@@ -34,7 +34,9 @@
       $(workarea).html('');
       workarea.appendChild(el);
 
-      CrafterCMSNext.render(el, 'EncryptTool');
+      CrafterCMSNext.render(el, 'EncryptTool', {
+        site: CStudioAuthoringContext.site
+      });
 
     }
   }
