@@ -550,7 +550,7 @@
         var visual = new CStudioAdminConsole.Tool.ContentTypes.FormVisualization(formDef, canvasEl);
         CStudioAdminConsole.Tool.ContentTypes.visualization = visual;
 
-        visual.render();
+        visual.render(this.config);
       },
 
       /**
@@ -1073,12 +1073,13 @@
       /**
        * render form visualization
        */
-      render: function() {
+      render: function (config) {
         var that = this;
+        this.config = this.config ? this.config : config;
         if (CStudioAdminConsole.Tool.ContentTypes.FormDefMain.dragActionTimer) {
           // If the drag action timer is set, changes are still occurring to the form
           // Call the render method again in a few milliseconds
-          setTimeout(function() {
+          setTimeout(function () {
             that.render();
           }, 10);
         }
@@ -1442,16 +1443,12 @@
         var dd = new DragAndDropDecorator(fieldContainerEl);
         var tar = new YAHOO.util.DDTarget(fieldContainerEl);
 
-        (function (fieldContainerEl) {
-          // Retrieve control file, loadModule from common-api.js does not identify if file doesn't
-          // exist, since it uses 'addJavascript', that adds a text/javascript script into the
-          // document.
-          $.get(`/studio/static-assets/components/cstudio-forms/controls/${field.type}.js`)
-            .fail(function () {
-              $(fieldContainerEl)
-                .append(`<span class="control-not-available">${formatMessage(contentTypesMessages.controlNotAvailable)}</span>`);
-            });
-        }(fieldContainerEl));
+        var controlExists = (this.config.controls.control.filter(control => control.name === field.type).length) > 0;
+        if (!controlExists) {
+          $(fieldContainerEl)
+            .addClass('disabled')
+            .append(`<span class="control-not-available">${formatMessage(contentTypesMessages.controlNotAvailable)}</span>`);
+        }
 
         var fieldClickFn = function (evt) {
           fieldEvent = true;
@@ -1533,7 +1530,7 @@
         };
 
         formItemSelectedEvent.subscribe(fieldSelectedFn, fieldContainerEl);
-        YAHOO.util.Event.on(fieldContainerEl, 'click', fieldClickFn);
+        $(fieldContainerEl).not('.disabled').on('click', fieldClickFn);
       }
     };
 
