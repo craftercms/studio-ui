@@ -30,7 +30,7 @@ import { markForTranslation } from '../../services/translation';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import palette from '../../styles/palette';
-import { useActiveSiteId } from '../../utils/hooks';
+import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import DialogBody from './DialogBody';
 import DialogHeader from './DialogHeader';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
@@ -237,16 +237,25 @@ interface ContentLocalizationDialogProps {
   locales: any;
   rootPath: string;
   item: SandboxItem;
-
   onItemChange?(item: SandboxItem): void;
   onClose?(): void;
+  onClosed?(): void;
 }
 
-export default function ContentLocalizationDialog(props: ContentLocalizationDialogProps) {
+export default function (props: ContentLocalizationDialogProps) {
+  const { open, onClose } = props;
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth>
+      <ContentLocalizationDialog {...props} />
+    </Dialog>
+  );
+}
+
+function ContentLocalizationDialog(props: ContentLocalizationDialogProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const classes = useStyles({});
-  const { open, onClose, locales, item, rootPath, onItemChange } = props;
+  const { onClose, locales, item, rootPath, onItemChange } = props;
   const [selected, setSelected] = useState([]);
   const [openSelector, setOpenSelector] = useState(false);
   const site = useActiveSiteId();
@@ -321,8 +330,10 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
     // TODO: Widget menu option clicked
   };
 
+  useUnmount(props.onClosed);
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <>
       <DialogHeader
         title={
           <FormattedMessage id="contentLocalization.title" defaultMessage="Content Localization" />
@@ -368,7 +379,7 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
               </>
             </header>
           )}
-          {locales.map((locale: any) => (
+          {locales?.map((locale: any) => (
             <div className={classes.flex} key={locale.id}>
               <Checkbox
                 color="primary"
@@ -403,6 +414,6 @@ export default function ContentLocalizationDialog(props: ContentLocalizationDial
         sections={[menuSections]}
         onMenuItemClicked={onMenuItemClicked}
       />
-    </Dialog>
+    </>
   );
 }
