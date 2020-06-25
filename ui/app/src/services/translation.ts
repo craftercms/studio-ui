@@ -18,7 +18,7 @@ import { forkJoin, Observable, Observer } from 'rxjs';
 import { postJSON } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 import { getSandboxItem } from './content';
-import TranslationConfig from '../models/Translation';
+import TranslationConfig from '../models/TranslationConfig';
 
 export function getItemLocales(site: string, path: string): Observable<any> {
   return forkJoin({
