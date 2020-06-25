@@ -106,7 +106,7 @@
     <div class="modal-body clearfix edit-{{dialogMode | lowercase}} admin-dialog user-management-dialog">
       <div class="col-md-12">
         <fieldset ng-disabled="user.externallyManaged">
-          <div class="form-group" ng-if="!(dialogMode == 'CREATE')">
+          <div class="form-group user-field" ng-if="!(dialogMode == 'CREATE')">
             <label for="enabled" class="control-label">Enabled</label>
             <input type="checkbox"
                    ng-disabled="!dialogMode"
@@ -118,7 +118,7 @@
             >
           </div>
 
-          <div class="form-group" ng-if="!(dialogMode == 'CREATE')">
+          <div class="form-group user-field" ng-if="!(dialogMode == 'CREATE')">
             <label for="enabled" class="control-label">Externally Managed</label>
             <input type="checkbox"
                    ng-disabled="true"
@@ -127,7 +127,7 @@
             >
           </div>
 
-          <div class="form-group">
+          <div class="form-group user-field">
             <label for="firstName" class="control-label">{{ 'admin.users.FIRST_NAME' | translate }}</label>
             <input ng-disabled="!dialogMode" type="text" class="form-control" id="firstName" name="firstName" ng-model="user.firstName" autofocus focus-me="true" required ng-maxlength="users.maxInputLength">
 
@@ -143,7 +143,7 @@
               </small>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group user-field">
             <label for="lastName" class="control-label">{{ 'admin.users.LAST_NAME' | translate }}</label>
             <input ng-disabled="!dialogMode" type="text" class="form-control" id="lastName" name="lastName" ng-model="user.lastName" required ng-maxlength="users.maxInputLength">
 
@@ -159,7 +159,7 @@
               </small>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group user-field">
             <label for="email" class="control-label">{{ 'admin.users.EMAIL' | translate }}</label>
             <input ng-disabled="!dialogMode" type="email" class="form-control" id="email" name="email" ng-model="user.email" required>
 
@@ -175,7 +175,7 @@
               </small>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group user-field">
             <label for="username" class="control-label">{{ 'admin.users.USER_NAME' | translate }}</label>
             <input ng-disabled="!dialogMode || dialogEdit" type="text" class="form-control" id="username" name="username" ng-model="user.username" required ng-maxlength="users.maxInputLength">
 
@@ -193,9 +193,8 @@
           </div>
 
           <div ng-if="!dialogMode">
-
             <div ng-if="user.sites">
-              <div class="form-group">
+              <div class="form-group user-field">
                 <label class="control-label"> Sites </label>
 
                 <!--<div ng-repeat="site in user.sites">-->
@@ -225,7 +224,7 @@
             </div>
 
             <div ng-if="user.groups">
-              <div class="form-group">
+              <div class="form-group user-field">
                 <label class="control-label"> Groups </label>
 
                 <div ng-repeat="group in user.groups">
@@ -234,8 +233,6 @@
 
               </div>
             </div>
-
-
           </div>
 
 
@@ -304,7 +301,7 @@
             <label for="newPassword" class="control-label">Reset Password
             </label>
             <input type="password" class="form-control" id="newPassword" name="newPassword" ng-model="user.newPassword"
-                   placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;' 
+                   placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
                    required ng-init="newPasswordRequirements()" >
             <div class="error-container"
                    ng-show="(passwordForm.newPassword.$dirty && passwordForm.newPassword.$invalid) || (passwordForm.newPassword.$touched && passwordForm.newPassword.$invalid)" >
