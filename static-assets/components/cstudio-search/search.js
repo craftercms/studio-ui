@@ -645,7 +645,7 @@
     $('select[name="sortOrder"]').val(sortOrderValue);
 
     if (searchContext.path) {
-      $('#filterPath').val(searchContext.path.replace('.+', ''))/*.prop('disabled', true)*/;
+      $('#filterPath').val(searchContext.path.replace('.+', ''));
 
       if (searchContext.path !== '') {
         $('#headingPath .path-header-label .selected').removeClass('hide');
