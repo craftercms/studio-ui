@@ -17,7 +17,15 @@
 import React, { Fragment, useCallback, useReducer, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
-import { copy, cut, getChildrenByPath, getPages, paste } from '../../../services/content';
+import {
+  copy,
+  cut,
+  fetchWorkflowAffectedItems,
+  getChildrenByPath,
+  getContentInstance,
+  getPages,
+  paste
+} from '../../../services/content';
 import { getTargetLocales } from '../../../services/translation';
 import { LegacyItem, SandboxItem } from '../../../models/Item';
 import clsx from 'clsx';
@@ -28,6 +36,7 @@ import {
   useEnv,
   useLogicResource,
   useMount,
+  useSelection,
   useSpreadState
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
@@ -47,8 +56,13 @@ import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import { fetchItemVersions } from '../../../state/reducers/versions';
-import { showDependenciesDialog, showHistoryDialog } from '../../../state/actions/dialogs';
+import {
+  showDependenciesDialog,
+  showHistoryDialog,
+  showWorkflowCancellationDialog
+} from '../../../state/actions/dialogs';
 import ContentLoader from 'react-content-loader';
+import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -206,6 +220,12 @@ interface MenuState {
   hasClipboard: boolean;
 }
 
+interface Menu {
+  sections: SectionItem[][];
+  anchorEl: Element;
+  activeItem: SandboxItem;
+}
+
 interface WidgetState {
   rootPath: string;
   currentPath: string;
@@ -340,6 +360,9 @@ export default function (props: WidgetProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+  //new
+  const defaultSrc = `${authoringBase}/legacy/form?`;
+  const contentTypes = useSelection((state) => state.contentTypes).byId;
 
   const exec = useCallback(
     (action) => {
@@ -363,7 +386,7 @@ export default function (props: WidgetProps) {
     selectMode: false,
     hasClipboard: false
   });
-  const [menu, setMenu] = useSpreadState({
+  const [menu, setMenu] = useSpreadState<Menu>({
     sections: [],
     anchorEl: null,
     activeItem: null
@@ -410,6 +433,35 @@ export default function (props: WidgetProps) {
 
   const onMenuItemClicked = (section: SectionItem) => {
     switch (section.id) {
+      case 'edit': {
+        getContentInstance(site, menu.activeItem.path, contentTypes).subscribe(
+          (response) => {
+            let src = `${defaultSrc}site=${site}&path=${menu.activeItem.path}&type=form`;
+            const editProps = {
+              src,
+              type: 'form',
+              inProgress: true,
+              showController: menu.activeItem.contentTypeId.includes('/page/'),
+              itemModel: response
+            };
+            fetchWorkflowAffectedItems(site, path).subscribe(
+              (items) => {
+                if (items?.length > 0) {
+                  dispatch(showWorkflowCancellationDialog({
+                    items,
+                    onContinue: showEditDialog(editProps)
+                  }));
+                } else {
+                  dispatch(
+                    showEditDialog(editProps)
+                  );
+                }
+              }
+            );
+          }
+        );
+        break;
+      }
       case 'select': {
         setMenuState({ selectMode: true });
         setMenu({
@@ -556,7 +608,7 @@ export default function (props: WidgetProps) {
     setMenu({
       sections: generateMenuSections(null, menuState, count),
       anchorEl: element,
-      activeItem: state.currentPath
+      activeItem: state.items[state.currentPath]
     });
   };
 
