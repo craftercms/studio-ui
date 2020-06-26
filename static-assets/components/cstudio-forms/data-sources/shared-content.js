@@ -175,6 +175,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 
     if (this.browsePath) {
       searchContext.path = this.browsePath.endsWith('/') ? `${this.browsePath}.+` : `${this.browsePath}/.+`;
+      searchContext.externalPath = true;
     }
 
     CStudioAuthoring.Operations.openSearch(

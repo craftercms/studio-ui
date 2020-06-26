@@ -1181,6 +1181,10 @@ var nodeOpen = false,
           searchUrl += '&path=' + encodeURIComponent(searchContext.path);
         }
 
+        if (!CStudioAuthoring.Utils.isEmpty(searchContext.externalPath)) {
+          searchUrl += '&externalPath=' + encodeURIComponent(searchContext.externalPath);
+        }
+
         var childSearch = null;
 
         if (
