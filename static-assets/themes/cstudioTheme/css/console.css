@@ -464,6 +464,8 @@ body, tbody {
   }
 }
 
+
+
 .site-config-landing-page {
   margin-top: 50px;
   padding: 0 20px;
@@ -554,6 +556,10 @@ body, tbody {
 
 .popover-content p {
   padding: 0px;
+}
+
+.popover.properties-help .popover-title .close {
+  font-size: 14px;
 }
 
 .checkboxes .property-label {
@@ -964,7 +970,6 @@ html, body {
 
 .quick-create-help th,
 .quick-create-help td {
-  vertical-align: top;
   padding: 0 5px 5px 0;
 }
 
