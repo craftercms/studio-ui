@@ -63,6 +63,7 @@ import {
 } from '../../../state/actions/dialogs';
 import ContentLoader from 'react-content-loader';
 import { showEditDialog } from '../../../state/reducers/dialogs/edit';
+import { fetchContentTypes } from '../../../state/actions/preview';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -74,7 +75,7 @@ const MyLoader = React.memo(function () {
     return new Array(numOfItems).fill(null).map((_, i) => ({
       y: start + (30 * i),
       width: createRand()
-    }))
+    }));
   });
   return (
     <ContentLoader
@@ -361,7 +362,7 @@ export default function (props: WidgetProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   //new
-  const defaultSrc = `${authoringBase}/legacy/form?`;
+  const defaultSrc = `${authoringBase}/studio/legacy/form?`;
   const contentTypes = useSelection((state) => state.contentTypes).byId;
 
   const exec = useCallback(
@@ -395,6 +396,8 @@ export default function (props: WidgetProps) {
   const [translationDialog, setTranslationDialog] = useState(null);
 
   useMount(() => {
+    // TODO: Ask about this;
+    dispatch(fetchContentTypes());
     exec(fetchPath(path));
   });
 
@@ -431,35 +434,44 @@ export default function (props: WidgetProps) {
     );
   };
 
-  const onMenuItemClicked = (section: SectionItem) => {
-    switch (section.id) {
-      case 'edit': {
-        getContentInstance(site, menu.activeItem.path, contentTypes).subscribe(
-          (response) => {
-            let src = `${defaultSrc}site=${site}&path=${menu.activeItem.path}&type=form`;
-            const editProps = {
-              src,
-              type: 'form',
-              inProgress: true,
-              showController: menu.activeItem.contentTypeId.includes('/page/'),
-              itemModel: response
-            };
-            fetchWorkflowAffectedItems(site, path).subscribe(
-              (items) => {
-                if (items?.length > 0) {
-                  dispatch(showWorkflowCancellationDialog({
-                    items,
-                    onContinue: showEditDialog(editProps)
-                  }));
-                } else {
-                  dispatch(
-                    showEditDialog(editProps)
-                  );
-                }
-              }
-            );
+  const openLegacyForm = (item: SandboxItem, readonly: boolean) => {
+    getContentInstance(site, item.path, contentTypes).subscribe(
+      (response) => {
+        let src = `${defaultSrc}site=${site}&path=${item.path}&type=form&${readonly && 'readonly=true'}`;
+        const editProps = {
+          src,
+          type: 'form',
+          inProgress: true,
+          showController: item.contentTypeId.includes('/page/'),
+          itemModel: response
+        };
+        fetchWorkflowAffectedItems(site, item.path).subscribe(
+          (items) => {
+            if (items?.length > 0) {
+              dispatch(showWorkflowCancellationDialog({
+                items,
+                onContinue: showEditDialog(editProps)
+              }));
+            } else {
+              dispatch(
+                showEditDialog(editProps)
+              );
+            }
           }
         );
+      }
+    );
+  };
+
+  const onMenuItemClicked = (section: SectionItem) => {
+    switch (section.id) {
+      case 'view':
+      case 'edit': {
+        openLegacyForm(menu.activeItem, section.id === 'view');
+        setMenu({
+          activeItem: null,
+          anchorEl: null
+        });
         break;
       }
       case 'select': {
@@ -608,7 +620,7 @@ export default function (props: WidgetProps) {
     setMenu({
       sections: generateMenuSections(null, menuState, count),
       anchorEl: element,
-      activeItem: state.items[state.currentPath]
+      activeItem: state.items[withIndex(state.currentPath)]
     });
   };
 

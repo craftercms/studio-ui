@@ -77,12 +77,13 @@
 <body>
 <script>
   const { formatMessage } = CrafterCMSNext.i18n.intl;
-  const { embeddedLegacyFormMessages  } = CrafterCMSNext.i18n.messages;
+  const { embeddedLegacyFormMessages } = CrafterCMSNext.i18n.messages;
   var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   var site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
   var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
   var contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   var isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent');
+  var readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly');
 
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
@@ -137,95 +138,129 @@
 
         if (!isNewContent) {
           CStudioAuthoring.Service.lookupContentItem(
-            site,
-            path,
-            {
-              success: (contentTO) => {
-                CStudioAuthoring.Operations.performSimpleIceEdit(
-                  contentTO.item,
-                  '',
-                  true,
+                  site,
+                  path,
                   {
-                    success: () => {
-                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
+                    success: (contentTO) => {
+                      CStudioAuthoring.Operations.performSimpleIceEdit(
+                              contentTO.item,
+                              '',
+                              true,
+                              {
+                                success: () => {
+                                  window.top.postMessage({
+                                    type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+                                    refresh: true,
+                                    tab: type,
+                                    action: 'success'
+                                  }, '*');
+                                },
+                                failure: error => {
+                                  error && console.error(error);
+                                  window.top.postMessage({
+                                    type: 'EMBEDDED_LEGACY_FORM_FAILURE',
+                                    refresh: false,
+                                    tab: type,
+                                    action: 'failure',
+                                    message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
+                                  }, '*');
+                                },
+                                cancelled: () => {
+                                  window.top.postMessage({
+                                    type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+                                    refresh: false,
+                                    tab: type,
+                                    action: 'cancelled'
+                                  }, '*');
+                                },
+                                renderComplete: () => {
+                                  if (!modelId) {
+                                    window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                                  } else {
+                                    CStudioAuthoring.InContextEdit.messageDialogs({
+                                      type: 'OPEN_CHILD_COMPONENT',
+                                      key: modelId,
+                                      iceId: null,
+                                      edit: true,
+                                      callback: {
+                                        renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
+                                        pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
+                                      }
+                                    });
+                                  }
+                                },
+                                pendingChanges: () => {
+                                  window.top.postMessage({
+                                    type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
+                                    tab: type
+                                  }, '*');
+                                }
+                              },
+                              readOnly ? [{ name: 'readonly' }] : [],
+                              null,
+                              !!isHidden);
                     },
                     failure: error => {
                       error && console.error(error);
                       window.top.postMessage({
-                        type: 'EMBEDDED_LEGACY_FORM_FAILURE', refresh: false, tab: type, action: 'failure',
+                        type: 'EMBEDDED_LEGACY_FORM_FAILURE',
+                        refresh: false,
+                        tab: type,
+                        action: 'failure',
+                        message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
+                      }, '*');
+                    }
+                  },
+                  false, false
+          );
+        } else {
+          CStudioAuthoring.Operations.openContentWebForm(
+                  contentTypeId,
+                  null,
+                  null,
+                  CStudioAuthoring.Operations.processPathsForMacros(path, null, true),
+                  false,
+                  false,
+                  {
+                    success: (response) => {
+                      window.top.postMessage({
+                        ...response,
+                        type: 'EMBEDDED_LEGACY_FORM_SAVE',
+                        refresh: false,
+                        tab: type,
+                        action: 'success',
+                        redirectUrl: response.item?.browserUri
+                      }, '*');
+                    },
+                    failure: (error) => {
+                      error && console.error(error);
+                      window.top.postMessage({
+                        type: 'EMBEDDED_LEGACY_FORM_FAILURE',
+                        refresh: false, tab: type, action: 'failure',
                         message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
                       }, '*');
                     },
                     cancelled: () => {
-                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
+                      window.top.postMessage({
+                        type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+                        refresh: false,
+                        tab: type,
+                        action: 'cancelled'
+                      }, '*');
                     },
                     renderComplete: () => {
-                      if (!modelId) {
-                        window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                      } else {
-                        CStudioAuthoring.InContextEdit.messageDialogs({
-                          type: 'OPEN_CHILD_COMPONENT',
-                          key: modelId,
-                          iceId: null,
-                          edit: true,
-                          callback: {
-                            renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
-                            pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
-                          }
-                        });
-                      }
+                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
                     },
                     pendingChanges: () => {
-                      window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
+                      window.top.postMessage({
+                        type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
+                        tab: type
+                      }, '*');
                     }
                   },
-                  [],
-                  null,
-                  !!isHidden);
-              },
-              failure: error => {
-                error && console.error(error);
-                window.top.postMessage({
-                  type: 'EMBEDDED_LEGACY_FORM_FAILURE', refresh: false, tab: type, action: 'failure',
-                  message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
-                }, '*');
-              }
-            },
-            false, false
+                  null
           );
-        } else {
-            CStudioAuthoring.Operations.openContentWebForm(
-              contentTypeId,
-              null,
-              null,
-              CStudioAuthoring.Operations.processPathsForMacros(path, null, true),
-              false,
-              false,
-              {
-                success: (response) => {
-                  window.top.postMessage({ ...response, type: 'EMBEDDED_LEGACY_FORM_SAVE', refresh: false, tab: type, action: 'success', redirectUrl: response.item?.browserUri }, '*');
-                },
-                failure: (error) => {
-                  error && console.error(error);
-                  window.top.postMessage({
-                    type: 'EMBEDDED_LEGACY_FORM_FAILURE',
-                    refresh: false, tab: type, action: 'failure',
-                    message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
-                  }, '*');
-                },
-                cancelled: () => {
-                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
-                },
-                renderComplete: () => {
-                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                },
-                pendingChanges: () => {
-                  window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
-                }
-              },
-              null
-            );
-          }
+        }
 
         break;
       }
@@ -233,19 +268,32 @@
       case 'template': {
         CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
           success: function () {
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: true, tab: type, action: 'success' }, '*');
+            window.top.postMessage({
+              type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+              refresh: true,
+              tab: type,
+              action: 'success'
+            }, '*');
           },
           failure: function () {
             console.log('failure');
           },
           cancelled: function () {
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_CLOSE', refresh: false, tab: type, action: 'cancelled' }, '*');
+            window.top.postMessage({
+              type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+              refresh: false,
+              tab: type,
+              action: 'cancelled'
+            }, '*');
           },
           renderComplete: function () {
             window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab: type }, '*');
           },
-          pendingChanges: function() {
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', tab: type }, '*');
+          pendingChanges: function () {
+            window.top.postMessage({
+              type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
+              tab: type
+            }, '*');
           },
           id: type,
           callingWindow: window
