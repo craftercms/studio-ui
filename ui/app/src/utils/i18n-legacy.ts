@@ -360,6 +360,10 @@ const contentTypesMessages = defineMessages({
     id: 'siteConfig.invalidNumber',
     defaultMessage: '"{value}" is not a valid number.'
   },
+  postfixes: {
+    id: 'siteConfig.postfixes',
+    defaultMessage: 'Postfixes'
+  },
   controlNotAvailable: {
     id: 'siteConfig.controlNotAvailable',
     defaultMessage: 'Control not available'
