@@ -127,7 +127,7 @@
               const type = currentField.type,
                 controls = this.config.controls.control,
                 postfixes = CStudioAdminConsole.getPostfixes(type, controls);
-              if(postfixes) {
+              if (postfixes) {
                 for (var k = 0; k < postfixes.length; k++) {
                   if (currentField.id.indexOf(postfixes[k]) > -1) {
                     postfixesFlag = true;
