@@ -147,6 +147,22 @@ table {
         border-radius: 14px;
       }
     }
+
+    &.edit-false.user-management-dialog {
+      .user-field {
+        display: flex;
+        place-items: baseline;
+
+        .control-label {
+          margin-bottom: 0;
+          padding: 6px 0;
+        }
+
+        .form-control {
+          flex-grow: 100;
+        }
+      }
+    }
   }
 
   .edit-false {
