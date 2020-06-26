@@ -359,6 +359,10 @@ const contentTypesMessages = defineMessages({
   invalidNumber: {
     id: 'siteConfig.invalidNumber',
     defaultMessage: '"{value}" is not a valid number.'
+  },
+  postfixes: {
+    id: 'siteConfig.postfixes',
+    defaultMessage: 'Postfixes'
   }
 });
 

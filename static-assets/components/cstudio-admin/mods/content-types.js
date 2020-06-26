@@ -2689,7 +2689,8 @@
             CStudioAdminConsole.isDirty = true;
           },
           showPostFixes,
-          'Postfixes',
+          `<span>${formatMessage(contentTypesMessages.postfixes)}</span>`+
+          '<button type="button" id="close" class="close fa fa-times" onclick="$(\'#help-id\').popover(\'hide\');"/>',
           this.renderPostfixesVariable(item.type),
           null,
           defaultField
@@ -2917,7 +2918,9 @@
               html: true,
               content: helpHTML,
               placement: 'left',
-              trigger: 'manual'
+              trigger: 'manual',
+              template: '<div class="popover properties-help" role="tooltip"><div class="arrow">' +
+                '</div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
             })
             .appendTo(labelEl)
             .on('inserted.bs.popover', function () {
