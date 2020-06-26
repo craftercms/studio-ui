@@ -363,6 +363,10 @@ const contentTypesMessages = defineMessages({
   postfixes: {
     id: 'siteConfig.postfixes',
     defaultMessage: 'Postfixes'
+  },
+  controlNotAvailable: {
+    id: 'siteConfig.controlNotAvailable',
+    defaultMessage: 'Control not available'
   }
 });
 
