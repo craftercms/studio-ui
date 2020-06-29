@@ -20,6 +20,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import {
   copy,
   cut,
+  duplicate,
   fetchWorkflowAffectedItems,
   getChildrenByPath,
   getContentInstance,
@@ -439,7 +440,7 @@ export default function (props: WidgetProps) {
     );
   };
 
-  const openLegacyForm = (item: SandboxItem, readonly: boolean) => {
+  const openLegacyForm = (item: SandboxItem, readonly: boolean = false) => {
     getContentInstance(site, item.path, contentTypes).subscribe(
       (response) => {
         let src = `${defaultSrc}site=${site}&path=${item.path}&type=form&${readonly && 'readonly=true'}`;
@@ -562,6 +563,12 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'duplicate': {
+        duplicate(site, menu.activeItem).subscribe(
+          (item: SandboxItem) => {
+            openLegacyForm(item, section.id === 'view');
+          }
+        );
+        closeContextMenu();
         break;
       }
       case 'cut': {

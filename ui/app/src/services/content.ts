@@ -1288,6 +1288,10 @@ export function paste(site: string, item: SandboxItem): Observable<any> {
   );
 }
 
+export function duplicate(site: string, item: SandboxItem): Observable<any> {
+  return null;
+}
+
 export function getPages(site: string, item: any): Observable<any> {
   return get(`/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`).pipe(
     pluck('response', 'item'),
