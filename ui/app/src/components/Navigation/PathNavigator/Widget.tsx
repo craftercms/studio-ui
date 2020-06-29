@@ -57,6 +57,8 @@ import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import { fetchItemVersions } from '../../../state/reducers/versions';
 import {
+  closeDeleteDialog,
+  showDeleteDialog,
   showDependenciesDialog,
   showHistoryDialog,
   showNewContentDialog,
@@ -580,6 +582,14 @@ export default function (props: WidgetProps) {
         );
         break;
       }
+      case 'delete': {
+        dispatch(showDeleteDialog({
+          items: [menu.activeItem],
+          onSuccess: closeDeleteDialog()
+        }));
+        closeContextMenu();
+        break;
+      }
       case 'translation': {
         translationDialogItemChange(menu.activeItem);
         closeContextMenu();
@@ -696,6 +706,10 @@ export default function (props: WidgetProps) {
     if (withoutIndex(state.currentPath) === path) {
       exec(fetchPath(path));
     }
+  };
+
+  const onItemDelete = (item) => {
+    console.log(item);
   };
 
   const onItemClicked = (item: SandboxItem) => {
