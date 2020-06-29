@@ -59,11 +59,13 @@ import { fetchItemVersions } from '../../../state/reducers/versions';
 import {
   showDependenciesDialog,
   showHistoryDialog,
+  showNewContentDialog,
   showWorkflowCancellationDialog
 } from '../../../state/actions/dialogs';
 import ContentLoader from 'react-content-loader';
 import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 import { fetchContentTypes } from '../../../state/actions/preview';
+import CreateNewFolder from '../../Dialogs/CreateNewFolder';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -104,11 +106,11 @@ const menuOptions = {
     label: translations.view
   },
   newContent: {
-    id: 'newcontent',
+    id: 'newContent',
     label: translations.newContent
   },
   newFolder: {
-    id: 'newfolder',
+    id: 'newFolder',
     label: translations.newFolder
   },
   changeTemplate: {
@@ -394,6 +396,7 @@ export default function (props: WidgetProps) {
   });
   const [copyDialog, setCopyDialog] = useState(null);
   const [translationDialog, setTranslationDialog] = useState(null);
+  const [newFolderDialog, setNewFolderDialog] = useState(null);
 
   useMount(() => {
     // TODO: Ask about this;
@@ -463,51 +466,60 @@ export default function (props: WidgetProps) {
     );
   };
 
+  const closeContextMenu = () => {
+    setMenu({
+      activeItem: null,
+      anchorEl: null
+    });
+  };
+
   const onMenuItemClicked = (section: SectionItem) => {
     switch (section.id) {
       case 'view':
       case 'edit': {
         openLegacyForm(menu.activeItem, section.id === 'view');
-        setMenu({
-          activeItem: null,
-          anchorEl: null
+        closeContextMenu();
+        break;
+      }
+      case 'newContent': {
+        dispatch(showNewContentDialog({
+          open: true,
+          item: menu.activeItem,
+          rootPath: menu.activeItem.path,
+          compact: true
+        }));
+        closeContextMenu();
+        break;
+      }
+      case 'newFolder': {
+        setNewFolderDialog({
+          path: withoutIndex(menu.activeItem.path)
         });
+        closeContextMenu();
         break;
       }
       case 'select': {
         setMenuState({ selectMode: true });
-        setMenu({
-          activeItem: null,
-          anchorEl: null
-        });
+        closeContextMenu();
         break;
       }
       case 'terminateSelection': {
         setMenuState({ selectMode: false });
         exec(clearChecked());
-        setMenu({
-          activeItem: null,
-          anchorEl: null
-        });
+        closeContextMenu();
         break;
       }
       case 'copy': {
         getPages(site, menu.activeItem).subscribe(
           (legacyItem: LegacyItem) => {
             if (legacyItem.children.length) {
-              setMenu({
-                activeItem: null,
-                anchorEl: null
-              });
+              closeContextMenu();
               setCopyDialog(legacyItem);
             } else {
               copy(site, menu.activeItem).subscribe(
                 (response) => {
                   if (response.success) {
-                    setMenu({
-                      activeItem: null,
-                      anchorEl: null
-                    });
+                    closeContextMenu();
                     setMenuState({ hasClipboard: true });
                   }
                 },
@@ -534,10 +546,7 @@ export default function (props: WidgetProps) {
       case 'paste': {
         paste(site, menu.activeItem).subscribe(
           () => {
-            setMenu({
-              activeItem: null,
-              anchorEl: null
-            });
+            closeContextMenu();
             setMenuState({ hasClipboard: false });
           },
           (response) => {
@@ -557,10 +566,7 @@ export default function (props: WidgetProps) {
         cut(site, menu.activeItem).subscribe(
           (response) => {
             if (response.success) {
-              setMenu({
-                activeItem: null,
-                anchorEl: null
-              });
+              closeContextMenu();
               setMenuState({ hasClipboard: true });
             }
           },
@@ -576,10 +582,7 @@ export default function (props: WidgetProps) {
       }
       case 'translation': {
         translationDialogItemChange(menu.activeItem);
-        setMenu({
-          activeItem: null,
-          anchorEl: null
-        });
+        closeContextMenu();
         break;
       }
       case 'dependencies': {
@@ -587,19 +590,13 @@ export default function (props: WidgetProps) {
           item: menu.activeItem,
           rootPath: path
         }));
-        setMenu({
-          activeItem: null,
-          anchorEl: null
-        });
+        closeContextMenu();
         break;
       }
       case 'history': {
         dispatch(fetchItemVersions({ rootPath: path, item: menu.activeItem }));
         dispatch(showHistoryDialog({}));
-        setMenu({
-          activeItem: null,
-          anchorEl: null
-        });
+        closeContextMenu();
         break;
       }
       default: {
@@ -692,6 +689,14 @@ export default function (props: WidgetProps) {
   };
 
   const onTranslationDialogClose = () => setTranslationDialog(null);
+
+  const onNewFolderDialogClose = () => setNewFolderDialog(null);
+
+  const onNewFolderCreated = (path: string, name: string) => {
+    if (withoutIndex(state.currentPath) === path) {
+      exec(fetchPath(path));
+    }
+  };
 
   const onItemClicked = (item: SandboxItem) => {
     if (item.previewUrl) {
@@ -804,6 +809,12 @@ export default function (props: WidgetProps) {
           onClose={onTranslationDialogClose}
         />
       )}
+      <CreateNewFolder
+        open={Boolean(newFolderDialog)}
+        {...newFolderDialog}
+        onClose={onNewFolderDialogClose}
+        onCreated={onNewFolderCreated}
+      />
     </section>
   );
 }
