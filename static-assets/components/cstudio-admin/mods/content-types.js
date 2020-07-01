@@ -2737,7 +2737,7 @@
             .popover({
               container: 'body',
               title: `<span>${helpTitle}</span>` +
-                `<button type="button" id="close" class="close fa fa-times" onclick="$(\'#help-${fName}\').popover('hide');"/>`,
+                `<button type="button" class="close fa fa-times" onclick="$(\'#help-${fName}\').popover('hide');"/>`,
               html: true,
               content: helpHTML,
               placement: 'left',
