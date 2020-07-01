@@ -814,7 +814,8 @@
           .focus(function() {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
             $(this).popover({
-              title: messages.passwordValidation,
+              title: `<span>${messages.passwordValidation}</span>` +
+                `<button type="button" id="close" class="close fa fa-times" onclick="$(this).popover('hide');"/>`,
               content: creatingPassValHTML.template,
               placement: placement ? placement : 'top',
               html: true,
