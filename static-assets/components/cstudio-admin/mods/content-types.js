@@ -2700,8 +2700,7 @@
             CStudioAdminConsole.isDirty = true;
           },
           showPostFixes,
-          `<span>${formatMessage(contentTypesMessages.postfixes)}</span>`+
-          '<button type="button" id="close" class="close fa fa-times" onclick="$(\'#help-id\').popover(\'hide\');"/>',
+          formatMessage(contentTypesMessages.postfixes),
           this.renderPostfixesVariable(item.type),
           null,
           defaultField
@@ -2925,7 +2924,8 @@
           )
             .popover({
               container: 'body',
-              title: helpTitle,
+              title: `<span>${helpTitle}</span>` +
+                `<button type="button" id="close" class="close fa fa-times" onclick="$(\'#help-${fName}\').popover('hide');"/>`,
               html: true,
               content: helpHTML,
               placement: 'left',
