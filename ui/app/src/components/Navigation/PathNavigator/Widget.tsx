@@ -546,11 +546,10 @@ export default function (props: WidgetProps) {
     );
   };
 
-  const openLegacyForm = (item: SandboxItem, path: string, type, readonly: boolean = false) => {
-    // TODO: EmbeddedLegacyEditors needs a refactor to support open only template or script;
+  const openLegacyFormEdit = (item: SandboxItem, path: string, type, readonly: boolean = false) => {
     getContentInstance(site, item.path, contentTypes).subscribe(
       (response) => {
-        let src = `${defaultSrc}site=${site}&path=${path}&type=form&${readonly && 'readonly=true'}`;
+        let src = `${defaultSrc}site=${site}&path=${path}&type=${type}&${readonly && 'readonly=true'}`;
         const editProps = {
           src,
           type: type,
@@ -577,6 +576,30 @@ export default function (props: WidgetProps) {
     );
   };
 
+  const openLegacyForm = (item: SandboxItem, path: string, type, readonly: boolean = false) => {
+    let src = `${defaultSrc}site=${site}&path=${path}&type=${type}&${readonly && 'readonly=true'}`;
+    const editProps = {
+      src,
+      type: type,
+      inProgress: true,
+      showTabs: false
+    };
+    fetchWorkflowAffectedItems(site, item.path).subscribe(
+      (items) => {
+        if (items?.length > 0) {
+          dispatch(showWorkflowCancellationDialog({
+            items,
+            onContinue: showEditDialog(editProps)
+          }));
+        } else {
+          dispatch(
+            showEditDialog(editProps)
+          );
+        }
+      }
+    );
+  };
+
   const closeContextMenu = () => {
     setMenu({
       activeItem: null,
@@ -588,7 +611,12 @@ export default function (props: WidgetProps) {
     switch (section.id) {
       case 'view':
       case 'edit': {
-        openLegacyForm(menu.activeItem, menu.activeItem.path, 'form', section.id === 'view');
+        let type = menu.activeItem.systemType;
+        if (type === 'template' || type === 'script') {
+          openLegacyForm(menu.activeItem, menu.activeItem.path, type === 'script' ? 'controller' : 'template', true);
+        } else {
+          openLegacyFormEdit(menu.activeItem, menu.activeItem.path, 'form', section.id === 'view');
+        }
         closeContextMenu();
         break;
       }
@@ -698,7 +726,7 @@ export default function (props: WidgetProps) {
           duplicate(site, activeItem, parentItem).subscribe(
             (item: SandboxItem) => {
               exec(fetchPath(state.currentPath));
-              openLegacyForm(item, item.path, 'form');
+              openLegacyFormEdit(item, item.path, 'form');
             }
           );
           dispatch(closeConfirmDialog());
