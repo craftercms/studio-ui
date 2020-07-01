@@ -23,7 +23,7 @@ import DialogFooter from './DialogFooter';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { createNewFolder } from '../../services/content';
+import { createNewFolder, renameFolder } from '../../services/content';
 import { useActiveSiteId } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -32,9 +32,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 interface CreateNewFolderProps {
   open: boolean;
   path?: string;
+  rename?: boolean;
+  value?: string;
   onClose(): void;
   onClosed?(): void;
-  onCreated?(path: string, name: string): void;
+  onCreated?(path: string, name: string, rename: boolean): void;
 }
 
 export default function (props: CreateNewFolderProps) {
@@ -69,8 +71,8 @@ interface CreateNewFolderUIProps extends CreateNewFolderProps {
 }
 
 function CreateNewFolderUI(props: CreateNewFolderUIProps) {
-  const { onClose, path, submitted, inProgress, setState, onCreated } = props;
-  const [name, setName] = useState('');
+  const { onClose, path, submitted, inProgress, setState, onCreated, rename = false, value } = props;
+  const [name, setName] = useState(value);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
 
@@ -78,27 +80,51 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
     setState({ inProgress: true, submitted: true });
 
     if (name) {
-      createNewFolder(site, path, name).subscribe(
-        (resp) => {
-          onClose();
-          onCreated?.(path, name);
-        },
-        (response) => {
-          setState({ inProgress: false, submitted: true });
-          dispatch(showErrorDialog(response));
-        }
-      );
+      if (rename) {
+        renameFolder(site, path, name).subscribe(
+          (resp) => {
+            onClose();
+            onCreated?.(path, name, rename);
+          },
+          (response) => {
+            setState({ inProgress: false, submitted: true });
+            dispatch(showErrorDialog(response));
+          }
+        );
+      } else {
+        createNewFolder(site, path, name).subscribe(
+          (resp) => {
+            onClose();
+            onCreated?.(path, name, rename);
+          },
+          (response) => {
+            setState({ inProgress: false, submitted: true });
+            dispatch(showErrorDialog(response));
+          }
+        );
+      }
+
     }
   };
   return (
     <>
       <DialogHeader
-        title={<FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />}
+        title={
+          rename
+            ? <FormattedMessage id="newFolder.title.rename" defaultMessage="Rename Folder" />
+            : <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
+
+        }
         onDismiss={inProgress === null ? onClose : null}
       />
       <DialogBody>
         <TextField
-          label={<FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />}
+          label={
+            rename
+              ?
+              <FormattedMessage id="newFolder.rename" defaultMessage="Provide a new folder name" />
+              : <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
+          }
           value={name}
           autoFocus
           required
@@ -135,7 +161,12 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
               inProgress &&
               <CircularProgress size={15} style={{ marginRight: '5px' }} />
             }
-            <FormattedMessage id="words.create" defaultMessage="Create" />
+            {
+              rename
+                ? <FormattedMessage id="words.rename" defaultMessage="Rename" />
+                : <FormattedMessage id="words.create" defaultMessage="Create" />
+            }
+
           </Button>
         </DialogActions>
       </DialogFooter>

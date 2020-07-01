@@ -54,9 +54,21 @@ export const translations = defineMessages({
     id: 'craftercms.pages.option.newFolder',
     defaultMessage: 'New Folder'
   },
+  renameFolder: {
+    id: 'craftercms.pages.option.renameFolder',
+    defaultMessage: 'Rename Folder'
+  },
   changeTemplate: {
     id: 'craftercms.pages.option.changeTemplate',
     defaultMessage: 'Change Template'
+  },
+  createTemplate: {
+    id: 'craftercms.pages.option.createTemplate',
+    defaultMessage: 'Create Template'
+  },
+  createController: {
+    id: 'craftercms.pages.option.createController',
+    defaultMessage: 'Create Controller'
   },
   cut: {
     id: 'words.cut',
@@ -82,6 +94,10 @@ export const translations = defineMessages({
     id: 'words.dependencies',
     defaultMessage: 'Dependencies'
   },
+  publish: {
+    id: 'craftercms.pages.option.publish',
+    defaultMessage: 'Approve & Publish'
+  },
   history: {
     id: 'words.history',
     defaultMessage: 'History'
@@ -89,6 +105,14 @@ export const translations = defineMessages({
   translation: {
     id: 'words.translation',
     defaultMessage: 'Translation'
+  },
+  upload: {
+    id: 'words.upload',
+    defaultMessage: 'Upload'
+  },
+  bulkUpload: {
+    id: 'craftercms.pages.option.bulkUpload',
+    defaultMessage: 'Bulk Upload Assets'
   },
   select: {
     id: 'words.select',

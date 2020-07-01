@@ -34,10 +34,10 @@ import { LookupTable } from '../../../models/LookupTable';
 import ContextMenu, { SectionItem } from '../../ContextMenu';
 import {
   useActiveSiteId,
+  useContentTypes,
   useEnv,
   useLogicResource,
   useMount,
-  useSelection,
   useSpreadState
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
@@ -63,11 +63,11 @@ import {
   showDependenciesDialog,
   showHistoryDialog,
   showNewContentDialog,
+  showPublishDialog,
   showWorkflowCancellationDialog
 } from '../../../state/actions/dialogs';
 import ContentLoader from 'react-content-loader';
 import { showEditDialog } from '../../../state/reducers/dialogs/edit';
-import { fetchContentTypes } from '../../../state/actions/preview';
 import CreateNewFolder from '../../Dialogs/CreateNewFolder';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
@@ -116,9 +116,21 @@ const menuOptions = {
     id: 'newFolder',
     label: translations.newFolder
   },
+  renameFolder: {
+    id: 'renameFolder',
+    label: translations.renameFolder
+  },
   changeTemplate: {
     id: 'changeTemplate',
     label: translations.changeTemplate
+  },
+  createTemplate: {
+    id: 'createTemplate',
+    label: translations.createTemplate
+  },
+  createController: {
+    id: 'createController',
+    label: translations.createController
   },
   cut: {
     id: 'cut',
@@ -144,6 +156,10 @@ const menuOptions = {
     id: 'dependencies',
     label: translations.dependencies
   },
+  publish: {
+    id: 'publish',
+    label: translations.publish
+  },
   history: {
     id: 'history',
     label: translations.history
@@ -151,6 +167,14 @@ const menuOptions = {
   translation: {
     id: 'translation',
     label: translations.translation
+  },
+  upload: {
+    id: 'upload',
+    label: translations.upload
+  },
+  bulkUpload: {
+    id: 'bulkUpload',
+    label: translations.bulkUpload
   },
   select: {
     id: 'select',
@@ -170,9 +194,25 @@ const menuOptions = {
   }
 };
 
-function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: number) {
+function defaultMenu(menuState): Array<[]> {
+  const defaultMenu = [];
+  defaultMenu.push(
+    [menuOptions.edit, menuOptions.view, menuOptions.newContent, menuOptions.newFolder],
+    [menuOptions.delete, menuOptions.changeTemplate]
+  );
+  defaultMenu.push(
+    menuState.hasClipboard
+      ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
+      : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
+  );
+  defaultMenu.push([menuOptions.dependencies], [menuOptions.history, menuOptions.translation]);
+  return defaultMenu;
+}
+
+function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: number, isRoot: boolean = false) {
   let sections = [];
-  if (menuState.selectMode && !item) {
+  console.log(item);
+  if (menuState.selectMode) {
     if (count > 0) {
       let selectedMenuItems = menuOptions.itemsSelected;
       selectedMenuItems.values.count = count;
@@ -189,21 +229,84 @@ function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: n
           menuOptions.duplicate,
           menuOptions.delete
         ]
-        : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate, menuOptions.delete]
+        : [
+          menuOptions.cut,
+          menuOptions.copy,
+          menuOptions.duplicate,
+          menuOptions.delete
+        ]
     );
     sections.push([menuOptions.translation]);
   } else {
-    sections.push(
-      [menuOptions.edit, menuOptions.view, menuOptions.newContent, menuOptions.newFolder],
-      [menuOptions.delete, menuOptions.changeTemplate]
-    );
-    sections.push(
-      menuState.hasClipboard
-        ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
-        : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
-    );
-    sections.push([menuOptions.dependencies], [menuOptions.history, menuOptions.translation]);
-    if (!item) {
+    switch (item.systemType) {
+      case 'page': {
+        sections = defaultMenu(menuState);
+        break;
+      }
+      case 'folder': {
+        sections.push(
+          [menuOptions.newContent, menuOptions.newFolder, menuOptions.renameFolder],
+          [menuOptions.delete]
+        );
+        sections.push(
+          menuState.hasClipboard
+            ? [
+              menuOptions.cut, menuOptions.copy, menuOptions.paste
+            ] : [
+              menuOptions.cut, menuOptions.copy
+            ]
+        );
+        break;
+      }
+      case 'taxonomy':
+      case 'component': {
+        sections.push(
+          [menuOptions.edit, menuOptions.view],
+          [menuOptions.delete, menuOptions.changeTemplate]
+        );
+        sections.push(
+          menuState.hasClipboard
+            ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
+            : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
+        );
+        sections.push(
+          [menuOptions.publish, menuOptions.dependencies],
+          [menuOptions.history]
+        );
+        break;
+      }
+      case 'template':
+      case 'script': {
+        sections.push(
+          [menuOptions.delete, menuOptions.edit, menuOptions.publish, menuOptions.history, menuOptions.dependencies]
+        );
+        sections.push(
+          menuState.hasClipboard
+            ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
+            : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
+        );
+        sections.push(
+          item.systemType === 'template'
+            ? [menuOptions.createTemplate]
+            : [menuOptions.createController]
+        );
+        break;
+      }
+      case 'asset': {
+        sections.push(
+          [menuOptions.delete, menuOptions.publish, menuOptions.history, menuOptions.dependencies]
+        );
+        sections.push(
+          menuState.hasClipboard
+            ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
+            : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
+        );
+        break;
+      }
+      default:
+        break;
+    }
+    if (isRoot && !menuState.selectMode) {
       sections.push([menuOptions.select]);
     }
   }
@@ -368,7 +471,7 @@ export default function (props: WidgetProps) {
   const { formatMessage } = useIntl();
   //new
   const defaultSrc = `${authoringBase}/studio/legacy/form?`;
-  const contentTypes = useSelection((state) => state.contentTypes).byId;
+  const contentTypes = useContentTypes();
 
   const exec = useCallback(
     (action) => {
@@ -402,8 +505,6 @@ export default function (props: WidgetProps) {
   const [newFolderDialog, setNewFolderDialog] = useState(null);
 
   useMount(() => {
-    // TODO: change this to useContentTypes, use contentTypes should check if is already in progress;
-    dispatch(fetchContentTypes());
     exec(fetchPath(path));
   });
 
@@ -448,7 +549,8 @@ export default function (props: WidgetProps) {
           src,
           type: 'form',
           inProgress: true,
-          showController: item.contentTypeId.includes('/page/'),
+          showController: !readonly && item.contentTypeId.includes('/page/'),
+          showTabs: !readonly,
           itemModel: response
         };
         fetchWorkflowAffectedItems(site, item.path).subscribe(
@@ -497,6 +599,15 @@ export default function (props: WidgetProps) {
       case 'newFolder': {
         setNewFolderDialog({
           path: withoutIndex(menu.activeItem.path)
+        });
+        closeContextMenu();
+        break;
+      }
+      case 'renameFolder': {
+        setNewFolderDialog({
+          path: withoutIndex(menu.activeItem.path),
+          rename: true,
+          value: menu.activeItem.label
         });
         closeContextMenu();
         break;
@@ -578,6 +689,15 @@ export default function (props: WidgetProps) {
         closeContextMenu();
         break;
       }
+      case 'publish': {
+        //TODO: looks like this needs a detailed item??
+        dispatch(showPublishDialog({
+          item: menu.activeItem,
+          rootPath: path
+        }));
+        closeContextMenu();
+        break;
+      }
       case 'cut': {
         cut(site, menu.activeItem).subscribe(
           (response) => {
@@ -623,6 +743,10 @@ export default function (props: WidgetProps) {
         closeContextMenu();
         break;
       }
+      case 'changeTemplate': {
+        //TODO: pending reduxify of changeTemplate modal
+        break;
+      }
       default: {
         if (section.id.includes('locale')) {
           setMenu({
@@ -638,19 +762,21 @@ export default function (props: WidgetProps) {
 
   const onCurrentParentMenu = (element: Element) => {
     const count = state.selectedItems.length;
+    const item = state.items[withIndex(state.currentPath)] ?? state.items[withoutIndex(state.currentPath)];
     setMenu({
-      sections: generateMenuSections(null, menuState, count),
+      sections: generateMenuSections(item, menuState, count, true),
       anchorEl: element,
-      activeItem: state.items[withIndex(state.currentPath)]
+      activeItem: item
     });
   };
 
-  const onOpenItemMenu = (element: Element, item: SandboxItem) =>
+  const onOpenItemMenu = (element: Element, item: SandboxItem) => {
     setMenu({
       sections: generateMenuSections(item, menuState),
       anchorEl: element,
       activeItem: item
     });
+  };
 
   const onHeaderButtonClick = (anchorEl: Element, type: string) => {
     if (type === 'language') {
@@ -716,8 +842,10 @@ export default function (props: WidgetProps) {
 
   const onNewFolderDialogClose = () => setNewFolderDialog(null);
 
-  const onNewFolderCreated = (path: string, name: string) => {
-    if (withoutIndex(state.currentPath) === path) {
+  const onNewFolderCreated = (path: string, name: string, rename: boolean) => {
+    if (rename) {
+      exec(fetchPath(state.currentPath));
+    } else if (withoutIndex(state.currentPath) === path) {
       exec(fetchPath(path));
     }
   };

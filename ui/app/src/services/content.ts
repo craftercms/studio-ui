@@ -1341,6 +1341,13 @@ export function createNewFolder(site: string, path: string, name: string) {
   );
 }
 
+export function renameFolder(site: string, path: string, name: string) {
+  return post(`/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${path}&name=${name}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
+}
+
 export default {
   getComponentInstanceHTML,
   getContent,

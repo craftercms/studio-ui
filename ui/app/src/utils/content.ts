@@ -76,6 +76,36 @@ export function isImage(path: string) {
   );
 }
 
+function systemType(item: LegacyItem) {
+  switch (true) {
+    case item.contentType === 'renderingTemplate': {
+      return 'template';
+    }
+    case item.contentType === 'script': {
+      return 'script';
+    }
+    case item.asset: {
+      return 'asset';
+    }
+    case item.component: {
+      return 'component';
+    }
+    case item.folder:
+    case item.container: {
+      return 'folder';
+    }
+    case item.page: {
+      return 'page';
+    }
+    case (item.contentType === 'taxonomy'): {
+      return 'taxonomy';
+    }
+    default: {
+      return null;
+    }
+  }
+}
+
 export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
   return {
     id: item.uri ?? item.path,
@@ -84,7 +114,7 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     path: item.uri ?? item.path,
     // Assuming folders aren't navigable
     previewUrl: item.uri?.includes('index.xml') ? (item.browserUri || '/') : null,
-    systemType: item.asset ? 'asset' : item.component ? 'component' : item.folder ? 'folder' : item.page ? 'page' : null,
+    systemType: systemType(item),
     mimeType: null,
     state: null,
     stateMap: getStateMapFromLegacyItem(item),
