@@ -54,7 +54,7 @@ import palette from '../../styles/palette';
 const translations = defineMessages({
   title: {
     id: 'bulkUpload.title',
-    defaultMessage: 'Bulk Upload'
+    defaultMessage: 'Upload'
   },
   subtitle: {
     id: 'bulkUpload.subtitle',
@@ -596,8 +596,8 @@ interface BulkUploadProps {
   path: string;
   site: string;
   maxSimultaneousUploads?: number;
-  onClose?(dropZoneStatus: DropZoneStatus): void;
-  onDismiss?(dropZoneStatus: DropZoneStatus): void;
+  onClose?(dropZoneStatus: DropZoneStatus, path?: string): void;
+  onDismiss?(dropZoneStatus: DropZoneStatus, path?: string): void;
 }
 
 export default function (props: BulkUploadProps) {
@@ -673,16 +673,16 @@ export default function (props: BulkUploadProps) {
       keepMounted={minimized}
       onDrop={preventWrongDrop}
       onDragOver={preventWrongDrop}
-      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
-      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
-      onClose={() => onClose(dropZoneStatus)}
+      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus, path)}
+      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus, path)}
+      onClose={() => onClose(dropZoneStatus, path)}
       fullWidth
       maxWidth={'sm'}
     >
       <DialogHeader
         title={formatMessage(translations.title)}
         subtitle={formatMessage(translations.subtitle)}
-        onDismiss={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus)}
+        onDismiss={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus, path)}
         closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
       />
       <DialogBody className={classes.dialogContent}>

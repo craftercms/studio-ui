@@ -71,7 +71,7 @@ interface CreateNewFolderUIProps extends CreateNewFolderProps {
 }
 
 function CreateNewFolderUI(props: CreateNewFolderUIProps) {
-  const { onClose, path, submitted, inProgress, setState, onCreated, rename = false, value } = props;
+  const { onClose, path, submitted, inProgress, setState, onCreated, rename = false, value = '' } = props;
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
   const site = useActiveSiteId();

@@ -110,10 +110,6 @@ export const translations = defineMessages({
     id: 'words.upload',
     defaultMessage: 'Upload'
   },
-  bulkUpload: {
-    id: 'craftercms.pages.option.bulkUpload',
-    defaultMessage: 'Bulk Upload Assets'
-  },
   select: {
     id: 'words.select',
     defaultMessage: 'Select'

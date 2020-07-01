@@ -72,6 +72,7 @@ import {
 import ContentLoader from 'react-content-loader';
 import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 import CreateNewFolder from '../../Dialogs/CreateNewFolder';
+import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -175,10 +176,6 @@ const menuOptions = {
     id: 'upload',
     label: translations.upload
   },
-  bulkUpload: {
-    id: 'bulkUpload',
-    label: translations.bulkUpload
-  },
   select: {
     id: 'select',
     label: translations.select
@@ -246,6 +243,7 @@ function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: n
         break;
       }
       case 'folder': {
+        // TODO: check if the folder support newContent;
         sections.push(
           [menuOptions.newContent, menuOptions.newFolder, menuOptions.renameFolder],
           [menuOptions.delete]
@@ -258,6 +256,10 @@ function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: n
               menuOptions.cut, menuOptions.copy
             ]
         );
+        // TODO: check if the folder support upload/createTemplate/createController;
+        sections.push([menuOptions.upload]);
+        sections.push([menuOptions.createTemplate]);
+        sections.push([menuOptions.createController]);
         break;
       }
       case 'taxonomy':
@@ -505,6 +507,7 @@ export default function (props: WidgetProps) {
   const [copyDialog, setCopyDialog] = useState(null);
   const [translationDialog, setTranslationDialog] = useState(null);
   const [newFolderDialog, setNewFolderDialog] = useState(null);
+  const [uploadDialog, setUploadDialog] = useState(null);
 
   useMount(() => {
     exec(fetchPath(path));
@@ -543,13 +546,14 @@ export default function (props: WidgetProps) {
     );
   };
 
-  const openLegacyForm = (item: SandboxItem, readonly: boolean = false) => {
+  const openLegacyForm = (item: SandboxItem, path: string, type, readonly: boolean = false) => {
+    // TODO: EmbeddedLegacyEditors needs a refactor to support open only template or script;
     getContentInstance(site, item.path, contentTypes).subscribe(
       (response) => {
-        let src = `${defaultSrc}site=${site}&path=${item.path}&type=form&${readonly && 'readonly=true'}`;
+        let src = `${defaultSrc}site=${site}&path=${path}&type=form&${readonly && 'readonly=true'}`;
         const editProps = {
           src,
-          type: 'form',
+          type: type,
           inProgress: true,
           showController: !readonly && item.contentTypeId.includes('/page/'),
           showTabs: !readonly,
@@ -584,7 +588,7 @@ export default function (props: WidgetProps) {
     switch (section.id) {
       case 'view':
       case 'edit': {
-        openLegacyForm(menu.activeItem, section.id === 'view');
+        openLegacyForm(menu.activeItem, menu.activeItem.path, 'form', section.id === 'view');
         closeContextMenu();
         break;
       }
@@ -694,7 +698,7 @@ export default function (props: WidgetProps) {
           duplicate(site, activeItem, parentItem).subscribe(
             (item: SandboxItem) => {
               exec(fetchPath(state.currentPath));
-              openLegacyForm(item, section.id === 'view');
+              openLegacyForm(item, item.path, 'form');
             }
           );
           dispatch(closeConfirmDialog());
@@ -749,8 +753,8 @@ export default function (props: WidgetProps) {
         }));
 
         const callback = (e) => {
-          exec(fetchPath(state.currentPath));
           dispatch(closeDeleteDialog());
+          exec(fetchPath(state.currentPath));
           document.removeEventListener(section.id, callback, false);
         };
         document.addEventListener(section.id, callback, true);
@@ -779,6 +783,19 @@ export default function (props: WidgetProps) {
       }
       case 'changeTemplate': {
         //TODO: pending reduxify of changeTemplate modal
+        break;
+      }
+      case 'createTemplate':
+      case 'createController': {
+        openLegacyForm(menu.activeItem, menu.activeItem.path, (section.id === 'createController') ? 'controller' : 'template');
+        closeContextMenu();
+        break;
+      }
+      case 'upload': {
+        setUploadDialog({
+          path: menu.activeItem.path
+        });
+        closeContextMenu();
         break;
       }
       default: {
@@ -875,6 +892,13 @@ export default function (props: WidgetProps) {
   const onTranslationDialogClose = () => setTranslationDialog(null);
 
   const onNewFolderDialogClose = () => setNewFolderDialog(null);
+
+  const onUploadDialogClose = (status: DropZoneStatus, path: string) => {
+    if (status.uploadedFiles > 0 && withoutIndex(state.currentPath) === path) {
+      exec(fetchPath(path));
+    }
+    setUploadDialog(null);
+  };
 
   const onNewFolderCreated = (path: string, name: string, rename: boolean) => {
     if (rename) {
@@ -1004,6 +1028,15 @@ export default function (props: WidgetProps) {
         onClose={onNewFolderDialogClose}
         onCreated={onNewFolderCreated}
       />
+      {
+        uploadDialog &&
+        <BulkUploadDialog
+          open={Boolean(uploadDialog)}
+          site={site}
+          path={uploadDialog.path}
+          onDismiss={onUploadDialogClose}
+        />
+      }
     </section>
   );
 }
