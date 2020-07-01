@@ -402,7 +402,7 @@ export default function (props: WidgetProps) {
   const [newFolderDialog, setNewFolderDialog] = useState(null);
 
   useMount(() => {
-    // TODO: Ask about this;
+    // TODO: change this to useContentTypes, use contentTypes should check if is already in progress;
     dispatch(fetchContentTypes());
     exec(fetchPath(path));
   });
@@ -563,8 +563,15 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'duplicate': {
+        // dispatch(showConfirmDialog({
+        //   title: 'Duplicate',
+        //   body: formatMessage(translations.duplicateDialogBody),
+        //   onCancel: closeConfirmDialog()
+        // }))
+        //TODO: onOkThis
         duplicate(site, menu.activeItem).subscribe(
           (item: SandboxItem) => {
+            exec(fetchPath(state.currentPath));
             openLegacyForm(item, section.id === 'view');
           }
         );
@@ -716,7 +723,6 @@ export default function (props: WidgetProps) {
   };
 
   const onItemDelete = (item) => {
-    console.log(item);
   };
 
   const onItemClicked = (item: SandboxItem) => {

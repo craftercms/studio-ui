@@ -1266,7 +1266,7 @@ export function getChildrenByPath(site: string, path: string, options?: GetChild
   );
 }
 
-export function copy(site: string, item: Partial<LegacyItem>): Observable<any> {
+export function copy(site: string, item: Partial<LegacyItem>): Observable<{ success: boolean }> {
   let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
   return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(
     pluck('response'),
@@ -1281,15 +1281,22 @@ export function cut(site: string, item: SandboxItem): Observable<any> {
   );
 }
 
-export function paste(site: string, item: SandboxItem): Observable<any> {
+export function paste(site: string, item: SandboxItem): Observable<{ site: string, status: string[] }> {
   return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );
 }
 
-export function duplicate(site: string, item: SandboxItem): Observable<any> {
-  return null;
+export function duplicate(site: string, item: SandboxItem): Observable<SandboxItem> {
+  return forkJoin({
+    copy: copy(site, item),
+    newItem: paste(site, item)
+  }).pipe(
+    map(({ copy, newItem }) => (
+      { ...item, path: newItem.status[0] }
+    ))
+  );
 }
 
 export function getPages(site: string, item: any): Observable<any> {

@@ -97,5 +97,9 @@ export const translations = defineMessages({
   terminateSelection: {
     id: 'craftercms.pages.option.terminateSelection',
     defaultMessage: 'Terminate Selection'
+  },
+  duplicateDialogBody: {
+    id: 'duplicate.dialog.body',
+    defaultMessage: 'A new copy of this item and all of it\'s item specific content will be created. Are you sure you wish to proceed?'
   }
 });
