@@ -76,7 +76,7 @@ export function isImage(path: string) {
   );
 }
 
-function systemType(item: LegacyItem) {
+function getLegacyItemSystemType(item: LegacyItem) {
   switch (true) {
     case item.contentType === 'renderingTemplate': {
       return 'template';
@@ -90,12 +90,12 @@ function systemType(item: LegacyItem) {
     case item.component: {
       return 'component';
     }
+    case item.page: {
+      return 'page';
+    }
     case item.folder:
     case item.container: {
       return 'folder';
-    }
-    case item.page: {
-      return 'page';
     }
     case (item.contentType === 'taxonomy'): {
       return 'taxonomy';
@@ -114,7 +114,7 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     path: item.uri ?? item.path,
     // Assuming folders aren't navigable
     previewUrl: item.uri?.includes('index.xml') ? (item.browserUri || '/') : null,
-    systemType: systemType(item),
+    systemType: getLegacyItemSystemType(item),
     mimeType: null,
     state: null,
     stateMap: getStateMapFromLegacyItem(item),

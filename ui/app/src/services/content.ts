@@ -1288,10 +1288,10 @@ export function paste(site: string, item: SandboxItem): Observable<{ site: strin
   );
 }
 
-export function duplicate(site: string, item: SandboxItem): Observable<SandboxItem> {
+export function duplicate(site: string, item: SandboxItem, parentItem: SandboxItem): Observable<SandboxItem> {
   return forkJoin({
     copy: copy(site, item),
-    newItem: paste(site, item)
+    newItem: paste(site, parentItem)
   }).pipe(
     map(({ copy, newItem }) => (
       { ...item, path: newItem.status[0] }

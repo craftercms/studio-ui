@@ -24,6 +24,7 @@ import {
   fetchWorkflowAffectedItems,
   getChildrenByPath,
   getContentInstance,
+  getDetailedItem,
   getPages,
   paste
 } from '../../../services/content';
@@ -58,7 +59,9 @@ import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import { fetchItemVersions } from '../../../state/reducers/versions';
 import {
+  closeConfirmDialog,
   closeDeleteDialog,
+  showConfirmDialog,
   showDeleteDialog,
   showDependenciesDialog,
   showHistoryDialog,
@@ -205,13 +208,12 @@ function defaultMenu(menuState): Array<[]> {
       ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
       : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
   );
-  defaultMenu.push([menuOptions.dependencies], [menuOptions.history, menuOptions.translation]);
+  defaultMenu.push([menuOptions.publish, menuOptions.dependencies], [menuOptions.history, menuOptions.translation]);
   return defaultMenu;
 }
 
 function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: number, isRoot: boolean = false) {
   let sections = [];
-  console.log(item);
   if (menuState.selectMode) {
     if (count > 0) {
       let selectedMenuItems = menuOptions.itemsSelected;
@@ -662,6 +664,7 @@ export default function (props: WidgetProps) {
           () => {
             closeContextMenu();
             setMenuState({ hasClipboard: false });
+            exec(fetchPath(state.currentPath));
           },
           (response) => {
             dispatch(
@@ -674,27 +677,46 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'duplicate': {
-        // dispatch(showConfirmDialog({
-        //   title: 'Duplicate',
-        //   body: formatMessage(translations.duplicateDialogBody),
-        //   onCancel: closeConfirmDialog()
-        // }))
-        //TODO: onOkThis
-        duplicate(site, menu.activeItem).subscribe(
-          (item: SandboxItem) => {
-            exec(fetchPath(state.currentPath));
-            openLegacyForm(item, section.id === 'view');
+        // TODO: review
+        const activeItem = menu.activeItem;
+        const parentItem = state.items[withIndex(state.currentPath)] ?? state.items[withoutIndex(state.currentPath)];
+        dispatch(showConfirmDialog({
+          title: 'Duplicate',
+          body: formatMessage(translations.duplicateDialogBody),
+          onCancel: closeConfirmDialog(),
+          onOk: {
+            type: 'DISPATCH_DOM_EVENT',
+            payload: { id: section.id }
           }
-        );
+        }));
+
+        const callback = (e) => {
+          duplicate(site, activeItem, parentItem).subscribe(
+            (item: SandboxItem) => {
+              exec(fetchPath(state.currentPath));
+              openLegacyForm(item, section.id === 'view');
+            }
+          );
+          dispatch(closeConfirmDialog());
+          document.removeEventListener(section.id, callback, false);
+        };
+        document.addEventListener(section.id, callback, true);
+
         closeContextMenu();
         break;
       }
       case 'publish': {
-        //TODO: looks like this needs a detailed item??
-        dispatch(showPublishDialog({
-          item: menu.activeItem,
-          rootPath: path
-        }));
+        getDetailedItem(site, menu.activeItem.path).subscribe(
+          (item) => {
+            dispatch(showPublishDialog({
+              items: [item],
+              rootPath: path
+            }));
+          },
+          (response) => {
+            dispatch(showErrorDialog(response));
+          }
+        );
         closeContextMenu();
         break;
       }
@@ -717,10 +739,22 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'delete': {
+        // TODO: review
         dispatch(showDeleteDialog({
           items: [menu.activeItem],
-          onSuccess: closeDeleteDialog()
+          onSuccess: {
+            type: 'DISPATCH_DOM_EVENT',
+            payload: { id: section.id }
+          }
         }));
+
+        const callback = (e) => {
+          exec(fetchPath(state.currentPath));
+          dispatch(closeDeleteDialog());
+          document.removeEventListener(section.id, callback, false);
+        };
+        document.addEventListener(section.id, callback, true);
+
         closeContextMenu();
         break;
       }
