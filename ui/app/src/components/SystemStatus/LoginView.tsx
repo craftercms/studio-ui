@@ -261,7 +261,6 @@ function LoginView(props: SubViewProps) {
       login({ username, password }).subscribe(
         () => {
           setError('');
-          onSubmit(false);
           localStorage.setItem('crafterStudioLanguage', language);
           localStorage.setItem('userName', username);
           localStorage.setItem(buildKey(username), language);
