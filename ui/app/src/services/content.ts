@@ -1323,6 +1323,13 @@ export function fetchWorkflowAffectedItems(site: string, path: string): Observab
   );
 }
 
+export function changeContentType(site: string, path: string, contentType: string): Observable<boolean> {
+  return post(`/studio/api/1/services/api/1/content/change-content-type.json?site=${site}&path=${path}&contentType=${contentType}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
+}
+
 export default {
   getComponentInstanceHTML,
   getContent,
@@ -1356,5 +1363,6 @@ export default {
   revertTo,
   lock,
   unlock,
-  fetchWorkflowAffectedItems
+  fetchWorkflowAffectedItems,
+  changeContentType
 };

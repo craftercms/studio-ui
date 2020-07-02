@@ -54,7 +54,7 @@ function createCallback(
         // We're using objects for all our payloads - I think - but this
         // could fail with literal native values such as strings or numbers
         : hasPayload && hasOutput
-          ? Object.assign(action.payload, { output })
+          ? { ...action.payload, output }
           : false;
     dispatch({
       type: action.type,
@@ -143,6 +143,7 @@ function GlobalDialogManager() {
         item={state.newContent.item}
         rootPath={state.newContent.rootPath}
         compact={state.newContent.compact}
+        type={state.newContent.type}
         onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onClosed={createCallback(state.newContent.onClosed, dispatch)}

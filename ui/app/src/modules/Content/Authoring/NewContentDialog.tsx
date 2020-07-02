@@ -53,6 +53,14 @@ const translations = defineMessages({
     id: 'newContentDialog.title',
     defaultMessage: 'Create Content'
   },
+  chooseContentType: {
+    id: 'newContentDialog.chooseContentType',
+    defaultMessage: 'Choose Content Type'
+  },
+  chooseContentTypeSubtitle: {
+    id: 'newContentDialog.chooseContentTypeSubtitle',
+    defaultMessage: 'The following starter templates are available for use within this section.'
+  },
   subtitle: {
     id: 'newContentDialog.subtitle',
     defaultMessage: 'Choose a content type template for your new content item.'
@@ -136,6 +144,7 @@ interface NewContentDialogBaseProps {
   item: SandboxItem;
   rootPath: string;
   compact: boolean;
+  type?: 'new' | 'change'
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
@@ -192,7 +201,8 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
     item,
     onContentTypeSelected,
     compact,
-    rootPath
+    rootPath,
+    type
   } = props;
   const [openSelector, setOpenSelector] = useState(false);
   const defaultFilterType = 'all';
@@ -332,8 +342,8 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   return (
     <>
       <DialogHeader
-        title={formatMessage(translations.title)}
-        subtitle={formatMessage(translations.subtitle)}
+        title={formatMessage(type === 'new' ? translations.title : translations.chooseContentType)}
+        subtitle={formatMessage(type === 'new' ? translations.subtitle : translations.chooseContentTypeSubtitle)}
         onDismiss={onDismiss}
       />
       <DialogBody classes={{ root: classes.dialogContent }}>
