@@ -443,10 +443,17 @@ const reducer: WidgetReducer = (state, { type, payload }) => {
         keyword: payload
       };
     case itemUnchecked.type:
+      let checked = [...state.selectedItems];
+      checked.splice(checked.indexOf(payload.path), 1);
+      return { ...state, selectedItems: checked };
     case setLocaleCode.type:
-    case itemChecked.type:
-    case clearChecked.type:
       return state;
+    case itemChecked.type:
+      let selectedItems = [...state.selectedItems];
+      selectedItems.push(payload.path);
+      return { ...state, selectedItems };
+    case clearChecked.type:
+      return { ...state, selectedItems: [] };
     default:
       throw new Error(`Unknown action "${type}"`);
   }
@@ -551,7 +558,7 @@ export default function (props: WidgetProps) {
       (response) => {
         setTranslationDialog({
           item,
-          locales: response.locales
+          locales: response.items
         });
       },
       (response) => {
@@ -618,6 +625,11 @@ export default function (props: WidgetProps) {
     );
   };
 
+  const terminateSelection = () => {
+    setMenuState({ selectMode: false });
+    exec(clearChecked());
+  };
+
   const closeContextMenu = () => {
     setMenu({
       activeItem: null,
@@ -670,12 +682,12 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'terminateSelection': {
-        setMenuState({ selectMode: false });
-        exec(clearChecked());
+        terminateSelection();
         closeContextMenu();
         break;
       }
       case 'copy': {
+        if (menuState.selectMode) return closeContextMenu();
         getPages(site, menu.activeItem).subscribe(
           (legacyItem: LegacyItem) => {
             if (legacyItem.children.length) {
@@ -727,6 +739,7 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'duplicate': {
+        if (menuState.selectMode) return closeContextMenu();
         // TODO: review
         const activeItem = menu.activeItem;
         const parentItem = state.items[withIndex(state.currentPath)] ?? state.items[withoutIndex(state.currentPath)];
@@ -771,6 +784,7 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'cut': {
+        if (menuState.selectMode) return closeContextMenu();
         cut(site, menu.activeItem).subscribe(
           (response) => {
             if (response.success) {
@@ -789,15 +803,19 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'delete': {
-        // TODO: review
+        let items = [menu.activeItem];
+        if (menuState.selectMode) {
+          items = state.selectedItems.map((path: string) => state.items[path]);
+          terminateSelection();
+        }
         dispatch(showDeleteDialog({
-          items: [menu.activeItem],
+          items,
           onSuccess: {
             type: 'DISPATCH_DOM_EVENT',
             payload: { id: section.id }
           }
         }));
-
+        // TODO: review
         const callback = (e) => {
           dispatch(closeDeleteDialog());
           exec(fetchPath(state.currentPath));
@@ -809,6 +827,7 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'translation': {
+        if (menuState.selectMode) return;
         translationDialogItemChange(menu.activeItem);
         closeContextMenu();
         break;
