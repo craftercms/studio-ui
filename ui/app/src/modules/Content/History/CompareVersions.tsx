@@ -36,6 +36,8 @@ import clsx from 'clsx';
 import Paper from '@material-ui/core/Paper';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 
+declare const monaco: any;
+
 const CompareVersionsStyles = makeStyles(() =>
   createStyles({
     monacoWrapper: {
@@ -387,17 +389,17 @@ function MonacoWrapper(props: MonacoWrapperProps) {
 
   useEffect(() => {
     if (ref.current) {
-      // const originalModel = monaco.editor.createModel(contentA, 'text/plain');
-      // const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
-      // const diffEditor = monaco.editor.createDiffEditor(ref.current, {
-      //   scrollbar: {
-      //     alwaysConsumeMouseWheel: false
-      //   }
-      // });
-      // diffEditor.setModel({
-      //   original: originalModel,
-      //   modified: modifiedModel
-      // });
+      const originalModel = monaco.editor.createModel(contentA, 'text/plain');
+      const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
+      const diffEditor = monaco.editor.createDiffEditor(ref.current, {
+        scrollbar: {
+          alwaysConsumeMouseWheel: false
+        }
+      });
+      diffEditor.setModel({
+        original: originalModel,
+        modified: modifiedModel
+      });
     }
   }, [contentA, contentB]);
 

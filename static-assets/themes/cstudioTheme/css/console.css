@@ -306,6 +306,21 @@ input[type="checkbox"].content-type-selector--checkbox {
   background: none repeat scroll 0 0 #D5E2F2;
 }
 
+.content-type-visual-field-container.disabled {
+  background-color: #fafafa;
+  cursor: default;
+}
+
+.content-type-visual-field-container.disabled .content-field-name {
+  color: #A1A1A1;
+}
+
+.content-type-visual-field-container .control-not-available {
+  position: absolute;
+  right: 20px;
+  top: 9px;
+}
+
 .content-type-visual-repeat-container {
   background: none repeat scroll 0 0 #F2F8FC;
   border: 1px solid #dddddd;

@@ -907,6 +907,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   confTabEngineSiteConfigurationDesc: 'Configuración del Sitio usada por Crafter Engine',
   confTabEngineSiteAppContextConfiguration: 'Configuración de Contexto de Aplicación de Sitio de Engine',
   confTabEngineSiteAppContextConfigurationDesc: 'Configuración del Contexto de Aplicación para el Sitio de Engine',
+  confTabTranslationConf: 'Configuración de Traducciones',
+  confTabTranslationConfDesc: 'Define los lenguajes soportados y su resolución',
 
   /*Postfixes*/
   iDescription: 'Para nuúmero entero.',
