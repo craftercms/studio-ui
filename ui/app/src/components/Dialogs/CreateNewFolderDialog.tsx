@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -28,6 +28,13 @@ import { useActiveSiteId } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
+export const translations = defineMessages({
+  placeholder: {
+    id: 'createNewFolder.placeholder',
+    defaultMessage: 'Please type a folder name'
+  }
+});
 
 interface CreateNewFolderProps {
   open: boolean;
@@ -75,6 +82,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
+  const { formatMessage } = useIntl();
 
   const onOk = () => {
     setState({ inProgress: true, submitted: true });
@@ -82,7 +90,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
     if (name) {
       if (rename) {
         renameFolder(site, path, name).subscribe(
-          (resp) => {
+          (response) => {
             onClose();
             onCreated?.(path, name, rename);
           },
@@ -129,7 +137,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
           autoFocus
           required
           error={!name && submitted}
-          placeholder="Type a folder name"
+          placeholder={formatMessage(translations.placeholder)}
           helperText={
             (!name && submitted) ? (
               <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />

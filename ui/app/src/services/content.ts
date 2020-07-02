@@ -1334,8 +1334,15 @@ export function fetchWorkflowAffectedItems(site: string, path: string): Observab
   );
 }
 
-export function createNewFolder(site: string, path: string, name: string) {
+export function createNewFolder(site: string, path: string, name: string): Observable<unknown> {
   return post(`/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${path}&name=${name}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
+}
+
+export function createNewFile(site: string, path: string, fileName: string): Observable<unknown> {
+  return post(`/studio/api/1/services/api/1/content/write-content.json?site=${site}&phase=onSave&path=${path}&fileName=${fileName}&user=admin&unlock=true`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );

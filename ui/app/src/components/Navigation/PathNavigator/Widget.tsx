@@ -71,8 +71,9 @@ import {
 } from '../../../state/actions/dialogs';
 import ContentLoader from 'react-content-loader';
 import { showEditDialog } from '../../../state/reducers/dialogs/edit';
-import CreateNewFolder from '../../Dialogs/CreateNewFolder';
+import CreateNewFolderDialog from '../../Dialogs/CreateNewFolderDialog';
 import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog';
+import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -209,7 +210,17 @@ function defaultMenu(menuState): Array<[]> {
   return defaultMenu;
 }
 
-function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: number, isRoot: boolean = false) {
+function generateMenuSections(
+  item: SandboxItem,
+  menuState: MenuState,
+  options?: {
+    upload: boolean;
+    createTemplate: boolean;
+    createController: boolean;
+  },
+  isRoot: boolean = false,
+  count?: number
+) {
   let sections = [];
   if (menuState.selectMode) {
     if (count > 0) {
@@ -257,9 +268,15 @@ function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: n
             ]
         );
         // TODO: check if the folder support upload/createTemplate/createController;
-        sections.push([menuOptions.upload]);
-        sections.push([menuOptions.createTemplate]);
-        sections.push([menuOptions.createController]);
+        if (options.upload) {
+          sections.push([menuOptions.upload]);
+        }
+        if (options.createTemplate) {
+          sections.push([menuOptions.createTemplate]);
+        }
+        if (options.createController) {
+          sections.push([menuOptions.createController]);
+        }
         break;
       }
       case 'taxonomy':
@@ -288,11 +305,6 @@ function generateMenuSections(item: SandboxItem, menuState: MenuState, count?: n
           menuState.hasClipboard
             ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
             : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
-        );
-        sections.push(
-          item.systemType === 'template'
-            ? [menuOptions.createTemplate]
-            : [menuOptions.createController]
         );
         break;
       }
@@ -476,6 +488,11 @@ export default function (props: WidgetProps) {
   //new
   const defaultSrc = `${authoringBase}/studio/legacy/form?`;
   const contentTypes = useContentTypes();
+  const options = {
+    upload: '/templates,/static-assets,/scripts'.includes(path),
+    createTemplate: path === '/templates',
+    createController: path === '/scripts'
+  };
 
   const exec = useCallback(
     (action) => {
@@ -507,6 +524,7 @@ export default function (props: WidgetProps) {
   const [copyDialog, setCopyDialog] = useState(null);
   const [translationDialog, setTranslationDialog] = useState(null);
   const [newFolderDialog, setNewFolderDialog] = useState(null);
+  const [newFileDialog, setNewFileDialog] = useState(null);
   const [uploadDialog, setUploadDialog] = useState(null);
 
   useMount(() => {
@@ -546,7 +564,7 @@ export default function (props: WidgetProps) {
     );
   };
 
-  const openLegacyFormEdit = (item: SandboxItem, path: string, type, readonly: boolean = false) => {
+  const openLegacyFormEdit = (item: SandboxItem, path: string, type: 'controller' | 'template' | 'form', readonly: boolean = false) => {
     getContentInstance(site, item.path, contentTypes).subscribe(
       (response) => {
         let src = `${defaultSrc}site=${site}&path=${path}&type=${type}&${readonly && 'readonly=true'}`;
@@ -576,7 +594,7 @@ export default function (props: WidgetProps) {
     );
   };
 
-  const openLegacyForm = (item: SandboxItem, path: string, type, readonly: boolean = false) => {
+  const openLegacyForm = (path: string, type: 'controller' | 'template', readonly: boolean = false) => {
     let src = `${defaultSrc}site=${site}&path=${path}&type=${type}&${readonly && 'readonly=true'}`;
     const editProps = {
       src,
@@ -584,7 +602,7 @@ export default function (props: WidgetProps) {
       inProgress: true,
       showTabs: false
     };
-    fetchWorkflowAffectedItems(site, item.path).subscribe(
+    fetchWorkflowAffectedItems(site, path).subscribe(
       (items) => {
         if (items?.length > 0) {
           dispatch(showWorkflowCancellationDialog({
@@ -613,7 +631,7 @@ export default function (props: WidgetProps) {
       case 'edit': {
         let type = menu.activeItem.systemType;
         if (type === 'template' || type === 'script') {
-          openLegacyForm(menu.activeItem, menu.activeItem.path, type === 'script' ? 'controller' : 'template', true);
+          openLegacyForm(menu.activeItem.path, type === 'script' ? 'controller' : 'template', true);
         } else {
           openLegacyFormEdit(menu.activeItem, menu.activeItem.path, 'form', section.id === 'view');
         }
@@ -815,7 +833,10 @@ export default function (props: WidgetProps) {
       }
       case 'createTemplate':
       case 'createController': {
-        openLegacyForm(menu.activeItem, menu.activeItem.path, (section.id === 'createController') ? 'controller' : 'template');
+        setNewFileDialog({
+          path: withoutIndex(menu.activeItem.path),
+          type: (section.id === 'createController') ? 'controller' : 'template'
+        });
         closeContextMenu();
         break;
       }
@@ -843,7 +864,7 @@ export default function (props: WidgetProps) {
     const count = state.selectedItems.length;
     const item = state.items[withIndex(state.currentPath)] ?? state.items[withoutIndex(state.currentPath)];
     setMenu({
-      sections: generateMenuSections(item, menuState, count, true),
+      sections: generateMenuSections(item, menuState, options, true, count),
       anchorEl: element,
       activeItem: item
     });
@@ -851,7 +872,7 @@ export default function (props: WidgetProps) {
 
   const onOpenItemMenu = (element: Element, item: SandboxItem) => {
     setMenu({
-      sections: generateMenuSections(item, menuState),
+      sections: generateMenuSections(item, menuState, options),
       anchorEl: element,
       activeItem: item
     });
@@ -921,6 +942,8 @@ export default function (props: WidgetProps) {
 
   const onNewFolderDialogClose = () => setNewFolderDialog(null);
 
+  const onNewFileDialogClose = () => setNewFileDialog(null);
+
   const onUploadDialogClose = (status: DropZoneStatus, path: string) => {
     if (status.uploadedFiles > 0 && withoutIndex(state.currentPath) === path) {
       exec(fetchPath(path));
@@ -936,7 +959,11 @@ export default function (props: WidgetProps) {
     }
   };
 
-  const onItemDelete = (item) => {
+  const onNewFileCreated = (path: string, fileName: string, type: 'controller' | 'template') => {
+    if (withoutIndex(state.currentPath) === path) {
+      exec(fetchPath(path));
+    }
+    openLegacyForm(`${path}/${fileName}`, type);
   };
 
   const onItemClicked = (item: SandboxItem) => {
@@ -1050,11 +1077,17 @@ export default function (props: WidgetProps) {
           onClose={onTranslationDialogClose}
         />
       )}
-      <CreateNewFolder
+      <CreateNewFolderDialog
         open={Boolean(newFolderDialog)}
         {...newFolderDialog}
         onClose={onNewFolderDialogClose}
         onCreated={onNewFolderCreated}
+      />
+      <CreateNewFileDialog
+        open={Boolean(newFileDialog)}
+        {...newFileDialog}
+        onClose={onNewFileDialogClose}
+        onCreated={onNewFileCreated}
       />
       {
         uploadDialog &&

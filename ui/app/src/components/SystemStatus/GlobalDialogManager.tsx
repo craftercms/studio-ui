@@ -54,7 +54,7 @@ function createCallback(
         // We're using objects for all our payloads - I think - but this
         // could fail with literal native values such as strings or numbers
         : hasPayload && hasOutput
-          ? Object.assign(action.payload, { output })
+          ? { ...action.payload, output }
           : false;
     dispatch({
       type: action.type,
