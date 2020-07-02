@@ -36,6 +36,7 @@ import { nou } from './object';
 import babel from './babelHelpers-legacy';
 import security from '../services/security';
 import authService from '../services/auth';
+import translation from '../services/translation';
 import { jssPreset, makeStyles, Theme } from '@material-ui/core/styles';
 import { generateClassName, theme } from '../styles/theme';
 import createStore, { CrafterCMSStore } from '../state/store';
@@ -182,7 +183,8 @@ export function createCodebaseBridge() {
       publishing,
       content,
       auth: authService,
-      security
+      security,
+      translation
     },
 
     // Mechanics

@@ -198,7 +198,7 @@ interface WidgetProps {
   locale: string;
   classes?: {
     root?: string;
-  }
+  };
 }
 
 interface MenuState {
@@ -369,10 +369,7 @@ export default function (props: WidgetProps) {
     activeItem: null
   });
   const [copyDialog, setCopyDialog] = useState(null);
-  const [translationDialog, setTranslationDialog] = useState({
-    item: null,
-    locales: null
-  });
+  const [translationDialog, setTranslationDialog] = useState(null);
 
   useMount(() => {
     exec(fetchPath(path));
@@ -738,7 +735,7 @@ export default function (props: WidgetProps) {
           item={translationDialog.item}
           rootPath={state.rootPath}
           locales={translationDialog.locales}
-          open={true}
+          open={Boolean(translationDialog)}
           onItemChange={translationDialogItemChange}
           onClose={onTranslationDialogClose}
         />

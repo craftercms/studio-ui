@@ -14,18 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { postJSON } from '../utils/ajax';
-import { pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import * as monaco from 'monaco-editor';
 
-export function encrypt(text: string): Observable<string>;
-export function encrypt(text: string, site: string): Observable<string>;
-export function encrypt(text: string, site: string = ''): Observable<string> {
-  return postJSON(`/studio/api/2/security/encrypt.json`, { text, siteId: site }).pipe(
-    pluck('response', 'item')
-  );
-}
-
-export default {
-  encrypt
-};
+window.monaco = monaco;

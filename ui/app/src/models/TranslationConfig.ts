@@ -14,18 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { postJSON } from '../utils/ajax';
-import { pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-
-export function encrypt(text: string): Observable<string>;
-export function encrypt(text: string, site: string): Observable<string>;
-export function encrypt(text: string, site: string = ''): Observable<string> {
-  return postJSON(`/studio/api/2/security/encrypt.json`, { text, siteId: site }).pipe(
-    pluck('response', 'item')
-  );
+export interface TranslationConfig {
+  localeCodes: string[];
+  defaultLocaleCode: string;
 }
 
-export default {
-  encrypt
-};
+export default TranslationConfig;

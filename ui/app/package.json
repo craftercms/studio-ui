@@ -35,7 +35,6 @@
     "jquery": "^3.5.0",
     "js-cookie": "^2.2.1",
     "moment-timezone": "^0.5.27",
-    "monaco-editor": "^0.20.0",
     "notistack": "^0.9.9",
     "prettier": "^1.19.1",
     "query-string": "^6.9.0",

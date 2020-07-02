@@ -15,9 +15,10 @@
  */
 
 import { forkJoin, Observable, Observer } from 'rxjs';
-import { post } from '../utils/ajax';
+import { postJSON } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 import { getSandboxItem } from './content';
+import TranslationConfig from '../models/TranslationConfig';
 
 export function getItemLocales(site: string, path: string): Observable<any> {
   return forkJoin({
@@ -70,13 +71,29 @@ export function getTargetLocales(site: string, path: string): Observable<any> {
 }
 
 export function markForTranslation(site: string, path: string, locale: string) {
-  return post('/studio/api/2/translation/mark_for_translation_by_path', { siteId: site, path: [path], locales: [locale] }, {
-    'Content-Type': 'application/json'
-  })
+  return postJSON('/studio/api/2/translation/mark_for_translation_by_path', {
+    siteId: site,
+    path: [path],
+    locales: [locale]
+  });
+}
+
+export function getSupportedLocales(site: string): Observable<TranslationConfig> {
+  ///studio/api/2/translation/get_supported_locales
+  const response = {
+    localeCodes: ['en_us', 'es_cr', 'fr_fr'],
+    defaultLocaleCode: 'en-us'
+  };
+
+  return new Observable((observer: Observer<any>) => {
+    observer.next(response);
+    observer.complete();
+  });
 }
 
 export default {
   getItemLocales,
   getTargetLocales,
-  markForTranslation
+  markForTranslation,
+  getSupportedLocales
 };

@@ -185,7 +185,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     controlWidgetContainerEl.appendChild(this.fileEl);
 
     var picker = document.createElement('div');
-    picker.id = 'box-picker-' + this.id;
+    picker.id = 'box-picker-' + this.id.replace(/\|/g, '-');
     picker.className = 'box-picker';
     controlWidgetContainerEl.appendChild(picker);
 
@@ -228,7 +228,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
         });
         filePicker.show(folderId, accessToken, {
           logoUrl: self.logo,
-          container: '#box-picker-' + self.id,
+          container: '#box-picker-' + self.id.replace(/\|/g, '-'),
           maxSelectable: self.enable_multi !== 'false' ? Infinity : 1,
           canUpload: self.enable_upload,
           canSetShareAccess: false,

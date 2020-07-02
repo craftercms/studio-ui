@@ -948,6 +948,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   confTabEngineSiteConfigurationDesc: 'Site configuration used by Crafter Engine',
   confTabEngineSiteAppContextConfiguration: 'Engine Site Application Context',
   confTabEngineSiteAppContextConfigurationDesc: 'Site application context used by Crafter Engine',
+  confTabTranslationConf: 'Translation Configuration',
+  confTabTranslationConfDesc: 'Defines supported languages and how to resolve them',
 
   /* Image */
   constraintsError: 'The uploaded file does not meet the specified width & height constraints',

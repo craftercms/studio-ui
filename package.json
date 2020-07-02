@@ -4,7 +4,8 @@
     "ui/app",
     "ui/guest",
     "ui/legacy",
-    "ui/scss"
+    "ui/scss",
+    "ui/monaco"
   ],
   "scripts": {
     "prettier": "node scripts/prettier.js",
