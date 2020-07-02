@@ -217,6 +217,7 @@ function generateMenuSections(
     upload: boolean;
     createTemplate: boolean;
     createController: boolean;
+    translation: boolean;
   },
   isRoot: boolean = false,
   count?: number
@@ -246,7 +247,9 @@ function generateMenuSections(
           menuOptions.delete
         ]
     );
-    sections.push([menuOptions.translation]);
+    if (options.translation) {
+      sections.push([menuOptions.translation]);
+    }
   } else {
     switch (item.systemType) {
       case 'page': {
@@ -498,7 +501,8 @@ export default function (props: WidgetProps) {
   const options = {
     upload: '/templates,/static-assets,/scripts'.includes(path),
     createTemplate: path === '/templates',
-    createController: path === '/scripts'
+    createController: path === '/scripts',
+    translation: path.includes('site/website/')
   };
 
   const exec = useCallback(
