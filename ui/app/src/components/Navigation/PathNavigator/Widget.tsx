@@ -564,10 +564,10 @@ export default function (props: WidgetProps) {
     );
   };
 
-  const openLegacyFormEdit = (item: SandboxItem, path: string, type: 'controller' | 'template' | 'form', readonly: boolean = false) => {
+  const openItemLegacyForm = (item: SandboxItem, type: 'controller' | 'template' | 'form', readonly: boolean = false) => {
     getContentInstance(site, item.path, contentTypes).subscribe(
       (response) => {
-        let src = `${defaultSrc}site=${site}&path=${path}&type=${type}&${readonly && 'readonly=true'}`;
+        let src = `${defaultSrc}site=${site}&path=${item.path}&type=${type}&${readonly && 'readonly=true'}`;
         const editProps = {
           src,
           type: type,
@@ -594,7 +594,7 @@ export default function (props: WidgetProps) {
     );
   };
 
-  const openLegacyForm = (path: string, type: 'controller' | 'template', readonly: boolean = false) => {
+  const openFileLegacyForm = (path: string, type: 'controller' | 'template', readonly: boolean = false) => {
     let src = `${defaultSrc}site=${site}&path=${path}&type=${type}&${readonly && 'readonly=true'}`;
     const editProps = {
       src,
@@ -631,9 +631,9 @@ export default function (props: WidgetProps) {
       case 'edit': {
         let type = menu.activeItem.systemType;
         if (type === 'template' || type === 'script') {
-          openLegacyForm(menu.activeItem.path, type === 'script' ? 'controller' : 'template', true);
+          openFileLegacyForm(menu.activeItem.path, type === 'script' ? 'controller' : 'template', true);
         } else {
-          openLegacyFormEdit(menu.activeItem, menu.activeItem.path, 'form', section.id === 'view');
+          openItemLegacyForm(menu.activeItem, 'form', section.id === 'view');
         }
         closeContextMenu();
         break;
@@ -744,7 +744,7 @@ export default function (props: WidgetProps) {
           duplicate(site, activeItem, parentItem).subscribe(
             (item: SandboxItem) => {
               exec(fetchPath(state.currentPath));
-              openLegacyFormEdit(item, item.path, 'form');
+              openItemLegacyForm(item, 'form');
             }
           );
           dispatch(closeConfirmDialog());
@@ -963,7 +963,7 @@ export default function (props: WidgetProps) {
     if (withoutIndex(state.currentPath) === path) {
       exec(fetchPath(path));
     }
-    openLegacyForm(`${path}/${fileName}`, type);
+    openFileLegacyForm(`${path}/${fileName}`, type);
   };
 
   const onItemClicked = (item: SandboxItem) => {
