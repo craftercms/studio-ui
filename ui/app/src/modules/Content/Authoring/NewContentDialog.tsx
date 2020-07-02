@@ -93,7 +93,8 @@ const useStyles = makeStyles((theme: Theme) =>
     dialogContent: {
       padding: theme.spacing(2),
       backgroundColor: palette.gray.light0,
-      minHeight: 628
+      overflow: 'auto',
+      minHeight: 455
     },
     cardsContainer: {
       marginTop: 14
@@ -103,18 +104,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     searchBox: {
       minWidth: '33%'
-    },
-    emptyStateRoot: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)'
-    },
-    loadingRoot: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)'
     },
     emptyStateLink: {
       cursor: 'pointer',
@@ -191,7 +180,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       onClose={props.onClose}
       fullWidth
       maxWidth="md"
-      scroll="paper"
     >
       <NewContentDialogWrapper {...props} />
     </Dialog>
@@ -348,7 +336,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
         subtitle={formatMessage(translations.subtitle)}
         onDismiss={onDismiss}
       />
-      <DialogBody dividers classes={{ root: classes.dialogContent }}>
+      <DialogBody classes={{ root: classes.dialogContent }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <SingleItemSelector
@@ -374,7 +362,6 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
           withEmptyStateProps={{
             emptyStateProps: {
               classes: {
-                root: classes.emptyStateRoot,
                 image: classes.emptyStateImg,
                 title: classes.emptyStateTitle
               },
@@ -406,8 +393,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
           }}
           loadingStateProps={{
             classes: {
-              graphic: classes.loadingGraphic,
-              root: classes.loadingRoot
+              graphic: classes.loadingGraphic
             }
           }}
         >

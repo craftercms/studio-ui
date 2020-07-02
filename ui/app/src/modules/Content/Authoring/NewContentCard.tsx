@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -96,9 +96,16 @@ export default function NewContentCard(props: NewContentCardProps) {
   const { onClick, isCompact } = props;
   const classes = useStyles();
   const rootClass = !isCompact ? classes.defaultCard : classes.compactCard;
+  const [hover, setHover] = useState(false);
 
   return (
-    <Card className={rootClass} onClick={onClick}>
+    <Card
+      className={rootClass}
+      onClick={onClick}
+      elevation={hover ? 3 : 1}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
       {!isCompact ? (
         <DefaultCardContent {...props} classes={classes} />
       ) : (
