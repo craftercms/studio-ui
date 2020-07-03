@@ -144,6 +144,7 @@ function GlobalDialogManager() {
         rootPath={state.newContent.rootPath}
         compact={state.newContent.compact}
         type={state.newContent.type}
+        selectedContentType={state.newContent.selectedContentType}
         onContentTypeSelected={createCallback(state.newContent.onContentTypeSelected, dispatch)}
         onClose={createCallback(state.newContent.onClose, dispatch)}
         onClosed={createCallback(state.newContent.onClosed, dispatch)}
