@@ -18,6 +18,7 @@ import React, { Fragment, useCallback, useReducer, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
+  changeContentType,
   copy,
   cut,
   duplicate,
@@ -74,6 +75,8 @@ import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 import CreateNewFolderDialog from '../../Dialogs/CreateNewFolderDialog';
 import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog';
 import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
+import { batchActions } from '../../../state/actions/misc';
+import queryString from 'query-string';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -748,7 +751,7 @@ export default function (props: WidgetProps) {
         const activeItem = menu.activeItem;
         const parentItem = state.items[withIndex(state.currentPath)] ?? state.items[withoutIndex(state.currentPath)];
         dispatch(showConfirmDialog({
-          title: 'Duplicate',
+          title: formatMessage(translations.duplicate),
           body: formatMessage(translations.duplicateDialogBody),
           onCancel: closeConfirmDialog(),
           onOk: {
@@ -845,13 +848,89 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'history': {
-        dispatch(fetchItemVersions({ rootPath: path, item: menu.activeItem }));
-        dispatch(showHistoryDialog({}));
+        dispatch(batchActions(
+          [
+            fetchItemVersions({ rootPath: path, item: menu.activeItem }),
+            showHistoryDialog({})
+          ]
+        ));
         closeContextMenu();
         break;
       }
       case 'changeTemplate': {
-        //TODO: pending reduxify of changeTemplate modal
+        const confirm = 'changeTemplateConfirm';
+        const newContent = 'contentTypeSelected';
+        const activeItem = menu.activeItem;
+
+        const newContentDialogCallback = (e) => {
+          const contentType = queryString.parse(e.detail.output.src).contentTypeId as string;
+          changeContentType(site, activeItem.path, contentType).subscribe(
+            (response) => {
+              if (contentTypes) {
+                getContentInstance(site, activeItem.path, contentTypes).subscribe(
+                  (response) => {
+                    let src = `${defaultSrc}site=${site}&path=${path}&type=form&changeTemplate=${contentType}`;
+                    const editProps = {
+                      src,
+                      type: 'form',
+                      inProgress: true,
+                      showController: false,
+                      showTabs: false,
+                      itemModel: response
+                    };
+                    fetchWorkflowAffectedItems(site, activeItem.path).subscribe(
+                      (items) => {
+                        if (items?.length > 0) {
+                          dispatch(showWorkflowCancellationDialog({
+                            items,
+                            onContinue: showEditDialog(editProps)
+                          }));
+                        } else {
+                          dispatch(
+                            showEditDialog(editProps)
+                          );
+                        }
+                      }
+                    );
+                  }
+                );
+              }
+            }
+          );
+          document.removeEventListener(newContent, newContentDialogCallback, false);
+        };
+
+        const confirmDialogCallback = (e) => {
+          dispatch(batchActions([
+            closeConfirmDialog(),
+            showNewContentDialog({
+              open: true,
+              rootPath: path,
+              item: activeItem,
+              type: 'choose',
+              onContentTypeSelected: {
+                type: 'DISPATCH_DOM_EVENT',
+                payload: { id: 'test' }
+              }
+            })
+          ]));
+
+          document.removeEventListener(confirm, confirmDialogCallback, false);
+        };
+
+        document.addEventListener(newContent, newContentDialogCallback, true);
+        document.addEventListener(confirm, confirmDialogCallback, true);
+
+        dispatch(showConfirmDialog({
+          title: formatMessage(translations.changeContentType),
+          body: formatMessage(translations.changeContentTypeBody),
+          onCancel: closeConfirmDialog(),
+          onOk: {
+            type: 'DISPATCH_DOM_EVENT',
+            payload: { id: confirm }
+          }
+        }));
+        closeContextMenu();
         break;
       }
       case 'createTemplate':

@@ -83,7 +83,6 @@
   var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
   var contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   var isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent');
-  var readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly');
 
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
@@ -135,6 +134,12 @@
       case 'form': {
         var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
         var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
+        var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
+        var readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly');
+
+        const aux = [];
+        if (readOnly) aux.push({ name: 'readonly' });
+        if (changeTemplate) aux.push({ name: 'changeTemplate', value: changeTemplate });
 
         if (!isNewContent) {
           CStudioAuthoring.Service.lookupContentItem(
@@ -196,7 +201,7 @@
                                   }, '*');
                                 }
                               },
-                              readOnly ? [{ name: 'readonly' }] : [],
+                              aux,
                               null,
                               !!isHidden);
                     },

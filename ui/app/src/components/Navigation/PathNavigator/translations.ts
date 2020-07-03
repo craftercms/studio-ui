@@ -121,5 +121,13 @@ export const translations = defineMessages({
   duplicateDialogBody: {
     id: 'duplicate.dialog.body',
     defaultMessage: 'A new copy of this item and all of it\'s item specific content will be created. Are you sure you wish to proceed?'
+  },
+  changeContentType: {
+    id: 'change.contentType.dialog.title',
+    defaultMessage: 'Warning: Change Content Type'
+  },
+  changeContentTypeBody: {
+    id: 'change.contentType.dialog.body',
+    defaultMessage: 'The following operation may result in data loss. Would you like to proceed?'
   }
 });
