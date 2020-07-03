@@ -62,6 +62,7 @@ import { fetchItemVersions } from '../../../state/reducers/versions';
 import {
   closeConfirmDialog,
   closeDeleteDialog,
+  closeNewContentDialog,
   showConfirmDialog,
   showDeleteDialog,
   showDependenciesDialog,
@@ -864,39 +865,43 @@ export default function (props: WidgetProps) {
 
         const newContentDialogCallback = (e) => {
           const contentType = queryString.parse(e.detail.output.src).contentTypeId as string;
-          changeContentType(site, activeItem.path, contentType).subscribe(
-            (response) => {
-              if (contentTypes) {
-                getContentInstance(site, activeItem.path, contentTypes).subscribe(
-                  (response) => {
-                    let src = `${defaultSrc}site=${site}&path=${path}&type=form&changeTemplate=${contentType}`;
-                    const editProps = {
-                      src,
-                      type: 'form',
-                      inProgress: true,
-                      showController: false,
-                      showTabs: false,
-                      itemModel: response
-                    };
-                    fetchWorkflowAffectedItems(site, activeItem.path).subscribe(
-                      (items) => {
-                        if (items?.length > 0) {
-                          dispatch(showWorkflowCancellationDialog({
-                            items,
-                            onContinue: showEditDialog(editProps)
-                          }));
-                        } else {
-                          dispatch(
-                            showEditDialog(editProps)
-                          );
+          if (activeItem.contentTypeId !== contentType) {
+            dispatch(closeNewContentDialog());
+            changeContentType(site, activeItem.path, contentType).subscribe(
+              (response) => {
+                if (contentTypes) {
+                  getContentInstance(site, activeItem.path, contentTypes).subscribe(
+                    (response) => {
+                      let src = `${defaultSrc}site=${site}&path=${activeItem.path}&type=form&changeTemplate=${contentType}`;
+                      const editProps = {
+                        src,
+                        type: 'form',
+                        inProgress: true,
+                        showController: false,
+                        showTabs: false,
+                        itemModel: response
+                      };
+                      fetchWorkflowAffectedItems(site, activeItem.path).subscribe(
+                        (items) => {
+                          if (items?.length > 0) {
+                            dispatch(showWorkflowCancellationDialog({
+                              items,
+                              onContinue: showEditDialog(editProps)
+                            }));
+                          } else {
+                            dispatch(
+                              showEditDialog(editProps)
+                            );
+                          }
                         }
-                      }
-                    );
-                  }
-                );
+                      );
+                    }
+                  );
+                }
               }
-            }
-          );
+            );
+          }
+
           document.removeEventListener(newContent, newContentDialogCallback, false);
         };
 
@@ -907,10 +912,11 @@ export default function (props: WidgetProps) {
               open: true,
               rootPath: path,
               item: activeItem,
-              type: 'choose',
+              type: 'change',
+              selectedContentType: activeItem.contentTypeId,
               onContentTypeSelected: {
                 type: 'DISPATCH_DOM_EVENT',
-                payload: { id: 'test' }
+                payload: { id: newContent }
               }
             })
           ]));
