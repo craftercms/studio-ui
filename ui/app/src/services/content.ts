@@ -1266,7 +1266,7 @@ export function getChildrenByPath(site: string, path: string, options?: GetChild
   );
 }
 
-export function copy(site: string, item: Partial<LegacyItem>): Observable<any> {
+export function copy(site: string, item: Partial<LegacyItem>): Observable<{ success: boolean }> {
   let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
   return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(
     pluck('response'),
@@ -1281,10 +1281,21 @@ export function cut(site: string, item: SandboxItem): Observable<any> {
   );
 }
 
-export function paste(site: string, item: SandboxItem): Observable<any> {
+export function paste(site: string, item: SandboxItem): Observable<{ site: string, status: string[] }> {
   return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
+  );
+}
+
+export function duplicate(site: string, item: SandboxItem, parentItem: SandboxItem): Observable<SandboxItem> {
+  return forkJoin({
+    copy: copy(site, item),
+    newItem: paste(site, parentItem)
+  }).pipe(
+    map(({ copy, newItem }) => (
+      { ...item, path: newItem.status[0] }
+    ))
   );
 }
 
@@ -1319,6 +1330,27 @@ export function fetchWorkflowAffectedItems(site: string, path: string): Observab
   return get(`/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`).pipe(
     pluck('response', 'items'),
     map(items => items.map(parseLegacyItemToSandBoxItem)),
+    catchError(errorSelectorApi1)
+  );
+}
+
+export function createNewFolder(site: string, path: string, name: string): Observable<unknown> {
+  return post(`/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${path}&name=${name}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
+}
+
+export function createNewFile(site: string, path: string, fileName: string): Observable<unknown> {
+  return post(`/studio/api/1/services/api/1/content/write-content.json?site=${site}&phase=onSave&path=${path}&fileName=${fileName}&user=admin&unlock=true`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
+}
+
+export function renameFolder(site: string, path: string, name: string) {
+  return post(`/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${path}&name=${name}`).pipe(
+    pluck('response'),
     catchError(errorSelectorApi1)
   );
 }

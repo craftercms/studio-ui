@@ -17,5 +17,9 @@
 import { SandboxItem } from '../../../models/Item';
 
 export function isNavigable(item: SandboxItem): boolean {
-  return item.systemType === 'page' || item.systemType === 'component' || item.systemType === 'asset';
+  return item.systemType === 'page'
+    || item.systemType === 'component'
+    || item.systemType === 'asset'
+    || item.systemType === 'template'
+    || item.systemType === 'script';
 }

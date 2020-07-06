@@ -54,9 +54,21 @@ export const translations = defineMessages({
     id: 'craftercms.pages.option.newFolder',
     defaultMessage: 'New Folder'
   },
+  renameFolder: {
+    id: 'craftercms.pages.option.renameFolder',
+    defaultMessage: 'Rename Folder'
+  },
   changeTemplate: {
     id: 'craftercms.pages.option.changeTemplate',
     defaultMessage: 'Change Template'
+  },
+  createTemplate: {
+    id: 'craftercms.pages.option.createTemplate',
+    defaultMessage: 'Create Template'
+  },
+  createController: {
+    id: 'craftercms.pages.option.createController',
+    defaultMessage: 'Create Controller'
   },
   cut: {
     id: 'words.cut',
@@ -82,6 +94,10 @@ export const translations = defineMessages({
     id: 'words.dependencies',
     defaultMessage: 'Dependencies'
   },
+  publish: {
+    id: 'craftercms.pages.option.publish',
+    defaultMessage: 'Approve & Publish'
+  },
   history: {
     id: 'words.history',
     defaultMessage: 'History'
@@ -90,6 +106,10 @@ export const translations = defineMessages({
     id: 'words.translation',
     defaultMessage: 'Translation'
   },
+  upload: {
+    id: 'words.upload',
+    defaultMessage: 'Upload'
+  },
   select: {
     id: 'words.select',
     defaultMessage: 'Select'
@@ -97,5 +117,17 @@ export const translations = defineMessages({
   terminateSelection: {
     id: 'craftercms.pages.option.terminateSelection',
     defaultMessage: 'Terminate Selection'
+  },
+  duplicateDialogBody: {
+    id: 'duplicate.dialog.body',
+    defaultMessage: 'A new copy of this item and all of it\'s item specific content will be created. Are you sure you wish to proceed?'
+  },
+  changeContentType: {
+    id: 'change.contentType.dialog.title',
+    defaultMessage: 'Warning: Change Content Type'
+  },
+  changeContentTypeBody: {
+    id: 'change.contentType.dialog.body',
+    defaultMessage: 'The following operation may result in data loss. Would you like to proceed?'
   }
 });

@@ -36,6 +36,7 @@ import { popDialog, pushDialog } from '../state/reducers/dialogs/minimizedDialog
 import { fetchSystemVersion } from '../state/actions/env';
 import { fetchQuickCreateList } from '../state/actions/content';
 import { fetchContentTypes } from '../state/actions/preview';
+import LookupTable from '../models/LookupTable';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -93,19 +94,25 @@ export function useSystemVersionResource() {
   return useResolveWhenNotNullResource(env.version);
 }
 
+export function useContentTypes(): LookupTable<ContentType> {
+  const dispatch = useDispatch();
+  const site = useActiveSiteId();
+  const { byId, isFetching } = useSelection((state) => state.contentTypes);
+  useEffect(() => {
+    if (!byId && site && isFetching === null) {
+      dispatch(fetchContentTypes());
+    }
+  }, [dispatch, site, byId, isFetching]);
+
+  return byId;
+}
+
 export function useContentTypeList(): Array<ContentType>;
 export function useContentTypeList(filterFn: (type: ContentType) => boolean): Array<ContentType>;
 export function useContentTypeList(
   filterFn: (type: ContentType) => boolean = null
 ): Array<ContentType> {
-  const dispatch = useDispatch();
-  const site = useActiveSiteId();
-  const { byId } = useSelection((state) => state.contentTypes);
-  useEffect(() => {
-    if (!byId && site) {
-      dispatch(fetchContentTypes());
-    }
-  }, [dispatch, site, byId]);
+  const byId = useContentTypes();
   return useMemo(
     () => {
       if (!byId) {

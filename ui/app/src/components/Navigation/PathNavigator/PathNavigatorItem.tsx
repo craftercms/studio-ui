@@ -71,6 +71,7 @@ export default function (props: NavItemProps) {
         <Checkbox
           color="default"
           className={classes.navItemCheckbox}
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => {
             onItemChecked(item, e.currentTarget.checked);
           }}
