@@ -49,7 +49,7 @@ import palette from '../../../styles/palette';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
-    minWidth: '245px',
+    minWidth: '200px',
     marginTop: '5px',
     padding: '0px 5px 5px 5px'
   },
@@ -60,19 +60,22 @@ const useStyles = makeStyles((theme) => ({
     'align-items': 'center',
     'justify-content': 'space-between',
     'align-self': 'flex-start',
-    'min-width': '245px',
+    'min-width': '200px',
     '& p': {
       padding: 0
+    },
+    '&.disable': {
+      'min-width': 'auto',
+      'backgroundColor': 'inherit'
     }
   },
   selectedItem: {
     marginLeft: 'auto',
-    display: 'flex',
-    marginRight: '15px'
+    display: 'flex'
   },
   title: {
     fontWeight: 600,
-    marginRight: '15px'
+    marginRight: '30px'
   },
   changeBtn: {},
   itemIcon: {
@@ -99,7 +102,7 @@ interface SingleItemSelectorProps {
   open: boolean;
   onClose?(): void;
   onItemClicked(item: SandboxItem): void;
-  onDropdownClick(): void;
+  onDropdownClick?(): void;
 }
 
 interface SingleItemSelectorState extends PaginationOptions {
@@ -127,7 +130,7 @@ const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props
   offset: null,
   limit: null,
   rootPath: props.rootPath,
-  currentPath: props.selectedItem?.path ?? props.rootPath,
+  currentPath: props.selectedItem?.path ?? props.rootPath
 });
 
 type SingleItemSelectorReducer = React.Reducer<SingleItemSelectorState, StandardAction>;
@@ -318,7 +321,9 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   };
 
   return (
-    <Paper className={clsx(classes.root, propClasses?.root)} elevation={0}>
+    <Paper
+      className={clsx(classes.root, !onDropdownClick && 'disable', propClasses?.root)} elevation={0}
+    >
       <Typography
         variant={titleVariant}
         className={clsx(classes.title, propClasses?.title)}
@@ -332,13 +337,16 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           <Typography variant={labelVariant}>{selectedItem.label}</Typography>
         </div>
       }
-      <IconButton
-        className={classes.changeBtn}
-        ref={anchorEl}
-        onClick={() => handleDropdownClick(selectedItem)}
-      >
-        <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
-      </IconButton>
+      {
+        onDropdownClick &&
+        <IconButton
+          className={classes.changeBtn}
+          ref={anchorEl}
+          onClick={() => handleDropdownClick(selectedItem)}
+        >
+          <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
+        </IconButton>
+      }
       <Popover
         anchorEl={anchorEl.current}
         open={open}
