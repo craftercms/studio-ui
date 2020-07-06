@@ -53,6 +53,14 @@ const translations = defineMessages({
     id: 'newContentDialog.title',
     defaultMessage: 'Create Content'
   },
+  chooseContentType: {
+    id: 'newContentDialog.chooseContentType',
+    defaultMessage: 'Choose Content Type'
+  },
+  chooseContentTypeSubtitle: {
+    id: 'newContentDialog.chooseContentTypeSubtitle',
+    defaultMessage: 'The following starter templates are available for use within this section.'
+  },
   subtitle: {
     id: 'newContentDialog.subtitle',
     defaultMessage: 'Choose a content type template for your new content item.'
@@ -93,7 +101,8 @@ const useStyles = makeStyles((theme: Theme) =>
     dialogContent: {
       padding: theme.spacing(2),
       backgroundColor: palette.gray.light0,
-      minHeight: 628
+      overflow: 'auto',
+      minHeight: 455
     },
     cardsContainer: {
       marginTop: 14
@@ -103,18 +112,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     searchBox: {
       minWidth: '33%'
-    },
-    emptyStateRoot: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)'
-    },
-    loadingRoot: {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)'
     },
     emptyStateLink: {
       cursor: 'pointer',
@@ -136,6 +133,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface ContentTypesGridProps {
   resource: Resource<LegacyFormConfig[] | any>;
   isCompact: boolean;
+  selectedContentType?: string;
 
   onTypeOpen(data: LegacyFormConfig): void;
 
@@ -147,6 +145,8 @@ interface NewContentDialogBaseProps {
   item: SandboxItem;
   rootPath: string;
   compact: boolean;
+  type?: 'new' | 'change';
+  selectedContentType?: string;
 }
 
 export type NewContentDialogProps = PropsWithChildren<NewContentDialogBaseProps & {
@@ -164,7 +164,7 @@ export interface NewContentDialogStateProps extends NewContentDialogBaseProps {
 }
 
 function ContentTypesGrid(props: ContentTypesGridProps) {
-  const { resource, isCompact, onTypeOpen, getPrevImg } = props;
+  const { resource, isCompact, onTypeOpen, getPrevImg, selectedContentType } = props;
   const classes = useStyles({});
   const filterContentTypes = resource.read();
   return (
@@ -177,6 +177,7 @@ function ContentTypesGrid(props: ContentTypesGridProps) {
             subheader={content.form}
             img={getPrevImg(content)}
             onClick={onTypeOpen(content)}
+            isSelected={content.name === selectedContentType}
           />
         </Grid>
       ))}
@@ -191,7 +192,6 @@ export default function NewContentDialog(props: NewContentDialogProps) {
       onClose={props.onClose}
       fullWidth
       maxWidth="md"
-      scroll="paper"
     >
       <NewContentDialogWrapper {...props} />
     </Dialog>
@@ -204,7 +204,9 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
     item,
     onContentTypeSelected,
     compact,
-    rootPath
+    rootPath,
+    type,
+    selectedContentType
   } = props;
   const [openSelector, setOpenSelector] = useState(false);
   const defaultFilterType = 'all';
@@ -344,18 +346,18 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   return (
     <>
       <DialogHeader
-        title={formatMessage(translations.title)}
-        subtitle={formatMessage(translations.subtitle)}
+        title={formatMessage(type === 'new' ? translations.title : translations.chooseContentType)}
+        subtitle={formatMessage(type === 'new' ? translations.subtitle : translations.chooseContentTypeSubtitle)}
         onDismiss={onDismiss}
       />
-      <DialogBody dividers classes={{ root: classes.dialogContent }}>
+      <DialogBody classes={{ root: classes.dialogContent }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <SingleItemSelector
               label="Item"
               open={openSelector}
               onClose={() => setOpenSelector(false)}
-              onDropdownClick={() => setOpenSelector(!openSelector)}
+              onDropdownClick={type === 'new' ? () => setOpenSelector(!openSelector) : null}
               rootPath={rootPath}
               selectedItem={previewItem}
               onItemClicked={(item) => {
@@ -374,7 +376,6 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
           withEmptyStateProps={{
             emptyStateProps: {
               classes: {
-                root: classes.emptyStateRoot,
                 image: classes.emptyStateImg,
                 title: classes.emptyStateTitle
               },
@@ -406,8 +407,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
           }}
           loadingStateProps={{
             classes: {
-              graphic: classes.loadingGraphic,
-              root: classes.loadingRoot
+              graphic: classes.loadingGraphic
             }
           }}
         >
@@ -416,6 +416,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
             isCompact={isCompact}
             onTypeOpen={onTypeOpen}
             getPrevImg={getPrevImg}
+            selectedContentType={selectedContentType}
           />
         </SuspenseWithEmptyState>
       </DialogBody>
