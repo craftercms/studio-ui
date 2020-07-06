@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import AppsRounded from '@material-ui/icons/AppsRounded';
+import CrafterChevron from '../Icons/CrafterChevron';
 import Avatar from '@material-ui/core/Avatar';
 import GlobalNav from './GlobalNav';
 import Menu from '@material-ui/core/Menu';
@@ -51,6 +51,12 @@ const useStyles = makeStyles(() => ({
       textDecoration: 'none',
       color: 'inherit'
     }
+  },
+  appsButton: {
+    padding: '5px',
+  },
+  crafterIcon: {
+    fontSize: '1.4em'
   }
 }));
 
@@ -118,8 +124,9 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
       <IconButton
         aria-label={formatMessage(messages.openDrawer)}
         onClick={onMenuClick}
+        className={classes.appsButton}
       >
-        <AppsRounded />
+        <CrafterChevron className={classes.crafterIcon} />
       </IconButton>
       <Avatar onClick={onAvatarClick} className={classes.avatarClickable}>
         {user.firstName[0]}{user.lastName[0]}
