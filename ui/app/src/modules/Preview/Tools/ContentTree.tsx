@@ -105,6 +105,9 @@ const useStyles = makeStyles((theme) =>
     breadcrumbsSeparator: {
       margin: '0 2px'
     },
+    breadcrumbsButton: {
+      display: 'flex'
+    },
     breadcrumbsTypography: {
       color: palette.gray.medium4
     },
@@ -145,7 +148,10 @@ const treeItemStyles = makeStyles((theme) =>
         paddingLeft: '15px'
       },
       '&.root': {
-        paddingLeft: '6px'
+        paddingLeft: 0,
+        '& $treeItemLabelRoot': {
+          paddingLeft: '6px'
+        }
       }
     },
     treeItemGroup: {},
@@ -805,6 +811,7 @@ function ContentTreeUI(props: ContentTreeUI) {
                   component="button"
                   variant="subtitle2"
                   underline="always"
+                  className={classes.breadcrumbsButton}
                   TypographyClasses={{
                     root: classes.breadcrumbsTypography
                   }}
