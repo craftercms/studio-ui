@@ -76,6 +76,10 @@ const translations = defineMessages({
   onThisPage: {
     id: 'previewContentTreeTool.onThisPage',
     defaultMessage: 'Current Content Items'
+  },
+  entry: {
+    id: 'words',
+    defaultMessage: 'Entry'
   }
 });
 
@@ -97,10 +101,7 @@ const useStyles = makeStyles((theme) =>
     breadcrumbsList: {
       display: 'flex',
       alignItems: 'center',
-      padding: '9px 6px 0px 6px',
-      '& li': {
-        //lineHeight: 1
-      }
+      padding: '9px 10px 2px 8px'
     },
     breadcrumbsSeparator: {
       margin: '0 2px'
@@ -183,6 +184,9 @@ const treeItemStyles = makeStyles((theme) =>
     chevron: {
       color: palette.gray.medium3,
       fontSize: '1.4rem'
+    },
+    nameLabel: {
+      color: palette.gray.medium4
     }
   })
 );
@@ -356,6 +360,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   let timeout = React.useRef<any>();
   const isMounted = useRef(null);
   let Icon;
+  const nodeName = node.name.split(':');
 
   useEffect(() => {
     isMounted.current = true;
@@ -415,7 +420,17 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(node)}>
           <Icon className={classes.icon} />
-          <p>{node.name}</p>
+          <p>
+            {
+              nodeName.map((value, i) => {
+                  if (nodeName.length > 1 && i === 0) {
+                    return <span className={classes.nameLabel} key={i}>{value}: {' '} </span>;
+                  }
+                  return value;
+                }
+              )
+            }
+          </p>
           {over && isPageOrComponent(node.type) && (
             <IconButton
               className={classes.options}
@@ -581,7 +596,9 @@ export default function ContentTree() {
           processedModels.current[model.craftercms.id] = true;
           let node: RenderTree = {
             id: model.craftercms.id,
-            name: model.craftercms.label,
+            name: (contentType.type === 'page')
+              ? `${formatMessage(translations.entry)}: ${model.craftercms.label}`
+              : `${contentType.name}: ${model.craftercms.label}`,
             children: [],
             type: contentType.type,
             modelId: model.craftercms.id
@@ -802,7 +819,7 @@ function ContentTreeUI(props: ContentTreeUI) {
                   key={nodeLookup[id].id}
                   variant="subtitle2"
                   className={classes.breadcrumbsTypography}
-                  children={nodeLookup[id].name}
+                  children={nodeLookup[id].name.split(':').pop()}
                 />
               ) : (
                 <Link
@@ -816,8 +833,11 @@ function ContentTreeUI(props: ContentTreeUI) {
                     root: classes.breadcrumbsTypography
                   }}
                   onClick={(e) => handleBreadCrumbClick(e, id === 'root' ? { id: 'root' } : nodeLookup[id])}
-                  children={id === 'root' ?
-                    <Root className={classes.rootIcon} /> : nodeLookup[id].name}
+                  children={
+                    id === 'root'
+                      ? <Root className={classes.rootIcon} />
+                      : nodeLookup[id].name.split(':').pop()
+                  }
                 />
               )
             )}
