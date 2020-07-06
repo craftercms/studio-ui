@@ -21,13 +21,16 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import Divider from '@material-ui/core/Divider';
 import palette from '../../../styles/palette';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   defaultCard: {
-    maxWidth: 345
+    maxWidth: 345,
+    cursor: 'pointer'
   },
   compactCard: {
-    display: 'flex'
+    display: 'flex',
+    cursor: 'pointer'
   },
   media: {
     paddingTop: '75%'
@@ -37,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
   },
   cardTitle: {
     color: palette.black
+  },
+  selected: {
+    border: `1px solid ${palette.blue.tint}`
   }
 }));
 
@@ -47,6 +53,7 @@ interface NewContentCardProps {
   img: string;
   onClick: any;
   isCompact: boolean;
+  isSelected: boolean;
 }
 
 const DefaultCardContent = (props) => {
@@ -93,14 +100,14 @@ const CompactCardContent = (props) => {
 };
 
 export default function NewContentCard(props: NewContentCardProps) {
-  const { onClick, isCompact } = props;
+  const { onClick, isCompact, isSelected } = props;
   const classes = useStyles();
   const rootClass = !isCompact ? classes.defaultCard : classes.compactCard;
   const [hover, setHover] = useState(false);
 
   return (
     <Card
-      className={rootClass}
+      className={clsx(rootClass, isSelected && classes.selected)}
       onClick={onClick}
       elevation={hover ? 3 : 1}
       onMouseEnter={() => setHover(true)}
