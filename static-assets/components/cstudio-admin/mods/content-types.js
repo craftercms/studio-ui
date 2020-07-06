@@ -3900,15 +3900,19 @@
 
     CStudioAdminConsole.cleanPostfix = (identifier, type) => {
       const $input = $(identifier).siblings('input'),
-        currentPostfix = '_' + $input.val().split('_').pop(),
         controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
         postfixes = CStudioAdminConsole.getPostfixes(type, controls),
-        replace = currentPostfix + '([^' + currentPostfix + ']*)$',
-        re = new RegExp(replace, 'i');
+        currentPostfix = postfixes.filter(postfix => $input.val().endsWith(postfix)),
+        hasPostfix = currentPostfix.length > 0;
 
-      for (var k = 0; k <= postfixes.length; k++) {
-        if (currentPostfix.indexOf(postfixes[k]) > -1) {
-          $input.val($input.val().replace(re, ''));
+      if(hasPostfix) {
+        const replace = currentPostfix + '([^' + currentPostfix + ']*)$',
+          re = new RegExp(replace, 'i');
+
+        for (var k = 0; k <= postfixes.length; k++) {
+          if (currentPostfix.indexOf(postfixes[k]) > -1) {
+            $input.val($input.val().replace(re, ''));
+          }
         }
       }
     };
