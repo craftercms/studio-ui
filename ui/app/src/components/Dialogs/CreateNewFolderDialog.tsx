@@ -24,7 +24,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { createNewFolder, renameFolder } from '../../services/content';
-import { useActiveSiteId } from '../../utils/hooks';
+import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -47,7 +47,7 @@ interface CreateNewFolderProps {
 }
 
 export default function (props: CreateNewFolderProps) {
-  const { open, onClose, onClosed } = props;
+  const { open, onClose } = props;
   const [state, setState] = useState({
     submitted: null,
     inProgress: null
@@ -57,7 +57,7 @@ export default function (props: CreateNewFolderProps) {
       open={open}
       fullWidth
       maxWidth={'xs'}
-      onClose={onClosed}
+      onClose={onClose}
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
     >
@@ -78,11 +78,13 @@ interface CreateNewFolderUIProps extends CreateNewFolderProps {
 }
 
 function CreateNewFolderUI(props: CreateNewFolderUIProps) {
-  const { onClose, path, submitted, inProgress, setState, onCreated, rename = false, value = '' } = props;
+  const { onClosed, onClose, path, submitted, inProgress, setState, onCreated, rename = false, value = '' } = props;
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
+
+  useUnmount(onClosed);
 
   const onOk = () => {
     setState({ inProgress: true, submitted: true });

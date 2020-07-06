@@ -24,7 +24,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { createNewFile } from '../../services/content';
-import { useActiveSiteId } from '../../utils/hooks';
+import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -56,7 +56,7 @@ export default function (props: CreateNewFileProps) {
       open={open}
       fullWidth
       maxWidth={'xs'}
-      onClose={onClosed}
+      onClose={onClose}
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
     >
@@ -77,11 +77,13 @@ interface CreateNewFileUIProps extends CreateNewFileProps {
 }
 
 function CreateNewFileUI(props: CreateNewFileUIProps) {
-  const { onClose, submitted, inProgress, setState, onCreated, type, path } = props;
+  const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path } = props;
   const [name, setName] = useState('');
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
+
+  useUnmount(onClosed);
 
   const onOk = () => {
     setState({ inProgress: true, submitted: true });
