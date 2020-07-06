@@ -37,6 +37,7 @@
                         </a>
                         <ul id="quick-create" class="dropdown-menu" role="menu">
                             <li class="title" style=""><span data-translation="quickCreate">Quick Create</span></li>
+                            <div class="quick-create-elements-container"></div>
                         </ul>
                     </li>
                 </ul>
@@ -112,7 +113,7 @@
                 </div>
                 <div id="_acn-dropdown-wrapper" class="acn-dropdown-wrapper"></div>
 
-                
+
                 <div id="acn-active-content"></div>
                 <div id="acn-admin-console" style="float: left"></div>
                 <div id="contextual_nav_menu_items"></div>

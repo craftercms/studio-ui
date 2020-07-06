@@ -31,7 +31,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
    * initialize module
    */
   initialize: function () {
-    var dropdown = $('#quick-create'),
+    var dropdown = $('#quick-create .quick-create-elements-container'),
       quickCreateWrapper = $('.dropdown.quick-create'),
       self = this;
     CStudioAuthoring.Service.getQuickCreate({
