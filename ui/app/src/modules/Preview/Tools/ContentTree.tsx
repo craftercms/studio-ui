@@ -482,6 +482,7 @@ function createBackHandler(dispatch) {
 export default function ContentTree() {
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
+  const currentModelId = guest?.modelId;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
@@ -581,10 +582,15 @@ export default function ContentTree() {
 
   // effect to refresh the contentTree if the site changes;
   useEffect(() => {
-    if (site) {
+    if (site && currentModelId) {
       processedModels.current = {};
+      setState({
+        selected: `root`,
+        expanded: ['root'],
+        breadcrumbs: ['root']
+      });
     }
-  }, [site]);
+  }, [site, currentModelId]);
 
   useEffect(() => {
     if (models && ContentTypesById) {
@@ -611,7 +617,7 @@ export default function ContentTree() {
         setNodeLookup(_nodeLookup);
       }
     }
-  }, [ContentTypesById, models, setNodeLookup]);
+  }, [ContentTypesById, formatMessage, models, setNodeLookup]);
 
   useEffect(() => {
     const handler = (e) => {
