@@ -31,7 +31,7 @@ import GlobalState from '../../models/GlobalState';
 import { useEnv, useMount, useSelection } from '../../utils/hooks';
 import palette from '../../styles/palette';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   avatarClickable: {
     cursor: 'pointer',
     textTransform: 'uppercase',
@@ -54,6 +54,7 @@ const useStyles = makeStyles(() => ({
   },
   appsButton: {
     padding: '5px',
+    marginRight: theme.spacing(1)
   },
   crafterIcon: {
     fontSize: '1.4em'
