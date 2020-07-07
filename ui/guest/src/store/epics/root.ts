@@ -50,8 +50,8 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TREE_FIELD_SELECTED,
+  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   CONTENT_TYPE_RECEPTACLES_RESPONSE,
   DESKTOP_ASSET_DRAG_ENDED,
@@ -481,6 +481,16 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         if (isNullOrUndefined(contentType.id)) {
           console.error('No contentTypeId found for this drag instance.');
         } else {
+          if (state.dragContext.dropZones.length === 0) {
+            post({
+              type: 'VALIDATION_MESSAGE',
+              payload: {
+                id: 'receptaclesNotFound',
+                level: 'suggestion',
+                values: { contentType: state.dragContext.contentType.id }
+              }
+            });
+          }
           return initializeDragSubjects(state$);
         }
         return NEVER;
@@ -498,6 +508,16 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
         if (isNullOrUndefined(state.dragContext.instance.craftercms.contentTypeId)) {
           console.error('No contentTypeId found for this drag instance.');
         } else {
+          if (state.dragContext.dropZones.length === 0) {
+            post({
+              type: 'VALIDATION_MESSAGE',
+              payload: {
+                id: 'receptaclesNotFound',
+                level: 'suggestion',
+                values: { contentType: state.dragContext.instance.craftercms.contentTypeId }
+              }
+            });
+          }
           return initializeDragSubjects(state$);
         }
         return NEVER;

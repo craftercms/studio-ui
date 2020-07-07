@@ -109,6 +109,10 @@ const guestMessages = defineMessages({
   registerNotFound: {
     id: 'register.notFound',
     defaultMessage: '{name} is not visible or was not registered by developers'
+  },
+  receptaclesNotFound: {
+    id: 'register.receptaclesNotFound',
+    defaultMessage: 'There are no receptacles for {contentType} components'
   }
 });
 

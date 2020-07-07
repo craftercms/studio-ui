@@ -46,7 +46,7 @@ export const translations = defineMessages({
 });
 
 export default function (props: CreateNewFileProps) {
-  const { open, onClose, onClosed } = props;
+  const { open, onClose } = props;
   const [state, setState] = useState({
     submitted: null,
     inProgress: null
