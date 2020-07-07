@@ -76,10 +76,6 @@ const translations = defineMessages({
   onThisPage: {
     id: 'previewContentTreeTool.onThisPage',
     defaultMessage: 'Current Content Items'
-  },
-  entry: {
-    id: 'words',
-    defaultMessage: 'Entry'
   }
 });
 
@@ -420,14 +416,14 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(node)}>
           <Icon className={classes.icon} />
-          <p>
+          <p title={node.name}>
             {
-              nodeName.map((value, i) => {
-                  if (nodeName.length > 1 && i === 0) {
-                    return <span className={classes.nameLabel} key={i}>{value}: {' '} </span>;
-                  }
-                  return value;
-                }
+              (nodeName.length === 1) ? (
+                nodeName[0]
+              ) : (
+                <>{nodeName[1]} <span
+                  className={classes.nameLabel}
+                >{`(${nodeName[0].trim()})`}</span></>
               )
             }
           </p>
@@ -602,9 +598,7 @@ export default function ContentTree() {
           processedModels.current[model.craftercms.id] = true;
           let node: RenderTree = {
             id: model.craftercms.id,
-            name: (contentType.type === 'page')
-              ? `${formatMessage(translations.entry)}: ${model.craftercms.label}`
-              : `${contentType.name}: ${model.craftercms.label}`,
+            name: `${contentType.name}: ${model.craftercms.label}`,
             children: [],
             type: contentType.type,
             modelId: model.craftercms.id
