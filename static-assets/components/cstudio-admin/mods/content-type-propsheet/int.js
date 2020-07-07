@@ -19,7 +19,6 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int =
   function(fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
-    this.lastValidValue = '';
     this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
     this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
     return this;
@@ -36,32 +35,21 @@ YAHOO.extend(
       YAHOO.util.Dom.addClass(valueEl, 'content-type-property-sheet-property-value');
       containerEl.appendChild(valueEl);
       valueEl.value = value;
-      this.lastValidValue = value;
       valueEl.fieldName = this.fieldName;
 
-      $(valueEl).on('blur', function (e) {
-        const currentValue = this.value;
-        const isNumber = /^[+-]?\d+(\.\d+)?$/;
-        const isValid = (currentValue.match(isNumber) !== null) || currentValue === '';
-        const $element = $(this);
+      $(valueEl).on('focus', function () {
+        valueEl.setAttribute('type', 'number');
+      });
 
-        if (isValid) {
-          _self.lastValidValue = currentValue;
-          $element.removeClass('invalid');
-          if (updateFieldFn) {
-            updateFieldFn(e, this);
-          }
-        } else {
-          $element.addClass('invalid');
-          this.value = _self.lastValidValue;
-          CStudioAuthoring.Utils.showNotification(
-            _self.formatMessage(_self.contentTypesMessages.invalidNumber, { value: currentValue }),
-            'top',
-            'right',
-            'error',
-            48,
-            'int-property'
-          );
+      $(valueEl).on('blur', function (e) {
+        valueEl.setAttribute('type', 'text');
+
+        const integerValue = parseInt($(valueEl).val());
+        if (!isNaN(integerValue)) {
+          $(valueEl).val(integerValue);   // Make sure that value is integer
+        }
+        if (updateFieldFn) {
+          updateFieldFn(e, this);
         }
       });
 
