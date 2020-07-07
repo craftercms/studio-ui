@@ -439,7 +439,7 @@ export function PreviewConcierge(props: any) {
         }
         case 'VALIDATION_MESSAGE': {
           enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
-            variant: payload.level === 'required' ? 'error' : 'warning'
+            variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
           });
           break;
         }

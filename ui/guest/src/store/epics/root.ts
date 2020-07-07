@@ -486,7 +486,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               type: 'VALIDATION_MESSAGE',
               payload: {
                 id: 'receptaclesNotFound',
-                level: 'suggestion',
+                level: 'info',
                 values: { contentType: state.dragContext.contentType.id }
               }
             });
@@ -513,7 +513,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               type: 'VALIDATION_MESSAGE',
               payload: {
                 id: 'receptaclesNotFound',
-                level: 'suggestion',
+                level: 'info',
                 values: { contentType: state.dragContext.instance.craftercms.contentTypeId }
               }
             });
