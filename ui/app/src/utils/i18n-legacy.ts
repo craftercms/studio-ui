@@ -359,6 +359,14 @@ const contentTypesMessages = defineMessages({
   invalidNumber: {
     id: 'siteConfig.invalidNumber',
     defaultMessage: '"{value}" is not a valid number.'
+  },
+  postfixes: {
+    id: 'siteConfig.postfixes',
+    defaultMessage: 'Postfixes'
+  },
+  controlNotAvailable: {
+    id: 'siteConfig.controlNotAvailable',
+    defaultMessage: 'Control not available'
   }
 });
 
@@ -868,6 +876,13 @@ const bulkUploadConfirmDialogMessages = defineMessages({
   }
 });
 
+const wcmRootFolder = defineMessages({
+  pathNotFound: {
+    id: 'wcmRootFolder.pathNotFound',
+    defaultMessage: 'Folder {path} not found.'
+  },
+})
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -900,5 +915,6 @@ export default {
   rteControlMessages,
   ossAttribution,
   dashboardWidgetsMessages,
-  bulkUploadConfirmDialogMessages
+  bulkUploadConfirmDialogMessages,
+  wcmRootFolder
 };

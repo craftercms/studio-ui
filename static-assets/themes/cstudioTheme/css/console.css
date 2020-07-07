@@ -294,6 +294,21 @@ body, tbody {
   background: none repeat scroll 0 0 #D5E2F2;
 }
 
+.content-type-visual-field-container.disabled {
+  background-color: #fafafa;
+  cursor: default;
+}
+
+.content-type-visual-field-container.disabled .content-field-name {
+  color: #A1A1A1;
+}
+
+.content-type-visual-field-container .control-not-available {
+  position: absolute;
+  right: 20px;
+  top: 9px;
+}
+
 .content-type-visual-repeat-container {
   background: none repeat scroll 0 0 #F2F8FC;
   border: 1px solid #dddddd;
@@ -449,6 +464,8 @@ body, tbody {
   }
 }
 
+
+
 .site-config-landing-page {
   margin-top: 50px;
   padding: 0 20px;
@@ -539,6 +556,10 @@ body, tbody {
 
 .popover-content p {
   padding: 0px;
+}
+
+.popover.properties-help .popover-title .close {
+  font-size: 14px;
 }
 
 .checkboxes .property-label {
@@ -949,7 +970,6 @@ html, body {
 
 .quick-create-help th,
 .quick-create-help td {
-  vertical-align: top;
   padding: 0 5px 5px 0;
 }
 

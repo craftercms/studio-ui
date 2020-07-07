@@ -127,14 +127,17 @@
               const type = currentField.type,
                 controls = this.config.controls.control,
                 postfixes = CStudioAdminConsole.getPostfixes(type, controls);
-              for (var k = 0; k < postfixes.length; k++) {
-                if (currentField.id.indexOf(postfixes[k]) > -1) {
-                  postfixesFlag = true;
-                  break;
+              if (postfixes) {
+                for (var k = 0; k < postfixes.length; k++) {
+                  if (currentField.id.indexOf(postfixes[k]) > -1) {
+                    postfixesFlag = true;
+                    break;
+                  }
                 }
-              }
-              if (!postfixesFlag && postfixes.length > 0) {
-                postfixError.push({ title: currentField.title, type: currentField.type });
+
+                if (!postfixesFlag && postfixes.length > 0) {
+                  postfixError.push({ title: currentField.title, type: currentField.type });
+                }
               }
             }
 
@@ -587,7 +590,7 @@
         var visual = new CStudioAdminConsole.Tool.ContentTypes.FormVisualization(formDef, canvasEl);
         CStudioAdminConsole.Tool.ContentTypes.visualization = visual;
 
-        visual.render();
+        visual.render(this.config);
       },
 
       /**
@@ -1147,8 +1150,9 @@
       /**
        * render form visualization
        */
-      render: function () {
+      render: function (config) {
         var that = this;
+        this.config = this.config ? this.config : config;
         if (CStudioAdminConsole.Tool.ContentTypes.FormDefMain.dragActionTimer) {
           // If the drag action timer is set, changes are still occurring to the form
           // Call the render method again in a few milliseconds
@@ -1547,6 +1551,13 @@
         var dd = new DragAndDropDecorator(fieldContainerEl);
         var tar = new YAHOO.util.DDTarget(fieldContainerEl);
 
+        var controlExists = (this.config.controls.control.filter(control => control.name === field.type).length) > 0;
+        if (!controlExists) {
+          $(fieldContainerEl)
+            .addClass('disabled')
+            .append(`<span class="control-not-available">${formatMessage(contentTypesMessages.controlNotAvailable)}</span>`);
+        }
+
         var fieldClickFn = function (evt) {
           fieldEvent = true;
           formItemSelectedEvent.fire(this);
@@ -1641,7 +1652,7 @@
         };
 
         formItemSelectedEvent.subscribe(fieldSelectedFn, fieldContainerEl);
-        YAHOO.util.Event.on(fieldContainerEl, 'click', fieldClickFn);
+        $(fieldContainerEl).not('.disabled').on('click', fieldClickFn);
       }
     };
 
@@ -2689,7 +2700,7 @@
             CStudioAdminConsole.isDirty = true;
           },
           showPostFixes,
-          'Postfixes',
+          formatMessage(contentTypesMessages.postfixes),
           this.renderPostfixesVariable(item.type),
           null,
           defaultField
@@ -2913,11 +2924,14 @@
           )
             .popover({
               container: 'body',
-              title: helpTitle,
+              title: `<span>${helpTitle}</span>` +
+                `<button type="button" class="close fa fa-times" onclick="$(\'#help-${fName}\').popover('hide');"/>`,
               html: true,
               content: helpHTML,
               placement: 'left',
-              trigger: 'manual'
+              trigger: 'manual',
+              template: '<div class="popover properties-help" role="tooltip"><div class="arrow">' +
+                '</div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
             })
             .appendTo(labelEl)
             .on('inserted.bs.popover', function () {

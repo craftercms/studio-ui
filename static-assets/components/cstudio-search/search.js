@@ -245,6 +245,29 @@
       }
     );
 
+    // Applying change to path filter
+    $('.cstudio-search').on('click', '.filter-item .apply-path', function () {
+      var $parent = $(this).parent(),
+        filterName = $parent.attr('filter-name'),
+        $selectedIndicator = $('#headingPath .path-header-label .selected');
+      CStudioSearch.searchContext.lastSelectedFilterSelector = '[href="#' + filterName + '"]';
+
+      let value = $('#filterPath').val();
+
+      if( value !== '') {
+        value = `${value}${value.endsWith('/') ? '.+' : '/.+'}`;
+        $selectedIndicator.removeClass('hide');
+      } else {
+        $selectedIndicator.addClass('hide');
+      }
+
+      CStudioSearch.searchContext[filterName] = value;
+
+      CStudioSearch.updateNumFilters();
+      CStudioSearch.performSearch(true);
+      CStudioSearch.updateUrl();
+    });
+
     // Selecting a multiple value filter
     $('.cstudio-search').on('change', '.filter-item input[type="checkbox"]', function () {
       var filterName = $(this).attr('name'),
@@ -358,6 +381,8 @@
     var view = CStudioAuthoring.Utils.getQueryVariable(queryString, 'view');
     var mode = CStudioAuthoring.Utils.getQueryVariable(queryString, 'mode');
     var query = CStudioAuthoring.Utils.getQueryVariable(queryString, 'query');
+    var path = CStudioAuthoring.Utils.getQueryVariable(queryString, 'path');
+    var externalPath = CStudioAuthoring.Utils.getQueryVariable(queryString, 'externalPath');
     if (sortBy === '_score') {
       searchContext.sortOrder = 'desc';
     }
@@ -369,6 +394,8 @@
     searchContext.itemsPerPage = itemsPerPage ? itemsPerPage : searchContext.itemsPerPage;
     searchContext.mode = mode ? mode : searchContext.mode;
     searchContext.query = query ? query : searchContext.query;
+    searchContext.path = path ? path : searchContext.path;
+    searchContext.externalPath = externalPath ? externalPath : false;
 
     $.each(urlParams, function (key, value) {
       var processedKey, processedValue;
@@ -419,7 +446,6 @@
 
     if (results.total === 0) {
       $selectAllContainer.hide();
-      $filtersSection.hide();
     } else {
       $selectAllContainer.show();
       $filtersSection.show();
@@ -548,7 +574,8 @@
       offset: (searchContext.currentPage - 1) * searchContext.itemsPerPage,
       limit: searchContext.itemsPerPage,
       sortBy: searchContext.sortBy,
-      sortOrder: searchContext.sortOrder
+      sortOrder: searchContext.sortOrder,
+      path: searchContext.path
     };
 
     if (!jQuery.isEmptyObject(searchContext.filters)) {
@@ -616,6 +643,19 @@
     var sortOrderValue = searchContext.sortOrder;
     $('#' + sortOrderValue).prop('checked', true);
     $('select[name="sortOrder"]').val(sortOrderValue);
+
+    if (searchContext.path) {
+      $('#filterPath').val(searchContext.path.replace('.+', ''));
+
+      if (searchContext.path !== '') {
+        $('#headingPath .path-header-label .selected').removeClass('hide');
+      }
+
+      if (searchContext.externalPath) {
+        $('#filterPath').prop('disabled', true);
+        $('#collapsePath .apply-path').hide();
+      }
+    }
 
     // add filters
     $.each(searchContext.facets, function (index, facet) {
@@ -839,8 +879,10 @@
   };
 
   CStudioSearch.updateNumFilters = function (filterName) {
-    // SortBy will always have a value -> minimum filters = 1
-    this.searchContext.numFilters = 1 + Object.keys(CStudioSearch.searchContext.filters).length;
+    let numFilters = Object.keys(CStudioSearch.searchContext.filters).length;
+    (CStudioSearch.searchContext.path && CStudioSearch.searchContext.path !== '') && numFilters++;
+
+    this.searchContext.numFilters = numFilters;
     $('#numFilters').text('(' + this.searchContext.numFilters + ')');
   };
 
@@ -1062,6 +1104,10 @@
     newUrl += '&view=' + searchContext.view;
     newUrl += '&mode=' + searchContext.mode;
     newUrl += '&query=' + searchContext.query;
+
+    if (searchContext.path && searchContext.path !== '') {
+      newUrl += '&path=' + encodeURIComponent(searchContext.path);
+    }
 
     // Add search filters to url
     // csf = crafter studio filter

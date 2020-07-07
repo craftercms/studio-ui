@@ -173,6 +173,11 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       searchContext.filters['content-type'] = this.type;
     }
 
+    if (this.browsePath) {
+      searchContext.path = this.browsePath.endsWith('/') ? `${this.browsePath}.+` : `${this.browsePath}/.+`;
+      searchContext.externalPath = true;
+    }
+
     CStudioAuthoring.Operations.openSearch(
       searchContext,
       true,

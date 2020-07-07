@@ -65,6 +65,10 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
         mode: 'select' // open search not in default but in select mode
       };
 
+      if (this.repoPath) {
+        searchContext.path = this.repoPath.endsWith('/') ? `${this.repoPath}.+` : `${this.repoPath}/.+`;
+      }
+
       CStudioAuthoring.Operations.openSearch(
         searchContext,
         true,

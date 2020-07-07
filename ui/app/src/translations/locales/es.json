@@ -345,6 +345,7 @@
   "usersAdmin.lastName": "Apellido",
   "usersAdmin.maxLengthError": "{field} no puede tener más de {size} caracteres",
   "usersAdmin.userName": "Nombre de usuario",
+  "wcmRootFolder.pathNotFound": "Carpeta {path} no encontrada.",
   "words.browse": "Explorar",
   "words.cancel": "Cancelar",
   "words.clear": "Limpiar",

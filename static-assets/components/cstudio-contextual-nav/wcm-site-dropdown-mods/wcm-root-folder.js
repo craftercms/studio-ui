@@ -344,6 +344,9 @@
         var pathFlag = true;
 
         var tree = (instance.tree = new YAHOO.widget.TreeView(treeEl));
+
+        tree = this.initializeContextMenu(tree, instance);
+
         tree.setDynamicLoad(this.onLoadNodeDataOnClick);
         /*tree.subscribe("collapse", function(node) {this.collapseTree});
                 tree.subscribe("expand", function(node) {this.expandTree});*/
@@ -660,27 +663,6 @@
 
           return true;
         });
-
-        instance.contextMenuId = 'ContextmenuWrapper' + counter++;
-        var oContextMenu = new YAHOO.widget.ContextMenu(instance.contextMenuId, {
-          container: 'acn-context-menu',
-          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
-          shadow: true,
-          lazyload: true,
-          hidedelay: 700,
-          showdelay: 0,
-          classname: 'wcm-root-folder-context-menu',
-          zIndex: 100
-        });
-
-        oContextMenu.subscribe(
-          'beforeShow',
-          function () {
-            Self.onTriggerContextMenu(tree, this);
-          },
-          tree,
-          false
-        );
 
         if (uniquePath) {
           nodeOpen = true;
@@ -1045,12 +1027,14 @@
             nodeSpan.appendChild(childOpen);
           }
 
-          nodeSpan.innerHTML += treeNodeTO.label;
-          nodeSpan.setAttribute('title', treeNodeTO.title);
-          nodeSpan.className =
-            treeNodeTO.style + ' yui-resize-label treenode-label over-effect-set';
-
-          nodeSpan.className = highlight ? nodeSpan.className + ' highlighted' : nodeSpan.className;
+          nodeSpan.innerHTML += treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label;
+          const tooltip = treeNodeTO.statusObj.deleted
+            ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound, { path: treeNodeTO.path })}</div>`
+            : treeNodeTO.title;
+          nodeSpan.setAttribute('title', tooltip);
+          nodeSpan.className = `${treeNodeTO.style} yui-resize-label treenode-label over-effect-set ${
+            treeNodeTO.statusObj.deleted && 'warning'
+          } ${highlight && 'highlighted'}`;
 
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
@@ -1206,6 +1190,9 @@
               var cont = j == 0 ? 0 : counter[key][j] + 1;
               return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
             };
+
+          tree = this.initializeContextMenu(tree, instance);
+
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
           YDom.addClass(label, 'loading');
@@ -3015,6 +3002,35 @@
           false,
           false
         );
+      },
+
+      initializeContextMenu: function (tree, instance) {
+        var oContextMenu = new YAHOO.widget.ContextMenu(instance.label, {
+          container: 'acn-context-menu',
+          trigger: YDom.get(instance.label.toLowerCase() + '-tree').parentNode,
+          shadow: true,
+          lazyload: true,
+          hidedelay: 700,
+          showdelay: 0,
+          classname: 'wcm-root-folder-context-menu',
+          zIndex: 100
+        });
+
+        oContextMenu.subscribe(
+          'beforeShow',
+          function (e) {
+            tree.oContextMenu.clearContent('');
+            if (!tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
+              Self.onTriggerContextMenu(tree, this);
+            }
+          },
+          tree,
+          false
+        );
+
+        tree.oContextMenu = oContextMenu;
+
+        return tree;
       },
 
       /**
