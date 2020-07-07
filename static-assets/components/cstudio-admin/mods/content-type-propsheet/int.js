@@ -42,7 +42,11 @@ YAHOO.extend(
 
       $(valueEl).on('blur', function (e) {
         valueEl.setAttribute('type', 'text');
-        $(valueEl).val(parseInt($(valueEl).val()));   // Make sure that value is integer
+
+        const integerValue = parseInt($(valueEl).val());
+        if (!isNaN(integerValue)) {
+          $(valueEl).val(integerValue);   // Make sure that value is integer
+        }
         if (updateFieldFn) {
           updateFieldFn(e, this);
         }
