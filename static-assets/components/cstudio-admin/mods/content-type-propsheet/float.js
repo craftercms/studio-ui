@@ -21,7 +21,6 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float =
   function (fieldName, containerEl) {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
-    this.lastValidValue = '';
     this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
     this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
     return this;
