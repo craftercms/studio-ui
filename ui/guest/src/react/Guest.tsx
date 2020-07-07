@@ -40,8 +40,8 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TREE_FIELD_SELECTED,
+  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
@@ -181,7 +181,7 @@ function Guest(props: GuestProps) {
           dragOk(status) && dispatch(action);
           break;
         case COMPONENT_INSTANCE_DRAG_STARTED:
-          dispatch({ type, payload: { instance: payload } });
+          dispatch({ type, payload });
           break;
         case COMPONENT_INSTANCE_DRAG_ENDED:
           dragOk(status) && dispatch(action);

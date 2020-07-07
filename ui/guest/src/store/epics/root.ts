@@ -487,7 +487,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               payload: {
                 id: 'receptaclesNotFound',
                 level: 'info',
-                values: { contentType: state.dragContext.contentType.id }
+                values: { contentType: state.dragContext.contentType.name }
               }
             });
           }
@@ -514,7 +514,7 @@ const epic: Epic<GuestStandardAction, GuestStandardAction, GuestState> = combine
               payload: {
                 id: 'receptaclesNotFound',
                 level: 'info',
-                values: { contentType: state.dragContext.instance.craftercms.contentTypeId }
+                values: { contentType: state.dragContext.contentType.name }
               }
             });
           }
