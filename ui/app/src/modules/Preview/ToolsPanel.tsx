@@ -40,13 +40,14 @@ import SimulatorPanel from './Tools/SimulatorPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
+import InPageInstancesPanel from './Tools/InPageInstancesPanel';
 import { fetchPreviewToolsConfig, selectTool } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
+  useLogicResource,
   usePreviewState,
-  useSelection,
-  useLogicResource
+  useSelection
 } from '../../utils/hooks';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
@@ -239,13 +240,14 @@ function ToolSelector(props: ToolSelectorProps) {
 }
 
 const componentIconMap: { [key in PreviewTool]: OverridableComponent<SvgIconTypeMap> } = {
-  "craftercms.ice.contentTypeReceptacles": undefined,
-  "craftercms.ice.edit": undefined,
+  'craftercms.ice.contentTypeReceptacles': undefined,
+  'craftercms.ice.edit': undefined,
   'craftercms.ice.components': ExtensionRounded,
   'craftercms.ice.assets': ImageRounded,
   'craftercms.ice.audiences': EmojiPeopleRounded,
   'craftercms.ice.simulator': DevicesRounded,
   'craftercms.ice.browseComponents': ExtensionRounded,
+  'craftercms.ice.inPageInstances': ExtensionRounded,
   'craftercms.ice.contentTree': AccountTreeRoundedIcon,
   'craftercms.ice.search': SearchRoundedIcon
 };
@@ -257,6 +259,7 @@ const componentMap: {  [key in PreviewTool]: React.ElementType } = {
   'craftercms.ice.simulator': SimulatorPanel,
   'craftercms.ice.edit': EditFormPanel,
   'craftercms.ice.browseComponents': BrowseComponentsPanel,
+  'craftercms.ice.inPageInstances': InPageInstancesPanel,
   'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,
   'craftercms.ice.contentTree': ContentTree,
   'craftercms.ice.search': SearchPanel

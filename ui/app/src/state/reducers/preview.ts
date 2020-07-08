@@ -39,6 +39,7 @@ import {
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
+  IN_PAGE_INSTANCES,
   OPEN_TOOLS,
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
@@ -83,7 +84,8 @@ const componentsInitialState = createEntityState({
     limit: 10,
     type: 'Component'
   },
-  contentTypeFilter: ''
+  contentTypeFilter: '',
+  inPageInstances: {}
 }) as PagedEntityState<ContentInstance>;
 
 const guestBase = envInitialState.guestBase;
@@ -455,10 +457,24 @@ const reducer = createReducer<GlobalState['preview']>({
     ...state,
     components: { ...state.components, error: payload.response, isFetching: false }
   }),
+  [IN_PAGE_INSTANCES]: (state, { payload }) => ({
+    ...state,
+    previousTool: 'craftercms.ice.components',
+    selectedTool: 'craftercms.ice.inPageInstances',
+    components: {
+      ...state.components,
+      contentTypeFilter: payload.contentType
+    }
+  }),
   [BROWSE_COMPONENT_INSTANCES]: (state, { payload }) => ({
     ...state,
+    previousTool: 'craftercms.ice.components',
     selectedTool: 'craftercms.ice.browseComponents',
-    components: { ...state.components, contentTypeFilter: payload }
+    components: {
+      ...state.components,
+      contentTypeFilter: payload.contentType,
+      inThisPage: payload.inThisPage
+    }
   }),
   [CONTENT_TYPE_RECEPTACLES_RESPONSE]: (state, { payload }) => ({
     ...state,
