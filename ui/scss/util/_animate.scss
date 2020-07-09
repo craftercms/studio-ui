@@ -5,14 +5,14 @@ Licensed under the MIT license - http://opensource.org/licenses/MIT
 Copyright (c) 2014 Daniel Eden
 */
 
-.studio-animated {
+.craftercms-animated {
   -webkit-animation-duration: .5s;
   animation-duration: .5s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
 }
 
-@-webkit-keyframes studio-bounce {
+@-webkit-keyframes craftercms-bounce {
   0%, 20%, 53%, 80%, 100% {
     -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
@@ -40,7 +40,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-bounce {
+@keyframes craftercms-bounce {
   0%, 20%, 53%, 80%, 100% {
     -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
@@ -68,15 +68,15 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-bounce {
-  -webkit-animation-name: studio-bounce;
-  animation-name: studio-bounce;
+.craftercms-bounce {
+  -webkit-animation-name: craftercms-bounce;
+  animation-name: craftercms-bounce;
   -webkit-transform-origin: center bottom;
   -ms-transform-origin: center bottom;
   transform-origin: center bottom;
 }
 
-@-webkit-keyframes studio-bounce-in {
+@-webkit-keyframes craftercms-bounce-in {
   0%, 20%, 40%, 60%, 80%, 100% {
     -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
@@ -116,7 +116,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-bounce-in {
+@keyframes craftercms-bounce-in {
   0%, 20%, 40%, 60%, 80%, 100% {
     -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
@@ -156,14 +156,14 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-bounce-in {
-  -webkit-animation-name: studio-bounce-in;
-  animation-name: studio-bounceIn;
+.craftercms-bounce-in {
+  -webkit-animation-name: craftercms-bounce-in;
+  animation-name: craftercms-bounceIn;
   -webkit-animation-duration: .75s;
   animation-duration: .75s;
 }
 
-@-webkit-keyframes studio-bounce-out {
+@-webkit-keyframes craftercms-bounce-out {
   20% {
     -webkit-transform: scale3d(.9, .9, .9);
     transform: scale3d(.9, .9, .9);
@@ -182,7 +182,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-bounce-out {
+@keyframes craftercms-bounce-out {
   20% {
     -webkit-transform: scale3d(.9, .9, .9);
     transform: scale3d(.9, .9, .9);
@@ -201,34 +201,34 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-bounce-out {
-  -webkit-animation-name: studio-bounce-out;
-  animation-name: studio-bounce-out;
+.craftercms-bounce-out {
+  -webkit-animation-name: craftercms-bounce-out;
+  animation-name: craftercms-bounce-out;
   -webkit-animation-duration: .75s;
   animation-duration: .75s;
 }
 
-@keyframes studio-fade-in {
+@keyframes craftercms-fade-in {
   0% {opacity: 0;}
   100% {opacity: 1;}
 }
 
-.studio-fade-in {
-  -webkit-animation-name: studio-fade-in;
-  animation-name: studio-fade-in;
+.craftercms-fade-in {
+  -webkit-animation-name: craftercms-fade-in;
+  animation-name: craftercms-fade-in;
 }
 
-@keyframes studio-fade-out {
+@keyframes craftercms-fade-out {
   0% {opacity: 1;}
   100% {opacity: 0;}
 }
 
-.studio-fade-out {
-  -webkit-animation-name: studio-fade-out;
-  animation-name: studio-fade-out;
+.craftercms-fade-out {
+  -webkit-animation-name: craftercms-fade-out;
+  animation-name: craftercms-fade-out;
 }
 
-@-webkit-keyframes studio-zoom-in {
+@-webkit-keyframes craftercms-zoom-in {
   0% {
     opacity: 0;
     -webkit-transform: scale3d(.3, .3, .3);
@@ -240,7 +240,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-zoom-in {
+@keyframes craftercms-zoom-in {
   0% {
     opacity: 0;
     -webkit-transform: scale3d(.3, .3, .3);
@@ -252,28 +252,12 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-zoom-in {
-  -webkit-animation-name: studio-zoom-in;
-  animation-name: studio-zoom-in;
+.craftercms-zoom-in {
+  -webkit-animation-name: craftercms-zoom-in;
+  animation-name: craftercms-zoom-in;
 }
 
-@-webkit-keyframes studio-zoom-out {
-  0% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0;
-    -webkit-transform: scale3d(.3, .3, .3);
-    transform: scale3d(.3, .3, .3);
-  }
-
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes studio-zoom-out {
+@-webkit-keyframes craftercms-zoom-out {
   0% {
     opacity: 1;
   }
@@ -289,12 +273,28 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-zoom-out {
-  -webkit-animation-name: studio-zoom-out;
-  animation-name: studio-zoom-out;
+@keyframes craftercms-zoom-out {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
-@-webkit-keyframes studio-slide-in-down {
+.craftercms-zoom-out {
+  -webkit-animation-name: craftercms-zoom-out;
+  animation-name: craftercms-zoom-out;
+}
+
+@-webkit-keyframes craftercms-slide-in-down {
   0% {
     -webkit-transform: translateY(-100%);
     transform: translateY(-100%);
@@ -307,7 +307,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-slide-in-down {
+@keyframes craftercms-slide-in-down {
   0% {
     -webkit-transform: translateY(-100%);
     transform: translateY(-100%);
@@ -320,12 +320,12 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-slideIn-down {
-  -webkit-animation-name: studio-slide-in-down;
-  animation-name: studio-slide-in-down;
+.craftercms-slideIn-down {
+  -webkit-animation-name: craftercms-slide-in-down;
+  animation-name: craftercms-slide-in-down;
 }
 
-@-webkit-keyframes studio-slide-in-left {
+@-webkit-keyframes craftercms-slide-in-left {
   0% {
     -webkit-transform: translateX(-100%);
     transform: translateX(-100%);
@@ -338,7 +338,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-slide-in-left {
+@keyframes craftercms-slide-in-left {
   0% {
     -webkit-transform: translateX(-100%);
     transform: translateX(-100%);
@@ -351,12 +351,12 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-slide-in-left {
-  -webkit-animation-name: studio-slide-in-left;
-  animation-name: studio-slide-in-left;
+.craftercms-slide-in-left {
+  -webkit-animation-name: craftercms-slide-in-left;
+  animation-name: craftercms-slide-in-left;
 }
 
-@-webkit-keyframes studio-slide-in-right {
+@-webkit-keyframes craftercms-slide-in-right {
   0% {
     -webkit-transform: translateX(100%);
     transform: translateX(100%);
@@ -369,7 +369,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-slide-in-right {
+@keyframes craftercms-slide-in-right {
   0% {
     -webkit-transform: translateX(100%);
     transform: translateX(100%);
@@ -382,12 +382,12 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-slide-in-right {
-  -webkit-animation-name: studio-slide-in-right;
-  animation-name: studio-slide-in-right;
+.craftercms-slide-in-right {
+  -webkit-animation-name: craftercms-slide-in-right;
+  animation-name: craftercms-slide-in-right;
 }
 
-@-webkit-keyframes studio-slide-in-up {
+@-webkit-keyframes craftercms-slide-in-up {
   0% {
     -webkit-transform: translateY(100%);
     transform: translateY(100%);
@@ -400,7 +400,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-slide-in-up {
+@keyframes craftercms-slide-in-up {
   0% {
     -webkit-transform: translateY(100%);
     transform: translateY(100%);
@@ -413,12 +413,12 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-slide-in-up {
-  -webkit-animation-name: studio-slide-in-up;
-  animation-name: studio-slide-in-up;
+.craftercms-slide-in-up {
+  -webkit-animation-name: craftercms-slide-in-up;
+  animation-name: craftercms-slide-in-up;
 }
 
-@-webkit-keyframes studio-slide-out-down {
+@-webkit-keyframes craftercms-slide-out-down {
   0% {
     -webkit-transform: translateY(0);
     transform: translateY(0);
@@ -431,7 +431,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-slide-out-down {
+@keyframes craftercms-slide-out-down {
   0% {
     -webkit-transform: translateY(0);
     transform: translateY(0);
@@ -444,12 +444,12 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-slide-out-down {
-  -webkit-animation-name: studio-slide-out-down;
-  animation-name: studio-slide-out-down;
+.craftercms-slide-out-down {
+  -webkit-animation-name: craftercms-slide-out-down;
+  animation-name: craftercms-slide-out-down;
 }
 
-@-webkit-keyframes studio-slide-out-left {
+@-webkit-keyframes craftercms-slide-out-left {
   0% {
     -webkit-transform: translateX(0);
     transform: translateX(0);
@@ -462,7 +462,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-slide-out-left {
+@keyframes craftercms-slide-out-left {
   0% {
     -webkit-transform: translateX(0);
     transform: translateX(0);
@@ -475,12 +475,12 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-slide-out-left {
-  -webkit-animation-name: studio-slide-out-left;
-  animation-name: studio-slide-out-left;
+.craftercms-slide-out-left {
+  -webkit-animation-name: craftercms-slide-out-left;
+  animation-name: craftercms-slide-out-left;
 }
 
-@-webkit-keyframes studio-slide-out-right {
+@-webkit-keyframes craftercms-slide-out-right {
   0% {
     -webkit-transform: translateX(0);
     transform: translateX(0);
@@ -493,7 +493,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-slide-out-right {
+@keyframes craftercms-slide-out-right {
   0% {
     -webkit-transform: translateX(0);
     transform: translateX(0);
@@ -506,12 +506,12 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-slide-out-right {
-  -webkit-animation-name: studio-slide-out-right;
-  animation-name: studio-slide-out-right;
+.craftercms-slide-out-right {
+  -webkit-animation-name: craftercms-slide-out-right;
+  animation-name: craftercms-slide-out-right;
 }
 
-@-webkit-keyframes studio-slide-out-up {
+@-webkit-keyframes craftercms-slide-out-up {
   0% {
     -webkit-transform: translateY(0);
     transform: translateY(0);
@@ -524,7 +524,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-@keyframes studio-slide-out-up {
+@keyframes craftercms-slide-out-up {
   0% {
     -webkit-transform: translateY(0);
     transform: translateY(0);
@@ -537,7 +537,7 @@ Copyright (c) 2014 Daniel Eden
   }
 }
 
-.studio-slide-out-up {
-  -webkit-animation-name: studio-slide-out-up;
-  animation-name: studio-slide-out-up;
+.craftercms-slide-out-up {
+  -webkit-animation-name: craftercms-slide-out-up;
+  animation-name: craftercms-slide-out-up;
 }
