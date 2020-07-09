@@ -324,10 +324,7 @@ const globalNavStyles = makeStyles((theme) =>
     userCardAvatar: {
       color: palette.white,
       textTransform: 'uppercase',
-      backgroundColor: palette.red.main,
-      '&:hover': {
-        backgroundColor: palette.red.shade
-      }
+      backgroundColor: palette.red.main
     }
   })
 );
