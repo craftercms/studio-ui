@@ -38,8 +38,8 @@ import {
   COMPONENT_DRAG_STARTED,
   COMPONENT_INSTANCE_DRAG_ENDED,
   COMPONENT_INSTANCE_DRAG_STARTED,
-  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TREE_FIELD_SELECTED,
+  CONTENT_TREE_SWITCH_FIELD_INSTANCE,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
   DESKTOP_ASSET_DRAG_ENDED,
   DESKTOP_ASSET_DRAG_STARTED,
@@ -121,7 +121,8 @@ const host_component_drag_started: GuestReducer = (state, action) => {
 // region host_instance_drag_started
 // TODO: Not pure.
 const host_instance_drag_started: GuestReducer = (state, action) => {
-  const { instance } = action.payload;
+  const { instance, contentType } = action.payload;
+
   if (notNullOrUndefined(instance)) {
     const receptacles = iceRegistry.getContentTypeReceptacles(instance.craftercms.contentTypeId);
     const validationsLookup = iceRegistry.runReceptaclesValidations(receptacles);
@@ -139,6 +140,7 @@ const host_instance_drag_started: GuestReducer = (state, action) => {
         dropZones,
         containers,
         instance,
+        contentType,
         inZone: false,
         targetIndex: null,
         dragged: null

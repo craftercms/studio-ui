@@ -190,7 +190,10 @@ export default function BrowseComponentsPanel() {
   const onDragStart = (item: ContentInstance) =>
     hostToGuest$.next({
       type: COMPONENT_INSTANCE_DRAG_STARTED,
-      payload: item
+      payload: {
+        instance: item,
+        contentType: contentTypesBranch.byId[item.craftercms.contentTypeId]
+      }
     });
 
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
