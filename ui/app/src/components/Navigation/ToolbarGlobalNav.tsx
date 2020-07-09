@@ -104,6 +104,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
         site={useActiveSiteId()}
         sites={useSiteList()}
         anchor={anchor}
+        user={user}
         version={version}
         logoutUrl={logoutUrl}
         authoringUrl={authoringBase}
