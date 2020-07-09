@@ -94,7 +94,6 @@ export default function InPageInstancesPanel() {
   const dispatch = useDispatch();
   const contentTypeLookup = useContentTypes();
   const contentTypeFilter = useSelection((state) => state.preview.components.contentTypeFilter);
-  //const contentTypeFilter = '/component/feature'
   const guest = usePreviewGuest();
   const [keyword, setKeyword] = useState('');
   const hostToGuest$ = getHostToGuestBus();
@@ -158,7 +157,6 @@ export default function InPageInstancesPanel() {
   };
 
   const onItemClick = (instance: ContentInstance) => {
-    console.log(instance);
     hostToGuest$.next({
       type: CONTENT_TREE_FIELD_SELECTED,
       payload: {
