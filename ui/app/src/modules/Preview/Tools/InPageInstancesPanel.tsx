@@ -26,9 +26,9 @@ import { defineMessages, useIntl } from 'react-intl';
 import MenuItem from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
-import { setContentTypeFilter } from '../../../state/actions/preview';
+import { CONTENT_TREE_FIELD_SELECTED, setContentTypeFilter } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
+import Suspencified from '../../../components/SystemStatus/Suspencified';
 import ContentInstance from '../../../models/ContentInstance';
 import LookupTable from '../../../models/LookupTable';
 import SearchBar from '../../../components/Controls/SearchBar';
@@ -39,6 +39,9 @@ import { getInitials } from '../../../utils/string';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { getHostToGuestBus } from '../previewContext';
+import EmptyState from '../../../components/SystemStatus/EmptyState';
+import { Resource } from '../../../models/Resource';
 
 const translations = defineMessages({
   title: {
@@ -80,7 +83,8 @@ const useStyles = makeStyles((theme) =>
     },
     emptyStateTitle: {
       fontSize: '1em'
-    }
+    },
+    item: {}
   })
 );
 
@@ -90,8 +94,10 @@ export default function InPageInstancesPanel() {
   const dispatch = useDispatch();
   const contentTypeLookup = useContentTypes();
   const contentTypeFilter = useSelection((state) => state.preview.components.contentTypeFilter);
+  //const contentTypeFilter = '/component/feature'
   const guest = usePreviewGuest();
   const [keyword, setKeyword] = useState('');
+  const hostToGuest$ = getHostToGuestBus();
 
   const models = useMemo(() => {
     return guest?.models;
@@ -147,7 +153,22 @@ export default function InPageInstancesPanel() {
   };
 
   const handleSelectChange = (value: string) => {
+    setKeyword('');
     dispatch(setContentTypeFilter(value));
+  };
+
+  const onItemClick = (instance: ContentInstance) => {
+    console.log(instance);
+    hostToGuest$.next({
+      type: CONTENT_TREE_FIELD_SELECTED,
+      payload: {
+        name: instance.craftercms.label,
+        modelId: instance.craftercms.id,
+        fieldId: null,
+        index: null
+      }
+    });
+    return;
   };
 
   return (
@@ -177,44 +198,61 @@ export default function InPageInstancesPanel() {
           )}
         </Select>
       </div>
-      <SuspenseWithEmptyState
-        resource={resource}
-        withEmptyStateProps={{
-          isEmpty: (value) => value.length === 0,
-          emptyStateProps: {
-            title: contentTypeFilter ? formatMessage(translations.noResults) : formatMessage(translations.chooseContentType),
-            classes: { title: classes.emptyStateTitle }
-          }
-        }}
-      >
+      <Suspencified>
         <InPageInstancesUI
           resource={resource}
           selectedModels={selectedModels}
+          onItemClick={onItemClick}
+          contentTypeFilter={contentTypeFilter}
         />
-      </SuspenseWithEmptyState>
+      </Suspencified>
     </ToolPanel>
   );
 }
 
-function InPageInstancesUI(props: any) {
-  const { resource, selectedModels } = props;
+interface InPageInstancesUIProps {
+  resource: Resource<ContentInstance[]>;
+  selectedModels: ContentInstance[];
+  contentTypeFilter: string;
+  onItemClick(instance: ContentInstance): void;
+}
+
+function InPageInstancesUI(props: InPageInstancesUIProps) {
+  const { resource, selectedModels, onItemClick, contentTypeFilter } = props;
   resource.read();
   const classes = useStyles({});
+  const { formatMessage } = useIntl();
 
   return (
-    selectedModels.map((instance: ContentInstance) =>
-      <ListItem key={instance.craftercms.id}>
-        <ListItemAvatar>
-          <Avatar>
-            {getInitials(instance.craftercms.label)}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={instance.craftercms.label}
-          secondary={instance.craftercms.contentTypeId}
-          classes={{ primary: classes.noWrapping, secondary: classes.noWrapping }}
-        />
-      </ListItem>
-    )
+    <>
+      {
+        (selectedModels.length) ? (
+          selectedModels.map((instance: ContentInstance) =>
+            <ListItem
+              key={instance.craftercms.id}
+              className={classes.item}
+              button={true}
+              onClick={() => onItemClick(instance)}
+            >
+              <ListItemAvatar>
+                <Avatar>
+                  {getInitials(instance.craftercms.label)}
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={instance.craftercms.label}
+                secondary={instance.craftercms.contentTypeId}
+                classes={{ primary: classes.noWrapping, secondary: classes.noWrapping }}
+              />
+            </ListItem>
+          )
+        ) : (
+          <EmptyState
+            title={contentTypeFilter ? formatMessage(translations.noResults) : formatMessage(translations.chooseContentType)}
+            classes={{ title: classes.emptyStateTitle }}
+          />
+        )
+      }
+    </>
   );
 }
