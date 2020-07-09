@@ -37,6 +37,7 @@ import { fetchSystemVersion } from '../state/actions/env';
 import { fetchQuickCreateList } from '../state/actions/content';
 import { fetchContentTypes } from '../state/actions/preview';
 import LookupTable from '../models/LookupTable';
+import { Site } from '../models/Site';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -298,4 +299,15 @@ export function useMinimizeDialog(initialTab: MinimizedDialog) {
   );
 
   return state?.minimized ?? initialTab.minimized;
+}
+
+export function useSiteList(): Site[] {
+  const state = useSites();
+  return useMemo(() => (
+    state.byId ? Object.values(state.byId) : null
+  ), [state.byId]);
+}
+
+export function useSites(): GlobalState['sites'] {
+  return useSelection((state) => state.sites);
 }

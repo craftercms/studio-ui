@@ -16,7 +16,7 @@
 
 import React, { ElementType, useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -36,29 +36,36 @@ import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
 import { forkJoin, Observable } from 'rxjs';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, useEnv, useMount, useSelection } from '../../utils/hooks';
+import { useMount, useSelection } from '../../utils/hooks';
 import { forEach } from '../../utils/array';
 import { getInnerHtml } from '../../utils/xml';
-import { createStyles } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { camelize, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite, fetchSites } from '../../state/reducers/sites';
 import { fetchSystemVersion } from '../../state/actions/env';
 import palette from '../../styles/palette';
+import { logout } from '../../services/auth';
+import Cookies from 'js-cookie';
+import Avatar from '@material-ui/core/Avatar';
+import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
+import Card from '@material-ui/core/Card/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
+import { Site } from '../../models/Site';
 
 const tileStyles = makeStyles(() =>
   createStyles({
     tile: {
-      'width': '120px',
-      'height': '100px',
-      'display': 'flex',
-      'alignItems': 'center',
-      'flexDirection': 'column',
-      'justifyContent': 'center',
-      'cursor': 'pointer',
-      'textAlign': 'center',
+      width: '120px',
+      height: '100px',
+      display: 'flex',
+      alignItems: 'center',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      textAlign: 'center',
       '&:hover': {
-        'textDecoration': 'none',
+        textDecoration: 'none',
         '& .MuiTypography-root': {
           textDecoration: 'underline'
         }
@@ -172,6 +179,14 @@ const messages = defineMessages({
   removeSiteConfirm: {
     id: 'globalMenu.removeSiteConfirm',
     defaultMessage: 'Do you want to remove {site}?'
+  },
+  signOut: {
+    id: 'toolbarGlobalNav.signOut',
+    defaultMessage: 'Sign Out'
+  },
+  settings: {
+    id: 'toolbarGlobalNav.settings',
+    defaultMessage: 'Settings'
   }
 });
 
@@ -218,12 +233,13 @@ const globalNavUrlMapping = {
   'home.globalMenu.globalConfig': '#/globalMenu/global-config',
   'home.globalMenu.cluster': '#/globalMenu/cluster',
   'home.globalMenu.encryptionTool': '#/globalMenu/encryption-tool',
-  'preview': '/next/preview',
-  'about': '#/about-us',
   'legacy.preview': '/preview/',
-  'siteConfig': '/site-config',
-  'search': '/search',
-  'siteDashboard': '/site-dashboard'
+  preview: '/next/preview',
+  about: '#/about-us',
+  siteConfig: '/site-config',
+  search: '/search',
+  siteDashboard: '/site-dashboard',
+  settings: '#/settings'
 };
 
 const siteMenuKeys = {
@@ -231,29 +247,40 @@ const siteMenuKeys = {
   siteConfig: 'site-config'
 };
 
-const maxHeight = '550px';
-
 const globalNavStyles = makeStyles((theme) =>
   createStyles({
     popover: {
-      maxWidth: '820px',
-      width: 'calc(100% - 32px)',
-      maxHeight,
-      borderRadius: '20px'
+      maxWidth: 990,
+      height: '100%',
+      borderRadius: '10px'
     },
-    sitesPanel: {
-      ...(theme.palette.type === 'dark'
-        ? { backgroundColor: palette.gray.dark1 }
-        : { backgroundColor: palette.gray.light1 }),
-      padding: '30px 24px 30px 30px',
-      maxHeight,
-      overflow: 'auto'
+    leftRail: {
+      height: '100%',
+      backgroundColor: theme.palette.type === 'dark' ? palette.gray.dark1 : palette.gray.light1
     },
-    sitesContent: {
-      padding: '30px 24px 30px 30px',
-      maxHeight,
-      overflow: 'auto'
+    rightRail: {
+      height: '100%'
     },
+    railTop: {
+      padding: '30px',
+      overflow: 'auto',
+      height: 'calc(100% - 65px)',
+    },
+    railBottom: {
+      height: 65,
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0 20px',
+      placeContent: 'center space-between'
+    },
+    logo: {
+      width: 115
+    },
+    gridContainer: {
+      height: '100%',
+      maxHeight: '100%'
+    },
+    versionText: {},
     title: {
       textTransform: 'uppercase',
       fontWeight: 600
@@ -281,22 +308,43 @@ const globalNavStyles = makeStyles((theme) =>
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center'
+    },
+    userCardRoot: {
+      width: '100%',
+      boxShadow: 'none'
+    },
+    userCardHeader: {
+      padding: 0
+    },
+    userCardActions: {
+      marginTop: 0,
+      marginRight: 0
+    },
+    userCardAvatar: {
+      color: palette.white,
+      textTransform: 'uppercase',
+      backgroundColor: palette.red.main,
+      '&:hover': {
+        backgroundColor: palette.red.shade
+      }
     }
   })
 );
 
 interface GlobalNavProps {
+  site: string;
+  sites: Site[];
   anchor: Element;
+  version: string;
+  logoutUrl: string;
+  authoringUrl: string;
   onMenuClose: (e: any) => void;
   rolesBySite: LookupTable<string[]>;
 }
 
 export default function GlobalNav(props: GlobalNavProps) {
-  const { anchor, onMenuClose, rolesBySite } = props;
+  const { anchor, onMenuClose, rolesBySite, logoutUrl, authoringUrl, version, site, sites } = props;
   const classes = globalNavStyles({});
-  const sitesState = useSelection(state => state.sites);
-  const { version } = useEnv();
-  const sites = useMemo(() => Object.values(sitesState.byId), [sitesState]);
   const [menuItems, setMenuItems] = useState(null);
   const [siteMenu, setSiteMenu] = useState(null);
   const [apiState, setApiState] = useState({
@@ -304,25 +352,23 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
-  const { authoringBase } = useEnv();
-  const crafterSite = useActiveSiteId();
   const dispatch = useDispatch();
 
   const cardActions = useMemo(
-    () => ([
+    () => [
       {
         name: formatMessage(messages.dashboard),
-        href: getLink('siteDashboard', authoringBase)
+        href: getLink('siteDashboard', authoringUrl)
       },
       {
         name: formatMessage(messages.preview),
-        href: getLink('preview', authoringBase)
+        href: getLink('preview', authoringUrl)
       },
       {
         name: formatMessage(messages.siteConfig),
-        href: getLink('siteConfig', authoringBase)
+        href: getLink('siteConfig', authoringUrl)
       }
-    ]),
+    ],
     // Disable exhaustive hooks check since only need to create on mount
     // eslint-disable-next-line
     []
@@ -332,14 +378,14 @@ export default function GlobalNav(props: GlobalNavProps) {
 
   const onSiteCardClick = (id: string) => {
     dispatch(changeSite(id));
-    navigateTo(`${authoringBase}/preview`);
+    navigateTo(`${authoringUrl}/preview`);
   };
 
   useEffect(() => {
-    if (crafterSite) {
+    if (site) {
       dispatch(fetchSites());
       const requests: Observable<any>[] = [getGlobalMenuItems()];
-      requests.push(getDOM(crafterSite, '/context-nav/sidebar.xml', 'studio'));
+      requests.push(getDOM(site, '/context-nav/sidebar.xml', 'studio'));
       forkJoin(requests).subscribe(
         ([globalMenuItemsResponse, xml]: any) => {
           setMenuItems(globalMenuItemsResponse.response.menuItems);
@@ -356,17 +402,17 @@ export default function GlobalNav(props: GlobalNavProps) {
                 const roles = module.querySelectorAll('role');
                 roleFound[getInnerHtml(module.querySelector('name'))] = roles.length
                   ? forEach(
-                    roles,
-                    (role) => {
-                      if (
-                        rolesBySite[crafterSite] &&
-                        rolesBySite[crafterSite].includes(getInnerHtml(role))
-                      ) {
-                        return true;
-                      }
-                    },
-                    false
-                  )
+                      roles,
+                      (role) => {
+                        if (
+                          rolesBySite[site] &&
+                          rolesBySite[site].includes(getInnerHtml(role))
+                        ) {
+                          return true;
+                        }
+                      },
+                      false
+                    )
                   : true;
               }
             });
@@ -386,7 +432,7 @@ export default function GlobalNav(props: GlobalNavProps) {
         }
       );
     }
-  }, [crafterSite, dispatch, rolesBySite]);
+  }, [site, dispatch, rolesBySite]);
 
   useMount(() => {
     version === null && dispatch(fetchSystemVersion());
@@ -394,7 +440,7 @@ export default function GlobalNav(props: GlobalNavProps) {
 
   return (
     <Popover
-      open={!!anchor}
+      open={Boolean(anchor)}
       anchorEl={anchor}
       onClose={(e) => onMenuClose(e)}
       classes={{ paper: classes.popover }}
@@ -407,24 +453,17 @@ export default function GlobalNav(props: GlobalNavProps) {
         horizontal: 'right'
       }}
     >
-      <IconButton
-        aria-label="close"
-        className={classes.closeButton}
-        onClick={(event) => onMenuClose(event)}
-      >
-        <CloseIcon />
-      </IconButton>
-      {
-        apiState.error ? (
-          <ErrorState
-            classes={{ root: classes.errorPaperRoot }}
-            error={apiState.errorResponse}
-            onBack={handleErrorBack}
-          />
-        ) : (!sitesState.isFetching && siteMenu !== null && menuItems !== null) ? (
-          <Grid container spacing={0}>
-            <Hidden only={['xs', 'sm']}>
-              <Grid item md={4} className={classes.sitesPanel}>
+      {apiState.error ? (
+        <ErrorState
+          classes={{ root: classes.errorPaperRoot }}
+          error={apiState.errorResponse}
+          onBack={handleErrorBack}
+        />
+      ) : ((sites!== null) && (siteMenu !== null) && (menuItems !== null)) ? (
+        <Grid container spacing={0} className={classes.gridContainer}>
+          <Hidden only={['xs', 'sm']}>
+            <Grid item md={4} className={classes.leftRail}>
+              <div className={classes.railTop}>
                 <Typography
                   variant="subtitle1"
                   component="h2"
@@ -433,22 +472,35 @@ export default function GlobalNav(props: GlobalNavProps) {
                 >
                   {formatMessage(messages.mySites)}
                 </Typography>
-                {
-                  sites.map((site, i) => (
-                    <SiteCard
-                      key={i}
-                      title={site.name}
-                      value={site.id}
-                      options={true}
-                      classes={{ root: classes.titleCard }}
-                      onCardClick={() => onSiteCardClick(site.id)}
-                      cardActions={cardActions}
-                    />
-                  ))
-                }
-              </Grid>
-            </Hidden>
-            <Grid item xs={12} md={8} className={classes.sitesContent}>
+                {sites.map((site, i) => (
+                  <SiteCard
+                    key={i}
+                    title={site.name}
+                    value={site.id}
+                    options={true}
+                    classes={{ root: classes.titleCard }}
+                    onCardClick={() => onSiteCardClick(site.id)}
+                    cardActions={cardActions}
+                  />
+                ))}
+              </div>
+              <div className={classes.railBottom}>
+                <img className={classes.logo} src="/studio/static-assets/images/logo.svg" alt="" />
+                <Typography className={classes.versionText} color="textSecondary" variant="caption">
+                  {version}
+                </Typography>
+              </div>
+            </Grid>
+          </Hidden>
+          <Grid item xs={12} md={8} className={classes.rightRail}>
+            <IconButton
+              aria-label="close"
+              className={classes.closeButton}
+              onClick={(event) => onMenuClose(event)}
+            >
+              <CloseIcon />
+            </IconButton>
+            <div className={classes.railTop}>
               <Typography
                 variant="subtitle1"
                 component="h2"
@@ -463,7 +515,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                     key={item.id}
                     title={formatMessage(messages[popPiece(camelize(item.id))])}
                     icon={item.icon}
-                    link={getLink(item.id, authoringBase)}
+                    link={getLink(item.id, authoringUrl)}
                     onClick={onMenuClose}
                   />
                 ))}
@@ -474,8 +526,14 @@ export default function GlobalNav(props: GlobalNavProps) {
                   target="_blank"
                 />
                 <Tile
+                  title={formatMessage(messages.settings)}
+                  icon={SettingsRoundedIcon}
+                  link={getLink('settings', authoringUrl)}
+                  disabled={!site}
+                />
+                <Tile
                   icon={About}
-                  link={getLink('about', authoringBase)}
+                  link={getLink('about', authoringUrl)}
                   title={formatMessage(messages.about)}
                 />
               </nav>
@@ -487,45 +545,69 @@ export default function GlobalNav(props: GlobalNavProps) {
                   <Tile
                     title={formatMessage(messages.dashboard)}
                     icon="fa-tasks"
-                    link={`${authoringBase}/site-dashboard`}
+                    link={`${authoringUrl}/site-dashboard`}
                     onClick={onMenuClose}
                   />
                 )}
                 <Tile
                   title={formatMessage(messages.preview)}
                   icon={Preview}
-                  link={`${authoringBase}/next/preview`}
+                  link={`${authoringUrl}/next/preview`}
                   onClick={onMenuClose}
                 />
                 <Tile
                   title={formatMessage(messages.legacyPreview)}
                   icon={DevicesIcon}
-                  link={getLink('legacy.preview', authoringBase)}
-                  disabled={!crafterSite}
+                  link={getLink('legacy.preview', authoringUrl)}
+                  disabled={!site}
                 />
                 {siteMenu?.[siteMenuKeys.siteConfig] && (
                   <Tile
                     title={formatMessage(messages.siteConfig)}
                     icon="fa-sliders"
-                    link={getLink('siteConfig', authoringBase)}
+                    link={getLink('siteConfig', authoringUrl)}
                     onClick={onMenuClose}
                   />
                 )}
                 <Tile
                   title={formatMessage(messages.search)}
                   icon={SearchIcon}
-                  link={getLink('search', authoringBase)}
-                  disabled={!crafterSite}
+                  link={getLink('search', authoringUrl)}
+                  disabled={!site}
                 />
               </nav>
-            </Grid>
+            </div>
+            <div className={classes.railBottom}>
+              <Card className={classes.userCardRoot}>
+                <CardHeader
+                  classes={{
+                    action: classes.userCardActions
+                  }}
+                  className={classes.userCardHeader}
+                  avatar={
+                    <Avatar aria-hidden="true" className={classes.userCardAvatar} children="RA" />
+                  }
+                  action={
+                    logoutUrl &&
+                    <IconButton
+                      aria-label={formatMessage(messages.signOut)}
+                      onClick={() => onLogout(logoutUrl)}
+                    >
+                      <ExitToAppRoundedIcon />
+                    </IconButton>
+                  }
+                  title="Roy Art"
+                  subheader="admin@admin.com"
+                />
+              </Card>
+            </div>
           </Grid>
-        ) : (
-          <div className={classes.loadingContainer}>
-            <LoadingState />
-          </div>
-        )
-      }
+        </Grid>
+      ) : (
+        <div className={classes.loadingContainer}>
+          <LoadingState />
+        </div>
+      )}
     </Popover>
   );
 }
@@ -540,4 +622,11 @@ function getBase() {
 
 function navigateTo(link: string): void {
   window.location.href = link;
+}
+
+function onLogout(url) {
+  logout().subscribe(() => {
+    Cookies.set('userSession', null);
+    window.location.href = url;
+  });
 }
