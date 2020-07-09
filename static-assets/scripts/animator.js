@@ -23,16 +23,16 @@
     f(crafter, $);
   }
 )('animator', ['crafter', 'jquery'], function (crafter, $) {
-  var ANIMATE_CLASS = 'animated',
+  var ANIMATE_CLASS = 'studio-animated',
     END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 
-  var BOUNCE = { enter: 'bounceIn', exit: 'bounceOut' },
-    FADE = { enter: 'fadeIn', exit: 'fadeOut' },
-    ZOOM = { enter: 'zoomIn', exit: 'zoomOut' },
-    SLIDE_LEFT = { enter: 'slideInLeft', exit: 'slideOutLeft' },
-    SLIDE_RIGHT = { enter: 'slideInRight', exit: 'slideOutRight' },
-    SLIDE_UP = { enter: 'slideInUp', exit: 'slideOutUp' },
-    SLIDE_DOWN = { enter: 'slideInDown', exit: 'slideOutDown' };
+  var BOUNCE = { enter: 'studio-bounce-in', exit: 'studio-bounce-out' },
+    FADE = { enter: 'studio-fade-in', exit: 'studio-fade-out' },
+    ZOOM = { enter: 'studio-zoom-in', exit: 'studio-zoom-out' },
+    SLIDE_LEFT = { enter: 'studio-slide-in-left', exit: 'studio-slide-out-left' },
+    SLIDE_RIGHT = { enter: 'studio-slide-in-right', exit: 'studio-slide-out-right' },
+    SLIDE_UP = { enter: 'studio-slide-in-up', exit: 'studio-slide-out-up' },
+    SLIDE_DOWN = { enter: 'studio-slide-in-down', exit: 'studio-slide-out-down' };
 
   function Animator(element) {
     var $element = $(element).addClass(ANIMATE_CLASS);
