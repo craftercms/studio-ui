@@ -46,7 +46,7 @@ export const translations = defineMessages({
 });
 
 export default function (props: CreateNewFileProps) {
-  const { open, onClose, onClosed } = props;
+  const { open, onClose } = props;
   const [state, setState] = useState({
     submitted: null,
     inProgress: null
@@ -55,7 +55,7 @@ export default function (props: CreateNewFileProps) {
     <Dialog
       open={open}
       fullWidth
-      maxWidth={'xs'}
+      maxWidth="xs"
       onClose={onClose}
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
@@ -91,7 +91,7 @@ function CreateNewFileUI(props: CreateNewFileUIProps) {
     if (name) {
       const fileName = (type === 'controller') ? `${name}.groovy` : `${name}.ftl`;
       createNewFile(site, path, fileName).subscribe(
-        (response) => {
+        () => {
           onClose();
           onCreated?.(path, fileName, type);
         },

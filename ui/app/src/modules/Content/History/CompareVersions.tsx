@@ -297,12 +297,12 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
         {
           (field.type === 'image') && (!unChanged ? (
               <div className={classes.imagesCompare}>
-                <img src={contentA} />
-                <img src={contentB} />
+                <img src={contentA} alt="" />
+                <img src={contentB} alt="" />
               </div>
             ) : (
               <div className={classes.singleImage}>
-                <img src={contentA} />
+                <img src={contentA} alt="" />
               </div>
             )
           )

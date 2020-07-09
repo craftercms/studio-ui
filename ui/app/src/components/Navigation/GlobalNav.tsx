@@ -36,11 +36,11 @@ import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
 import { forkJoin, Observable } from 'rxjs';
 import { LookupTable } from '../../models/LookupTable';
-import { useMount, useSelection } from '../../utils/hooks';
+import { useMount } from '../../utils/hooks';
 import { forEach } from '../../utils/array';
 import { getInnerHtml } from '../../utils/xml';
 import { useDispatch } from 'react-redux';
-import { camelize, getSimplifiedVersion, popPiece } from '../../utils/string';
+import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite, fetchSites } from '../../state/reducers/sites';
 import { fetchSystemVersion } from '../../state/actions/env';
 import palette from '../../styles/palette';
@@ -52,6 +52,7 @@ import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { Site } from '../../models/Site';
+import { User } from '../../models/User';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -332,6 +333,7 @@ const globalNavStyles = makeStyles((theme) =>
 );
 
 interface GlobalNavProps {
+  user: User;
   site: string;
   sites: Site[];
   anchor: Element;
@@ -343,7 +345,7 @@ interface GlobalNavProps {
 }
 
 export default function GlobalNav(props: GlobalNavProps) {
-  const { anchor, onMenuClose, rolesBySite, logoutUrl, authoringUrl, version, site, sites } = props;
+  const { anchor, onMenuClose, rolesBySite, logoutUrl, authoringUrl, version, site, sites, user } = props;
   const classes = globalNavStyles({});
   const [menuItems, setMenuItems] = useState(null);
   const [siteMenu, setSiteMenu] = useState(null);
@@ -585,7 +587,11 @@ export default function GlobalNav(props: GlobalNavProps) {
                   }}
                   className={classes.userCardHeader}
                   avatar={
-                    <Avatar aria-hidden="true" className={classes.userCardAvatar} children="RA" />
+                    <Avatar
+                      aria-hidden="true"
+                      className={classes.userCardAvatar}
+                      children={getInitials(`${user.firstName} ${user.lastName}`)}
+                    />
                   }
                   action={
                     logoutUrl &&
@@ -596,8 +602,8 @@ export default function GlobalNav(props: GlobalNavProps) {
                       <ExitToAppRoundedIcon />
                     </IconButton>
                   }
-                  title="Roy Art"
-                  subheader="admin@admin.com"
+                  title={`${user.firstName} ${user.lastName}`}
+                  subheader={user.username || user.email}
                 />
               </Card>
             </div>

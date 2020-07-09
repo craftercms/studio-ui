@@ -1204,11 +1204,11 @@ export function getVersions(site: string, path: string, versionNumbers: string[]
       return [
         {
           ...response,
-          ['title_t']: 'testeo',
-          ['features_o']: [
+          title_t: 'testeo',
+          features_o: [
             {
               ...response['features_o'][0],
-              ['craftercms']: {
+              craftercms: {
                 ...response['features_o'][0].craftercms,
                 dateModified: Date.now(),
                 id: 'asd1232'
@@ -1216,18 +1216,18 @@ export function getVersions(site: string, path: string, versionNumbers: string[]
             },
             ...response['features_o']
           ],
-          ['craftercms']: {
+          craftercms: {
             ...response.craftercms,
             versionNumber: versionNumbers[0]
           }
         },
         {
           ...response,
-          ['hero_image_s']: 'https://via.placeholder.com/300',
-          ['features_o']: [
+          hero_image_s: 'https://via.placeholder.com/300',
+          features_o: [
             {
               ...response['features_o'][0],
-              ['craftercms']: {
+              craftercms: {
                 ...response['features_o'][0].craftercms,
                 dateModified: Date.now() + 1,
                 id: 'asd1232'
@@ -1236,15 +1236,15 @@ export function getVersions(site: string, path: string, versionNumbers: string[]
             ...response['features_o'],
             {
               ...response['features_o'][0],
-              ['craftercms']: {
+              craftercms: {
                 ...response['features_o'][0].craftercms,
                 dateModified: Date.now(),
                 id: 'asd1234'
               }
             }
           ],
-          ['hero_title_html']: '<h2>Simply Editorial</h2>',
-          ['craftercms']: {
+          hero_title_html: '<h2>Simply Editorial</h2>',
+          craftercms: {
             ...response.craftercms,
             versionNumber: versionNumbers[1]
           }
