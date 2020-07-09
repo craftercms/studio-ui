@@ -17,24 +17,24 @@
 import React, { useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import CrafterChevron from '../Icons/CrafterChevron';
-import Avatar from '@material-ui/core/Avatar';
 import GlobalNav from './GlobalNav';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import { getLogoutInfoURL, logout } from '../../services/auth';
-import Cookies from 'js-cookie';
+import { getLogoutInfoURL } from '../../services/auth';
 import GlobalState from '../../models/GlobalState';
-import { useEnv, useMount, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useMount, useSelection, useSiteList } from '../../utils/hooks';
 import palette from '../../styles/palette';
 
 const useStyles = makeStyles((theme) => ({
   avatarClickable: {
+    width: 43,
+    height: 43,
+    fontSize: '1em',
     cursor: 'pointer',
+    boxShadow: 'none',
+    color: palette.white,
     textTransform: 'uppercase',
+    padding: theme.spacing(1),
     backgroundColor: palette.red.main,
     '&:hover': {
       backgroundColor: palette.red.shade
@@ -53,8 +53,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   appsButton: {
-    padding: '5px',
-    marginRight: theme.spacing(1)
+    padding: '5px'
   },
   crafterIcon: {
     fontSize: '1.4em'
@@ -62,14 +61,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const messages = defineMessages({
-  settings: {
-    id: 'toolbarGlobalNav.settings',
-    defaultMessage: 'Settings'
-  },
-  signOut: {
-    id: 'toolbarGlobalNav.signOut',
-    defaultMessage: 'Sign Out'
-  },
   openDrawer: {
     id: 'toolbarGlobalNav.openMenuButtonText',
     defaultMessage: 'Open Menu'
@@ -84,41 +75,21 @@ interface ToolBarGlobalNavProps {
 export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const user = useSelection<GlobalState['user']>(state => state.user);
   const [anchor, setAnchor] = useState<Element>();
-  const [anchorAvatar, setAnchorAvatar] = useState<Element>();
   const onMenuClick = (e) => setAnchor(e.target);
-  const onAvatarClick = (e) => setAnchorAvatar(e.target);
-  const onAvatarClose = () => setAnchorAvatar(null);
   const onMenuClose = () => setAnchor(null);
-  const [logoutInfo, setLogoutInfo] = useState({ url: null, show: false });
-  const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { authoringBase } = useEnv();
+  const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
+  const [logoutUrl, setLogoutUrl] = useState<string>('/studio');
+  const { authoringBase, version } = useEnv();
 
   useMount(() => {
     if (user.authType === authHeaders || user.authType === authSaml) {
       getLogoutInfoURL().subscribe((response) => {
-        setLogoutInfo({
-          url: response.logoutUrl ?? false,
-          show: !!response.logoutUrl
-        });
+        setLogoutUrl(response.logoutUrl ?? null);
       });
-    } else {
-      setLogoutInfo({ url: false, show: true });
     }
   });
-
-  function onLogout() {
-    setAnchorAvatar(null);
-    logout().subscribe(() => {
-      Cookies.set('userSession', null);
-      if (logoutInfo.url) {
-        window.location.href = logoutInfo.url;
-      } else {
-        window.location.href = '/studio';
-      }
-    });
-  }
 
   return (
     <>
@@ -129,37 +100,16 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
       >
         <CrafterChevron className={classes.crafterIcon} />
       </IconButton>
-      <Avatar onClick={onAvatarClick} className={classes.avatarClickable}>
-        {user.firstName[0]}{user.lastName[0]}
-      </Avatar>
-      <Menu
-        anchorEl={anchorAvatar}
-        open={!!anchorAvatar}
-        onClose={() => onAvatarClose()}
-        disableEnforceFocus={true}
-      >
-        <div className={classes.userInfo}>
-          <Typography variant="subtitle2" gutterBottom className={classes.bold}>
-            {user.firstName} {user.lastName}
-          </Typography>
-          <Typography variant="subtitle2">
-            {user.email}
-          </Typography>
-        </div>
-        <MenuItem
-          component={Link}
-          href={`${authoringBase}/#/settings`}
-          color="textPrimary"
-          className={classes.anchor}
-        >
-          {formatMessage(messages.settings)}
-        </MenuItem>
-        {
-          logoutInfo.show &&
-          <MenuItem onClick={onLogout}>{formatMessage(messages.signOut)}</MenuItem>
-        }
-      </Menu>
-      <GlobalNav anchor={anchor} onMenuClose={onMenuClose} rolesBySite={user.rolesBySite} />
+      <GlobalNav
+        site={useActiveSiteId()}
+        sites={useSiteList()}
+        anchor={anchor}
+        version={version}
+        logoutUrl={logoutUrl}
+        authoringUrl={authoringBase}
+        onMenuClose={onMenuClose}
+        rolesBySite={user.rolesBySite}
+      />
     </>
   );
 }

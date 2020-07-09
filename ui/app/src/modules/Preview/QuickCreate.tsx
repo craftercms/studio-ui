@@ -162,7 +162,6 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
       <Menu
         classes={{ paper: classes.menu }}
         anchorEl={anchorEl}
-        keepMounted
         open={open}
         onClose={onClose}
       >
