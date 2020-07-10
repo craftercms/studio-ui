@@ -103,6 +103,9 @@ crafterDefine(
         communicator.on(Topics.DND_COMPONENTS_MODEL_LOAD, function (data) {
           componentsModelLoad.call(me, data);
         });
+        communicator.on(Topics.DND_PANEL_OFF, function(){
+          me.done();
+        })
       }
     }
 
