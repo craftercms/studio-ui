@@ -39,7 +39,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, usePreviewGuest, usePreviewState, useSelection } from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -52,6 +52,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { useSnackbar } from 'notistack';
 import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
+import { SandboxItem } from '../../models/Item';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -159,6 +160,7 @@ function createOnEnter(handler, argument: 'value' | 'event' = 'event') {
 interface AddressBarProps {
   site: string;
   url: string;
+  item?: Partial<SandboxItem>;
   onSiteChange: (siteId: string) => any;
   onUrlChange: (value: string) => any;
   onRefresh: (e) => any;
@@ -171,6 +173,7 @@ export function AddressBar(props: AddressBarProps) {
     site,
     url = '',
     sites = [],
+    item,
     onSiteChange = foo,
     onUrlChange = foo,
     onRefresh = foo
@@ -240,6 +243,7 @@ export function AddressBar(props: AddressBarProps) {
         <SingleItemSelector
           disabled={noSiteSet}
           rootPath='/site/website'
+          selectedItem={item as SandboxItem}
           open={openSelector}
           onClose={() => setOpenSelector(false)}
           onDropdownClick={() => setOpenSelector(!openSelector)}
@@ -271,6 +275,14 @@ export default function ToolBar() {
   const editMode = useSelection((state) => state.preview.editMode);
   const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
   const { computedUrl, showToolsPanel } = usePreviewState();
+  const guest = usePreviewGuest();
+  const modelId = guest?.modelId;
+  const models = guest?.models;
+  const item = models?.[modelId] ? {
+    id: models[modelId].craftercms.id,
+    path: models[modelId].craftercms.path,
+    label: models[modelId].craftercms.label
+  } : null;
   const { enqueueSnackbar } = useSnackbar();
 
   return (
@@ -305,6 +317,7 @@ export default function ToolBar() {
             site={site ?? ''}
             sites={sites}
             url={computedUrl}
+            item={item}
             onSiteChange={(site) => dispatch(changeSite(site))}
             onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
             onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
