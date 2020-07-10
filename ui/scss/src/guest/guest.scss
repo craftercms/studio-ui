@@ -44,7 +44,7 @@
 }
 
 .#{$ice-class-prefix}-overlay {
-  @extend .animated;
+  @extend .craftercms-animated;
   position: absolute;
   border-style: solid;
   border-width: 2px;

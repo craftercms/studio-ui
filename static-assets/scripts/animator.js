@@ -23,20 +23,20 @@
     f(crafter, $);
   }
 )('animator', ['crafter', 'jquery'], function(crafter, $) {
-  var ANIMATE_CLASS = 'animated',
+  var ANIMATE_CLASS = 'craftercms-animated',
     END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 
-  var BOUNCE = { enter: 'bounceIn', exit: 'bounceOut' },
-    FADE = { enter: 'fadeIn', exit: 'fadeOut' },
-    ZOOM = { enter: 'zoomIn', exit: 'zoomOut' },
-    SLIDE_LEFT = { enter: 'slideInLeft', exit: 'slideOutLeft' },
-    SLIDE_RIGHT = { enter: 'slideInRight', exit: 'slideOutRight' },
-    SLIDE_UP = { enter: 'slideInUp', exit: 'slideOutUp' },
-    SLIDE_DOWN = { enter: 'slideInDown', exit: 'slideOutDown' };
+  var BOUNCE = { enter: 'craftercms-bounce-in', exit: 'craftercms-bounce-out' },
+    FADE = { enter: 'craftercms-fade-in', exit: 'craftercms-fade-out' },
+    ZOOM = { enter: 'craftercms-zoom-in', exit: 'craftercms-zoom-out' },
+    SLIDE_LEFT = { enter: 'craftercms-slide-in-left', exit: 'craftercms-slide-out-left' },
+    SLIDE_RIGHT = { enter: 'craftercms-slide-in-right', exit: 'craftercms-slide-out-right' },
+    SLIDE_UP = { enter: 'craftercms-slide-in-up', exit: 'craftercms-slide-out-up' },
+    SLIDE_DOWN = { enter: 'craftercms-slide-in-down', exit: 'craftercms-slide-out-down' };
 
   function Animator(element) {
     var $element = $(element).addClass(ANIMATE_CLASS);
-    this.$el = function(el) {
+    this.$el = function (el) {
       if (el) $element = $(el).addClass(ANIMATE_CLASS);
       return $element;
     };
