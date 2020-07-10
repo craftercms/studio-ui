@@ -102,11 +102,14 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     // component-panel.js loads from page load rather than when enabling dnd
     // hence the page model loads from page load too.
     if (communicator) {
-      communicator.on(Topics.DND_COMPONENT_MODEL_LOAD, function(data) {
+      communicator.on(Topics.DND_COMPONENT_MODEL_LOAD, function (data) {
         componentModelLoad.call(me, data.trackingNumber, data.model);
       });
-      communicator.on(Topics.DND_COMPONENTS_MODEL_LOAD, function(data) {
+      communicator.on(Topics.DND_COMPONENTS_MODEL_LOAD, function (data) {
         componentsModelLoad.call(me, data);
+      });
+      communicator.on(Topics.DND_PANEL_OFF, function () {
+        me.done();
       });
     }
   }
