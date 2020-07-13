@@ -18,43 +18,43 @@ CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
 
 REJECT_DIALOG_TEMPLATE = [
   '<div class="bd">' +
-    '<div id="acnVersionWrapper" class="acnBox">' +
-    '<h3>Reject</h3>' +
-    '<p>The following checked item(s) will be rejected.</p>' +
-    '<div class="acnScroll rejectContainer">' +
-    //'<div class="acnScrollBox" style="height:100px">'+
-    '<table class="acnLiveTable liveTable">' +
-    '<thead class="ttThead">' +
-    '<tr>' +
-    '<th class="checkboxTh"></th>' +
-    '<th class="itemTh">Item</th>' +
-    '<th class="submittedTh">Submitted By</th>' +
-    '</tr>' +
-    '</thead>' +
-    '<tbody id="tbodyDepend">' +
-    '</tbody>' +
-    '</table>' +
-    // '</div>'+
-    '</div>' +
-    '<div class="formRow padTop">' +
-    '<label>Rejection Reason:</label>' +
-    '<div class="field">' +
-    '<select id="rejectReasonDropDown" class="rejectReasonDropDown">' +
-    '<option>Select a Reason</option>' +
-    '<option value="NotApproved">Not Approved</option>' +
-    '<option value="IncorrectBranding">Incorrect Branding</option>' +
-    '<option value="Typos">Typos</option>' +
-    '<option value="BrokenLinks">Broken Links</option>' +
-    '<option value="NSOA">Needs Section Owner\'s Approval</option>' +
-    '</select>' +
-    '</div>' +
-    '</div>' +
-    '<div class="formRow">' +
-    '<textarea id="rejectMessageArea" class="rejectBottomBox rejectTextarea form-control"></textarea>' +
-    '</div>' +
-    '<div class="acnSubmitButtons">' +
-    '<span><input id="golivesubmitButton" type="submit" value="Send Rejection" class="rejectSend btn btn-primary"></span>' +
-    '<span><input id="golivecancelButton" type="submit" value="Cancel" class="rejectCancel btn btn-default"></span>' +
+    '<div class="rejectContainer">' +
+    '<h3 id="title">Reject</h3>' +
+    '<p id="subtitle">The following checked item(s) will be rejected.</p>' +
+    '<div class="row">' +
+      '<div class="col-sm-8">' +
+        '<div class="table-wrapper">' +
+          '<table class="acnLiveTable liveTable">' +
+          '<thead class="ttThead">' +
+          '<tr>' +
+          '<th class="checkboxTh"></th>' +
+          '<th class="itemTh">Item</th>' +
+          '<th class="submittedTh">Submitted By</th>' +
+          '</tr>' +
+          '</thead>' +
+          '<tbody id="tbodyDepend">' +
+          '</tbody>' +
+          '</table>' +
+        '</div>' +
+      '</div>' +
+      '<div class="col-sm-4">' +
+        '<h4>Rejection Reason:</h4>' +
+        '<div class="field">' +
+          '<select id="rejectReasonDropDown" class="rejectReasonDropDown">' +
+          '<option>Select a Reason</option>' +
+          '<option value="NotApproved">Not Approved</option>' +
+          '<option value="IncorrectBranding">Incorrect Branding</option>' +
+          '<option value="Typos">Typos</option>' +
+          '<option value="BrokenLinks">Broken Links</option>' +
+          '<option value="NSOA">Needs Section Owner\'s Approval</option>' +
+          '</select>' +
+        '</div>' +
+        '<textarea id="rejectMessageArea" class="rejectBottomBox rejectTextarea form-control"></textarea>' +
+        '<div class="acnSubmitButtons">' +
+        '<span><input id="golivesubmitButton" type="submit" value="Send Rejection" class="rejectSend btn btn-primary"></span>' +
+        '<span><input id="golivecancelButton" type="submit" value="Cancel" class="rejectCancel btn btn-default"></span>' +
+        '</div>' +
+      '</div>' +
     '</div>' +
     '<div id="rejectReasonJson" style="display:none;">' +
     '</div>' +

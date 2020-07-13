@@ -33,15 +33,6 @@
   float: left;
 }
 
-#acnVersionWrapper .rejectContainer {
-  height: 340px;
-  overflow: auto !important;
-}
-
-#acnVersionWrapper table {
-  width: 544px !important
-}
-
 .cstudio-view h1,
 #acnSubmitWrapper h3 {
   color: #000;
@@ -1816,6 +1807,35 @@ div.acnBox table.acnLiveTable td.acnLiveTableRight {
   margin: 0px;
   text-align: left;
 }
+#submitPanel .rejectContainer {
+  background: #f2f2f2;
+  color: #333 !important;
+  padding: 15px !important;
+  max-width: 800px;
+  #title {
+    margin: 0 0 5px;
+  }
+  #subtitle {
+    margin: 0 0 15px;
+  }
+  .table-wrapper {
+    height: 340px;
+    padding: 11px 12px;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.125);
+    overflow-y: scroll;
+  }
+  .field {
+    margin-bottom: 15px;
+  }
+  textarea {
+    height: 111px;
+    margin-bottom: 30px;
+  }
+  .acnSubmitButtons {
+    text-align: right;
+  }
+}
 
 #schedulePolicyPanel .bd {
   padding: 0;
@@ -1984,32 +2004,22 @@ div.rejectContainer{
     width: 100% !important;
     table-layout: fixed;
 
-    thead{
-      background-color: #7f9db9;
-      color: #fff;
-      font-weight: normal;
-      margin: 0;
-      overflow: hidden;
-      padding: 7px 20px 7px 27px;
-      width: 100%;
-      border-radius: 6px 6px 0 0;
-
+    thead {
+      border-bottom: 15px solid transparent;
       tr{
-        height: 45px;
-
+        height: 25px;
+        vertical-align: top;
         th{
-          border-radius: inherit;
-
           &.checkboxTh{
             width: 10%;
-            border-top-left-radius: 6px;
           }
           &.itemTh{
             width: 65%;
           }
           &.submittedTh{
             width: 25%;
-            border-top-right-radius: 6px;
+            text-align: right;
+            padding-right: 15px;
           }
 
         }
@@ -2018,24 +2028,25 @@ div.rejectContainer{
     }
 
     tbody{
-
-      border: 1px solid #CCCCCC;
-
       tr{
-        border-bottom: 1px solid #fff;
-        height: 40px;
-
+        height: 20px;
         td {
-          padding: 3px 5px 10px 0;
+          white-space: normal;
+          vertical-align: top;
+          &.name {
+            padding-bottom: 10px;
+            padding-top: 2px;
+          }
+          &.schedule {
+            padding-top: 2px;
+            text-align: right;
+            padding-right: 15px;
+          }
         }
-
       }
-
-      tr:last-child{
-        border-bottom-color: #CCC;
-      }
-
-      div.in{
+      div.in {
+        text-overflow: ellipsis;
+        overflow: hidden;
         word-break: break-all !important;
       }
     }
