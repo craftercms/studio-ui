@@ -278,6 +278,8 @@ CStudioAuthoring.Module.requireModule(
         this.dialog.render(document.body);
         this.dialog.show();
 
+        this.dialog.mask.style.zIndex = '1030';
+
         //set z-index for panel so that it will appear over context nav bar also.
         var oContainerPanel = YDom.get('submitPanel_c');
         if (oContainerPanel && oContainerPanel.style.zIndex != '') {

@@ -33,6 +33,15 @@
   float: left;
 }
 
+#acnVersionWrapper .rejectContainer {
+  height: 340px;
+  overflow: auto !important;
+}
+
+#acnVersionWrapper table {
+  width: 544px !important
+}
+
 .cstudio-view h1,
 #acnSubmitWrapper h3 {
   color: #000;
