@@ -50,13 +50,13 @@ REJECT_DIALOG_TEMPLATE = [
           '</select>' +
         '</div>' +
         '<textarea id="rejectMessageArea" class="rejectBottomBox rejectTextarea form-control"></textarea>' +
-        '<div class="acnSubmitButtons">' +
-        '<span><input id="golivesubmitButton" type="submit" value="Send Rejection" class="rejectSend btn btn-primary"></span>' +
-        '<span><input id="golivecancelButton" type="submit" value="Cancel" class="rejectCancel btn btn-default"></span>' +
-        '</div>' +
       '</div>' +
     '</div>' +
     '<div id="rejectReasonJson" style="display:none;">' +
+    '</div>' +
+    '<div class="acnSubmitButtons">' +
+    '<span><input id="golivesubmitButton" type="submit" value="Send Rejection" class="rejectSend btn btn-primary"></span>' +
+    '<span><input id="golivecancelButton" type="submit" value="Cancel" class="rejectCancel btn btn-default"></span>' +
     '</div>' +
     '</div>' +
     '</div>'

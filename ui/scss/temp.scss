@@ -1829,11 +1829,14 @@ div.acnBox table.acnLiveTable td.acnLiveTableRight {
     margin-bottom: 15px;
   }
   textarea {
-    height: 111px;
+    height: 211px;
     margin-bottom: 30px;
+    resize: none;
   }
   .acnSubmitButtons {
-    text-align: right;
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
   }
 }
 
