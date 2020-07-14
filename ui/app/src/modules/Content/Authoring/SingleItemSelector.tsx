@@ -313,7 +313,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   };
 
   const onCrumbSelected = (item: SandboxItem) => {
-    if (withoutIndex(state.currentPath) === withoutIndex(item.path)) {
+    if (state.breadcrumb.length === 1) {
       handleItemClicked(item);
     } else {
       exec(fetchChildrenByPath(item.path));
