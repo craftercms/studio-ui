@@ -26,7 +26,7 @@ export const useStyles = makeStyles((theme) =>
       }
     },
     widgetSection: {
-      padding: `0 10px`,
+      padding: `0 0 0 10px`,
       '& .MuiSvgIcon-root': {
         fontSize: '1.1rem'
       }

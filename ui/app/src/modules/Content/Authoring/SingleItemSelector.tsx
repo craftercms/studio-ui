@@ -93,13 +93,16 @@ interface SingleItemSelectorProps {
     title?: string;
     selectIcon?: string;
     itemIcon?: string;
+    popoverRoot?: string;
   };
   selectedItem?: SandboxItem;
   rootPath: string;
-  label: string;
+  label?: string;
   titleVariant?: Variant;
   labelVariant?: Variant;
   open: boolean;
+  hideUI?: boolean;
+  disabled?: boolean;
   onClose?(): void;
   onItemClicked(item: SandboxItem): void;
   onDropdownClick?(): void;
@@ -236,6 +239,8 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     classes: propClasses,
     titleVariant = 'body1',
     labelVariant = 'body1',
+    hideUI = false,
+    disabled = false,
     onItemClicked,
     onDropdownClick,
     onClose,
@@ -320,29 +325,38 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     onItemClicked(item);
   };
 
+  const Wrapper = hideUI ? React.Fragment : Paper;
+  const wrapperProps = hideUI ? {} : {
+    className: clsx(classes.root, !onDropdownClick && 'disable', propClasses?.root),
+    elevation: 0
+  };
+
   return (
-    <Paper
-      className={clsx(classes.root, !onDropdownClick && 'disable', propClasses?.root)} elevation={0}
-    >
-      <Typography
-        variant={titleVariant}
-        className={clsx(classes.title, propClasses?.title)}
-      >
-        {label}
-      </Typography>
+    <Wrapper {...wrapperProps}>
       {
-        selectedItem &&
-        <div className={classes.selectedItem}>
-          <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
-          <Typography variant={labelVariant}>{selectedItem.label}</Typography>
-        </div>
+        !hideUI &&
+        <>
+          <Typography
+            variant={titleVariant}
+            className={clsx(classes.title, propClasses?.title)}
+          >
+            {label}
+          </Typography>
+          {
+            selectedItem &&
+            <div className={classes.selectedItem}>
+              <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
+              <Typography variant={labelVariant}>{selectedItem.label}</Typography>
+            </div>
+          }
+        </>
       }
       {
         onDropdownClick &&
         <IconButton
           className={classes.changeBtn}
           ref={anchorEl}
-          onClick={() => handleDropdownClick(selectedItem)}
+          onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
         >
           <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
         </IconButton>
@@ -350,7 +364,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
       <Popover
         anchorEl={anchorEl.current}
         open={open}
-        classes={{ paper: classes.popoverRoot }}
+        classes={{ paper: clsx(classes.popoverRoot, propClasses?.popoverRoot) }}
         onClose={onClose}
         anchorOrigin={{
           vertical: 'bottom',
@@ -378,6 +392,6 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
           />
         </SuspenseWithEmptyState>
       </Popover>
-    </Paper>
+    </Wrapper>
   );
 }

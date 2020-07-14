@@ -23,7 +23,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
-import KeyboardArrowDownRounded from '@material-ui/icons/KeyboardArrowDownRounded';
 import KeyboardArrowLeftRounded from '@material-ui/icons/KeyboardArrowLeftRounded';
 import KeyboardArrowRightRounded from '@material-ui/icons/KeyboardArrowRightRounded';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
@@ -40,7 +39,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, usePreviewGuest, usePreviewState, useSelection } from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -52,6 +51,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { useSnackbar } from 'notistack';
 import palette from '../../styles/palette';
+import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
+import { SandboxItem } from '../../models/Item';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -142,6 +143,10 @@ const useStyles = makeStyles((theme: Theme) =>
     loadingRoot: {
       height: 'calc(100% - 104px)',
       justifyContent: 'center'
+    },
+    selectorPopoverRoot: {
+      width: 400,
+      marginLeft: '4px'
     }
   })
 );
@@ -155,6 +160,7 @@ function createOnEnter(handler, argument: 'value' | 'event' = 'event') {
 interface AddressBarProps {
   site: string;
   url: string;
+  item?: Partial<SandboxItem>;
   onSiteChange: (siteId: string) => any;
   onUrlChange: (value: string) => any;
   onRefresh: (e) => any;
@@ -167,6 +173,7 @@ export function AddressBar(props: AddressBarProps) {
     site,
     url = '',
     sites = [],
+    item,
     onSiteChange = foo,
     onUrlChange = foo,
     onRefresh = foo
@@ -175,6 +182,7 @@ export function AddressBar(props: AddressBarProps) {
   const [internalUrl, setInternalUrl] = useState(url);
   const [anchorEl, setAnchorEl] = useState(null);
   const modelId = useSelection<string>((state) => state.preview.guest?.modelId);
+  const [openSelector, setOpenSelector] = useState(false);
 
   useEffect(() => {
     url && setInternalUrl(url);
@@ -232,9 +240,23 @@ export function AddressBar(props: AddressBarProps) {
           classes={{ input: classes.input }}
           inputProps={{ 'aria-label': '' }}
         />
-        <IconButton aria-label="search" disabled={noSiteSet}>
-          <KeyboardArrowDownRounded />
-        </IconButton>
+        <SingleItemSelector
+          disabled={noSiteSet}
+          rootPath='/site/website'
+          selectedItem={item as SandboxItem}
+          open={openSelector}
+          onClose={() => setOpenSelector(false)}
+          onDropdownClick={() => setOpenSelector(!openSelector)}
+          onItemClicked={(item) => {
+            setOpenSelector(false);
+            setInternalUrl(item.previewUrl);
+            onUrlChange(item.previewUrl);
+          }}
+          hideUI
+          classes={{
+            popoverRoot: classes.selectorPopoverRoot
+          }}
+        />
       </Paper>
       <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <MoreVertRounded />
@@ -253,6 +275,14 @@ export default function ToolBar() {
   const editMode = useSelection((state) => state.preview.editMode);
   const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
   const { computedUrl, showToolsPanel } = usePreviewState();
+  const guest = usePreviewGuest();
+  const modelId = guest?.modelId;
+  const models = guest?.models;
+  const item = models?.[modelId] ? {
+    id: models[modelId].craftercms.id,
+    path: models[modelId].craftercms.path,
+    label: models[modelId].craftercms.label
+  } : null;
   const { enqueueSnackbar } = useSnackbar();
 
   return (
@@ -287,6 +317,7 @@ export default function ToolBar() {
             site={site ?? ''}
             sites={sites}
             url={computedUrl}
+            item={item}
             onSiteChange={(site) => dispatch(changeSite(site))}
             onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
             onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
