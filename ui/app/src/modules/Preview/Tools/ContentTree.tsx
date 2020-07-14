@@ -74,7 +74,7 @@ const translations = defineMessages({
     defaultMessage: 'Loading'
   },
   onThisPage: {
-    id: 'previewContentTreeTool.onThisPage',
+    id: 'previewContentTreeTool.rootItemLabel',
     defaultMessage: 'Current Content Items'
   }
 });
