@@ -16,7 +16,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
@@ -40,7 +40,7 @@ import ContentTypeFieldIcon from '../../../components/Icons/ContentTypeField';
 import Component from '../../../components/Icons/Component';
 import NodeSelector from '../../../components/Icons/NodeSelector';
 import RepeatGroupItem from '../../../components/Icons/RepeatGroupItem';
-import Root from '@material-ui/icons/HomeOutlined';
+import Root from '@material-ui/icons/HomeRounded';
 import NavigateNextIcon from '@material-ui/icons/NavigateNextRounded';
 import { LookupTable } from '../../../models/LookupTable';
 import ContentInstance from '../../../models/ContentInstance';
@@ -74,8 +74,8 @@ const translations = defineMessages({
     defaultMessage: 'Loading'
   },
   onThisPage: {
-    id: 'previewContentTreeTool.onThisPage',
-    defaultMessage: 'On this page...'
+    id: 'previewContentTreeTool.rootItemLabel',
+    defaultMessage: 'Current Content Items'
   }
 });
 
@@ -86,6 +86,10 @@ const useStyles = makeStyles((theme) =>
         marginLeft: '0px'
       }
     },
+    rootIcon: {
+      fontSize: '1.2em',
+      color: palette.gray.medium7
+    },
     breadcrumbs: {
       display: 'flex',
       alignItems: 'center'
@@ -93,32 +97,38 @@ const useStyles = makeStyles((theme) =>
     breadcrumbsList: {
       display: 'flex',
       alignItems: 'center',
-      padding: '9px 6px 0px 6px',
-      '& li': {
-        lineHeight: 1
-      }
+      padding: '9px 10px 2px 8px'
     },
     breadcrumbsSeparator: {
       margin: '0 2px'
     },
+    breadcrumbsButton: {
+      display: 'flex'
+    },
     breadcrumbsTypography: {
-      fontWeight: 'bold',
       color: palette.gray.medium4
+    },
+    currentContentItems: {
+      fontWeight: 600,
+      color: palette.gray.medium7,
+      padding: '10px 12px 2px 12px'
+    },
+    chevron: {
+      color: palette.gray.medium3,
+      fontSize: '1.4rem'
     }
   })
 );
 
 const treeItemStyles = makeStyles((theme) =>
   createStyles({
-    icon: {},
+    icon: {
+      color: palette.teal.main
+    },
     displayNone: {
       display: 'none'
     },
-    treeItemIconContainer: {
-      '& svg': {
-        fontSize: '1.5rem'
-      }
-    },
+    treeItemIconContainer: {},
     treeItemRoot: {
       '&:focus > .MuiTreeItem-content': {
         '& .MuiTreeItem-label': {
@@ -135,13 +145,18 @@ const treeItemStyles = makeStyles((theme) =>
         paddingLeft: '15px'
       },
       '&.root': {
-        paddingLeft: 0
+        paddingLeft: 0,
+        '& $treeItemLabelRoot': {
+          paddingLeft: '6px'
+        }
       }
     },
     treeItemGroup: {},
     treeItemExpanded: {},
     treeItemSelected: {},
-    treeItemLabelRoot: {},
+    treeItemLabelRoot: {
+      paddingLeft: 0
+    },
     treeItemLabel: {
       display: 'flex',
       alignItems: 'center',
@@ -161,6 +176,13 @@ const treeItemStyles = makeStyles((theme) =>
     options: {
       marginLeft: 'auto',
       padding: '6px'
+    },
+    chevron: {
+      color: palette.gray.medium3,
+      fontSize: '1.4rem'
+    },
+    nameLabel: {
+      color: palette.gray.medium4
     }
   })
 );
@@ -334,6 +356,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   let timeout = React.useRef<any>();
   const isMounted = useRef(null);
   let Icon;
+  const nodeName = node.name.split(':');
 
   useEffect(() => {
     isMounted.current = true;
@@ -386,12 +409,24 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       nodeId={node.id}
       onMouseOver={(e) => setOverState(e, true)}
       onMouseOut={(e) => setOverState(e, false)}
-      icon={isPageOrComponent(node.type) &&
-      <ChevronRightIcon onClick={() => handleClick(node)} />}
+      icon={
+        isPageOrComponent(node.type) &&
+        <ChevronRightIcon onClick={() => handleClick(node)} className={classes.chevron} />
+      }
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(node)}>
           <Icon className={classes.icon} />
-          <p>{node.name}</p>
+          <p title={node.name}>
+            {
+              (nodeName.length === 1) ? (
+                nodeName[0]
+              ) : (
+                <>{nodeName[1]} <span
+                  className={classes.nameLabel}
+                >{`(${nodeName[0].trim()})`}</span></>
+              )
+            }
+          </p>
           {over && isPageOrComponent(node.type) && (
             <IconButton
               className={classes.options}
@@ -426,7 +461,7 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
           {...props}
           key={String(childNodeId) + i}
           node={nodeLookup[String(childNodeId)]}
-          isRootChild={node.type === 'root' ? true : false}
+          isRootChild={node.type === 'root'}
         />
       ))}
     </TreeItem>
@@ -443,6 +478,7 @@ function createBackHandler(dispatch) {
 export default function ContentTree() {
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
+  const currentModelId = guest?.modelId;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
@@ -542,10 +578,15 @@ export default function ContentTree() {
 
   // effect to refresh the contentTree if the site changes;
   useEffect(() => {
-    if (site) {
+    if (site && currentModelId) {
       processedModels.current = {};
+      setState({
+        selected: `root`,
+        expanded: ['root'],
+        breadcrumbs: ['root']
+      });
     }
-  }, [site]);
+  }, [site, currentModelId]);
 
   useEffect(() => {
     if (models && ContentTypesById) {
@@ -557,7 +598,7 @@ export default function ContentTree() {
           processedModels.current[model.craftercms.id] = true;
           let node: RenderTree = {
             id: model.craftercms.id,
-            name: model.craftercms.label,
+            name: `${contentType.name}: ${model.craftercms.label}`,
             children: [],
             type: contentType.type,
             modelId: model.craftercms.id
@@ -570,7 +611,7 @@ export default function ContentTree() {
         setNodeLookup(_nodeLookup);
       }
     }
-  }, [ContentTypesById, models, setNodeLookup]);
+  }, [ContentTypesById, formatMessage, models, setNodeLookup]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -676,8 +717,8 @@ export default function ContentTree() {
     <ToolPanel title={translations.contentTree} onBack={onBack}>
       <TreeView
         className={classes.root}
-        defaultCollapseIcon={<ExpandMoreIcon className="toggle" />}
-        defaultExpandIcon={<ChevronRightIcon className="toggle" />}
+        defaultCollapseIcon={<ExpandMoreIcon className={clsx('toggle', classes.chevron)} />}
+        defaultExpandIcon={<ChevronRightIcon className={clsx('toggle', classes.chevron)} />}
         disableSelection
         expanded={state.expanded}
         onNodeToggle={handleChange}
@@ -761,48 +802,76 @@ function ContentTreeUI(props: ContentTreeUI) {
 
   return (
     <>
-      {Boolean(breadcrumbs.length > 1) && (
-        <MuiBreadcrumbs
-          maxItems={2}
-          aria-label="Breadcrumbs"
-          separator={<NavigateNextIcon fontSize="small" />}
-          classes={{
-            ol: classes.breadcrumbsList,
-            separator: classes.breadcrumbsSeparator
-          }}
-        >
-          {breadcrumbs.map((id, i: number) =>
-            id === selected ? (
-              <Typography
-                key={nodeLookup[id].id}
-                variant="subtitle2"
-                className={classes.breadcrumbsTypography}
-                children={nodeLookup[id].name}
+      {
+        Boolean(breadcrumbs.length > 1) && (
+          <MuiBreadcrumbs
+            maxItems={2}
+            aria-label="Breadcrumbs"
+            separator={<NavigateNextIcon fontSize="small" />}
+            classes={{
+              ol: classes.breadcrumbsList,
+              separator: classes.breadcrumbsSeparator
+            }}
+          >
+            {breadcrumbs.map((id, i: number) =>
+              id === selected ? (
+                <Typography
+                  key={nodeLookup[id].id}
+                  variant="subtitle2"
+                  className={classes.breadcrumbsTypography}
+                  children={nodeLookup[id].name.split(':').pop()}
+                />
+              ) : (
+                <Link
+                  key={id === 'root' ? 'root' : nodeLookup[id].id}
+                  color="inherit"
+                  component="button"
+                  variant="subtitle2"
+                  underline="always"
+                  className={classes.breadcrumbsButton}
+                  TypographyClasses={{
+                    root: classes.breadcrumbsTypography
+                  }}
+                  onClick={(e) => handleBreadCrumbClick(e, id === 'root' ? { id: 'root' } : nodeLookup[id])}
+                  children={
+                    id === 'root'
+                      ? <Root className={classes.rootIcon} />
+                      : nodeLookup[id].name.split(':').pop()
+                  }
+                />
+              )
+            )}
+          </MuiBreadcrumbs>
+        )
+      }
+      {
+        (node.id === 'root') ? (
+          <>
+            <Typography variant="subtitle1" className={classes.currentContentItems}>
+              <FormattedMessage
+                id="previewContentTreeTool.currentContentItems"
+                defaultMessage="Current Content Items"
               />
-            ) : (
-              <Link
-                key={id === 'root' ? 'root' : nodeLookup[id].id}
-                color="inherit"
-                component="button"
-                variant="subtitle2"
-                underline="always"
-                TypographyClasses={{
-                  root: classes.breadcrumbsTypography
-                }}
-                onClick={(e) => handleBreadCrumbClick(e, id === 'root' ? { id: 'root' } : nodeLookup[id])}
-                children={id === 'root' ? <Root /> : nodeLookup[id].name}
+            </Typography>
+            {node.children?.map((childNodeId, i) => (
+              <TreeItemCustom
+                {...props}
+                key={String(childNodeId) + i}
+                node={nodeLookup[String(childNodeId)]}
+                isRootChild={node.type === 'root'}
               />
-            )
-          )}
-        </MuiBreadcrumbs>
-      )}
-      <TreeItemCustom
-        node={node}
-        nodeLookup={nodeLookup}
-        handleScroll={handleScroll}
-        handleClick={handleClick}
-        handleOptions={handleOptions}
-      />
+            ))}
+          </>
+        ) : (
+          <TreeItemCustom
+            node={node}
+            nodeLookup={nodeLookup}
+            handleScroll={handleScroll}
+            handleClick={handleClick}
+            handleOptions={handleOptions}
+          />
+        )
+      }
       <ComponentMenu
         anchorEl={optionsMenu.anchorEl}
         handleClose={handleClose}

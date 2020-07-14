@@ -25,10 +25,8 @@ import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/Cont
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { Operation } from '../models/Operations';
 import {
-  CHILDREN_MAP_UPDATE,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
-  GUEST_MODELS_RECEIVED,
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
@@ -78,6 +76,7 @@ const modelsRequested = {};
 const _models$ = new BehaviorSubject<LookupTable<ContentInstance>>({
   /*'modelId': { ...modelData }*/
 });
+
 const modelsObs$ = _models$.asObservable().pipe(
   filter((objects) => Object.keys(objects).length > 0)
 );
@@ -88,8 +87,6 @@ const _contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
 const contentTypesObs$ = _contentTypes$.asObservable().pipe(
   filter((objects) => Object.keys(objects).length > 0)
 );
-
-modelsObs$.subscribe((models) => post(GUEST_MODELS_RECEIVED, models))
 
 // endregion
 
@@ -181,8 +178,6 @@ function modelResponseReceived(responseModels: LookupTable<ContentInstance>): vo
       children[id] = null;
     }
   });
-
-  post(CHILDREN_MAP_UPDATE, children);
 
   _models$.next(Object.assign({}, currentModels, normalizedModels));
 

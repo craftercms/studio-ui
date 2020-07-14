@@ -33,6 +33,7 @@ import AssetUploaderMask from './AssetUploaderMask';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
+  CHILDREN_MAP_UPDATE,
   CLEAR_CONTENT_TREE_FIELD_SELECTED,
   CLEAR_HIGHLIGHTED_RECEPTACLES,
   CLEAR_SELECTED_ZONES,
@@ -51,6 +52,7 @@ import {
   EditingStatus,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
+  GUEST_MODELS_RECEIVED,
   HOST_CHECK_IN,
   NAVIGATION_REQUEST,
   RELOAD_REQUEST,
@@ -302,13 +304,20 @@ function Guest(props: GuestProps) {
     post(GUEST_CHECK_IN, { location, modelId, path, site, documentDomain });
 
     const iceId = iceRegistry.register({ modelId });
+
     // prettier-ignore
     zip(
       contentController.models$(modelId),
       contentController.contentTypes$()
     ).pipe(take(1)).subscribe(() => (refs.current.contentReady = true));
 
+    const sub = contentController.models$().subscribe((models) => {
+      post(GUEST_MODELS_RECEIVED, models);
+      post(CHILDREN_MAP_UPDATE, contentController.children);
+    });
+
     return () => {
+      sub.unsubscribe();
       post(GUEST_CHECK_OUT);
       iceRegistry.deregister(iceId);
     };
