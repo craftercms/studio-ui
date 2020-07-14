@@ -27,7 +27,7 @@ import {
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
-  InPageInstances,
+  inPageInstances,
   selectTool
 } from '../../../state/actions/preview';
 import { useSelectorResource } from '../../../utils/hooks';
@@ -140,7 +140,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   };
 
   const onListInPageInstancesClick = () => {
-    dispatch(InPageInstances({
+    dispatch(inPageInstances({
       contentType: menuContext.contentType.id
     }));
   };
