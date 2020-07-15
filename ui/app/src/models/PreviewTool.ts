@@ -21,6 +21,7 @@ type PreviewTool =
   'craftercms.ice.simulator' |
   'craftercms.ice.edit' |
   'craftercms.ice.browseComponents' |
+  'craftercms.ice.inPageInstances' |
   'craftercms.ice.contentTypeReceptacles' |
   'craftercms.ice.contentTree' |
   'craftercms.ice.search';

@@ -27,6 +27,7 @@ import {
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   CONTENT_TYPE_RECEPTACLES_REQUEST,
+  inPageInstances,
   selectTool
 } from '../../../state/actions/preview';
 import { useSelectorResource } from '../../../utils/hooks';
@@ -47,6 +48,14 @@ const translations = defineMessages({
   browse: {
     id: 'previewComponentsTool.browse',
     defaultMessage: 'Browse existing instances'
+  },
+  listReceptacles: {
+    id: 'previewComponentsTool.listReceptacles',
+    defaultMessage: 'List receptacles'
+  },
+  listInPageInstances: {
+    id: 'previewComponentsTool.listInPageInstances',
+    defaultMessage: 'List in-page instances'
   }
 });
 
@@ -124,7 +133,16 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const onMenuOptionClicked = () => setMenuContext(null);
 
   const onBrowseSharedInstancesClicked = () => {
-    dispatch(browseSharedInstance(menuContext.contentType.id));
+    dispatch(browseSharedInstance({
+        contentType: menuContext.contentType.id
+      })
+    );
+  };
+
+  const onListInPageInstancesClick = () => {
+    dispatch(inPageInstances({
+      contentType: menuContext.contentType.id
+    }));
   };
 
   const onListReceptaclesClick = () => {
@@ -151,11 +169,15 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
       </List>
 
       <Menu open={!!menuContext} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
-        <MenuItem onClick={onMenuOptionClicked}>List in-page instances</MenuItem>
+        <MenuItem onClick={onListInPageInstancesClick}>
+          {formatMessage(translations.listInPageInstances)}
+        </MenuItem>
         <MenuItem onClick={onBrowseSharedInstancesClicked}>
           {formatMessage(translations.browse)}
         </MenuItem>
-        <MenuItem onClick={onListReceptaclesClick}>List receptacles</MenuItem>
+        <MenuItem onClick={onListReceptaclesClick}>
+          {formatMessage(translations.listReceptacles)}
+        </MenuItem>
       </Menu>
     </>
   );

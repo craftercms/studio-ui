@@ -69,6 +69,7 @@ export const DESKTOP_ASSET_UPLOAD_STARTED = 'DESKTOP_ASSET_UPLOAD_STARTED';
 export const COMPONENT_INSTANCE_DRAG_STARTED = 'COMPONENT_INSTANCE_DRAG_STARTED';
 export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
 export const BROWSE_COMPONENT_INSTANCES = 'BROWSE_COMPONENT_INSTANCES';
+export const IN_PAGE_INSTANCES = 'IN_PAGE_INSTANCES';
 export const COMPONENT_INSTANCE_HTML_REQUEST = 'COMPONENT_INSTANCE_HTML_REQUEST';
 export const COMPONENT_INSTANCE_HTML_RESPONSE = 'COMPONENT_INSTANCE_HTML_RESPONSE';
 export const CONTENT_TYPE_RECEPTACLES_REQUEST = 'CONTENT_TYPE_RECEPTACLES_REQUEST';
@@ -275,7 +276,9 @@ export const fetchComponentsByContentTypeComplete = createAction<ContentInstance
 
 export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 
-export const browseSharedInstance = createAction<string>(BROWSE_COMPONENT_INSTANCES);
+export const browseSharedInstance = createAction<{ contentType: string; }>(BROWSE_COMPONENT_INSTANCES);
+
+export const inPageInstances = createAction<{ contentType: string; }>(IN_PAGE_INSTANCES);
 
 export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 
