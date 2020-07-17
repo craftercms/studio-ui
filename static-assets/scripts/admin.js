@@ -1490,7 +1490,7 @@
         );
 
         adminService
-          .getUser(user.username)
+          .getUser(encodeURIComponent(user.username) + '.json')
           .success(function (data) {
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
@@ -1528,7 +1528,7 @@
         $scope.dialogEdit = true;
 
         adminService
-          .getUser(user.username)
+          .getUser(encodeURIComponent(user.username) + '.json')
           .success(function (data) {
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
@@ -1579,7 +1579,7 @@
         $scope.adminModal = $scope.showModal('modalView.html');
 
         adminService
-          .getUser(user.username)
+          .getUser(encodeURIComponent(user.username) + '.json')
           .success(function (data) {
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
