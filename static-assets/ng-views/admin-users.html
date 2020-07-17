@@ -215,7 +215,8 @@
             >{{ 'admin.users.USER_NAME' | translate }}</label>
             <input
               ng-disabled="!dialogMode || dialogEdit" type="text" class="form-control" id="username"
-              name="username" ng-model="user.username" required ng-maxlength="users.maxInputLength"
+              name="username" ng-model="user.username" required
+              ng-maxlength="users.maxUsernameLength"
             >
 
             <div

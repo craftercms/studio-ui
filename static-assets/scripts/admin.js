@@ -1236,13 +1236,14 @@
       passwordRequirements
     ) {
       const maxInputLength = 32;
+      const maxUsernameLength = 255;
 
       $scope.users = {
         maxInputLength: maxInputLength,
         messages: {
           userNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
             field: formatMessage(usersAdminMessages.userName),
-            size: maxInputLength
+            size: maxUsernameLength
           }),
           firstNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
             field: formatMessage(usersAdminMessages.firstName),
