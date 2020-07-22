@@ -129,7 +129,7 @@ const translations = defineMessages({
   },
   scheduled: {
     id: 'publishingDashboard.scheduled',
-    defaultMessage: 'Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <p>{approver}</p>'
+    defaultMessage: 'Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <b>{approver}</b>'
   },
   status: {
     id: 'publishingDashboard.status',
