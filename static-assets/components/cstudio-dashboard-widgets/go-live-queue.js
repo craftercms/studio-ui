@@ -340,7 +340,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
                 )
               : '',
             '</td>',
-            "<td class='alignRight'>",
+            "<td class='alignRight username trim'>",
             WcmDashboardWidgetCommon.getDisplayName(item),
             '</td>',
             "<td class='alignRight ttThColLast'>",

@@ -56,7 +56,10 @@
                         </ul>
                     </li>
                     <li class="dropdown" uib-dropdown>
-                        <a id="account-dropdown" class="dropdown-toggle pointer" uib-dropdown-toggle>{{user.username}} <span class="caret"></span></a>
+                        <a id="account-dropdown" class="dropdown-toggle pointer" uib-dropdown-toggle>
+                          <span class="username trim">{{user.username}}</span>
+                          <span class="caret"></span>
+                        </a>
                         <ul id="account-dropdown-container" class="dropdown-menu" role="menu">
                             <li class="user-display">
                                 <div class="first-name" ng-if="user.firstName">{{user.firstName}} {{user.lastName}}</div>

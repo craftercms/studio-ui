@@ -1297,6 +1297,7 @@
 
       $scope.users = {
         maxInputLength: maxInputLength,
+        maxUsernameLength: maxUsernameLength,
         messages: {
           userNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
             field: formatMessage(usersAdminMessages.userName),

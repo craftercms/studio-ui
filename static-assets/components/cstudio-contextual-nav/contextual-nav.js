@@ -120,14 +120,12 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
         document.getElementById('nav-user-name').innerHTML =
           results.firstName + ' ' + results.lastName;
         document.getElementById('nav-user-email').innerHTML = results.email;
-        document.getElementById('account-dropdown').childNodes[0].nodeValue = results.username;
+        $('#account-dropdown').prepend(`<span>${results.username}</span>`);
       },
       failure: function (response) {}
     };
 
-    CStudioAuthoring.Service.getUserInfo(callback);
-    document.getElementById('account-dropdown').childNodes[0].nodeValue =
-      CStudioAuthoringContext.user;
+    $('#account-dropdown').prepend(`<span class="username trim">${CStudioAuthoringContext.user}</span>`);
   },
 
   /**

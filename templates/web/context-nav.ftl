@@ -63,7 +63,9 @@
                             </ul>
                         </li>
                         <li class="dropdown" dropdown="">
-                            <a id="account-dropdown" class="dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">&nbsp; <span class="caret"></span></a>
+                            <a id="account-dropdown" class="dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
+                              &nbsp; <span class="caret"></span>
+                            </a>
                             <ul class="dropdown-menu" role="menu">
                                 <li class="user-display" style="padding: 0 20px 5px; margin-bottom: 5px; border-bottom: 1px solid #f2f2f2;">
                                     <div id="nav-user-name"></div>

@@ -112,6 +112,12 @@
       float: left;
     }
   }
+
+  .username.trim {
+    max-width: 390px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .site-dashboard .panel .panel-heading .widget-controls > li#loading-MyRecentActivity,
@@ -440,13 +446,13 @@ table.scroll-body {
   }
 
   .studio-ice-dialog {
-    display:none; 
+    display:none;
     overflow: hidden;
 
     .collapseForm {
       #colExpButton {
         background-position: 0 -26px;
-      }      
+      }
     }
 
     #colExpButton {
@@ -489,7 +495,7 @@ table.scroll-body {
   z-index: 100;
 }
 
-#approve-dialog, #requestDialog{ 
+#approve-dialog, #requestDialog{
   .approve-subtitle{
     font-size: 15px;
   }
@@ -512,7 +518,7 @@ table.scroll-body {
 
 .yui-module.yui-overlay .cstudio-dialogue-body .dependencies-display {
   @import  '../app/src/styles/dependency-selection.scss';
-} 
+}
 
 .dependencies-display.delete-display{
   height: 385px;
