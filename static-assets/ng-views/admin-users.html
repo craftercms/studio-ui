@@ -54,7 +54,9 @@
 
             <tr dir-paginate="user in usersCollection | filter:q | itemsPerPage: users.itemsPerPage"
                 current-page="users.pagination.current" total-items="users.totalLogs" id="user-row-{{user.username}}">
-              <td class="userName"><a ng-click="users.viewUser(user)">{{user.username}}</a></td>
+              <td class="userName"><a
+                class="username trim inline-block" ng-click="users.viewUser(user)"
+              >{{user.username}}</a></td>
               <td class="firstName">{{user.firstName}}</td>
               <td class="lastName">{{user.lastName}}</td>
               <td class="email">{{user.email}}</td>
@@ -214,8 +216,14 @@
               for="username" class="control-label"
             >{{ 'admin.users.USER_NAME' | translate }}</label>
             <input
-              ng-disabled="!dialogMode || dialogEdit" type="text" class="form-control" id="username"
-              name="username" ng-model="user.username" required
+              ng-disabled="!dialogMode || dialogEdit"
+              type="text"
+              class="form-control username"
+              ng-class="{trim: !dialogMode}"
+              id="username"
+              name="username"
+              ng-model="user.username"
+              required
               ng-maxlength="users.maxUsernameLength"
             >
 

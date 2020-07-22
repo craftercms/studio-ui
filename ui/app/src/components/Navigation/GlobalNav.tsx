@@ -325,6 +325,11 @@ const globalNavStyles = makeStyles((theme) =>
       color: palette.white,
       textTransform: 'uppercase',
       backgroundColor: palette.red.main
+    },
+    username: {
+      maxWidth: '390px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
     }
   })
 );
@@ -601,6 +606,9 @@ export default function GlobalNav(props: GlobalNavProps) {
                   }
                   title={`${user.firstName} ${user.lastName}`}
                   subheader={user.username || user.email}
+                  subheaderTypographyProps={{
+                    className: classes.username
+                  }}
                 />
               </Card>
             </div>
