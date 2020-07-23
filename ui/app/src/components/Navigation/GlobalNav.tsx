@@ -327,7 +327,7 @@ const globalNavStyles = makeStyles((theme) =>
       backgroundColor: palette.red.main
     },
     username: {
-      maxWidth: '390px',
+      maxWidth: '300px',
       overflow: 'hidden',
       textOverflow: 'ellipsis'
     }

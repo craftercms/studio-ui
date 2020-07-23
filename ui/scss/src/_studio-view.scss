@@ -123,12 +123,6 @@
       float: left;
     }
   }
-
-  .username.trim {
-    max-width: 390px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 
 .site-dashboard .panel .panel-heading .widget-controls > li#loading-MyRecentActivity,

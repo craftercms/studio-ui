@@ -27,6 +27,7 @@ const
     'search',
     'graphiql',
     'uppy',
+    'common',
     'tinymce-ace',
     'browse',
     { input: 'guest/guest', output: 'guest' },
