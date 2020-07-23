@@ -101,22 +101,17 @@
     }
   }
 
-  .itemNameContainer{
-    span.iconRow{
+  .itemNameContainer {
+    span.iconRow {
       width: 15% !important;
       padding-left: 0% !important;
       float: left !important;
     }
-    a.anchorRow{
+
+    a.anchorRow {
       width: 85%;
       float: left;
     }
-  }
-
-  .username.trim {
-    max-width: 390px;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
 

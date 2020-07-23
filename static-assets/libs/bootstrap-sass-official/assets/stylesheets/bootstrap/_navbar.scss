@@ -420,12 +420,6 @@
         color: $navbar-default-link-hover-color;
         background-color: $navbar-default-link-hover-bg;
       }
-      .username.trim {
-        max-width: 390px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: inline-block;
-      }
     }
     > .active > a {
       &,
