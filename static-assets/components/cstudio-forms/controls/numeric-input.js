@@ -49,6 +49,10 @@
     _onChange: function(evt, obj) {
       obj.value = obj.inputEl.value;
 
+      // Empty error state before new validation (for a clean state)
+      YAHOO.util.Dom.removeClass(obj.patternErrEl, 'on');
+      obj.clearError('pattern');
+
       var validationExist = false;
       var validationResult = true;
       if (obj.required) {
