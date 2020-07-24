@@ -311,3 +311,7 @@ export function useSiteList(): Site[] {
 export function useSites(): GlobalState['sites'] {
   return useSelection((state) => state.sites);
 }
+
+export function useSupportedLocales(): GlobalState['translation']['supportedLocales'] {
+  return useSelection((state) => state.translation.supportedLocales);
+}
