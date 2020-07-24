@@ -15,8 +15,8 @@
  */
 
 import { forkJoin, Observable, Observer } from 'rxjs';
-import { postJSON } from '../utils/ajax';
-import { map } from 'rxjs/operators';
+import { get, postJSON } from '../utils/ajax';
+import { map, pluck } from 'rxjs/operators';
 import { getSandboxItem } from './content';
 import TranslationConfig from '../models/TranslationConfig';
 
@@ -79,16 +79,7 @@ export function markForTranslation(site: string, path: string, locale: string) {
 }
 
 export function getSupportedLocales(site: string): Observable<TranslationConfig> {
-  ///studio/api/2/translation/get_supported_locales
-  const response = {
-    localeCodes: ['en_us', 'es_cr', 'fr_fr'],
-    defaultLocaleCode: 'en-us'
-  };
-
-  return new Observable((observer: Observer<any>) => {
-    observer.next(response);
-    observer.complete();
-  });
+  return get(`/studio/api/2/configuration/translation?siteId=${site}`).pipe(pluck('response', 'config'));
 }
 
 export default {
