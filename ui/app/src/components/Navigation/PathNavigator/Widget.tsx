@@ -80,6 +80,7 @@ import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
 import { batchActions } from '../../../state/actions/misc';
 import queryString from 'query-string';
 import { fetchSupportedLocales } from '../../../state/actions/translation';
+import { languages } from '../../../utils/i18n-legacy';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -999,7 +1000,7 @@ export default function (props: WidgetProps) {
       id: `locale.${code}`,
       label: {
         id: `locale.${code}`,
-        defaultMessage: `locale.${code}`    // TODO: get labels for locale codes
+        defaultMessage: formatMessage(languages[code])
       }
     }));
 

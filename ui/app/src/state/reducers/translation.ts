@@ -41,18 +41,15 @@ const reducer = createReducer<GlobalState['translation']>(
         isFetching: true
       }
     }),
-    [FETCH_SUPPORTED_LOCALES_COMPLETE]: (state, { payload }) => {
-      console.log('fetch supported locales complete', payload);
-      return ({
-        ...state,
-        supportedLocales: {
-          ...state.supportedLocales,
-          isFetching: false,
-          localeCodes: payload.localeCodes,
-          defaultLocaleCode: payload.defaultLocaleCode
-        }
-      });
-    },
+    [FETCH_SUPPORTED_LOCALES_COMPLETE]: (state, { payload }) => ({
+      ...state,
+      supportedLocales: {
+        ...state.supportedLocales,
+        isFetching: false,
+        localeCodes: payload.localeCodes,
+        defaultLocaleCode: payload.defaultLocaleCode
+      }
+    }),
     [FETCH_SUPPORTED_LOCALES_FAILED]: (state) => ({
       ...state,
       supportedLocales: {
