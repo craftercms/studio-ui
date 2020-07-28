@@ -45,7 +45,6 @@
     <#include "/templates/web/common/js-next-scripts.ftl" />
 
     <link rel="stylesheet" href="/studio/static-assets/styles/main.css?version=${UIBuildId!.now?string('Mddyyyy')}">
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/common.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
     <link rel="stylesheet" href="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.css?version=${UIBuildId!.now?string('Mddyyyy')}">
     <link rel="stylesheet" href="/studio/static-assets/libs/flexslider/flexslider.css?version=${UIBuildId!.now?string('Mddyyyy')}">
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css?version=${UIBuildId!.now?string('Mddyyyy')}" />

@@ -30,12 +30,11 @@
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/dashboard-presentation.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/presentation.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/contextNav.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/global.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/global.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/styleicon.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/uppy.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/common.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <!--[if IE 9]>
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/ie9.css" />
   <![endif]-->

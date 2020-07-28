@@ -11,9 +11,10 @@ const
     'search',
     'graphiql',
     'uppy',
-    'common',
+    'commonNO',
     'tinymce-ace',
     'browse',
+    'global',
     { input: 'guest/guest', output: 'guest' }
   ];
 
