@@ -65,10 +65,6 @@
           rel="stylesheet" type="text/css"
           href="/studio/static-assets/styles/uppy.css?version=${UIBuildId!.now?string('Mddyyyy')}"
   />
-  <link
-          rel="stylesheet" type="text/css"
-          href="/studio/static-assets/styles/common.css?version=${UIBuildId!.now?string('Mddyyyy')}"
-  />
   <!--[if IE 9]>
   <link
           rel="stylesheet" type="text/css"

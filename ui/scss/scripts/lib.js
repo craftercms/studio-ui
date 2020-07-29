@@ -27,11 +27,11 @@ const
     'search',
     'graphiql',
     'uppy',
-    'common',
     'tinymce-ace',
     'browse',
     { input: 'guest/guest', output: 'guest' },
     { input: 'base', output: '../themes/cstudioTheme/base' },
+    { input: 'global', output: '../themes/cstudioTheme/css/global' },
     'typography'
   ];
 
