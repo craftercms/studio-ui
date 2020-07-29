@@ -148,6 +148,10 @@ sup {
   width: 100%;
 }
 
+#header.cstudio-form-field-container {
+  min-width: auto;
+}
+
 #container {
   padding: 53px 30px 30px 30px;
 }
@@ -2361,7 +2365,6 @@ div#footerLogin {
   display: inline-block;
   height: 16px;
   position: relative;
-  position: none;
   top: 2px;
   width: 12px;
 }
@@ -2372,7 +2375,6 @@ div#footerLogin {
   display: inline-block;
   height: 16px;
   position: relative;
-  position: none;
   top: 2px;
   width: 12px;
 }
@@ -2383,7 +2385,6 @@ div#footerLogin {
   display: inline-block;
   height: 16px;
   position: relative;
-  position: none;
   top: 2px;
   width: 18px;
   margin-right: 3px;
@@ -2395,7 +2396,6 @@ div#footerLogin {
   display: inline-block;
   height: 16px;
   position: relative;
-  position: none;
   top: 2px;
   width: 18px;
   margin-right: 3px;
@@ -2405,7 +2405,6 @@ div#footerLogin {
   display: inline-block;
   height: 16px;
   position: relative;
-  position: none;
   top: 2px;
   width: 18px;
   margin-right: 3px;
@@ -2494,18 +2493,15 @@ div#footerLogin {
   float: none;
   height: 300px;
   margin: -5px 0 0;
-  _margin: 0;
   overflow: auto;
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0px;
   width: 548px;
-  _width: 548px;
 }
 
 .reorderSubmitWrapperButton {
   margin-top: 17px;
-  _margin-top: 14px;
   text-align: center;
   cursor: pointer;
 }
@@ -2660,13 +2656,11 @@ li.list2 {
   float: none;
   height: 180px;
   margin: 0;
-  _margin: 0;
   overflow: auto;
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0px;
   width: 548px;
-  _width: 548px;
 }
 
 .submitSubheader td {
@@ -3004,13 +2998,11 @@ li.list2 {
   float: none;
   height: 272px;
   margin: -5px 0 0 0;
-  _margin: 0;
   overflow: auto;
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0px;
   width: 548px;
-  _width: 548px;
 }
 
 .copysubmitButton {
@@ -3181,7 +3173,7 @@ li.list2 {
 }
 
 .contentTypePopupBtn .ok, .contentTypePopupBtn .cancel {
-  width: 72px;
+  min-width: 72px;
 }
 
 /* yui calendar/datepicker global styles*/
@@ -3234,7 +3226,6 @@ div#cal1Container {
 .yui-skin-cstudioTheme .yui-calendar td.calcell {
   background: #fff;
   border: 0px;
-  padding: 5px;
 }
 
 .yui-skin-cstudioTheme .yui-calendar td.calcell {

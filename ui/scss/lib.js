@@ -11,7 +11,6 @@ const
     'search',
     'graphiql',
     'uppy',
-    'commonNO',
     'tinymce-ace',
     'browse',
     'global',

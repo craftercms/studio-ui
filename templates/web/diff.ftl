@@ -22,10 +22,10 @@
     <#include "/templates/web/common/page-fragments/head.ftl" />
 
     <title>Crafter Studio</title>
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/global.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/global.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/forms-engine.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
-   
+
    <link href="/studio/static-assets/themes/cstudioTheme/css/icons.css?version=${UIBuildId!.now?string('Mddyyyy')}" type="text/css" rel="stylesheet">
    <link href="/studio/static-assets/yui/container/assets/container.css?version=${UIBuildId!.now?string('Mddyyyy')}" type="text/css" rel="stylesheet">
 
@@ -49,8 +49,8 @@
         }else{
             CStudioAuthoring = {
                 cookieDomain: "${cookieDomain}"
-            }    
-        }        
+            }
+        }
     </script>
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/css/diff.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 </head>
@@ -67,14 +67,14 @@
             </div>
        </nav>
     </div>
-    </#if>  
+    </#if>
 
     <hgroup>
         <div class="page-header <#if mode != 'iframe'>with-navbar</#if>">
             <div class="container">
                 <h1>
                     <span class="content-name">${dir} </span>
-                    
+
                     <div>
                         <#if versionTO??>
                             <#if version == versionTO>
@@ -89,13 +89,13 @@
                 </h1>
             </div>
         </div>
-    </hgroup>  
+    </hgroup>
 
     <style>
-        
+
     </style>
 
-    <div class='container <#if mode == "iframe">as-dialog</#if>'> 
+    <div class='container <#if mode == "iframe">as-dialog</#if>'>
         <div class='content'>${diff}</div>
     </div>
 
@@ -105,16 +105,16 @@
             <input id="cancelBtn" class="btn btn-default" type="button" value="Close">
         </div>
     </div>
-    </#if>  
+    </#if>
 
     <script>
-        $(document).ready(function(){ 
-            CStudioAuthoring.Service.getCurrentVersion(CStudioAuthoringContext.site, "${dir}", 
-                { 
-                    success: function(version) { 
+        $(document).ready(function(){
+            CStudioAuthoring.Service.getCurrentVersion(CStudioAuthoringContext.site, "${dir}",
+                {
+                    success: function(version) {
                         $('#current-version').append(version)
-                    } 
-                } 
+                    }
+                }
             );
 
             $('#cancelBtn').on('click', function() {
