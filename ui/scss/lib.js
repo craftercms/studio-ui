@@ -13,8 +13,8 @@ const
     'uppy',
     'tinymce-ace',
     'browse',
-    'global',
-    { input: 'guest/guest', output: 'guest' }
+    { input: 'guest/guest', output: 'guest' },
+    { input: 'global', output: '../themes/cstudioTheme/css/global' }
   ];
 
 function processFile(data) {

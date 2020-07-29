@@ -22,7 +22,7 @@
     <#include "/templates/web/common/page-fragments/head.ftl" />
 
     <title>Crafter Studio</title>
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/global.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/global.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/forms-engine.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 
