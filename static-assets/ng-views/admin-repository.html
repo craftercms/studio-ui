@@ -91,7 +91,7 @@
               </a>
             </td>
             <td>
-              <a ng-click="removeRepo(repo)" class="btn btn-sm remove">
+              <a class="btn btn-sm remove" ng-click="removeRepo(repo)" ng-if="repo.removable">
                 <i class="fa fa-trash-o" title="Remove"></i>
               </a>
             </td>
