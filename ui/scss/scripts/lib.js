@@ -31,6 +31,7 @@ const
     'browse',
     { input: 'guest/guest', output: 'guest' },
     { input: 'base', output: '../themes/cstudioTheme/base' },
+    { input: 'global', output: '../themes/cstudioTheme/css/global' },
     'typography'
   ];
 

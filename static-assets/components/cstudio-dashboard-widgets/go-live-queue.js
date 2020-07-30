@@ -282,7 +282,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
             "<td title='fullUri' class='width0'>",
             uri,
             '</td>',
-            "<td title='server'>",
+            '<td title=\'server\'>',
             environment,
             '</td>',
             '<td class="">',
@@ -290,10 +290,10 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard =
               ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone, 'tooltipformat')
               : '',
             '</td>',
-            "<td class='alignRight'>",
+            '<td class=\'alignRight username trim\'>',
             WcmDashboardWidgetCommon.getDisplayName(item),
             '</td>',
-            "<td class='alignRight ttThColLast'>",
+            '<td class=\'alignRight ttThColLast\'>',
             CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone),
             '</td>'
           ]);

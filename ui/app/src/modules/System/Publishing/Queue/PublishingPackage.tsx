@@ -96,6 +96,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&:hover': {
       backgroundColor: fade(palette.orange.main, 0.08)
     }
+  },
+  username: {
+    maxWidth: '390px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: 'inline-block',
+    marginBottom: '-5px'
   }
 }));
 
@@ -289,7 +296,9 @@ export default function PublishingPackage(props: PublishingPackageProps) {
               {
                 schedule: new Date(schedule),
                 approver: approver,
-                b: (content) => <strong key={content}>{content}</strong>
+                b: (content) => <strong
+                  key={content} className={classes.username}
+                >{content}</strong>
               }
             )
           }

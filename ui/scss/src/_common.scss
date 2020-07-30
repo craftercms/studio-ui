@@ -92,3 +92,10 @@
     color: var(--craftercms-medium4);
   }
 }
+
+.username.trim {
+  max-width: 390px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: -5px;
+}

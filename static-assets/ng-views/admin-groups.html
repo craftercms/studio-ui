@@ -140,7 +140,7 @@
         <tbody>
         <tr id="member-{{user.username}}" dir-paginate="user in displayedCollection | itemsPerPage: groups.members.itemsPerPage" current-page="groups.members.pagination.current"
             pagination-id="paginateMembers" total-items="groups.members.totalLogs">
-          <td>{{user.username}}</td>
+          <td><span class="username trim inline-block">{{user.username}}</span></td>
           <td>{{user.email}}</td>
           <td>
             <a ng-click="removeUserFromGroup(user, groups.selectedGroup)"
