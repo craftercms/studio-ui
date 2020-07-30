@@ -48,7 +48,7 @@
     validate: function (obj) {
       if (obj.inputEl) obj.value = obj.inputEl.value;
       if (obj.required) {
-        if (obj.value == '') {
+        if (obj.value === '') {
           obj.setError('required', formatMessage('requiredError'));
           obj.renderValidation(true, false);
         } else {
@@ -78,15 +78,13 @@
       for (var i = 0; i < config.properties.length; i++) {
         var prop = config.properties[i];
 
-        if (prop.name == 'readonly' && prop.value == 'true') {
+        if (prop.name === 'readonly' && prop.value === 'true') {
           this.readonly = true;
         }
       }
 
-      var keyValueList = null;
-
       CrafterCMSNext.services.translation.getSupportedLocales(CStudioAuthoringContext.site).subscribe(
-        ({ localeCodes }) => {
+        ({ localeCodes, defaultLocaleCode }) => {
           var titleEl = document.createElement('span');
 
           YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
@@ -109,7 +107,7 @@
             _self.controlWidgetContainerEl = controlWidgetContainerEl;
             _self.controlWidgetContainerEl.inputEl = inputEl;
 
-            inputEl.value = _self.value == '_not-set' ? config.defaultValue : _self.value;
+            inputEl.value = _self.value === '_not-set' ? config.defaultValue : _self.value;
             _self.controlWidgetContainerEl.appendChild(inputEl);
             YAHOO.util.Event.on(
               inputEl,
@@ -150,15 +148,16 @@
             });
           }
 
-          if (_self.readonly == true) {
+          if (_self.readonly === true) {
             inputEl.disabled = true;
           }
 
-          var configValue = _self.getValue();
+          var savedValue = _self.getValue();
+          var configValue = (savedValue && savedValue !== '') ? savedValue : defaultLocaleCode;
 
           for (var x = 0; x < _self.inputEl.options.length; x++) {
             if (_self.inputEl.options[x].value.toLowerCase() === configValue.toLowerCase()) {
-              _self.inputEl.value = configValue; // set value after loading data source
+              _self.inputEl.value = configValue; // set value
               _self.validate(_self);
             }
           }
