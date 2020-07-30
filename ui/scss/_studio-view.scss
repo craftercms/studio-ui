@@ -101,13 +101,14 @@
     }
   }
 
-  .itemNameContainer{
-    span.iconRow{
+  .itemNameContainer {
+    span.iconRow {
       width: 15% !important;
       padding-left: 0% !important;
       float: left !important;
     }
-    a.anchorRow{
+
+    a.anchorRow {
       width: 85%;
       float: left;
     }
@@ -440,13 +441,13 @@ table.scroll-body {
   }
 
   .studio-ice-dialog {
-    display:none; 
+    display:none;
     overflow: hidden;
 
     .collapseForm {
       #colExpButton {
         background-position: 0 -26px;
-      }      
+      }
     }
 
     #colExpButton {
@@ -489,7 +490,7 @@ table.scroll-body {
   z-index: 100;
 }
 
-#approve-dialog, #requestDialog{ 
+#approve-dialog, #requestDialog{
   .approve-subtitle{
     font-size: 15px;
   }
@@ -512,7 +513,7 @@ table.scroll-body {
 
 .yui-module.yui-overlay .cstudio-dialogue-body .dependencies-display {
   @import  '../app/src/styles/dependency-selection.scss';
-} 
+}
 
 .dependencies-display.delete-display{
   height: 385px;

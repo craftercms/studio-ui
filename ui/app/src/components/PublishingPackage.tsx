@@ -86,6 +86,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     '-webkit-animation': 'pulse 3s infinite ease-in-out',
     'animation': 'pulse 3s infinite ease-in-out',
     pointerEvents: 'none'
+  },
+  username: {
+    maxWidth: '390px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: 'inline-block',
+    marginBottom: '-5px'
   }
 }));
 
@@ -280,7 +287,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
               {
                 schedule: new Date(schedule),
                 approver: approver,
-                b: (content) => <strong key={content}>{content}</strong>
+                b: (content) => <strong key={content} className={classes.username}>{content}</strong>
               }
             )
           }
