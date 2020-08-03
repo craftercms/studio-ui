@@ -100,23 +100,18 @@
 
     doDeleteActionClicked: function () {
       this.showProcessingOverlay(true);
-      //this.disableActions();
       this.fire('submitStart');
-      var data = this.getData(),
+      var data = `${this.result.map(i => `${i}`).join('&paths=')}`,
         _this = this;
       (function (dataInf) {
         CStudioAuthoring.Service.request({
-          method: 'POST',
-          data: data,
+          method: 'DELETE',
           resetFormState: true,
           url: CStudioAuthoring.Service.createServiceUri(
-            CStudioAuthoring.Service.deleteContentUrl +
-              '?deletedep=true&site=' +
-              CStudioAuthoringContext.site +
-              '&user=' +
-              CStudioAuthoringContext.user +
-              '&submissionComment=' +
-              _this.getComponent('.delete-submission-comment').value
+            '/api/2/content/delete.json' +
+            '?&siteId=' + CStudioAuthoringContext.site +
+            '&paths=' + data +
+            '&submissionComment=' + _this.getComponent('.delete-submission-comment').value
           ),
           callback: {
             success: function (oResponse) {
