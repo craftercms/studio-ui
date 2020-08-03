@@ -102,7 +102,7 @@
       this.showProcessingOverlay(true);
       //this.disableActions();
       this.fire('submitStart');
-      var data = `${this.result.map(i => `${i}`).join('&paths=')}` , // paths=[path1,path2]
+      var data = `${this.result.map(i => `${i}`).join('&paths=')}`,
         _this = this;
       (function (dataInf) {
         CStudioAuthoring.Service.request({
