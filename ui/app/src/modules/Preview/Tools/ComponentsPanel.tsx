@@ -130,8 +130,6 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
 
   const onMenuClose = () => setMenuContext(null);
 
-  const onMenuOptionClicked = () => setMenuContext(null);
-
   const onBrowseSharedInstancesClicked = () => {
     dispatch(browseSharedInstance({
         contentType: menuContext.contentType.id
