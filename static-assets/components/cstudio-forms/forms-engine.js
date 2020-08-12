@@ -3242,7 +3242,7 @@ var CStudioForms =
               var repeatValue = repeatItem[fieldName],
                 isRemote = CStudioRemote[key] && fieldName === 'url' ? true : false,
                 isArray = Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1,
-                isTokenized = fieldInstructions[`${key}.${fieldName}`]?.tokenize === true,
+                isTokenized = (!!fieldInstructions[`${key}.${fieldName}`]) && fieldInstructions[`${key}.${fieldName}`].tokenize === true,
                 repeatAttr = `${isRemote ? 'remote="true"' : ''} ${isArray ? 'item-list="true"' : ''} ${isTokenized ? 'tokenized="true"' : ''}`;
               output += '\t<' + fieldName + repeatAttr + '>';
               if (isArray) {
