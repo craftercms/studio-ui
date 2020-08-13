@@ -1600,6 +1600,12 @@ var storage = CStudioAuthoring.Storage;
               });
             }
 
+            //PlayVideo
+            this.aMenuItems.push({
+              text: 'Play video',
+              onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.playVideo }
+            });
+
             //Clipping
             this.aMenuItems.push({
               text: CMgs.format(siteDropdownLangBundle, 'createClip'),
@@ -1984,7 +1990,7 @@ var storage = CStudioAuthoring.Storage;
       );
     },
 
-    createClip: function () {
+    playVideo: function () {
       const wrapper = document.createElement('div');
       const onClose = () => {
         CrafterCMSNext.ReactDOM.unmountComponentAtNode(wrapper);
@@ -1998,16 +2004,22 @@ var storage = CStudioAuthoring.Storage;
         src: 'https://www.cbsnews.com/common/video/dai_prod.m3u8',
         open: true
       });
+    },
 
-      //createClip
-      // CrafterCMSNext.render(wrapper, 'ClipDialog', {
-      //   onClose: onClose,
-      //   videoSource: {
-      //     type: 'application/x-mpegURL',
-      //     src: 'https://www.cbsnews.com/common/video/dai_prod.m3u8'
-      //   },
-      //   open: true
-      // });
+    createClip: function () {
+      const wrapper = document.createElement('div');
+      const onClose = () => {
+        CrafterCMSNext.ReactDOM.unmountComponentAtNode(wrapper);
+      };
+
+      CrafterCMSNext.render(wrapper, 'ClipDialog', {
+        onClose: onClose,
+        videoSource: {
+          type: 'application/x-mpegURL',
+          src: 'https://www.cbsnews.com/common/video/dai_prod.m3u8'
+        },
+        open: true
+      });
     },
 
     bulkUpload: function () {
