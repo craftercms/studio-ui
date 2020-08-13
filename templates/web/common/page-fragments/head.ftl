@@ -35,8 +35,12 @@
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/uppy.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+  <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/video-js.min.css" />
   <!--[if IE 9]>
-  <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/ie9.css" />
+  <link
+          rel="stylesheet" type="text/css"
+          href="/studio/static-assets/themes/cstudioTheme/css/ie9.css"
+  />
   <![endif]-->
 
   <script src="/studio/static-assets/yui/utilities/utilities.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>

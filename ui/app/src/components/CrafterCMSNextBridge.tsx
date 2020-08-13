@@ -25,6 +25,7 @@ import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
 import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
+import VideoProvider from '@craftercms/video/provider';
 
 const Locales: any = {
   en,
@@ -69,9 +70,11 @@ function CrafterCMSNextBridge(props: PropsWithChildren<{}>) {
   return (
     <RawIntlProvider value={intl}>
       <ThemeProvider theme={theme}>
-        <Suspense fallback="">
-          {props.children}
-        </Suspense>
+        <VideoProvider>
+          <Suspense fallback="">
+            {props.children}
+          </Suspense>
+        </VideoProvider>
       </ThemeProvider>
     </RawIntlProvider>
   );

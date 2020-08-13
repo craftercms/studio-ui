@@ -771,7 +771,7 @@ var storage = CStudioAuthoring.Storage;
           num = el.getAttribute('num');
         plainpath = roothpath == '/site' ? 'root-folder' : plainpath;
         if (!num) {
-          while ((el = el.parentElement) && !el.hasAttribute('num'));
+          while ((el = el.parentElement) && !el.hasAttribute('num')) ;
         }
         if (el) {
           CStudioAuthoring.ContextualNav.WcmAssetsFolder.save(
@@ -808,7 +808,7 @@ var storage = CStudioAuthoring.Storage;
         (num = el.getAttribute('num'));
       plainpath = plainpath == '/site' || path == num ? 'root-folder' : plainpath;
       if (!num) {
-        while ((el = el.parentElement) && !el.hasAttribute('num'));
+        while ((el = el.parentElement) && !el.hasAttribute('num')) ;
       }
 
       CStudioAuthoring.ContextualNav.WcmAssetsFolder.save(
@@ -961,7 +961,7 @@ var storage = CStudioAuthoring.Storage;
                     ? (tmp[key][k[key]].charAt(0) == '/'
                         ? tmp[key][k[key]].substr(1)
                         : tmp[key][k[key]]
-                      ).split('/')
+                    ).split('/')
                     : null;
                   recursiveCalls[key][k[key]] = tmp[key][k[key]].length
                     ? paths[key][k[key]].length
@@ -1069,7 +1069,7 @@ var storage = CStudioAuthoring.Storage;
                         ? (tmp[key][k[key]].charAt(0) == '/'
                             ? tmp[key][k[key]].substr(1)
                             : tmp[key][k[key]]
-                          ).split('/')
+                        ).split('/')
                         : null;
                       recursiveCalls[key][k[key]] = tmp[key][k[key]].length
                         ? paths[key][k[key]].length
@@ -1114,9 +1114,11 @@ var storage = CStudioAuthoring.Storage;
                     treePrint(servPath);
                   }
                 },
-                failure: function () {}
+                failure: function () {
+                }
               });
             }
+
             treePrint(servPath);
           })(ind);
         }
@@ -1228,8 +1230,8 @@ var storage = CStudioAuthoring.Storage;
       }
 
       var icon = treeItem.folder
-          ? CStudioAuthoring.Utils.createIcon('', RootFolder().defaultIcons.childClosed)
-          : CStudioAuthoring.Utils.getContentItemIcon(treeItem),
+        ? CStudioAuthoring.Utils.createIcon('', RootFolder().defaultIcons.childClosed)
+        : CStudioAuthoring.Utils.getContentItemIcon(treeItem),
         contentType =
           'unknown' != retTransferObj.contentType
             ? retTransferObj.contentType
@@ -1537,7 +1539,7 @@ var storage = CStudioAuthoring.Storage;
                   } else {
                     this.aMenuItems = this.menuItems[
                       'assetsFolderMenuNoDeleteNoCreateFolder'
-                    ].slice();
+                      ].slice();
                   }
                 }
               } else {
@@ -1598,6 +1600,12 @@ var storage = CStudioAuthoring.Storage;
               });
             }
 
+            //Clipping
+            this.aMenuItems.push({
+              text: CMgs.format(siteDropdownLangBundle, 'createClip'),
+              onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.createClip }
+            });
+
             var isRelevant = !(oCurrentTextNode.data.status.toLowerCase().indexOf('live') !== -1);
             var isAssetsFolder = !oCurrentTextNode.isLeaf;
 
@@ -1618,7 +1626,8 @@ var storage = CStudioAuthoring.Storage;
                             false
                           );
                         },
-                        failure: function () {}
+                        failure: function () {
+                        }
                       };
 
                       CStudioAuthoring.Service.lookupContentItem(
@@ -1646,7 +1655,8 @@ var storage = CStudioAuthoring.Storage;
                             selectedContent
                           );
                         },
-                        failure: function () {}
+                        failure: function () {
+                        }
                       };
 
                       CStudioAuthoring.Service.lookupContentItem(
@@ -1687,7 +1697,8 @@ var storage = CStudioAuthoring.Storage;
                         false
                       );
                     },
-                    failure: function () {}
+                    failure: function () {
+                    }
                   };
 
                   CStudioAuthoring.Service.lookupContentItem(
@@ -1740,7 +1751,8 @@ var storage = CStudioAuthoring.Storage;
                   this.args.show();
                 },
 
-                failure: function () {},
+                failure: function () {
+                },
 
                 args: this.p_aArgs,
                 menuItems: this.aMenuItems,
@@ -1768,7 +1780,8 @@ var storage = CStudioAuthoring.Storage;
               }
             }
           },
-          failure: function () {}
+          failure: function () {
+          }
         };
         checkPermissionsCb.menuItems = menuItems;
         checkPermissionsCb.aMenuItems = aMenuItems;
@@ -1794,7 +1807,8 @@ var storage = CStudioAuthoring.Storage;
           RootFolder().refreshNodes(this.tree, false, false, null, null, true);
         },
 
-        failure: function () {},
+        failure: function () {
+        },
 
         callingWindow: window,
         tree: oCurrentTextNode
@@ -1814,7 +1828,8 @@ var storage = CStudioAuthoring.Storage;
           RootFolder().refreshNodes(this.tree.parent, false, false, null, null, true);
         },
 
-        failure: function () {},
+        failure: function () {
+        },
 
         callingWindow: window,
         tree: oCurrentTextNode
@@ -1856,7 +1871,8 @@ var storage = CStudioAuthoring.Storage;
           document.dispatchEvent(eventNS);
         },
 
-        failure: function () {},
+        failure: function () {
+        },
 
         callingWindow: window
       };
@@ -1898,7 +1914,8 @@ var storage = CStudioAuthoring.Storage;
           document.dispatchEvent(eventNS);
         },
 
-        failure: function () {},
+        failure: function () {
+        },
 
         callingWindow: window
       };
@@ -1936,13 +1953,14 @@ var storage = CStudioAuthoring.Storage;
         success: function (templatePath) {
           RootFolder().refreshNodes(this.tree, false, false, null, null, true);
         },
-        failure: function () {},
+        failure: function () {
+        },
         tree: oCurrentTextNode
       });
     },
 
     /**
-     *	upload an asset to the target folder if it's a new asset
+     *  upload an asset to the target folder if it's a new asset
      */
     uploadAsset: function () {
       var uploadCb = {
@@ -1951,7 +1969,8 @@ var storage = CStudioAuthoring.Storage;
           RootFolder().refreshNodes(this.tree, false, false, null, null, true);
         },
 
-        failure: function () {},
+        failure: function () {
+        },
 
         callingWindow: window,
         tree: oCurrentTextNode
@@ -1963,6 +1982,32 @@ var storage = CStudioAuthoring.Storage;
         'upload',
         uploadCb
       );
+    },
+
+    createClip: function () {
+      const wrapper = document.createElement('div');
+      const onClose = () => {
+        CrafterCMSNext.ReactDOM.unmountComponentAtNode(wrapper);
+      };
+
+      const src = oCurrentTextNode.data.browserUri;
+
+      CrafterCMSNext.render(wrapper, 'VideoPlayerDialog', {
+        id: 'dialogPlayer',
+        onClose: onClose,
+        src: 'https://www.cbsnews.com/common/video/dai_prod.m3u8',
+        open: true
+      });
+
+      //createClip
+      // CrafterCMSNext.render(wrapper, 'ClipDialog', {
+      //   onClose: onClose,
+      //   videoSource: {
+      //     type: 'application/x-mpegURL',
+      //     src: 'https://www.cbsnews.com/common/video/dai_prod.m3u8'
+      //   },
+      //   open: true
+      // });
     },
 
     bulkUpload: function () {
@@ -2002,7 +2047,7 @@ var storage = CStudioAuthoring.Storage;
     },
 
     /**
-     *	upload an asset to the target folder if it's a new asset
+     *  upload an asset to the target folder if it's a new asset
      */
     overwriteAsset: function () {
       var uploadCb = {
@@ -2010,7 +2055,8 @@ var storage = CStudioAuthoring.Storage;
           RootFolder().refreshNodes(this.tree, false, false, null, null, true);
         },
 
-        failure: function () {},
+        failure: function () {
+        },
 
         callingWindow: window,
         tree: oCurrentTextNode
@@ -2041,7 +2087,7 @@ var storage = CStudioAuthoring.Storage;
     },
 
     /**
-     *	Deletes a folder and contents in the target folder
+     *  Deletes a folder and contents in the target folder
      */
     deleteContainer: function (p_sType, p_aArgs, tree) {
       CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContent(p_sType, p_aArgs, tree);
@@ -2083,10 +2129,10 @@ var storage = CStudioAuthoring.Storage;
             var currentlySelectedTextNode = el;
             if (currentlySelectedTextNode == RootFolder().lastSelectedTextNode) return;
             (YDom.hasClass(RootFolder().lastSelectedTextNode, highlightWrpClass)
-              ? RootFolder().lastSelectedTextNode
-              : YDom.hasClass(RootFolder().lastSelectedTextNode, 'ygtvitem')
-              ? YDom.getFirstChild(RootFolder().lastSelectedTextNode)
-              : RootFolder().lastSelectedTextNode.parentNode
+                ? RootFolder().lastSelectedTextNode
+                : YDom.hasClass(RootFolder().lastSelectedTextNode, 'ygtvitem')
+                  ? YDom.getFirstChild(RootFolder().lastSelectedTextNode)
+                  : RootFolder().lastSelectedTextNode.parentNode
             ).style.backgroundColor = '';
 
             RootFolder().lastSelectedTextNode = null;
@@ -2099,10 +2145,10 @@ var storage = CStudioAuthoring.Storage;
           if (RootFolder().lastSelectedTextNode != null) return;
           var el = this;
           (YDom.hasClass(el, highlightWrpClass)
-            ? el
-            : YDom.hasClass(el, 'ygtvitem')
-            ? YDom.getFirstChild(el)
-            : el.parentNode
+              ? el
+              : YDom.hasClass(el, 'ygtvitem')
+                ? YDom.getFirstChild(el)
+                : el.parentNode
           ).style.backgroundColor = '';
         };
       for (
