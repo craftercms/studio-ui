@@ -1293,13 +1293,15 @@
       passwordRequirements
     ) {
       const maxInputLength = 32;
+      const maxUsernameLength = 255;
 
       $scope.users = {
         maxInputLength: maxInputLength,
+        maxUsernameLength: maxUsernameLength,
         messages: {
           userNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
             field: formatMessage(usersAdminMessages.userName),
-            size: maxInputLength
+            size: maxUsernameLength
           }),
           firstNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
             field: formatMessage(usersAdminMessages.firstName),
@@ -1490,7 +1492,7 @@
         );
 
         adminService
-          .getUser(user.username)
+          .getUser(encodeURIComponent(user.username) + '.json')
           .success(function (data) {
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
@@ -1528,7 +1530,7 @@
         $scope.dialogEdit = true;
 
         adminService
-          .getUser(user.username)
+          .getUser(encodeURIComponent(user.username) + '.json')
           .success(function (data) {
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;
@@ -1579,7 +1581,7 @@
         $scope.adminModal = $scope.showModal('modalView.html');
 
         adminService
-          .getUser(user.username)
+          .getUser(encodeURIComponent(user.username) + '.json')
           .success(function (data) {
             $scope.user = data.user;
             $scope.user.enabled = data.user.enabled;

@@ -1,5 +1,7 @@
-@import "bootstrap-sass-official/assets/stylesheets/bootstrap/variables";
-@import "bootstrap-sass-official/assets/stylesheets/bootstrap/mixins";
+@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/variables";
+@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins";
+
+@import "common";
 
 body.state-loading * {
   cursor: wait;
@@ -144,6 +146,10 @@ sup {
   margin: 0 0px 0 0px;
   min-width: 1000px;
   width: 100%;
+}
+
+#header.cstudio-form-field-container {
+  min-width: auto;
 }
 
 #container {
@@ -371,11 +377,14 @@ sup {
   width: auto;
 }
 
+#nav-user-name{
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
 #globalSearch {
   float: left;
   margin: 5px 10px 0 0;
-  _margin: 5px 0px 0 0; *
-margin: 5px 0px 0 0;
   text-align: right;
   width: 162px;
 }
@@ -441,8 +450,8 @@ margin: 5px 0px 0 0;
 /* end of container elements */ /* dashboard page */
 /*Tree table styles*/
 #treetable {
-  padding: 20px 0 0 0; *
-padding: 10px 0 0 0;
+  //padding: 20px 0 0 0;
+  padding: 10px 0 0 0;
 }
 
 div.ttTableGroup {
@@ -1228,8 +1237,6 @@ div#footerLogin {
   height: 20px;
   left: 1px;
   position: relative;
-  _position: none;
-  *position: none;
   vertical-align: middle;
   width: 18px;
 }
@@ -1376,10 +1383,11 @@ div#footerLogin {
 }
 
 .acn-tooltip .tooltip-title {
-  width: 85px !important;
+  width: 99px !important;
   text-align: right !important;
   font-weight: bold !important;
   padding-right: 5px !important;
+  display: inline-block;
 }
 
 .break-word {
@@ -1420,7 +1428,6 @@ div#footerLogin {
   display: inline-block;
   height: 20px;
   left: 1px;
-  _position: none;
   position: none;
   vertical-align: middle;
   width: 18px;
@@ -2358,8 +2365,6 @@ div#footerLogin {
   display: inline-block;
   height: 16px;
   position: relative;
-  _position: none; *
-position: none;
   top: 2px;
   width: 12px;
 }
@@ -2370,8 +2375,6 @@ position: none;
   display: inline-block;
   height: 16px;
   position: relative;
-  _position: none; *
-position: none;
   top: 2px;
   width: 12px;
 }
@@ -2382,8 +2385,6 @@ position: none;
   display: inline-block;
   height: 16px;
   position: relative;
-  _position: none; *
-position: none;
   top: 2px;
   width: 18px;
   margin-right: 3px;
@@ -2395,8 +2396,6 @@ position: none;
   display: inline-block;
   height: 16px;
   position: relative;
-  _position: none; *
-position: none;
   top: 2px;
   width: 18px;
   margin-right: 3px;
@@ -2406,8 +2405,6 @@ position: none;
   display: inline-block;
   height: 16px;
   position: relative;
-  _position: none; *
-position: none;
   top: 2px;
   width: 18px;
   margin-right: 3px;
@@ -2496,18 +2493,15 @@ position: none;
   float: none;
   height: 300px;
   margin: -5px 0 0;
-  _margin: 0;
   overflow: auto;
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0px;
   width: 548px;
-  _width: 548px;
 }
 
 .reorderSubmitWrapperButton {
   margin-top: 17px;
-  _margin-top: 14px;
   text-align: center;
   cursor: pointer;
 }
@@ -2631,8 +2625,6 @@ li.list2 {
   left: 1px;
   margin: 0 0 0 2px;
   position: relative;
-  _position: none;
-  *position: none;
   vertical-align: middle;
   width: 18px;
 }
@@ -2664,13 +2656,11 @@ li.list2 {
   float: none;
   height: 180px;
   margin: 0;
-  _margin: 0;
   overflow: auto;
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0px;
   width: 548px;
-  _width: 548px;
 }
 
 .submitSubheader td {
@@ -2788,8 +2778,6 @@ li.list2 {
   left: 1px;
   margin: 2px 0 0 2px;
   position: relative;
-  _position: none;
-  *position: none;
   vertical-align: middle;
   width: 18px;
 }
@@ -2930,8 +2918,6 @@ li.list2 {
   margin-top: 1px;
   _margin-top: 2px;
   position: relative;
-  _position: none;
-  *position: none;
   vertical-align: middle;
   width: 16px;
 }
@@ -2946,8 +2932,6 @@ li.list2 {
   margin-top: 1px;
   _margin-top: 2px;
   position: relative;
-  _position: none;
-  *position: none;
   vertical-align: middle;
   width: 16px;
 }
@@ -2962,8 +2946,6 @@ li.list2 {
   margin-top: 1px;
   _margin-top: 2px;
   position: relative;
-  _position: none;
-  *position: none;
   vertical-align: middle;
   width: 16px;
 }
@@ -2976,8 +2958,6 @@ li.list2 {
   height: 18px;
   left: 0px;
   position: relative;
-  _position: none;
-  *position: none;
   vertical-align: middle;
   width: 16px;
 }
@@ -2991,8 +2971,6 @@ li.list2 {
   left: 0px;
   _margin-top: 1px;
   position: relative;
-  _position: none;
-  *position: none;
   vertical-align: middle;
   width: 16px;
 }
@@ -3020,13 +2998,11 @@ li.list2 {
   float: none;
   height: 272px;
   margin: -5px 0 0 0;
-  _margin: 0;
   overflow: auto;
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0px;
   width: 548px;
-  _width: 548px;
 }
 
 .copysubmitButton {
@@ -3196,8 +3172,8 @@ li.list2 {
   text-align: center;
 }
 
-.contentTypePopupBtn .ok {
-  width: 72px;
+.contentTypePopupBtn .ok, .contentTypePopupBtn .cancel {
+  min-width: 72px;
 }
 
 /* yui calendar/datepicker global styles*/
@@ -3249,8 +3225,7 @@ div#cal1Container {
 
 .yui-skin-cstudioTheme .yui-calendar td.calcell {
   background: #fff;
-  border: 0px; #
-padding: 5px;
+  border: 0px;
 }
 
 .yui-skin-cstudioTheme .yui-calendar td.calcell {
@@ -3359,6 +3334,10 @@ a:hover.editLink {
   color: #808080 !important;
 }
 
+.preview {
+  color: #52779b;
+}
+
 .cs-input {
   background-color: white;
   border: 1px solid black;
@@ -3440,6 +3419,162 @@ input.drop-arrow-button {
   background-color: #CCC;
   border-color: #777;
   color: #999;
+}
+
+.cancel-workflow-view .view-caption {
+  margin-top: 15px;
+}
+
+
+.cancel-workflow-view .view-title {
+  margin-top: 7px;
+}
+
+
+.cancel-workflow-view .view-square-wrp {
+  border-radius: 6px 6px 0 0;
+}
+
+.yui-module.yui-overlay.yui-panel button.btn-default {
+  color: #333333;
+  background-color: white;
+  border-color: #cccccc;
+}
+
+.yui-module.yui-overlay.yui-panel button.btn-default:hover {
+  background-color: #e6e6e6;
+  border-color: #adadad;
+  color: #333333;
+}
+
+.cancel-workflow-view.cstudio-view .action-wrapper{
+  text-align: right;
+}
+
+.yui-module.yui-overlay.yui-panel .cancel-workflow-view button.cancel{
+  margin-left: 5px;
+}
+
+
+
+.cstudio-search-result .cstudio-search-select-container,
+.cstudio-search-result .cstudio-search-result-body {
+  float: left; }
+
+
+
+#reorderWrapper.reorderWrapperDialog{
+  width: 600px;
+  height: 375px;
+  border: none;
+  background: transparent;
+  margin: 0;
+}
+
+#reorderWrapper.reorderWrapperDialog #reorderContainer{
+  margin: 0;
+}
+
+#reorderWrapper.reorderWrapperDialog .reorderHeadertext{
+  display: block;
+  border-bottom: 1px solid rgb(224, 223, 223);
+  width: 100%;
+  padding: 14px 25px 9px;
+}
+
+#reorderWrapper.reorderWrapperDialog .reorderSubtext{
+  margin: 13px 8px 2px 25px;
+}
+
+#reorderWrapper.reorderWrapperDialog #submitxformscroll{
+  height: 231px;
+  width: 548px;
+  margin: 10px 25px;
+  border-color: rgb(224, 223, 223);-webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+
+#reorderWrapper.reorderWrapperDialog #sortable{
+  width: 100%;
+}
+
+#reorderWrapper.reorderWrapperDialog #sortable li{
+  height: auto;
+  padding: 0.5em 0.4em 0.5em 1.5em;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+
+#reorderWrapper.reorderWrapperDialog #left-drag-handle{
+  margin: -1px -20px;
+}
+
+#reorderWrapper.reorderWrapperDialog .reorderSubmitWrapperButton{
+  float: right;
+  margin: 0 25px 0 0;
+}
+
+.studio-ice-dialog.ui-resizable .ui-resizable-s, .studio-ice-dialog.ui-resizable .ui-resizable-se{
+  z-index: 9000000000000!important;
+}
+
+.studio-ice-dialog.ui-resizable .ui-resizable-e{
+  width: 0px;
+  height: 0px;
+}
+
+.cstudio-spinner {
+  display: inline-block !important;
+  width: 15px;
+  height: 15px;
+  background: url("/studio/static-assets/themes/cstudioTheme/images/treeview-loading.gif") no-repeat;
+  background-size: 100% 100%;
+  margin-right: 5px;
+  margin-bottom: -2px;
+}
+
+
+.ccms-iewarning {
+  display: none;
+  z-index: 1000;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background-color: DARKORANGE;
+  border: 1px solid ORANGE;
+  color: white;
+  font-weight: bold;
+  padding: 1px;
+  /* position: absolute; */
+  text-align: center;
+  left: 0px;
+}
+
+body.iewarning .ccms-iewarning {
+  display: block;
+}
+
+body.iewarning #studioBar > .navbar, body.iewarning #admin-console .categories-panel {
+  top: 21px;
+}
+
+body.iewarning #preview-tools-panel-container_c, body.iewarning #acn-dropdown-menu-wrapper{
+  top: 71px;
+}
+
+body.iewarning #content-type-canvas {
+  margin-top: 72px;
+}
+
+body.iewarning #content-type-tools{
+  padding-top: 58px;
+}
+
+body.iewarning .studio-preview {
+  top: 71px;
+  height: calc( 100vh - 71px );
 }
 
 .cstudio-search-result .cstudio-search-select-container,

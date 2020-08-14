@@ -37,6 +37,7 @@
                         </a>
                         <ul id="quick-create" class="dropdown-menu" role="menu">
                             <li class="title" style=""><span data-translation="quickCreate">Quick Create</span></li>
+                            <div class="quick-create-elements-container"></div>
                         </ul>
                     </li>
                 </ul>
@@ -62,7 +63,9 @@
                             </ul>
                         </li>
                         <li class="dropdown" dropdown="">
-                            <a id="account-dropdown" class="dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">&nbsp; <span class="caret"></span></a>
+                            <a id="account-dropdown" class="dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
+                              &nbsp; <span class="caret"></span>
+                            </a>
                             <ul class="dropdown-menu" role="menu">
                                 <li class="user-display" style="padding: 0 20px 5px; margin-bottom: 5px; border-bottom: 1px solid #f2f2f2;">
                                     <div id="nav-user-name"></div>
@@ -112,7 +115,7 @@
                 </div>
                 <div id="_acn-dropdown-wrapper" class="acn-dropdown-wrapper"></div>
 
-                
+
                 <div id="acn-active-content"></div>
                 <div id="acn-admin-console" style="float: left"></div>
                 <div id="contextual_nav_menu_items"></div>

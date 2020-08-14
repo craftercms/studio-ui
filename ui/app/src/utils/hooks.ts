@@ -14,12 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Dispatch, EffectCallback, SetStateAction, useEffect, useReducer, useRef } from 'react';
+import {
+  Dispatch,
+  EffectCallback,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef
+} from 'react';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<Partial<S>>>] {
   return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);
+}
+
+export function useSubject<T = unknown>() {
+  return useMemo(() => new Subject<T>(), []);
 }
 
 export function useDebouncedInput(
