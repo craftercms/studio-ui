@@ -14,7 +14,9 @@ const
     'tinymce-ace',
     'browse',
     { input: 'guest/guest', output: 'guest' },
-    { input: 'global', output: '../themes/cstudioTheme/css/global' }
+    { input: 'global', output: '../themes/cstudioTheme/css/global' },
+    { input: 'base', output: '../themes/cstudioTheme/base' },
+    'fonts'
   ];
 
 function processFile(data) {
