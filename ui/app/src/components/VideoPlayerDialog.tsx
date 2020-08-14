@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog } from '@material-ui/core';
 import {
+  ContentCutRounded,
   ControlsBarVideoJSAdapter,
+  IconControl,
+  PlaybackRateButton,
   Player,
-  useVideoJSSource,
-  useVideoJSVolume
+  useVideoJsIsPlaying,
+  useVideoJsPlaybackRate,
+  useVideoJsSource,
+  useVideoJsVolume
 } from '@craftercms/video';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
@@ -51,8 +56,11 @@ export default function VideoPlayerDialog(props: VideoPlayerDialogProps) {
 function VideoPlayerUI(props: VideoPlayerDialogProps) {
   const { id = 'dialogPlayer', src, onClose } = props;
   const classes = getClasses({});
-  const [volume, setVolume] = useVideoJSVolume(id);
-  const [source, setSource] = useVideoJSSource(id);
+  const [volume, setVolume] = useVideoJsVolume(id);
+  const [, setSource] = useVideoJsSource(id);
+  const [openClipDialog, setOpenClipDialog] = useState(false);
+  const [, setPlaying] = useVideoJsIsPlaying(id);
+  const [playbackSpeed, SetPlaybackSpeed] = useVideoJsPlaybackRate(id);
 
   useEffect(() => {
     setSource(src);
@@ -78,6 +86,23 @@ function VideoPlayerUI(props: VideoPlayerDialogProps) {
         volume={volume}
         setVolume={setVolume}
         position={'relative'}
+        leftBlock={
+          <IconControl
+            disabled={openClipDialog}
+            icon={ContentCutRounded}
+            label="Clip"
+            onClick={() => {
+              setPlaying(false);
+              setOpenClipDialog(true);
+            }}
+          />
+        }
+        rightBlock={
+          <PlaybackRateButton
+            rate={{ value: playbackSpeed, label: null }}
+            onChange={SetPlaybackSpeed}
+          />
+        }
       />
     </>
   );

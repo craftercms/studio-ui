@@ -25,7 +25,7 @@ import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
 import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
-import VideoProvider from '@craftercms/video/provider';
+import VideoProvider from '@craftercms/video/Provider';
 
 const Locales: any = {
   en,

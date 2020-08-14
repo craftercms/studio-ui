@@ -1525,6 +1525,7 @@ var storage = CStudioAuthoring.Storage;
 
             if (isWrite == true) {
               RootFolder().IS_WRITE = true;
+
               if (this.isContainer) {
                 this.menuWidth = '130px';
                 if (isDeleteAllowed) {
@@ -1544,10 +1545,29 @@ var storage = CStudioAuthoring.Storage;
                 }
               } else {
                 this.menuWidth = '130px';
+                this.aMenuItems = [];
+
+                if (
+                  oCurrentTextNode.data.internalName.endsWith('.m3u8') ||
+                  oCurrentTextNode.data.internalName.endsWith('.mp4')
+                ) {
+                  //PlayVideo
+                  this.aMenuItems.push({
+                    text: CMgs.format(siteDropdownLangBundle, 'playVideo'),
+                    onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.playVideo }
+                  });
+
+                  //Clipping
+                  this.aMenuItems.push({
+                    text: CMgs.format(siteDropdownLangBundle, 'createClip'),
+                    onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.createClip }
+                  });
+                }
+
                 if (isDeleteAllowed) {
-                  this.aMenuItems = this.menuItems['assetsMenu'].slice();
+                  this.aMenuItems.push(this.menuItems['assetsMenu'].slice());
                 } else {
-                  this.aMenuItems = this.menuItems['assetsMenuNoDelete'].slice();
+                  this.aMenuItems.push(this.menuItems['assetsMenuNoDelete'].slice());
                 }
               }
 
@@ -1599,18 +1619,6 @@ var storage = CStudioAuthoring.Storage;
                 onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.bulkUpload }
               });
             }
-
-            //PlayVideo
-            this.aMenuItems.push({
-              text: 'Play video',
-              onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.playVideo }
-            });
-
-            //Clipping
-            this.aMenuItems.push({
-              text: CMgs.format(siteDropdownLangBundle, 'createClip'),
-              onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.createClip }
-            });
 
             var isRelevant = !(oCurrentTextNode.data.status.toLowerCase().indexOf('live') !== -1);
             var isAssetsFolder = !oCurrentTextNode.isLeaf;

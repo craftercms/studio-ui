@@ -215,6 +215,20 @@ body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, .yui-panel.yui-overl
   font-family: 'Open Sans', sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6  {
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   font-weight: 600;
+}
+
+//reset bootstrap styles for fieldset and legend
+fieldset {
+  padding: revert;
+  margin: initial;
+  border: initial;
+  min-width: initial;
+}
+
+legend {
+  width: initial;
+  margin-bottom: initial;
+  border-bottom: none;
 }

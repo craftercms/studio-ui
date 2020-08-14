@@ -289,6 +289,7 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'en', {
   controllerFilename: 'Provide a filename for the script',
   bulkUploadAssets: 'Bulk Upload Assets',
   createClip: 'Create clip',
+  playVideo: 'Play video',
   lastEdited: 'Last Edited',
   editedBy: 'Edited by',
   lockedBy: 'Locked by',
