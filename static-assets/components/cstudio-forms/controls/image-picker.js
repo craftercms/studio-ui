@@ -46,7 +46,10 @@ CStudioForms.Controls.ImagePicker =
       'TIFF',
       'TIF',
       'BMP',
-      'SVG'
+      'SVG',
+      'jp2',
+      'jxr',
+      'webp'
     ];
     this.readonly = readonly;
     this.originalWidth = null;
