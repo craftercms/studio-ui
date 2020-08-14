@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Dialog } from '@material-ui/core';
 import {
   ContentCutRounded,
@@ -6,7 +6,6 @@ import {
   IconControl,
   PlaybackRateButton,
   Player,
-  useVideoJsIsPlaying,
   useVideoJsPlaybackRate,
   useVideoJsSource,
   useVideoJsVolume
@@ -36,6 +35,7 @@ type VideoPlayerDialogProps = React.PropsWithChildren<{
   open: boolean;
   src: string;
   onClose(): void;
+  onClip(): void;
 }>
 
 export default function VideoPlayerDialog(props: VideoPlayerDialogProps) {
@@ -54,12 +54,10 @@ export default function VideoPlayerDialog(props: VideoPlayerDialogProps) {
 }
 
 function VideoPlayerUI(props: VideoPlayerDialogProps) {
-  const { id = 'dialogPlayer', src, onClose } = props;
+  const { id = 'dialogPlayer', src, onClose, onClip } = props;
   const classes = getClasses({});
   const [volume, setVolume] = useVideoJsVolume(id);
   const [, setSource] = useVideoJsSource(id);
-  const [openClipDialog, setOpenClipDialog] = useState(false);
-  const [, setPlaying] = useVideoJsIsPlaying(id);
   const [playbackSpeed, SetPlaybackSpeed] = useVideoJsPlaybackRate(id);
 
   useEffect(() => {
@@ -88,12 +86,10 @@ function VideoPlayerUI(props: VideoPlayerDialogProps) {
         position={'relative'}
         leftBlock={
           <IconControl
-            disabled={openClipDialog}
             icon={ContentCutRounded}
             label="Clip"
             onClick={() => {
-              setPlaying(false);
-              setOpenClipDialog(true);
+              onClip();
             }}
           />
         }

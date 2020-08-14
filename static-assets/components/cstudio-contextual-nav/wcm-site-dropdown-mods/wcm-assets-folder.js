@@ -747,7 +747,12 @@ var storage = CStudioAuthoring.Storage;
      * method fired when tree item is clicked
      */
     onTreeNodeClick: function (node) {
-      if (node.data.previewable == true) {
+      if (
+        node.data.internalName.endsWith('.m3u8') ||
+        node.data.internalName.endsWith('.mp4')
+      ) {
+        CStudioAuthoring.ContextualNav.WcmAssetsFolder.playVideo(node);
+      } else if (node.data.previewable == true) {
         if (!node.data.isLevelDescriptor && !node.data.isContainer) {
           CStudioAuthoring.Operations.openPreview(node.data, '', false, false);
         }
@@ -1554,13 +1559,13 @@ var storage = CStudioAuthoring.Storage;
                   //PlayVideo
                   this.aMenuItems.push({
                     text: CMgs.format(siteDropdownLangBundle, 'playVideo'),
-                    onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.playVideo }
+                    onclick: { fn: () => CSA.ContextualNav.WcmAssetsFolder.playVideo() }
                   });
 
                   //Clipping
                   this.aMenuItems.push({
                     text: CMgs.format(siteDropdownLangBundle, 'createClip'),
-                    onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.createClip }
+                    onclick: { fn: () => CSA.ContextualNav.WcmAssetsFolder.createClip() }
                   });
                 }
 
@@ -1998,27 +2003,36 @@ var storage = CStudioAuthoring.Storage;
       );
     },
 
-    playVideo: function () {
+    playVideo: function (node) {
       const wrapper = document.createElement('div');
       const onClose = () => {
         CrafterCMSNext.ReactDOM.unmountComponentAtNode(wrapper);
       };
 
-      const src = oCurrentTextNode.data.browserUri;
+      const onClip = () => {
+        onClose();
+        CStudioAuthoring.ContextualNav.WcmAssetsFolder.createClip(null, node);
+      };
+
+      node = node ? node : oCurrentTextNode;
+      const src = node.data.browserUri;
 
       CrafterCMSNext.render(wrapper, 'VideoPlayerDialog', {
         id: 'dialogPlayer',
         onClose: onClose,
+        onClip: onClip,
         src: 'https://www.cbsnews.com/common/video/dai_prod.m3u8',
         open: true
       });
     },
 
-    createClip: function () {
+    createClip: function (e, node) {
       const wrapper = document.createElement('div');
       const onClose = () => {
         CrafterCMSNext.ReactDOM.unmountComponentAtNode(wrapper);
       };
+      node = node ? node : oCurrentTextNode;
+      const src = node.data.browserUri;
 
       CrafterCMSNext.render(wrapper, 'ClipDialog', {
         onClose: onClose,
