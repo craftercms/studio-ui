@@ -22,8 +22,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!'Crafter CMS'}</title>
-  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i&display=swap"
-        rel="stylesheet">
+  <link href="/studio/static-assets/styles/fonts.css" rel="stylesheet">
   <style>
     html, body, #root {
       margin: 0;
