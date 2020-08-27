@@ -120,6 +120,10 @@ ui/app/public/preview-landing.umd.js
 ui/guest/dist
 ui/app/src/test
 ui/app/src/tests
+static-assets/components/cstudio-admin/mods/encrypt-tool.js
+static-assets/components/cstudio-admin/mods/content-type-propsheet/contentTypes.js
+static-assets/components/cstudio-forms/controls/locale-selector.js
+static-assets/components/cstudio-forms/data-sources/receptacles.js
 
 # misc
 *.ignore.*
