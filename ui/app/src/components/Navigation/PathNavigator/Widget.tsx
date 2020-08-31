@@ -78,6 +78,7 @@ import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog
 import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
 import { batchActions } from '../../../state/actions/misc';
 import queryString from 'query-string';
+import { pathNavigatorFetchPath, pathNavigatorInit } from '../../../state/reducers/pathNavigator';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -337,9 +338,10 @@ function generateMenuSections(
   return sections;
 }
 
-interface WidgetProps {
+export interface WidgetProps {
   path: string;
   icon?: string | React.ElementType;
+  id: string;
   title?: string;
   locale: string;
   classes?: Partial<Record<'root' | 'body', string>>;
@@ -356,7 +358,7 @@ interface Menu {
   activeItem: SandboxItem;
 }
 
-interface WidgetState {
+export interface WidgetState {
   rootPath: string;
   currentPath: string;
   localeCode: string;
@@ -473,23 +475,9 @@ const fetchPath = createAction<string>('FETCH_PATH');
 const fetchPathComplete = createAction<GetChildrenResponse>('FETCH_PATH_COMPLETE');
 const setKeyword = createAction<string>('SET_KEYWORD');
 
-// function useReducerMiddleware(reducer, initialArg, init, middleware) {
-//   const [state, _dispatch] = useReducer(reducer, initialArg, init);
-//   return [
-//     state,
-//     useCallback(
-//       (action) => {
-//         _dispatch(action);
-//         middleware(action, _dispatch);
-//       },
-//       [middleware]
-//     )
-//   ];
-// }
-
 // PathNavigator
 export default function (props: WidgetProps) {
-  const { title, icon, path } = props;
+  const { title, icon, path, id } = props;
   const [state, _dispatch] = useReducer(reducer, props, init);
 
   const classes = useStyles({});
@@ -506,6 +494,11 @@ export default function (props: WidgetProps) {
     createController: path === '/scripts',
     translation: path.includes('site/website/')
   };
+
+  useMount(() => {
+    dispatch(pathNavigatorInit({ id, props }));
+    dispatch(pathNavigatorFetchPath({ id, path }));
+  });
 
   const exec = useCallback(
     (action) => {
