@@ -41,7 +41,7 @@ import {
   useLogicResource,
   useMount,
   useSpreadState,
-  useSupportedLocales
+  useSiteLocales
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
 import ContentLocalizationDialog from '../../Dialogs/ContentLocalizationDialog';
@@ -79,7 +79,7 @@ import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog
 import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
 import { batchActions } from '../../../state/actions/misc';
 import queryString from 'query-string';
-import { fetchSupportedLocales } from '../../../state/actions/translation';
+import { fetchSiteLocales } from '../../../state/actions/translation';
 import { languages } from '../../../utils/i18n-legacy';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
@@ -544,14 +544,14 @@ export default function (props: WidgetProps) {
   const [uploadDialog, setUploadDialog] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchSupportedLocales());
+    dispatch(fetchSiteLocales());
   }, []);
 
   useMount(() => {
     exec(fetchPath(path));
   });
 
-  const supportedLocales = useSupportedLocales();
+  const siteLocales = useSiteLocales();
 
   const itemsResource: Resource<SandboxItem[]> = useLogicResource(state.itemsInPath, {
     shouldResolve: (items) => Boolean(items),
@@ -994,7 +994,7 @@ export default function (props: WidgetProps) {
   };
 
   const onHeaderButtonClick = (anchorEl: Element, type: string) => {
-    const locales = supportedLocales.localeCodes.map(code => ({
+    const locales = siteLocales.localeCodes.map(code => ({
       id: `locale.${code}`,
       label: {
         id: `locale.${code}`,

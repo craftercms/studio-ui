@@ -18,12 +18,12 @@ import { createAction } from '@reduxjs/toolkit';
 
 // region Supported Locales
 
-export const FETCH_SUPPORTED_LOCALES = 'FETCH_SUPPORTED_LOCALES';
-export const FETCH_SUPPORTED_LOCALES_COMPLETE = 'FETCH_SUPPORTED_LOCALES_COMPLETE';
-export const FETCH_SUPPORTED_LOCALES_FAILED = 'FETCH_SUPPORTED_LOCALES_FAILED';
+export const FETCH_SITE_LOCALES = 'FETCH_SITE_LOCALES';
+export const FETCH_SITE_LOCALES_COMPLETE = 'FETCH_SITE_LOCALES_COMPLETE';
+export const FETCH_SITE_LOCALES_FAILED = 'FETCH_SITE_LOCALES_FAILED';
 
-export const fetchSupportedLocales = createAction(FETCH_SUPPORTED_LOCALES);
-export const fetchSupportedLocalesComplete = createAction(FETCH_SUPPORTED_LOCALES_COMPLETE);
-export const fetchSupportedLocalesFailed = createAction(FETCH_SUPPORTED_LOCALES_FAILED);
+export const fetchSiteLocales = createAction(FETCH_SITE_LOCALES);
+export const fetchSiteLocalesComplete = createAction(FETCH_SITE_LOCALES_COMPLETE);
+export const fetchSiteLocalesFailed = createAction(FETCH_SITE_LOCALES_FAILED);
 
 // endregion

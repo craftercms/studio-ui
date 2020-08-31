@@ -138,7 +138,7 @@ export interface GlobalState {
     reject: RejectDialogStateProps;
   };
   translation: {
-    supportedLocales: {
+    siteLocales: {
       error: ApiResponse
       isFetching: boolean;
       localeCodes: string[],

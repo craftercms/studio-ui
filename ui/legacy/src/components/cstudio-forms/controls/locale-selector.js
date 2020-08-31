@@ -83,7 +83,7 @@
         }
       }
 
-      CrafterCMSNext.services.translation.getSupportedLocales(CStudioAuthoringContext.site).subscribe(
+      CrafterCMSNext.services.translation.getSiteLocales(CStudioAuthoringContext.site).subscribe(
         ({ localeCodes, defaultLocaleCode }) => {
           var titleEl = document.createElement('span');
 

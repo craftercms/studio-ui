@@ -313,8 +313,8 @@ export function useSites(): GlobalState['sites'] {
   return useSelection((state) => state.sites);
 }
 
-export function useSupportedLocales(): GlobalState['translation']['supportedLocales'] {
-  return useSelection((state) => state.translation.supportedLocales);
+export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
+  return useSelection((state) => state.translation.siteLocales);
 }
 
 export function usePreviousValue<T = any>(value: T) {

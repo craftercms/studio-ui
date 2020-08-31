@@ -19,23 +19,23 @@ import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { getSupportedLocales } from '../../services/translation';
+import { getSiteLocales } from '../../services/translation';
 import { catchAjaxError } from '../../utils/ajax';
 import {
-  FETCH_SUPPORTED_LOCALES,
-  fetchSupportedLocalesComplete,
-  fetchSupportedLocalesFailed
+  FETCH_SITE_LOCALES,
+  fetchSiteLocalesComplete,
+  fetchSiteLocalesFailed
 } from '../actions/translation';
 
-const fetchSupportedLocales: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_SUPPORTED_LOCALES),
+const fetchSiteLocales: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
+  ofType(FETCH_SITE_LOCALES),
   withLatestFrom(state$),
-  switchMap(([, state]) => getSupportedLocales(state.sites.active).pipe(
-    map(fetchSupportedLocalesComplete),
-    catchAjaxError(fetchSupportedLocalesFailed)
+  switchMap(([, state]) => getSiteLocales(state.sites.active).pipe(
+    map(fetchSiteLocalesComplete),
+    catchAjaxError(fetchSiteLocalesFailed)
   ))
 );
 
 export default [
-  fetchSupportedLocales
+  fetchSiteLocales
 ] as Epic[];
