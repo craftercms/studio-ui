@@ -219,10 +219,11 @@ export function useLogicResource<ReturnType = unknown, SourceType = unknown, Err
   source: SourceType,
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
+
+  const checkersRef = useRef<CustomResourceSelectors<ReturnType, SourceType, ErrorType>>();
   const [[resource, resolve, reject], setBundle] = useState(() =>
     createResourceBundle<ReturnType>()
   );
-  const checkersRef = useRef<CustomResourceSelectors<ReturnType, SourceType, ErrorType>>();
 
   checkersRef.current = checkers;
 
@@ -310,4 +311,12 @@ export function useSiteList(): Site[] {
 
 export function useSites(): GlobalState['sites'] {
   return useSelection((state) => state.sites);
+}
+
+export function usePreviousValue<T = any>(value: T) {
+  const ref = useRef<T>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 }

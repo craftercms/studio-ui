@@ -17,12 +17,11 @@
 import React, { useEffect } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import ExtensionRounded from '@material-ui/icons/ExtensionRounded';
-import ImageRounded from '@material-ui/icons/ImageRounded';
+import ImageRounded from '@material-ui/icons/ImageOutlined';
 import EmojiPeopleRounded from '@material-ui/icons/EmojiPeopleRounded';
 import DevicesRounded from '@material-ui/icons/DevicesRounded';
 import ChevronRightIcon from '@material-ui/icons/ChevronRightRounded';
 import WarningRounded from '@material-ui/icons/WarningRounded';
-import AccountTreeRoundedIcon from '@material-ui/icons/AccountTreeRounded';
 import SearchRoundedIcon from '@material-ui/icons/SearchRounded';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -51,7 +50,7 @@ import {
 } from '../../utils/hooks';
 import EmptyState from '../../components/SystemStatus/EmptyState';
 import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
-import ContentTree from './Tools/ContentTree';
+import PageExplorer from './Tools/PageExplorer';
 import { nnou } from '../../utils/object';
 import Suspencified from '../../components/SystemStatus/Suspencified';
 import SearchPanel from './Tools/SearchPanel';
@@ -59,6 +58,9 @@ import PreviewTool from '../../models/PreviewTool';
 import { Resource } from '../../models/Resource';
 import { SvgIconTypeMap } from '@material-ui/core/SvgIcon/SvgIcon';
 import { OverridableComponent } from '@material-ui/core/OverridableComponent';
+import SiteExplorer from './Tools/SiteExplorer';
+import PageExplorerRounded from '../../components/Icons/PageExplorerRounded';
+import SiteExplorerRounded from '../../components/Icons/SiteExplorerRounded';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -152,17 +154,21 @@ const translations = defineMessages({
     id: 'craftercms.ice.browseComponents.title',
     defaultMessage: 'Browse Components'
   },
-  contentTreePanel: {
-    id: 'craftercms.ice.contentTreePanel.title',
-    defaultMessage: 'Content Tree'
+  pageExplorerPanel: {
+    id: 'craftercms.ice.pageExplorerPanel.title',
+    defaultMessage: 'Page Explorer'
   },
   searchPanel: {
-    id: 'craftercms.ice.contentTreePanel.title',
+    id: 'craftercms.ice.pageExplorerPanel.title',
     defaultMessage: 'Search Everywhere'
   },
   loading: {
     id: 'words.loading',
     defaultMessage: 'Loading'
+  },
+  siteExplorerPanel: {
+    id: 'siteExplorerPanel',
+    defaultMessage: 'Site Explorer'
   }
 });
 
@@ -248,8 +254,9 @@ const componentIconMap: { [key in PreviewTool]: OverridableComponent<SvgIconType
   'craftercms.ice.simulator': DevicesRounded,
   'craftercms.ice.browseComponents': ExtensionRounded,
   'craftercms.ice.inPageInstances': ExtensionRounded,
-  'craftercms.ice.contentTree': AccountTreeRoundedIcon,
-  'craftercms.ice.search': SearchRoundedIcon
+  'craftercms.ice.pageExplorer': PageExplorerRounded,
+  'craftercms.ice.search': SearchRoundedIcon,
+  'craftercms.siteExplorerPanel': SiteExplorerRounded
 };
 
 const componentMap: {  [key in PreviewTool]: React.ElementType } = {
@@ -261,8 +268,9 @@ const componentMap: {  [key in PreviewTool]: React.ElementType } = {
   'craftercms.ice.browseComponents': BrowseComponentsPanel,
   'craftercms.ice.inPageInstances': InPageInstancesPanel,
   'craftercms.ice.contentTypeReceptacles': ReceptaclesPanel,
-  'craftercms.ice.contentTree': ContentTree,
-  'craftercms.ice.search': SearchPanel
+  'craftercms.ice.pageExplorer': PageExplorer,
+  'craftercms.ice.search': SearchPanel,
+  'craftercms.siteExplorerPanel': SiteExplorer
 };
 
 export default function ToolsPanel() {

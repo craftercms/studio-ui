@@ -47,7 +47,7 @@ const translations = defineMessages({
   },
   browse: {
     id: 'previewComponentsTool.browse',
-    defaultMessage: 'Browse existing instances'
+    defaultMessage: 'Browse existing'
   },
   listReceptacles: {
     id: 'previewComponentsTool.listReceptacles',

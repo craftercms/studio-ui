@@ -342,9 +342,7 @@ interface WidgetProps {
   icon?: string | React.ElementType;
   title?: string;
   locale: string;
-  classes?: {
-    root?: string;
-  };
+  classes?: Partial<Record<'root' | 'body', string>>;
 }
 
 interface MenuState {
@@ -1098,7 +1096,7 @@ export default function (props: WidgetProps) {
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
       />
-      <div {...collapsed ? { hidden: true } : {}}>
+      <div {...collapsed ? { hidden: true } : {}} className={clsx(props.classes?.body)}>
         <SuspenseWithEmptyState
           resource={itemsResource}
           loadingStateProps={{

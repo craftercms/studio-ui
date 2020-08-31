@@ -23,7 +23,8 @@ type PreviewTool =
   'craftercms.ice.browseComponents' |
   'craftercms.ice.inPageInstances' |
   'craftercms.ice.contentTypeReceptacles' |
-  'craftercms.ice.contentTree' |
-  'craftercms.ice.search';
+  'craftercms.ice.pageExplorer' |
+  'craftercms.ice.search' |
+  'craftercms.siteExplorerPanel';
 
 export default PreviewTool;
