@@ -152,7 +152,7 @@ export function SiteExplorerContainer() {
   useEffect(() => {
     if (
       (!state.items && !state.isFetching) ||
-      prevSite !== site
+      (prevSite !== undefined && prevSite !== site)
     ) {
       dispatch(fetchSidebarConfig(site));
     }

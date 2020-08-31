@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
-import { getDOM, getGlobalMenuItems } from '../../services/configuration';
+import { getGlobalMenuItems } from '../../services/configuration';
 import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
@@ -34,11 +34,8 @@ import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { forkJoin, Observable } from 'rxjs';
 import { LookupTable } from '../../models/LookupTable';
-import { useMount } from '../../utils/hooks';
-import { forEach } from '../../utils/array';
-import { getInnerHtml } from '../../utils/xml';
+import { useMount, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite, fetchSites } from '../../state/reducers/sites';
@@ -53,6 +50,8 @@ import CardHeader from '@material-ui/core/CardHeader';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { Site } from '../../models/Site';
 import { User } from '../../models/User';
+import { fetchSidebarConfig } from '../../state/actions/configuration';
+import { forEach } from '../../utils/array';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -265,7 +264,7 @@ const globalNavStyles = makeStyles((theme) =>
     railTop: {
       padding: '30px',
       overflow: 'auto',
-      height: 'calc(100% - 65px)',
+      height: 'calc(100% - 65px)'
     },
     railBottom: {
       height: 65,
@@ -356,6 +355,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
+  const sidebarState = useSelection((state) => state.configuration.sidebar);
   const dispatch = useDispatch();
 
   const cardActions = useMemo(
@@ -388,40 +388,40 @@ export default function GlobalNav(props: GlobalNavProps) {
   useEffect(() => {
     if (site) {
       dispatch(fetchSites());
-      const requests: Observable<any>[] = [getGlobalMenuItems()];
-      requests.push(getDOM(site, '/context-nav/sidebar.xml', 'studio'));
-      forkJoin(requests).subscribe(
-        ([globalMenuItemsResponse, xml]: any) => {
-          setMenuItems(globalMenuItemsResponse.response.menuItems);
+    }
+  }, [site, dispatch]);
+
+  useEffect(() => {
+    if (!sidebarState.items && !sidebarState.isFetching) {
+      dispatch(fetchSidebarConfig(site));
+    }
+    if (site && sidebarState.items) {
+      getGlobalMenuItems().subscribe(({ response }) => {
+          setMenuItems(response.menuItems);
           let roleFound = {
             [siteMenuKeys.dashboard]: false,
             [siteMenuKeys.siteConfig]: false
           };
-          if (xml) {
-            forEach(xml.querySelectorAll('modulehook'), (module) => {
-              if (
-                getInnerHtml(module.querySelector('name')) === siteMenuKeys.siteConfig ||
-                getInnerHtml(module.querySelector('name')) === siteMenuKeys.dashboard
-              ) {
-                const roles = module.querySelectorAll('role');
-                roleFound[getInnerHtml(module.querySelector('name'))] = roles.length
-                  ? forEach(
-                      roles,
-                      (role) => {
-                        if (
-                          rolesBySite[site] &&
-                          rolesBySite[site].includes(getInnerHtml(role))
-                        ) {
-                          return true;
-                        }
-                      },
-                      false
-                    )
-                  : true;
-              }
-            });
-          }
-          setSiteMenu(roleFound);
+          sidebarState.items.forEach((item) => {
+            if (item.name === siteMenuKeys.siteConfig || item.name === siteMenuKeys.dashboard) {
+              let roles = item.params['roles']?.['role'];
+              roleFound[item.name] = roles?.length
+                ? forEach(
+                  roles,
+                  (role) => {
+                    if (
+                      rolesBySite[site] &&
+                      rolesBySite[site].includes(role)
+                    ) {
+                      return true;
+                    }
+                  },
+                  false
+                )
+                : true;
+              setSiteMenu(roleFound);
+            }
+          });
         },
         (error) => {
           if (error.response) {
@@ -436,7 +436,7 @@ export default function GlobalNav(props: GlobalNavProps) {
         }
       );
     }
-  }, [site, dispatch, rolesBySite]);
+  }, [dispatch, site, sidebarState.isFetching, sidebarState.items, rolesBySite]);
 
   useMount(() => {
     version === null && dispatch(fetchSystemVersion());
@@ -463,7 +463,7 @@ export default function GlobalNav(props: GlobalNavProps) {
           error={apiState.errorResponse}
           onBack={handleErrorBack}
         />
-      ) : ((sites!== null) && (siteMenu !== null) && (menuItems !== null)) ? (
+      ) : ((sites !== null) && (siteMenu !== null) && (menuItems !== null)) ? (
         <Grid container spacing={0} className={classes.gridContainer}>
           <Hidden only={['xs', 'sm']}>
             <Grid item md={4} className={classes.leftRail}>
