@@ -47,10 +47,14 @@ export const useStyles = makeStyles((theme) =>
     // region Header
     headerRoot: {
       display: 'flex',
-      padding: '5px 10px 0',
+      padding: '0 10px 0',
       alignItems: 'center',
+      cursor: 'pointer',
       '& .MuiSvgIcon-root': {
         fontSize: '1.1rem'
+      },
+      '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.04)'
       }
     },
     headerTitle: {

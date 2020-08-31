@@ -18,6 +18,7 @@
 import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
 import prettier from 'prettier/standalone';
 import { nnou } from './object';
+import parser from 'fast-xml-parser';
 
 export function fromString(xml: string) {
   return (xml != null) ? new DOMParser().parseFromString(xml, 'text/xml') : null;
@@ -128,6 +129,15 @@ export function createElements(doc: XMLDocument, element: Element, data: object)
 
 export function wrapElementInAuxDocument(element: Element): XMLDocument {
   return fromString(`<?xml version="1.0" encoding="UTF-8"?>${element.outerHTML}`);
+}
+
+export function toJS(xml: string): any;
+export function toJS(xml: XMLDocument): any;
+export function toJS(xml: string | XMLDocument): any {
+  if (typeof xml !== 'string') {
+    xml = serialize(xml);
+  }
+  return parser.parse(xml, {});
 }
 
 export default {

@@ -65,16 +65,16 @@ import ComponentMenu from '../../../components/ComponentMenu';
 const rootPrefix = '{root}_';
 
 const translations = defineMessages({
-  contentTree: {
-    id: 'previewContentTreeTool.title',
-    defaultMessage: 'Content Tree'
+  title: {
+    id: 'pageExplorerPanel.title',
+    defaultMessage: 'Page Explorer'
   },
   loading: {
-    id: 'previewContentTreeTool.loading',
+    id: 'pageExplorerPanel.loading',
     defaultMessage: 'Loading'
   },
   onThisPage: {
-    id: 'previewContentTreeTool.rootItemLabel',
+    id: 'pageExplorerPanel.rootItemLabel',
     defaultMessage: 'Current Content Items'
   }
 });
@@ -475,7 +475,7 @@ function createBackHandler(dispatch) {
   };
 }
 
-export default function ContentTree() {
+export default function PageExplorer() {
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
   const currentModelId = guest?.modelId;
@@ -550,7 +550,7 @@ export default function ContentTree() {
     update();
   }, [models]);
 
-  //effect to refresh the contentTree if the models are updated
+  // effect to refresh the contentTree if the models are updated
   useEffect(() => {
     const sub = hostToHost$.subscribe((action) => {
       switch (action.type) {
@@ -714,7 +714,7 @@ export default function ContentTree() {
   });
 
   return (
-    <ToolPanel title={translations.contentTree} onBack={onBack}>
+    <ToolPanel title={translations.title} onBack={onBack}>
       <TreeView
         className={classes.root}
         defaultCollapseIcon={<ExpandMoreIcon className={clsx('toggle', classes.chevron)} />}
@@ -724,7 +724,7 @@ export default function ContentTree() {
         onNodeToggle={handleChange}
       >
         <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
-          <ContentTreeUI
+          <PageExplorerUI
             handleBreadCrumbClick={handleBreadCrumbClick}
             handleClick={handleClick}
             handleClose={handleClose}
@@ -745,7 +745,7 @@ export default function ContentTree() {
   );
 }
 
-interface ContentTreeUI {
+interface PageExplorerUIProps {
   resource: Resource<any>;
   optionsMenu: {
     modelId: string;
@@ -765,7 +765,7 @@ interface ContentTreeUI {
   rootChildren: string[];
 }
 
-function ContentTreeUI(props: ContentTreeUI) {
+function PageExplorerUI(props: PageExplorerUIProps) {
   const {
     resource,
     handleScroll,
@@ -849,7 +849,7 @@ function ContentTreeUI(props: ContentTreeUI) {
           <>
             <Typography variant="subtitle1" className={classes.currentContentItems}>
               <FormattedMessage
-                id="previewContentTreeTool.currentContentItems"
+                id="pageExplorerPanel.currentContentItems"
                 defaultMessage="Current Content Items"
               />
             </Typography>

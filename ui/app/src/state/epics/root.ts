@@ -30,6 +30,7 @@ import { switchMap } from 'rxjs/operators';
 import { batchActions } from '../actions/misc';
 import GlobalState from '../../models/GlobalState';
 import StandardAction from '../../models/StandardAction';
+import configuration from './configuration';
 
 const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.apply(this, [
   (action$) =>
@@ -47,7 +48,8 @@ const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.app
   ...legacy,
   ...itemVersions,
   ...env,
-  ...content
+  ...content,
+  ...configuration
 ]);
 
 export default epic;

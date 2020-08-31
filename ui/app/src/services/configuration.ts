@@ -21,12 +21,14 @@ import {
   extractLocalizedElements,
   fromString,
   getInnerHtml,
-  getInnerHtmlNumber
+  getInnerHtmlNumber,
+  toJS
 } from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import { createLookupTable, reversePluckProps } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
 import { VersionsResponse } from '../models/Version';
+import { asArray } from '../utils/array';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -293,6 +295,31 @@ function parseSimulatorPanelConfig(element: Element) {
       })
     };
   }
+}
+
+// endregion
+
+// region SidebarConfig
+
+export interface SidebarConfigItem {
+  name?: string;
+  params?: object;
+  render?: string;
+  props?: object;
+}
+
+export function getSidebarConfig(site: string): Observable<SidebarConfigItem[]> {
+  return getConfiguration(site, '/context-nav/sidebar.xml', 'studio').pipe(
+    map((rawXML) => {
+      // The XML has a structure like:
+      // {root}.contextNav.contexts.context.groups.group.menuItems.menuItem.modulehooks.modulehook;
+      // To avoid excessive traversal, create a transition XML document with just the items.
+      const items = Array.from(fromString(rawXML).querySelectorAll('modulehook'));
+      const cleanDoc = fromString(`<?xml version="1.0" encoding="UTF-8"?><root></root>`);
+      cleanDoc.documentElement.append(...items);
+      return asArray<SidebarConfigItem>(toJS(cleanDoc).root.modulehook).filter(Boolean);
+    })
+  );
 }
 
 // endregion
