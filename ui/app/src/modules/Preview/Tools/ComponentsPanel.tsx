@@ -47,7 +47,7 @@ const translations = defineMessages({
   },
   browse: {
     id: 'previewComponentsTool.browse',
-    defaultMessage: 'Browse existing instances'
+    defaultMessage: 'Browse existing'
   },
   listReceptacles: {
     id: 'previewComponentsTool.listReceptacles',
@@ -129,8 +129,6 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
 
   const onMenuClose = () => setMenuContext(null);
-
-  const onMenuOptionClicked = () => setMenuContext(null);
 
   const onBrowseSharedInstancesClicked = () => {
     dispatch(browseSharedInstance({

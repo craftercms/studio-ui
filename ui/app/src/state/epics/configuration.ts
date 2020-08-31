@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,4 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "source-sans";
+import { Epic, ofType } from 'redux-observable';
+import { map, switchMap } from 'rxjs/operators';
+import { catchAjaxError } from '../../utils/ajax';
+import {
+  fetchSidebarConfig,
+  fetchSidebarConfigComplete,
+  fetchSidebarConfigFailed
+} from '../actions/configuration';
+import { getSidebarConfig } from '../../services/configuration';
+
+const fetch_sidebar_config: Epic = (action$) => action$.pipe(
+  ofType(fetchSidebarConfig.type),
+  switchMap(({ payload }) => getSidebarConfig(payload).pipe(
+    map(fetchSidebarConfigComplete),
+    catchAjaxError(fetchSidebarConfigFailed)
+  ))
+);
+
+export default [
+  fetch_sidebar_config
+] as Epic[];

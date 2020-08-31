@@ -288,7 +288,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard =
         '<td class="">',
         item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone) : '',
         '</td>',
-        '<td class="alignRight">',
+        '<td class="alignRight username trim">',
         WcmDashboardWidgetCommon.getDisplayName(item),
         '</td>',
         '<td class="ttThColLast alignRight">',

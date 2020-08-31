@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "source-sans";
+
 :root {
   --craftercms-blue: #007AFF;
   --craftercms-blueTint: #409CFF;
@@ -91,4 +93,11 @@
     text-decoration: underline;
     color: var(--craftercms-medium4);
   }
+}
+
+.username.trim {
+  max-width: 390px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: -5px;
 }

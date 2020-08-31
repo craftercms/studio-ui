@@ -1236,13 +1236,15 @@
       passwordRequirements
     ) {
       const maxInputLength = 32;
+      const maxUsernameLength = 255;
 
       $scope.users = {
         maxInputLength: maxInputLength,
+        maxUsernameLength: maxUsernameLength,
         messages: {
           userNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
             field: formatMessage(usersAdminMessages.userName),
-            size: maxInputLength
+            size: maxUsernameLength
           }),
           firstNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
             field: formatMessage(usersAdminMessages.firstName),
@@ -1922,13 +1924,13 @@
 
       groups.getUsersAutocomplete = function() {
         var params = {};
-        params.limit = -1;
-        adminService.getUsers(params).success(function(data) {
+        params.limit = 1000;
+        adminService.getUsers(params).success(function (data) {
           groups.usersAutocomplete = [];
 
-          data.users.forEach(function(user) {
+          data.users.forEach(function (user) {
             var added = false;
-            groups.usersFromGroupCollection.forEach(function(userCompare) {
+            groups.usersFromGroupCollection.forEach(function (userCompare) {
               if (user.username == userCompare.username) {
                 added = true;
               }

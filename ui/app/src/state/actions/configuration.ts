@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,4 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "source-sans";
+import { createAction } from '@reduxjs/toolkit';
+import { SidebarConfigItem } from '../../services/configuration';
+import { AjaxError } from 'rxjs/ajax';
+
+export const fetchSidebarConfig = createAction<string>('FETCH_SIDEBAR_CONFIG');
+export const fetchSidebarConfigComplete = createAction<SidebarConfigItem[]>('FETCH_SIDEBAR_CONFIG_COMPLETE');
+export const fetchSidebarConfigFailed = createAction<AjaxError>('FETCH_SIDEBAR_CONFIG_FAILED');

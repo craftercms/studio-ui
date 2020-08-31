@@ -27,6 +27,7 @@ import dialogs from './dialogs';
 import versions from './versions';
 import content from './content';
 import translation from './translation';
+import configuration from './configuration';
 
 const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   auth,
@@ -38,7 +39,8 @@ const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   dialogs,
   versions,
   content,
-  translation
+  translation,
+  configuration
 };
 
 export default reducer;
