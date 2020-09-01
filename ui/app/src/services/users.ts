@@ -38,6 +38,10 @@ export function fetchRolesInSite(username: string, siteId: string): Observable<s
   return get(`/studio/api/2/users/${username}/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
 }
 
+export function fetchRolesInSiteForCurrent(siteId: string): Observable<string[]> {
+  return get(`/studio/api/2/users/me/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
+}
+
 export function fetchRolesBySite(username?: string, sites?: Site[]): Observable<LookupTable<string[]>> {
   return forkJoin({
     username: username ? of(username) : me().pipe(map(user => user.username)),
@@ -45,7 +49,20 @@ export function fetchRolesBySite(username?: string, sites?: Site[]): Observable<
   }).pipe(
     switchMap(({ username, sites }) => forkJoin<LookupTable<Observable<string[]>>, ''>(
       sites.reduce((lookup, site) => {
-        lookup[site.id] = fetchRolesInSite(username, site.id)
+        lookup[site.id] = fetchRolesInSite(username, site.id);
+        return lookup;
+      }, {})
+    ))
+  );
+}
+
+export function fetchRolesBySiteForCurrent(sites?: Site[]): Observable<LookupTable<string[]>> {
+  return forkJoin({
+    sites: sites ? of(sites) : fetchSites()
+  }).pipe(
+    switchMap(({ sites }) => forkJoin<LookupTable<Observable<string[]>>, ''>(
+      sites.reduce((lookup, site) => {
+        lookup[site.id] = fetchRolesInSiteForCurrent(site.id);
         return lookup;
       }, {})
     ))
