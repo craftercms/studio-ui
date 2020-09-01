@@ -15,7 +15,7 @@
  */
 
 import React, { ElementType, useEffect, useMemo, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
@@ -52,6 +52,7 @@ import { Site } from '../../models/Site';
 import { User } from '../../models/User';
 import { fetchSidebarConfig } from '../../state/actions/configuration';
 import { forEach } from '../../utils/array';
+import EmptyState from '../SystemStatus/EmptyState';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -386,59 +387,52 @@ export default function GlobalNav(props: GlobalNavProps) {
   };
 
   useEffect(() => {
-    if (site) {
-      dispatch(fetchSites());
-    }
-  }, [site, dispatch]);
-
-  useEffect(() => {
-    if (!sidebarState.items && !sidebarState.isFetching) {
+    if (site && !sidebarState.items && !sidebarState.isFetching) {
       dispatch(fetchSidebarConfig(site));
     }
-    if (site && sidebarState.items) {
-      getGlobalMenuItems().subscribe(({ response }) => {
-          setMenuItems(response.menuItems);
-          let roleFound = {
-            [siteMenuKeys.dashboard]: false,
-            [siteMenuKeys.siteConfig]: false
-          };
-          sidebarState.items.forEach((item) => {
-            if (item.name === siteMenuKeys.siteConfig || item.name === siteMenuKeys.dashboard) {
-              let roles = item.params['roles']?.['role'];
-              roleFound[item.name] = roles?.length
-                ? forEach(
-                  roles,
-                  (role) => {
-                    if (
-                      rolesBySite[site] &&
-                      rolesBySite[site].includes(role)
-                    ) {
-                      return true;
-                    }
-                  },
-                  false
-                )
-                : true;
-              setSiteMenu(roleFound);
-            }
-          });
-        },
-        (error) => {
-          if (error.response) {
-            const _response = {
-              ...error.response,
-              code: '',
-              documentationUrl: '',
-              remedialAction: ''
-            };
-            setApiState({ error: true, errorResponse: _response });
+    getGlobalMenuItems().subscribe(({ response }) => {
+        setMenuItems(response.menuItems);
+        let roleFound = {
+          [siteMenuKeys.dashboard]: false,
+          [siteMenuKeys.siteConfig]: false
+        };
+        sidebarState.items?.forEach((item) => {
+          if (item.name === siteMenuKeys.siteConfig || item.name === siteMenuKeys.dashboard) {
+            let roles = item.params['roles']?.['role'];
+            roleFound[item.name] = roles?.length
+              ? forEach(
+                roles,
+                (role) => {
+                  if (
+                    rolesBySite[site] &&
+                    rolesBySite[site].includes(role)
+                  ) {
+                    return true;
+                  }
+                },
+                false
+              )
+              : true;
+            setSiteMenu(roleFound);
           }
+        });
+      },
+      (error) => {
+        if (error.response) {
+          const _response = {
+            ...error.response,
+            code: '',
+            documentationUrl: '',
+            remedialAction: ''
+          };
+          setApiState({ error: true, errorResponse: _response });
         }
-      );
-    }
+      }
+    );
   }, [dispatch, site, sidebarState.isFetching, sidebarState.items, rolesBySite]);
 
   useMount(() => {
+    dispatch(fetchSites());
     version === null && dispatch(fetchSystemVersion());
   });
 
@@ -463,7 +457,7 @@ export default function GlobalNav(props: GlobalNavProps) {
           error={apiState.errorResponse}
           onBack={handleErrorBack}
         />
-      ) : ((sites !== null) && (siteMenu !== null) && (menuItems !== null)) ? (
+      ) : (menuItems !== null) ? (
         <Grid container spacing={0} className={classes.gridContainer}>
           <Hidden only={['xs', 'sm']}>
             <Grid item md={4} className={classes.leftRail}>
@@ -476,17 +470,27 @@ export default function GlobalNav(props: GlobalNavProps) {
                 >
                   {formatMessage(messages.mySites)}
                 </Typography>
-                {sites.map((site, i) => (
-                  <SiteCard
-                    key={i}
-                    title={site.name}
-                    value={site.id}
-                    options={true}
-                    classes={{ root: classes.titleCard }}
-                    onCardClick={() => onSiteCardClick(site.id)}
-                    cardActions={cardActions}
-                  />
-                ))}
+                {
+                  sites.length ? (
+                    sites.map((site, i) => (
+                      <SiteCard
+                        key={i}
+                        title={site.name}
+                        value={site.id}
+                        options={true}
+                        classes={{ root: classes.titleCard }}
+                        onCardClick={() => onSiteCardClick(site.id)}
+                        cardActions={cardActions}
+                      />
+                    ))
+                  ) : (
+                    <EmptyState
+                      title={<FormattedMessage
+                        id="globalMenu.noSites" defaultMessage="No sites."
+                      />}
+                    />
+                  )
+                }
               </div>
               <div className={classes.railBottom}>
                 <img className={classes.logo} src="/studio/static-assets/images/logo.svg" alt="" />
