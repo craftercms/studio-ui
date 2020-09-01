@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useCallback, useReducer, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
@@ -23,7 +23,6 @@ import {
   cut,
   duplicate,
   fetchWorkflowAffectedItems,
-  getChildrenByPath,
   getContentInstance,
   getDetailedItem,
   getPages,
@@ -39,7 +38,7 @@ import {
   useContentTypes,
   useEnv,
   useLogicResource,
-  useMount,
+  useSelection,
   useSpreadState
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
@@ -49,10 +48,7 @@ import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
 import StandardAction from '../../../models/StandardAction';
-import { createAction } from '@reduxjs/toolkit';
-import { createLookupTable, nou } from '../../../utils/object';
-import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
-import { itemsFromPath, withIndex, withoutIndex } from '../../../utils/path';
+import { withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
@@ -78,7 +74,16 @@ import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog
 import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
 import { batchActions } from '../../../state/actions/misc';
 import queryString from 'query-string';
-import { pathNavigatorFetchPath, pathNavigatorInit } from '../../../state/reducers/pathNavigator';
+import {
+  pathNavigatorClearChecked,
+  pathNavigatorFetchPath,
+  pathNavigatorInit,
+  pathNavigatorItemChecked,
+  pathNavigatorItemUnchecked,
+  pathNavigatorSetCurrentPath,
+  pathNavigatorSetKeyword,
+  pathNavigatorSetLocaleCode
+} from '../../../state/reducers/pathNavigator';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -394,98 +399,112 @@ const init: (props: WidgetProps) => WidgetState = (props: WidgetProps) => ({
 
 type WidgetReducer = React.Reducer<WidgetState, StandardAction>;
 
-const reducer: WidgetReducer = (state, { type, payload }) => {
-  switch (type) {
-    case fetchPath.type:
-      return state;
-    case fetchPathComplete.type: {
-      const path = state.currentPath;
-      // Check and handle if the item has no children
-      if (
-        payload.length === 0 &&
-        // If it is the root path, we want to show the empty state,
-        // vs child paths, want to show the previous path and inform
-        // that there aren't any items at that path
-        withoutIndex(path) !== withoutIndex(state.rootPath)
-      ) {
-        let pieces = path.split('/').slice(0);
-        pieces.pop();
-        if (path.includes('index.xml')) {
-          pieces.pop();
-        }
-        let nextPath = pieces.join('/');
-        if (nou(state.items[nextPath])) {
-          nextPath = withIndex(nextPath);
-        }
-        return {
-          ...state,
-          // Revert path to previous (parent) path
-          currentPath: nextPath,
-          leafs: state.leafs.concat(path)
-        };
-      } else {
-        const nextItems = {
-          ...state.items,
-          [payload.parent.id]: payload.parent,
-          ...createLookupTable(payload)
-        };
-        return {
-          ...state,
-          breadcrumb: itemsFromPath(path, state.rootPath, nextItems),
-          itemsInPath: payload.map((item) => item.id),
-          items: nextItems,
-          count: payload.length
-        };
-      }
-    }
-    case setCurrentPath.type:
-      return {
-        ...state,
-        keyword: '',
-        currentPath: payload
-      };
-    case setKeyword.type:
-      return {
-        ...state,
-        keyword: payload
-      };
-    case itemUnchecked.type:
-      let checked = [...state.selectedItems];
-      checked.splice(checked.indexOf(payload.path), 1);
-      return { ...state, selectedItems: checked };
-    case setLocaleCode.type:
-      return state;
-    case itemChecked.type:
-      let selectedItems = [...state.selectedItems];
-      selectedItems.push(payload.path);
-      return { ...state, selectedItems };
-    case clearChecked.type:
-      return { ...state, selectedItems: [] };
-    default:
-      throw new Error(`Unknown action "${type}"`);
-  }
-};
+// const reducer: WidgetReducer = (state, { type, payload }) => {
+//   switch (type) {
+//     case fetchPath.type:
+//       return state;
+//     case fetchPathComplete.type: {
+//       const path = state.currentPath;
+//       // Check and handle if the item has no children
+//       if (
+//         payload.length === 0 &&
+//         // If it is the root path, we want to show the empty state,
+//         // vs child paths, want to show the previous path and inform
+//         // that there aren't any items at that path
+//         withoutIndex(path) !== withoutIndex(state.rootPath)
+//       ) {
+//         let pieces = path.split('/').slice(0);
+//         pieces.pop();
+//         if (path.includes('index.xml')) {
+//           pieces.pop();
+//         }
+//         let nextPath = pieces.join('/');
+//         if (nou(state.items[nextPath])) {
+//           nextPath = withIndex(nextPath);
+//         }
+//         return {
+//           ...state,
+//           // Revert path to previous (parent) path
+//           currentPath: nextPath,
+//           leafs: state.leafs.concat(path)
+//         };
+//       } else {
+//         const nextItems = {
+//           ...state.items,
+//           [payload.parent.id]: payload.parent,
+//           ...createLookupTable(payload)
+//         };
+//         return {
+//           ...state,
+//           breadcrumb: itemsFromPath(path, state.rootPath, nextItems),
+//           itemsInPath: payload.map((item) => item.id),
+//           items: nextItems,
+//           count: payload.length
+//         };
+//       }
+//     }
+//     case setCurrentPath.type:
+//       return {
+//         ...state,
+//         keyword: '',
+//         currentPath: payload
+//       };
+//     case setKeyword.type:
+//       return {
+//         ...state,
+//         keyword: payload
+//       };
+//     case itemUnchecked.type:
+//       let checked = [...state.selectedItems];
+//       checked.splice(checked.indexOf(payload.path), 1);
+//       return { ...state, selectedItems: checked };
+//     case setLocaleCode.type:
+//       return state;
+//     case itemChecked.type:
+//       let selectedItems = [...state.selectedItems];
+//       selectedItems.push(payload.path);
+//       return { ...state, selectedItems };
+//     case clearChecked.type:
+//       return { ...state, selectedItems: [] };
+//     default:
+//       throw new Error(`Unknown action "${type}"`);
+//   }
+// };
 
-const setLocaleCode = createAction<string>('SET_LOCALE_CODE');
-const setCurrentPath = createAction<string>('SET_CURRENT_PATH');
-const itemChecked = createAction<SandboxItem>('ITEM_CHECKED');
-const itemUnchecked = createAction<SandboxItem>('ITEM_UNCHECKED');
-const clearChecked = createAction('CLEAR_CHECKED');
-const fetchPath = createAction<string>('FETCH_PATH');
-const fetchPathComplete = createAction<GetChildrenResponse>('FETCH_PATH_COMPLETE');
-const setKeyword = createAction<string>('SET_KEYWORD');
+// const setLocaleCode = createAction<string>('SET_LOCALE_CODE');
+// const setCurrentPath = createAction<string>('SET_CURRENT_PATH');
+// const itemChecked = createAction<SandboxItem>('ITEM_CHECKED');
+// const itemUnchecked = createAction<SandboxItem>('ITEM_UNCHECKED');
+// const clearChecked = createAction('CLEAR_CHECKED');
+// const fetchPath = createAction<string>('FETCH_PATH');
+// const fetchPathComplete = createAction<GetChildrenResponse>('FETCH_PATH_COMPLETE');
+// const setKeyword = createAction<string>('SET_KEYWORD');
 
 // PathNavigator
 export default function (props: WidgetProps) {
   const { title, icon, path, id } = props;
-  const [state, _dispatch] = useReducer(reducer, props, init);
-
+  const pathNavigator = useSelection(state => state.pathNavigator[id]);
+  const [state, setState] = useState({
+    rootPath: props.path,
+    currentPath: props.path,
+    localeCode: props.locale,
+    keyword: '',
+    isSelectMode: false,
+    hasClipboard: false,
+    itemsInPath: null,
+    items: {},
+    breadcrumb: [],
+    selectedItems: [],
+    leafs: [],
+    limit: 10,
+    offset: 0,
+    count: 0
+  });
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  //new
   const defaultSrc = `${authoringBase}/studio/legacy/form?`;
   const contentTypes = useContentTypes();
   const options = {
@@ -495,27 +514,14 @@ export default function (props: WidgetProps) {
     translation: path.includes('site/website/')
   };
 
-  useMount(() => {
-    dispatch(pathNavigatorInit({ id, props }));
-    dispatch(pathNavigatorFetchPath({ id, path }));
-  });
-
-  const exec = useCallback(
-    (action) => {
-      _dispatch(action);
-      const { type, payload } = action;
-      switch (type) {
-        case fetchPath.type:
-        case setCurrentPath.type:
-          getChildrenByPath(site, fetchPath.type === type ? state.currentPath : payload).subscribe(
-            (response) => exec(fetchPathComplete(response)),
-            (response) => dispatch(showErrorDialog({ error: response }))
-          );
-          break;
-      }
-    },
-    [dispatch, site, state]
-  );
+  useEffect(() => {
+    if (!pathNavigator) {
+      dispatch(pathNavigatorInit({ id: props.id, props }));
+      dispatch(pathNavigatorFetchPath({ id: props.id, path: props.path }));
+    } else {
+      setState(pathNavigator);
+    }
+  }, [dispatch, pathNavigator, props]);
 
   const [collapsed, setCollapsed] = useState(false);
   const [menuState, setMenuState] = useSpreadState<MenuState>({
@@ -533,10 +539,6 @@ export default function (props: WidgetProps) {
   const [newFileDialog, setNewFileDialog] = useState(null);
   const [uploadDialog, setUploadDialog] = useState(null);
 
-  useMount(() => {
-    exec(fetchPath(path));
-  });
-
   const itemsResource: Resource<SandboxItem[]> = useLogicResource(state.itemsInPath, {
     shouldResolve: (items) => Boolean(items),
     shouldRenew: (items, resource) => resource.complete,
@@ -545,12 +547,18 @@ export default function (props: WidgetProps) {
     errorSelector: null
   });
 
-  const onPathSelected = (item: SandboxItem) => exec(setCurrentPath(item.path));
+  const onPathSelected = (item: SandboxItem) => dispatch(pathNavigatorSetCurrentPath({
+    id,
+    path: item.path
+  }));
 
   const onPageChanged = (page: number) => void 0;
 
   const onSelectItem = (item: SandboxItem, checked: boolean) =>
-    exec(checked ? itemChecked(item) : itemUnchecked(item));
+    dispatch(checked ? pathNavigatorItemChecked({ id, item }) : pathNavigatorItemUnchecked({
+      id,
+      item
+    }));
 
   const translationDialogItemChange = (item: SandboxItem) => {
     getTargetLocales(site, item.path).subscribe(
@@ -626,7 +634,7 @@ export default function (props: WidgetProps) {
 
   const terminateSelection = () => {
     setMenuState({ selectMode: false });
-    exec(clearChecked());
+    dispatch(pathNavigatorClearChecked({ id }));
   };
 
   const closeContextMenu = () => {
@@ -725,7 +733,7 @@ export default function (props: WidgetProps) {
           () => {
             closeContextMenu();
             setMenuState({ hasClipboard: false });
-            exec(fetchPath(state.currentPath));
+            dispatch(pathNavigatorFetchPath({ id, path: state.currentPath }));
           },
           (response) => {
             dispatch(
@@ -755,7 +763,7 @@ export default function (props: WidgetProps) {
         const callback = (e) => {
           duplicate(site, activeItem, parentItem).subscribe(
             (item: SandboxItem) => {
-              exec(fetchPath(state.currentPath));
+              dispatch(pathNavigatorFetchPath({ id, path: state.currentPath }));
               openItemLegacyForm(item, 'form');
             }
           );
@@ -817,7 +825,7 @@ export default function (props: WidgetProps) {
         // TODO: review
         const callback = (e) => {
           dispatch(closeDeleteDialog());
-          exec(fetchPath(state.currentPath));
+          dispatch(pathNavigatorFetchPath({ id, path: state.currentPath }));
           document.removeEventListener(section.id, callback, false);
         };
         document.addEventListener(section.id, callback, true);
@@ -952,7 +960,7 @@ export default function (props: WidgetProps) {
             ...menu,
             anchorEl: null
           });
-          exec(setLocaleCode(section.id.split('.')[1]));
+          dispatch(pathNavigatorSetLocaleCode({ id, locale: section.id.split('.')[1] }));
         }
         break;
       }
@@ -1045,22 +1053,22 @@ export default function (props: WidgetProps) {
 
   const onUploadDialogClose = (status: DropZoneStatus, path: string) => {
     if (status.uploadedFiles > 0 && withoutIndex(state.currentPath) === path) {
-      exec(fetchPath(path));
+      dispatch(pathNavigatorFetchPath({ id, path }));
     }
     setUploadDialog(null);
   };
 
   const onNewFolderCreated = (path: string, name: string, rename: boolean) => {
     if (rename) {
-      exec(fetchPath(state.currentPath));
+      dispatch(pathNavigatorFetchPath({ id, path: state.currentPath }));
     } else if (withoutIndex(state.currentPath) === path) {
-      exec(fetchPath(path));
+      dispatch(pathNavigatorFetchPath({ id, path }));
     }
   };
 
   const onNewFileCreated = (path: string, fileName: string, type: 'controller' | 'template') => {
     if (withoutIndex(state.currentPath) === path) {
-      exec(fetchPath(path));
+      dispatch(pathNavigatorFetchPath({ id, path }));
     }
     openFileLegacyForm(`${path}/${fileName}`, type);
   };
@@ -1075,7 +1083,7 @@ export default function (props: WidgetProps) {
     if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
       onItemClicked(item);
     } else {
-      exec(setCurrentPath(item.path));
+      dispatch(pathNavigatorSetCurrentPath({ id, path: item.path }));
     }
   };
 
@@ -1112,7 +1120,7 @@ export default function (props: WidgetProps) {
             keyword={state.keyword}
             breadcrumb={state.breadcrumb}
             onMenu={onCurrentParentMenu}
-            onSearch={(q) => exec(setKeyword(q))}
+            onSearch={(keyword) => dispatch(pathNavigatorSetKeyword({ id, keyword }))}
             onCrumbSelected={onBreadcrumbSelected}
           />
           <Nav
@@ -1136,7 +1144,7 @@ export default function (props: WidgetProps) {
             labelRowsPerPage=""
             count={state.count}
             rowsPerPage={state.limit}
-            page={Math.ceil(state.offset / state.limit)}
+            page={state && Math.ceil(state.offset / state.limit)}
             backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
             nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
             onChangePage={(e, page: number) => onPageChanged(page)}
