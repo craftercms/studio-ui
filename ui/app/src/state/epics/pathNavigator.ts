@@ -15,27 +15,33 @@
  */
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   pathNavigatorFetchPath,
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
+  pathNavigatorInit,
   pathNavigatorSetCurrentPath
 } from '../reducers/pathNavigator';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
+import { NEVER } from 'rxjs';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(pathNavigatorFetchPath.type, pathNavigatorSetCurrentPath.type),
+      ofType(pathNavigatorFetchPath.type, pathNavigatorSetCurrentPath.type, pathNavigatorInit.type),
       withLatestFrom(state$),
-      switchMap(([{ type, payload: { id, path } }, state]) => {
-          return getChildrenByPath(state.sites.active, pathNavigatorFetchPath.type === type ? state.pathNavigator[id].currentPath : path).pipe(
-            map((response) => pathNavigatorFetchPathComplete({ id, response })),
-            catchAjaxError(pathNavigatorFetchPathFailed)
-          );
+      mergeMap(([{ type, payload: { id, path } }, state]) => {
+          if (pathNavigatorInit.type === type && localStorage.getItem('pathNavigator')) {
+            return NEVER;
+          } else {
+            return getChildrenByPath(state.sites.active, path).pipe(
+              map((response) => pathNavigatorFetchPathComplete({ id, response })),
+              catchAjaxError(pathNavigatorFetchPathFailed)
+            );
+          }
         }
       )
     )

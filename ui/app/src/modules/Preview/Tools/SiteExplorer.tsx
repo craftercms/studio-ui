@@ -120,7 +120,7 @@ export function SiteExplorer(props: SiteExplorerProps) {
       {Boolean(notSupported.length) && (
         <Alert severity="warning">{formatMessage(translations.unsupportedItemsPreset)}</Alert>
       )}
-      {widgets.slice(0, 3)?.map((item, index) => {
+      {widgets?.map((item, index) => {
         const Component = ItemToComponentMap[item.name || item.render];
         return <Component
           key={index} {...(item.name ? item.params : item.props)} classes={classes}

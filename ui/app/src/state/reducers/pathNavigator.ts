@@ -24,7 +24,7 @@ import { createLookupTable, nou } from '../../utils/object';
 
 type PayloadWithId<P> = P & { id: string };
 
-export const pathNavigatorInit = createAction<PayloadWithId<{ props: WidgetProps }>>('PATH_NAVIGATOR_INIT');
+export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; props: WidgetProps }>>('PATH_NAVIGATOR_INIT');
 
 export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>('PATH_NAVIGATOR_INIT_SET_LOCALE_CODE');
 
@@ -48,25 +48,29 @@ const reducer = createReducer<LookupTable<WidgetState>>(
   {},
   {
     [pathNavigatorInit.type]: (state, { payload: { props, id } }) => {
-      return {
-        ...state,
-        [id]: {
-          rootPath: props.path,
-          currentPath: props.path,
-          localeCode: props.locale,
-          keyword: '',
-          isSelectMode: false,
-          hasClipboard: false,
-          itemsInPath: null,
-          items: {},
-          breadcrumb: [],
-          selectedItems: [],
-          leafs: [],
-          limit: 10,
-          offset: 0,
-          count: 0
-        }
-      };
+      if (localStorage.getItem('pathNavigator')) {
+        return JSON.parse(localStorage.getItem('pathNavigator'));
+      } else {
+        return {
+          ...state,
+          [id]: {
+            rootPath: props.path,
+            currentPath: props.path,
+            localeCode: props.locale,
+            keyword: '',
+            isSelectMode: false,
+            hasClipboard: false,
+            itemsInPath: null,
+            items: {},
+            breadcrumb: [],
+            selectedItems: [],
+            leafs: [],
+            limit: 10,
+            offset: 0,
+            count: 0
+          }
+        };
+      }
     },
     [pathNavigatorFetchPath.type]: (state) => state,
     [pathNavigatorSetCurrentPath.type]: (state, { payload: { id, path } }) => {
@@ -113,7 +117,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           [response.parent.id]: response.parent,
           ...createLookupTable(response)
         };
-        return {
+        const nextState = {
           ...state,
           [id]: {
             ...state[id],
@@ -123,6 +127,8 @@ const reducer = createReducer<LookupTable<WidgetState>>(
             count: response.length
           }
         };
+        localStorage.setItem('pathNavigator', JSON.stringify(nextState));
+        return nextState;
       }
     },
     [pathNavigatorSetKeyword.type]: (state, { payload: { id, keyword } }) => {

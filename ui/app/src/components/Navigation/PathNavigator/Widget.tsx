@@ -47,7 +47,6 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
-import StandardAction from '../../../models/StandardAction';
 import { withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
@@ -380,106 +379,6 @@ export interface WidgetState {
   offset: number;
 }
 
-const init: (props: WidgetProps) => WidgetState = (props: WidgetProps) => ({
-  rootPath: props.path,
-  currentPath: props.path,
-  localeCode: props.locale,
-  keyword: '',
-  isSelectMode: false,
-  hasClipboard: false,
-  itemsInPath: null,
-  items: {},
-  breadcrumb: [],
-  selectedItems: [],
-  leafs: [],
-  limit: 10,
-  offset: 0,
-  count: 0
-});
-
-type WidgetReducer = React.Reducer<WidgetState, StandardAction>;
-
-// const reducer: WidgetReducer = (state, { type, payload }) => {
-//   switch (type) {
-//     case fetchPath.type:
-//       return state;
-//     case fetchPathComplete.type: {
-//       const path = state.currentPath;
-//       // Check and handle if the item has no children
-//       if (
-//         payload.length === 0 &&
-//         // If it is the root path, we want to show the empty state,
-//         // vs child paths, want to show the previous path and inform
-//         // that there aren't any items at that path
-//         withoutIndex(path) !== withoutIndex(state.rootPath)
-//       ) {
-//         let pieces = path.split('/').slice(0);
-//         pieces.pop();
-//         if (path.includes('index.xml')) {
-//           pieces.pop();
-//         }
-//         let nextPath = pieces.join('/');
-//         if (nou(state.items[nextPath])) {
-//           nextPath = withIndex(nextPath);
-//         }
-//         return {
-//           ...state,
-//           // Revert path to previous (parent) path
-//           currentPath: nextPath,
-//           leafs: state.leafs.concat(path)
-//         };
-//       } else {
-//         const nextItems = {
-//           ...state.items,
-//           [payload.parent.id]: payload.parent,
-//           ...createLookupTable(payload)
-//         };
-//         return {
-//           ...state,
-//           breadcrumb: itemsFromPath(path, state.rootPath, nextItems),
-//           itemsInPath: payload.map((item) => item.id),
-//           items: nextItems,
-//           count: payload.length
-//         };
-//       }
-//     }
-//     case setCurrentPath.type:
-//       return {
-//         ...state,
-//         keyword: '',
-//         currentPath: payload
-//       };
-//     case setKeyword.type:
-//       return {
-//         ...state,
-//         keyword: payload
-//       };
-//     case itemUnchecked.type:
-//       let checked = [...state.selectedItems];
-//       checked.splice(checked.indexOf(payload.path), 1);
-//       return { ...state, selectedItems: checked };
-//     case setLocaleCode.type:
-//       return state;
-//     case itemChecked.type:
-//       let selectedItems = [...state.selectedItems];
-//       selectedItems.push(payload.path);
-//       return { ...state, selectedItems };
-//     case clearChecked.type:
-//       return { ...state, selectedItems: [] };
-//     default:
-//       throw new Error(`Unknown action "${type}"`);
-//   }
-// };
-
-// const setLocaleCode = createAction<string>('SET_LOCALE_CODE');
-// const setCurrentPath = createAction<string>('SET_CURRENT_PATH');
-// const itemChecked = createAction<SandboxItem>('ITEM_CHECKED');
-// const itemUnchecked = createAction<SandboxItem>('ITEM_UNCHECKED');
-// const clearChecked = createAction('CLEAR_CHECKED');
-// const fetchPath = createAction<string>('FETCH_PATH');
-// const fetchPathComplete = createAction<GetChildrenResponse>('FETCH_PATH_COMPLETE');
-// const setKeyword = createAction<string>('SET_KEYWORD');
-
 // PathNavigator
 export default function (props: WidgetProps) {
   const { title, icon, path, id } = props;
@@ -516,8 +415,7 @@ export default function (props: WidgetProps) {
 
   useEffect(() => {
     if (!pathNavigator) {
-      dispatch(pathNavigatorInit({ id: props.id, props }));
-      dispatch(pathNavigatorFetchPath({ id: props.id, path: props.path }));
+      dispatch(pathNavigatorInit({ id: props.id, path: props.path, props }));
     } else {
       setState(pathNavigator);
     }
