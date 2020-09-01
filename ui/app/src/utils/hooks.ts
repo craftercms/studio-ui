@@ -318,7 +318,7 @@ export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
   const siteLocales = useSelection((state) => state.translation.siteLocales);
   const dispatch = useDispatch();
 
-  if (siteLocales.localeCodes?.length === 0 && siteLocales.isFetching === false) {
+  if (!siteLocales.localeCodes && !siteLocales.isFetching) {
     dispatch(fetchSiteLocales());
   }
 

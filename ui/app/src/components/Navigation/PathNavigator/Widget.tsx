@@ -989,7 +989,7 @@ export default function (props: WidgetProps) {
   };
 
   const onHeaderButtonClick = (anchorEl: Element, type: string) => {
-    const locales = siteLocales.localeCodes.map(code => ({
+    const locales = siteLocales.localeCodes?.map(code => ({
       id: `locale.${code}`,
       label: {
         id: `locale.${code}`,

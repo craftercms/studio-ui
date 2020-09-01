@@ -26,7 +26,7 @@ export const initialState = {
   siteLocales: {
     error: null,
     isFetching: false,
-    localeCodes: [],
+    localeCodes: null,
     defaultLocaleCode: null
   }
 };
