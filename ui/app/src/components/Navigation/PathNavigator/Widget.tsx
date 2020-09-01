@@ -79,7 +79,6 @@ import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog
 import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
 import { batchActions } from '../../../state/actions/misc';
 import queryString from 'query-string';
-import { fetchSiteLocales } from '../../../state/actions/translation';
 import { languages } from '../../../utils/i18n-legacy';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
@@ -542,10 +541,6 @@ export default function (props: WidgetProps) {
   const [newFolderDialog, setNewFolderDialog] = useState(null);
   const [newFileDialog, setNewFileDialog] = useState(null);
   const [uploadDialog, setUploadDialog] = useState(null);
-
-  useEffect(() => {
-    dispatch(fetchSiteLocales());
-  }, []);
 
   useMount(() => {
     exec(fetchPath(path));

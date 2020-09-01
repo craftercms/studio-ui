@@ -46,7 +46,7 @@ const reducer = createReducer<GlobalState['translation']>(
       siteLocales: {
         ...state.siteLocales,
         isFetching: false,
-        localeCodes: payload.localeCodes,
+        localeCodes: payload.localeCodes??[],
         defaultLocaleCode: payload.defaultLocaleCode
       }
     }),
