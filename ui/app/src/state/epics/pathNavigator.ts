@@ -18,6 +18,8 @@ import { Epic, ofType, StateObservable } from 'redux-observable';
 import { map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
+  pathNavigatorFetchParentItems,
+  pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPath,
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
@@ -25,6 +27,9 @@ import {
 } from '../reducers/pathNavigator';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
+import { getParentsFromPath, withIndex } from '../../utils/path';
+import { forkJoin, Observable } from 'rxjs';
+import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
@@ -33,9 +38,40 @@ export default [
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, path } }, state]) => {
           return getChildrenByPath(state.sites.active, path).pipe(
-            map((response) => pathNavigatorFetchPathComplete({ id, response })),
+            map((response) => {
+                localStorage.setItem(`craftercms.pathNavigator.${id}`, JSON.stringify({ currentPath: path }));
+                return pathNavigatorFetchPathComplete({ id, response });
+              }
+            ),
             catchAjaxError(pathNavigatorFetchPathFailed)
           );
+        }
+      )
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(pathNavigatorFetchParentItems.type),
+      withLatestFrom(state$),
+      mergeMap(([{ type, payload: { id, path } }, state]) => {
+          const site = state.sites.active;
+          const parentsPath = [...getParentsFromPath(path, state.pathNavigator[id].rootPath), path];
+          const requests: Observable<GetChildrenResponse>[] = [];
+          if (parentsPath.length) {
+            parentsPath.forEach(parentPath => {
+              if (!state.pathNavigator[id].items[parentPath] && !state.pathNavigator[id].items[withIndex(parentPath)]) {
+                requests.push(getChildrenByPath(site, parentPath));
+              }
+            });
+            return forkJoin(requests).pipe(
+              map((response) => pathNavigatorFetchParentItemsComplete({ id, response })),
+              catchAjaxError(pathNavigatorFetchPathFailed)
+            );
+          } else {
+            return getChildrenByPath(site, path).pipe(
+              map((response) => pathNavigatorFetchPathComplete({ id, response })),
+              catchAjaxError(pathNavigatorFetchPathFailed)
+            );
+          }
         }
       )
     )

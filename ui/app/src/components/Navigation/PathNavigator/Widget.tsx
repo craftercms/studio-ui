@@ -78,14 +78,14 @@ import queryString from 'query-string';
 import { languages } from '../../../utils/i18n-legacy';
 import {
   pathNavigatorClearChecked,
+  pathNavigatorFetchParentItems,
   pathNavigatorFetchPath,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode,
-  pathNavigatorUpdate
+  pathNavigatorSetLocaleCode
 } from '../../../state/reducers/pathNavigator';
 import { trimerize } from '../../../utils/string';
 
@@ -421,9 +421,10 @@ export default function (props: WidgetProps) {
 
   useMount(() => {
     if (localStorage.getItem(`craftercms.pathNavigator.${id}`)) {
-      dispatch(pathNavigatorUpdate({
+      dispatch(pathNavigatorInit({ id: props.id, path: props.path, locale: props.locale }));
+      dispatch(pathNavigatorFetchParentItems({
         id,
-        state: JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${id}`))
+        path: JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${id}`)).currentPath
       }));
     } else {
       dispatch(pathNavigatorInit({ id: props.id, path: props.path, locale: props.locale }));

@@ -26,25 +26,29 @@ type PayloadWithId<P> = P & { id: string };
 
 export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; locale: string }>>('PATH_NAVIGATOR_INIT');
 
-export const pathNavigatorUpdate = createAction<PayloadWithId<{ state: WidgetState }>>('PATH_NAVIGATOR_UPDATE');
+export const pathNavigatorUpdate = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_UPDATE');
 
-export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>('PATH_NAVIGATOR_INIT_SET_LOCALE_CODE');
+export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>('PATH_NAVIGATOR_SET_LOCALE_CODE');
 
-export const pathNavigatorSetCurrentPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_INIT_SET_CURRENT_PATH');
+export const pathNavigatorSetCurrentPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_SET_CURRENT_PATH');
 
-export const pathNavigatorItemChecked = createAction<PayloadWithId<{ item: SandboxItem }>>('PATH_NAVIGATOR_INIT_ITEM_CHECKED');
+export const pathNavigatorItemChecked = createAction<PayloadWithId<{ item: SandboxItem }>>('PATH_NAVIGATOR_ITEM_CHECKED');
 
-export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: SandboxItem }>>('PATH_NAVIGATOR_INIT_ITEM_UNCHECKED');
+export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: SandboxItem }>>('PATH_NAVIGATOR_ITEM_UNCHECKED');
 
-export const pathNavigatorClearChecked = createAction<{ id: string }>('PATH_NAVIGATOR_INIT_CLEAR_CHECKED');
+export const pathNavigatorClearChecked = createAction<{ id: string }>('PATH_NAVIGATOR_CLEAR_CHECKED');
 
-export const pathNavigatorFetchPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_INIT_FETCH_PATH');
+export const pathNavigatorFetchPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PATH');
 
-export const pathNavigatorFetchPathComplete = createAction<PayloadWithId<{ response: GetChildrenResponse }>>('PATH_NAVIGATOR_INIT_FETCH_PATH_COMPLETE');
+export const pathNavigatorFetchParentItems = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
 
-export const pathNavigatorFetchPathFailed = createAction('PATH_NAVIGATOR_INIT_FETCH_PATH_FAILED');
+export const pathNavigatorFetchPathComplete = createAction<PayloadWithId<{ response: GetChildrenResponse }>>('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
 
-export const pathNavigatorSetKeyword = createAction<PayloadWithId<{ keyword: string }>>('PATH_NAVIGATOR_INIT_SET_KEYWORD');
+export const pathNavigatorFetchParentItemsComplete = createAction<PayloadWithId<{ response: GetChildrenResponse[] }>>('PATH_NAVIGATOR_FETCH_PARENT_ITEMS_COMPLETE');
+
+export const pathNavigatorFetchPathFailed = createAction('PATH_NAVIGATOR_FETCH_PATH_FAILED');
+
+export const pathNavigatorSetKeyword = createAction<PayloadWithId<{ keyword: string }>>('PATH_NAVIGATOR_SET_KEYWORD');
 
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
@@ -68,12 +72,6 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           offset: 0,
           count: 0
         }
-      };
-    },
-    [pathNavigatorUpdate.type]: (state, { payload: { id, state: updatedState } }) => {
-      return {
-        ...state,
-        [id]: updatedState
       };
     },
     [pathNavigatorFetchPath.type]: (state) => state,
@@ -128,12 +126,46 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           items: nextItems,
           count: response.length
         };
-        localStorage.setItem(`craftercms.pathNavigator.${id}`, JSON.stringify(widgetState));
         return {
           ...state,
           [id]: widgetState
         };
       }
+    },
+    [pathNavigatorFetchParentItems.type]: (state, { payload: { id, path } }) => {
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          keyword: '',
+          currentPath: path
+        }
+      };
+    },
+    [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { id, response } }) => {
+      const { currentPath, rootPath } = state[id];
+      let nextItems = {};
+      let items = [];
+
+      response.forEach((resp: GetChildrenResponse, i: number) => {
+        if (i === response.length - 1) {
+          items = resp.map((item) => item.id);
+        }
+        nextItems = {
+          ...nextItems, ...createLookupTable(resp),
+          [resp.parent.id]: resp.parent
+        };
+      });
+
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          items: nextItems,
+          itemsInPath: items,
+          breadcrumb: [...itemsFromPath(currentPath, rootPath, nextItems)]
+        }
+      };
     },
     [pathNavigatorSetKeyword.type]: (state, { payload: { id, keyword } }) => {
       return {
