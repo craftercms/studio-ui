@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
@@ -38,7 +38,6 @@ import {
   useContentTypes,
   useEnv,
   useLogicResource,
-  useMount,
   useSelection,
   useSiteLocales,
   useSpreadState
@@ -387,7 +386,8 @@ export interface WidgetState {
 // PathNavigator
 export default function (props: WidgetProps) {
   const { title, icon, path, id = trimerize(props.title) } = props;
-  const state = useSelection(state => state.pathNavigator[id]);
+  const pathNavigator = useSelection(state => state.pathNavigator);
+  const state = pathNavigator?.[id];
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
@@ -419,18 +419,20 @@ export default function (props: WidgetProps) {
 
   const siteLocales = useSiteLocales();
 
-  useMount(() => {
-    if (localStorage.getItem(`craftercms.pathNavigator.${id}`)) {
-      dispatch(pathNavigatorInit({ id: props.id, path: props.path, locale: props.locale }));
+  useEffect(() => {
+    if (pathNavigator !== undefined && Object.keys(pathNavigator).length === 0 && localStorage.getItem(`craftercms.pathNavigator.${id}`)) {
+      //Recovering state from localStorage
+      dispatch(pathNavigatorInit({ id, path: props.path, locale: props.locale }));
       dispatch(pathNavigatorFetchParentItems({
         id,
         path: JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${id}`)).currentPath
       }));
-    } else {
-      dispatch(pathNavigatorInit({ id: props.id, path: props.path, locale: props.locale }));
+    } else if (pathNavigator !== undefined && Object.keys(pathNavigator).length === 0) {
+      //No prev state found... init...
+      dispatch(pathNavigatorInit({ id, path: props.path, locale: props.locale }));
       dispatch(pathNavigatorFetchPath({ id, path: props.path }));
     }
-  });
+  }, [dispatch, id, pathNavigator, props.locale, props.path]);
 
   const itemsResource: Resource<SandboxItem[]> = useLogicResource(state?.itemsInPath, {
     shouldResolve: (items) => Boolean(items),
