@@ -124,7 +124,9 @@ export function SiteExplorer(props: SiteExplorerProps) {
       {widgets?.map((item, index) => {
         const Component = ItemToComponentMap[item.name || item.render];
         return <Component
-          key={index} {...(item.name ? item.params : item.props)} classes={classes}
+          key={index} 
+          {...(item.name ? item.params : item.props)} 
+          classes={classes}
         />;
       })}
     </>
