@@ -75,28 +75,45 @@
       // Avoid recurrently showing the notification over and
       // over as long as the page is not refreshed
       previewNextCheckInNotification = true;
-    communicator.addTargetWindow({
-      origin: origin,
-      window: getEngineWindow().contentWindow
-    });
-      const eventId = 'iceGoToPreview2';
-      CrafterCMSNext.createLegacyCallbackListener(eventId, () => {
+      communicator.addTargetWindow({
+        origin: origin,
+        window: getEngineWindow().contentWindow
+      });
+      const handleRemember = (remember, goOrStay) => {
+        if (remember) {
+          window.localStorage.setItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`, goOrStay);
+        } else {
+          window.localStorage.removeItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`);
+        }
+      }
+      const doGo = () => {
         const state = CrafterCMSNext.system.store.getState();
         window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
-      });
-    CrafterCMSNext.system.store.dispatch({
-      type: 'SHOW_CONFIRM_DIALOG',
-      payload: {
-        // TODO: Translate - Discuss/chose appropriate message.
-        title: 'In-context editing',
-        body: 'To edit this page using in-context editing, please go to Preview 2. Would you like to go now?',
-        onOk: {
-          type: 'DISPATCH_DOM_EVENT',
-            payload: { id: eventId }
-        },
-        onCancel: { type: 'CLOSE_CONFIRM_DIALOG' }
+      };
+      const previousChoice = localStorage.getItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`);
+      if (previousChoice) {
+        if (previousChoice === 'go') {
+          doGo();
+        }
+      } else {
+        let unmount;
+        CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
+          data,
+          onOk({ remember }) {
+            handleRemember(remember, 'go');
+            doGo();
+          },
+          onCancel({ remember }) {
+            handleRemember(remember, 'stay');
+          },
+          onClosed() {
+            console.log('Dialog closed');
+            unmount();
+          }
+        }).then((args) => {
+          unmount = args.unmount;
+        });
       }
-    });
     }
     communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
   });
@@ -126,13 +143,7 @@
     var currentPath = message.itemId
       ? message.itemId
       : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
-    var cachePermissionsKey =
-        CStudioAuthoringContext.site +
-        '_' +
-        currentPath +
-        '_' +
-        CStudioAuthoringContext.user +
-        '_permissions',
+    var cachePermissionsKey = `${CStudioAuthoringContext.site}_${currentPath}_${CStudioAuthoringContext.user}_permissions`,
       isPermissionCached = cache.get(cachePermissionsKey),
       cacheContentKey =
         CStudioAuthoringContext.site +
@@ -545,7 +556,7 @@
     $('#acn-ice-tools-container img').attr(
       'src',
       CStudioAuthoringContext.authoringAppBaseUri +
-        '/static-assets/themes/cstudioTheme/images/edit_off.png'
+      '/static-assets/themes/cstudioTheme/images/edit_off.png'
     );
   });
 
@@ -553,7 +564,7 @@
     $('#acn-ice-tools-container img').attr(
       'src',
       CStudioAuthoringContext.authoringAppBaseUri +
-        '/static-assets/themes/cstudioTheme/images/edit.png'
+      '/static-assets/themes/cstudioTheme/images/edit.png'
     );
   });
 
