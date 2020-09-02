@@ -17,14 +17,14 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { SandboxItem } from '../../models/Item';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import { WidgetProps, WidgetState } from '../../components/Navigation/PathNavigator/Widget';
+import { WidgetState } from '../../components/Navigation/PathNavigator/Widget';
 import LookupTable from '../../models/LookupTable';
 import { itemsFromPath, withIndex, withoutIndex } from '../../utils/path';
 import { createLookupTable, nou } from '../../utils/object';
 
 type PayloadWithId<P> = P & { id: string };
 
-export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; props: WidgetProps }>>('PATH_NAVIGATOR_INIT');
+export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; locale: string }>>('PATH_NAVIGATOR_INIT');
 
 export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>('PATH_NAVIGATOR_INIT_SET_LOCALE_CODE');
 
@@ -47,16 +47,16 @@ export const pathNavigatorSetKeyword = createAction<PayloadWithId<{ keyword: str
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
   {
-    [pathNavigatorInit.type]: (state, { payload: { props, id } }) => {
+    [pathNavigatorInit.type]: (state, { payload: { id, path, locale } }) => {
       if (localStorage.getItem('pathNavigator')) {
         return JSON.parse(localStorage.getItem('pathNavigator'));
       } else {
         return {
           ...state,
           [id]: {
-            rootPath: props.path,
-            currentPath: props.path,
-            localeCode: props.locale,
+            rootPath: path,
+            currentPath: path,
+            localeCode: locale,
             keyword: '',
             isSelectMode: false,
             hasClipboard: false,

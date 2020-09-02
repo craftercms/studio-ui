@@ -115,6 +115,7 @@ export function SiteExplorer(props: SiteExplorerProps) {
   const { supported: widgets, notSupported } = resource.read();
   const { formatMessage } = useIntl();
   const classes = useExplorerStyles();
+
   return (
     <>
       {Boolean(notSupported.length) && (

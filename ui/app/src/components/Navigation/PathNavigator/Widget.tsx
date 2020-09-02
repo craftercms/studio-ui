@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useCallback,useEffect, useReducer, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
@@ -39,9 +39,8 @@ import {
   useEnv,
   useLogicResource,
   useSelection,
-  useSpreadState,
-  useMount,
-  useSiteLocales
+  useSiteLocales,
+  useSpreadState
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
 import ContentLocalizationDialog from '../../Dialogs/ContentLocalizationDialog';
@@ -86,6 +85,7 @@ import {
   pathNavigatorSetKeyword,
   pathNavigatorSetLocaleCode
 } from '../../../state/reducers/pathNavigator';
+import { trimerize } from '../../../utils/string';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -384,7 +384,7 @@ export interface WidgetState {
 
 // PathNavigator
 export default function (props: WidgetProps) {
-  const { title, icon, path, id } = props;
+  const { title, icon, path, id = trimerize(props.title) } = props;
   const pathNavigator = useSelection(state => state.pathNavigator[id]);
   const [state, setState] = useState({
     rootPath: props.path,
@@ -418,7 +418,7 @@ export default function (props: WidgetProps) {
 
   useEffect(() => {
     if (!pathNavigator) {
-      dispatch(pathNavigatorInit({ id: props.id, path: props.path, props }));
+      dispatch(pathNavigatorInit({ id: props.id, path: props.path, locale: props.locale }));
     } else {
       setState(pathNavigator);
     }
