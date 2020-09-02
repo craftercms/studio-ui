@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useCallback, useReducer, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useReducer, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
@@ -40,7 +40,8 @@ import {
   useEnv,
   useLogicResource,
   useMount,
-  useSpreadState
+  useSpreadState,
+  useSiteLocales
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
 import ContentLocalizationDialog from '../../Dialogs/ContentLocalizationDialog';
@@ -78,6 +79,7 @@ import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog
 import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
 import { batchActions } from '../../../state/actions/misc';
 import queryString from 'query-string';
+import { languages } from '../../../utils/i18n-legacy';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -544,6 +546,8 @@ export default function (props: WidgetProps) {
     exec(fetchPath(path));
   });
 
+  const siteLocales = useSiteLocales();
+
   const itemsResource: Resource<SandboxItem[]> = useLogicResource(state.itemsInPath, {
     shouldResolve: (items) => Boolean(items),
     shouldRenew: (items, resource) => resource.complete,
@@ -985,20 +989,17 @@ export default function (props: WidgetProps) {
   };
 
   const onHeaderButtonClick = (anchorEl: Element, type: string) => {
+    const locales = siteLocales.localeCodes?.map(code => ({
+      id: `locale.${code}`,
+      label: {
+        id: `locale.${code}`,
+        defaultMessage: formatMessage(languages[code])
+      }
+    }));
+
     if (type === 'language') {
       setMenu({
-        sections: [
-          [
-            {
-              id: 'locale.en',
-              label: { id: 'locale.en', defaultMessage: 'English, US (en)' }
-            },
-            {
-              id: 'locale.es',
-              label: { id: 'locale.es', defaultMessage: 'Spanish, Spain (es)' }
-            }
-          ]
-        ],
+        sections: [locales],
         anchorEl,
         activeItem: null
       });
