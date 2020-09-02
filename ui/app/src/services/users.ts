@@ -57,14 +57,13 @@ export function fetchRolesBySite(username?: string, sites?: Site[]): Observable<
 }
 
 export function fetchRolesBySiteForCurrent(sites?: Site[]): Observable<LookupTable<string[]>> {
-  return forkJoin({
-    sites: sites ? of(sites) : fetchSites()
-  }).pipe(
-    switchMap(({ sites }) => forkJoin<LookupTable<Observable<string[]>>, ''>(
-      sites.reduce((lookup, site) => {
-        lookup[site.id] = fetchRolesInSiteForCurrent(site.id);
-        return lookup;
-      }, {})
-    ))
-  );
+  return (sites ? of(sites) : fetchSites())
+    .pipe(
+      switchMap((sites) => forkJoin<LookupTable<Observable<string[]>>, ''>(
+        sites.reduce((lookup, site) => {
+          lookup[site.id] = fetchRolesInSiteForCurrent(site.id);
+          return lookup;
+        }, {})
+      ))
+    );
 }
