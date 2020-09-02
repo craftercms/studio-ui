@@ -967,7 +967,7 @@ const localeSelectorControlMessages = defineMessages({
   }
 });
 
-const languages = defineMessages({
+export const languages = defineMessages({
   af: { id: 'languages.af', defaultMessage: 'Afrikaans' },
   sq: { id: 'languages.sq', defaultMessage: 'Albanian' },
   am: { id: 'languages.am', defaultMessage: 'Amharic' },
