@@ -26,6 +26,7 @@ import legacy from './legacy';
 import itemVersions from './itemVersions';
 import env from './env';
 import content from './content';
+import translation from './translation';
 import { switchMap } from 'rxjs/operators';
 import { batchActions } from '../actions/misc';
 import GlobalState from '../../models/GlobalState';
@@ -50,6 +51,7 @@ const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.app
   ...itemVersions,
   ...env,
   ...content,
+  ...translation,
   ...configuration,
   ...pathNavigator
 ]);

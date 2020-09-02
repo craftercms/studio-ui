@@ -138,6 +138,14 @@ export interface GlobalState {
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
   };
+  translation: {
+    siteLocales: {
+      error: ApiResponse
+      isFetching: boolean;
+      localeCodes: string[],
+      defaultLocaleCode: string
+    }
+  }
   configuration: {
     sidebar: {
       error: ApiResponse;
