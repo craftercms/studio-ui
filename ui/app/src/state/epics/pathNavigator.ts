@@ -21,27 +21,21 @@ import {
   pathNavigatorFetchPath,
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
-  pathNavigatorInit,
   pathNavigatorSetCurrentPath
 } from '../reducers/pathNavigator';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
-import { NEVER } from 'rxjs';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(pathNavigatorFetchPath.type, pathNavigatorSetCurrentPath.type, pathNavigatorInit.type),
+      ofType(pathNavigatorFetchPath.type, pathNavigatorSetCurrentPath.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, path } }, state]) => {
-          if (pathNavigatorInit.type === type && localStorage.getItem('pathNavigator')) {
-            return NEVER;
-          } else {
-            return getChildrenByPath(state.sites.active, path).pipe(
-              map((response) => pathNavigatorFetchPathComplete({ id, response })),
-              catchAjaxError(pathNavigatorFetchPathFailed)
-            );
-          }
+          return getChildrenByPath(state.sites.active, path).pipe(
+            map((response) => pathNavigatorFetchPathComplete({ id, response })),
+            catchAjaxError(pathNavigatorFetchPathFailed)
+          );
         }
       )
     )

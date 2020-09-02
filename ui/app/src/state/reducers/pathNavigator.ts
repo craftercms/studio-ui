@@ -26,6 +26,8 @@ type PayloadWithId<P> = P & { id: string };
 
 export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; locale: string }>>('PATH_NAVIGATOR_INIT');
 
+export const pathNavigatorUpdate = createAction<PayloadWithId<{ state: WidgetState }>>('PATH_NAVIGATOR_UPDATE');
+
 export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>('PATH_NAVIGATOR_INIT_SET_LOCALE_CODE');
 
 export const pathNavigatorSetCurrentPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_INIT_SET_CURRENT_PATH');
@@ -48,29 +50,31 @@ const reducer = createReducer<LookupTable<WidgetState>>(
   {},
   {
     [pathNavigatorInit.type]: (state, { payload: { id, path, locale } }) => {
-      if (localStorage.getItem('pathNavigator')) {
-        return JSON.parse(localStorage.getItem('pathNavigator'));
-      } else {
-        return {
-          ...state,
-          [id]: {
-            rootPath: path,
-            currentPath: path,
-            localeCode: locale,
-            keyword: '',
-            isSelectMode: false,
-            hasClipboard: false,
-            itemsInPath: null,
-            items: {},
-            breadcrumb: [],
-            selectedItems: [],
-            leafs: [],
-            limit: 10,
-            offset: 0,
-            count: 0
-          }
-        };
-      }
+      return {
+        ...state,
+        [id]: {
+          rootPath: path,
+          currentPath: path,
+          localeCode: locale,
+          keyword: '',
+          isSelectMode: false,
+          hasClipboard: false,
+          itemsInPath: null,
+          items: {},
+          breadcrumb: [],
+          selectedItems: [],
+          leafs: [],
+          limit: 10,
+          offset: 0,
+          count: 0
+        }
+      };
+    },
+    [pathNavigatorUpdate.type]: (state, { payload: { id, state: updatedState } }) => {
+      return {
+        ...state,
+        [id]: updatedState
+      };
     },
     [pathNavigatorFetchPath.type]: (state) => state,
     [pathNavigatorSetCurrentPath.type]: (state, { payload: { id, path } }) => {
@@ -117,18 +121,18 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           [response.parent.id]: response.parent,
           ...createLookupTable(response)
         };
-        const nextState = {
-          ...state,
-          [id]: {
-            ...state[id],
-            breadcrumb: itemsFromPath(path, state[id].rootPath, nextItems),
-            itemsInPath: response.map((item) => item.id),
-            items: nextItems,
-            count: response.length
-          }
+        const widgetState = {
+          ...state[id],
+          breadcrumb: itemsFromPath(path, state[id].rootPath, nextItems),
+          itemsInPath: response.map((item) => item.id),
+          items: nextItems,
+          count: response.length
         };
-        localStorage.setItem('pathNavigator', JSON.stringify(nextState));
-        return nextState;
+        localStorage.setItem(`craftercms.pathNavigator.${id}`, JSON.stringify(widgetState));
+        return {
+          ...state,
+          [id]: widgetState
+        };
       }
     },
     [pathNavigatorSetKeyword.type]: (state, { payload: { id, keyword } }) => {

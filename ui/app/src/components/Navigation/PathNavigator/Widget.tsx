@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
@@ -38,6 +38,7 @@ import {
   useContentTypes,
   useEnv,
   useLogicResource,
+  useMount,
   useSelection,
   useSiteLocales,
   useSpreadState
@@ -83,7 +84,8 @@ import {
   pathNavigatorItemUnchecked,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode
+  pathNavigatorSetLocaleCode,
+  pathNavigatorUpdate
 } from '../../../state/reducers/pathNavigator';
 import { trimerize } from '../../../utils/string';
 
@@ -385,23 +387,7 @@ export interface WidgetState {
 // PathNavigator
 export default function (props: WidgetProps) {
   const { title, icon, path, id = trimerize(props.title) } = props;
-  const pathNavigator = useSelection(state => state.pathNavigator[id]);
-  const [state, setState] = useState({
-    rootPath: props.path,
-    currentPath: props.path,
-    localeCode: props.locale,
-    keyword: '',
-    isSelectMode: false,
-    hasClipboard: false,
-    itemsInPath: null,
-    items: {},
-    breadcrumb: [],
-    selectedItems: [],
-    leafs: [],
-    limit: 10,
-    offset: 0,
-    count: 0
-  });
+  const state = useSelection(state => state.pathNavigator[id]);
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
@@ -415,15 +401,6 @@ export default function (props: WidgetProps) {
     createController: path === '/scripts',
     translation: path.includes('site/website/')
   };
-
-  useEffect(() => {
-    if (!pathNavigator) {
-      dispatch(pathNavigatorInit({ id: props.id, path: props.path, locale: props.locale }));
-    } else {
-      setState(pathNavigator);
-    }
-  }, [dispatch, pathNavigator, props]);
-
   const [collapsed, setCollapsed] = useState(false);
   const [menuState, setMenuState] = useSpreadState<MenuState>({
     selectMode: false,
@@ -442,7 +419,19 @@ export default function (props: WidgetProps) {
 
   const siteLocales = useSiteLocales();
 
-  const itemsResource: Resource<SandboxItem[]> = useLogicResource(state.itemsInPath, {
+  useMount(() => {
+    if (localStorage.getItem(`craftercms.pathNavigator.${id}`)) {
+      dispatch(pathNavigatorUpdate({
+        id,
+        state: JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${id}`))
+      }));
+    } else {
+      dispatch(pathNavigatorInit({ id: props.id, path: props.path, locale: props.locale }));
+      dispatch(pathNavigatorFetchPath({ id, path: props.path }));
+    }
+  });
+
+  const itemsResource: Resource<SandboxItem[]> = useLogicResource(state?.itemsInPath, {
     shouldResolve: (items) => Boolean(items),
     shouldRenew: (items, resource) => resource.complete,
     shouldReject: () => false,
@@ -992,7 +981,7 @@ export default function (props: WidgetProps) {
       <Header
         icon={icon}
         title={title}
-        locale={state.localeCode}
+        locale={state?.localeCode}
         onClick={() => setCollapsed(!collapsed)}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
@@ -1017,15 +1006,15 @@ export default function (props: WidgetProps) {
           }}
         >
           <Breadcrumbs
-            keyword={state.keyword}
-            breadcrumb={state.breadcrumb}
+            keyword={state?.keyword}
+            breadcrumb={state?.breadcrumb}
             onMenu={onCurrentParentMenu}
             onSearch={(keyword) => dispatch(pathNavigatorSetKeyword({ id, keyword }))}
             onCrumbSelected={onBreadcrumbSelected}
           />
           <Nav
-            leafs={state.leafs}
-            locale={state.localeCode}
+            leafs={state?.leafs}
+            locale={state?.localeCode}
             resource={itemsResource}
             isSelectMode={menuState.selectMode}
             onSelectItem={onSelectItem}
@@ -1042,8 +1031,8 @@ export default function (props: WidgetProps) {
             }}
             component="div"
             labelRowsPerPage=""
-            count={state.count}
-            rowsPerPage={state.limit}
+            count={state?.count}
+            rowsPerPage={state?.limit}
             page={state && Math.ceil(state.offset / state.limit)}
             backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
             nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
