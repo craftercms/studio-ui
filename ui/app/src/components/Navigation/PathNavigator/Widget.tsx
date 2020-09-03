@@ -78,7 +78,6 @@ import { languages } from '../../../utils/i18n-legacy';
 import {
   pathNavigatorClearChecked,
   pathNavigatorFetchParentItems,
-  pathNavigatorFetchPath,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
@@ -438,7 +437,7 @@ export default function (props: WidgetProps) {
     } else if (pathNavigator !== undefined && Object.keys(pathNavigator).length === 0) {
       //No prev state found... init...
       dispatch(pathNavigatorInit({ id, path: props.path, locale: props.locale }));
-      dispatch(pathNavigatorFetchPath({ id, path: props.path }));
+      dispatch(pathNavigatorSetCurrentPath({ id, path: props.path }));
     }
   }, [dispatch, id, pathNavigator, props.locale, props.path]);
 
@@ -636,7 +635,7 @@ export default function (props: WidgetProps) {
           () => {
             closeContextMenu();
             setMenuState({ hasClipboard: false });
-            dispatch(pathNavigatorFetchPath({ id, path: state.currentPath }));
+            dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
           },
           (response) => {
             dispatch(
@@ -666,7 +665,7 @@ export default function (props: WidgetProps) {
         const callback = (e) => {
           duplicate(site, activeItem, parentItem).subscribe(
             (item: SandboxItem) => {
-              dispatch(pathNavigatorFetchPath({ id, path: state.currentPath }));
+              dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
               openItemLegacyForm(item, 'form');
             }
           );
@@ -728,7 +727,7 @@ export default function (props: WidgetProps) {
         // TODO: review
         const callback = (e) => {
           dispatch(closeDeleteDialog());
-          dispatch(pathNavigatorFetchPath({ id, path: state.currentPath }));
+          dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
           document.removeEventListener(section.id, callback, false);
         };
         document.addEventListener(section.id, callback, true);
@@ -953,22 +952,22 @@ export default function (props: WidgetProps) {
 
   const onUploadDialogClose = (status: DropZoneStatus, path: string) => {
     if (status.uploadedFiles > 0 && withoutIndex(state.currentPath) === path) {
-      dispatch(pathNavigatorFetchPath({ id, path }));
+      dispatch(pathNavigatorSetCurrentPath({ id, path }));
     }
     setUploadDialog(null);
   };
 
   const onNewFolderCreated = (path: string, name: string, rename: boolean) => {
     if (rename) {
-      dispatch(pathNavigatorFetchPath({ id, path: state.currentPath }));
+      dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
     } else if (withoutIndex(state.currentPath) === path) {
-      dispatch(pathNavigatorFetchPath({ id, path }));
+      dispatch(pathNavigatorSetCurrentPath({ id, path }));
     }
   };
 
   const onNewFileCreated = (path: string, fileName: string, type: 'controller' | 'template') => {
     if (withoutIndex(state.currentPath) === path) {
-      dispatch(pathNavigatorFetchPath({ id, path }));
+      dispatch(pathNavigatorSetCurrentPath({ id, path }));
     }
     openFileLegacyForm(`${path}/${fileName}`, type);
   };

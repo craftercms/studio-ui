@@ -38,8 +38,6 @@ export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: San
 
 export const pathNavigatorClearChecked = createAction<{ id: string }>('PATH_NAVIGATOR_CLEAR_CHECKED');
 
-export const pathNavigatorFetchPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PATH');
-
 export const pathNavigatorFetchParentItems = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
 
 export const pathNavigatorFetchPathComplete = createAction<PayloadWithId<{ response: GetChildrenResponse }>>('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
@@ -75,7 +73,6 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         }
       };
     },
-    [pathNavigatorFetchPath.type]: (state) => state,
     [pathNavigatorSetCurrentPath.type]: (state, { payload: { id, path } }) => {
       return {
         ...state,
@@ -169,7 +166,6 @@ const reducer = createReducer<LookupTable<WidgetState>>(
       };
     },
     [pathNavigatorSetCollapsed.type]: (state, { payload: { id, collapsed } }) => {
-      console.log(collapsed);
       return {
         ...state,
         [id]: {
@@ -209,7 +205,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         }
       };
     },
-    [pathNavigatorClearChecked.type]: (state, { payload: { id, item } }) => {
+    [pathNavigatorClearChecked.type]: (state, { payload: { id } }) => {
       return {
         ...state,
         [id]: {

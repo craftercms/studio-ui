@@ -15,14 +15,14 @@
  */
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
-import { map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   pathNavigatorFetchParentItems,
   pathNavigatorFetchParentItemsComplete,
-  pathNavigatorFetchPath,
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
+  pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath
 } from '../reducers/pathNavigator';
 import { getChildrenByPath } from '../../services/content';
@@ -34,15 +34,11 @@ import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(pathNavigatorFetchPath.type, pathNavigatorSetCurrentPath.type),
+      ofType(pathNavigatorSetCurrentPath.type),
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, path } }, state]) => {
           return getChildrenByPath(state.sites.active, path).pipe(
             map((response) => {
-                localStorage.setItem(`craftercms.pathNavigator.${id}`, JSON.stringify({
-                  currentPath: path,
-                  collapsed: state.pathNavigator[id].collapsed
-                }));
                 return pathNavigatorFetchPathComplete({ id, response });
               }
             ),
@@ -77,5 +73,18 @@ export default [
           }
         }
       )
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(pathNavigatorSetCurrentPath.type, pathNavigatorSetCollapsed.type),
+      withLatestFrom(state$),
+      tap(([{ type, payload: { id } }, state]) => {
+          localStorage.setItem(`craftercms.pathNavigator.${id}`, JSON.stringify({
+            currentPath: state.pathNavigator[id].currentPath,
+            collapsed: state.pathNavigator[id].collapsed
+          }));
+        }
+      ),
+      ignoreElements()
     )
 ] as Epic[];
