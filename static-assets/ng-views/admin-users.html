@@ -355,6 +355,14 @@
       <div class="col-md-12">
         <fieldset ng-disabled="user.externallyManaged">
           <div class="form-group">
+            <label for="userName" class="control-label">User Name
+            </label>
+            <input
+              name="userName" type="text" readonly value="{{user.username}}" disabled
+              class="form-control"
+            />
+          </div>
+          <div class="form-group">
             <label for="newPassword" class="control-label">Reset Password
             </label>
             <input
