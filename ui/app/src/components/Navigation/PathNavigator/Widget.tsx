@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { ElementType, Fragment, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
@@ -205,6 +205,10 @@ const menuOptions = {
   terminateSelection: {
     id: 'terminateSelection',
     label: translations.terminateSelection
+  },
+  refresh: {
+    id: 'refresh',
+    label: translations.refresh
   }
 };
 
@@ -352,7 +356,7 @@ export interface WidgetProps {
   id: string;
   title?: string;
   locale: string;
-  classes?: Partial<Record<'root' | 'body', string>>;
+  classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
 }
 
 interface MenuState {
@@ -364,6 +368,10 @@ interface Menu {
   sections: SectionItem[][];
   anchorEl: Element;
   activeItem: SandboxItem;
+  emptyState?: {
+    icon?: ElementType;
+    message: string;
+  }
 }
 
 export interface WidgetState {
@@ -402,7 +410,6 @@ export default function (props: WidgetProps) {
     createController: path === '/scripts',
     translation: path.includes('site/website/')
   };
-  const [collapsed, setCollapsed] = useState(false);
   const [menuState, setMenuState] = useSpreadState<MenuState>({
     selectMode: false,
     hasClipboard: false
@@ -410,7 +417,8 @@ export default function (props: WidgetProps) {
   const [menu, setMenu] = useSpreadState<Menu>({
     sections: [],
     anchorEl: null,
-    activeItem: null
+    activeItem: null,
+    emptyState: null
   });
   const [copyDialog, setCopyDialog] = useState(null);
   const [translationDialog, setTranslationDialog] = useState(null);
@@ -424,20 +432,24 @@ export default function (props: WidgetProps) {
     if (pathNavigator !== undefined && Object.keys(pathNavigator).length === 0 && localStorage.getItem(`craftercms.pathNavigator.${id}`)) {
       //Recovering state from localStorage
       const restoredState = JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${id}`));
-      dispatch(pathNavigatorInit({
-        id,
-        path: props.path,
-        locale: props.locale,
-        collapsed: restoredState.collapsed
-      }));
-      dispatch(pathNavigatorFetchParentItems({
-        id,
-        path: restoredState.currentPath
-      }));
-    } else if (pathNavigator !== undefined && Object.keys(pathNavigator).length === 0) {
+      dispatch(batchActions([
+        pathNavigatorInit({
+          id,
+          path: props.path,
+          locale: props.locale,
+          collapsed: restoredState.collapsed
+        }),
+        pathNavigatorFetchParentItems({
+          id,
+          path: restoredState.currentPath
+        })
+      ]));
+    } else if (pathNavigator !== undefined && pathNavigator[id] === undefined) {
       //No prev state found... init...
-      dispatch(pathNavigatorInit({ id, path: props.path, locale: props.locale }));
-      dispatch(pathNavigatorSetCurrentPath({ id, path: props.path }));
+      dispatch(batchActions([
+        pathNavigatorInit({ id, path: props.path, locale: props.locale }),
+        pathNavigatorSetCurrentPath({ id, path: props.path })
+      ]));
     }
   }, [dispatch, id, pathNavigator, props.locale, props.path]);
 
@@ -856,6 +868,16 @@ export default function (props: WidgetProps) {
         closeContextMenu();
         break;
       }
+      case 'refresh': {
+        dispatch(
+          pathNavigatorFetchParentItems({
+            id,
+            path: state.currentPath
+          })
+        );
+        closeContextMenu();
+        break;
+      }
       default: {
         if (section.id.includes('locale')) {
           setMenu({
@@ -898,18 +920,16 @@ export default function (props: WidgetProps) {
 
     if (type === 'language') {
       setMenu({
-        sections: [locales],
+        sections: locales.length ? [locales] : [],
         anchorEl,
-        activeItem: null
+        activeItem: null,
+        emptyState: locales.length === 0 ? { message: formatMessage(translations.noLocales) } : null
       });
     } else {
       setMenu({
         sections: [
           [
-            {
-              id: 'option1',
-              label: { id: 'option1', defaultMessage: 'Option 1' }
-            }
+            menuOptions.refresh
           ]
         ],
         anchorEl,
@@ -1021,6 +1041,7 @@ export default function (props: WidgetProps) {
             onMenu={onCurrentParentMenu}
             onSearch={(keyword) => dispatch(pathNavigatorSetKeyword({ id, keyword }))}
             onCrumbSelected={onBreadcrumbSelected}
+            classes={{ searchRoot: props.classes?.searchRoot }}
           />
           <Nav
             leafs={state?.leafs}
@@ -1061,6 +1082,7 @@ export default function (props: WidgetProps) {
         }}
         onClose={onCloseCustomMenu}
         sections={menu.sections}
+        emptyState={{ message: menu.emptyState?.message }}
         onMenuItemClicked={onMenuItemClicked}
       />
       {copyDialog && (

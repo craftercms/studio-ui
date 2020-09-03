@@ -34,6 +34,7 @@ interface BreadcrumbsProps {
   onMenu?(element: Element): void;
   onSearch?(keyword: string): void;
   onCrumbSelected(breadcrumb: SandboxItem): void;
+  classes?: Partial<Record<'searchRoot', string>>;
 }
 
 // PathBreadcrumbs + PathOptions + (Path)Search
@@ -60,7 +61,11 @@ export default function (props: BreadcrumbsProps) {
           keyword={keyword}
           showActionButton={true}
           onActionButtonClick={() => onChange('')}
-          classes={{ root: classes.searchRoot }}
+          classes={{
+            root: clsx(classes.searchRoot, props.classes?.searchRoot),
+            inputInput: classes.searchInput,
+            actionIcon: classes.searchCloseIcon
+          }}
         />
       ) : (
         <>

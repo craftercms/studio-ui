@@ -77,6 +77,9 @@ const useExplorerStyles = makeStyles(() =>
     body: {
       marginLeft: 10,
       borderLeft: `3px solid ${palette.gray.light2}`
+    },
+    searchRoot: {
+      marginRight: 10
     }
   })
 );
@@ -124,8 +127,8 @@ export function SiteExplorer(props: SiteExplorerProps) {
       {widgets?.map((item, index) => {
         const Component = ItemToComponentMap[item.name || item.render];
         return <Component
-          key={index} 
-          {...(item.name ? item.params : item.props)} 
+          key={index}
+          {...(item.name ? item.params : item.props)}
           classes={classes}
         />;
       })}
