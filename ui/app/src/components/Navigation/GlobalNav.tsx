@@ -485,9 +485,12 @@ export default function GlobalNav(props: GlobalNavProps) {
                     ))
                   ) : (
                     <EmptyState
-                      title={<FormattedMessage
-                        id="globalMenu.noSites" defaultMessage="No sites."
-                      />}
+                      title={
+                        <FormattedMessage
+                          id="globalMenu.noSitesMessage" 
+                          defaultMessage="No sites to display."
+                        />
+                      }
                     />
                   )
                 }
