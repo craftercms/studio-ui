@@ -24,11 +24,11 @@ import { createLookupTable, nou } from '../../utils/object';
 
 type PayloadWithId<P> = P & { id: string };
 
-export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; locale: string }>>('PATH_NAVIGATOR_INIT');
-
-export const pathNavigatorUpdate = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_UPDATE');
+export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; locale: string; collapsed?: boolean }>>('PATH_NAVIGATOR_INIT');
 
 export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>('PATH_NAVIGATOR_SET_LOCALE_CODE');
+
+export const pathNavigatorSetCollapsed = createAction<PayloadWithId<{ collapsed: boolean }>>('PATH_NAVIGATOR_SET_COLLAPSED');
 
 export const pathNavigatorSetCurrentPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_SET_CURRENT_PATH');
 
@@ -53,7 +53,7 @@ export const pathNavigatorSetKeyword = createAction<PayloadWithId<{ keyword: str
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
   {
-    [pathNavigatorInit.type]: (state, { payload: { id, path, locale } }) => {
+    [pathNavigatorInit.type]: (state, { payload: { id, path, locale, collapsed = false } }) => {
       return {
         ...state,
         [id]: {
@@ -70,7 +70,8 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           leafs: [],
           limit: 10,
           offset: 0,
-          count: 0
+          count: 0,
+          collapsed
         }
       };
     },
@@ -164,6 +165,16 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           items: nextItems,
           itemsInPath: items,
           breadcrumb: [...itemsFromPath(currentPath, rootPath, nextItems)]
+        }
+      };
+    },
+    [pathNavigatorSetCollapsed.type]: (state, { payload: { id, collapsed } }) => {
+      console.log(collapsed);
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          collapsed
         }
       };
     },

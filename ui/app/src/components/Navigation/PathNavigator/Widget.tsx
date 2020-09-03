@@ -82,11 +82,12 @@ import {
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
+  pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
   pathNavigatorSetLocaleCode
 } from '../../../state/reducers/pathNavigator';
-import { trimerize } from '../../../utils/string';
+import { removeSpaces } from '../../../utils/string';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -381,11 +382,12 @@ export interface WidgetState {
   count: number; // Number of items in the current path
   limit: number;
   offset: number;
+  collapsed?: boolean;
 }
 
 // PathNavigator
 export default function (props: WidgetProps) {
-  const { title, icon, path, id = trimerize(props.title) } = props;
+  const { title, icon, path, id = removeSpaces(props.title) } = props;
   const pathNavigator = useSelection(state => state.pathNavigator);
   const state = pathNavigator?.[id];
   const classes = useStyles({});
@@ -422,10 +424,16 @@ export default function (props: WidgetProps) {
   useEffect(() => {
     if (pathNavigator !== undefined && Object.keys(pathNavigator).length === 0 && localStorage.getItem(`craftercms.pathNavigator.${id}`)) {
       //Recovering state from localStorage
-      dispatch(pathNavigatorInit({ id, path: props.path, locale: props.locale }));
+      const restoredState = JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${id}`));
+      dispatch(pathNavigatorInit({
+        id,
+        path: props.path,
+        locale: props.locale,
+        collapsed: restoredState.collapsed
+      }));
       dispatch(pathNavigatorFetchParentItems({
         id,
-        path: JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${id}`)).currentPath
+        path: restoredState.currentPath
       }));
     } else if (pathNavigator !== undefined && Object.keys(pathNavigator).length === 0) {
       //No prev state found... init...
@@ -980,16 +988,16 @@ export default function (props: WidgetProps) {
   };
 
   return (
-    <section className={clsx(classes.root, props.classes?.root, collapsed && 'collapsed')}>
+    <section className={clsx(classes.root, props.classes?.root, state?.collapsed && 'collapsed')}>
       <Header
         icon={icon}
         title={title}
         locale={state?.localeCode}
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => dispatch(pathNavigatorSetCollapsed({ id, collapsed: !state?.collapsed }))}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
       />
-      <div {...collapsed ? { hidden: true } : {}} className={clsx(props.classes?.body)}>
+      <div {...state?.collapsed ? { hidden: true } : {}} className={clsx(props.classes?.body)}>
         <SuspenseWithEmptyState
           resource={itemsResource}
           loadingStateProps={{

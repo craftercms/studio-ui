@@ -50,7 +50,7 @@ export function dasherize(str: string) {
   return str.replace(/_/g, '-');
 }
 
-export function trimerize(str: string) {
+export function removeSpaces(str: string) {
   return str.replace(/\s+/g, '');
 }
 

@@ -39,7 +39,10 @@ export default [
       mergeMap(([{ type, payload: { id, path } }, state]) => {
           return getChildrenByPath(state.sites.active, path).pipe(
             map((response) => {
-                localStorage.setItem(`craftercms.pathNavigator.${id}`, JSON.stringify({ currentPath: path }));
+                localStorage.setItem(`craftercms.pathNavigator.${id}`, JSON.stringify({
+                  currentPath: path,
+                  collapsed: state.pathNavigator[id].collapsed
+                }));
                 return pathNavigatorFetchPathComplete({ id, response });
               }
             ),
