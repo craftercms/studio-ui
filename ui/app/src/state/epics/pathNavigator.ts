@@ -36,16 +36,10 @@ export default [
     action$.pipe(
       ofType(pathNavigatorSetCurrentPath.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id, path } }, state]) => {
-          return getChildrenByPath(state.sites.active, path).pipe(
-            map((response) => {
-                return pathNavigatorFetchPathComplete({ id, response });
-              }
-            ),
-            catchAjaxError(pathNavigatorFetchPathFailed)
-          );
-        }
-      )
+      mergeMap(([{ type, payload: { id, path } }, state]) => getChildrenByPath(state.sites.active, path).pipe(
+        map((response) => pathNavigatorFetchPathComplete({ id, response })),
+        catchAjaxError(pathNavigatorFetchPathFailed)
+      ))
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
