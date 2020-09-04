@@ -673,7 +673,7 @@ export default function (props: WidgetProps) {
       case 'newFolder': {
         setNewFolderDialog({
           path: withoutIndex(menu.activeItem.path),
-          allowBraces: menu.activeItem.path === '/scripts/rest'
+          allowBraces: menu.activeItem.path.startsWith('/scripts/rest')
         });
         closeContextMenu();
         break;

@@ -138,7 +138,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
             // esc
             me.createPopupCancel();
           } else {
-            me.processKey(e, inputEl, eventParams.self.path === '/scripts/rest');
+            me.processKey(e, inputEl, eventParams.self.path.startsWith('/scripts/rest'));
           }
         } else {
           me.createPopupSubmit(e, eventParams);
