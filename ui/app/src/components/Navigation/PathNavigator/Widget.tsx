@@ -75,6 +75,7 @@ import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
 import { batchActions } from '../../../state/actions/misc';
 import queryString from 'query-string';
 import { languages } from '../../../utils/i18n-legacy';
+import { removeSpaces } from '../../../utils/string';
 import {
   pathNavigatorClearChecked,
   pathNavigatorFetchParentItems,
@@ -85,8 +86,7 @@ import {
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
   pathNavigatorSetLocaleCode
-} from '../../../state/reducers/pathNavigator';
-import { removeSpaces } from '../../../utils/string';
+} from '../../../state/actions/pathNavigator';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);

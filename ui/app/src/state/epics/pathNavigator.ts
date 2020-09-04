@@ -17,6 +17,11 @@
 import { Epic, ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
+import { getChildrenByPath } from '../../services/content';
+import GlobalState from '../../models/GlobalState';
+import { getParentsFromPath, withIndex } from '../../utils/path';
+import { forkJoin, Observable } from 'rxjs';
+import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import {
   pathNavigatorFetchParentItems,
   pathNavigatorFetchParentItemsComplete,
@@ -24,12 +29,7 @@ import {
   pathNavigatorFetchPathFailed,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath
-} from '../reducers/pathNavigator';
-import { getChildrenByPath } from '../../services/content';
-import GlobalState from '../../models/GlobalState';
-import { getParentsFromPath, withIndex } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
-import { GetChildrenResponse } from '../../models/GetChildrenResponse';
+} from '../actions/pathNavigator';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>

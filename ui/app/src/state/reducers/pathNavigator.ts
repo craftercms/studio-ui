@@ -14,39 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import { SandboxItem } from '../../models/Item';
+import { createReducer } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { WidgetState } from '../../components/Navigation/PathNavigator/Widget';
 import LookupTable from '../../models/LookupTable';
 import { itemsFromPath, withIndex, withoutIndex } from '../../utils/path';
 import { createLookupTable, nou } from '../../utils/object';
-
-type PayloadWithId<P> = P & { id: string };
-
-export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; locale: string; collapsed?: boolean }>>('PATH_NAVIGATOR_INIT');
-
-export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>('PATH_NAVIGATOR_SET_LOCALE_CODE');
-
-export const pathNavigatorSetCollapsed = createAction<PayloadWithId<{ collapsed: boolean }>>('PATH_NAVIGATOR_SET_COLLAPSED');
-
-export const pathNavigatorSetCurrentPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_SET_CURRENT_PATH');
-
-export const pathNavigatorItemChecked = createAction<PayloadWithId<{ item: SandboxItem }>>('PATH_NAVIGATOR_ITEM_CHECKED');
-
-export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: SandboxItem }>>('PATH_NAVIGATOR_ITEM_UNCHECKED');
-
-export const pathNavigatorClearChecked = createAction<{ id: string }>('PATH_NAVIGATOR_CLEAR_CHECKED');
-
-export const pathNavigatorFetchParentItems = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
-
-export const pathNavigatorFetchPathComplete = createAction<PayloadWithId<{ response: GetChildrenResponse }>>('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
-
-export const pathNavigatorFetchParentItemsComplete = createAction<PayloadWithId<{ response: GetChildrenResponse[] }>>('PATH_NAVIGATOR_FETCH_PARENT_ITEMS_COMPLETE');
-
-export const pathNavigatorFetchPathFailed = createAction('PATH_NAVIGATOR_FETCH_PATH_FAILED');
-
-export const pathNavigatorSetKeyword = createAction<PayloadWithId<{ keyword: string }>>('PATH_NAVIGATOR_SET_KEYWORD');
+import {
+  pathNavigatorClearChecked,
+  pathNavigatorFetchParentItems,
+  pathNavigatorFetchParentItemsComplete,
+  pathNavigatorFetchPathComplete,
+  pathNavigatorInit,
+  pathNavigatorItemChecked,
+  pathNavigatorItemUnchecked,
+  pathNavigatorSetCollapsed,
+  pathNavigatorSetCurrentPath,
+  pathNavigatorSetKeyword,
+  pathNavigatorSetLocaleCode
+} from '../actions/pathNavigator';
 
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
