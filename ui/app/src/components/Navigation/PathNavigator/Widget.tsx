@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useCallback, useEffect, useReducer, useState } from 'react';
+import React, { Fragment, useCallback, useReducer, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
@@ -40,8 +40,8 @@ import {
   useEnv,
   useLogicResource,
   useMount,
-  useSpreadState,
-  useSiteLocales
+  useSiteLocales,
+  useSpreadState
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
 import ContentLocalizationDialog from '../../Dialogs/ContentLocalizationDialog';
@@ -672,7 +672,8 @@ export default function (props: WidgetProps) {
       }
       case 'newFolder': {
         setNewFolderDialog({
-          path: withoutIndex(menu.activeItem.path)
+          path: withoutIndex(menu.activeItem.path),
+          allowBraces: menu.activeItem.path === '/scripts/rest'
         });
         closeContextMenu();
         break;
