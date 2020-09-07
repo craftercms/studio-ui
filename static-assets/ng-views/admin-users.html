@@ -25,7 +25,10 @@
 
           <h4 class="pl15 mt8 mb20">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</h4>
 
-          <a id="new-user-btn" class="btn btn-default" ng-click="users.createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
+          <a
+            class="btn btn-default" id="new-user-btn" ng-click="users.createUserDialog()"
+            role="button" style="float: right;"
+          >{{ 'admin.users.NEW_USER' | translate }}</a>
 
           <div class="pull-right mr15" ng-show="!users.searchdirty">
             <label>{{ 'admin.users.USERS_PER_PAGE' | translate }}: </label>
@@ -36,6 +39,7 @@
           <table class="table table-striped">
             <thead>
             <tr>
+              <th></th>
               <th>{{ 'admin.users.USER_NAME' | translate }}</th>
               <th>{{ 'admin.users.FIRST_NAME' | translate }}</th>
               <th>{{ 'admin.users.LAST_NAME' | translate }}</th>
@@ -52,20 +56,36 @@
             </thead>
             <tbody>
 
-            <tr dir-paginate="user in usersCollection | filter:q | itemsPerPage: users.itemsPerPage"
-                current-page="users.pagination.current" total-items="users.totalLogs" id="user-row-{{user.username}}">
-              <td class="userName"><a
-                class="username trim inline-block" ng-click="users.viewUser(user)"
-              >{{user.username}}</a></td>
+            <tr
+              dir-paginate="user in usersCollection | filter:q | itemsPerPage: users.itemsPerPage"
+              current-page="users.pagination.current" total-items="users.totalLogs"
+              id="user-row-{{user.username}}"
+            >
+              <td>
+                <span
+                  class="icon-externally-managed" ng-if="user.externallyManaged"
+                  tooltip-placement="bottom"
+                  uib-tooltip="{{ 'admin.users.EXTERNALLY_MANAGED' | translate }}"
+                >
+                  <i class="fa fa fa-external-link"></i>
+                </span>
+              </td>
+              <td class="userName">
+                <a class="username trim inline-block" ng-click="users.viewUser(user)">
+                  {{user.username}}
+                </a>
+              </td>
               <td class="firstName">{{user.firstName}}</td>
               <td class="lastName">{{user.lastName}}</td>
               <td class="email">{{user.email}}</td>
 
               <td class="edit">
-                <a ng-click="users.editUserDialog(user)"
-                   class="btn btn-sm"
-                   tooltip-placement="bottom"
-                   uib-tooltip="{{'common.EDIT' | translate}}">
+                <a
+                  ng-click="users.editUserDialog(user)"
+                  class="btn btn-sm"
+                  tooltip-placement="bottom"
+                  uib-tooltip="{{'common.EDIT' | translate}}"
+                >
                   <i class="fa fa-pencil">
                   </i>
                 </a>

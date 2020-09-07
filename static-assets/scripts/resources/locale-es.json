@@ -165,7 +165,8 @@
       "ADD_TO_GROUP_TEXT": "Para agregar un usuario a un grupo, use Grupos del menú principal.",
       "DELETE_ERROR": "No se puede eliminar el usuario. Por favor, póngase en contacto con el administrador del sistema.",
       "ERROR": "Error:",
-      "USERS_PER_PAGE": "Usuarios por página"
+      "USERS_PER_PAGE": "Usuarios por página",
+      "EXTERNALLY_MANAGED": "Administrado externamente"
     },
     "audit": {
       "AUDIT": "Auditoría",
