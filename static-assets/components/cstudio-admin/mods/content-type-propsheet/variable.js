@@ -35,6 +35,10 @@ YAHOO.extend(
 
       if (updateFn) {
         var updateFieldFn = function(event, el) {
+          if (fName === 'id' && this.value) {
+            var input = YDom.getElementsByClassName('property-input-id')[0];
+            input.value = this.value.replace(/[-]/g, '_');
+          }
           updateFn(event, el);
           var addPostfixes = '';
           switch (type) {
@@ -77,6 +81,7 @@ YAHOO.extend(
               : YDom.getElementsByClassName('property-input-id')[0];
             if (idDatasource) {
               idDatasource.value = this.value.replace(/[^A-Za-z0-9-_]/g, '');
+              idDatasource.value = idDatasource.value.replace(/[-]/g, '_');
               idDatasource.value =
                 idDatasource.value.substr(0, 1).toLowerCase() + idDatasource.value.substr(1) + addPostfixes;
 
