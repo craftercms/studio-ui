@@ -86,5 +86,5 @@
   document.write(`<script type="application/json" id="initialState">${'$'}{initialState}<\/script>`);
 })(window.location.origin);
 </script>
-<script src="/studio/static-assets/next/monaco/monaco.0.20.0.js"></script>
+<script defer src="/studio/static-assets/next/monaco/monaco.0.20.0.js"></script>
 </#if>

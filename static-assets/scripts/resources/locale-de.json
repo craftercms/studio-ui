@@ -164,7 +164,8 @@
       "ADD_TO_GROUP_TEXT": "Um Benutzer zu einer Gruppe hinzuzufügen, wählen Sie bitte den Eintrag \"Gruppen\" aus dem Hauptmenü.",
       "DELETE_ERROR": "Der Benutzer konnte nicht gelöscht werden. Bitte wenden Sie sich an Ihren Systemadministator.",
       "ERROR": "Fehler:",
-      "USERS_PER_PAGE": "Benutzer pro Seite"
+      "USERS_PER_PAGE": "Benutzer pro Seite",
+      "EXTERNALLY_MANAGED": "Extern verwaltet"
     },
     "audit": {
       "AUDIT": "Audit",
