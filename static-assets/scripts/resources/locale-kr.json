@@ -166,7 +166,8 @@
       "ADD_TO_GROUP_TEXT": "그룹에 사용자를 추가하려면 기본 메뉴에서 그룹스를 사용하십시오",
       "DELETE_ERROR": "사용자를 삭제할 수 없습니다. 시스템 관리자에게 문의하십시오.",
       "ERROR": "오류:",
-      "USERS_PER_PAGE": "페이지 당 사용자 수"
+      "USERS_PER_PAGE": "페이지 당 사용자 수",
+      "EXTERNALLY_MANAGED": "외부에서 관리"
     },
     "audit": {
       "AUDIT": "심사",
