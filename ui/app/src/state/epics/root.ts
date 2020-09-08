@@ -32,6 +32,7 @@ import { batchActions } from '../actions/misc';
 import GlobalState from '../../models/GlobalState';
 import StandardAction from '../../models/StandardAction';
 import configuration from './configuration';
+import pathNavigator from './pathNavigator';
 
 const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.apply(this, [
   (action$) =>
@@ -51,7 +52,8 @@ const epic: Epic<StandardAction, StandardAction, GlobalState> = combineEpics.app
   ...env,
   ...content,
   ...translation,
-  ...configuration
+  ...configuration,
+  ...pathNavigator
 ]);
 
 export default epic;

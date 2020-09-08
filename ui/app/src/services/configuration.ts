@@ -314,10 +314,14 @@ export function getSidebarConfig(site: string): Observable<SidebarConfigItem[]> 
       // The XML has a structure like:
       // {root}.contextNav.contexts.context.groups.group.menuItems.menuItem.modulehooks.modulehook;
       // To avoid excessive traversal, create a transition XML document with just the items.
-      const items = Array.from(fromString(rawXML).querySelectorAll('modulehook'));
-      const cleanDoc = fromString(`<?xml version="1.0" encoding="UTF-8"?><root></root>`);
-      cleanDoc.documentElement.append(...items);
-      return asArray<SidebarConfigItem>(toJS(cleanDoc).root.modulehook).filter(Boolean);
+      if (rawXML) {
+        const items = Array.from(fromString(rawXML).querySelectorAll('modulehook'));
+        const cleanDoc = fromString(`<?xml version="1.0" encoding="UTF-8"?><root></root>`);
+        cleanDoc.documentElement.append(...items);
+        return asArray<SidebarConfigItem>(toJS(cleanDoc).root.modulehook).filter(Boolean);
+      } else {
+        return [];
+      }
     })
   );
 }

@@ -15,7 +15,7 @@
  */
 
 import React, { ElementType, useEffect, useMemo, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
-import { getDOM, getGlobalMenuItems } from '../../services/configuration';
+import { getGlobalMenuItems } from '../../services/configuration';
 import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
@@ -34,11 +34,8 @@ import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
-import { forkJoin, Observable } from 'rxjs';
 import { LookupTable } from '../../models/LookupTable';
-import { useMount } from '../../utils/hooks';
-import { forEach } from '../../utils/array';
-import { getInnerHtml } from '../../utils/xml';
+import { useMount, useSelection } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite, fetchSites } from '../../state/reducers/sites';
@@ -53,6 +50,9 @@ import CardHeader from '@material-ui/core/CardHeader';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { Site } from '../../models/Site';
 import { User } from '../../models/User';
+import { fetchSidebarConfig } from '../../state/actions/configuration';
+import { forEach } from '../../utils/array';
+import EmptyState from '../SystemStatus/EmptyState';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -265,7 +265,7 @@ const globalNavStyles = makeStyles((theme) =>
     railTop: {
       padding: '30px',
       overflow: 'auto',
-      height: 'calc(100% - 65px)',
+      height: 'calc(100% - 65px)'
     },
     railBottom: {
       height: 65,
@@ -356,6 +356,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
+  const sidebarState = useSelection((state) => state.configuration.sidebar);
   const dispatch = useDispatch();
 
   const cardActions = useMemo(
@@ -386,59 +387,52 @@ export default function GlobalNav(props: GlobalNavProps) {
   };
 
   useEffect(() => {
-    if (site) {
-      dispatch(fetchSites());
-      const requests: Observable<any>[] = [getGlobalMenuItems()];
-      requests.push(getDOM(site, '/context-nav/sidebar.xml', 'studio'));
-      forkJoin(requests).subscribe(
-        ([globalMenuItemsResponse, xml]: any) => {
-          setMenuItems(globalMenuItemsResponse.response.menuItems);
-          let roleFound = {
-            [siteMenuKeys.dashboard]: false,
-            [siteMenuKeys.siteConfig]: false
-          };
-          if (xml) {
-            forEach(xml.querySelectorAll('modulehook'), (module) => {
-              if (
-                getInnerHtml(module.querySelector('name')) === siteMenuKeys.siteConfig ||
-                getInnerHtml(module.querySelector('name')) === siteMenuKeys.dashboard
-              ) {
-                const roles = module.querySelectorAll('role');
-                roleFound[getInnerHtml(module.querySelector('name'))] = roles.length
-                  ? forEach(
-                      roles,
-                      (role) => {
-                        if (
-                          rolesBySite[site] &&
-                          rolesBySite[site].includes(getInnerHtml(role))
-                        ) {
-                          return true;
-                        }
-                      },
-                      false
-                    )
-                  : true;
-              }
-            });
-          }
-          setSiteMenu(roleFound);
-        },
-        (error) => {
-          if (error.response) {
-            const _response = {
-              ...error.response,
-              code: '',
-              documentationUrl: '',
-              remedialAction: ''
-            };
-            setApiState({ error: true, errorResponse: _response });
-          }
-        }
-      );
+    if (site && !sidebarState.items && !sidebarState.isFetching) {
+      dispatch(fetchSidebarConfig(site));
     }
-  }, [site, dispatch, rolesBySite]);
+    getGlobalMenuItems().subscribe(({ response }) => {
+        setMenuItems(response.menuItems);
+        let roleFound = {
+          [siteMenuKeys.dashboard]: false,
+          [siteMenuKeys.siteConfig]: false
+        };
+        sidebarState.items?.forEach((item) => {
+          if (item.name === siteMenuKeys.siteConfig || item.name === siteMenuKeys.dashboard) {
+            let roles = item.params['roles']?.['role'];
+            roleFound[item.name] = roles?.length
+              ? forEach(
+                roles,
+                (role) => {
+                  if (
+                    rolesBySite[site] &&
+                    rolesBySite[site].includes(role)
+                  ) {
+                    return true;
+                  }
+                },
+                false
+              )
+              : true;
+            setSiteMenu(roleFound);
+          }
+        });
+      },
+      (error) => {
+        if (error.response) {
+          const _response = {
+            ...error.response,
+            code: '',
+            documentationUrl: '',
+            remedialAction: ''
+          };
+          setApiState({ error: true, errorResponse: _response });
+        }
+      }
+    );
+  }, [dispatch, site, sidebarState.isFetching, sidebarState.items, rolesBySite]);
 
   useMount(() => {
+    dispatch(fetchSites());
     version === null && dispatch(fetchSystemVersion());
   });
 
@@ -463,7 +457,7 @@ export default function GlobalNav(props: GlobalNavProps) {
           error={apiState.errorResponse}
           onBack={handleErrorBack}
         />
-      ) : ((sites!== null) && (siteMenu !== null) && (menuItems !== null)) ? (
+      ) : (menuItems !== null) ? (
         <Grid container spacing={0} className={classes.gridContainer}>
           <Hidden only={['xs', 'sm']}>
             <Grid item md={4} className={classes.leftRail}>
@@ -476,17 +470,30 @@ export default function GlobalNav(props: GlobalNavProps) {
                 >
                   {formatMessage(messages.mySites)}
                 </Typography>
-                {sites.map((site, i) => (
-                  <SiteCard
-                    key={i}
-                    title={site.name}
-                    value={site.id}
-                    options={true}
-                    classes={{ root: classes.titleCard }}
-                    onCardClick={() => onSiteCardClick(site.id)}
-                    cardActions={cardActions}
-                  />
-                ))}
+                {
+                  sites.length ? (
+                    sites.map((site, i) => (
+                      <SiteCard
+                        key={i}
+                        title={site.name}
+                        value={site.id}
+                        options={true}
+                        classes={{ root: classes.titleCard }}
+                        onCardClick={() => onSiteCardClick(site.id)}
+                        cardActions={cardActions}
+                      />
+                    ))
+                  ) : (
+                    <EmptyState
+                      title={
+                        <FormattedMessage
+                          id="globalMenu.noSitesMessage" 
+                          defaultMessage="No sites to display."
+                        />
+                      }
+                    />
+                  )
+                }
               </div>
               <div className={classes.railBottom}>
                 <img className={classes.logo} src="/studio/static-assets/images/logo.svg" alt="" />
