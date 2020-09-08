@@ -26,7 +26,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.String,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn) {
+    render: function (value, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
       var containerEl = this.containerEl;
       var valueEl = document.createElement('input');
       containerEl.appendChild(valueEl);
@@ -34,12 +34,29 @@ YAHOO.extend(
       valueEl.fieldName = this.fieldName;
 
       if (updateFn) {
-        var updateFieldFn = function(event, el) {
+        var updateFieldFn = function (event, el) {
+          updateFn(event, el);
+          CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+        };
+
+        var onBlur = function (event, el) {
+          if (!el.value.startsWith(validations.startsWith)) {
+            if (el.value.startsWith('/')) {
+              el.value = validations.startsWith + el.value;
+            } else {
+              el.value = validations.startsWith + '/' + el.value;
+            }
+          }
           updateFn(event, el);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
         };
 
         YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
+        if (validations) {
+          if (validations.startsWith) {
+            YAHOO.util.Event.on(valueEl, 'blur', onBlur, valueEl);
+          }
+        }
       }
 
       this.valueEl = valueEl;
