@@ -81,12 +81,13 @@ export default [
         // "loop" of "CLOSE_*_DIALOG" actions. The filter insures the actions to be called
         // don't include the "CLOSE_*_DIALOG" action to avoid said loop.
         const onClose = getDialogState(type, state)?.onClose;
+
         return [
           // In the case of batch actions, save the additional BATCH_ACTIONS action itself
           // and jump straight to the actions to dispatch.
           ...asArray(payload?.type === batchActions.type ? payload.payload : payload),
           ...asArray(onClose?.type === batchActions.type ? onClose.payload : onClose)
-        ].filter((action) => Boolean(action) && action.type !== type);
+        ].filter((action) => Boolean(action) && action.type && action.type !== type);
       }),
       switchMap((actions) => (actions.length ? actions : NEVER))
     ),

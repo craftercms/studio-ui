@@ -35,32 +35,39 @@ const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
-const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
+const DependenciesDialog = lazy(() =>
+  import('../../modules/Content/Dependencies/DependenciesDialog')
+);
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const EmbeddedLegacyEditors = lazy(() => import('../../modules/Preview/EmbeddedLegacyEditors'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 
-function createCallback(
-  action: StandardAction,
-  dispatch: Dispatch
-): (output?: unknown) => void {
-  return action ? (output) => {
-    const hasPayload = Boolean(action.payload);
-    const hasOutput = Boolean(output) && isPlainObject(output);
-    const payload = hasPayload && !hasOutput
-      ? action.payload
-      : !hasPayload && hasOutput
-        ? output
-        // We're using objects for all our payloads - I think - but this
-        // could fail with literal native values such as strings or numbers
-        : hasPayload && hasOutput
-          ? { ...action.payload, output }
-          : false;
-    dispatch({
-      type: action.type,
-      ...(payload ? { payload } : {})
-    });
-  } : null;
+function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
+  return action
+    ? (output) => {
+      const hasPayload = Boolean(action.payload);
+      const hasOutput = Boolean(output) && isPlainObject(output);
+      const payload =
+        hasPayload && !hasOutput
+          ? action.payload
+          : !hasPayload && hasOutput
+          ? output
+          : // We're using objects for all our payloads - I think - but this
+          // could fail with literal native values such as strings or numbers
+          hasPayload && hasOutput
+            ? Array.isArray(action.payload)
+            ? action.payload.map((action) => ({
+              ...action,
+              payload: { ...action.payload, output }
+            }))
+            : { ...action.payload, output }
+            : false;
+      dispatch({
+        type: action.type,
+        ...(payload ? { payload } : {})
+      });
+    }
+    : null;
 }
 
 export const useStyles = makeStyles(() =>
@@ -80,8 +87,8 @@ export const useStyles = makeStyles(() =>
 
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
-  const contentTypesBranch = useSelection(state => state.contentTypes);
-  const versionsBranch = useSelection(state => state.versions);
+  const contentTypesBranch = useSelection((state) => state.contentTypes);
+  const versionsBranch = useSelection((state) => state.versions);
   const dispatch = useDispatch();
   return (
     <Suspense fallback="">
@@ -212,8 +219,12 @@ function GlobalDialogManager() {
           onClick: createCallback(action.onClick, dispatch)
         }))}
         contentTypesBranch={contentTypesBranch}
-        selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
-        selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
+        selectedA={
+          versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null
+        }
+        selectedB={
+          versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null
+        }
         versionsBranch={versionsBranch}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
@@ -254,7 +265,10 @@ function GlobalDialogManager() {
   );
 }
 
-function MinimizedDialogManager({ state, dispatch }: {
+function MinimizedDialogManager({
+                                  state,
+                                  dispatch
+                                }: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {
