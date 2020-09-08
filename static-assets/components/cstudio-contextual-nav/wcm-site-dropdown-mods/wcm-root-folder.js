@@ -2964,7 +2964,7 @@
 
                   if (
                     collection.count > 0 &&
-                    isContainer &&
+                    (isContainer || oCurrentTextNode.data.isPage) &&
                     collection.item[0].uri.replace(/\/\//g, '/') != oCurrentTextNode.data.uri
                   ) {
                     if (
