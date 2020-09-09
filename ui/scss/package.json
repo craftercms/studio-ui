@@ -9,7 +9,7 @@
     "watch": "node watch.js"
   },
   "dependencies": {
-    "node-sass": "^4.12.0",
+    "node-sass": "4.13.1",
     "rxjs": "^6.5.2"
   }
 }
