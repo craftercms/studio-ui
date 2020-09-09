@@ -61,16 +61,18 @@ import { parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../
 import QuickCreateItem from '../models/content/QuickCreateItem';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
-  return getText(`/crafter-controller/component.html?path=${path}`).pipe(
-    pluck('response')
-  );
+  return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
 }
 
 interface GetContentOptions {
-  lock: boolean
+  lock: boolean;
 }
 
-export function getContent(site: string, path: string, options?: GetContentOptions): Observable<string> {
+export function getContent(
+  site: string,
+  path: string,
+  options?: GetContentOptions
+): Observable<string> {
   options = Object.assign({ lock: false }, options);
   const qs = toQueryString({ site_id: site, path, edit: options.lock });
   return get(`/studio/api/1/services/api/1/content/get-content.json${qs}`).pipe(
@@ -79,16 +81,13 @@ export function getContent(site: string, path: string, options?: GetContentOptio
 }
 
 export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
-  return get(`/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`).pipe(
-    pluck('response', 'item'),
-    catchError(errorSelectorApi1)
-  );
+  return get(
+    `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`
+  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
 export function getSandboxItem(site: string, path: string): Observable<SandboxItem> {
-  return getLegacyItem(site, path).pipe(
-    map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem)
-  );
+  return getLegacyItem(site, path).pipe(map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem));
 }
 
 export function getDetailedItem(site: string, path: string): Observable<DetailedItem> {
@@ -101,19 +100,35 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(map(fromString));
 }
 
-export function getContentInstanceLookup(site: string, path: string, contentTypesLookup: LookupTable<ContentType>): Observable<LookupTable<ContentInstance>> {
+export function getContentInstanceLookup(
+  site: string,
+  path: string,
+  contentTypesLookup: LookupTable<ContentType>
+): Observable<LookupTable<ContentInstance>> {
+  return getDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
+}
+
+export function getContentInstance(
+  site: string,
+  path: string,
+  contentTypesLookup: LookupTable<ContentType>
+): Observable<ContentInstance> {
   return getDOM(site, path).pipe(
-    map(doc => parseContentXML(doc, path, contentTypesLookup, {}))
+    map(
+      (doc) =>
+        parseContentXML(doc, path, contentTypesLookup, {})[
+          getInnerHtml(doc.querySelector('objectId'))
+        ]
+    )
   );
 }
 
-export function getContentInstance(site: string, path: string, contentTypesLookup: LookupTable<ContentType>): Observable<ContentInstance> {
-  return getDOM(site, path).pipe(
-    map(doc => parseContentXML(doc, path, contentTypesLookup, {})[doc.querySelector('objectId').innerHTML])
-  );
-}
-
-function parseElementByContentType(element: Element, field: ContentTypeField, contentTypesLookup: LookupTable<ContentType>, instanceLookup: LookupTable<ContentInstance>) {
+function parseElementByContentType(
+  element: Element,
+  field: ContentTypeField,
+  contentTypesLookup: LookupTable<ContentType>,
+  instanceLookup: LookupTable<ContentInstance>
+) {
   const type = field ? field.type : null;
   switch (type) {
     case 'repeat': {
@@ -122,7 +137,12 @@ function parseElementByContentType(element: Element, field: ContentTypeField, co
         const repeatItem = {};
         item.querySelectorAll(':scope > *').forEach((fieldTag) => {
           let fieldTagName = fieldTag.tagName;
-          repeatItem[fieldTagName] = parseElementByContentType(fieldTag, field.fields[fieldTagName], contentTypesLookup, instanceLookup);
+          repeatItem[fieldTagName] = parseElementByContentType(
+            fieldTag,
+            field.fields[fieldTagName],
+            contentTypesLookup,
+            instanceLookup
+          );
         });
         array.push(repeatItem);
       });
@@ -133,7 +153,12 @@ function parseElementByContentType(element: Element, field: ContentTypeField, co
       element.querySelectorAll(':scope > item').forEach((item) => {
         const key = getInnerHtml(item.querySelector('key'));
         const component = item.querySelector('component');
-        const instanceLK = parseContentXML(component ? wrapElementInAuxDocument(component) : null, key, contentTypesLookup, instanceLookup);
+        const instanceLK = parseContentXML(
+          component ? wrapElementInAuxDocument(component) : null,
+          key,
+          contentTypesLookup,
+          instanceLookup
+        );
         array.push(instanceLK[objectIdFromPath(key)]);
       });
       return array;
@@ -146,8 +171,12 @@ function parseElementByContentType(element: Element, field: ContentTypeField, co
   }
 }
 
-function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLookup: LookupTable<ContentType>, instanceLookup: LookupTable<ContentInstance>): LookupTable<ContentInstance> {
-
+function parseContentXML(
+  doc: XMLDocument,
+  path: string = null,
+  contentTypesLookup: LookupTable<ContentType>,
+  instanceLookup: LookupTable<ContentInstance>
+): LookupTable<ContentInstance> {
   const id = nnou(doc) ? getInnerHtml(doc.querySelector('objectId')) : objectIdFromPath(path);
   const contentType = nnou(doc) ? getInnerHtml(doc.querySelector('content-type')) : null;
   instanceLookup[id] = {
@@ -164,13 +193,114 @@ function parseContentXML(doc: XMLDocument, path: string = null, contentTypesLook
   if (nnou(doc)) {
     Array.from(doc.documentElement.children).forEach((element: Element) => {
       if (!systemPropsList.includes(element.tagName)) {
-        instanceLookup[id][element.tagName] = parseElementByContentType(element, contentTypesLookup[contentType].fields[element.tagName], contentTypesLookup, instanceLookup);
+        instanceLookup[id][element.tagName] = parseElementByContentType(
+          element,
+          contentTypesLookup[contentType].fields[element.tagName],
+          contentTypesLookup,
+          instanceLookup
+        );
       }
     });
   }
 
   return instanceLookup;
 }
+
+// Code disabled temporarily
+
+// noinspection DuplicatedCode
+/*function parseContentXMLWithoutContentTypes(
+  doc: XMLDocument,
+  path: string = null,
+  instanceLookup: LookupTable<ContentInstance> = {}
+): LookupTable<ContentInstance> {
+  const id = nnou(doc)
+    ? getInnerHtml(doc.querySelector(':scope > objectId'))
+    : objectIdFromPath(path);
+  const contentType = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > content-type')) : null;
+  instanceLookup[id] = {
+    craftercms: {
+      id,
+      path,
+      label: nnou(doc) ? getInnerHtml(doc.querySelector(':scope > internal-name')) : null,
+      locale: null,
+      dateCreated: nnou(doc) ? getInnerHtml(doc.querySelector(':scope > createdDate_dt')) : null,
+      dateModified: nnou(doc)
+        ? getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'))
+        : null,
+      contentTypeId: contentType
+    }
+  };
+  if (nnou(doc)) {
+    parseContentXMLWithoutContentTypes_processFields(
+      doc.documentElement,
+      instanceLookup[id],
+      instanceLookup
+    );
+  }
+  return instanceLookup;
+}
+
+function parseContentXMLWithoutContentTypes_processFields(
+  element: Element,
+  instance: LookupTable<any>,
+  instanceLookup: LookupTable<ContentInstance>
+): void {
+  Array.from(element.children).forEach((elem: Element) => {
+    const fieldId = elem.tagName;
+    if (!systemPropsList.includes(fieldId)) {
+      if (fieldId.endsWith('_o')) {
+        const parentId = getInnerHtml(element.querySelector('objectId'));
+        const isNodeSelector =
+          Boolean(elem.querySelector(':scope > item > component')) ||
+          Boolean(
+            elem.querySelector(':scope > item > key') &&
+              elem.querySelector(':scope > item > value') &&
+              elem.querySelector(':scope > item > include')
+          );
+        if (isNodeSelector) {
+          // component
+          instanceLookup[parentId][fieldId] = Array.from(
+            elem.querySelectorAll(':scope > item')
+          ).map((item) => {
+            const component = item.querySelector(':scope > component');
+            const isEmbedded = Boolean(component);
+            return {
+              craftercms: {
+                id: isEmbedded ? getInnerHtml(component.querySelector(':scope > objectId')) : null,
+                path: isEmbedded ? null : getInnerHtml(item.querySelector(':scope > include')),
+                dateCreated: isEmbedded
+                  ? getInnerHtml(component.querySelector(':scope > createdDate_dt'))
+                  : null,
+                dateModified: isEmbedded
+                  ? getInnerHtml(component.querySelector(':scope > lastModifiedDate_dt'))
+                  : null,
+                contentTypeId: isEmbedded
+                  ? getInnerHtml(component.querySelector(':scope > content-type'))
+                  : null,
+                label: isEmbedded
+                  ? getInnerHtml(component.querySelector(':scope > internal-name'))
+                  : getInnerHtml(item.querySelector(':scope > value')),
+                locale: null
+              }
+            };
+          });
+        } else {
+          // repeat group
+          instanceLookup[parentId][fieldId] = Array.from(
+            elem.querySelectorAll(':scope > item')
+          ).map((item) => {
+            const groupItem = {};
+            parseContentXMLWithoutContentTypes_processFields(item, groupItem, instanceLookup);
+            return groupItem;
+          });
+        }
+      } else {
+        instance[fieldId] = getInnerHtml(elem);
+      }
+    }
+  });
+}*/
 
 function parseLegacyContentType(legacy: LegacyContentType): ContentType {
   return {
@@ -204,11 +334,12 @@ const systemPropsList = [
   'lastModifiedDate_dt'
 ];
 
-export function fetchLegacyContentTypes(site: string, path?: string): Observable<LegacyContentType[]> {
+export function fetchLegacyContentTypes(
+  site: string,
+  path?: string
+): Observable<LegacyContentType[]> {
   const qs = toQueryString({ site, path });
-  return get(
-    `/studio/api/1/services/api/1/content/get-content-types.json${qs}`
-  ).pipe(
+  return get(`/studio/api/1/services/api/1/content/get-content-types.json${qs}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );
@@ -216,47 +347,58 @@ export function fetchLegacyContentTypes(site: string, path?: string): Observable
 
 export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
   return fetchLegacyContentTypes(site).pipe(
-    map((response) => (
-        (query?.type)
-          ? response.filter((contentType) => (
-            (contentType.type === query.type) &&
-            (contentType.name !== '/component/level-descriptor')
-          ))
-          : response
+    map((response) =>
+      (query?.type
+        ? response.filter(
+            (contentType) =>
+              contentType.type === query.type && contentType.name !== '/component/level-descriptor'
+          )
+        : response
       ).map(parseLegacyContentType)
     ),
-    switchMap((contentTypes) => zip(
-      of(contentTypes),
-      forkJoin<LookupTable<Observable<Partial<ContentType>>>, 'id'>(
-        contentTypes.reduce((hash, contentType) => {
-          hash[contentType.id] = fetchFormDefinition(site, contentType.id);
-          return hash;
-        }, {})
+    switchMap((contentTypes) =>
+      zip(
+        of(contentTypes),
+        forkJoin<LookupTable<Observable<Partial<ContentType>>>, 'id'>(
+          contentTypes.reduce((hash, contentType) => {
+            hash[contentType.id] = fetchFormDefinition(site, contentType.id);
+            return hash;
+          }, {})
+        )
       )
-    )),
-    map(([contentTypes, formDefinitions]) => contentTypes.map((contentType) => ({
-      ...contentType,
-      ...formDefinitions[contentType.id]
-    })))
+    ),
+    map(([contentTypes, formDefinitions]) =>
+      contentTypes.map((contentType) => ({
+        ...contentType,
+        ...formDefinitions[contentType.id]
+      }))
+    )
   );
 }
 
-export function fetchLegacyFormDefinition(site: string, contentTypeId: string): Observable<LegacyFormDefinition> {
-  return get(`/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types${contentTypeId}/form-definition.xml`).pipe(
-    pluck('response')
-  );
+export function fetchLegacyFormDefinition(
+  site: string,
+  contentTypeId: string
+): Observable<LegacyFormDefinition> {
+  return get(
+    `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types${contentTypeId}/form-definition.xml`
+  ).pipe(pluck('response'));
 }
 
-export function fetchFormDefinition(site: string, contentTypeId: string): Observable<Partial<ContentType>> {
-  return fetchLegacyFormDefinition(site, contentTypeId).pipe(
-    map(parseLegacyFormDef)
-  );
+export function fetchFormDefinition(
+  site: string,
+  contentTypeId: string
+): Observable<Partial<ContentType>> {
+  return fetchLegacyFormDefinition(site, contentTypeId).pipe(map(parseLegacyFormDef));
 }
 
-export function fetchLegacyContentType(site: string, contentTypeId: string): Observable<LegacyContentType> {
-  return get(`/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`).pipe(
-    pluck('response')
-  );
+export function fetchLegacyContentType(
+  site: string,
+  contentTypeId: string
+): Observable<LegacyContentType> {
+  return get(
+    `/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`
+  ).pipe(pluck('response'));
 }
 
 export function fetchContentType(site: string, contentTypeId: string): Observable<ContentType> {
@@ -271,7 +413,15 @@ export function fetchContentType(site: string, contentTypeId: string): Observabl
   );
 }
 
-const systemPropList = ['id', 'path', 'contentTypeId', 'dateCreated', 'dateModified', 'label', 'locale'];
+const systemPropList = [
+  'id',
+  'path',
+  'contentTypeId',
+  'dateCreated',
+  'dateModified',
+  'label',
+  'locale'
+];
 
 export function fetchById(site: string, id: string): Observable<any> {
   return post(
@@ -365,40 +515,39 @@ export function fetchById(site: string, id: string): Observable<any> {
     },
     { 'Content-Type': 'application/json' }
   ).pipe(
-    map(({ response }) => response.data.contentItems.items.flatMap((model) => {
-
-      if ([
-        '/page/search-results',
-        '/component/level-descriptor'
-      ].includes(model.contentTypeId)) {
-        return [];
-      }
-
-      const system = pluckProps(model, ...systemPropList);
-      const data = reversePluckProps(model, ...systemPropList);
-
-      Object.entries(data).forEach(([key, value]: [string, any]) => {
-        if (key.endsWith('_o')) {
-          data[key] = value.item.map((item) => item.component?.id || item);
-        } else if (model.contentTypeId === '/taxonomy' && key === 'items') {
-          data[key] = value.item;
+    map(({ response }) =>
+      response.data.contentItems.items.flatMap((model) => {
+        if (['/page/search-results', '/component/level-descriptor'].includes(model.contentTypeId)) {
+          return [];
         }
-      });
 
-      return [{
-        craftercms: system,
-        ...data
-      }];
+        const system = pluckProps(model, ...systemPropList);
+        const data = reversePluckProps(model, ...systemPropList);
 
-    }))
+        Object.entries(data).forEach(([key, value]: [string, any]) => {
+          if (key.endsWith('_o')) {
+            data[key] = value.item.map((item) => item.component?.id || item);
+          } else if (model.contentTypeId === '/taxonomy' && key === 'items') {
+            data[key] = value.item;
+          }
+        });
+
+        return [
+          {
+            craftercms: system,
+            ...data
+          }
+        ];
+      })
+    )
   );
 }
 
 const typeMap = {
-  'input': 'text',
+  input: 'text',
   'rte-tinymce5': 'html',
   'rte-tinymce4': 'html',
-  'checkbox': 'boolean',
+  checkbox: 'boolean',
   'image-picker': 'image'
 };
 
@@ -420,8 +569,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   //get receptacles dataSources
   if (definition.datasources?.datasource) {
     asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
-      if (datasource.type === 'receptacles')
-        receptaclesLookup[datasource.id] = datasource;
+      if (datasource.type === 'receptacles') receptaclesLookup[datasource.id] = datasource;
     });
   }
 
@@ -458,89 +606,103 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   // }
 
   // Parse Sections & Fields
-  definition.sections?.section && asArray<LegacyFormDefinitionSection>(definition.sections.section).forEach((legacySection) => {
-    const fieldIds = [];
+  definition.sections?.section &&
+    asArray<LegacyFormDefinitionSection>(definition.sections.section).forEach((legacySection) => {
+      const fieldIds = [];
 
-    legacySection.fields?.field && asArray<LegacyFormDefinitionField>(legacySection.fields.field).forEach((legacyField) => {
+      legacySection.fields?.field &&
+        asArray<LegacyFormDefinitionField>(legacySection.fields.field).forEach((legacyField) => {
+          const fieldId = ['file-name', 'internal-name'].includes(legacyField.id)
+            ? camelize(legacyField.id)
+            : legacyField.id;
 
-      const fieldId = [
-        'file-name',
-        'internal-name'
-      ].includes(legacyField.id) ? camelize(legacyField.id) : legacyField.id;
+          fieldIds.push(fieldId);
 
-      fieldIds.push(fieldId);
-
-      const field: ContentTypeField = {
-        id: fieldId,
-        name: legacyField.title,
-        type: typeMap[legacyField.type] || legacyField.type,
-        sortable: (legacyField.type === 'node-selector' || legacyField.type === 'repeat'),
-        validations: {},
-        defaultValue: legacyField.defaultValue,
-        required: false
-      };
-
-      legacyField.constraints && asArray<LegacyFormDefinitionProperty>(legacyField.constraints.constraint)
-        .forEach((legacyProp) => {
-          const value = legacyProp.value.trim();
-          switch (legacyProp.name) {
-            case 'required':
-              if (value === 'true') {
-                field.validations.required = {
-                  id: 'required',
-                  value: (value === 'true'),
-                  level: 'required'
-                };
-              }
-              break;
-            case 'allowDuplicates':
-              break;
-            case 'pattern':
-              break;
-            case 'minSize':
-              break;
-            default:
-              console.log(`[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`, legacyProp);
-          }
-        });
-
-      if (legacyField.type === 'repeat') {
-        field.fields = {};
-        asArray(legacyField.fields.field).forEach((_legacyField) => {
-          const _fieldId = camelize(_legacyField.id);
-          field.fields[_fieldId] = {
-            id: _fieldId,
-            name: _legacyField.title,
-            type: typeMap[_legacyField.type] || _legacyField.type,
-            sortable: (legacyField.type === 'node-selector' || legacyField.type === 'repeat'),
-            validations: null,
-            defaultValue: '',
+          const field: ContentTypeField = {
+            id: fieldId,
+            name: legacyField.title,
+            type: typeMap[legacyField.type] || legacyField.type,
+            sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
+            validations: {},
+            defaultValue: legacyField.defaultValue,
             required: false
           };
-          if (field.fields[_fieldId].type === 'node-selector') {
-            field.fields[_fieldId].validations = getFieldValidations(_legacyField.properties.property, receptaclesLookup);
+
+          legacyField.constraints &&
+            asArray<LegacyFormDefinitionProperty>(legacyField.constraints.constraint).forEach(
+              (legacyProp) => {
+                const value = legacyProp.value.trim();
+                switch (legacyProp.name) {
+                  case 'required':
+                    if (value === 'true') {
+                      field.validations.required = {
+                        id: 'required',
+                        value: value === 'true',
+                        level: 'required'
+                      };
+                    }
+                    break;
+                  case 'allowDuplicates':
+                    break;
+                  case 'pattern':
+                    break;
+                  case 'minSize':
+                    break;
+                  default:
+                    console.log(
+                      `[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`,
+                      legacyProp
+                    );
+                }
+              }
+            );
+
+          if (legacyField.type === 'repeat') {
+            field.fields = {};
+            asArray(legacyField.fields.field).forEach((_legacyField) => {
+              const _fieldId = camelize(_legacyField.id);
+              field.fields[_fieldId] = {
+                id: _fieldId,
+                name: _legacyField.title,
+                type: typeMap[_legacyField.type] || _legacyField.type,
+                sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
+                validations: null,
+                defaultValue: '',
+                required: false
+              };
+              if (field.fields[_fieldId].type === 'node-selector') {
+                field.fields[_fieldId].validations = getFieldValidations(
+                  _legacyField.properties.property,
+                  receptaclesLookup
+                );
+              }
+            });
+          } else if (legacyField.type === 'node-selector') {
+            field.validations = {
+              ...field.validations,
+              ...getFieldValidations(legacyField.properties.property, receptaclesLookup)
+            };
+          } else if (legacyField.type === 'input') {
+            field.validations = {
+              ...field.validations,
+              ...getFieldValidations(legacyField.properties.property)
+            };
           }
+
+          fields[fieldId] = field;
         });
-      } else if (legacyField.type === 'node-selector') {
-        field.validations = { ...field.validations, ...getFieldValidations(legacyField.properties.property, receptaclesLookup) };
-      } else if (legacyField.type === 'input') {
-        field.validations = { ...field.validations, ...getFieldValidations(legacyField.properties.property) };
-      }
 
-      fields[fieldId] = field;
-
+      sections.push({
+        description: legacySection.description,
+        expandByDefault: legacySection.defaultOpen === 'true',
+        title: legacySection.title,
+        fields: fieldIds
+      });
     });
 
-    sections.push({
-      description: legacySection.description,
-      expandByDefault: legacySection.defaultOpen === 'true',
-      title: legacySection.title,
-      fields: fieldIds
-    });
-
-  });
-
-  const topLevelProps: LegacyFormDefinitionProperty[] = definition.properties?.property ? asArray(definition.properties.property) : [];
+  const topLevelProps: LegacyFormDefinitionProperty[] = definition.properties?.property
+    ? asArray(definition.properties.property)
+    : [];
 
   return {
     // Find display template
@@ -550,7 +712,6 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
     sections,
     fields
   };
-
 }
 
 const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxlength', 'readonly'];
@@ -577,31 +738,36 @@ function bestGuessParse(value: any) {
   }
 }
 
-function getFieldValidations(fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[], receptaclesLookup?: LookupTable<LegacyDataSource>): Partial<ContentTypeFieldValidations> {
-  const map = asArray<LegacyFormDefinitionProperty>(fieldProperty)
-    .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
-      table[prop.name] = prop;
-      return table;
-    }, {});
+function getFieldValidations(
+  fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[],
+  receptaclesLookup?: LookupTable<LegacyDataSource>
+): Partial<ContentTypeFieldValidations> {
+  const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<
+    LookupTable<LegacyFormDefinitionProperty>
+  >((table, prop) => {
+    table[prop.name] = prop;
+    return table;
+  }, {});
 
   let validations: Partial<ContentTypeFieldValidations> = {};
 
-  Object.keys(map).forEach(key => {
+  Object.keys(map).forEach((key) => {
     if (systemValidationsNames.includes(key)) {
       if (key === 'itemManager' && receptaclesLookup) {
-        map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
-          if (receptaclesLookup[value]) {
-            asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
-              if (systemValidationsKeysMap[prop.name]) {
-                validations[systemValidationsKeysMap[prop.name]] = {
-                  id: systemValidationsKeysMap[prop.name],
-                  value: prop.value ? prop.value.split(',') : [],
-                  level: 'required'
-                };
-              }
-            });
-          }
-        });
+        map.itemManager?.value &&
+          map.itemManager.value.split(',').forEach((value) => {
+            if (receptaclesLookup[value]) {
+              asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
+                if (systemValidationsKeysMap[prop.name]) {
+                  validations[systemValidationsKeysMap[prop.name]] = {
+                    id: systemValidationsKeysMap[prop.name],
+                    value: prop.value ? prop.value.split(',') : [],
+                    level: 'required'
+                  };
+                }
+              });
+            }
+          });
       } else if (systemValidationsNames.includes(key) && !isBlank(map[key]?.value)) {
         validations[systemValidationsKeysMap[key]] = {
           id: systemValidationsKeysMap[key],
@@ -628,30 +794,25 @@ export function updateField(
   parentModelId: string = null,
   value: any
 ): Observable<any> {
-  return performMutation(
-    site,
-    modelId,
-    parentModelId,
-    doc => {
-      let node = extractNode(doc, removeLastPiece(fieldId) || fieldId, indexToUpdate);
+  return performMutation(site, modelId, parentModelId, (doc) => {
+    let node = extractNode(doc, removeLastPiece(fieldId) || fieldId, indexToUpdate);
 
-      if (fieldId.includes('.')) {
-        // node is <item/> inside collection
-        const fieldToUpdate = popPiece(fieldId);
-        let fieldNode = node.querySelector(`:scope > ${fieldToUpdate}`);
-        if (nou(fieldNode)) {
-          fieldNode = doc.createElement(fieldToUpdate);
-          node.appendChild(fieldNode);
-        }
-        node = fieldNode;
-      } else if (!node) {
-        // node is <fieldId/> inside the doc
-        node = doc.createElement(fieldId);
-        doc.documentElement.appendChild(node);
+    if (fieldId.includes('.')) {
+      // node is <item/> inside collection
+      const fieldToUpdate = popPiece(fieldId);
+      let fieldNode = node.querySelector(`:scope > ${fieldToUpdate}`);
+      if (nou(fieldNode)) {
+        fieldNode = doc.createElement(fieldToUpdate);
+        node.appendChild(fieldNode);
       }
-      node.innerHTML = `<![CDATA[${value}]]>`;
+      node = fieldNode;
+    } else if (!node) {
+      // node is <fieldId/> inside the doc
+      node = doc.createElement(fieldId);
+      doc.documentElement.appendChild(node);
     }
-  );
+    node.innerHTML = `<![CDATA[${value}]]>`;
+  });
 }
 
 function performMutation(
@@ -663,7 +824,6 @@ function performMutation(
   const isEmbeddedTarget = nnou(parentModelId);
   return getDOM(site, isEmbeddedTarget ? parentModelId : modelId).pipe(
     switchMap((doc) => {
-
       const qs = {
         site,
         path: isEmbeddedTarget ? parentModelId : modelId,
@@ -683,11 +843,7 @@ function performMutation(
 
       updateModifiedDateElement(doc);
 
-      return post(
-        writeContentUrl(qs),
-        serialize(doc)
-      );
-
+      return post(writeContentUrl(qs), serialize(doc));
     })
   );
 }
@@ -702,55 +858,52 @@ export function insertComponent(
   parentModelId: string = null,
   shared = false
 ): Observable<any> {
-  return performMutation(
-    site,
-    modelId,
-    parentModelId,
-    doc => {
+  return performMutation(site, modelId, parentModelId, (doc) => {
+    const id = instance.craftercms.id;
+    const path = shared
+      ? instance.craftercms.path ?? getComponentPath(id, instance.craftercms.contentTypeId)
+      : null;
 
-      const id = instance.craftercms.id;
-      const path = shared ? instance.craftercms.path ?? getComponentPath(id, instance.craftercms.contentTypeId) : null;
+    // Create the new `item` that holds or references (embedded vs shared) the component.
+    const newItem = doc.createElement('item');
 
-      // Create the new `item` that holds or references (embedded vs shared) the component.
-      const newItem = doc.createElement('item');
+    delete instance.fileName;
+    delete instance.internalName;
 
-      delete instance.fileName;
-      delete instance.internalName;
+    // Create the new component that will be either embedded into the parent's XML or
+    // shared stored on it's own.
+    const component = mergeContentDocumentProps('component', {
+      '@attributes': { id },
+      'content-type': contentType.id,
+      'display-template': contentType.displayTemplate,
+      'internal-name': instance.craftercms.label,
+      'file-name': `${id}.xml`,
+      objectId: id,
+      locale: instance.craftercms.locale,
+      ...reversePluckProps(instance, 'craftercms')
+    });
 
-      // Create the new component that will be either embedded into the parent's XML or
-      // shared stored on it's own.
-      const component = mergeContentDocumentProps('component', {
-        '@attributes': { id },
-        'content-type': contentType.id,
-        'display-template': contentType.displayTemplate,
-        'internal-name': instance.craftercms.label,
-        'file-name': `${id}.xml`,
-        'objectId': id,
-        'locale': instance.craftercms.locale,
-        ...reversePluckProps(instance, 'craftercms')
-      });
+    // Add the child elements into the `item` node
+    createElements(doc, newItem, {
+      '@attributes': {
+        // TODO: Hardcoded value. Fix.
+        datasource: 'TODO',
+        ...(shared ? {} : { inline: true })
+      },
+      key: shared ? path : id,
+      value: instance.craftercms.label,
+      ...(shared
+        ? {
+            include: path,
+            disableFlattening: 'false'
+          }
+        : {
+            component
+          })
+    });
 
-      // Add the child elements into the `item` node
-      createElements(doc, newItem, {
-        '@attributes': {
-          // TODO: Hardcoded value. Fix.
-          datasource: 'TODO',
-          ...(shared ? {} : { inline: true })
-        },
-        key: shared ? path : id,
-        value: instance.craftercms.label,
-        ...(shared ? {
-          include: path,
-          disableFlattening: 'false'
-        } : {
-          component
-        })
-      });
-
-      insertCollectionItem(doc, fieldId, targetIndex, newItem);
-
-    }
-  );
+    insertCollectionItem(doc, fieldId, targetIndex, newItem);
+  });
 }
 
 export function insertInstance(
@@ -761,35 +914,27 @@ export function insertInstance(
   instance: ContentInstance,
   parentModelId: string = null
 ): Observable<any> {
-  return performMutation(
-    site,
-    modelId,
-    parentModelId,
-    doc => {
-      const path = instance.craftercms.path;
+  return performMutation(site, modelId, parentModelId, (doc) => {
+    const path = instance.craftercms.path;
 
-      const newItem = doc.createElement('item');
+    const newItem = doc.createElement('item');
 
-      createElements(doc, newItem, {
-        '@attributes': {
-          // TODO: Hardcoded value. Fix.
-          datasource: 'TODO'
-        },
-        key: path,
-        value: instance.craftercms.label,
-        include: path,
-        disableFlattening: 'false'
-      });
+    createElements(doc, newItem, {
+      '@attributes': {
+        // TODO: Hardcoded value. Fix.
+        datasource: 'TODO'
+      },
+      key: path,
+      value: instance.craftercms.label,
+      include: path,
+      disableFlattening: 'false'
+    });
 
-      insertCollectionItem(doc, fieldId, targetIndex, newItem);
-
-    }
-  );
+    insertCollectionItem(doc, fieldId, targetIndex, newItem);
+  });
 }
 
-export function insertItem() {
-
-}
+export function insertItem() {}
 
 export function sortItem(
   site: string,
@@ -799,15 +944,10 @@ export function sortItem(
   targetIndex: number,
   parentModelId: string = null
 ): Observable<any> {
-  return performMutation(
-    site,
-    modelId,
-    parentModelId,
-    doc => {
-      const item = extractNode(doc, fieldId, currentIndex);
-      insertCollectionItem(doc, fieldId, targetIndex, item, currentIndex);
-    }
-  );
+  return performMutation(site, modelId, parentModelId, (doc) => {
+    const item = extractNode(doc, fieldId, currentIndex);
+    insertCollectionItem(doc, fieldId, targetIndex, item, currentIndex);
+  });
 }
 
 export function moveItem(
@@ -824,74 +964,42 @@ export function moveItem(
   // TODO Warning: cannot perform as transaction whilst the UI is the one to do all this.
   // const isOriginalEmbedded = nnou(originalParentModelId);
   // const isTargetEmbedded = nnou(targetParentModelId);
-  if (
-    (originalModelId === targetModelId) ||
-    (originalParentModelId === targetParentModelId)
-  ) {
-    if ((originalParentModelId === targetParentModelId) && nnou(originalParentModelId)) {
+  if (originalModelId === targetModelId || originalParentModelId === targetParentModelId) {
+    if (originalParentModelId === targetParentModelId && nnou(originalParentModelId)) {
       debugger;
     }
     // Moving items between two fields of the same model...
-    return performMutation(
-      site,
-      originalModelId,
-      originalParentModelId,
-      (doc) => {
+    return performMutation(site, originalModelId, originalParentModelId, (doc) => {
+      const item = extractNode(doc, originalFieldId, originalIndex);
+      const targetField = extractNode(doc, targetFieldId, removeLastPiece(`${targetIndex}`));
+      const targetFieldItems = targetField.querySelectorAll(':scope > item');
 
-        const item = extractNode(doc, originalFieldId, originalIndex);
-        const targetField = extractNode(doc, targetFieldId, removeLastPiece(`${targetIndex}`));
-        const targetFieldItems = targetField.querySelectorAll(':scope > item');
-
-        const parsedTargetIndex = parseInt(popPiece(`${targetIndex}`));
-        if (targetFieldItems.length === parsedTargetIndex) {
-          targetField.appendChild(item);
-        } else {
-          targetField.insertBefore(item, targetFieldItems[parsedTargetIndex]);
-        }
-
+      const parsedTargetIndex = parseInt(popPiece(`${targetIndex}`));
+      if (targetFieldItems.length === parsedTargetIndex) {
+        targetField.appendChild(item);
+      } else {
+        targetField.insertBefore(item, targetFieldItems[parsedTargetIndex]);
       }
-    );
+    });
   } else {
     let removedItemHTML: string;
-    return performMutation(
-      site,
-      originalModelId,
-      originalParentModelId,
-      (doc) => {
+    return performMutation(site, originalModelId, originalParentModelId, (doc) => {
+      const item: Element = extractNode(doc, originalFieldId, originalIndex);
+      const field: Element = extractNode(doc, originalFieldId, removeLastPiece(`${originalIndex}`));
 
-        const item: Element = extractNode(doc, originalFieldId, originalIndex);
-        const field: Element = extractNode(
-          doc,
-          originalFieldId,
-          removeLastPiece(`${originalIndex}`)
-        );
-
-        removedItemHTML = item.outerHTML;
-        field.removeChild(item);
-
-      }
-    ).pipe(
+      removedItemHTML = item.outerHTML;
+      field.removeChild(item);
+    }).pipe(
       switchMap(() =>
-        performMutation(
-          site,
-          targetModelId,
-          targetParentModelId,
-          (doc) => {
+        performMutation(site, targetModelId, targetParentModelId, (doc) => {
+          const item: Element = extractNode(doc, targetFieldId, targetIndex);
+          const field: Element = extractNode(doc, targetFieldId, removeLastPiece(`${targetIndex}`));
 
-            const item: Element = extractNode(doc, targetFieldId, targetIndex);
-            const field: Element = extractNode(
-              doc,
-              targetFieldId,
-              removeLastPiece(`${targetIndex}`)
-            );
+          const auxElement = doc.createElement('hold');
+          auxElement.innerHTML = removedItemHTML;
 
-            const auxElement = doc.createElement('hold');
-            auxElement.innerHTML = removedItemHTML;
-
-            field.insertBefore(auxElement.querySelector(':scope > item'), item);
-
-          }
-        )
+          field.insertBefore(auxElement.querySelector(':scope > item'), item);
+        })
       )
     );
   }
@@ -904,56 +1012,70 @@ export function deleteItem(
   indexToDelete: number | string,
   parentModelId: string = null
 ): Observable<any> {
-  return performMutation(
-    site,
-    modelId,
-    parentModelId,
-    doc => {
+  return performMutation(site, modelId, parentModelId, (doc) => {
+    let index = indexToDelete;
+    let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
 
-      let index = indexToDelete;
-      let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
-
-      if (typeof indexToDelete === 'string') {
-        index = parseInt(popPiece(indexToDelete));
-        // A fieldId can be in the form of `a.b`, which translates to `a > item > b` on the XML.
-        // In terms of index, since all it should ever arrive here is collection items,
-        // this assumes the index path points to the item itself, not the collection.
-        // By calling removeLastPiece(indexToDelete), we should get the collection node here.
-        fieldNode = extractNode(doc, fieldId, removeLastPiece(`${indexToDelete}`));
-      }
-
-      $(fieldNode).children().eq(index as number).remove();
-
+    if (typeof indexToDelete === 'string') {
+      index = parseInt(popPiece(indexToDelete));
+      // A fieldId can be in the form of `a.b`, which translates to `a > item > b` on the XML.
+      // In terms of index, since all it should ever arrive here is collection items,
+      // this assumes the index path points to the item itself, not the collection.
+      // By calling removeLastPiece(indexToDelete), we should get the collection node here.
+      fieldNode = extractNode(doc, fieldId, removeLastPiece(`${indexToDelete}`));
     }
-  );
+
+    $(fieldNode)
+      .children()
+      .eq(index as number)
+      .remove();
+  });
 }
 
-export function getContentByContentType(site: string, contentType: string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<ContentInstancePage>;
-export function getContentByContentType(site: string, contentTypes: string[], contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<ContentInstancePage>;
-export function getContentByContentType(site: string, contentTypes: string[] | string, contentTypesLookup: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<ContentInstancePage> {
+export function getContentByContentType(
+  site: string,
+  contentType: string,
+  contentTypesLookup: LookupTable<ContentType>,
+  options?: ComponentsContentTypeParams
+): Observable<ContentInstancePage>;
+export function getContentByContentType(
+  site: string,
+  contentTypes: string[],
+  contentTypesLookup: LookupTable<ContentType>,
+  options?: ComponentsContentTypeParams
+): Observable<ContentInstancePage>;
+export function getContentByContentType(
+  site: string,
+  contentTypes: string[] | string,
+  contentTypesLookup: LookupTable<ContentType>,
+  options?: ComponentsContentTypeParams
+): Observable<ContentInstancePage> {
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
-  return postJSON(
-    `/studio/api/2/search/search.json?siteId=${site}`,
-    {
-      ...reversePluckProps(options, 'type'),
-      filters: { 'content-type': contentTypes }
-    }
-  ).pipe(
-    map<AjaxResponse, { count: number, paths: string[] }>(({ response }) => ({
+  return postJSON(`/studio/api/2/search/search.json?siteId=${site}`, {
+    ...reversePluckProps(options, 'type'),
+    filters: { 'content-type': contentTypes }
+  }).pipe(
+    map<AjaxResponse, { count: number; paths: string[] }>(({ response }) => ({
       count: response.result.total,
-      paths: response.result.items.filter((item) => item.type === options.type).map((item) => item.path)
+      paths: response.result.items
+        .filter((item) => item.type === options.type)
+        .map((item) => item.path)
     })),
-    switchMap(({ paths, count }) => zip(
-      of(count),
-      paths.length ? forkJoin(
-        paths.reduce((array, path) => {
-          array.push(getContentInstanceLookup(site, path, contentTypesLookup));
-          return array;
-        }, []) as Array<Observable<LookupTable<ContentInstance>>>
-      ) : of([])
-    )),
+    switchMap(({ paths, count }) =>
+      zip(
+        of(count),
+        paths.length
+          ? forkJoin(
+              paths.reduce((array, path) => {
+                array.push(getContentInstanceLookup(site, path, contentTypesLookup));
+                return array;
+              }, []) as Array<Observable<LookupTable<ContentInstance>>>
+            )
+          : of([])
+      )
+    ),
     map(([count, array]) => ({
       count,
       lookup: array.reduce((hash, lookupTable) => Object.assign(hash, lookupTable), {})
@@ -963,15 +1085,17 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
 
 export function formatXML(site: string, path: string) {
   return getDOM(site, path).pipe(
-    switchMap((doc) => post(
-      writeContentUrl({
-        site,
-        path: path,
-        unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector('file-name'))
-      }),
-      serialize(doc)
-    ))
+    switchMap((doc) =>
+      post(
+        writeContentUrl({
+          site,
+          path: path,
+          unlock: 'true',
+          fileName: getInnerHtml(doc.querySelector('file-name'))
+        }),
+        serialize(doc)
+      )
+    )
   );
 }
 
@@ -981,10 +1105,10 @@ interface LegacyContentDocumentProps {
   'internal-name': string;
   'file-name': string;
   'merge-strategy': string;
-  'createdDate_dt': string;
-  'lastModifiedDate_dt': string;
-  'objectId': string;
-  'locale': string;
+  createdDate_dt: string;
+  lastModifiedDate_dt: string;
+  objectId: string;
+  locale: string;
   placeInNav?: 'true' | 'false';
 }
 
@@ -1000,11 +1124,8 @@ interface AnyObject {
 // }
 
 function extractNode(doc: XMLDocument, fieldId: string, index: string | number) {
-  const indexes = (
-    (index === '' || nou(index))
-      ? []
-      : `${index}`.split('.').map(i => parseInt(i, 10))
-  );
+  const indexes =
+    index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
   let aux: any = doc.documentElement;
   if (nou(index) || isBlank(`${index}`)) {
     return aux.querySelector(`:scope > ${fieldId}`);
@@ -1014,7 +1135,7 @@ function extractNode(doc: XMLDocument, fieldId: string, index: string | number) 
     // There's more indexes than fields
     throw new Error(
       '[content/extractNode] Path not handled: indexes.length > fields.length. Indexes ' +
-      `is ${indexes} and fields is ${fields}`
+        `is ${indexes} and fields is ${fields}`
     );
   }
   indexes.forEach((_index, i) => {
@@ -1033,10 +1154,10 @@ function extractNode(doc: XMLDocument, fieldId: string, index: string | number) 
 }
 
 function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContentDocumentProps {
-// Dasherized props...
-// content-type, display-template, no-template-required, internal-name, file-name
-// merge-strategy, folder-name, parent-descriptor
-  const now = (data.lastModifiedDate_dt && data.createdDate_dt) ? null : createModifiedDate();
+  // Dasherized props...
+  // content-type, display-template, no-template-required, internal-name, file-name
+  // merge-strategy, folder-name, parent-descriptor
+  const now = data.lastModifiedDate_dt && data.createdDate_dt ? null : createModifiedDate();
   const dateCreated = data.createdDate_dt ? data.createdDate_dt : now;
   const dateModified = data.lastModifiedDate_dt ? data.lastModifiedDate_dt : now;
   return Object.assign(
@@ -1046,13 +1167,13 @@ function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContent
       'internal-name': '',
       'file-name': '',
       'merge-strategy': 'inherit-levels',
-      'createdDate_dt': dateCreated,
-      'lastModifiedDate_dt': dateModified,
-      'objectId': '',
-      'locale': 'en'
+      createdDate_dt: dateCreated,
+      lastModifiedDate_dt: dateModified,
+      objectId: '',
+      locale: 'en'
     },
-    (type === 'page' ? { placeInNav: 'false' as 'false' } : {}),
-    (data || {})
+    type === 'page' ? { placeInNav: 'false' as 'false' } : {},
+    data || {}
   );
 }
 
@@ -1065,22 +1186,34 @@ function updateModifiedDateElement(doc: XMLDocument) {
 }
 
 function getComponentPath(id: string, contentType: string) {
-  const pathBase = `/site/components/${contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
+  const pathBase = `/site/components/${contentType.replace('/component/', '')}s/`.replace(
+    /\/{1,}$/m,
+    ''
+  );
   return `${pathBase}/${id}.xml`;
 }
 
-function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: string | number, newItem: Node, currentIndex?: number): void {
+function insertCollectionItem(
+  doc: XMLDocument,
+  fieldId: string,
+  targetIndex: string | number,
+  newItem: Node,
+  currentIndex?: number
+): void {
   let fieldNode = extractNode(doc, fieldId, removeLastPiece(`${targetIndex}`));
-  let index = ((typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex);
+  let index = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
 
   //If currentIndex it means the op is a 'sort', and the index(targetIndex) needs to plus 1 or no
   if (nnou(currentIndex)) {
-    let currentIndexParsed = (typeof currentIndex === 'string') ? parseInt(popPiece(currentIndex)) : currentIndex;
-    let targetIndexParsed = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
+    let currentIndexParsed =
+      typeof currentIndex === 'string' ? parseInt(popPiece(currentIndex)) : currentIndex;
+    let targetIndexParsed =
+      typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
     if (currentIndexParsed > targetIndexParsed) {
-      index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) : targetIndex;
+      index = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
     } else {
-      index = (typeof targetIndex === 'string') ? parseInt(popPiece(targetIndex)) + 1 : targetIndex + 1;
+      index =
+        typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) + 1 : targetIndex + 1;
     }
   }
 
@@ -1100,7 +1233,9 @@ function insertCollectionItem(doc: XMLDocument, fieldId: string, targetIndex: st
 }
 
 export function fetchPublishingChannels(site: string) {
-  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`);
+  return get(
+    `/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`
+  );
 }
 
 export function uploadDataUrl(
@@ -1173,147 +1308,205 @@ export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]
 }
 
 export function getHistory(site: string, path: string): Observable<VersionsResponse> {
-  return get(`/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${path}`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return get(
+    `/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${path}`
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function revertTo(site: string, path: string, versionNumber: string): Observable<Boolean> {
-  return get(`/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${path}&version=${versionNumber}`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return get(
+    `/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${path}&version=${versionNumber}`
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function getVersion(site: string, path: string, versionNumber: string): Observable<any> {
-  return new Observable((observer) => {
-    observer.next({
-      name: 'Test',
-      versionNumber,
-      lastModifiedDate: Date.now(),
-      contentTypeId: '/page/home'
-    });
-    observer.complete();
+// region Get Version(s)
+
+interface VersionDescriptor {
+  site: string;
+  path: string;
+  versionNumber: string;
+  content: ContentInstance;
+}
+
+// Temporarily disabling getVersion(s) and returning just the necessary information to power
+// the previous "diff" view — without network requests — while we develop the backend
+
+export function getVersion(site: string, path: string, versionNumber: string): Observable<VersionDescriptor> {
+  return of({
+    site,
+    path,
+    versionNumber,
+    content: null
   });
+  // Code disabled temporarily
+  // return getDOM(site, path).pipe(
+  //   map((doc) => {
+  //     const id = getInnerHtml(doc.querySelector('objectId'));
+  //     const content = parseContentXMLWithoutContentTypes(doc, path, {});
+  //     const item = content[id];
+  //     return {
+  //       id,
+  //       site,
+  //       path,
+  //       content,
+  //       versionNumber,
+  //       lastModifiedDate: item.craftercms.dateModified,
+  //       contentTypeId: item.craftercms.contentTypeId
+  //     };
+  //   })
+  // );
 }
 
-export function getVersions(site: string, path: string, versionNumbers: string[], contentTypes: LookupTable<ContentType>): Observable<any> {
-  return getContentInstance(site, path, contentTypes).pipe(
-    map(response => {
-      return [
-        {
-          ...response,
-          title_t: 'testeo',
-          features_o: [
-            {
-              ...response['features_o'][0],
-              craftercms: {
-                ...response['features_o'][0].craftercms,
-                dateModified: Date.now(),
-                id: 'asd1232'
-              }
-            },
-            ...response['features_o']
-          ],
-          craftercms: {
-            ...response.craftercms,
-            versionNumber: versionNumbers[0]
-          }
-        },
-        {
-          ...response,
-          hero_image_s: 'https://via.placeholder.com/300',
-          features_o: [
-            {
-              ...response['features_o'][0],
-              craftercms: {
-                ...response['features_o'][0].craftercms,
-                dateModified: Date.now() + 1,
-                id: 'asd1232'
-              }
-            },
-            ...response['features_o'],
-            {
-              ...response['features_o'][0],
-              craftercms: {
-                ...response['features_o'][0].craftercms,
-                dateModified: Date.now(),
-                id: 'asd1234'
-              }
-            }
-          ],
-          hero_title_html: '<h2>Simply Editorial</h2>',
-          craftercms: {
-            ...response.craftercms,
-            versionNumber: versionNumbers[1]
-          }
-        }
-      ];
-    })
-  );
+export function getVersions(
+  site: string,
+  path: string,
+  versionNumbers: [string, string],
+  contentTypes: LookupTable<ContentType>
+): Observable<[VersionDescriptor, VersionDescriptor]> {
+  return of([
+    {
+      site,
+      path,
+      versionNumber: versionNumbers[0],
+      content: null
+    },
+    {
+      site,
+      path,
+      versionNumber: versionNumbers[1],
+      content: null
+    }
+  ]);
+  // Code disabled temporarily
+  // return getContentInstance(site, path, contentTypes).pipe(
+  //   map((response) => [
+  //     {
+  //       ...response,
+  //       title_t: 'testeo',
+  //       features_o: [
+  //         {
+  //           ...response['features_o'][0],
+  //           craftercms: {
+  //             ...response['features_o'][0].craftercms,
+  //             dateModified: Date.now(),
+  //             id: 'asd1232'
+  //           }
+  //         },
+  //         ...response['features_o']
+  //       ],
+  //       craftercms: {
+  //         ...response.craftercms,
+  //         versionNumber: versionNumbers[0]
+  //       }
+  //     },
+  //     {
+  //       ...response,
+  //       hero_image_s: 'https://via.placeholder.com/300',
+  //       features_o: [
+  //         {
+  //           ...response['features_o'][0],
+  //           craftercms: {
+  //             ...response['features_o'][0].craftercms,
+  //             dateModified: Date.now() + 1,
+  //             id: 'asd1232'
+  //           }
+  //         },
+  //         ...response['features_o'],
+  //         {
+  //           ...response['features_o'][0],
+  //           craftercms: {
+  //             ...response['features_o'][0].craftercms,
+  //             dateModified: Date.now(),
+  //             id: 'asd1234'
+  //           }
+  //         }
+  //       ],
+  //       hero_title_html: '<h2>Simply Editorial</h2>',
+  //       craftercms: {
+  //         ...response.craftercms,
+  //         versionNumber: versionNumbers[1]
+  //       }
+  //     }
+  //   ])
+  // );
 }
 
-export function getChildrenByPath(site: string, path: string, options?: GetChildrenOptions): Observable<GetChildrenResponse> {
+// endregion
 
+export function getChildrenByPath(
+  site: string,
+  path: string,
+  options?: GetChildrenOptions
+): Observable<GetChildrenResponse> {
   // TODO: Waiting for API. Temporarily calling API1's get-items-tree
   // return get(`/studio/api/2/content/children_by_path?siteId=${site}&path=${path}`).pipe(
-  return get(`/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${path}&depth=1&order=default`).pipe(
+  return get(
+    `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${path}&depth=1&order=default`
+  ).pipe(
     pluck('response'),
     // map(({ items, parent }) => Object.assign(items, { parent })),
-    map(({ item }) => Object.assign(parseLegacyItemToSandBoxItem(item.children), { parent: parseLegacyItemToSandBoxItem(item) })),
+    map(({ item }) =>
+      Object.assign(parseLegacyItemToSandBoxItem(item.children), {
+        parent: parseLegacyItemToSandBoxItem(item)
+      })
+    ),
     catchError(errorSelectorApi1)
   );
 }
 
 export function copy(site: string, item: Partial<LegacyItem>): Observable<{ success: boolean }> {
   let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
-  return post(`/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`, _item, CONTENT_TYPE_JSON).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return post(
+    `/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`,
+    _item,
+    CONTENT_TYPE_JSON
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function cut(site: string, item: SandboxItem): Observable<any> {
-  return post(`/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`, { item: [{ uri: item.path }] }, CONTENT_TYPE_JSON).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return post(
+    `/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`,
+    { item: [{ uri: item.path }] },
+    CONTENT_TYPE_JSON
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function paste(site: string, item: SandboxItem): Observable<{ site: string, status: string[] }> {
-  return get(`/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+export function paste(
+  site: string,
+  item: SandboxItem
+): Observable<{ site: string; status: string[] }> {
+  return get(
+    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function duplicate(site: string, item: SandboxItem, parentItem: SandboxItem): Observable<SandboxItem> {
+export function duplicate(
+  site: string,
+  item: SandboxItem,
+  parentItem: SandboxItem
+): Observable<SandboxItem> {
   return forkJoin({
     copy: copy(site, item),
     newItem: paste(site, parentItem)
-  }).pipe(
-    map(({ copy, newItem }) => (
-      { ...item, path: newItem.status[0] }
-    ))
-  );
+  }).pipe(map(({ copy, newItem }) => ({ ...item, path: newItem.status[0] })));
 }
 
 export function getPages(site: string, item: any): Observable<any> {
-  return get(`/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`).pipe(
-    pluck('response', 'item'),
-    catchError(errorSelectorApi1)
-  );
+  return get(
+    `/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`
+  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
-export function deleteItems(site: string, user: string, submissionComment: string, data: AnyObject): Observable<any> {
+export function deleteItems(
+  site: string,
+  user: string,
+  submissionComment: string,
+  data: AnyObject
+): Observable<any> {
   return postJSON(
     `/studio/api/1/services/api/1/workflow/go-delete.json?site=${site}&user=${user}&submissionComment=${submissionComment}`,
     data
-  ).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function lock(site: string, path: string): Observable<boolean> {
@@ -1321,45 +1514,47 @@ export function lock(site: string, path: string): Observable<boolean> {
 }
 
 export function unlock(site: string, path: string): Observable<boolean> {
-  return get(`/studio/api/1/services/api/1/content/unlock-content.json?site=${site}&path=${path}`).pipe(
-    mapTo(true)
-  );
+  return get(
+    `/studio/api/1/services/api/1/content/unlock-content.json?site=${site}&path=${path}`
+  ).pipe(mapTo(true));
 }
 
 export function fetchWorkflowAffectedItems(site: string, path: string): Observable<SandboxItem[]> {
-  return get(`/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`).pipe(
+  return get(
+    `/studio/api/1/services/api/1/workflow/get-workflow-affected-paths.json?site=${site}&path=${path}`
+  ).pipe(
     pluck('response', 'items'),
-    map(items => items.map(parseLegacyItemToSandBoxItem)),
+    map((items) => items.map(parseLegacyItemToSandBoxItem)),
     catchError(errorSelectorApi1)
   );
 }
 
 export function createNewFolder(site: string, path: string, name: string): Observable<unknown> {
-  return post(`/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${path}&name=${name}`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return post(
+    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${path}&name=${name}`
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function createNewFile(site: string, path: string, fileName: string): Observable<unknown> {
-  return post(`/studio/api/1/services/api/1/content/write-content.json?site=${site}&phase=onSave&path=${path}&fileName=${fileName}&user=admin&unlock=true`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return post(
+    `/studio/api/1/services/api/1/content/write-content.json?site=${site}&phase=onSave&path=${path}&fileName=${fileName}&user=admin&unlock=true`
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function renameFolder(site: string, path: string, name: string) {
-  return post(`/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${path}&name=${name}`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  return post(
+    `/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${path}&name=${name}`
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function changeContentType(site: string, path: string, contentType: string): Observable<boolean> {
-  return post(`/studio/api/1/services/api/1/content/change-content-type.json?site=${site}&path=${path}&contentType=${contentType}`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+export function changeContentType(
+  site: string,
+  path: string,
+  contentType: string
+): Observable<boolean> {
+  return post(
+    `/studio/api/1/services/api/1/content/change-content-type.json?site=${site}&path=${path}&contentType=${contentType}`
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export default {
