@@ -21,7 +21,6 @@ import { useLogicResource, useUnmount } from '../../utils/hooks';
 import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import { SuspenseWithEmptyState } from '../SystemStatus/Suspencified';
@@ -160,18 +159,16 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>
-        <DialogActions>
-          {onClose && (
-            <Button onClick={onClose} variant="contained">
-              <FormattedMessage id="workflowCancellation.cancel" defaultMessage="Cancel" />
-            </Button>
-          )}
-          {onContinue && (
-            <Button onClick={onContinue} variant="contained" color="primary" autoFocus>
-              <FormattedMessage id="workflowCancellation.continue" defaultMessage="Continue" />
-            </Button>
-          )}
-        </DialogActions>
+        {onClose && (
+          <Button onClick={onClose} variant="contained">
+            <FormattedMessage id="workflowCancellation.cancel" defaultMessage="Cancel" />
+          </Button>
+        )}
+        {onContinue && (
+          <Button onClick={onContinue} variant="contained" color="primary" autoFocus>
+            <FormattedMessage id="workflowCancellation.continue" defaultMessage="Continue" />
+          </Button>
+        )}
       </DialogFooter>
     </>
   );

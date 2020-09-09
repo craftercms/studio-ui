@@ -18,7 +18,6 @@ import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import React, { PropsWithChildren } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
@@ -99,18 +98,16 @@ function ConfirmDialogWrapper(props: ConfirmDialogProps) {
         {children}
       </DialogBody>
       <DialogFooter>
-        <DialogActions>
-          {onCancel && (
-            <Button onClick={onCancel} variant="outlined">
-              {formatMessage(messages.cancel)}
-            </Button>
-          )}
-          {onOk && (
-            <Button onClick={onOk} variant="contained" color="primary" autoFocus>
-              {formatMessage(messages.ok)}
-            </Button>
-          )}
-        </DialogActions>
+        {onCancel && (
+          <Button onClick={onCancel} variant="outlined">
+            {formatMessage(messages.cancel)}
+          </Button>
+        )}
+        {onOk && (
+          <Button onClick={onOk} variant="contained" color="primary" autoFocus>
+            {formatMessage(messages.ok)}
+          </Button>
+        )}
       </DialogFooter>
     </>
   );

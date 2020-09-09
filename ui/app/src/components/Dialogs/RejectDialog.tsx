@@ -33,7 +33,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import DialogFooter from './DialogFooter';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -150,7 +149,7 @@ function RejectDialogContentUI(props: RejectDialogContentUIProps) {
                   color="primary"
                 />
               </ListItemIcon>
-              <ListItemText primary={item.label} secondary={item.path} id={labelId}/>
+              <ListItemText primary={item.label} secondary={item.path} id={labelId} />
             </ListItem>
           );
         })
@@ -273,24 +272,22 @@ function RejectDialogUI(props: RejectDialogUIProps) {
         </Grid>
       </DialogBody>
       <DialogFooter>
-        <DialogActions>
-          {onClose && (
-            <Button onClick={onClose} variant="contained">
-              <FormattedMessage id="rejectDialog.cancel" defaultMessage="Cancel" />
-            </Button>
-          )}
-          {onReject && (
-            <Button
-              onClick={onReject}
-              variant="contained"
-              color="primary"
-              autoFocus
-              disabled={checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''}
-            >
-              <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />
-            </Button>
-          )}
-        </DialogActions>
+        {onClose && (
+          <Button onClick={onClose} variant="contained">
+            <FormattedMessage id="rejectDialog.cancel" defaultMessage="Cancel" />
+          </Button>
+        )}
+        {onReject && (
+          <Button
+            onClick={onReject}
+            variant="contained"
+            color="primary"
+            autoFocus
+            disabled={checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''}
+          >
+            <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />
+          </Button>
+        )}
       </DialogFooter>
     </>
   );
@@ -349,9 +346,9 @@ function RejectDialogWrapper(props: RejectDialogProps) {
         (message) => {
           setRejectionComment(message);
         }
-      )
+      );
     }
-  }, [rejectionReason, setRejectionComment, currentLocale, siteId])
+  }, [rejectionReason, setRejectionComment, currentLocale, siteId]);
 
   const updateChecked = (value) => {
     const itemExist = checkedItems.includes(value);
