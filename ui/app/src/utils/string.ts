@@ -50,6 +50,10 @@ export function dasherize(str: string) {
   return str.replace(/_/g, '-');
 }
 
+export function removeSpaces(str: string) {
+  return str.replace(/\s+/g, '');
+}
+
 export function removeLastPiece(str: string, splitChar = '.') {
   return str.substr(0, str.lastIndexOf(splitChar));
 }

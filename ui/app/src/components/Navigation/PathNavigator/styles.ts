@@ -71,7 +71,17 @@ export const useStyles = makeStyles((theme) =>
     itemIconButton: {
       padding: '2px 3px'
     },
-    searchRoot: {},
+    searchRoot: {
+      margin: '7px 10px 7px 0',
+      height: '25px'
+    },
+    searchInput: {
+      fontSize: '12px',
+      padding: '5px !important'
+    },
+    searchCloseIcon: {
+      fontSize: '12px !important'
+    },
     // region Breadcrumbs
     breadcrumbs: {
       display: 'flex',

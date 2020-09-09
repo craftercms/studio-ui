@@ -41,6 +41,7 @@ interface CreateNewFolderProps {
   path?: string;
   rename?: boolean;
   value?: string;
+  allowBraces?: boolean;
   onClose(): void;
   onClosed?(): void;
   onCreated?(path: string, name: string, rename: boolean): void;
@@ -78,7 +79,7 @@ interface CreateNewFolderUIProps extends CreateNewFolderProps {
 }
 
 function CreateNewFolderUI(props: CreateNewFolderUIProps) {
-  const { onClosed, onClose, path, submitted, inProgress, setState, onCreated, rename = false, value = '' } = props;
+  const { onClosed, onClose, path, submitted, inProgress, setState, onCreated, rename = false, value = '', allowBraces = false } = props;
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
@@ -91,7 +92,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
 
     if (name) {
       if (rename) {
-        renameFolder(site, path, name).subscribe(
+        renameFolder(site, path, encodeURI(name)).subscribe(
           (response) => {
             onClose();
             onCreated?.(path, name, rename);
@@ -102,7 +103,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
           }
         );
       } else {
-        createNewFolder(site, path, name).subscribe(
+        createNewFolder(site, path, encodeURI(name)).subscribe(
           (resp) => {
             onClose();
             onCreated?.(path, name, rename);
@@ -155,7 +156,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
           InputLabelProps={{
             shrink: true
           }}
-          onChange={(event) => setName(event.target.value.replace(/[^a-zA-Z0-9-_]/g, ''))}
+          onChange={(event) => setName(event.target.value.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, ''))}
         />
       </DialogBody>
       <DialogFooter>

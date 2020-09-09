@@ -129,5 +129,13 @@ export const translations = defineMessages({
   changeContentTypeBody: {
     id: 'change.contentType.dialog.body',
     defaultMessage: 'The following operation may result in data loss. Would you like to proceed?'
+  },
+  refresh: {
+    id: 'words.refresh',
+    defaultMessage: 'Refresh'
+  },
+  noLocales: {
+    id: 'craftercms.pages.option.noLocales',
+    defaultMessage: 'The site has no locales declared.'
   }
 });

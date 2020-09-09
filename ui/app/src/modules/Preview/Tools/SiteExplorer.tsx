@@ -77,6 +77,9 @@ const useExplorerStyles = makeStyles(() =>
     body: {
       marginLeft: 10,
       borderLeft: `3px solid ${palette.gray.light2}`
+    },
+    searchRoot: {
+      marginRight: 10
     }
   })
 );
@@ -115,6 +118,7 @@ export function SiteExplorer(props: SiteExplorerProps) {
   const { supported: widgets, notSupported } = resource.read();
   const { formatMessage } = useIntl();
   const classes = useExplorerStyles();
+
   return (
     <>
       {Boolean(notSupported.length) && (
@@ -122,7 +126,11 @@ export function SiteExplorer(props: SiteExplorerProps) {
       )}
       {widgets?.map((item, index) => {
         const Component = ItemToComponentMap[item.name || item.render];
-        return <Component key={index} {...(item.name ? item.params : item.props)} classes={classes} />;
+        return <Component
+          key={index}
+          {...(item.name ? item.params : item.props)}
+          classes={classes}
+        />;
       })}
     </>
   );
@@ -152,7 +160,7 @@ export function SiteExplorerContainer() {
   useEffect(() => {
     if (
       (!state.items && !state.isFetching) ||
-      prevSite !== site
+      (prevSite !== undefined && prevSite !== site)
     ) {
       dispatch(fetchSidebarConfig(site));
     }
