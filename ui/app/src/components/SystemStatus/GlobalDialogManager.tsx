@@ -42,7 +42,10 @@ const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialo
 const EmbeddedLegacyEditors = lazy(() => import('../../modules/Preview/EmbeddedLegacyEditors'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 
-function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
+function createCallback(
+   action: StandardAction,
+   dispatch: Dispatch
+ ): (output?: unknown) => void {
   return action
     ? (output) => {
       const hasPayload = Boolean(action.payload);
@@ -265,10 +268,7 @@ function GlobalDialogManager() {
   );
 }
 
-function MinimizedDialogManager({
-                                  state,
-                                  dispatch
-                                }: {
+function MinimizedDialogManager({ state, dispatch }: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {
