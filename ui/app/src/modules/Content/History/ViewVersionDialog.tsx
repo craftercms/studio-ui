@@ -17,17 +17,10 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
-import ListItemText from '@material-ui/core/ListItemText';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
-import { useUnmount, useLogicResource } from '../../../utils/hooks';
-import { FancyFormattedDate } from './VersionList';
+import { useLogicResource, useUnmount } from '../../../utils/hooks';
 import StandardAction from '../../../models/StandardAction';
-import ContentType, { ContentTypeField } from '../../../models/ContentType';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ContentType from '../../../models/ContentType';
 import { LookupTable } from '../../../models/LookupTable';
 import { ApiResponse } from '../../../models/ApiResponse';
 import { EntityState } from '../../../models/EntityState';
@@ -38,9 +31,33 @@ import DialogHeader, {
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { Resource } from '../../../models/Resource';
 import Dialog from '@material-ui/core/Dialog';
-import palette from '../../../styles/palette';
 
-const versionViewStyles = makeStyles(() => ({
+interface VersionViewProps {
+  resource: Resource<VersionResource>;
+}
+
+interface ViewVersionDialogBaseProps {
+  open: boolean;
+  error: ApiResponse;
+  isFetching: boolean;
+  version: any;
+}
+
+interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
+  contentTypesBranch: EntityState<ContentType>;
+  leftActions?: DialogHeaderAction[];
+  rightActions?: DialogHeaderAction[];
+  onClose?(): void;
+  onClosed?(): void;
+  onDismiss?(): void;
+}
+
+interface VersionResource {
+  version: any;
+  contentTypes: LookupTable<ContentType>;
+}
+
+/*const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
     margin: '0 10px 10px 10px',
     '& .blackText': {
@@ -63,13 +80,16 @@ const versionViewStyles = makeStyles(() => ({
   singleItemSelector: {
     marginBottom: '10px'
   }
+}));*/
+
+const getLegacyDialogStyles = makeStyles(() => ({
+  iframe: {
+    border: 'none',
+    height: '80vh'
+  }
 }));
 
-interface VersionViewProps {
-  resource: Resource<VersionResource>;
-}
-
-function VersionView(props: VersionViewProps) {
+/*function VersionView(props: VersionViewProps) {
   const { version, contentTypes } = props.resource.read();
   const classes = versionViewStyles({});
   const values = Object.values(contentTypes[version.contentTypeId].fields) as ContentTypeField[];
@@ -91,44 +111,35 @@ function VersionView(props: VersionViewProps) {
         />
       </section>
       <section className={classes.viewVersionContent}>
-        {
-          contentTypes &&
-          values.map((field) =>
+        {contentTypes &&
+          values.map((field) => (
             <ExpansionPanel key={field.id} classes={{ root: classes.root }}>
               <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography><span
-                  className={classes.bold}
-                >{field.id} </span>({field.name})</Typography>
+                <Typography>
+                  <span className={classes.bold}>{field.name}</span> ({field.id})
+                </Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                  sit amet blandit leo lobortis eget.
+                  {field.type === 'html' ? (
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: decodeHTML(version.content[version.id][field.id])
+                      }}
+                    />
+                  ) : typeof version.content[version.id][field.id] === 'object' ? (
+                    JSON.stringify(version.content[version.id][field.id])
+                  ) : (
+                    version.content[version.id][field.id]
+                  )}
                 </Typography>
               </ExpansionPanelDetails>
             </ExpansionPanel>
-          )
-        }
+          ))}
       </section>
     </>
   );
-}
-
-interface ViewVersionDialogBaseProps {
-  open: boolean;
-  error: ApiResponse;
-  isFetching: boolean;
-  version: any;
-}
-
-interface ViewVersionDialogProps extends ViewVersionDialogBaseProps {
-  contentTypesBranch: EntityState<ContentType>;
-  leftActions?: DialogHeaderAction[];
-  rightActions?: DialogHeaderAction[];
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}
+}*/
 
 export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps {
   leftActions?: DialogHeaderStateAction[];
@@ -138,19 +149,9 @@ export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps 
   onDismiss?: StandardAction;
 }
 
-interface VersionResource {
-  version: any;
-  contentTypes: LookupTable<ContentType>;
-}
-
 export default function ViewVersionDialog(props: ViewVersionDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      fullWidth
-      maxWidth="md"
-    >
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
       <ViewVersionDialogWrapper {...props} />
     </Dialog>
   );
@@ -160,21 +161,20 @@ function ViewVersionDialogWrapper(props: ViewVersionDialogProps) {
   const { onDismiss, rightActions } = props;
   useUnmount(props.onClosed);
   const resource = useLogicResource<VersionResource, ViewVersionDialogProps>(props, {
-    shouldResolve: (source) => (
+    shouldResolve: (source) =>
       source.version &&
       source.contentTypesBranch.byId &&
       !source.isFetching &&
-      !source.contentTypesBranch.isFetching
-    ),
+      !source.contentTypesBranch.isFetching,
     shouldReject: (source) => Boolean(source.error) || Boolean(source.contentTypesBranch.error),
-    shouldRenew: (source, resource) => (source.isFetching || source.contentTypesBranch.isFetching) && resource.complete,
+    shouldRenew: (source, resource) =>
+      (source.isFetching || source.contentTypesBranch.isFetching) && resource.complete,
     resultSelector: (source) => ({
       version: source.version,
       contentTypes: source.contentTypesBranch.byId
     }),
     errorSelector: (source) => source.error || source.contentTypesBranch.error
   });
-
   return (
     <>
       <DialogHeader
@@ -189,9 +189,21 @@ function ViewVersionDialogWrapper(props: ViewVersionDialogProps) {
       />
       <DialogBody>
         <SuspenseWithEmptyState resource={resource}>
-          <VersionView resource={resource} />
+          <LegacyVersionDialog resource={resource} />
         </SuspenseWithEmptyState>
       </DialogBody>
     </>
+  );
+}
+
+function LegacyVersionDialog(props: VersionViewProps) {
+  const { version } = props.resource.read();
+  const classes = getLegacyDialogStyles();
+  return (
+    <iframe
+      title="View version"
+      className={classes.iframe}
+      src={`http://localhost:8080/studio/diff?site=${version.site}&path=${version.path}&version=${version.versionNumber}&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
+    />
   );
 }

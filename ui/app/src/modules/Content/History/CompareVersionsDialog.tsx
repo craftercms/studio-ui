@@ -88,20 +88,15 @@ export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBa
   onDismiss?: StandardAction;
 }
 
-export default function CompareVersionsDialog(props: CompareVersionsDialogProps) {
+export default function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      fullWidth
-      maxWidth="md"
-    >
-      <CompareVersionsDialogWrapper {...props} />
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
+      <CompareVersionsDialog {...props} />
     </Dialog>
   );
 }
 
-function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
+function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const {
     rightActions,
     selectedA,
@@ -110,7 +105,16 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
     versionsBranch,
     contentTypesBranch
   } = props;
-  const { count, page, limit, selected, compareVersionsBranch, current, item, rootPath } = versionsBranch;
+  const {
+    count,
+    page,
+    limit,
+    selected,
+    compareVersionsBranch,
+    current,
+    item,
+    rootPath
+  } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
   const [openSelector, setOpenSelector] = useState(false);
@@ -136,8 +140,10 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
     [compareVersionsBranch, contentTypesBranch]
   );
 
-  const compareVersionsResource = useLogicResource<CompareVersionsResource,
-    { compareVersionsBranch: CompareVersionsBranch; contentTypesBranch: EntityState<ContentType> }>(compareVersionsData, {
+  const compareVersionsResource = useLogicResource<
+    CompareVersionsResource,
+    { compareVersionsBranch: CompareVersionsBranch; contentTypesBranch: EntityState<ContentType> }
+  >(compareVersionsData, {
     shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) =>
       compareVersionsBranch.compareVersions &&
       contentTypesBranch.byId &&
@@ -198,12 +204,12 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
         leftActions={
           compareMode
             ? [
-              {
-                icon: 'BackIcon',
-                onClick: () => dispatch(compareVersion({ id: selected[0] })),
-                'aria-label': formatMessage(translations.backToSelectRevision)
-              }
-            ]
+                {
+                  icon: 'BackIcon',
+                  onClick: () => dispatch(compareVersion({ id: selected[0] })),
+                  'aria-label': formatMessage(translations.backToSelectRevision)
+                }
+              ]
             : null
         }
         rightActions={rightActions}
@@ -266,4 +272,3 @@ function CompareVersionsDialogWrapper(props: CompareVersionsDialogProps) {
     </>
   );
 }
-

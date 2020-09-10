@@ -41,6 +41,7 @@ import QuickCreateItem from './content/QuickCreateItem';
 import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
 import { SidebarConfigItem } from '../services/configuration';
+import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -137,6 +138,14 @@ export interface GlobalState {
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
   };
+  translation: {
+    siteLocales: {
+      error: ApiResponse
+      isFetching: boolean;
+      localeCodes: string[],
+      defaultLocaleCode: string
+    }
+  }
   configuration: {
     sidebar: {
       error: ApiResponse;
@@ -144,11 +153,9 @@ export interface GlobalState {
       isFetching: boolean;
     }
   };
-  // A state branch to hold more volatile or dynamic state trees.
-  // The guid identifies the branch and serves as a locator for the consumer.
-  // unstructured: {
-  //   [guid: string]: object
-  // }
+  pathNavigator: {
+    [id: string]: WidgetState;
+  };
 }
 
 export default GlobalState;

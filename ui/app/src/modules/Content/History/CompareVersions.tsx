@@ -14,31 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Next UI code disabled temporarily
+
 import makeStyles from '@material-ui/styles/makeStyles';
-import createStyles from '@material-ui/styles/createStyles';
-import palette from '../../../styles/palette';
 import ContentInstance from '../../../models/ContentInstance';
 import { LookupTable } from '../../../models/LookupTable';
-import ContentType, { ContentTypeField } from '../../../models/ContentType';
-import ListItemText from '@material-ui/core/ListItemText';
-import { FancyFormattedDate } from './VersionList';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMoreRounded';
-import Typography from '@material-ui/core/Typography';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import React, { useEffect, useRef, useState } from 'react';
+import ContentType from '../../../models/ContentType';
+import React from 'react';
 import { Resource } from '../../../models/Resource';
-import { useMount } from '../../../utils/hooks';
-import Chip from '@material-ui/core/Chip';
-import clsx from 'clsx';
-import Paper from '@material-ui/core/Paper';
-import EmptyState from '../../../components/SystemStatus/EmptyState';
 
-declare const monaco: any;
+// declare const monaco: any;
 
-const CompareVersionsStyles = makeStyles(() =>
+/*const CompareVersionsStyles = makeStyles(() =>
   createStyles({
     monacoWrapper: {
       width: '100%',
@@ -93,9 +80,9 @@ const CompareVersionsStyles = makeStyles(() =>
       backgroundColor: palette.gray.light1
     }
   })
-);
+);*/
 
-const ContentInstanceComponentsStyles = makeStyles(() =>
+/*const ContentInstanceComponentsStyles = makeStyles(() =>
   createStyles({
     componentsWrapper: {
       display: 'flex',
@@ -138,9 +125,9 @@ const ContentInstanceComponentsStyles = makeStyles(() =>
       color: palette.gray.medium4
     }
   })
-);
+);*/
 
-const translations = defineMessages({
+/*const translations = defineMessages({
   changed: {
     id: 'words.changed',
     defaultMessage: 'Changed'
@@ -161,7 +148,7 @@ const translations = defineMessages({
     id: 'compareVersionsDialog.noItemsStatus',
     defaultMessage: 'No items'
   }
-});
+});*/
 
 export interface CompareVersionsResource {
   a: ContentInstance;
@@ -173,9 +160,26 @@ interface CompareVersionsProps {
   resource: Resource<CompareVersionsResource>;
 }
 
-const systemProps = ['fileName', 'internalName', 'disabled'];
+const getLegacyDialogStyles = makeStyles(() => ({
+  iframe: {
+    border: 'none',
+    height: '80vh'
+  }
+}));
 
 export function CompareVersions(props: CompareVersionsProps) {
+  const { a, b } = props.resource.read();
+  const classes = getLegacyDialogStyles();
+  return (
+    <iframe
+      title="Comparing versions"
+      className={classes.iframe}
+      src={`http://localhost:8080/studio/diff?site=${a.site}&path=${a.path}&version=${a.versionNumber}&versionTO=${b.versionNumber}&mode=iframe&ui=next`}
+    />
+  );
+}
+
+/*export function CompareVersions(props: CompareVersionsProps) {
   const classes = CompareVersionsStyles({});
   const { a, b, contentTypes } = props.resource.read();
   const values = Object.values(contentTypes[a.craftercms.contentTypeId].fields) as ContentTypeField[];
@@ -226,15 +230,15 @@ export function CompareVersions(props: CompareVersionsProps) {
       </section>
     </>
   );
-}
+}*/
 
-interface CompareFieldPanelProps {
+/*interface CompareFieldPanelProps {
   a: ContentInstance;
   b: ContentInstance;
   field: ContentTypeField;
-}
+}*/
 
-function CompareFieldPanel(props: CompareFieldPanelProps) {
+/*function CompareFieldPanel(props: CompareFieldPanelProps) {
   const classes = CompareVersionsStyles({});
   const { a, b, field } = props;
   const [unChanged, setUnChanged] = useState(false);
@@ -265,11 +269,13 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
 
   return (
     <ExpansionPanel
-      key={field.id} classes={{ root: classes.root }} TransitionProps={{ mountOnEnter: true }}
+      key={field.id}
+      classes={{ root: classes.root }}
+      TransitionProps={{ mountOnEnter: true }}
     >
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>
-          <span className={classes.bold}>{field.id} </span>({field.name})
+          <span className={classes.bold}>{field.name} </span>({field.id})
         </Typography>
         {
           unChanged &&
@@ -314,14 +320,14 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
-}
+}*/
 
-interface ContentInstanceComponentsProps {
+/*interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
   contentB: ContentInstance[];
-}
+}*/
 
-function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
+/*function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const { contentA, contentB } = props;
   const classes = ContentInstanceComponentsStyles({});
   const [mergeContent, setMergeContent] = useState([]);
@@ -375,14 +381,14 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
       }
     </section>
   );
-}
+}*/
 
-interface MonacoWrapperProps {
+/*interface MonacoWrapperProps {
   contentA: string;
   contentB: string;
-}
+}*/
 
-function MonacoWrapper(props: MonacoWrapperProps) {
+/*function MonacoWrapper(props: MonacoWrapperProps) {
   const classes = CompareVersionsStyles({});
   const { contentA, contentB } = props;
   const ref = useRef();
@@ -406,4 +412,4 @@ function MonacoWrapper(props: MonacoWrapperProps) {
   return (
     <div ref={ref} className={classes.monacoWrapper} />
   );
-}
+}*/

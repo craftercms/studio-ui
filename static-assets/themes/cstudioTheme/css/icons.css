@@ -96,6 +96,10 @@
   display: none;
 }
 
+.on-closed .edited, .on-open .edited {
+  color: #d0a70d;
+}
+
 .cstudio-admin-console-item .contenttypes:before {
   content: "\f009";
 }

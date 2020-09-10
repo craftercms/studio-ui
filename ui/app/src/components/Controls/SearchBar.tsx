@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/SearchRounded';
@@ -24,44 +24,48 @@ import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  search: {
-    position: 'relative',
-    background: (props: any) => props.background || palette.gray.light3,
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 12px',
-    borderRadius: '5px',
-    '&.focus': {
-      backgroundColor: palette.white,
-      boxShadow: '0px 0px 3px rgba(65, 69, 73, 0.15), 0px 4px 4px rgba(65, 69, 73, 0.15)'
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    search: {
+      position: 'relative',
+      background: (props: any) => props.background || palette.gray.light3,
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '0 12px',
+      borderRadius: '5px',
+      '&.focus': {
+        backgroundColor: palette.white,
+        boxShadow: '0px 0px 3px rgba(65, 69, 73, 0.15), 0px 4px 4px rgba(65, 69, 73, 0.15)'
+      },
+      '&.noPadded': {
+        padding: '0 0 0 12px'
+      }
+    },
+    searchIcon: {
+      color: theme.palette.text.secondary
+    },
+    icon: {
+      padding: '6px'
+    },
+    closeIcon: {
+      fontSize: '25px',
+      color: theme.palette.text.secondary,
+      cursor: 'pointer'
+    },
+    inputRoot: {
+      flexGrow: 1
+    },
+    inputInput: {
+      background: 'none',
+      border: 'none',
+      width: '100%',
+      padding: '10px 5px',
+      '&:focus': {
+        boxShadow: 'none'
+      }
     }
-  },
-  searchIcon: {
-    color: theme.palette.text.secondary
-  },
-  icon: {
-    padding: '6px'
-  },
-  closeIcon: {
-    fontSize: '25px',
-    color: theme.palette.text.secondary,
-    cursor: 'pointer'
-  },
-  inputRoot: {
-    flexGrow: 1
-  },
-  inputInput: {
-    background: 'none',
-    border: 'none',
-    width: '100%',
-    padding: '10px 5px',
-    '&:focus': {
-      boxShadow: 'none'
-    }
-  }
-}));
+  }));
 
 const messages = defineMessages({
   placeholder: {
@@ -82,6 +86,9 @@ interface SearchBarProps {
   disabled?: boolean;
   classes?: {
     root?: any;
+    inputRoot?: any;
+    inputInput?: any;
+    actionIcon?: any;
   };
   onChange(value: string): void;
   onKeyPress?(key: string): void;
@@ -106,10 +113,12 @@ export default function SearchBar(props: SearchBarProps) {
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
   return (
-    <div className={clsx(classes.search, focus && 'focus', props.classes?.root)}>
+    <div
+      className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
+    >
       {
         showDecoratorIcon &&
-        <DecoratorIcon className={classes.searchIcon}/>
+        <DecoratorIcon className={classes.searchIcon} />
       }
       <InputBase
         onChange={e => onChange(e.target.value)}
@@ -121,15 +130,18 @@ export default function SearchBar(props: SearchBarProps) {
         disabled={disabled}
         value={keyword}
         classes={{
-          root: classes.inputRoot,
-          input: classes.inputInput
+          root: clsx(classes.inputRoot, props.classes?.inputRoot),
+          input: clsx(classes.inputInput, props.classes?.inputInput)
         }}
         inputProps={{ 'aria-label': 'search' }}
       />
       {
         showActionButton &&
-        <IconButton onClick={onActionButtonClick? onActionButtonClick: () => onChange('') } className={classes.icon}>
-          <ActionButtonIcon className={classes.closeIcon}/>
+        <IconButton
+          onClick={onActionButtonClick ? onActionButtonClick : () => onChange('')}
+          className={classes.icon}
+        >
+          <ActionButtonIcon className={clsx(classes.closeIcon, props.classes?.actionIcon)} />
         </IconButton>
       }
     </div>

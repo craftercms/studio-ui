@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, useCallback, useReducer, useState } from 'react';
+import React, { ElementType, Fragment, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
@@ -23,7 +23,6 @@ import {
   cut,
   duplicate,
   fetchWorkflowAffectedItems,
-  getChildrenByPath,
   getContentInstance,
   getDetailedItem,
   getPages,
@@ -39,7 +38,8 @@ import {
   useContentTypes,
   useEnv,
   useLogicResource,
-  useMount,
+  useSelection,
+  useSiteLocales,
   useSpreadState
 } from '../../../utils/hooks';
 import CopyItemsDialog from '../../Dialogs/CopyItemsDialog';
@@ -48,11 +48,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
-import StandardAction from '../../../models/StandardAction';
-import { createAction } from '@reduxjs/toolkit';
-import { createLookupTable, nou } from '../../../utils/object';
-import { GetChildrenResponse } from '../../../models/GetChildrenResponse';
-import { itemsFromPath, withIndex, withoutIndex } from '../../../utils/path';
+import { withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
@@ -78,6 +74,19 @@ import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog
 import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
 import { batchActions } from '../../../state/actions/misc';
 import queryString from 'query-string';
+import { languages } from '../../../utils/i18n-legacy';
+import { removeSpaces } from '../../../utils/string';
+import {
+  pathNavigatorClearChecked,
+  pathNavigatorFetchParentItems,
+  pathNavigatorInit,
+  pathNavigatorItemChecked,
+  pathNavigatorItemUnchecked,
+  pathNavigatorSetCollapsed,
+  pathNavigatorSetCurrentPath,
+  pathNavigatorSetKeyword,
+  pathNavigatorSetLocaleCode
+} from '../../../state/actions/pathNavigator';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -196,6 +205,10 @@ const menuOptions = {
   terminateSelection: {
     id: 'terminateSelection',
     label: translations.terminateSelection
+  },
+  refresh: {
+    id: 'refresh',
+    label: translations.refresh
   }
 };
 
@@ -337,12 +350,13 @@ function generateMenuSections(
   return sections;
 }
 
-interface WidgetProps {
+export interface WidgetProps {
   path: string;
   icon?: string | React.ElementType;
+  id: string;
   title?: string;
   locale: string;
-  classes?: Partial<Record<'root' | 'body', string>>;
+  classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
 }
 
 interface MenuState {
@@ -354,9 +368,13 @@ interface Menu {
   sections: SectionItem[][];
   anchorEl: Element;
   activeItem: SandboxItem;
+  emptyState?: {
+    icon?: ElementType;
+    message: string;
+  }
 }
 
-interface WidgetState {
+export interface WidgetState {
   rootPath: string;
   currentPath: string;
   localeCode: string;
@@ -371,133 +389,19 @@ interface WidgetState {
   count: number; // Number of items in the current path
   limit: number;
   offset: number;
+  collapsed?: boolean;
 }
-
-const init: (props: WidgetProps) => WidgetState = (props: WidgetProps) => ({
-  rootPath: props.path,
-  currentPath: props.path,
-  localeCode: props.locale,
-  keyword: '',
-  isSelectMode: false,
-  hasClipboard: false,
-  itemsInPath: null,
-  items: {},
-  breadcrumb: [],
-  selectedItems: [],
-  leafs: [],
-  limit: 10,
-  offset: 0,
-  count: 0
-});
-
-type WidgetReducer = React.Reducer<WidgetState, StandardAction>;
-
-const reducer: WidgetReducer = (state, { type, payload }) => {
-  switch (type) {
-    case fetchPath.type:
-      return state;
-    case fetchPathComplete.type: {
-      const path = state.currentPath;
-      // Check and handle if the item has no children
-      if (
-        payload.length === 0 &&
-        // If it is the root path, we want to show the empty state,
-        // vs child paths, want to show the previous path and inform
-        // that there aren't any items at that path
-        withoutIndex(path) !== withoutIndex(state.rootPath)
-      ) {
-        let pieces = path.split('/').slice(0);
-        pieces.pop();
-        if (path.includes('index.xml')) {
-          pieces.pop();
-        }
-        let nextPath = pieces.join('/');
-        if (nou(state.items[nextPath])) {
-          nextPath = withIndex(nextPath);
-        }
-        return {
-          ...state,
-          // Revert path to previous (parent) path
-          currentPath: nextPath,
-          leafs: state.leafs.concat(path)
-        };
-      } else {
-        const nextItems = {
-          ...state.items,
-          [payload.parent.id]: payload.parent,
-          ...createLookupTable(payload)
-        };
-        return {
-          ...state,
-          breadcrumb: itemsFromPath(path, state.rootPath, nextItems),
-          itemsInPath: payload.map((item) => item.id),
-          items: nextItems,
-          count: payload.length
-        };
-      }
-    }
-    case setCurrentPath.type:
-      return {
-        ...state,
-        keyword: '',
-        currentPath: payload
-      };
-    case setKeyword.type:
-      return {
-        ...state,
-        keyword: payload
-      };
-    case itemUnchecked.type:
-      let checked = [...state.selectedItems];
-      checked.splice(checked.indexOf(payload.path), 1);
-      return { ...state, selectedItems: checked };
-    case setLocaleCode.type:
-      return state;
-    case itemChecked.type:
-      let selectedItems = [...state.selectedItems];
-      selectedItems.push(payload.path);
-      return { ...state, selectedItems };
-    case clearChecked.type:
-      return { ...state, selectedItems: [] };
-    default:
-      throw new Error(`Unknown action "${type}"`);
-  }
-};
-
-const setLocaleCode = createAction<string>('SET_LOCALE_CODE');
-const setCurrentPath = createAction<string>('SET_CURRENT_PATH');
-const itemChecked = createAction<SandboxItem>('ITEM_CHECKED');
-const itemUnchecked = createAction<SandboxItem>('ITEM_UNCHECKED');
-const clearChecked = createAction('CLEAR_CHECKED');
-const fetchPath = createAction<string>('FETCH_PATH');
-const fetchPathComplete = createAction<GetChildrenResponse>('FETCH_PATH_COMPLETE');
-const setKeyword = createAction<string>('SET_KEYWORD');
-
-// function useReducerMiddleware(reducer, initialArg, init, middleware) {
-//   const [state, _dispatch] = useReducer(reducer, initialArg, init);
-//   return [
-//     state,
-//     useCallback(
-//       (action) => {
-//         _dispatch(action);
-//         middleware(action, _dispatch);
-//       },
-//       [middleware]
-//     )
-//   ];
-// }
 
 // PathNavigator
 export default function (props: WidgetProps) {
-  const { title, icon, path } = props;
-  const [state, _dispatch] = useReducer(reducer, props, init);
-
+  const { title, icon, path, id = removeSpaces(props.title) } = props;
+  const pathNavigator = useSelection(state => state.pathNavigator);
+  const state = pathNavigator?.[id];
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  //new
   const defaultSrc = `${authoringBase}/studio/legacy/form?`;
   const contentTypes = useContentTypes();
   const options = {
@@ -506,25 +410,6 @@ export default function (props: WidgetProps) {
     createController: path === '/scripts',
     translation: path.includes('site/website/')
   };
-
-  const exec = useCallback(
-    (action) => {
-      _dispatch(action);
-      const { type, payload } = action;
-      switch (type) {
-        case fetchPath.type:
-        case setCurrentPath.type:
-          getChildrenByPath(site, fetchPath.type === type ? state.currentPath : payload).subscribe(
-            (response) => exec(fetchPathComplete(response)),
-            (response) => dispatch(showErrorDialog({ error: response }))
-          );
-          break;
-      }
-    },
-    [dispatch, site, state]
-  );
-
-  const [collapsed, setCollapsed] = useState(false);
   const [menuState, setMenuState] = useSpreadState<MenuState>({
     selectMode: false,
     hasClipboard: false
@@ -532,7 +417,8 @@ export default function (props: WidgetProps) {
   const [menu, setMenu] = useSpreadState<Menu>({
     sections: [],
     anchorEl: null,
-    activeItem: null
+    activeItem: null,
+    emptyState: null
   });
   const [copyDialog, setCopyDialog] = useState(null);
   const [translationDialog, setTranslationDialog] = useState(null);
@@ -540,11 +426,34 @@ export default function (props: WidgetProps) {
   const [newFileDialog, setNewFileDialog] = useState(null);
   const [uploadDialog, setUploadDialog] = useState(null);
 
-  useMount(() => {
-    exec(fetchPath(path));
-  });
+  const siteLocales = useSiteLocales();
 
-  const itemsResource: Resource<SandboxItem[]> = useLogicResource(state.itemsInPath, {
+  useEffect(() => {
+    if (pathNavigator !== undefined && Object.keys(pathNavigator).length === 0 && localStorage.getItem(`craftercms.pathNavigator.${id}`)) {
+      //Recovering state from localStorage
+      const restoredState = JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${id}`));
+      dispatch(batchActions([
+        pathNavigatorInit({
+          id,
+          path: props.path,
+          locale: props.locale,
+          collapsed: restoredState.collapsed
+        }),
+        pathNavigatorFetchParentItems({
+          id,
+          path: restoredState.currentPath
+        })
+      ]));
+    } else if (pathNavigator !== undefined && pathNavigator[id] === undefined) {
+      //No prev state found... init...
+      dispatch(batchActions([
+        pathNavigatorInit({ id, path: props.path, locale: props.locale }),
+        pathNavigatorSetCurrentPath({ id, path: props.path })
+      ]));
+    }
+  }, [dispatch, id, pathNavigator, props.locale, props.path]);
+
+  const itemsResource: Resource<SandboxItem[]> = useLogicResource(state?.itemsInPath, {
     shouldResolve: (items) => Boolean(items),
     shouldRenew: (items, resource) => resource.complete,
     shouldReject: () => false,
@@ -552,12 +461,18 @@ export default function (props: WidgetProps) {
     errorSelector: null
   });
 
-  const onPathSelected = (item: SandboxItem) => exec(setCurrentPath(item.path));
+  const onPathSelected = (item: SandboxItem) => dispatch(pathNavigatorSetCurrentPath({
+    id,
+    path: item.path
+  }));
 
   const onPageChanged = (page: number) => void 0;
 
   const onSelectItem = (item: SandboxItem, checked: boolean) =>
-    exec(checked ? itemChecked(item) : itemUnchecked(item));
+    dispatch(checked ? pathNavigatorItemChecked({ id, item }) : pathNavigatorItemUnchecked({
+      id,
+      item
+    }));
 
   const translationDialogItemChange = (item: SandboxItem) => {
     getTargetLocales(site, item.path).subscribe(
@@ -633,7 +548,7 @@ export default function (props: WidgetProps) {
 
   const terminateSelection = () => {
     setMenuState({ selectMode: false });
-    exec(clearChecked());
+    dispatch(pathNavigatorClearChecked({ id }));
   };
 
   const closeContextMenu = () => {
@@ -668,7 +583,8 @@ export default function (props: WidgetProps) {
       }
       case 'newFolder': {
         setNewFolderDialog({
-          path: withoutIndex(menu.activeItem.path)
+          path: withoutIndex(menu.activeItem.path),
+          allowBraces: menu.activeItem.path.startsWith('/scripts/rest')
         });
         closeContextMenu();
         break;
@@ -732,7 +648,7 @@ export default function (props: WidgetProps) {
           () => {
             closeContextMenu();
             setMenuState({ hasClipboard: false });
-            exec(fetchPath(state.currentPath));
+            dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
           },
           (response) => {
             dispatch(
@@ -762,7 +678,7 @@ export default function (props: WidgetProps) {
         const callback = (e) => {
           duplicate(site, activeItem, parentItem).subscribe(
             (item: SandboxItem) => {
-              exec(fetchPath(state.currentPath));
+              dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
               openItemLegacyForm(item, 'form');
             }
           );
@@ -824,7 +740,7 @@ export default function (props: WidgetProps) {
         // TODO: review
         const callback = (e) => {
           dispatch(closeDeleteDialog());
-          exec(fetchPath(state.currentPath));
+          dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
           document.removeEventListener(section.id, callback, false);
         };
         document.addEventListener(section.id, callback, true);
@@ -953,13 +869,23 @@ export default function (props: WidgetProps) {
         closeContextMenu();
         break;
       }
+      case 'refresh': {
+        dispatch(
+          pathNavigatorFetchParentItems({
+            id,
+            path: state.currentPath
+          })
+        );
+        closeContextMenu();
+        break;
+      }
       default: {
         if (section.id.includes('locale')) {
           setMenu({
             ...menu,
             anchorEl: null
           });
-          exec(setLocaleCode(section.id.split('.')[1]));
+          dispatch(pathNavigatorSetLocaleCode({ id, locale: section.id.split('.')[1] }));
         }
         break;
       }
@@ -985,31 +911,26 @@ export default function (props: WidgetProps) {
   };
 
   const onHeaderButtonClick = (anchorEl: Element, type: string) => {
+    const locales = siteLocales.localeCodes?.map(code => ({
+      id: `locale.${code}`,
+      label: {
+        id: `locale.${code}`,
+        defaultMessage: formatMessage(languages[code])
+      }
+    }));
+
     if (type === 'language') {
       setMenu({
-        sections: [
-          [
-            {
-              id: 'locale.en',
-              label: { id: 'locale.en', defaultMessage: 'English, US (en)' }
-            },
-            {
-              id: 'locale.es',
-              label: { id: 'locale.es', defaultMessage: 'Spanish, Spain (es)' }
-            }
-          ]
-        ],
+        sections: locales.length ? [locales] : [],
         anchorEl,
-        activeItem: null
+        activeItem: null,
+        emptyState: locales.length === 0 ? { message: formatMessage(translations.noLocales) } : null
       });
     } else {
       setMenu({
         sections: [
           [
-            {
-              id: 'option1',
-              label: { id: 'option1', defaultMessage: 'Option 1' }
-            }
+            menuOptions.refresh
           ]
         ],
         anchorEl,
@@ -1052,22 +973,22 @@ export default function (props: WidgetProps) {
 
   const onUploadDialogClose = (status: DropZoneStatus, path: string) => {
     if (status.uploadedFiles > 0 && withoutIndex(state.currentPath) === path) {
-      exec(fetchPath(path));
+      dispatch(pathNavigatorSetCurrentPath({ id, path }));
     }
     setUploadDialog(null);
   };
 
   const onNewFolderCreated = (path: string, name: string, rename: boolean) => {
     if (rename) {
-      exec(fetchPath(state.currentPath));
+      dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
     } else if (withoutIndex(state.currentPath) === path) {
-      exec(fetchPath(path));
+      dispatch(pathNavigatorSetCurrentPath({ id, path }));
     }
   };
 
   const onNewFileCreated = (path: string, fileName: string, type: 'controller' | 'template') => {
     if (withoutIndex(state.currentPath) === path) {
-      exec(fetchPath(path));
+      dispatch(pathNavigatorSetCurrentPath({ id, path }));
     }
     openFileLegacyForm(`${path}/${fileName}`, type);
   };
@@ -1082,21 +1003,21 @@ export default function (props: WidgetProps) {
     if (withoutIndex(item.path) === withoutIndex(state.currentPath)) {
       onItemClicked(item);
     } else {
-      exec(setCurrentPath(item.path));
+      dispatch(pathNavigatorSetCurrentPath({ id, path: item.path }));
     }
   };
 
   return (
-    <section className={clsx(classes.root, props.classes?.root, collapsed && 'collapsed')}>
+    <section className={clsx(classes.root, props.classes?.root, state?.collapsed && 'collapsed')}>
       <Header
         icon={icon}
         title={title}
-        locale={state.localeCode}
-        onClick={() => setCollapsed(!collapsed)}
+        locale={state?.localeCode}
+        onClick={() => dispatch(pathNavigatorSetCollapsed({ id, collapsed: !state?.collapsed }))}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
       />
-      <div {...collapsed ? { hidden: true } : {}} className={clsx(props.classes?.body)}>
+      <div {...state?.collapsed ? { hidden: true } : {}} className={clsx(props.classes?.body)}>
         <SuspenseWithEmptyState
           resource={itemsResource}
           loadingStateProps={{
@@ -1116,15 +1037,16 @@ export default function (props: WidgetProps) {
           }}
         >
           <Breadcrumbs
-            keyword={state.keyword}
-            breadcrumb={state.breadcrumb}
+            keyword={state?.keyword}
+            breadcrumb={state?.breadcrumb}
             onMenu={onCurrentParentMenu}
-            onSearch={(q) => exec(setKeyword(q))}
+            onSearch={(keyword) => dispatch(pathNavigatorSetKeyword({ id, keyword }))}
             onCrumbSelected={onBreadcrumbSelected}
+            classes={{ searchRoot: props.classes?.searchRoot }}
           />
           <Nav
-            leafs={state.leafs}
-            locale={state.localeCode}
+            leafs={state?.leafs}
+            locale={state?.localeCode}
             resource={itemsResource}
             isSelectMode={menuState.selectMode}
             onSelectItem={onSelectItem}
@@ -1141,9 +1063,9 @@ export default function (props: WidgetProps) {
             }}
             component="div"
             labelRowsPerPage=""
-            count={state.count}
-            rowsPerPage={state.limit}
-            page={Math.ceil(state.offset / state.limit)}
+            count={state?.count}
+            rowsPerPage={state?.limit}
+            page={state && Math.ceil(state.offset / state.limit)}
             backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
             nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
             onChangePage={(e, page: number) => onPageChanged(page)}
@@ -1161,6 +1083,7 @@ export default function (props: WidgetProps) {
         }}
         onClose={onCloseCustomMenu}
         sections={menu.sections}
+        emptyState={{ message: menu.emptyState?.message }}
         onMenuItemClicked={onMenuItemClicked}
       />
       {copyDialog && (

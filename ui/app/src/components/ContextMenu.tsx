@@ -14,12 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { ElementType } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import { MessageDescriptor, useIntl } from 'react-intl';
+import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+
+export const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      display: 'block',
+      padding: '10px',
+      textAlign: 'center'
+    }
+  }));
 
 export interface Option {
   id: string;
@@ -41,6 +52,10 @@ interface CustomMenuProps {
     helperText?: any;
   }
   sections: SectionItem[][];
+  emptyState?: {
+    icon?: ElementType;
+    message: string;
+  }
 
   onClose?(): void;
 
@@ -48,8 +63,10 @@ interface CustomMenuProps {
 }
 
 export default function ContextMenu(props: CustomMenuProps) {
-  const { sections, classes, onClose, open, anchorEl, onMenuItemClicked } = props;
+  const { sections, classes, onClose, open, anchorEl, onMenuItemClicked, emptyState } = props;
   const { formatMessage } = useIntl();
+  const emptyStyles = useStyles({});
+
   return (
     <Menu
       anchorEl={anchorEl}
@@ -78,6 +95,15 @@ export default function ContextMenu(props: CustomMenuProps) {
             )
           )
         )
+      }
+      {
+        (sections.length === 0 && emptyState?.message) &&
+        <div className={emptyStyles.root}>
+          <ErrorOutlineOutlinedIcon fontSize={'small'} />
+          <Typography variant="caption" display="block">
+            {emptyState.message}
+          </Typography>
+        </div>
       }
     </Menu>
   );

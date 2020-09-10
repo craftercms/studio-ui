@@ -38,6 +38,7 @@ import { fetchQuickCreateList } from '../state/actions/content';
 import { fetchContentTypes } from '../state/actions/preview';
 import LookupTable from '../models/LookupTable';
 import { Site } from '../models/Site';
+import { fetchSiteLocales } from '../state/actions/translation';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -311,6 +312,17 @@ export function useSiteList(): Site[] {
 
 export function useSites(): GlobalState['sites'] {
   return useSelection((state) => state.sites);
+}
+
+export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
+  const siteLocales = useSelection((state) => state.translation.siteLocales);
+  const dispatch = useDispatch();
+
+  if (!siteLocales.localeCodes && !siteLocales.isFetching) {
+    dispatch(fetchSiteLocales());
+  }
+
+  return siteLocales;
 }
 
 export function usePreviousValue<T = any>(value: T) {

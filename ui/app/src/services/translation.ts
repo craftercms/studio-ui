@@ -78,7 +78,7 @@ export function markForTranslation(site: string, path: string, locale: string) {
   });
 }
 
-export function getSupportedLocales(site: string): Observable<TranslationConfig> {
+export function getSiteLocales(site: string): Observable<TranslationConfig> {
   return get(`/studio/api/2/configuration/translation?siteId=${site}`).pipe(pluck('response', 'config'));
 }
 
@@ -86,5 +86,5 @@ export default {
   getItemLocales,
   getTargetLocales,
   markForTranslation,
-  getSupportedLocales
+  getSiteLocales
 };
