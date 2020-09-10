@@ -86,50 +86,68 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
   const { formatMessage } = useIntl();
   const [currentPath, setCurrentPath] = useState(rootPath);
   const [expanded, setExpanded] = useState(defaultExpanded);
+  const [invalidPath, setInvalidPath] = useState(false);
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
   useUnmount(onClosed);
 
   useEffect(() => {
-    let nodesLookup = nodesLookupRef.current;
-    if (currentPath && !nodesLookup[currentPath]?.fetched) {
-      get(
-        `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${currentPath}&depth=1&order=default`
-      ).subscribe(({ response: { item } }) => {
-        let rootNode;
-        let parent;
 
-        if (!nodesLookup['root']) {
-          parent = {
-            id: item.path,
-            name: item.name,
-            fetched: true,
-            children: legacyItemsToTreeNodes(item.children)
-          };
-          rootNode = parent;
-          nodesLookup[item.path] = parent;
-          nodesLookup['root'] = parent;
-        } else {
-          rootNode = nodesLookup['root'];
-          parent = nodesLookup[item.path];
-          parent.fetched = true;
-          parent.children = legacyItemsToTreeNodes(item.children);
-        }
+    if (currentPath) {
+      let nodesLookup = nodesLookupRef.current;
 
-        parent.children.forEach((child) => {
-          nodesLookup[child.id] = child;
+      if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
+        setInvalidPath(false);
+      } else {
+        // TODO: if the path is depth > 1 needs to fetch the parents path if does not exist;
+        get(
+          `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${currentPath}&depth=1&order=default`
+        ).subscribe(({ response: { item } }) => {
+
+          //validate the current path;
+          if (item.deleted) {
+            setInvalidPath(true);
+            return;
+          } else {
+            setInvalidPath(false);
+          }
+
+          let rootNode;
+          let parent;
+
+          if (!nodesLookup['root']) {
+            parent = {
+              id: item.path,
+              name: item.name,
+              fetched: true,
+              children: legacyItemsToTreeNodes(item.children)
+            };
+            rootNode = parent;
+            nodesLookup[item.path] = parent;
+            nodesLookup['root'] = parent;
+          } else {
+            rootNode = nodesLookup['root'];
+            parent = nodesLookup[item.path];
+            parent.fetched = true;
+            parent.children = legacyItemsToTreeNodes(item.children);
+          }
+
+          parent.children.forEach((child) => {
+            nodesLookup[child.id] = child;
+          });
+
+          setTreeNodes({ ...rootNode });
         });
-
-        setTreeNodes({ ...rootNode });
-      });
+      }
     }
+
   }, [currentPath, site]);
 
   const resource = useLogicResource<TreeNode, TreeNode>(treeNodes, {
     shouldResolve: (treeNodes) => Boolean(treeNodes),
     shouldReject: (treeNodes) => false,
-    shouldRenew: (treeNodes, resource) => resource.complete,
+    shouldRenew: (treeNodes, resource) => treeNodes === null && resource.complete,
     resultSelector: (treeNodes) => treeNodes,
     errorSelector: (treeNodes) => null
   });
@@ -142,7 +160,7 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
     setCreateFolder(false);
   };
 
-  const onFolderCreated = (path: string, name: string, rename: boolean) => {
+  const onFolderCreated = (path: string, name: string) => {
     setCreateFolder(false);
     let id = `${path}/${name}`;
     nodesLookupRef.current[currentPath].children.push({
@@ -168,6 +186,12 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
     setCurrentPath(nodeId);
   };
 
+  const onPathChanged = (path: string) => {
+    setCurrentPath(path);
+    // TODO: the expanded needs to be calculated if the path contains depth > 1
+    //setExpanded([...expanded, path]);
+  };
+
   return (
     <>
       <DialogHeader title="Select Path" onDismiss={onClose} />
@@ -177,6 +201,7 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
             classes={{
               treeViewRoot: classes.treeViewRoot
             }}
+            invalidPath={invalidPath}
             onNodeToggle={onNodeToggle}
             onNodeSelected={onNodeSelected}
             rootPath={rootPath}
@@ -185,6 +210,7 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
             selected={currentPath}
             resource={resource}
             defaultExpanded={defaultExpanded}
+            onPathChanged={onPathChanged}
           />
         </Suspencified>
       </DialogBody>

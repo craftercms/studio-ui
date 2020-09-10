@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { InputBase, Typography } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { FormHelperText, InputBase, Typography } from '@material-ui/core';
 import palette from '../../styles/palette';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -27,6 +27,8 @@ import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { FormattedMessage } from 'react-intl';
 import LoadingState from '../SystemStatus/LoadingState';
+import { Resource } from '../../models/Resource';
+import clsx from 'clsx';
 
 export interface TreeNode {
   id: string;
@@ -78,8 +80,7 @@ export function legacyItemsToTreeNodes(items: LegacyItem[]) {
       name: item.name,
       children: [
         {
-          id: 'loading',
-          name: 'loading'
+          id: 'loading'
         }
       ]
     }));
@@ -89,11 +90,17 @@ interface FolderBrowserTreeViewProps {
   rootPath: string;
   defaultExpanded: string[];
   currentPath: string;
-  classes: any;
-  setCurrentPath(currentPath: string): void;
+  expanded: string[];
+  selected: string;
+  invalidPath: boolean;
+  resource: Resource<TreeNode>;
+  classes?: Partial<Record<'treeViewRoot', string>>;
+  onNodeSelected(event: React.ChangeEvent<{}>, nodeId: string): void;
+  onNodeToggle(event: React.ChangeEvent<{}>, nodeIds: string[]): void;
+  onPathChanged(path: string): void;
 }
 
-export default function FolderBrowserTreeView(props: any) {
+export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
   const classes = useStyles({});
   const {
     rootPath,
@@ -103,14 +110,21 @@ export default function FolderBrowserTreeView(props: any) {
     selected,
     onNodeToggle,
     onNodeSelected,
-    resource
+    resource,
+    onPathChanged,
+    invalidPath
   } = props;
 
   const treeNodes = resource.read();
 
   return (
     <section className={classes.wrapper}>
-      <PathSelected rootPath={rootPath} currentPath={currentPath.replace(rootPath, '')} />
+      <PathSelected
+        rootPath={rootPath}
+        currentPath={currentPath.replace(rootPath, '')}
+        onPathChanged={onPathChanged}
+        invalidPath={invalidPath}
+      />
       {
         treeNodes ? (
           <TreeView
@@ -141,7 +155,9 @@ function RenderTreeNode({ node }: RenderTreeNode) {
   const classes = useStyles({});
   return node.id === 'loading' ? (
     <div className={classes.loading}>
-      <Typography>Loading...</Typography>
+      <Typography>
+        <FormattedMessage id="folderBrowserTreeView.loading" defaultMessage={'Loading...'} />
+      </Typography>
       <CircularProgress size={16} />
     </div>
   ) : (
@@ -170,7 +186,10 @@ const PathSelectedStyles = makeStyles(() =>
       background: palette.white,
       padding: '10px 12px',
       border: `1px solid  ${palette.gray.light1}`,
-      borderRadius: '5px'
+      borderRadius: '5px',
+      '&.invalid': {
+        borderColor: palette.red.main
+      }
     },
     selected: {
       fontWeight: 600,
@@ -185,6 +204,11 @@ const PathSelectedStyles = makeStyles(() =>
         borderColor: 'none',
         boxShadow: 'inherit'
       }
+    },
+    invalid: {
+      '& $input': {
+        color: palette.red.main
+      }
     }
   })
 );
@@ -192,20 +216,60 @@ const PathSelectedStyles = makeStyles(() =>
 interface PathSelectedProps {
   rootPath: string;
   currentPath: string;
+  invalidPath: boolean;
+  onPathChanged(path: string): void;
 }
 
 function PathSelected(props: PathSelectedProps) {
-  const { rootPath, currentPath } = props;
+  const { rootPath, currentPath, onPathChanged, invalidPath } = props;
   const classes = PathSelectedStyles({});
+  const [focus, setFocus] = useState(false);
+  const [value, setValue] = useState(null);
+
+  useEffect(() => {
+    setValue(currentPath);
+  }, [currentPath]);
+
+  const onBlur = () => {
+    setFocus(false);
+    onPathChanged(rootPath + value);
+  };
+
+  const onKeyPress = (event: React.KeyboardEvent) => {
+    if (event.charCode === 13) {
+      onPathChanged(rootPath + value);
+    }
+  };
+
   return (
-    <section className={classes.wrapper}>
-      <Typography className={classes.selected} display="inline">
-        <FormattedMessage id="words.selected" defaultMessage="Selected" />
-      </Typography>
-      <Typography color="textSecondary" display="inline">
-        {rootPath}
-      </Typography>
-      <InputBase fullWidth classes={{ input: classes.invisibleInput }} value={currentPath} />
-    </section>
+    <>
+      <section className={clsx(classes.wrapper, invalidPath && 'invalid')}>
+        <Typography className={classes.selected} display="inline">
+          <FormattedMessage id="words.selected" defaultMessage="Selected" />
+        </Typography>
+        <Typography color="textSecondary" display="inline">
+          {rootPath}
+        </Typography>
+        <InputBase
+          className={invalidPath ? classes.invalid : null}
+          onFocus={() => setFocus(true)}
+          onBlur={onBlur}
+          fullWidth
+          onKeyPress={onKeyPress}
+          onChange={(e) => setValue(e.currentTarget.value)}
+          classes={{ input: classes.invisibleInput }}
+          value={focus ? value : currentPath}
+        />
+      </section>
+      {
+        invalidPath &&
+        <FormHelperText error>
+          <FormattedMessage
+            id="folderBrowserTreeView.invalidPath"
+            defaultMessage={'The entered path doesn’t exist.'}
+          />
+        </FormHelperText>
+      }
+    </>
   );
 }
