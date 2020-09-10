@@ -70,33 +70,62 @@
 
   // Preview 2 check in
   let previewNextCheckInNotification = false;
+  let compatibilityQueryArg = CrafterCMSNext.util.path.getQueryVariable(window.location.search, 'compatibility');
+  let compatibilityForceStay = compatibilityQueryArg === 'stay';
+  let compatibilityAsk = compatibilityQueryArg === 'ask';
   communicator.subscribe(Topics.GUEST_CHECK_IN, function(data) {
-    if (!previewNextCheckInNotification) {
+    if (!previewNextCheckInNotification && !compatibilityForceStay) {
       // Avoid recurrently showing the notification over and
       // over as long as the page is not refreshed
       previewNextCheckInNotification = true;
-    communicator.addTargetWindow({
-      origin: origin,
-      window: getEngineWindow().contentWindow
-    });
-      const eventId = 'iceGoToPreview2';
-      CrafterCMSNext.createLegacyCallbackListener(eventId, () => {
+      communicator.addTargetWindow({
+        origin: origin,
+        window: getEngineWindow().contentWindow
+      });
+      const handleRemember = (remember, goOrStay) => {
+        window.localStorage.setItem(
+          `craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`,
+          remember ? goOrStay : 'ask'
+        );
+      };
+      const doGo = () => {
         const state = CrafterCMSNext.system.store.getState();
         window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
-      });
-    CrafterCMSNext.system.store.dispatch({
-      type: 'SHOW_CONFIRM_DIALOG',
-      payload: {
-        // TODO: Translate - Discuss/chose appropriate message.
-        title: 'In-context editing',
-        body: 'To edit this page using in-context editing, please go to Preview 2. Would you like to go now?',
-        onOk: {
-          type: 'DISPATCH_DOM_EVENT',
-            payload: { id: eventId }
-        },
-        onCancel: { type: 'CLOSE_CONFIRM_DIALOG' }
+      };
+      const showCompatDialog = () => {
+        let unmount;
+        CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
+          data,
+          onOk({ remember }) {
+            handleRemember(remember, 'go');
+            doGo();
+          },
+          onCancel({ remember }) {
+            handleRemember(remember, 'stay');
+          },
+          onClosed() {
+            unmount({ removeContainer: true });
+          }
+        }).then((args) => {
+          unmount = args.unmount;
+        });
+      };
+      let previousChoice = localStorage.getItem(
+        `craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`
+      );
+      if (previousChoice === null) {
+        previousChoice = 'go';
+        localStorage.setItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`, 'go');
       }
-    });
+      if (previousChoice && !compatibilityAsk) {
+        if (previousChoice === 'go') {
+          doGo();
+        } else if (previousChoice === 'ask') {
+          showCompatDialog();
+        }
+      } else {
+        showCompatDialog();
+      }
     }
     communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
   });
@@ -126,13 +155,7 @@
     var currentPath = message.itemId
       ? message.itemId
       : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
-    var cachePermissionsKey =
-        CStudioAuthoringContext.site +
-        '_' +
-        currentPath +
-        '_' +
-        CStudioAuthoringContext.user +
-        '_permissions',
+    var cachePermissionsKey = `${CStudioAuthoringContext.site}_${currentPath}_${CStudioAuthoringContext.user}_permissions`,
       isPermissionCached = cache.get(cachePermissionsKey),
       cacheContentKey =
         CStudioAuthoringContext.site +
@@ -283,12 +306,7 @@
       selectStudioContent(site, studioPath);
 
       CStudioAuthoringContext.previewCurrentPath = message.url;
-      CStudioAuthoring.ComponentsPanel.getPageModel(
-        studioPath,
-        'init-components',
-        true,
-        false
-      );
+      CStudioAuthoring.ComponentsPanel.getPageModel(studioPath, 'init-components', true, false);
 
       communicator.publish(Topics.DND_PANEL_OFF);
     }

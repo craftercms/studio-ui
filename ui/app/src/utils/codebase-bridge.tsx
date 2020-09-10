@@ -142,7 +142,8 @@ export function createCodebaseBridge() {
       GlobalDialogManager: lazy(() => import('../components/SystemStatus/GlobalDialogManager')),
       PagesWidget: lazy(() => import('../components/Navigation/PathNavigator/Widget')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
-      NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog'))
+      NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog')),
+      PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog'))
     },
 
     system: { generateClassName, theme, palette, store: null },

@@ -15,7 +15,7 @@
  */
 
 import { Epic, ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
@@ -27,31 +27,61 @@ import {
   pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
+  pathNavigatorInit,
   pathNavigatorSetCollapsed,
-  pathNavigatorSetCurrentPath
+  pathNavigatorSetCurrentPath,
+  pathNavigatorUpdate
 } from '../actions/pathNavigator';
 
 export default [
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorInit.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        const { id } = payload;
+        const site = state.sites.active;
+        const storedState = JSON.parse(
+          localStorage.getItem(`craftercms.pathNavigator.${site}.${id}`)
+        );
+        return [
+          storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
+          pathNavigatorFetchParentItems({ id, path: storedState ? storedState.currentPath : payload.path })
+        ].filter(Boolean);
+      })
+    ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(pathNavigatorSetCurrentPath.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id, path } }, state]) => getChildrenByPath(state.sites.active, path).pipe(
-        map((response) => pathNavigatorFetchPathComplete({ id, response })),
-        catchAjaxError(pathNavigatorFetchPathFailed)
-      ))
+      mergeMap(([{ type, payload: { id, path } }, state]) =>
+        getChildrenByPath(state.sites.active, path).pipe(
+          map((response) => pathNavigatorFetchPathComplete({ id, response })),
+          catchAjaxError(pathNavigatorFetchPathFailed)
+        )
+      )
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(pathNavigatorFetchParentItems.type),
       withLatestFrom(state$),
-      mergeMap(([{ type, payload: { id, path } }, state]) => {
+      mergeMap(
+        ([
+          {
+            type,
+            payload: { id, path }
+          },
+          state
+        ]) => {
           const site = state.sites.active;
           const parentsPath = [...getParentsFromPath(path, state.pathNavigator[id].rootPath), path];
           const requests: Observable<GetChildrenResponse>[] = [];
           if (parentsPath.length) {
-            parentsPath.forEach(parentPath => {
-              if (!state.pathNavigator[id].items[parentPath] && !state.pathNavigator[id].items[withIndex(parentPath)]) {
+            parentsPath.forEach((parentPath) => {
+              if (
+                !state.pathNavigator[id].items[parentPath] &&
+                !state.pathNavigator[id].items[withIndex(parentPath)]
+              ) {
                 requests.push(getChildrenByPath(site, parentPath));
               }
             });
@@ -72,11 +102,21 @@ export default [
     action$.pipe(
       ofType(pathNavigatorSetCurrentPath.type, pathNavigatorSetCollapsed.type),
       withLatestFrom(state$),
-      tap(([{ type, payload: { id } }, state]) => {
-          localStorage.setItem(`craftercms.pathNavigator.${id}`, JSON.stringify({
-            currentPath: state.pathNavigator[id].currentPath,
-            collapsed: state.pathNavigator[id].collapsed
-          }));
+      tap(
+        ([
+          {
+            type,
+            payload: { id }
+          },
+          state
+        ]) => {
+          localStorage.setItem(
+            `craftercms.pathNavigator.${state.sites.active}.${id}`,
+            JSON.stringify({
+              currentPath: state.pathNavigator[id].currentPath,
+              collapsed: state.pathNavigator[id].collapsed
+            })
+          );
         }
       ),
       ignoreElements()
