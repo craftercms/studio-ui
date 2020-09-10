@@ -88,7 +88,6 @@ export function legacyItemsToTreeNodes(items: LegacyItem[]) {
 
 interface FolderBrowserTreeViewProps {
   rootPath: string;
-  defaultExpanded: string[];
   currentPath: string;
   expanded: string[];
   selected: string;
@@ -104,7 +103,6 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
   const classes = useStyles({});
   const {
     rootPath,
-    defaultExpanded,
     currentPath,
     expanded,
     selected,
@@ -130,7 +128,6 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
           <TreeView
             classes={{ root: props.classes?.treeViewRoot }}
             defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpanded={defaultExpanded}
             defaultExpandIcon={<ChevronRightIcon />}
             expanded={expanded}
             selected={selected}
@@ -233,12 +230,20 @@ function PathSelected(props: PathSelectedProps) {
 
   const onBlur = () => {
     setFocus(false);
-    onPathChanged(rootPath + value);
+    let path = rootPath + value;
+    if (path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+    onPathChanged(path);
   };
 
   const onKeyPress = (event: React.KeyboardEvent) => {
     if (event.charCode === 13) {
-      onPathChanged(rootPath + value);
+      let path = rootPath + value;
+      if (path.endsWith('/')) {
+        path = path.slice(0, -1);
+      }
+      onPathChanged(path);
     }
   };
 

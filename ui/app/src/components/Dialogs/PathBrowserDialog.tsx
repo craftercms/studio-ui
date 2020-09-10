@@ -64,7 +64,6 @@ interface PathBrowserDialogProps {
   open: boolean;
   rootPath: string;
   currentPath?: string;
-  defaultExpanded: string[];
   onClose(): void;
   onClosed?(): void;
   onOk(selectedPath: string): void;
@@ -84,7 +83,7 @@ export default function PathBrowserDialog(props: PathBrowserDialogProps) {
 }
 
 function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
-  const { onClosed, onClose, onOk, defaultExpanded, rootPath, currentPath: path } = props;
+  const { onClosed, onClose, onOk, rootPath, currentPath: path } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
@@ -222,19 +221,24 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
             expanded={expanded}
             selected={currentPath}
             resource={resource}
-            defaultExpanded={defaultExpanded}
             onPathChanged={onPathChanged}
           />
         </Suspencified>
       </DialogBody>
       <DialogFooter>
-        <Button onClick={onCreateFolder} variant="outlined" className={classes.createFolderBtn}>
+        <Button
+          disabled={invalidPath} onClick={onCreateFolder} variant="outlined"
+          className={classes.createFolderBtn}
+        >
           {formatMessage(messages.create)}
         </Button>
         <Button onClick={onClose} variant="outlined">
           {formatMessage(messages.cancel)}
         </Button>
-        <Button onClick={() => onOk(currentPath)} variant="contained" color="primary">
+        <Button
+          disabled={invalidPath} onClick={() => onOk(currentPath)} variant="contained"
+          color="primary"
+        >
           {formatMessage(messages.ok)}
         </Button>
       </DialogFooter>

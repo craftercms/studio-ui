@@ -107,6 +107,9 @@ export function getParentsFromPath(path: string, rootPath: string): string[] {
 
 export function getAllPaths(path: string, rootPath: string) {
   let splitPath = path.split('/');
+  if (path.endsWith('/')) {
+    splitPath.pop();
+  }
   return [rootPath, ...splitPath.map((value, i) => `/${splitPath.slice(1, i + 1).join('/')}`).splice(2)];
 }
 
