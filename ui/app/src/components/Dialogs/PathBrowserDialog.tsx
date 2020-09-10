@@ -32,6 +32,9 @@ import CreateNewFolderDialog from './CreateNewFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
 import Suspencified from '../SystemStatus/Suspencified';
+import { getAllPaths } from '../../utils/path';
+import { forkJoin, Observable } from 'rxjs';
+import { AjaxResponse } from 'rxjs/ajax';
 
 const messages = defineMessages({
   ok: {
@@ -60,6 +63,7 @@ const useStyles = makeStyles(() => createStyles({
 interface PathBrowserDialogProps {
   open: boolean;
   rootPath: string;
+  currentPath?: string;
   defaultExpanded: string[];
   onClose(): void;
   onClosed?(): void;
@@ -80,12 +84,12 @@ export default function PathBrowserDialog(props: PathBrowserDialogProps) {
 }
 
 function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
-  const { onClosed, onClose, onOk, defaultExpanded, rootPath } = props;
+  const { onClosed, onClose, onOk, defaultExpanded, rootPath, currentPath: path } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const [currentPath, setCurrentPath] = useState(rootPath);
-  const [expanded, setExpanded] = useState(defaultExpanded);
+  const [currentPath, setCurrentPath] = useState(path ?? rootPath);
+  const [expanded, setExpanded] = useState(path ? getAllPaths(path, rootPath) : [rootPath]);
   const [invalidPath, setInvalidPath] = useState(false);
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
@@ -100,49 +104,59 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
       if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
         setInvalidPath(false);
       } else {
-        // TODO: if the path is depth > 1 needs to fetch the parents path if does not exist;
-        get(
-          `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${currentPath}&depth=1&order=default`
-        ).subscribe(({ response: { item } }) => {
+        const allPaths = getAllPaths(currentPath, rootPath).filter(
+          path => !nodesLookup[path] || !nodesLookup[path].fetched
+        );
+        const requests: Observable<AjaxResponse>[] = [];
+        allPaths.forEach((nextPath) => {
+          requests.push(
+            get(
+              `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${nextPath}&depth=1&order=default`
+            )
+          );
+        });
 
-          //validate the current path;
-          if (item.deleted) {
-            setInvalidPath(true);
-            return;
-          } else {
-            setInvalidPath(false);
-          }
-
+        forkJoin(requests).subscribe((responses) => {
           let rootNode;
-          let parent;
+          responses.forEach(({ response: { item } }, i) => {
+            let parent;
 
-          if (!nodesLookup['root']) {
-            parent = {
-              id: item.path,
-              name: item.name,
-              fetched: true,
-              children: legacyItemsToTreeNodes(item.children)
-            };
-            rootNode = parent;
-            nodesLookup[item.path] = parent;
-            nodesLookup['root'] = parent;
-          } else {
-            rootNode = nodesLookup['root'];
-            parent = nodesLookup[item.path];
-            parent.fetched = true;
-            parent.children = legacyItemsToTreeNodes(item.children);
-          }
+            if (i === requests.length - 1) {
+              setInvalidPath(item.deleted);
+            }
 
-          parent.children.forEach((child) => {
-            nodesLookup[child.id] = child;
+            if (item.deleted) {
+              return;
+            }
+
+            if (!nodesLookup['root']) {
+              parent = {
+                id: item.path,
+                name: item.name,
+                fetched: true,
+                children: legacyItemsToTreeNodes(item.children)
+              };
+              rootNode = parent;
+              nodesLookup[item.path] = parent;
+              nodesLookup['root'] = parent;
+            } else {
+              rootNode = nodesLookup['root'];
+              parent = nodesLookup[item.path];
+              parent.fetched = true;
+              parent.children = legacyItemsToTreeNodes(item.children);
+            }
+
+            parent.children.forEach((child) => {
+              nodesLookup[child.id] = child;
+            });
+
           });
-
           setTreeNodes({ ...rootNode });
         });
       }
     }
 
-  }, [currentPath, site]);
+  }, [currentPath, rootPath, site]);
 
   const resource = useLogicResource<TreeNode, TreeNode>(treeNodes, {
     shouldResolve: (treeNodes) => Boolean(treeNodes),
@@ -188,8 +202,7 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
 
   const onPathChanged = (path: string) => {
     setCurrentPath(path);
-    // TODO: the expanded needs to be calculated if the path contains depth > 1
-    //setExpanded([...expanded, path]);
+    setExpanded(getAllPaths(path, rootPath));
   };
 
   return (
