@@ -212,6 +212,10 @@ const numericInputControlMessages = defineMessages({
   maximun: {
     id: 'numericInputControl.maximun',
     defaultMessage: 'Maximum'
+  },
+  noDecimalsErrMessage: {
+    id: 'numericInputControl.noDecimalsErrMessage',
+    defaultMessage: 'Decimals are not allowed, the Numeric Input control has `_i` or `_l` postfix.'
   }
 });
 
