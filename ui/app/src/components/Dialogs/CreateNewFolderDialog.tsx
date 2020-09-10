@@ -20,7 +20,6 @@ import DialogHeader from './DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { createNewFolder, renameFolder } from '../../services/content';
@@ -160,26 +159,24 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
         />
       </DialogBody>
       <DialogFooter>
-        <DialogActions>
-          <Button onClick={onClose} variant="outlined" disabled={inProgress}>
-            <FormattedMessage id="words.close" defaultMessage="Close" />
-          </Button>
-          <Button
-            onClick={() => onOk()} variant="contained" color="primary" autoFocus
-            disabled={inProgress}
-          >
-            {
-              inProgress &&
-              <CircularProgress size={15} style={{ marginRight: '5px' }} />
-            }
-            {
-              rename
-                ? <FormattedMessage id="words.rename" defaultMessage="Rename" />
-                : <FormattedMessage id="words.create" defaultMessage="Create" />
-            }
+        <Button onClick={onClose} variant="outlined" disabled={inProgress}>
+          <FormattedMessage id="words.close" defaultMessage="Close" />
+        </Button>
+        <Button
+          onClick={() => onOk()} variant="contained" color="primary" autoFocus
+          disabled={inProgress}
+        >
+          {
+            inProgress &&
+            <CircularProgress size={15} style={{ marginRight: '5px' }} />
+          }
+          {
+            rename
+              ? <FormattedMessage id="words.rename" defaultMessage="Rename" />
+              : <FormattedMessage id="words.create" defaultMessage="Create" />
+          }
 
-          </Button>
-        </DialogActions>
+        </Button>
       </DialogFooter>
     </>
   );
