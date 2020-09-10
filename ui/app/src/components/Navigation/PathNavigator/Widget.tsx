@@ -699,7 +699,7 @@ export default function (props: WidgetProps) {
             }));
           },
           (response) => {
-            dispatch(showErrorDialog(response));
+            dispatch(showErrorDialog({ error: response }));
           }
         );
         closeContextMenu();
