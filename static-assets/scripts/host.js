@@ -115,7 +115,7 @@
       );
       if (previousChoice === null) {
         previousChoice = 'go';
-        localStorage.setItem(`craftercms.previewCompatChoice.${site}`, 'go');
+        localStorage.setItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`, 'go');
       }
       if (previousChoice && !compatibilityAsk) {
         if (previousChoice === 'go') {
