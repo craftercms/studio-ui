@@ -42,36 +42,42 @@ const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialo
 const EmbeddedLegacyEditors = lazy(() => import('../../modules/Preview/EmbeddedLegacyEditors'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 
-function createCallback(
-   action: StandardAction,
-   dispatch: Dispatch
- ): (output?: unknown) => void {
-  return action
-    ? (output) => {
-      const hasPayload = Boolean(action.payload);
-      const hasOutput = Boolean(output) && isPlainObject(output);
-      const payload =
-        hasPayload && !hasOutput
-          ? action.payload
-          : !hasPayload && hasOutput
-          ? output
-          : // We're using objects for all our payloads - I think - but this
-          // could fail with literal native values such as strings or numbers
-          hasPayload && hasOutput
+// @formatter:off
+function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
+  // prettier-ignore
+  return action ? (output: any) => {
+    const hasPayload = Boolean(action.payload);
+    const hasOutput = Boolean(output) && isPlainObject(output);
+    const payload = (hasPayload && !hasOutput)
+      // If there's a payload in the original action and there
+      // is no output from the resulting callback, simply use the
+      // original payload
+      ? action.payload
+      // Otherwise, if there's no payload but there is an output sent
+      // to the resulting callback, use the output as the payload
+      : (!hasPayload && hasOutput)
+        ? output
+        : (
+          (hasPayload && hasOutput)
+            // If there's an output and a payload, merge them both into a single object.
+            // We're supposed to be using objects for all our payloads, otherwise this
+            // could fail with literal native values such as strings or numbers.
             ? Array.isArray(action.payload)
-            ? action.payload.map((action) => ({
-              ...action,
-              payload: { ...action.payload, output }
-            }))
-            : { ...action.payload, output }
-            : false;
-      dispatch({
-        type: action.type,
-        ...(payload ? { payload } : {})
-      });
-    }
-    : null;
+              // If it's an array, assume is a BATCH_ACTIONS action payload; each item
+              // of the array should be an action, so merge each item with output.
+              ? action.payload.map((a) => ({ ...a, payload: { ...a.payload, ...output } }))
+              // If it's not an array, it's a single action. Merge with output.
+              : { ...action.payload, ...output }
+            // Later, we check if there's a payload to add it
+            : false
+        );
+    dispatch({
+      type: action.type,
+      ...(payload ? { payload } : {})
+    });
+  } : null;
 }
+// @formatter:on
 
 export const useStyles = makeStyles(() =>
   createStyles({
@@ -268,7 +274,10 @@ function GlobalDialogManager() {
   );
 }
 
-function MinimizedDialogManager({ state, dispatch }: {
+function MinimizedDialogManager({
+                                  state,
+                                  dispatch
+                                }: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {

@@ -1,5 +1,4 @@
 <component name="ProjectCodeStyleConfiguration">
-
   <code_scheme name="Project" version="173">
     <option name="OTHER_INDENT_OPTIONS">
       <value>
@@ -8,6 +7,7 @@
       </value>
     </option>
     <option name="RIGHT_MARGIN" value="100" />
+    <option name="FORMATTER_TAGS_ENABLED" value="true" />
     <HTMLCodeStyleSettings>
       <option name="HTML_TEXT_WRAP" value="0" />
       <option name="HTML_KEEP_BLANK_LINES" value="1" />

@@ -179,11 +179,10 @@ export function PreviewConcierge(props: any) {
             previewNextCheckInNotificationRef.current = true;
             let previousChoice = localStorage.getItem(`craftercms.previewCompatChoice.${site}`);
             if (previousChoice === null) {
-              previousChoice = 'go';
-              localStorage.setItem(`craftercms.previewCompatChoice.${site}`, 'go');
+              localStorage.setItem(`craftercms.previewCompatChoice.${site}`, previousChoice = '1');
             }
             if (previousChoice && !compatibilityAsk) {
-              if (previousChoice === 'go') {
+              if (previousChoice === '1') {
                 handlePreviewCompatibilityDialogGo();
               } else if (previousChoice === 'ask') {
                 setPreviewCompatibilityDialogOpen(true);
