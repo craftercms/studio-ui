@@ -204,7 +204,7 @@ const PathSelectedStyles = makeStyles(() =>
       }
     },
     invalid: {
-      '& $input': {
+      '& $invisibleInput': {
         color: palette.red.main
       }
     }
