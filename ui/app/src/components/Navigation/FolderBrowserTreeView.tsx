@@ -193,7 +193,8 @@ const PathSelectedStyles = makeStyles(() =>
     },
     selected: {
       fontWeight: 600,
-      marginRight: '10px'
+      marginRight: '10px',
+      color: palette.gray.medium4
     },
     invisibleInput: {
       padding: 0,
