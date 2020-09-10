@@ -79,7 +79,6 @@ import { languages } from '../../../utils/i18n-legacy';
 import { removeSpaces } from '../../../utils/string';
 import {
   pathNavigatorClearChecked,
-  pathNavigatorFetchParentItems,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
@@ -567,7 +566,8 @@ export default function(props: WidgetProps) {
             open: true,
             item: menu.activeItem,
             rootPath: menu.activeItem.path,
-            compact: true
+            compact: true,
+            onContentTypeSelected: showEditDialog({})
           })
         );
         closeContextMenu();
@@ -868,7 +868,7 @@ export default function(props: WidgetProps) {
       }
       case 'refresh': {
         dispatch(
-          pathNavigatorFetchParentItems({
+          pathNavigatorSetCurrentPath({
             id,
             path: state.currentPath
           })

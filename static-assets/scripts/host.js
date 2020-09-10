@@ -97,11 +97,11 @@
         CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
           data,
           onOk({ remember }) {
-            handleRemember(remember, 'go');
+            handleRemember(remember, '2');
             doGo();
           },
           onCancel({ remember }) {
-            handleRemember(remember, 'stay');
+            handleRemember(remember, '1');
           },
           onClosed() {
             unmount({ removeContainer: true });
@@ -114,11 +114,10 @@
         `craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`
       );
       if (previousChoice === null) {
-        previousChoice = 'go';
-        localStorage.setItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`, 'go');
+        localStorage.setItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`, previousChoice = '2');
       }
       if (previousChoice && !compatibilityAsk) {
-        if (previousChoice === 'go') {
+        if (previousChoice === '2') {
           doGo();
         } else if (previousChoice === 'ask') {
           showCompatDialog();
