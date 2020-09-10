@@ -21,7 +21,7 @@ import Button from '@material-ui/core/Button';
 import React, { useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
-import { useActiveSiteId, useUnmount } from '../../utils/hooks';
+import { useActiveSiteId, useLogicResource, useUnmount } from '../../utils/hooks';
 import FolderBrowserTreeView, {
   legacyItemsToTreeNodes,
   TreeNode
@@ -31,6 +31,7 @@ import createStyles from '@material-ui/styles/createStyles';
 import CreateNewFolderDialog from './CreateNewFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
+import Suspencified from '../SystemStatus/Suspencified';
 
 const messages = defineMessages({
   ok: {
@@ -85,7 +86,7 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
   const { formatMessage } = useIntl();
   const [currentPath, setCurrentPath] = useState(rootPath);
   const [expanded, setExpanded] = useState(defaultExpanded);
-  const [treeNodes, setTreeNodes] = useState(null);
+  const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
   useUnmount(onClosed);
@@ -125,6 +126,14 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
     }
   }, [currentPath, site]);
 
+  const resource = useLogicResource<TreeNode, TreeNode>(treeNodes, {
+    shouldResolve: (treeNodes) => Boolean(treeNodes),
+    shouldReject: (treeNodes) => false,
+    shouldRenew: (treeNodes, resource) => resource.complete,
+    resultSelector: (treeNodes) => treeNodes,
+    errorSelector: (treeNodes) => null
+  });
+
   const onCreateFolder = () => {
     setCreateFolder(true);
   };
@@ -163,19 +172,21 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
     <>
       <DialogHeader title="Select Path" onDismiss={onClose} />
       <DialogBody>
-        <FolderBrowserTreeView
-          classes={{
-            treeViewRoot: classes.treeViewRoot
-          }}
-          onNodeToggle={onNodeToggle}
-          onNodeSelected={onNodeSelected}
-          rootPath={rootPath}
-          currentPath={currentPath}
-          expanded={expanded}
-          selected={currentPath}
-          treeNodes={treeNodes}
-          defaultExpanded={defaultExpanded}
-        />
+        <Suspencified>
+          <FolderBrowserTreeView
+            classes={{
+              treeViewRoot: classes.treeViewRoot
+            }}
+            onNodeToggle={onNodeToggle}
+            onNodeSelected={onNodeSelected}
+            rootPath={rootPath}
+            currentPath={currentPath}
+            expanded={expanded}
+            selected={currentPath}
+            resource={resource}
+            defaultExpanded={defaultExpanded}
+          />
+        </Suspencified>
       </DialogBody>
       <DialogFooter>
         <Button onClick={onCreateFolder} variant="outlined" className={classes.createFolderBtn}>

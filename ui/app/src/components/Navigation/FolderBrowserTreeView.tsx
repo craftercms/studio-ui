@@ -103,8 +103,10 @@ export default function FolderBrowserTreeView(props: any) {
     selected,
     onNodeToggle,
     onNodeSelected,
-    treeNodes
+    resource
   } = props;
+
+  const treeNodes = resource.read();
 
   return (
     <section className={classes.wrapper}>
