@@ -15,8 +15,9 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap } from 'rxjs/operators';
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
+  SELECT_TOOL,
   fetchPreviewToolsConfig,
   fetchPreviewToolsConfigComplete,
   fetchPreviewToolsConfigFailed,
@@ -27,13 +28,26 @@ import { catchAjaxError } from '../../utils/ajax';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 
 export default [
+  (action$, state$) => action$.pipe(
+    ofType(SELECT_TOOL),
+    withLatestFrom(state$),
+    tap(([{ payload }, state]) => {
+      console.log(payload)
+      if (payload) {
+        window.localStorage.setItem(`craftercms.previewSelectedTool.${state.sites.active}`, payload);
+      } else {
+        window.localStorage.removeItem(`craftercms.previewSelectedTool.${state.sites.active}`);
+      }
+    }),
+    ignoreElements()
+  ),
   // region fetchPreviewToolsConfig
   (action$) =>
     action$.pipe(
       ofType(fetchPreviewToolsConfig.type),
       switchMap(({ payload: site }) =>
         getPreviewToolsConfig(site).pipe(
-          map((config) => fetchPreviewToolsConfigComplete(config)),
+          map(fetchPreviewToolsConfigComplete),
           catchAjaxError(fetchPreviewToolsConfigFailed)
         )
       )

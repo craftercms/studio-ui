@@ -49,6 +49,7 @@ import {
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
   selectForEdit,
+  selectTool,
   setChildrenMap,
   setContentTypeReceptacles,
   setItemBeingDragged,
@@ -86,6 +87,7 @@ import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
 import { getQueryVariable } from '../../utils/path';
+import PreviewTool from '../../models/PreviewTool';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -149,6 +151,10 @@ export function PreviewConcierge(props: any) {
   // Guest detection, document domain restoring and misc cleanup.
   useMount(() => {
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
+    const storedTool = window.localStorage.getItem(`craftercms.previewSelectedTool.${site}`);
+    if (storedTool) {
+      dispatch(selectTool(storedTool as PreviewTool));
+    }
     return () => {
       sub.unsubscribe();
       contentTypes$.complete();
@@ -553,7 +559,7 @@ export function PreviewConcierge(props: any) {
 
 function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
   const guestToHost$ = getGuestToHostBus();
-  return interval(1500)
+  return interval(2500)
     .pipe(
       take(1),
       takeUntil(

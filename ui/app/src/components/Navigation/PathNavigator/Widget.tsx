@@ -79,7 +79,6 @@ import { languages } from '../../../utils/i18n-legacy';
 import { removeSpaces } from '../../../utils/string';
 import {
   pathNavigatorClearChecked,
-  pathNavigatorFetchParentItems,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
