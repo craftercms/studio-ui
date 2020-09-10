@@ -31,7 +31,7 @@ import {
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode
+  pathNavigatorSetLocaleCode, pathNavigatorUpdate
 } from '../actions/pathNavigator';
 
 const reducer = createReducer<LookupTable<WidgetState>>(
@@ -200,7 +200,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         }
       };
     },
-    [pathNavigatorSetLocaleCode.type]: (state) => state
+    [pathNavigatorUpdate.type]: (state, { payload }) => ({ ...state, [payload.id]: { ...state[payload.id], ...payload } })
   }
 );
 

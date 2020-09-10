@@ -17,12 +17,15 @@
 import { createAction } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { SandboxItem } from '../../models/Item';
+import { WidgetState } from '../../components/Navigation/PathNavigator/Widget';
 
 type PayloadWithId<P> = P & { id: string };
 
 export const pathNavigatorInit = createAction<PayloadWithId<{ path: string; locale: string; collapsed?: boolean }>>('PATH_NAVIGATOR_INIT');
 
 export const pathNavigatorSetLocaleCode = createAction<PayloadWithId<{ locale: string }>>('PATH_NAVIGATOR_SET_LOCALE_CODE');
+
+export const pathNavigatorUpdate = createAction<PayloadWithId<Partial<WidgetState>>>('PATH_NAVIGATOR_UPDATE');
 
 export const pathNavigatorSetCollapsed = createAction<PayloadWithId<{ collapsed: boolean }>>('PATH_NAVIGATOR_SET_COLLAPSED');
 

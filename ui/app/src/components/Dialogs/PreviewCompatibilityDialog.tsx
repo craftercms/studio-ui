@@ -18,12 +18,11 @@ import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
-import { useActiveSiteId, useEnv, useUnmount } from '../../utils/hooks';
+import { useUnmount } from '../../utils/hooks';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
@@ -43,12 +42,12 @@ const translations = defineMessages({
   nextCompatibility: {
     id: 'previewCompatDialog.nextCompatMessage',
     defaultMessage:
-      'To edit this page using in-context editing, please go to Preview 2. Would you like to go now?'
+      'This page is compatible with the new editing experience. Would you like to go there now?'
   },
   legacyCompatibility: {
     id: 'previewCompatDialog.legacyCompatMessage',
     defaultMessage:
-      'To edit this page using in-context editing, please go to Preview. Would you like to go now?'
+      'This page is compatible with the previous editing experience. Would you like to go there now?'
   },
   rememberChoice: {
     id: 'previewCompatDialog.rememberChoice',
@@ -58,7 +57,6 @@ const translations = defineMessages({
 
 interface PreviewCompatibilityDialogProps {
   open: boolean;
-  previewUrl: string;
   onOk: (...args) => any;
   onCancel: (...args) => any;
   onClose?: () => any;
@@ -78,12 +76,10 @@ export default function LegacyContainer(props) {
         props.onCancel(options);
       }}
     />
-  )
+  );
 }
 
-export function PreviewCompatibilityDialogContainer(
-  props: PreviewCompatibilityDialogProps
-) {
+export function PreviewCompatibilityDialogContainer(props: PreviewCompatibilityDialogProps) {
   return (
     <Dialog
       open={props.open}
@@ -111,27 +107,31 @@ export function PreviewCompatibilityDialog(props: PreviewCompatibilityDialogProp
           )}
         </DialogContentText>
       </DialogBody>
-      <DialogFooter style={{ width: '100%', display: 'flex', placeContent: 'center space-between' }}>
-        <DialogActions>
-          <FormControlLabel
-            label={formatMessage(translations.rememberChoice)}
-            control={
-              <Checkbox
-                color="primary"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-              />
-            }
-          />
-          <div>
-            <Button onClick={() => onCancel({ remember })} variant="outlined" style={{ marginRight: 5 }}>
-              {formatMessage(translations.stay)}
-            </Button>
-            <Button onClick={() => onOk({ remember })} variant="contained" color="primary" autoFocus>
-              {formatMessage(translations.go)}
-            </Button>
-          </div>
-        </DialogActions>
+      <DialogFooter
+        style={{ width: '100%', display: 'flex', placeContent: 'center space-between' }}
+      >
+        <FormControlLabel
+          label={formatMessage(translations.rememberChoice)}
+          control={
+            <Checkbox
+              color="primary"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            />
+          }
+        />
+        <div>
+          <Button
+            onClick={() => onCancel({ remember })}
+            variant="outlined"
+            style={{ marginRight: 5 }}
+          >
+            {formatMessage(translations.stay)}
+          </Button>
+          <Button onClick={() => onOk({ remember })} variant="contained" color="primary" autoFocus>
+            {formatMessage(translations.go)}
+          </Button>
+        </div>
       </DialogFooter>
     </>
   );

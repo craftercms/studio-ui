@@ -70,8 +70,11 @@
 
   // Preview 2 check in
   let previewNextCheckInNotification = false;
+  let compatibilityQueryArg = CrafterCMSNext.util.path.getQueryVariable(window.location.search, 'compatibility');
+  let compatibilityForceStay = compatibilityQueryArg === 'stay';
+  let compatibilityAsk = compatibilityQueryArg === 'ask';
   communicator.subscribe(Topics.GUEST_CHECK_IN, function(data) {
-    if (!previewNextCheckInNotification) {
+    if (!previewNextCheckInNotification && !compatibilityForceStay) {
       // Avoid recurrently showing the notification over and
       // over as long as the page is not refreshed
       previewNextCheckInNotification = true;
@@ -80,22 +83,16 @@
         window: getEngineWindow().contentWindow
       });
       const handleRemember = (remember, goOrStay) => {
-        if (remember) {
-          window.localStorage.setItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`, goOrStay);
-        } else {
-          window.localStorage.removeItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`);
-        }
-      }
+        window.localStorage.setItem(
+          `craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`,
+          remember ? goOrStay : 'ask'
+        );
+      };
       const doGo = () => {
         const state = CrafterCMSNext.system.store.getState();
         window.location.href = `${state.env.authoringBase}/next/preview#/?page=${data.location.pathname}&site=${state.sites.active}`;
       };
-      const previousChoice = localStorage.getItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`);
-      if (previousChoice) {
-        if (previousChoice === 'go') {
-          doGo();
-        }
-      } else {
+      const showCompatDialog = () => {
         let unmount;
         CrafterCMSNext.render(document.createElement('div'), 'PreviewCompatDialog', {
           data,
@@ -107,12 +104,27 @@
             handleRemember(remember, 'stay');
           },
           onClosed() {
-            console.log('Dialog closed');
-            unmount();
+            unmount({ removeContainer: true });
           }
         }).then((args) => {
           unmount = args.unmount;
         });
+      };
+      let previousChoice = localStorage.getItem(
+        `craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`
+      );
+      if (previousChoice === null) {
+        previousChoice = 'go';
+        localStorage.setItem(`craftercms.previewCompatChoice.${site}`, 'go');
+      }
+      if (previousChoice && !compatibilityAsk) {
+        if (previousChoice === 'go') {
+          doGo();
+        } else if (previousChoice === 'ask') {
+          showCompatDialog();
+        }
+      } else {
+        showCompatDialog();
       }
     }
     communicator.dispatch({ type: Topics.LEGACY_CHECK_IN, payload: { editMode: false } });
@@ -294,12 +306,7 @@
       selectStudioContent(site, studioPath);
 
       CStudioAuthoringContext.previewCurrentPath = message.url;
-      CStudioAuthoring.ComponentsPanel.getPageModel(
-        studioPath,
-        'init-components',
-        true,
-        false
-      );
+      CStudioAuthoring.ComponentsPanel.getPageModel(studioPath, 'init-components', true, false);
 
       communicator.publish(Topics.DND_PANEL_OFF);
     }
@@ -556,7 +563,7 @@
     $('#acn-ice-tools-container img').attr(
       'src',
       CStudioAuthoringContext.authoringAppBaseUri +
-      '/static-assets/themes/cstudioTheme/images/edit_off.png'
+        '/static-assets/themes/cstudioTheme/images/edit_off.png'
     );
   });
 
@@ -564,7 +571,7 @@
     $('#acn-ice-tools-container img').attr(
       'src',
       CStudioAuthoringContext.authoringAppBaseUri +
-      '/static-assets/themes/cstudioTheme/images/edit.png'
+        '/static-assets/themes/cstudioTheme/images/edit.png'
     );
   });
 
