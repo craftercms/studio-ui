@@ -63,7 +63,7 @@ const useStyles = makeStyles(() => createStyles({
 interface PathBrowserDialogProps {
   open: boolean;
   rootPath: string;
-  currentPath?: string;
+  initialPath?: string;
   onClose(): void;
   onClosed?(): void;
   onOk(selectedPath: string): void;
@@ -83,12 +83,12 @@ export default function PathBrowserDialog(props: PathBrowserDialogProps) {
 }
 
 function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
-  const { onClosed, onClose, onOk, rootPath, currentPath: path } = props;
+  const { onClosed, onClose, onOk, rootPath, initialPath } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const [currentPath, setCurrentPath] = useState(path ?? rootPath);
-  const [expanded, setExpanded] = useState(path ? getAllPaths(path, rootPath) : [rootPath]);
+  const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
+  const [expanded, setExpanded] = useState(initialPath ? getAllPaths(initialPath, rootPath) : [rootPath]);
   const [invalidPath, setInvalidPath] = useState(false);
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);

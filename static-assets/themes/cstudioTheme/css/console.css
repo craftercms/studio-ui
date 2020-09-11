@@ -24,6 +24,25 @@ body, tbody {
   height: 100%;
 }
 
+.repository-selector {
+
+}
+
+.repository-selector--input {
+  width: 100%;
+  border: none;
+  display: block;
+  padding: 4px 18px 4px 2%;
+  border-bottom: 1px solid #f3f3f3;
+}
+
+.repository-selector--icon {
+  position: absolute;
+  right: 10px;
+  top: 6px;
+  cursor: pointer;
+}
+
 .content-type-selector {
 
 }
