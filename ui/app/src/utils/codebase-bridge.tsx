@@ -22,6 +22,7 @@ import string from './string';
 import ajax from './ajax';
 import path from './path';
 import auth from './auth';
+import state from './state';
 import contentUtil from './content';
 import configuration from '../services/configuration';
 import sites from '../services/sites';
@@ -167,6 +168,7 @@ export function createCodebaseBridge() {
       string,
       auth,
       babel,
+      state,
       content: contentUtil,
       redux: { useDispatch, useSelector, useStore }
     },

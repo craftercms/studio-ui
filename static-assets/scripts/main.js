@@ -516,7 +516,7 @@
       };
 
       this.setCookie = function(cookieGenName, value) {
-        CrafterCMSNext.util.auth.setSiteCookie(cookieGenName, value);
+        CrafterCMSNext.util.auth.setSiteCookie(value);
       };
 
       this.editSite = function(site) {
@@ -524,7 +524,7 @@
         $timeout(
           function() {
             $window.location.href =
-              window.localStorage.getItem(`craftercms.previewCompatChoice.${site.siteId}`) === '2'
+              CrafterCMSNext.util.state.getStoredPreviewChoice(site.siteId) === '2'
                 ? '/studio/next/preview'
                 : '/studio/preview';
           },
