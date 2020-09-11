@@ -40,8 +40,8 @@ export function getCookieDomain(): string {
   return domain;
 }
 
-export function setSiteCookie(name: string, value: string): void {
-  Cookies.set(name, value, {
+export function setSiteCookie(value: string, cookieName: string = 'crafterSite'): void {
+  Cookies.set(cookieName, value, {
     domain: getCookieDomain(),
     path: '/'
   });

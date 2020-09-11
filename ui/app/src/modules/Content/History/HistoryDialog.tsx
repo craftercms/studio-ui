@@ -18,7 +18,7 @@ import React, { PropsWithChildren, useCallback, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import { useUnmount, useSpreadState, useLogicResource } from '../../../utils/hooks';
+import { useLogicResource, useSpreadState, useUnmount } from '../../../utils/hooks';
 import ContextMenu, { SectionItem } from '../../../components/ContextMenu';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { LookupTable } from '../../../models/LookupTable';
@@ -92,7 +92,8 @@ const translations = defineMessages({
 const historyStyles = makeStyles(() =>
   createStyles({
     dialogBody: {
-      overflow: 'auto'
+      overflow: 'auto',
+      minHeight: '50vh'
     },
     dialogFooter: {
       padding: 0
@@ -195,7 +196,7 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
-export default function HistoryDialog(props: HistoryDialogProps) {
+export default function HistoryDialogWrapper(props: HistoryDialogProps) {
   return (
     <Dialog
       open={props.open}
@@ -203,12 +204,12 @@ export default function HistoryDialog(props: HistoryDialogProps) {
       fullWidth
       maxWidth="md"
     >
-      <HistoryDialogWrapper {...props} />
+      <HistoryDialog {...props} />
     </Dialog>
   );
 }
 
-function HistoryDialogWrapper(props: HistoryDialogProps) {
+function HistoryDialog(props: HistoryDialogProps) {
   const { onDismiss, versionsBranch } = props;
   const { count, page, limit, current, item, rootPath } = versionsBranch;
   const path = item ? item.path : '';
@@ -264,17 +265,15 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
     [count, setMenu]
   );
 
-  function CompareVersionDialogWithActions() {
-    return showCompareVersionsDialog({
-      rightActions: [
-        {
-          icon: 'HistoryIcon',
-          onClick: showHistoryDialog({}),
-          'aria-label': formatMessage(translations.backToHistoryList)
-        }
-      ]
-    });
-  }
+  const compareVersionDialogWithActions = () => showCompareVersionsDialog({
+    rightActions: [
+      {
+        icon: 'HistoryIcon',
+        onClick: showHistoryDialog({}),
+        'aria-label': formatMessage(translations.backToHistoryList)
+      }
+    ]
+  });
 
   const handleViewItem = (version: LegacyVersion) => {
     dispatch(batchActions([
@@ -296,7 +295,7 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
     dispatch(batchActions([
       fetchContentTypes(),
       compareVersion({ id: versionNumber }),
-      CompareVersionDialogWithActions()
+      compareVersionDialogWithActions(),
     ]));
   };
 
@@ -304,7 +303,7 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
     dispatch(batchActions([
       fetchContentTypes(),
       compareBothVersions({ versions: selected }),
-      CompareVersionDialogWithActions()
+      compareVersionDialogWithActions()
     ]));
   };
 
@@ -312,7 +311,7 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
     dispatch(batchActions([
       fetchContentTypes(),
       compareToPreviousVersion({ id: versionNumber }),
-      CompareVersionDialogWithActions()
+      compareVersionDialogWithActions()
     ]));
   };
 
@@ -410,7 +409,6 @@ function HistoryDialogWrapper(props: HistoryDialogProps) {
           />
         }
       </DialogFooter>
-
       {Boolean(menu.anchorEl) && (
         <ContextMenu
           open={true}

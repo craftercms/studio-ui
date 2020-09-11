@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
   checkInGuest,
@@ -49,6 +49,7 @@ import {
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
   selectForEdit,
+  selectTool,
   setChildrenMap,
   setContentTypeReceptacles,
   setItemBeingDragged,
@@ -84,6 +85,10 @@ import {
 import { nnou, nou, pluckProps } from '../../utils/object';
 import RubbishBin from './Tools/RubbishBin';
 import { useSnackbar } from 'notistack';
+import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
+import { getQueryVariable } from '../../utils/path';
+import PreviewTool from '../../models/PreviewTool';
+import { getStoredPreviewChoice, setStoredPreviewChoice } from '../../utils/state';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -132,10 +137,25 @@ export function PreviewConcierge(props: any) {
   const models = guest?.models;
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
   const editMode = useSelection((state) => state.preview.editMode);
+  const [previewCompatibilityDialogOpen, setPreviewCompatibilityDialogOpen] = useState(false);
+  const previewNextCheckInNotificationRef = useRef(false);
+  const handlePreviewCompatDialogRemember = useCallback(
+    (remember, goOrStay) => {
+      setStoredPreviewChoice(site, remember ? goOrStay : 'ask');
+    },
+    [site]
+  );
+  const handlePreviewCompatibilityDialogGo = useCallback(() => {
+    window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
+  }, [authoringBase, computedUrl, site]);
 
   // Guest detection, document domain restoring and misc cleanup.
   useMount(() => {
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
+    const storedTool = window.localStorage.getItem(`craftercms.previewSelectedTool.${site}`);
+    if (storedTool) {
+      dispatch(selectTool(storedTool as PreviewTool));
+    }
     return () => {
       sub.unsubscribe();
       contentTypes$.complete();
@@ -158,24 +178,26 @@ export function PreviewConcierge(props: any) {
       switch (type) {
         // Legacy sites.
         case 'GUEST_SITE_LOAD':
-          enqueueSnackbar(
-            // TODO: Translate - Discuss/chose appropriate message.
-            'This page is not using this version of Preview. Go to compatible version?',
-            {
-              action: (key) => (
-                <Button
-                  key={key}
-                  size="small"
-                  color="secondary"
-                  onClick={() => {
-                    window.location.href = `${authoringBase}/preview/#/?page=${computedUrl}&site=${site}`;
-                  }}
-                >
-                  {formatMessage(guestMessages.yes)}
-                </Button>
-              )
+          let previewNextCheckInNotification = previewNextCheckInNotificationRef.current;
+          let compatibilityQueryArg = getQueryVariable(window.location.search, 'compatibility');
+          let compatibilityForceStay = compatibilityQueryArg === 'stay';
+          let compatibilityAsk = compatibilityQueryArg === 'ask';
+          if (!previewNextCheckInNotification && !compatibilityForceStay) {
+            previewNextCheckInNotificationRef.current = true;
+            let previousChoice = getStoredPreviewChoice(site);
+            if (previousChoice === null) {
+              setStoredPreviewChoice(site, previousChoice = '1');
             }
-          );
+            if (previousChoice && !compatibilityAsk) {
+              if (previousChoice === '1') {
+                handlePreviewCompatibilityDialogGo();
+              } else if (previousChoice === 'ask') {
+                setPreviewCompatibilityDialogOpen(true);
+              }
+            } else {
+              setPreviewCompatibilityDialogOpen(true);
+            }
+          }
           break;
         case GUEST_CHECK_IN: {
           hostToGuest$.next({ type: HOST_CHECK_IN, payload: { editMode } });
@@ -197,11 +219,9 @@ export function PreviewConcierge(props: any) {
           } else {
             // If the content types have already been loaded, contentTypes$ subject will emit
             // immediately. If not, it will emit when the content type fetch payload does arrive.
-            contentTypes$
-              .pipe(take(1))
-              .subscribe((payload) => {
-                hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
-              });
+            contentTypes$.pipe(take(1)).subscribe((payload) => {
+              hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
+            });
           }
 
           break;
@@ -439,7 +459,12 @@ export function PreviewConcierge(props: any) {
         }
         case 'VALIDATION_MESSAGE': {
           enqueueSnackbar(formatMessage(guestMessages[payload.id], payload.values ?? {}), {
-            variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
+            variant:
+              payload.level === 'required'
+                ? 'error'
+                : payload.level === 'suggestion'
+                ? 'warning'
+                : 'info'
           });
           break;
         }
@@ -461,14 +486,14 @@ export function PreviewConcierge(props: any) {
     guestBase,
     site,
     xsrfArgument,
-    editMode
+    editMode,
+    handlePreviewCompatibilityDialogGo
   ]);
 
   useEffect(() => {
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        site &&
-        dispatch(fetchAssetsPanelItems({}));
+        site && dispatch(fetchAssetsPanelItems({}));
         break;
       case 'craftercms.ice.audiences':
         if (
@@ -482,9 +507,7 @@ export function PreviewConcierge(props: any) {
         }
         break;
       case 'craftercms.ice.browseComponents':
-        contentTypeComponents.contentTypeFilter &&
-        site &&
-        dispatch(fetchComponentsByContentType());
+        contentTypeComponents.contentTypeFilter && site && dispatch(fetchComponentsByContentType());
         break;
     }
   }, [
@@ -518,21 +541,31 @@ export function PreviewConcierge(props: any) {
         open={nnou(guest?.itemBeingDragged)}
         onTrash={() => getHostToGuestBus().next({ type: TRASHED, payload: guest.itemBeingDragged })}
       />
+      <PreviewCompatibilityDialogContainer
+        isPreviewNext={false}
+        open={previewCompatibilityDialogOpen}
+        onClose={() => setPreviewCompatibilityDialogOpen(false)}
+        onOk={({ remember }) => {
+          handlePreviewCompatDialogRemember(remember, 'go');
+          handlePreviewCompatibilityDialogGo();
+        }}
+        onCancel={({ remember }) => {
+          handlePreviewCompatDialogRemember(remember, 'stay');
+          setPreviewCompatibilityDialogOpen(false);
+        }}
+      />
     </>
   );
 }
 
 function beginGuestDetection(enqueueSnackbar, closeSnackbar): Subscription {
   const guestToHost$ = getGuestToHostBus();
-  return interval(1500)
+  return interval(2500)
     .pipe(
       take(1),
       takeUntil(
         guestToHost$.pipe(
-          filter(({ type }) =>
-            type === GUEST_CHECK_IN ||
-            type === 'GUEST_SITE_LOAD'
-          )
+          filter(({ type }) => type === GUEST_CHECK_IN || type === 'GUEST_SITE_LOAD')
         )
       )
     )

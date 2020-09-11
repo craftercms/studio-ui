@@ -35,33 +35,49 @@ const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
-const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
+const DependenciesDialog = lazy(() =>
+  import('../../modules/Content/Dependencies/DependenciesDialog')
+);
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const EmbeddedLegacyEditors = lazy(() => import('../../modules/Preview/EmbeddedLegacyEditors'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 
-function createCallback(
-  action: StandardAction,
-  dispatch: Dispatch
-): (output?: unknown) => void {
-  return action ? (output) => {
+// @formatter:off
+function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
+  // prettier-ignore
+  return action ? (output: any) => {
     const hasPayload = Boolean(action.payload);
     const hasOutput = Boolean(output) && isPlainObject(output);
-    const payload = hasPayload && !hasOutput
+    const payload = (hasPayload && !hasOutput)
+      // If there's a payload in the original action and there
+      // is no output from the resulting callback, simply use the
+      // original payload
       ? action.payload
-      : !hasPayload && hasOutput
+      // Otherwise, if there's no payload but there is an output sent
+      // to the resulting callback, use the output as the payload
+      : (!hasPayload && hasOutput)
         ? output
-        // We're using objects for all our payloads - I think - but this
-        // could fail with literal native values such as strings or numbers
-        : hasPayload && hasOutput
-          ? { ...action.payload, output }
-          : false;
+        : (
+          (hasPayload && hasOutput)
+            // If there's an output and a payload, merge them both into a single object.
+            // We're supposed to be using objects for all our payloads, otherwise this
+            // could fail with literal native values such as strings or numbers.
+            ? Array.isArray(action.payload)
+              // If it's an array, assume is a BATCH_ACTIONS action payload; each item
+              // of the array should be an action, so merge each item with output.
+              ? action.payload.map((a) => ({ ...a, payload: { ...a.payload, ...output } }))
+              // If it's not an array, it's a single action. Merge with output.
+              : { ...action.payload, ...output }
+            // Later, we check if there's a payload to add it
+            : false
+        );
     dispatch({
       type: action.type,
       ...(payload ? { payload } : {})
     });
   } : null;
 }
+// @formatter:on
 
 export const useStyles = makeStyles(() =>
   createStyles({
@@ -80,8 +96,8 @@ export const useStyles = makeStyles(() =>
 
 function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
-  const contentTypesBranch = useSelection(state => state.contentTypes);
-  const versionsBranch = useSelection(state => state.versions);
+  const contentTypesBranch = useSelection((state) => state.contentTypes);
+  const versionsBranch = useSelection((state) => state.versions);
   const dispatch = useDispatch();
   return (
     <Suspense fallback="">
@@ -212,8 +228,12 @@ function GlobalDialogManager() {
           onClick: createCallback(action.onClick, dispatch)
         }))}
         contentTypesBranch={contentTypesBranch}
-        selectedA={versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null}
-        selectedB={versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null}
+        selectedA={
+          versionsBranch?.selected[0] ? versionsBranch.byId[versionsBranch.selected[0]] : null
+        }
+        selectedB={
+          versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null
+        }
         versionsBranch={versionsBranch}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
@@ -254,7 +274,10 @@ function GlobalDialogManager() {
   );
 }
 
-function MinimizedDialogManager({ state, dispatch }: {
+function MinimizedDialogManager({
+                                  state,
+                                  dispatch
+                                }: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {

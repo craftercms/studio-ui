@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, Fragment, useEffect, useState } from 'react';
+import React, { ElementType, Fragment, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import {
@@ -38,6 +38,7 @@ import {
   useContentTypes,
   useEnv,
   useLogicResource,
+  useMount,
   useSelection,
   useSiteLocales,
   useSpreadState
@@ -78,7 +79,6 @@ import { languages } from '../../../utils/i18n-legacy';
 import { removeSpaces } from '../../../utils/string';
 import {
   pathNavigatorClearChecked,
-  pathNavigatorFetchParentItems,
   pathNavigatorInit,
   pathNavigatorItemChecked,
   pathNavigatorItemUnchecked,
@@ -91,28 +91,23 @@ import {
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
 
-const MyLoader = React.memo(function () {
+const MyLoader = React.memo(function() {
   const [items] = useState(() => {
     const numOfItems = 5;
     const start = 20;
     return new Array(numOfItems).fill(null).map((_, i) => ({
-      y: start + (30 * i),
+      y: start + 30 * i,
       width: createRand()
     }));
   });
   return (
-    <ContentLoader
-      speed={2}
-      width="100%"
-      backgroundColor="#f3f3f3"
-      foregroundColor="#ecebeb"
-    >
-      {items.map(({ y, width }, i) =>
+    <ContentLoader speed={2} width="100%" backgroundColor="#f3f3f3" foregroundColor="#ecebeb">
+      {items.map(({ y, width }, i) => (
         <Fragment key={i}>
           <circle cx="10" cy={y} r="8" />
           <rect x="25" y={y - 5} rx="5" ry="5" width={`${width}%`} height="10" />
         </Fragment>
-      )}
+      ))}
     </ContentLoader>
   );
 });
@@ -223,7 +218,10 @@ function defaultMenu(menuState): Array<[]> {
       ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
       : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
   );
-  defaultMenu.push([menuOptions.publish, menuOptions.dependencies], [menuOptions.history, menuOptions.translation]);
+  defaultMenu.push(
+    [menuOptions.publish, menuOptions.dependencies],
+    [menuOptions.history, menuOptions.translation]
+  );
   return defaultMenu;
 }
 
@@ -251,18 +249,13 @@ function generateMenuSections(
     sections.push(
       menuState.hasClipboard
         ? [
-          menuOptions.cut,
-          menuOptions.copy,
-          menuOptions.paste,
-          menuOptions.duplicate,
-          menuOptions.delete
-        ]
-        : [
-          menuOptions.cut,
-          menuOptions.copy,
-          menuOptions.duplicate,
-          menuOptions.delete
-        ]
+            menuOptions.cut,
+            menuOptions.copy,
+            menuOptions.paste,
+            menuOptions.duplicate,
+            menuOptions.delete
+          ]
+        : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate, menuOptions.delete]
     );
     if (options.translation) {
       sections.push([menuOptions.translation]);
@@ -281,11 +274,8 @@ function generateMenuSections(
         );
         sections.push(
           menuState.hasClipboard
-            ? [
-              menuOptions.cut, menuOptions.copy, menuOptions.paste
-            ] : [
-              menuOptions.cut, menuOptions.copy
-            ]
+            ? [menuOptions.cut, menuOptions.copy, menuOptions.paste]
+            : [menuOptions.cut, menuOptions.copy]
         );
         // TODO: check if the folder support upload/createTemplate/createController;
         if (options.upload) {
@@ -310,17 +300,18 @@ function generateMenuSections(
             ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
             : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate]
         );
-        sections.push(
-          [menuOptions.publish, menuOptions.dependencies],
-          [menuOptions.history]
-        );
+        sections.push([menuOptions.publish, menuOptions.dependencies], [menuOptions.history]);
         break;
       }
       case 'template':
       case 'script': {
-        sections.push(
-          [menuOptions.delete, menuOptions.edit, menuOptions.publish, menuOptions.history, menuOptions.dependencies]
-        );
+        sections.push([
+          menuOptions.delete,
+          menuOptions.edit,
+          menuOptions.publish,
+          menuOptions.history,
+          menuOptions.dependencies
+        ]);
         sections.push(
           menuState.hasClipboard
             ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
@@ -329,9 +320,12 @@ function generateMenuSections(
         break;
       }
       case 'asset': {
-        sections.push(
-          [menuOptions.delete, menuOptions.publish, menuOptions.history, menuOptions.dependencies]
-        );
+        sections.push([
+          menuOptions.delete,
+          menuOptions.publish,
+          menuOptions.history,
+          menuOptions.dependencies
+        ]);
         sections.push(
           menuState.hasClipboard
             ? [menuOptions.cut, menuOptions.copy, menuOptions.paste, menuOptions.duplicate]
@@ -371,7 +365,7 @@ interface Menu {
   emptyState?: {
     icon?: ElementType;
     message: string;
-  }
+  };
 }
 
 export interface WidgetState {
@@ -393,10 +387,10 @@ export interface WidgetState {
 }
 
 // PathNavigator
-export default function (props: WidgetProps) {
+export default function(props: WidgetProps) {
   const { title, icon, path, id = removeSpaces(props.title) } = props;
-  const pathNavigator = useSelection(state => state.pathNavigator);
-  const state = pathNavigator?.[id];
+  const pathNavigator = useSelection((state) => state.pathNavigator);
+  const state = pathNavigator[id];
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
@@ -428,30 +422,11 @@ export default function (props: WidgetProps) {
 
   const siteLocales = useSiteLocales();
 
-  useEffect(() => {
-    if (pathNavigator !== undefined && Object.keys(pathNavigator).length === 0 && localStorage.getItem(`craftercms.pathNavigator.${id}`)) {
-      //Recovering state from localStorage
-      const restoredState = JSON.parse(localStorage.getItem(`craftercms.pathNavigator.${id}`));
-      dispatch(batchActions([
-        pathNavigatorInit({
-          id,
-          path: props.path,
-          locale: props.locale,
-          collapsed: restoredState.collapsed
-        }),
-        pathNavigatorFetchParentItems({
-          id,
-          path: restoredState.currentPath
-        })
-      ]));
-    } else if (pathNavigator !== undefined && pathNavigator[id] === undefined) {
-      //No prev state found... init...
-      dispatch(batchActions([
-        pathNavigatorInit({ id, path: props.path, locale: props.locale }),
-        pathNavigatorSetCurrentPath({ id, path: props.path })
-      ]));
+  useMount(() => {
+    if (!state) {
+      dispatch(pathNavigatorInit({ id, path: props.path, locale: props.locale }));
     }
-  }, [dispatch, id, pathNavigator, props.locale, props.path]);
+  });
 
   const itemsResource: Resource<SandboxItem[]> = useLogicResource(state?.itemsInPath, {
     shouldResolve: (items) => Boolean(items),
@@ -461,18 +436,25 @@ export default function (props: WidgetProps) {
     errorSelector: null
   });
 
-  const onPathSelected = (item: SandboxItem) => dispatch(pathNavigatorSetCurrentPath({
-    id,
-    path: item.path
-  }));
+  const onPathSelected = (item: SandboxItem) =>
+    dispatch(
+      pathNavigatorSetCurrentPath({
+        id,
+        path: item.path
+      })
+    );
 
   const onPageChanged = (page: number) => void 0;
 
   const onSelectItem = (item: SandboxItem, checked: boolean) =>
-    dispatch(checked ? pathNavigatorItemChecked({ id, item }) : pathNavigatorItemUnchecked({
-      id,
-      item
-    }));
+    dispatch(
+      checked
+        ? pathNavigatorItemChecked({ id, item })
+        : pathNavigatorItemUnchecked({
+            id,
+            item
+          })
+    );
 
   const translationDialogItemChange = (item: SandboxItem) => {
     getTargetLocales(site, item.path).subscribe(
@@ -492,37 +474,42 @@ export default function (props: WidgetProps) {
     );
   };
 
-  const openItemLegacyForm = (item: SandboxItem, type: 'controller' | 'template' | 'form', readonly: boolean = false) => {
-    getContentInstance(site, item.path, contentTypes).subscribe(
-      (response) => {
-        let src = `${defaultSrc}site=${site}&path=${item.path}&type=${type}&${readonly && 'readonly=true'}`;
-        const editProps = {
-          src,
-          type: type,
-          inProgress: true,
-          showController: !readonly && item.contentTypeId.includes('/page/'),
-          showTabs: !readonly,
-          itemModel: response
-        };
-        fetchWorkflowAffectedItems(site, item.path).subscribe(
-          (items) => {
-            if (items?.length > 0) {
-              dispatch(showWorkflowCancellationDialog({
-                items,
-                onContinue: showEditDialog(editProps)
-              }));
-            } else {
-              dispatch(
-                showEditDialog(editProps)
-              );
-            }
-          }
-        );
-      }
-    );
+  const openItemLegacyForm = (
+    item: SandboxItem,
+    type: 'controller' | 'template' | 'form',
+    readonly: boolean = false
+  ) => {
+    getContentInstance(site, item.path, contentTypes).subscribe((response) => {
+      let src = `${defaultSrc}site=${site}&path=${item.path}&type=${type}&${readonly &&
+        'readonly=true'}`;
+      const editProps = {
+        src,
+        type: type,
+        inProgress: true,
+        showController: !readonly && item.contentTypeId.includes('/page/'),
+        showTabs: !readonly,
+        itemModel: response
+      };
+      fetchWorkflowAffectedItems(site, item.path).subscribe((items) => {
+        if (items?.length > 0) {
+          dispatch(
+            showWorkflowCancellationDialog({
+              items,
+              onContinue: showEditDialog(editProps)
+            })
+          );
+        } else {
+          dispatch(showEditDialog(editProps));
+        }
+      });
+    });
   };
 
-  const openFileLegacyForm = (path: string, type: 'controller' | 'template', readonly: boolean = false) => {
+  const openFileLegacyForm = (
+    path: string,
+    type: 'controller' | 'template',
+    readonly: boolean = false
+  ) => {
     let src = `${defaultSrc}site=${site}&path=${path}&type=${type}&${readonly && 'readonly=true'}`;
     const editProps = {
       src,
@@ -530,20 +517,18 @@ export default function (props: WidgetProps) {
       inProgress: true,
       showTabs: false
     };
-    fetchWorkflowAffectedItems(site, path).subscribe(
-      (items) => {
-        if (items?.length > 0) {
-          dispatch(showWorkflowCancellationDialog({
+    fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+      if (items?.length > 0) {
+        dispatch(
+          showWorkflowCancellationDialog({
             items,
             onContinue: showEditDialog(editProps)
-          }));
-        } else {
-          dispatch(
-            showEditDialog(editProps)
-          );
-        }
+          })
+        );
+      } else {
+        dispatch(showEditDialog(editProps));
       }
-    );
+    });
   };
 
   const terminateSelection = () => {
@@ -564,7 +549,11 @@ export default function (props: WidgetProps) {
       case 'edit': {
         let type = menu.activeItem.systemType;
         if (type === 'template' || type === 'script') {
-          openFileLegacyForm(menu.activeItem.path, type === 'script' ? 'controller' : 'template', true);
+          openFileLegacyForm(
+            menu.activeItem.path,
+            type === 'script' ? 'controller' : 'template',
+            true
+          );
         } else {
           openItemLegacyForm(menu.activeItem, 'form', section.id === 'view');
         }
@@ -572,12 +561,15 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'newContent': {
-        dispatch(showNewContentDialog({
-          open: true,
-          item: menu.activeItem,
-          rootPath: menu.activeItem.path,
-          compact: true
-        }));
+        dispatch(
+          showNewContentDialog({
+            open: true,
+            item: menu.activeItem,
+            rootPath: menu.activeItem.path,
+            compact: true,
+            onContentTypeSelected: showEditDialog({})
+          })
+        );
         closeContextMenu();
         break;
       }
@@ -664,24 +656,25 @@ export default function (props: WidgetProps) {
         if (menuState.selectMode) return closeContextMenu();
         // TODO: review
         const activeItem = menu.activeItem;
-        const parentItem = state.items[withIndex(state.currentPath)] ?? state.items[withoutIndex(state.currentPath)];
-        dispatch(showConfirmDialog({
-          title: formatMessage(translations.duplicate),
-          body: formatMessage(translations.duplicateDialogBody),
-          onCancel: closeConfirmDialog(),
-          onOk: {
-            type: 'DISPATCH_DOM_EVENT',
-            payload: { id: section.id }
-          }
-        }));
+        const parentItem =
+          state.items[withIndex(state.currentPath)] ?? state.items[withoutIndex(state.currentPath)];
+        dispatch(
+          showConfirmDialog({
+            title: formatMessage(translations.duplicate),
+            body: formatMessage(translations.duplicateDialogBody),
+            onCancel: closeConfirmDialog(),
+            onOk: {
+              type: 'DISPATCH_DOM_EVENT',
+              payload: { id: section.id }
+            }
+          })
+        );
 
         const callback = (e) => {
-          duplicate(site, activeItem, parentItem).subscribe(
-            (item: SandboxItem) => {
-              dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
-              openItemLegacyForm(item, 'form');
-            }
-          );
+          duplicate(site, activeItem, parentItem).subscribe((item: SandboxItem) => {
+            dispatch(pathNavigatorSetCurrentPath({ id, path: state.currentPath }));
+            openItemLegacyForm(item, 'form');
+          });
           dispatch(closeConfirmDialog());
           document.removeEventListener(section.id, callback, false);
         };
@@ -693,10 +686,12 @@ export default function (props: WidgetProps) {
       case 'publish': {
         getDetailedItem(site, menu.activeItem.path).subscribe(
           (item) => {
-            dispatch(showPublishDialog({
-              items: [item],
-              rootPath: path
-            }));
+            dispatch(
+              showPublishDialog({
+                items: [item],
+                rootPath: path
+              })
+            );
           },
           (response) => {
             dispatch(showErrorDialog({ error: response }));
@@ -730,13 +725,15 @@ export default function (props: WidgetProps) {
           items = state.selectedItems.map((path: string) => state.items[path]);
           terminateSelection();
         }
-        dispatch(showDeleteDialog({
-          items,
-          onSuccess: {
-            type: 'DISPATCH_DOM_EVENT',
-            payload: { id: section.id }
-          }
-        }));
+        dispatch(
+          showDeleteDialog({
+            items,
+            onSuccess: {
+              type: 'DISPATCH_DOM_EVENT',
+              payload: { id: section.id }
+            }
+          })
+        );
         // TODO: review
         const callback = (e) => {
           dispatch(closeDeleteDialog());
@@ -755,20 +752,22 @@ export default function (props: WidgetProps) {
         break;
       }
       case 'dependencies': {
-        dispatch(showDependenciesDialog({
-          item: menu.activeItem,
-          rootPath: path
-        }));
+        dispatch(
+          showDependenciesDialog({
+            item: menu.activeItem,
+            rootPath: path
+          })
+        );
         closeContextMenu();
         break;
       }
       case 'history': {
-        dispatch(batchActions(
-          [
+        dispatch(
+          batchActions([
             fetchItemVersions({ rootPath: path, item: menu.activeItem }),
             showHistoryDialog({})
-          ]
-        ));
+          ])
+        );
         closeContextMenu();
         break;
       }
@@ -781,59 +780,55 @@ export default function (props: WidgetProps) {
           const contentType = queryString.parse(e.detail.output.src).contentTypeId as string;
           if (activeItem.contentTypeId !== contentType) {
             dispatch(closeNewContentDialog());
-            changeContentType(site, activeItem.path, contentType).subscribe(
-              (response) => {
-                if (contentTypes) {
-                  getContentInstance(site, activeItem.path, contentTypes).subscribe(
-                    (response) => {
-                      let src = `${defaultSrc}site=${site}&path=${activeItem.path}&type=form&changeTemplate=${contentType}`;
-                      const editProps = {
-                        src,
-                        type: 'form',
-                        inProgress: true,
-                        showController: false,
-                        showTabs: false,
-                        itemModel: response
-                      };
-                      fetchWorkflowAffectedItems(site, activeItem.path).subscribe(
-                        (items) => {
-                          if (items?.length > 0) {
-                            dispatch(showWorkflowCancellationDialog({
-                              items,
-                              onContinue: showEditDialog(editProps)
-                            }));
-                          } else {
-                            dispatch(
-                              showEditDialog(editProps)
-                            );
-                          }
-                        }
+            changeContentType(site, activeItem.path, contentType).subscribe((response) => {
+              if (contentTypes) {
+                getContentInstance(site, activeItem.path, contentTypes).subscribe((response) => {
+                  let src = `${defaultSrc}site=${site}&path=${activeItem.path}&type=form&changeTemplate=${contentType}`;
+                  const editProps = {
+                    src,
+                    type: 'form',
+                    inProgress: true,
+                    showController: false,
+                    showTabs: false,
+                    itemModel: response
+                  };
+                  fetchWorkflowAffectedItems(site, activeItem.path).subscribe((items) => {
+                    if (items?.length > 0) {
+                      dispatch(
+                        showWorkflowCancellationDialog({
+                          items,
+                          onContinue: showEditDialog(editProps)
+                        })
                       );
+                    } else {
+                      dispatch(showEditDialog(editProps));
                     }
-                  );
-                }
+                  });
+                });
               }
-            );
+            });
           }
 
           document.removeEventListener(newContent, newContentDialogCallback, false);
         };
 
         const confirmDialogCallback = (e) => {
-          dispatch(batchActions([
-            closeConfirmDialog(),
-            showNewContentDialog({
-              open: true,
-              rootPath: path,
-              item: activeItem,
-              type: 'change',
-              selectedContentType: activeItem.contentTypeId,
-              onContentTypeSelected: {
-                type: 'DISPATCH_DOM_EVENT',
-                payload: { id: newContent }
-              }
-            })
-          ]));
+          dispatch(
+            batchActions([
+              closeConfirmDialog(),
+              showNewContentDialog({
+                open: true,
+                rootPath: path,
+                item: activeItem,
+                type: 'change',
+                selectedContentType: activeItem.contentTypeId,
+                onContentTypeSelected: {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: newContent }
+                }
+              })
+            ])
+          );
 
           document.removeEventListener(confirm, confirmDialogCallback, false);
         };
@@ -841,15 +836,17 @@ export default function (props: WidgetProps) {
         document.addEventListener(newContent, newContentDialogCallback, true);
         document.addEventListener(confirm, confirmDialogCallback, true);
 
-        dispatch(showConfirmDialog({
-          title: formatMessage(translations.changeContentType),
-          body: formatMessage(translations.changeContentTypeBody),
-          onCancel: closeConfirmDialog(),
-          onOk: {
-            type: 'DISPATCH_DOM_EVENT',
-            payload: { id: confirm }
-          }
-        }));
+        dispatch(
+          showConfirmDialog({
+            title: formatMessage(translations.changeContentType),
+            body: formatMessage(translations.changeContentTypeBody),
+            onCancel: closeConfirmDialog(),
+            onOk: {
+              type: 'DISPATCH_DOM_EVENT',
+              payload: { id: confirm }
+            }
+          })
+        );
         closeContextMenu();
         break;
       }
@@ -857,7 +854,7 @@ export default function (props: WidgetProps) {
       case 'createController': {
         setNewFileDialog({
           path: withoutIndex(menu.activeItem.path),
-          type: (section.id === 'createController') ? 'controller' : 'template'
+          type: section.id === 'createController' ? 'controller' : 'template'
         });
         closeContextMenu();
         break;
@@ -871,7 +868,7 @@ export default function (props: WidgetProps) {
       }
       case 'refresh': {
         dispatch(
-          pathNavigatorFetchParentItems({
+          pathNavigatorSetCurrentPath({
             id,
             path: state.currentPath
           })
@@ -894,7 +891,8 @@ export default function (props: WidgetProps) {
 
   const onCurrentParentMenu = (element: Element) => {
     const count = state.selectedItems.length;
-    const item = state.items[withIndex(state.currentPath)] ?? state.items[withoutIndex(state.currentPath)];
+    const item =
+      state.items[withIndex(state.currentPath)] ?? state.items[withoutIndex(state.currentPath)];
     setMenu({
       sections: generateMenuSections(item, menuState, options, true, count),
       anchorEl: element,
@@ -911,7 +909,7 @@ export default function (props: WidgetProps) {
   };
 
   const onHeaderButtonClick = (anchorEl: Element, type: string) => {
-    const locales = siteLocales.localeCodes?.map(code => ({
+    const locales = siteLocales.localeCodes?.map((code) => ({
       id: `locale.${code}`,
       label: {
         id: `locale.${code}`,
@@ -928,11 +926,7 @@ export default function (props: WidgetProps) {
       });
     } else {
       setMenu({
-        sections: [
-          [
-            menuOptions.refresh
-          ]
-        ],
+        sections: [[menuOptions.refresh]],
         anchorEl,
         activeItem: null
       });
@@ -1017,7 +1011,7 @@ export default function (props: WidgetProps) {
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
       />
-      <div {...state?.collapsed ? { hidden: true } : {}} className={clsx(props.classes?.body)}>
+      <div {...(state?.collapsed ? { hidden: true } : {})} className={clsx(props.classes?.body)}>
         <SuspenseWithEmptyState
           resource={itemsResource}
           loadingStateProps={{
@@ -1118,15 +1112,14 @@ export default function (props: WidgetProps) {
         onClose={onNewFileDialogClose}
         onCreated={onNewFileCreated}
       />
-      {
-        uploadDialog &&
+      {uploadDialog && (
         <BulkUploadDialog
           open={Boolean(uploadDialog)}
           site={site}
           path={uploadDialog.path}
           onDismiss={onUploadDialogClose}
         />
-      }
+      )}
     </section>
   );
 }

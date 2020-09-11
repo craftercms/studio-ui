@@ -9839,7 +9839,7 @@ CStudioAuthoring.FilesDiff = {
   YAHOO.util.Event.onDOMReady(function (e, args, win) {
     //
     if (!(!window.ActiveXObject && 'ActiveXObject' in window)) {
-      CrafterCMSNext.util.auth.setSiteCookie('crafterSite', win.CStudioAuthoringContext.site);
+      CrafterCMSNext.util.auth.setSiteCookie(win.CStudioAuthoringContext.site);
     }
 
     CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/mime-type.xml', {

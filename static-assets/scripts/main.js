@@ -516,14 +516,17 @@
       };
 
       this.setCookie = function(cookieGenName, value) {
-        CrafterCMSNext.util.auth.setSiteCookie(cookieGenName, value);
+        CrafterCMSNext.util.auth.setSiteCookie(value);
       };
 
       this.editSite = function(site) {
         me.setCookie('crafterSite', site.siteId);
         $timeout(
           function() {
-            $window.location.href = '/studio/preview';
+            $window.location.href =
+              CrafterCMSNext.util.state.getStoredPreviewChoice(site.siteId) === '2'
+                ? '/studio/next/preview'
+                : '/studio/preview';
           },
           0,
           false
@@ -586,8 +589,8 @@
         this.getAvailableLanguages()
           .success(function(data) {
             var userCookieLang = scope.user
-              ? localStorage.getItem(scope.user.username + '_crafterStudioLanguage')
-              : null,
+                ? localStorage.getItem(scope.user.username + '_crafterStudioLanguage')
+                : null,
               cookieLang = userCookieLang
                 ? userCookieLang
                 : localStorage.getItem('crafterStudioLanguage');
@@ -669,7 +672,7 @@
   ]);
 
   app.service('passwordRequirements', [
-    function () {
+    function() {
       var me = this,
         generalRegExp = passwordRequirementsRegex, // Global declared in entry.ftl, comes from FTL context.
         generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ''),
@@ -775,7 +778,7 @@
               }
             }
             html += `<span class="password-popover--list-Info">${messages[captureGroupNameClean] ||
-            captureGroupNameClean}</span>`;
+              captureGroupNameClean}</span>`;
             html += '</li>';
           });
           html += '</ul>';
@@ -814,7 +817,8 @@
           .focus(function() {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
             $(this).popover({
-              title: `<span>${messages.passwordValidation}</span>` +
+              title:
+                `<span>${messages.passwordValidation}</span>` +
                 `<button type="button" class="close fa fa-times" onclick="$(this).popover('hide');"/>`,
               content: creatingPassValHTML.template,
               placement: placement ? placement : 'top',
@@ -826,7 +830,6 @@
             scope.$apply();
           });
       };
-
     }
   ]);
 
@@ -1122,7 +1125,7 @@
         passwordRequirements.init($scope, 'validPass', 'password', 'top');
       };
 
-      $rootScope.$on('$stateChangeStart', function (event, toState) {
+      $rootScope.$on('$stateChangeStart', function(event, toState) {
         if ($scope.isModified) {
           event.preventDefault();
 
@@ -1150,7 +1153,7 @@
     '$state',
     '$location',
     'sitesService',
-    function ($rootScope, $scope, $state, $location, sitesService) {
+    function($rootScope, $scope, $state, $location, sitesService) {
       if ($rootScope.globalMenuData) {
         initGlobalMenu($rootScope.globalMenuData);
       } else {
@@ -1536,13 +1539,13 @@
             resolve: { sample: () => sampleValue }
           })
           .result.then(function({ mode, sample }) {
-          const value = aceEditor.getValue();
-          aceEditor.setValue(
-            mode === 'replace' ? sample : `${value}${value.trim() === '' ? '' : '\n\n'}${sample}`,
-            -1
-          );
-          aceEditor.focus();
-        });
+            const value = aceEditor.getValue();
+            aceEditor.setValue(
+              mode === 'replace' ? sample : `${value}${value.trim() === '' ? '' : '\n\n'}${sample}`,
+              -1
+            );
+            aceEditor.focus();
+          });
       };
 
       function enableUI(enable = true, digest = false) {
@@ -1551,7 +1554,7 @@
         digest && $scope.$apply();
       }
 
-      $rootScope.$on('$stateChangeStart', function (event, toState) {
+      $rootScope.$on('$stateChangeStart', function(event, toState) {
         if (globalConfig.isModified) {
           event.preventDefault();
 
@@ -2127,5 +2130,4 @@
       }
     };
   });
-
 })(angular);

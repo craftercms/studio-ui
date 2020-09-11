@@ -53,6 +53,8 @@ import { User } from '../../models/User';
 import { fetchSidebarConfig } from '../../state/actions/configuration';
 import { forEach } from '../../utils/array';
 import EmptyState from '../SystemStatus/EmptyState';
+import { getStoredPreviewChoice } from '../../utils/state';
+import { setSiteCookie } from '../../utils/auth';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -99,11 +101,15 @@ const messages = defineMessages({
   },
   preview: {
     id: 'globalMenu.preview',
-    defaultMessage: 'Preview 2.0 (beta)'
-  },
-  legacyPreview: {
-    id: 'globalMenu.legacyPreview',
     defaultMessage: 'Preview'
+  },
+  preview2: {
+    id: 'globalMenu.preview2',
+    defaultMessage: 'Preview 2.0'
+  },
+  preview1: {
+    id: 'globalMenu.preview1',
+    defaultMessage: 'Preview 1.0'
   },
   search: {
     id: 'words.search',
@@ -347,7 +353,17 @@ interface GlobalNavProps {
 }
 
 export default function GlobalNav(props: GlobalNavProps) {
-  const { anchor, onMenuClose, rolesBySite, logoutUrl, authoringUrl, version, site, sites, user } = props;
+  const {
+    anchor,
+    onMenuClose,
+    rolesBySite,
+    logoutUrl,
+    authoringUrl,
+    version,
+    site,
+    sites,
+    user
+  } = props;
   const classes = globalNavStyles({});
   const [menuItems, setMenuItems] = useState(null);
   const [siteMenu, setSiteMenu] = useState(null);
@@ -363,15 +379,29 @@ export default function GlobalNav(props: GlobalNavProps) {
     () => [
       {
         name: formatMessage(messages.dashboard),
-        href: getLink('siteDashboard', authoringUrl)
+        href: getLink('siteDashboard', authoringUrl),
+        onClick(site) {
+          setSiteCookie(site);
+        }
       },
       {
         name: formatMessage(messages.preview),
-        href: getLink('preview', authoringUrl)
+        href(site) {
+          return getLink(
+            getStoredPreviewChoice(site) === '1' ? 'legacy.preview' : 'preview',
+            authoringUrl
+          );
+        },
+        onClick(site) {
+          setSiteCookie(site);
+        }
       },
       {
         name: formatMessage(messages.siteConfig),
-        href: getLink('siteConfig', authoringUrl)
+        href: getLink('siteConfig', authoringUrl),
+        onClick(site) {
+          setSiteCookie(site);
+        }
       }
     ],
     // Disable exhaustive hooks check since only need to create on mount
@@ -383,14 +413,19 @@ export default function GlobalNav(props: GlobalNavProps) {
 
   const onSiteCardClick = (id: string) => {
     dispatch(changeSite(id));
-    navigateTo(`${authoringUrl}/preview`);
+    navigateTo(
+      getStoredPreviewChoice(id) === '2'
+        ? `${authoringUrl}/next/preview`
+        : `${authoringUrl}/preview`
+    );
   };
 
   useEffect(() => {
     if (site && !sidebarState.items && !sidebarState.isFetching) {
       dispatch(fetchSidebarConfig(site));
     }
-    getGlobalMenuItems().subscribe(({ response }) => {
+    getGlobalMenuItems().subscribe(
+      ({ response }) => {
         setMenuItems(response.menuItems);
         let roleFound = {
           [siteMenuKeys.dashboard]: false,
@@ -401,17 +436,14 @@ export default function GlobalNav(props: GlobalNavProps) {
             let roles = item.params['roles']?.['role'];
             roleFound[item.name] = roles?.length
               ? forEach(
-                roles,
-                (role) => {
-                  if (
-                    rolesBySite[site] &&
-                    rolesBySite[site].includes(role)
-                  ) {
-                    return true;
-                  }
-                },
-                false
-              )
+                  roles,
+                  (role) => {
+                    if (rolesBySite[site] && rolesBySite[site].includes(role)) {
+                      return true;
+                    }
+                  },
+                  false
+                )
               : true;
             setSiteMenu(roleFound);
           }
@@ -457,7 +489,7 @@ export default function GlobalNav(props: GlobalNavProps) {
           error={apiState.errorResponse}
           onBack={handleErrorBack}
         />
-      ) : (menuItems !== null) ? (
+      ) : menuItems !== null ? (
         <Grid container spacing={0} className={classes.gridContainer}>
           <Hidden only={['xs', 'sm']}>
             <Grid item md={4} className={classes.leftRail}>
@@ -470,30 +502,28 @@ export default function GlobalNav(props: GlobalNavProps) {
                 >
                   {formatMessage(messages.mySites)}
                 </Typography>
-                {
-                  sites.length ? (
-                    sites.map((site, i) => (
-                      <SiteCard
-                        key={i}
-                        title={site.name}
-                        value={site.id}
-                        options={true}
-                        classes={{ root: classes.titleCard }}
-                        onCardClick={() => onSiteCardClick(site.id)}
-                        cardActions={cardActions}
-                      />
-                    ))
-                  ) : (
-                    <EmptyState
-                      title={
-                        <FormattedMessage
-                          id="globalMenu.noSitesMessage" 
-                          defaultMessage="No sites to display."
-                        />
-                      }
+                {sites.length ? (
+                  sites.map((site, i) => (
+                    <SiteCard
+                      key={i}
+                      title={site.name}
+                      value={site.id}
+                      options={true}
+                      classes={{ root: classes.titleCard }}
+                      onCardClick={() => onSiteCardClick(site.id)}
+                      cardActions={cardActions}
                     />
-                  )
-                }
+                  ))
+                ) : (
+                  <EmptyState
+                    title={
+                      <FormattedMessage
+                        id="globalMenu.noSitesMessage"
+                        defaultMessage="No sites to display."
+                      />
+                    }
+                  />
+                )}
               </div>
               <div className={classes.railBottom}>
                 <img className={classes.logo} src="/studio/static-assets/images/logo.svg" alt="" />
@@ -530,6 +560,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                     onClick={onMenuClose}
                   />
                 ))}
+                {/* prettier-ignore */}
                 <Tile
                   title={formatMessage(messages.docs)}
                   icon={Docs}
@@ -561,13 +592,13 @@ export default function GlobalNav(props: GlobalNavProps) {
                   />
                 )}
                 <Tile
-                  title={formatMessage(messages.preview)}
+                  title={formatMessage(messages.preview2)}
                   icon={Preview}
                   link={`${authoringUrl}/next/preview`}
                   onClick={onMenuClose}
                 />
                 <Tile
-                  title={formatMessage(messages.legacyPreview)}
+                  title={formatMessage(messages.preview1)}
                   icon={DevicesIcon}
                   link={getLink('legacy.preview', authoringUrl)}
                   disabled={!site}
@@ -603,13 +634,14 @@ export default function GlobalNav(props: GlobalNavProps) {
                     />
                   }
                   action={
-                    logoutUrl &&
-                    <IconButton
-                      aria-label={formatMessage(messages.signOut)}
-                      onClick={() => onLogout(logoutUrl)}
-                    >
-                      <ExitToAppRoundedIcon />
-                    </IconButton>
+                    logoutUrl && (
+                      <IconButton
+                        aria-label={formatMessage(messages.signOut)}
+                        onClick={() => onLogout(logoutUrl)}
+                      >
+                        <ExitToAppRoundedIcon />
+                      </IconButton>
+                    )
                   }
                   title={`${user.firstName} ${user.lastName}`}
                   subheader={user.username || user.email}

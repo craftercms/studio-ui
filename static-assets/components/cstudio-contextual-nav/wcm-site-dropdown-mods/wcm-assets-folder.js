@@ -556,9 +556,30 @@ var storage = CStudioAuthoring.Storage;
           key = key.replace(/\s/g, '');
 
           //create spans for icons
-          var childIcons = WcmAssets.customIcons[key].childIcons,
-            childClosed = CStudioAuthoring.Utils.createIcon(childIcons.closed, '', 'on-closed'),
-            childOpen = CStudioAuthoring.Utils.createIcon(childIcons.open, '', 'on-open');
+
+          var childIcons = WcmAssets.customIcons[key].childIcons;
+          var closedConfig = childIcons.closed;
+          var openConfig = childIcons.open;
+
+          // adding stackedclass to folders if inProgress
+          if (treeNodeTO.statusObj.inProgress) {
+            closedConfig.icon.stackedclass = `${CStudioAuthoring.Constants.WORKFLOWICONS.edited} edited`;
+            openConfig.icon.stackedclass = `${CStudioAuthoring.Constants.WORKFLOWICONS.edited} edited`;
+          } else {
+            closedConfig.icon.stackedclass = null;
+            openConfig.icon.stackedclass = null;
+          }
+
+          var childClosed = CStudioAuthoring.Utils.createIcon(
+            closedConfig,
+            '',
+            'on-closed'
+          );
+          var childOpen = CStudioAuthoring.Utils.createIcon(
+            openConfig,
+            '',
+            'on-open'
+          );
 
           nodeSpan.appendChild(childClosed);
           nodeSpan.appendChild(childOpen);
