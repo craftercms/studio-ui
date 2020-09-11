@@ -677,7 +677,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         handleClose();
         // TODO: Remove when createSite updates to API2
         // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
-        setSiteCookie(siteCookieName, site.siteId ?? site.site_id);
+        setSiteCookie(site.siteId ?? site.site_id);
         window.location.href = `${authoringBase}/preview`;
       },
       ({ response }) => {

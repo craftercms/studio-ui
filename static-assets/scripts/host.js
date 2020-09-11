@@ -70,7 +70,10 @@
 
   // Preview 2 check in
   let previewNextCheckInNotification = false;
-  let compatibilityQueryArg = CrafterCMSNext.util.path.getQueryVariable(window.location.search, 'compatibility');
+  let compatibilityQueryArg = CrafterCMSNext.util.path.getQueryVariable(
+    window.location.search,
+    'compatibility'
+  );
   let compatibilityForceStay = compatibilityQueryArg === 'stay';
   let compatibilityAsk = compatibilityQueryArg === 'ask';
   communicator.subscribe(Topics.GUEST_CHECK_IN, function(data) {
@@ -83,8 +86,8 @@
         window: getEngineWindow().contentWindow
       });
       const handleRemember = (remember, goOrStay) => {
-        window.localStorage.setItem(
-          `craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`,
+        CrafterCMSNext.util.state.setStoredPreviewChoice(
+          CStudioAuthoringContext.siteId,
           remember ? goOrStay : 'ask'
         );
       };
@@ -110,11 +113,14 @@
           unmount = args.unmount;
         });
       };
-      let previousChoice = localStorage.getItem(
-        `craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`
+      let previousChoice = CrafterCMSNext.util.state.getStoredPreviewChoice(
+        CStudioAuthoringContext.siteId
       );
       if (previousChoice === null) {
-        localStorage.setItem(`craftercms.previewCompatChoice.${CStudioAuthoringContext.siteId}`, previousChoice = '2');
+        CrafterCMSNext.util.state.setStoredPreviewChoice(
+          CStudioAuthoringContext.siteId,
+          (previousChoice = '2')
+        );
       }
       if (previousChoice && !compatibilityAsk) {
         if (previousChoice === '2') {
@@ -623,7 +629,7 @@
     var siteChanged = false;
 
     if (hash.site) {
-      CrafterCMSNext.util.auth.setSiteCookie('crafterSite', hash.site);
+      CrafterCMSNext.util.auth.setSiteCookie(hash.site);
       siteChanged = site !== hash.site;
     }
 

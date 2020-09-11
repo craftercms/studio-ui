@@ -79,12 +79,13 @@ export default function SiteCard(props: TitleCardProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles({});
 
-  const handleClose = (event: any) => {
+  const handleClose = (event, action?) => {
     event.stopPropagation();
     setAnchorEl(null);
+    action?.onClick?.(value, event);
   };
 
-  const handleOptions = (event: any) => {
+  const handleOptions = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
@@ -117,7 +118,12 @@ export default function SiteCard(props: TitleCardProps) {
       />
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {cardActions.map((action, i) => (
-          <MenuItem key={i} component={Link} href={action.href} onClick={handleClose}>
+          <MenuItem
+            key={i}
+            component={Link}
+            href={typeof action.href === 'function' ? action.href(value) : action.href}
+            onClick={(e) => handleClose(e, action)}
+          >
             {action.name}
           </MenuItem>
         ))}

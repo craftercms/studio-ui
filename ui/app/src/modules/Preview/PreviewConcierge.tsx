@@ -88,6 +88,7 @@ import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
 import { getQueryVariable } from '../../utils/path';
 import PreviewTool from '../../models/PreviewTool';
+import { getStoredPreviewChoice, setStoredPreviewChoice } from '../../utils/state';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -140,7 +141,7 @@ export function PreviewConcierge(props: any) {
   const previewNextCheckInNotificationRef = useRef(false);
   const handlePreviewCompatDialogRemember = useCallback(
     (remember, goOrStay) => {
-      window.localStorage.setItem(`craftercms.previewCompatChoice.${site}`, remember ? goOrStay : 'ask');
+      setStoredPreviewChoice(site, remember ? goOrStay : 'ask');
     },
     [site]
   );
@@ -183,9 +184,9 @@ export function PreviewConcierge(props: any) {
           let compatibilityAsk = compatibilityQueryArg === 'ask';
           if (!previewNextCheckInNotification && !compatibilityForceStay) {
             previewNextCheckInNotificationRef.current = true;
-            let previousChoice = localStorage.getItem(`craftercms.previewCompatChoice.${site}`);
+            let previousChoice = getStoredPreviewChoice(site);
             if (previousChoice === null) {
-              localStorage.setItem(`craftercms.previewCompatChoice.${site}`, previousChoice = '1');
+              setStoredPreviewChoice(site, previousChoice = '1');
             }
             if (previousChoice && !compatibilityAsk) {
               if (previousChoice === '1') {

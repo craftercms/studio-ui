@@ -32,7 +32,6 @@ export default [
     ofType(SELECT_TOOL),
     withLatestFrom(state$),
     tap(([{ payload }, state]) => {
-      console.log(payload)
       if (payload) {
         window.localStorage.setItem(`craftercms.previewSelectedTool.${state.sites.active}`, payload);
       } else {
