@@ -243,7 +243,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
       </DialogBody>
       <DialogFooter>
         <Button
-          disabled={invalidPath && isFetching} onClick={onCreateFolder} variant="outlined"
+          disabled={invalidPath || isFetching} onClick={onCreateFolder} variant="outlined"
           className={classes.createFolderBtn}
         >
           {formatMessage(messages.create)}
@@ -252,7 +252,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
           {formatMessage(messages.cancel)}
         </Button>
         <Button
-          disabled={invalidPath && isFetching} onClick={() => onOk(currentPath)} variant="contained"
+          disabled={invalidPath || isFetching} onClick={() => onOk(currentPath)} variant="contained"
           color="primary"
         >
           {formatMessage(messages.ok)}
