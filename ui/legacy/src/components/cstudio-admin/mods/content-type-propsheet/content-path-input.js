@@ -41,7 +41,7 @@
       CrafterCMSNext.render(dialogContainer, 'PathSelectionDialog', {
         open: true,
         rootPath,
-        initialPath: value,
+        initialPath: value ? value : rootPath,
         onClose: () => unmount(),
         onOk: (path) => {
           unmount();
@@ -56,15 +56,14 @@
           type="text"
           value={value}
           className="content-path-input--input"
-          placeholder='/site/...'
-          onBlur={validations.regex ? onBlur : null}
+          placeholder={defaultValue}
+          onBlur={validations?.regex ? onBlur : null}
           onChange={(e) => onChange(e.target.value)}
         />
-        <button className="content-path-input--icon">
+        <button className="content-path-input--icon" onClick={openPathBrowser}>
           <i
             className="fa fa-search"
             aria-hidden="true"
-            onClick={openPathBrowser}
           />
         </button>
       </>
