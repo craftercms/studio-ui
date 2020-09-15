@@ -19,7 +19,7 @@
   const { React, ReactDOM } = CrafterCMSNext;
   const { useState } = React;
 
-  function Selector({ initialValue, updateFn, rootPath, validations }) {
+  function Selector({ initialValue, updateFn, defaultValue, rootPath, validations }) {
     const [value, setValue] = useState(initialValue);
 
     const onChange = (value) => {
@@ -28,14 +28,11 @@
     };
 
     const onBlur = () => {
-      if (!value.startsWith(validations.startsWith)) {
-        if (value.startsWith('/')) {
-          setValue(validations.startsWith + value);
-        } else {
-          setValue(`${validations.startsWith}${value ? '/' + value : value}`);
-        }
+      let path = value;
+      if (!validations.regex.test(value)) {
+        path = rootPath + value;
       }
-      updateFn(value);
+      onChange(value ? path : defaultValue);
     };
 
     const openPathBrowser = () => {
@@ -44,7 +41,7 @@
       CrafterCMSNext.render(dialogContainer, 'PathSelectionDialog', {
         open: true,
         rootPath,
-        initialPath: value.endsWith('/') ? value.slice(0, -1) : value,
+        initialPath: value,
         onClose: () => unmount(),
         onOk: (path) => {
           unmount();
@@ -60,7 +57,7 @@
           value={value}
           className="content-path-input--input"
           placeholder='/site/...'
-          onBlur={validations.startsWith ? onBlur : null}
+          onBlur={validations.regex ? onBlur : null}
           onChange={(e) => onChange(e.target.value)}
         />
         <i
@@ -79,7 +76,7 @@
   }
 
   ContentPathInput.prototype = {
-    render(initialValue, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
+    render(initialValue, updateFn, fName, itemId, defaultValue, typeControl, disabled, properties) {
       const element = $('<div class="repository-selector"/>').appendTo(this.container)[0];
 
       const onChange = (value) => {
@@ -89,9 +86,10 @@
       ReactDOM.render(
         <Selector
           initialValue={initialValue}
-          rootPath={defaultValue}
+          rootPath={properties.rootPath}
           updateFn={onChange}
-          validations={validations}
+          defaultValue={defaultValue}
+          validations={properties.validations}
         />,
         element
       );

@@ -37,10 +37,13 @@ body, tbody {
 }
 
 .content-path-input--icon {
+  background-color: Transparent;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
   position: absolute;
   right: 10px;
-  top: 6px;
-  cursor: pointer;
+  top: 4px;
 }
 
 .content-type-selector {

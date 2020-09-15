@@ -95,6 +95,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
   const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
   const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath, rootPath) : [rootPath]);
   const [invalidPath, setInvalidPath] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
@@ -120,43 +121,47 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
           );
         });
 
-        forkJoin(requests).subscribe((responses) => {
-          let rootNode;
-          responses.forEach(({ response: { item } }, i) => {
-            let parent;
+        if (requests.length) {
+          setIsFetching(true);
+          forkJoin(requests).subscribe((responses) => {
+            let rootNode;
+            setIsFetching(false);
+            responses.forEach(({ response: { item } }, i) => {
+              let parent;
 
-            if (i === requests.length - 1) {
-              setInvalidPath(item.deleted);
-            }
+              if (i === requests.length - 1) {
+                setInvalidPath(item.deleted);
+              }
 
-            if (item.deleted) {
-              return;
-            }
+              if (item.deleted) {
+                return;
+              }
 
-            if (!nodesLookup['root']) {
-              parent = {
-                id: item.path,
-                name: item.name,
-                fetched: true,
-                children: legacyItemsToTreeNodes(item.children)
-              };
-              rootNode = parent;
-              nodesLookup[item.path] = parent;
-              nodesLookup['root'] = parent;
-            } else {
-              rootNode = nodesLookup['root'];
-              parent = nodesLookup[item.path];
-              parent.fetched = true;
-              parent.children = legacyItemsToTreeNodes(item.children);
-            }
+              if (!nodesLookup['root']) {
+                parent = {
+                  id: item.path,
+                  name: item.name,
+                  fetched: true,
+                  children: legacyItemsToTreeNodes(item.children)
+                };
+                rootNode = parent;
+                nodesLookup[item.path] = parent;
+                nodesLookup['root'] = parent;
+              } else {
+                rootNode = nodesLookup['root'];
+                parent = nodesLookup[item.path];
+                parent.fetched = true;
+                parent.children = legacyItemsToTreeNodes(item.children);
+              }
 
-            parent.children.forEach((child) => {
-              nodesLookup[child.id] = child;
+              parent.children.forEach((child) => {
+                nodesLookup[child.id] = child;
+              });
+
             });
-
+            setTreeNodes({ ...rootNode });
           });
-          setTreeNodes({ ...rootNode });
-        });
+        }
       }
     }
 
@@ -229,15 +234,16 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
             rootPath={rootPath}
             currentPath={currentPath}
             expanded={expanded}
-            selected={currentPath}
+            selected={currentPath.replace(/\/$/, '')}
             resource={resource}
             onPathChanged={onPathChanged}
+            isFetching={isFetching}
           />
         </Suspencified>
       </DialogBody>
       <DialogFooter>
         <Button
-          disabled={invalidPath} onClick={onCreateFolder} variant="outlined"
+          disabled={invalidPath && isFetching} onClick={onCreateFolder} variant="outlined"
           className={classes.createFolderBtn}
         >
           {formatMessage(messages.create)}
@@ -246,7 +252,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
           {formatMessage(messages.cancel)}
         </Button>
         <Button
-          disabled={invalidPath} onClick={() => onOk(currentPath)} variant="contained"
+          disabled={invalidPath && isFetching} onClick={() => onOk(currentPath)} variant="contained"
           color="primary"
         >
           {formatMessage(messages.ok)}
