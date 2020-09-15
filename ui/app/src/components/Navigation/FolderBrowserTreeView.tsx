@@ -40,7 +40,6 @@ export interface TreeNode {
 const useStyles = makeStyles(() =>
   createStyles({
     wrapper: {
-      minHeight: '60vh',
       display: 'flex',
       flexDirection: 'column'
     },
@@ -54,7 +53,7 @@ const useStyles = makeStyles(() =>
       padding: '2px',
       marginLeft: '5px',
       '& p': {
-        marginRight: '10px'
+        marginLeft: '10px'
       }
     },
     treeItemRoot: {
@@ -152,10 +151,10 @@ function RenderTreeNode({ node }: RenderTreeNode) {
   const classes = useStyles({});
   return node.id === 'loading' ? (
     <div className={classes.loading}>
-      <Typography>
-        <FormattedMessage id="folderBrowserTreeView.loading" defaultMessage={'Loading...'} />
-      </Typography>
       <CircularProgress size={16} />
+      <Typography>
+        <FormattedMessage id="words.loading" defaultMessage="Loading" />
+      </Typography>
     </div>
   ) : (
     <TreeItem

@@ -41,7 +41,7 @@
     const openPathBrowser = () => {
       let unmount;
       const dialogContainer = document.createElement('div');
-      CrafterCMSNext.render(dialogContainer, 'PathBrowserDialog', {
+      CrafterCMSNext.render(dialogContainer, 'PathSelectionDialog', {
         open: true,
         rootPath,
         initialPath: value.endsWith('/') ? value.slice(0, -1) : value,
@@ -58,13 +58,13 @@
         <input
           type="text"
           value={value}
-          className="repository-selector--input"
+          className="content-path-input--input"
           placeholder='/site/...'
           onBlur={validations.startsWith ? onBlur : null}
           onChange={(e) => onChange(e.target.value)}
         />
         <i
-          className="repository-selector--icon fa fa-search"
+          className="content-path-input--icon fa fa-search"
           aria-hidden="true"
           onClick={openPathBrowser}
         />
@@ -72,13 +72,13 @@
     );
   }
 
-  function Repository(fieldName, container) {
+  function ContentPathInput(fieldName, container) {
     this.fieldName = fieldName;
     this.container = container;
     this.value = '';
   }
 
-  Repository.prototype = {
+  ContentPathInput.prototype = {
     render(initialValue, updateFn, fName, itemId, defaultValue, typeControl, disabled, validations) {
       const element = $('<div class="repository-selector"/>').appendTo(this.container)[0];
 
@@ -104,8 +104,8 @@
   };
 
   CStudioAuthoring.Module.moduleLoaded(
-    'cstudio-console-tools-content-types-proptype-repository',
-    Repository
+    'cstudio-console-tools-content-types-proptype-content-path-input',
+    ContentPathInput
   );
 
 })();

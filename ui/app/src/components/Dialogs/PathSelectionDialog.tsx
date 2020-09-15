@@ -19,7 +19,7 @@ import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import Button from '@material-ui/core/Button';
 import React, { useEffect, useRef, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, useUnmount } from '../../utils/hooks';
 import FolderBrowserTreeView, {
@@ -32,7 +32,7 @@ import CreateNewFolderDialog from './CreateNewFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
 import Suspencified from '../SystemStatus/Suspencified';
-import { getAllPaths } from '../../utils/path';
+import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 
@@ -46,12 +46,15 @@ const messages = defineMessages({
     defaultMessage: 'Cancel'
   },
   create: {
-    id: 'path.browser.create',
+    id: 'path.browser.createFolderButtonLabel',
     defaultMessage: 'Create Folder'
   }
 });
 
 const useStyles = makeStyles(() => createStyles({
+  dialogBody: {
+    minHeight: '60vh'
+  },
   createFolderBtn: {
     marginRight: 'auto'
   },
@@ -60,16 +63,18 @@ const useStyles = makeStyles(() => createStyles({
   }
 }));
 
-interface PathBrowserDialogProps {
+interface PathSelectionDialogProps {
   open: boolean;
   rootPath: string;
   initialPath?: string;
+  title?: string;
   onClose(): void;
   onClosed?(): void;
   onOk(selectedPath: string): void;
+
 }
 
-export default function PathBrowserDialog(props: PathBrowserDialogProps) {
+export default function PathSelectionDialog(props: PathSelectionDialogProps) {
   return (
     <Dialog
       open={props.open}
@@ -77,18 +82,18 @@ export default function PathBrowserDialog(props: PathBrowserDialogProps) {
       fullWidth
       maxWidth='sm'
     >
-      <PathBrowserDialogWrapper {...props} />
+      <PathSelectionDialogWrapper {...props} />
     </Dialog>
   );
 }
 
-function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
-  const { onClosed, onClose, onOk, rootPath, initialPath } = props;
+function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
+  const { onClosed, onClose, onOk, rootPath, initialPath, title } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
-  const [expanded, setExpanded] = useState(initialPath ? getAllPaths(initialPath, rootPath) : [rootPath]);
+  const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath, rootPath) : [rootPath]);
   const [invalidPath, setInvalidPath] = useState(false);
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
@@ -103,7 +108,7 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
       if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
         setInvalidPath(false);
       } else {
-        const allPaths = getAllPaths(currentPath, rootPath).filter(
+        const allPaths = getIndividualPaths(currentPath, rootPath).filter(
           path => !nodesLookup[path] || !nodesLookup[path].fetched
         );
         const requests: Observable<AjaxResponse>[] = [];
@@ -201,13 +206,18 @@ function PathBrowserDialogWrapper(props: PathBrowserDialogProps) {
 
   const onPathChanged = (path: string) => {
     setCurrentPath(path);
-    setExpanded(getAllPaths(path, rootPath));
+    setExpanded(getIndividualPaths(path, rootPath));
   };
 
   return (
     <>
-      <DialogHeader title="Select Path" onDismiss={onClose} />
-      <DialogBody>
+      <DialogHeader
+        title={title
+          ? title
+          : <FormattedMessage id="path.dialog.title" defaultMessage="Select Path" />}
+        onDismiss={onClose}
+      />
+      <DialogBody className={classes.dialogBody}>
         <Suspencified>
           <FolderBrowserTreeView
             classes={{
