@@ -378,7 +378,11 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
         label: CMgs.format(langBundle, 'browsePath'),
         name: 'browsePath',
         type: 'content-path-input',
-        rootPath: '/site'
+        defaultValue: '/site/',
+        rootPath: '/site',
+        validations: {
+          regex: /^\/site(\/.*)?$/
+        }
       },
       { label: CMgs.format(langBundle, 'defaultType'), name: 'type', type: 'string' }
     ];

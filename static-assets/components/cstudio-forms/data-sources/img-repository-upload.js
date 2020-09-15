@@ -139,8 +139,22 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
 
   getSupportedProperties() {
     return [
-      { label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' },
-      { label: CMgs.format(langBundle, 'useSearch'), name: 'useSearch', type: 'boolean', defaultValue: 'false' }
+      {
+        label: CMgs.format(langBundle, 'repositoryPath'),
+        name: 'repoPath',
+        type: 'content-path-input',
+        defaultValue: '/static-assets/',
+        rootPath: '/static-assets',
+        validations: {
+          regex: /^\/static-assets(\/.*)?$/
+        }
+      },
+      {
+        label: CMgs.format(langBundle, 'useSearch'),
+        name: 'useSearch',
+        type: 'boolean',
+        defaultValue: 'false'
+      }
     ];
   },
 

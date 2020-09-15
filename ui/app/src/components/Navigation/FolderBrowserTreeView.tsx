@@ -195,6 +195,9 @@ const PathSelectedStyles = makeStyles(() =>
       marginRight: '10px',
       color: palette.gray.medium4
     },
+    root: {
+      flexGrow: 1
+    },
     invisibleInput: {
       padding: 0,
       border: 0,
@@ -263,10 +266,9 @@ function PathSelected(props: PathSelectedProps) {
           className={invalidPath ? classes.invalid : null}
           onFocus={() => setFocus(true)}
           onBlur={onBlur}
-          fullWidth
           onKeyPress={onKeyPress}
           onChange={(e) => setValue(e.currentTarget.value)}
-          classes={{ input: classes.invisibleInput }}
+          classes={{ root: classes.root, input: classes.invisibleInput }}
           value={focus ? value : currentPath}
           endAdornment={isFetching ? <CircularProgress size={16} /> : null}
         />
