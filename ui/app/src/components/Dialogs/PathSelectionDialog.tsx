@@ -95,6 +95,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
   const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
   const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath, rootPath) : [rootPath]);
   const [invalidPath, setInvalidPath] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
@@ -119,6 +120,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
         );
         const requests: Observable<AjaxResponse>[] = [];
         allPaths.forEach((nextPath) => {
+          setFetching(true);
           requests.push(
             get(
               `/studio/api/1/services/api/1/content/get-items-tree.json?site=${site}&path=${nextPath}&depth=1&order=default`
@@ -128,6 +130,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
 
         forkJoin(requests).subscribe((responses) => {
           let rootNode;
+          setFetching(false);
           responses.forEach(({ response: { item } }, i) => {
             let parent;
 
@@ -239,12 +242,13 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
             selected={currentPath}
             resource={resource}
             onPathChanged={onPathChanged}
+            fetching={fetching}
           />
         </Suspencified>
       </DialogBody>
       <DialogFooter>
         <Button
-          disabled={invalidPath} onClick={onCreateFolder} variant="outlined"
+          disabled={invalidPath || fetching} onClick={onCreateFolder} variant="outlined"
           className={classes.createFolderBtn}
         >
           {formatMessage(messages.create)}
@@ -253,7 +257,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
           {formatMessage(messages.cancel)}
         </Button>
         <Button
-          disabled={invalidPath} onClick={() => onOk(currentPath)} variant="contained"
+          disabled={invalidPath || fetching} onClick={() => onOk(currentPath)} variant="contained"
           color="primary"
         >
           {formatMessage(messages.ok)}

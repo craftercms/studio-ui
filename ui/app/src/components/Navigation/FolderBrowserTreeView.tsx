@@ -91,6 +91,7 @@ interface FolderBrowserTreeViewProps {
   expanded: string[];
   selected: string;
   invalidPath: boolean;
+  fetching: boolean;
   resource: Resource<TreeNode>;
   classes?: Partial<Record<'treeViewRoot', string>>;
   onNodeSelected(event: React.ChangeEvent<{}>, nodeId: string): void;
@@ -109,7 +110,8 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
     onNodeSelected,
     resource,
     onPathChanged,
-    invalidPath
+    invalidPath,
+    fetching
   } = props;
 
   const treeNodes = resource.read();
@@ -121,6 +123,7 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
         currentPath={currentPath.replace(rootPath, '')}
         onPathChanged={onPathChanged}
         invalidPath={invalidPath}
+        fetching={fetching}
       />
       {
         treeNodes ? (
@@ -214,11 +217,12 @@ interface PathSelectedProps {
   rootPath: string;
   currentPath: string;
   invalidPath: boolean;
+  fetching: boolean;
   onPathChanged(path: string): void;
 }
 
 function PathSelected(props: PathSelectedProps) {
-  const { rootPath, currentPath, onPathChanged, invalidPath } = props;
+  const { rootPath, currentPath, onPathChanged, invalidPath, fetching } = props;
   const classes = PathSelectedStyles({});
   const [focus, setFocus] = useState(false);
   const [value, setValue] = useState(null);
@@ -264,6 +268,7 @@ function PathSelected(props: PathSelectedProps) {
           onChange={(e) => setValue(e.currentTarget.value)}
           classes={{ input: classes.invisibleInput }}
           value={focus ? value : currentPath}
+          endAdornment={fetching ? <CircularProgress size={16} /> : null}
         />
       </section>
       {
