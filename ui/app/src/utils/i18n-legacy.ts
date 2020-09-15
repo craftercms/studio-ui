@@ -215,7 +215,7 @@ const numericInputControlMessages = defineMessages({
   },
   noDecimalsErrMessage: {
     id: 'numericInputControl.noDecimalsErrMessage',
-    defaultMessage: 'Decimals are not allowed, the Numeric Input control has `_i` or `_l` postfix.'
+    defaultMessage: 'Decimals aren\'t allowed on this input.'
   }
 });
 
