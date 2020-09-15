@@ -60,11 +60,13 @@
           onBlur={validations.regex ? onBlur : null}
           onChange={(e) => onChange(e.target.value)}
         />
-        <i
-          className="content-path-input--icon fa fa-search"
-          aria-hidden="true"
-          onClick={openPathBrowser}
-        />
+        <button className="content-path-input--icon">
+          <i
+            className="fa fa-search"
+            aria-hidden="true"
+            onClick={openPathBrowser}
+          />
+        </button>
       </>
     );
   }
