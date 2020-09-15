@@ -230,7 +230,7 @@ function PathSelected(props: PathSelectedProps) {
   const onBlur = () => {
     setFocus(false);
     let path = rootPath + value;
-    if (path.endsWith('/')) {
+    if (value && path.endsWith('/')) {
       path = path.slice(0, -1);
     }
     onPathChanged(path);
@@ -239,7 +239,7 @@ function PathSelected(props: PathSelectedProps) {
   const onKeyPress = (event: React.KeyboardEvent) => {
     if (event.charCode === 13) {
       let path = rootPath + value;
-      if (path.endsWith('/')) {
+      if (value && path.endsWith('/')) {
         path = path.slice(0, -1);
       }
       onPathChanged(path);

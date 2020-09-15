@@ -108,8 +108,14 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
       if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
         setInvalidPath(false);
       } else {
-        const allPaths = getIndividualPaths(currentPath, rootPath).filter(
-          path => !nodesLookup[path] || !nodesLookup[path].fetched
+        let cleanedRootPath = rootPath.endsWith('/') ? rootPath.slice(0, -1) : rootPath;
+        const allPaths = getIndividualPaths(currentPath, cleanedRootPath).filter(
+          path => {
+            if (cleanedRootPath === path && nodesLookup[rootPath]) {
+              return false;
+            }
+            return !nodesLookup[path] || !nodesLookup[path].fetched;
+          }
         );
         const requests: Observable<AjaxResponse>[] = [];
         allPaths.forEach((nextPath) => {
@@ -134,14 +140,15 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
             }
 
             if (!nodesLookup['root']) {
+              let id = item.path + '/';
               parent = {
-                id: item.path,
+                id: id,
                 name: item.name,
                 fetched: true,
                 children: legacyItemsToTreeNodes(item.children)
               };
               rootNode = parent;
-              nodesLookup[item.path] = parent;
+              nodesLookup[id] = parent;
               nodesLookup['root'] = parent;
             } else {
               rootNode = nodesLookup['root'];
