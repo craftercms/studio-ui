@@ -46,7 +46,7 @@ const messages = defineMessages({
     defaultMessage: 'Cancel'
   },
   create: {
-    id: 'path.browser.createFolderButtonLabel',
+    id: 'pathSelectionDialog.createFolderButtonLabel',
     defaultMessage: 'Create Folder'
   }
 });
