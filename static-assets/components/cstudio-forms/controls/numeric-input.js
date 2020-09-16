@@ -51,6 +51,7 @@
 
       // Empty error state before new validation (for a clean state)
       YAHOO.util.Dom.removeClass(obj.patternErrEl, 'on');
+      YAHOO.util.Dom.removeClass(obj.numTypeErrEl, 'on');
       obj.clearError('pattern');
 
       var validationExist = false;
@@ -89,6 +90,32 @@
 
             break;
           }
+
+          const numType = obj.id.substring(obj.id.indexOf("_"));
+          let numTypeRegex;
+          let numTypeErrMessage;
+          if (numType === '_f' || numType === '_d') {   // with decimals
+            numTypeRegex = /^(\d|-)?(\d|,)*\.?\d*$/;
+          } else {
+            numTypeRegex = /^([+-]?[1-9]\d*|0)$/;
+            numTypeErrMessage = formatMessage(numericInputControlMessages.noDecimalsErrMessage);
+          }
+
+          if (obj.inputEl.value.match(numTypeRegex)) {
+            // only when there is no other validation mark it as passed
+            obj.clearError('pattern');
+            YAHOO.util.Dom.removeClass(obj.numTypeErrEl, 'on');
+            validationExist = true;
+          } else {
+            if (obj.inputEl.value != '') {
+              obj.numTypeErrEl.innerHTML = numTypeErrMessage;
+              YAHOO.util.Dom.addClass(obj.numTypeErrEl, 'on');
+            }
+            obj.setError('pattern', 'numtype failed.');
+            validationExist = true;
+            validationResult = false;
+          }
+
         }
       }
       // actual validation is checked by # of errors
@@ -112,22 +139,23 @@
      */
     count: function(evt, countEl, el) {
       const self = this;
-      clearTimeout(this.inputTimeout);
+      clearTimeout(el.inputTimeout);
 
-      this.inputTimeout = setTimeout(function() {
+      el.inputTimeout = setTimeout(function () {
         const element = el ? el : self,
           max = element.maxValue,
           min = element.minValue;
 
-        if (max != null && max !== '' && parseFloat(self.value) > max) {
-          self.value = max;
-        } else if (min != null && min !== '' && parseFloat(self.value) < min) {
-          self.value = min;
+        if (max != null && max !== '' && parseFloat(element.value) > max) {
+          self.setValue(max);
+        } else if (min != null && min !== '' && parseFloat(element.value) < min) {
+          self.setValue(min);
         }
       }, 500);
     },
 
     render: function(config, containerEl) {
+      const self = this;
       // we need to make the general layout of a control inherit from common
       // you should be able to override it -- but most of the time it wil be the same
       containerEl.id = this.id;
@@ -186,6 +214,8 @@
         }
       }
 
+      inputEl.setAttribute('step', 'any');
+
       if (this.readonly == true) {
         inputEl.disabled = true;
       }
@@ -202,9 +232,14 @@
       controlWidgetContainerEl.appendChild(patternErrEl);
       this.patternErrEl = patternErrEl;
 
-      YAHOO.util.Event.on(inputEl, 'keyup', this.count, countEl);
-      YAHOO.util.Event.on(inputEl, 'keypress', this.count, countEl);
-      YAHOO.util.Event.on(inputEl, 'mouseup', this.count, countEl);
+      var numTypeErrEl = document.createElement('div');
+      YAHOO.util.Dom.addClass(numTypeErrEl, 'cstudio-form-control-input-url-err');
+      controlWidgetContainerEl.appendChild(numTypeErrEl);
+      this.numTypeErrEl = numTypeErrEl;
+
+      $(inputEl).on('keyup keypress mouseup', function(e) {
+        self.count(e, countEl, this);
+      });
 
       this.renderHelp(config, controlWidgetContainerEl);
 
