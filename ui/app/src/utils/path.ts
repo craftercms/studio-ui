@@ -45,12 +45,11 @@ export function getPathFromPreviewURL(previewURL: string) {
 }
 
 export function getPreviewURLFromPath(baseUrl: string, path: string) {
-  let url = '';
   if (path.endsWith('.xml')) {
-    url.replace('.xml', '.html');
+    path = path.replace('.xml', '.html');
   }
-  url.replace('/site/website', '');
-  return `${baseUrl}${url}`;
+  path = path.replace('/site/website', '');
+  return `${baseUrl}${path}`;
 }
 
 export function getQueryVariable(query: string, variable: string) {

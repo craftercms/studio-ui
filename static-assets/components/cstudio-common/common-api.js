@@ -1515,7 +1515,11 @@ var nodeOpen = false,
               url = '/';
             }
           }
-          window.location = `/studio/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;
+          if (CrafterCMSNext.util.state.getStoredPreviewChoice(CStudioAuthoringContext.site) === '2') {
+            window.location = `/studio/next/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;
+          } else {
+            window.location = `/studio/preview/#/?page=${url}&site=${CStudioAuthoringContext.site}`;
+          }
         }
       },
 
