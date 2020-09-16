@@ -106,12 +106,13 @@ export function getParentsFromPath(path: string, rootPath: string): string[] {
 }
 
 export function getIndividualPaths(path: string) {
-  let splitPath = path.split('/');
-  if (path.endsWith('/')) {
-    splitPath.pop();
-  }
-  let regex = /[^\/\\]+/;
-  return [`/${path.match(regex)[0]}`, ...splitPath.map((value, i) => `/${splitPath.slice(1, i + 1).join('/')}`).splice(2)];
+  let paths = [];
+  let array = path.replace(/^\/|\/$/g, '').split('/');
+  do {
+    paths.push('/' + array.join('/'));
+    array.pop();
+  } while (array.length);
+  return paths;
 }
 
 export default {
