@@ -30,6 +30,7 @@ import { showErrorDialog } from '../state/reducers/dialogs/error';
 import { fetchItemVersions } from '../state/reducers/versions';
 import {
   closeDeleteDialog,
+  closeWorkflowCancellationDialog,
   showDeleteDialog,
   showDependenciesDialog,
   showHistoryDialog,
@@ -157,23 +158,31 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
         }
 
+        const editProps = {
+          src,
+          type,
+          inProgress: true,
+          showController: !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page',
+          itemModel: models[modelId],
+          embeddedParentPath
+        };
+
+        dispatch(showWorkflowCancellationDialog({
+          items: null,
+          onContinue: showEditDialog(editProps)
+        }));
+
         fetchWorkflowAffectedItems(siteId, path).subscribe(
           (items) => {
-            const editProps = {
-              src,
-              type,
-              inProgress: true,
-              showController: !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page',
-              itemModel: models[modelId],
-              embeddedParentPath
-            };
-
             if (items?.length > 0) {
+              // update items state
               dispatch(showWorkflowCancellationDialog({
-                items,
-                onContinue: showEditDialog(editProps)
+                items
               }));
             } else {
+              dispatch(
+                closeWorkflowCancellationDialog()
+              );
               dispatch(
                 showEditDialog(editProps)
               );
