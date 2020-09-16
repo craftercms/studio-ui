@@ -16,7 +16,7 @@
 
 CStudioForms.Datasources.ImgDesktopUpload =
   CStudioForms.Datasources.ImgDesktopUpload ||
-  function(id, form, properties, constraints) {
+  function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
     this.properties = properties;
@@ -26,14 +26,14 @@ CStudioForms.Datasources.ImgDesktopUpload =
   };
 
 YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioFormDatasource, {
-  getLabel: function() {
+  getLabel: function () {
     return CMgs.format(langBundle, 'imageUploadedDesktop');
   },
 
   /**
    * action called when user clicks insert image
    */
-  insertImageAction: function(insertCb) {
+  insertImageAction: function (insertCb) {
     this._self = this;
     var site = CStudioAuthoringContext.site;
     var path = '/static-assets/images'; // default
@@ -51,7 +51,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
     }
 
     var callback = {
-      success: function(imageData) {
+      success: function (imageData) {
         var topWin = window.parent.CStudioAuthoring.ContextualNav.WcmRootFolder;
         if (topWin.currentTextNode && topWin.myTreeAssets) {
           topWin.refreshNodes(topWin.currentTextNode, false, false, topWin.myTreeAssets, null, true);
@@ -63,7 +63,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
 
         insertCb.success(imageData);
       },
-      failure: function() {
+      failure: function () {
         insertCb.failure('An error occurred while uploading the image.');
       },
       context: this
@@ -90,14 +90,14 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
   /**
    * create preview URL
    */
-  createPreviewUrl: function(imagePath) {
+  createPreviewUrl: function (imagePath) {
     return CStudioAuthoringContext.previewAppBaseUri + imagePath + '';
   },
 
   /**
    * clean up preview URL so that URL is canonical
    */
-  cleanPreviewUrl: function(previewUrl) {
+  cleanPreviewUrl: function (previewUrl) {
     var url = previewUrl;
 
     if (previewUrl.indexOf(CStudioAuthoringContext.previewAppBaseUri) != -1) {
@@ -111,21 +111,33 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
     return url;
   },
 
-  deleteImage: function(path) {},
+  deleteImage: function (path) {
+  },
 
-  getInterface: function() {
+  getInterface: function () {
     return 'image';
   },
 
-  getName: function() {
+  getName: function () {
     return 'img-desktop-upload';
   },
 
-  getSupportedProperties: function() {
-    return [{ label: CMgs.format(langBundle, 'repositoryPath'), name: 'repoPath', type: 'string' }];
+  getSupportedProperties: function () {
+    return [
+      {
+        label: CMgs.format(langBundle, 'repositoryPath'),
+        name: 'repoPath',
+        type: 'content-path-input',
+        defaultValue: '/static-assets/',
+        rootPath: '/static-assets',
+        validations: {
+          regex: /^\/static-assets(\/.*)?$/
+        }
+      }
+    ];
   },
 
-  getSupportedConstraints: function() {
+  getSupportedConstraints: function () {
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   }
 });

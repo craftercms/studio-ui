@@ -105,6 +105,16 @@ export function getParentsFromPath(path: string, rootPath: string): string[] {
   return [rootPath, ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(2)];
 }
 
+export function getIndividualPaths(path: string) {
+  let paths = [];
+  let array = path.replace(/^\/|\/$/g, '').split('/');
+  do {
+    paths.push('/' + array.join('/'));
+    array.pop();
+  } while (array.length);
+  return paths;
+}
+
 export default {
   getPathFromPreviewURL,
   getPreviewURLFromPath,

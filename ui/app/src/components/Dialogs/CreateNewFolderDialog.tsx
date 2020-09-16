@@ -98,7 +98,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
           },
           (response) => {
             setState({ inProgress: false, submitted: true });
-            dispatch(showErrorDialog(response));
+            dispatch(showErrorDialog({ error: response }));
           }
         );
       } else {
@@ -109,7 +109,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
           },
           (response) => {
             setState({ inProgress: false, submitted: true });
-            dispatch(showErrorDialog(response));
+            dispatch(showErrorDialog({ error: response }));
           }
         );
       }
