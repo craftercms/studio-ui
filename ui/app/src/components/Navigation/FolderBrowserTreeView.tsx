@@ -146,11 +146,11 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
   );
 }
 
-interface RenderTreeNode {
+interface RenderTreeNodeProps {
   node: TreeNode;
 }
 
-function RenderTreeNode({ node }: RenderTreeNode) {
+function RenderTreeNode({ node }: RenderTreeNodeProps) {
   const classes = useStyles({});
   return node.id === 'loading' ? (
     <div className={classes.loading}>
