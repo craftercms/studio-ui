@@ -219,7 +219,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
       <DialogHeader
         title={title
           ? title
-          : <FormattedMessage id="path.dialog.title" defaultMessage="Select Path" />}
+          : <FormattedMessage id="pathSelectionDialog.title" defaultMessage="Select Path" />}
         onDismiss={onClose}
       />
       <DialogBody className={classes.dialogBody}>
