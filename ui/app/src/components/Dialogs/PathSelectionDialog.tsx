@@ -93,7 +93,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
-  const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath, rootPath) : [rootPath]);
+  const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath) : [rootPath]);
   const [invalidPath, setInvalidPath] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
@@ -109,7 +109,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
       if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
         setInvalidPath(false);
       } else {
-        const allPaths = getIndividualPaths(currentPath, rootPath).filter(
+        const allPaths = getIndividualPaths(currentPath).filter(
           path => !nodesLookup[path] || !nodesLookup[path].fetched
         );
         const requests: Observable<AjaxResponse>[] = [];
@@ -211,7 +211,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
 
   const onPathChanged = (path: string) => {
     setCurrentPath(path);
-    setExpanded(getIndividualPaths(path, rootPath));
+    setExpanded(getIndividualPaths(path));
   };
 
   return (
