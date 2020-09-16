@@ -178,7 +178,7 @@ function RenderTreeNode({ node }: RenderTreeNodeProps) {
   );
 }
 
-const PathSelectedStyles = makeStyles(() =>
+const getPathSelectedStyles = makeStyles(() =>
   createStyles({
     wrapper: {
       display: 'flex',
@@ -226,7 +226,7 @@ interface PathSelectedProps {
 
 function PathSelected(props: PathSelectedProps) {
   const { rootPath, currentPath, onPathChanged, invalidPath, isFetching } = props;
-  const classes = PathSelectedStyles({});
+  const classes = getPathSelectedStyles({});
   const [focus, setFocus] = useState(false);
   const [value, setValue] = useState(null);
 
