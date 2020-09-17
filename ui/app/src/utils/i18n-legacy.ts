@@ -504,9 +504,13 @@ const codeEditorMessages = defineMessages({
     id: 'words.insert',
     defaultMessage: 'Insert'
   },
+  copy: {
+    id: 'words.copy',
+    defaultMessage: 'Copy'
+  },
   localesHelperText: {
     id: 'codeEditor.localesHelperText',
-    defaultMessage: 'Select the locale for which to create/edit a template. Base locales, like `en` will cover sub-locales like `en_us` or `en_uk`, saving you work.'
+    defaultMessage: 'Select the locale for which to create/edit a template. Base locales, like \'en\' will cover sub-locales like \'en_us\' or \'en_uk\', saving you work.'
   },
   localesConfirmTitle: {
     id: 'codeEditor.localesConfirmTitle',
@@ -515,6 +519,10 @@ const codeEditorMessages = defineMessages({
   localesConfirmBody: {
     id: 'codeEditor.localesConfirmBody',
     defaultMessage: 'The template for the locale you selected does not exist. Do you want to creates it now?'
+  },
+  localesSnackBarTitle: {
+    id: 'codeEditor.localesSnackBarTitle',
+    defaultMessage: 'Template Created. Do you want to copy the base template?'
   }
 });
 

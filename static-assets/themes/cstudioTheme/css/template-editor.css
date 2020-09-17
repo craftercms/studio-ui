@@ -51,6 +51,11 @@
   margin-left: 10px;
 }
 
+.template-editor-locales-helper-button {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
 .template-editor-toolbar-variable {
   display: flex;
   align-items: center;
@@ -160,3 +165,52 @@
 .ace_editor.ace_autocomplete {
   z-index: 1050 !important;
 }
+
+.button-without-styles {
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+/*notify styles*/
+.notifyjs-material-snackbar-confirm-base {
+  color: #fff;
+  display: flex;
+  padding: 6px 16px;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  align-items: center;
+  font-weight: 400;
+  line-height: 1.43;
+  border-radius: 4px;
+  letter-spacing: 0.01071em;
+  background-color: rgb(49, 49, 49);
+}
+
+.notifyjs-material-snackbar-confirm-base .message {
+  padding: 8px 0;
+}
+
+.notifyjs-material-snackbar-confirm-base .actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: -8px;
+  padding-left: 16px;
+}
+
+.notifyjs-material-snackbar-confirm-base .button:focus {
+  outline: none;
+}
+
+
+.notifyjs-material-snackbar-confirm-base .no {
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 4px;
+  margin: 0 0 0 6px;
+}
+
+

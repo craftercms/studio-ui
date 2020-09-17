@@ -786,6 +786,10 @@ CStudioAuthoring.Module.requireModule(
 
 
                     $(headerEl).append($select);
+                    const $helperBtn = $(`<button class="button-without-styles template-editor-locales-helper-button"><i class="fa fa-question-circle-o"></i></button>`);
+                    $(headerEl).append($helperBtn);
+
+                    CStudioAuthoring.Utils.addPopover($helperBtn, null, formatMessage(messages.localesHelperText));
 
                     //set prev value
                     $select.data('prev', $select.val());
@@ -832,10 +836,18 @@ CStudioAuthoring.Module.requireModule(
                             });
 
                             CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
-                              //updating the filename
                               $(headerEl).find('.fileName')[0].innerText = this.value ? `${baseName}_${this.value}.ftl` : `${baseName}.ftl`;
-                              aceEditor.setValue(defaultContent);
+                              aceEditor.setValue('');
                               CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
+
+                              CStudioAuthoring.Utils.showConfirmNotification(
+                                formatMessage(messages.localesSnackBarTitle),
+                                formatMessage(messages.copy),
+                                () => {
+                                  aceEditor.setValue(defaultContent);
+                                }
+                              );
+
                             });
 
                             CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
