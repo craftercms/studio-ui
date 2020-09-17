@@ -235,6 +235,8 @@ var storage = CStudioAuthoring.Storage;
       var label = treeEl.previousElementSibling;
       YDom.addClass(label, 'loading');
 
+      RootFolder().initializeContextMenu(tree, instance);
+
       CStudioAuthoring.Service.lookupSiteContent(site, rootPath, 1, 'default', {
         openToPath: pathToOpen,
         success: function(treeData) {
