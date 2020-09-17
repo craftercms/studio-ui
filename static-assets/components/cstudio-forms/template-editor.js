@@ -847,7 +847,6 @@ CStudioAuthoring.Module.requireModule(
                                   aceEditor.setValue(defaultContent);
                                 }
                               );
-
                             });
 
                             CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
