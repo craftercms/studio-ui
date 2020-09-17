@@ -318,6 +318,6 @@ function DateTimePicker(props: DateTimePickerProps) {
       }
     </FormControl>
   );
-};
+}
 
 export default DateTimePicker;
