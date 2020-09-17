@@ -144,7 +144,8 @@ export function createCodebaseBridge() {
       PagesWidget: lazy(() => import('../components/Navigation/PathNavigator/Widget')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog')),
-      PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog'))
+      PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog')),
+      PathSelectionDialog: lazy(() => import('../components/Dialogs/PathSelectionDialog'))
     },
 
     system: { generateClassName, theme, palette, store: null },

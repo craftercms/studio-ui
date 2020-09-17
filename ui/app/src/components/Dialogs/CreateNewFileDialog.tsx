@@ -96,7 +96,7 @@ function CreateNewFileUI(props: CreateNewFileUIProps) {
         },
         (response) => {
           setState({ inProgress: false, submitted: true });
-          dispatch(showErrorDialog(response));
+          dispatch(showErrorDialog({ error: response }));
         }
       );
     }

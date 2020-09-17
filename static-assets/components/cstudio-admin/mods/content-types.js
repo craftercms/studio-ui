@@ -2345,7 +2345,7 @@
             sheetEl,
             function (e, el) {
               updatePropertyFn(el.fieldName, el.value);
-            }, null, null, null, null, null, property.validations
+            }, null, null, null, null, null, property
           );
         }
       },
@@ -2702,7 +2702,7 @@
         helpHTML,
         typeControl,
         disabled,
-        validations
+        properties
       ) {
         var itemId = this.itemId;
         var helpIcon = '';
@@ -2770,7 +2770,7 @@
           moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
             try {
               var propControl = new moduleClass(fName, propertyContainerEl, this.self.form, type);
-              propControl.render(value, fn, fName, itemId, defaultValue, typeControl, disabled, validations);
+              propControl.render(value, fn, fName, itemId, defaultValue, typeControl, disabled, properties);
             } catch (e) {}
           },
           self: this

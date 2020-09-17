@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useEffect, useRef, useState } from 'react';
+import { createStyles, Theme } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
 import AccessTimeIcon from '@material-ui/icons/AccessTimeRounded';
@@ -28,6 +28,7 @@ import { getTimezones } from '../../utils/datetime';
 import FormControl from '@material-ui/core/FormControl';
 import { nnou, nou } from '../../utils/object';
 import palette from '../../styles/palette';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 const translations = defineMessages({
   datePlaceholder: {
@@ -71,52 +72,58 @@ interface DateTimePickerProps {
   };
 }
 
-const dateTimePickerStyles = () => ({
-  root: {
-    width: 'auto'
-  },
-  picker: {
-    width: '100%',
-    marginBottom: 0
-  },
-  pickerInput: {
-    padding: '8px 12px',
-    backgroundColor: palette.white,
-    fontSize: '14px'
-  },
-  pickerButton: {
-    position: 'absolute' as 'absolute',
-    right: 0
-  },
-  select: {
-    padding: '8px 12px',
-    borderRadius: '4px',
-    marginTop: '16px',
-    position: 'relative' as 'relative',
-    backgroundColor: palette.white,
-    fontSize: '14px'
-  },
-  selectIcon: {
-    right: '12px',
-    top: '22px'
-  },
-  autocompleteRoot: {
-    marginTop: '16px',
-    backgroundColor: palette.white
-  },
-  autocompleteInputRoot: {
-    paddingTop: '4px !important',
-    paddingBottom: '4px !important',
-    border: 'none'
-  },
-  autocompleteInput: {
-    border: 'none',
-    fontSize: '14px'
-  },
-  autocompleteEndAdornment: {
-    right: '12px !important'
-  }
-});
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: 'auto'
+    },
+    picker: {
+      width: '100%',
+      marginBottom: 0
+    },
+    pickerInput: {
+      padding: '8px 12px',
+      backgroundColor: palette.white,
+      fontSize: '14px'
+    },
+    pickerButton: {
+      position: 'absolute' as 'absolute',
+      right: 0,
+      '& button': {
+        padding: '2px',
+        marginRight: '10px'
+      }
+    },
+    select: {
+      padding: '8px 12px',
+      borderRadius: '4px',
+      marginTop: '16px',
+      position: 'relative' as 'relative',
+      backgroundColor: palette.white,
+      fontSize: '14px'
+    },
+    selectIcon: {
+      right: '12px',
+      top: '22px'
+    },
+    autocompleteRoot: {
+      marginTop: '16px',
+      backgroundColor: palette.white
+    },
+    autocompleteInputRoot: {
+      paddingTop: '4px !important',
+      paddingBottom: '4px !important',
+      border: 'none'
+    },
+    autocompleteInput: {
+      border: 'none',
+      fontSize: '14px'
+    },
+    autocompleteEndAdornment: {
+      right: '12px !important'
+    }
+  })
+);
 
 interface timezoneType {
   timezoneName: string;
@@ -144,10 +151,9 @@ const getDateTimeMoment = (dateString, timezoneObj) => {
   return dateMoment;
 };
 
-const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerProps) => {
+function DateTimePicker(props: DateTimePickerProps) {
   const {
     id,
-    classes,
     onChange,
     onError,
     date = moment(),
@@ -157,6 +163,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     timePickerProps = {},
     timeZonePickerProps = {}
   } = props;
+  const classes = useStyles({});
   const [pickerState, setPickerState] = useState({
     dateValid: true,
     timeValid: true,
@@ -297,16 +304,20 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
             input: classes.autocompleteInput,
             endAdornment: classes.autocompleteEndAdornment
           }}
-          popupIcon={<PublicRoundedIcon />}
+          popupIcon={<PublicRoundedIcon/>}
           disableClearable={true}
           renderInput={params => (
-            <TextField {...params} variant="outlined" fullWidth />
+            <TextField
+              {...params}
+              variant="outlined"
+              fullWidth
+            />
           )}
           disabled={disabled}
         />
       }
     </FormControl>
   );
-});
+}
 
 export default DateTimePicker;
