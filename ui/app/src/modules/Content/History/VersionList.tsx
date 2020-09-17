@@ -51,6 +51,7 @@ const versionListStyles = makeStyles(() =>
       alignItems: 'center'
     },
     listItemTextSecondary: {
+      whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
       overflow: 'hidden'
     },

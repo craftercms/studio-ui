@@ -175,6 +175,9 @@ export const useStyles = makeStyles((theme) =>
       color: palette.teal.shade,
       padding: 0,
       marginRight: 'auto',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
       '&.opacity': {
         opacity: '0.7'
       },

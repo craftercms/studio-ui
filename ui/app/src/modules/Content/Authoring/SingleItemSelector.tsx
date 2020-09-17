@@ -50,6 +50,7 @@ import palette from '../../../styles/palette';
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
     minWidth: '200px',
+    maxWidth: '400px',
     marginTop: '5px',
     padding: '0px 5px 5px 5px'
   },
