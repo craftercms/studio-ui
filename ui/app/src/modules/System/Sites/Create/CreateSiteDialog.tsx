@@ -49,7 +49,7 @@ import {
   fetchBlueprints as fetchMarketplaceBlueprints
 } from '../../../../services/marketplace';
 import gitLogo from '../../../../assets/git-logo.svg';
-import { backgroundColor} from '../../../../styles/theme';
+import { backgroundColor } from '../../../../styles/theme';
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from '../../../../components/Controls/SearchBar';
@@ -335,7 +335,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   const { current: refts } = useRef<any>({});
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
-  const { siteCookieName, authoringBase } = useEnv();
+  const { authoringBase } = useEnv();
 
   const views: Views = {
     0: {

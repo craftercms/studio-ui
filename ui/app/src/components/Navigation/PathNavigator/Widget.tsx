@@ -396,7 +396,7 @@ export default function(props: WidgetProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const defaultSrc = `${authoringBase}/studio/legacy/form?`;
+  const defaultSrc = `${authoringBase}/legacy/form?`;
   const contentTypes = useContentTypes();
   const options = {
     upload: '/templates,/static-assets,/scripts'.includes(path),
