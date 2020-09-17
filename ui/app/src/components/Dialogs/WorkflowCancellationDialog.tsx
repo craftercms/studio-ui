@@ -78,6 +78,11 @@ const useStyles = makeStyles(() =>
     contentRoot: {
       height: '254px'
     },
+    suspense: {
+      minHeight: '442px',
+      margin: 0,
+      justifyContent: 'center'
+    },
     filesList: {
       height: '100%',
       border: '1px solid #D8D8DC',
@@ -87,31 +92,6 @@ const useStyles = makeStyles(() =>
   })
 );
 
-function WorkflowCancellationContentUI(props: WorkflowCancellationContentUIProps) {
-  const {
-    resource,
-    classes
-  } = props;
-
-  const items = resource.read();
-
-  return (
-    <Grid container spacing={3} className={classes.contentRoot}>
-      <Grid item xs={12}>
-        <List className={classes.filesList}>
-          {
-            items.map(item =>
-              <ListItem key={item.path}>
-                <ListItemText primary={item.label} secondary={item.path} />
-              </ListItem>
-            )
-          }
-        </List>
-      </Grid>
-    </Grid>
-  );
-}
-
 function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) {
   const {
     resource,
@@ -120,6 +100,8 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
     onContinue,
     classes
   } = props;
+
+  const items = resource.read();
 
   return (
     <>
@@ -139,24 +121,19 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
         onDismiss={onDismiss}
       />
       <DialogBody>
-        <SuspenseWithEmptyState
-          resource={resource}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: (
-                <FormattedMessage
-                  id="publishDialog.noItemsSelected"
-                  defaultMessage="There are no affected files"
-                />
-              )
-            }
-          }}
-        >
-          <WorkflowCancellationContentUI
-            resource={resource}
-            classes={classes}
-          />
-        </SuspenseWithEmptyState>
+        <Grid container spacing={3} className={classes.contentRoot}>
+          <Grid item xs={12}>
+            <List className={classes.filesList}>
+              {
+                items.map(item =>
+                  <ListItem key={item.path}>
+                    <ListItemText primary={item.label} secondary={item.path} />
+                  </ListItem>
+                )
+              }
+            </List>
+          </Grid>
+        </Grid>
       </DialogBody>
       <DialogFooter>
         {onClose && (
@@ -175,20 +152,6 @@ function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) 
 }
 
 export default function WorkflowCancellationDialog(props: WorkflowCancellationDialogProps) {
-  return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      aria-labelledby="workflowCancellationDialogTitle"
-      fullWidth
-      maxWidth="sm"
-    >
-      <WorkflowCancellationDialogWrapper {...props} />
-    </Dialog>
-  );
-}
-
-function WorkflowCancellationDialogWrapper(props: WorkflowCancellationDialogProps) {
   const {
     items,
     onClose,
@@ -196,6 +159,7 @@ function WorkflowCancellationDialogWrapper(props: WorkflowCancellationDialogProp
     onDismiss,
     onContinue
   } = props;
+  const classes = useStyles();
   useUnmount(props.onClosed);
 
   const resource = useLogicResource<Return, Source>(items, {
@@ -212,13 +176,41 @@ function WorkflowCancellationDialogWrapper(props: WorkflowCancellationDialogProp
   };
 
   return (
-    <WorkflowCancellationDialogUI
-      resource={resource}
-      onClose={onClose}
-      onClosed={onClosed}
-      onDismiss={onDismiss}
-      onContinue={onContinueClick}
-      classes={useStyles()}
-    />
+    <Dialog
+      open={props.open}
+      onClose={props.onClose}
+      aria-labelledby="workflowCancellationDialogTitle"
+      fullWidth
+      maxWidth="sm"
+    >
+      <SuspenseWithEmptyState
+        resource={resource}
+        withEmptyStateProps={{
+          emptyStateProps: {
+            title: (
+              <FormattedMessage
+                id="publishDialog.noItemsSelected"
+                defaultMessage="There are no affected files"
+              />
+            )
+          }
+        }}
+        loadingStateProps = {{
+          classes: {
+            root: classes.suspense
+          }
+        }}
+      >
+        <WorkflowCancellationDialogUI
+          resource={resource}
+          onClose={onClose}
+          onClosed={onClosed}
+          onDismiss={onDismiss}
+          onContinue={onContinueClick}
+          classes={classes}
+        />
+      </SuspenseWithEmptyState>
+    </Dialog>
   );
 }
+

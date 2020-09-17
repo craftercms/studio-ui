@@ -2544,31 +2544,40 @@ var nodeOpen = false,
           }
         }
 
+        const eventIdSuccess = 'workflowCancellationDialogContinue';
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+          payload: {
+            open: true,
+            items: null,
+            onContinue: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
+              ]
+            }
+          }
+        });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+          doEdit();
+        });
+
         CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
           (items) => {
             if (items && items.length) {
               const eventIdSuccess = 'workflowCancellationDialogContinue';
               CrafterCMSNext.system.store.dispatch({
                 type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-                payload: {
-                  open: true,
-                  items,
-                  onContinue: {
-                    type: 'BATCH_ACTIONS',
-                    payload: [
-                      {
-                        type: 'DISPATCH_DOM_EVENT',
-                        payload: { id: eventIdSuccess }
-                      },
-                      { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
-                    ]
-                  }
-                }
-              });
-              CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
-                doEdit();
+                payload: { items }
               });
             } else {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+              });
               doEdit();
             }
           }

@@ -98,8 +98,9 @@ const useStyles = makeStyles(() => createStyles({
     fontSize: '14px'
   },
   checkboxInput: {
-    paddingTop: 0,
-    paddingBottom: 0
+    padding: '2px',
+    marginLeft: '5px',
+    marginRight: '7px'
   },
   selectInput: {
     padding: '10px 12px',
@@ -140,8 +141,9 @@ const useStyles = makeStyles(() => createStyles({
     fontSize: '14px'
   },
   radioInput: {
-    paddingBottom: '4px',
-    paddingTop: '4px'
+    padding: '4px',
+    marginLeft: '5px',
+    marginRight: '5px'
   },
   selectIcon: {
     right: '12px'
