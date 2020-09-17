@@ -38,7 +38,7 @@ const versionListStyles = makeStyles(() =>
       borderRadius: '5px 5px 0 0'
     },
     listItem: {
-      padding: ' 15px 20px',
+      padding: '15px 48px 15px 20px',
       '&.selected': {
         backgroundColor: palette.blue.highlight
       }
@@ -49,6 +49,10 @@ const versionListStyles = makeStyles(() =>
     listItemTextPrimary: {
       display: 'flex',
       alignItems: 'center'
+    },
+    listItemTextSecondary: {
+      textOverflow: 'ellipsis',
+      overflow: 'hidden'
     },
     chip: {
       padding: '1px',
@@ -141,7 +145,8 @@ export function VersionList(props: VersionListProps) {
             <ListItemText
               classes={{
                 multiline: classes.listItemTextMultiline,
-                primary: classes.listItemTextPrimary
+                primary: classes.listItemTextPrimary,
+                secondary: classes.listItemTextSecondary
               }}
               primary={
                 <>
