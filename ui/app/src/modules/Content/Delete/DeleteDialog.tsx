@@ -19,10 +19,9 @@ import { SandboxItem } from '../../../models/Item';
 import { deleteItems } from '../../../services/content';
 import {
   useActiveSiteId,
-  useActiveUser,
-  useUnmount,
+  useLogicResource,
   useSpreadState,
-  useLogicResource
+  useUnmount
 } from '../../../utils/hooks';
 import { fetchDeleteDependencies } from '../../../services/dependencies';
 import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
@@ -41,11 +40,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
+import { Typography } from '@material-ui/core';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
   items: SandboxItem[];
   submissionComment: string;
+  submissionCommentCount: any;
   setSubmissionComment: Function;
   onSelectionChange?: Function;
 }
@@ -55,6 +56,7 @@ interface DeleteDialogUIProps {
   items: SandboxItem[];
   selectedItems: SandboxItem[];
   submissionComment: string;
+  submissionCommentCount: any;
   setSubmissionComment: Function;
   apiState: any;
   handleSubmit: any;
@@ -118,12 +120,23 @@ const deleteDialogStyles = makeStyles((theme) =>
     },
     depsContainer: {
       minHeight: '350px'
+    },
+    submissionCommentCount: {
+      fontSize: '14px',
+      color: palette.gray.medium4
     }
   })
 );
 
 function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
-  const { resource, items, submissionComment, setSubmissionComment, onSelectionChange } = props;
+  const {
+    resource,
+    items,
+    submissionComment,
+    submissionCommentCount,
+    setSubmissionComment,
+    onSelectionChange
+  } = props;
   const classes = deleteDialogStyles({});
   const deleteDependencies: DeleteDependencies = resource.read();
 
@@ -156,8 +169,31 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
               InputProps={{
                 className: classes.textField
               }}
+              inputProps={{ maxLength: submissionCommentCount.maxLength }}
             />
           </form>
+
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+          >
+            <Grid item>
+              <Typography className={classes.submissionCommentCount}>
+                <FormattedMessage
+                  id="deleteDialog.maxCharacters"
+                  defaultMessage="Max {maxLength} characters"
+                  values={{ maxLength: submissionCommentCount.maxLength }}
+                />
+              </Typography>
+            </Grid>
+
+            <Grid item>
+              <Typography className={classes.submissionCommentCount}>
+                {submissionCommentCount.currentLength}/{submissionCommentCount.maxLength}
+              </Typography>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </>
@@ -170,11 +206,12 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
     items,
     selectedItems,
     submissionComment,
+    submissionCommentCount,
     setSubmissionComment,
     apiState,
     handleSubmit,
     onSelectionChange,
-    onDismiss,
+    onDismiss
   } = props;
   const classes = deleteDialogStyles({});
   const { formatMessage } = useIntl();
@@ -192,6 +229,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
             resource={resource}
             items={items}
             submissionComment={submissionComment}
+            submissionCommentCount={submissionCommentCount}
             setSubmissionComment={setSubmissionComment}
             onSelectionChange={onSelectionChange}
           />
@@ -235,11 +273,14 @@ export default function DeleteDialog(props: DeleteDialogProps) {
 function DeleteDialogWrapper(props: DeleteDialogProps) {
   const { items, onClose, onDismiss, onSuccess } = props;
   const [submissionComment, setSubmissionComment] = useState('');
+  const [submissionCommentCount, setSubmissionCommentCount] = useSpreadState({
+    currentLength: 0,
+    maxLength: 250
+  });
   const [apiState, setApiState] = useSpreadState({
     error: null,
     submitting: false
   });
-  const user = useActiveUser();
   const siteId = useActiveSiteId();
   // Dependency selection
   const [deleteDependencies, setDeleteDependencies] = useState<DeleteDependencies>();
@@ -273,6 +314,12 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     );
   }, [selectedItems, setApiState, siteId]);
 
+  useEffect(() => {
+    setSubmissionCommentCount({
+      currentLength: submissionComment.length
+    });
+  }, [submissionComment, setSubmissionCommentCount]);
+
   const handleSubmit = () => {
     const data = {
       items: selectedItems
@@ -280,7 +327,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
 
     setApiState({ submitting: true });
 
-    deleteItems(siteId, user.username, submissionComment, data).subscribe(
+    deleteItems(siteId, submissionComment, data).subscribe(
       (response) => {
         setApiState({ submitting: false });
         onSuccess?.(response);
@@ -297,6 +344,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
       items={items}
       selectedItems={selectedItems}
       submissionComment={submissionComment}
+      submissionCommentCount={submissionCommentCount}
       setSubmissionComment={setSubmissionComment}
       apiState={apiState}
       handleSubmit={handleSubmit}

@@ -14,7 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CONTENT_TYPE_JSON, errorSelectorApi1, get, getText, post, postJSON } from '../utils/ajax';
+import {
+  CONTENT_TYPE_JSON,
+  del,
+  errorSelectorApi1,
+  get,
+  getText,
+  post,
+  postJSON
+} from '../utils/ajax';
 import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import {
@@ -59,6 +67,7 @@ import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import { parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
+import ApiResponse from '../models/ApiResponse';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -1499,14 +1508,13 @@ export function getPages(site: string, item: any): Observable<any> {
 
 export function deleteItems(
   site: string,
-  user: string,
   submissionComment: string,
   data: AnyObject
-): Observable<any> {
-  return postJSON(
-    `/studio/api/1/services/api/1/workflow/go-delete.json?site=${site}&user=${user}&submissionComment=${submissionComment}`,
-    data
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+): Observable<ApiResponse> {
+  const paths = encodeURIComponent(data.items.join(','));
+  return del(
+    `/studio/api/2/content/delete?siteId=${site}&submissionComment=${submissionComment}&paths=${paths}`
+  ).pipe(pluck('response', 'response'));
 }
 
 export function lock(site: string, path: string): Observable<boolean> {
