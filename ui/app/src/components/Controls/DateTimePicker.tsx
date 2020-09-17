@@ -170,14 +170,6 @@ function DateTimePicker(props: DateTimePickerProps) {
     timezoneValid: true
   });
 
-  const autoCompleteEl = useRef(null);
-
-  useEffect(() => {
-    const autoCompleteButton = autoCompleteEl.current.querySelector('.MuiAutocomplete-popupIndicator');
-    autoCompleteButton.tabIndex = 0;
-  }, [autoCompleteEl]);
-
-
   // Set defaults on wrapped controls props
   if (nou(timeZonePickerProps.timezone)) {
     timeZonePickerProps['timezone'] = moment.tz.guess();
@@ -322,7 +314,6 @@ function DateTimePicker(props: DateTimePickerProps) {
             />
           )}
           disabled={disabled}
-          ref={autoCompleteEl}
         />
       }
     </FormControl>
