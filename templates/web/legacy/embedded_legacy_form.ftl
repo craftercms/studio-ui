@@ -31,6 +31,7 @@
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <#-- Lang resources -->
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
   <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
