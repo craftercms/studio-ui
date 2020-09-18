@@ -46,8 +46,8 @@ fs.writeFileSync(
   `${TEMPLATES}/web/common/js-next-scripts.ftl`,
   `${jsNextScriptsFileContent}`);
 
-console.log(`Deleting previous build (rm -rf ${DEST}/*)`);
-rimraf.sync(`${DEST}/*`);
+console.log(`Deleting previous build (rm -rf ${DEST}/static)`);
+rimraf.sync(`${DEST}/static`);
 
 console.log(`Copying build files to ${DEST}/static`);
 ncp(`${PATH_BUILD}/static`, `${DEST}/static`, (err) => {
