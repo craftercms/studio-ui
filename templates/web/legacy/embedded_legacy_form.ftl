@@ -68,7 +68,6 @@
 
     .cstudio-template-editor-container {
       border: 0 !important;
-      padding-top: 20px !important;
       background: #f8f8f8 !important;
       box-shadow: none !important;
     }

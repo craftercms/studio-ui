@@ -50,6 +50,7 @@ import palette from '../../../styles/palette';
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
     minWidth: '200px',
+    maxWidth: '400px',
     marginTop: '5px',
     padding: '0px 5px 5px 5px'
   },
@@ -59,10 +60,13 @@ const useStyles = makeStyles((theme) => ({
     'padding-left': '15px',
     'align-items': 'center',
     'justify-content': 'space-between',
-    'align-self': 'flex-start',
+    'margin-right': 'auto',
+    'max-width': '100%',
     'min-width': '200px',
-    '& p': {
-      padding: 0
+    '& $itemName': {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
     },
     '&.disable': {
       'min-width': 'auto',
@@ -71,13 +75,15 @@ const useStyles = makeStyles((theme) => ({
   },
   selectedItem: {
     marginLeft: 'auto',
-    display: 'flex'
+    display: 'flex',
+    minWidth: 0
   },
   title: {
     fontWeight: 600,
     marginRight: '30px'
   },
   changeBtn: {},
+  itemName: {},
   itemIcon: {
     fill: palette.teal.main,
     marginRight: 10
@@ -346,7 +352,9 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
             selectedItem &&
             <div className={classes.selectedItem}>
               <ItemIcon className={clsx(classes.itemIcon, propClasses?.itemIcon)} />
-              <Typography variant={labelVariant}>{selectedItem.label}</Typography>
+              <Typography
+                className={classes.itemName} variant={labelVariant}
+              >{selectedItem.label}</Typography>
             </div>
           }
         </>
