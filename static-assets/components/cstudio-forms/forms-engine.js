@@ -1359,7 +1359,12 @@ var CStudioForms =
               return;
             }
 
-            form.onBeforeSave({ preview: preview });
+            try {
+              form.onBeforeSave({ preview: preview });
+            } catch (e) {
+              cfe.engine.cancelForm();
+              return;
+            }
 
             if (form.customController && !form.customController.onBeforeSave()) {
               return;
