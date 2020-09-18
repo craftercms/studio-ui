@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable = function(fieldName, containerEl) {
+CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable = function (fieldName, containerEl) {
   this.fieldName = fieldName;
   this.containerEl = containerEl;
   return this;
@@ -24,7 +24,7 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    render: function(value, updateFn, fName, itemId, defaultValue, type, disabled) {
+    render: function (value, updateFn, fName, itemId, defaultValue, type, disabled) {
       var containerEl = this.containerEl;
       var valueEl = document.createElement('input');
       YAHOO.util.Dom.addClass(valueEl, 'property-input-' + fName);
@@ -34,7 +34,7 @@ YAHOO.extend(
       valueEl.fieldName = this.fieldName;
 
       if (updateFn) {
-        var updateFieldFn = function(event, el) {
+        var updateFieldFn = function (event, el) {
           if (fName === 'id' && this.value) {
             var input = YDom.getElementsByClassName('property-input-id')[0];
             input.value = this.value.replace(/[-]/g, '_');
@@ -91,7 +91,7 @@ YAHOO.extend(
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
         };
 
-        var checkVarState = function(event, el) {
+        var checkVarState = function (event, el) {
           var titleEl = YDom.getElementsByClassName('property-input-title');
           YAHOO.util.Dom.addClass(titleEl, 'no-update');
 
@@ -101,8 +101,9 @@ YAHOO.extend(
         };
 
         YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
-        $(valueEl).change(function() {
-          updateFieldFn(event, this);
+
+        $(valueEl).on('paste', function (e) {
+          updateFieldFn(e, valueEl);
         });
 
         if ((fName == 'id' || fName == 'name') && value !== '') {
@@ -117,7 +118,7 @@ YAHOO.extend(
       this.valueEl = valueEl;
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.valueEl.value;
     }
   }
