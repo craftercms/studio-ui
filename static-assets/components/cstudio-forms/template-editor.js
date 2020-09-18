@@ -239,7 +239,6 @@ CStudioAuthoring.Module.requireModule(
 
                     var containerEl = document.createElement('div');
                     containerEl.className = 'cstudio-template-editor-container';
-                    YAHOO.util.Dom.addClass(containerEl, 'seethrough');
                     modalEl.appendChild(containerEl);
                     var formHTML = '';
 
@@ -757,7 +756,11 @@ CStudioAuthoring.Module.requireModule(
               addLocales: (headerEl, aceEditor, templatePath, filename, defaultContent) => {
                 CrafterCMSNext.services.translation.getSiteLocales(CStudioAuthoringContext.site).subscribe(
                   ({ localeCodes }) => {
-                    const $select = $('<select id="locale-selector" class="template-editor-locales-selector"></select>');
+                    if (localeCodes === null) {
+                      return;
+                    }
+
+                    const $select = $('<select id="locale-selector" class="template-editor-locales-selector" />');
                     const options = [];
                     let defaultLocale = '';
 

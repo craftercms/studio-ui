@@ -85,7 +85,7 @@
 }
 
 .template-editor-toolbar-variable .addButtonVar {
-  margin-left: 17px;
+  margin-left: 5px;
   margin-top: 2px;
   padding: 4px 8px;
   position: relative;
@@ -94,6 +94,11 @@
 
 .editor-container {
   flex-grow: 1;
+}
+
+.editor-container .ace_editor {
+  border: none;
+  border-radius: 0
 }
 
 .editor-container textarea {
