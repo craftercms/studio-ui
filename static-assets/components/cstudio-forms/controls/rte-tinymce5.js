@@ -289,6 +289,18 @@ CStudioAuthoring.Module.requireModule(
 
           rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : null;
 
+          const $editorContainer = $(`#${rteId}`).parent(),
+            editorContainerWidth = $editorContainer.width(),
+            editorContainerPL = parseFloat($editorContainer.css('padding-left').replace('px', ''));
+
+          if (_thisControl.rteWidth > editorContainerWidth) {
+            $editorContainer.css('padding-left', 0);
+            $editorContainer.css('float', 'right');
+            if (_thisControl.rteWidth > editorContainerWidth + editorContainerPL) {
+              _thisControl.rteWidth = editorContainerWidth + editorContainerPL;
+            }
+          }
+
           editor = tinymce.init({
             selector: '#' + rteId,
             width: _thisControl.rteWidth,
