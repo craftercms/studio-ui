@@ -270,7 +270,6 @@ input[type="checkbox"].content-type-selector--checkbox {
 }
 
 .content-type-visual-datasource-container {
-/ / background: none repeat scroll 0 0 #ccbbcc;
   border-bottom: 1px solid #dddddd;
   min-height: 20px;
   text-align: left;
@@ -287,7 +286,6 @@ input[type="checkbox"].content-type-selector--checkbox {
 .content-type-visual-datasource-container-selected {
   background: none repeat scroll 0 0 #ccbbcc;
 }
-
 
 .content-type-visual-section-container {
   background: none repeat scroll 0 0 #FFF;
@@ -311,7 +309,6 @@ input[type="checkbox"].content-type-selector--checkbox {
 }
 
 .content-type-visual-field-container {
-/ / background: none repeat scroll 0 0 #D5E6F2;
   border-bottom: 1px solid #dddddd;
   min-height: 20px;
   text-align: left;
@@ -361,15 +358,15 @@ input[type="checkbox"].content-type-selector--checkbox {
 
 .content-type-visual-repeat-container-selected {
   background: #E5EDF7;
-  border: 1px solid #0000000;
+  border: 1px solid #000000;
 }
 
 .content-type-visual-repeat-container-selected .content-type-visual-field-container:hover {
-/ / background-color: #D5E2F2;
+  background-color: #E6F2FF;
 }
 
 .content-field-name {
-  color: #0290D6;
+  color: #333;
   display: inline-block;
   min-width: 145px;
   margin-right: 16px;
@@ -381,14 +378,14 @@ input[type="checkbox"].content-type-selector--checkbox {
   white-space: nowrap;
   overflow: hidden;
   width: 145px;
-  height: 16px;
+  height: 18px;
   padding-top: 1px;
   position: relative;
   top: 3px;
 }
 
 .content-datasource-name {
-  color: #993399;
+  color: #333;
   display: inline-block;
   min-width: 125px;
   margin-right: 16px;
@@ -396,7 +393,7 @@ input[type="checkbox"].content-type-selector--checkbox {
   white-space: nowrap;
   overflow: hidden;
   width: 145px;
-  height: 16px;
+  height: 18px;
   padding-top: 1px;
   position: relative;
   top: 3px;
@@ -410,7 +407,7 @@ input[type="checkbox"].content-type-selector--checkbox {
   white-space: nowrap;
   overflow: hidden;
   width: 185px;
-  height: 16px;
+  height: 18px;
   padding-top: 1px;
   display: inline-block;
   position: relative;
@@ -439,7 +436,7 @@ input[type="checkbox"].content-type-selector--checkbox {
   white-space: nowrap;
   overflow: hidden;
   width: 185px;
-  height: 16px;
+  height: 18px;
   padding-top: 1px;
   display: inline-block;
   position: relative;
@@ -447,7 +444,7 @@ input[type="checkbox"].content-type-selector--checkbox {
 }
 
 .content-section-name {
-  color: #333333;
+  color: #444;
   background-color: whitesmoke;
   border-bottom: 1px solid #dddddd;
   display: block;
@@ -460,7 +457,6 @@ input[type="checkbox"].content-type-selector--checkbox {
 
 .content-section-name:hover {
   cursor: pointer;
-
 }
 
 #cstudio-admin-console-command-bar {
