@@ -757,6 +757,7 @@ CStudioAuthoring.Module.requireModule(
               addLocales: (headerEl, aceEditor, templatePath, filename, defaultContent) => {
                 CrafterCMSNext.services.translation.getSiteLocales(CStudioAuthoringContext.site).subscribe(
                   ({ localeCodes }) => {
+                    if (localesCodes) return;
                     const $select = $('<select id="locale-selector" class="template-editor-locales-selector"></select>');
                     const options = [];
                     let defaultLocale = '';
