@@ -296,16 +296,17 @@ export function createCodebaseBridge() {
     },
 
     createLegacyCallbackListener(id: string, listener: EventListener) {
-      const callback = (e) => {
+      let callback;
+      callback = (e) => {
         listener(e.detail);
-        document.removeEventListener(id, listener, false);
+        document.removeEventListener(id, callback, false);
       };
-      document.addEventListener(id, callback, true);
+      document.addEventListener(id, callback, false);
     }
 
   };
 
- // @ts-ignore
+  // @ts-ignore
   window.CrafterCMSNext = Bridge;
 
   createStore().subscribe((store) => {
