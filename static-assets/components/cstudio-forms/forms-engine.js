@@ -544,13 +544,6 @@ var CStudioForms =
             YAHOO.util.Dom.addClass(indicatorEl, 'fa-check');
           }
         }
-      },
-
-      pendingChanges: function() {
-        if (this.iceWindowCallback && this.iceWindowCallback.pendingChanges) {
-          let callback = getCustomCallback(this.iceWindowCallback.pendingChanges);
-          callback();
-        }
       }
     };
 
@@ -1164,14 +1157,6 @@ var CStudioForms =
         form.definition.pageLocation = this._getPageLocation(path);
         form.containerEl = document.getElementById('formContainer');
 
-        $(form.containerEl).on('change', '.datum', () => {
-          var flag = isModified();
-          if (flag && iceWindowCallback && iceWindowCallback.pendingChanges) {
-            let callback = getCustomCallback(iceWindowCallback.pendingChanges);
-            callback();
-          }
-        });
-
         this._loadDatasources(form, function(loaded, notLoaded) {
           var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
           var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceComponent');
@@ -1629,12 +1614,6 @@ var CStudioForms =
             }
 
             var flag = isModified();
-
-            // calling pendingChanges cb if present
-            if (flag && iceWindowCallback && iceWindowCallback.pendingChanges) {
-              let callback = getCustomCallback(iceWindowCallback.pendingChanges);
-              callback();
-            }
 
             if (showWarnMsg && (flag || repeatEdited)) {
               if (CStudioAuthoring.InContextEdit.isDialogCollapsed()) {

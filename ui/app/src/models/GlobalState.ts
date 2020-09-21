@@ -33,7 +33,6 @@ import { DependenciesDialogStateProps } from '../modules/Content/Dependencies/De
 import { DeleteDialogStateProps } from '../modules/Content/Delete/DeleteDialog';
 import { EntityState } from './EntityState';
 import { ApiResponse } from './ApiResponse';
-import { EmbeddedLegacyEditorsStateProps } from '../modules/Preview/EmbeddedLegacyEditors';
 import { ViewVersionDialogStateProps } from '../modules/Content/History/ViewVersionDialog';
 import { CompareVersionsDialogStateProps } from '../modules/Content/History/CompareVersionsDialog';
 import { VersionsStateProps } from './Version';
@@ -42,6 +41,7 @@ import { WorkflowCancellationDialogStateProps } from '../components/Dialogs/Work
 import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
 import { SidebarConfigItem } from '../services/configuration';
 import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
+import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -134,7 +134,7 @@ export interface GlobalState {
     publish: PublishDialogStateProps;
     dependencies: DependenciesDialogStateProps;
     delete: DeleteDialogStateProps;
-    edit: EmbeddedLegacyEditorsStateProps;
+    edit: LegacyFormDialogStateProps;
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
   };

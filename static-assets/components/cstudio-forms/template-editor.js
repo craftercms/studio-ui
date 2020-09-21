@@ -378,7 +378,7 @@ CStudioAuthoring.Module.requireModule(
 
                         aceEditor.getSession().on('change', function () {
                           aceEditor.isModified = true;
-                          onSaveCb.pendingChanges && onSaveCb.pendingChanges();
+                          onSaveCb.pendingChanges && onSaveCb.pendingChanges(true);
                         });
 
                         return aceEditor;
@@ -815,18 +815,18 @@ CStudioAuthoring.Module.requireModule(
                 );
               },
               save: (modalEl, aceEditor, templatePath, onSaveCb, unlock, type) => {
-                var value = aceEditor.getValue();
-                var path = templatePath.substring(0, templatePath.lastIndexOf('/'));
-                var filename = templatePath.substring(templatePath.lastIndexOf('/') + 1);
+                const value = aceEditor.getValue();
+                const path = templatePath.substring(0, templatePath.lastIndexOf('/'));
+                let filename = templatePath.substring(templatePath.lastIndexOf('/') + 1);
+                const $select = $('#locale-selector');
 
-                if (filename.indexOf('.ftl') !== -1) {
-                  const $select = $('#locale-selector');
+                if (filename.indexOf('.ftl') !== -1 && $select.length) {
                   const baseName = $select.data('baseName');
                   const localeCode = $select.val();
                   filename = localeCode ? `${baseName}_${localeCode}.ftl` : `${baseName}.ftl`;
                 }
 
-                var writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${CStudioAuthoringContext.site}&phase=onSave&path=${path}&fileName=${encodeURI(filename)}&user=${CStudioAuthoringContext.user}&unlock=${unlock}`;
+                const writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${CStudioAuthoringContext.site}&phase=onSave&path=${path}&fileName=${encodeURI(filename)}&user=${CStudioAuthoringContext.user}&unlock=${unlock}`;
 
                 fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
                   method: 'POST',
@@ -840,12 +840,19 @@ CStudioAuthoring.Module.requireModule(
                   .then((res) => res.json())
                   .then((data) => {
                     if (data && data.result && data.result.success) {
+                      //update pending changes state;
+                      aceEditor.isModified = false;
+                      onSaveCb.pendingChanges && onSaveCb.pendingChanges(false);
                       CStudioAuthoring.Utils.showNotification(formatMessage(messages.saved));
                       if (type === 'saveAndClose') {
-                        var event = new CustomEvent('legacyTemplateEditor.closed');
+                        const event = new CustomEvent('legacyTemplateEditor.closed');
                         document.dispatchEvent(event);
                         modalEl.parentNode.removeChild(modalEl);
                         onSaveCb.success && onSaveCb.success();
+                      } else if (type === 'save') {
+                        onSaveCb.success && onSaveCb.success('refresh');
+                      } else {
+                        onSaveCb.success && onSaveCb.success('minimize');
                       }
                     }
                   });

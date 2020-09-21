@@ -17,9 +17,9 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import StandardAction from '../../../models/StandardAction';
 import GlobalState from '../../../models/GlobalState';
-import { EmbeddedLegacyEditorsStateProps } from '../../../modules/Preview/EmbeddedLegacyEditors';
+import { LegacyFormDialogStateProps } from '../../../components/Dialogs/LegacyFormDialog';
 
-export const showEditDialog = createAction<Partial<EmbeddedLegacyEditorsStateProps>>(
+export const showEditDialog = createAction<Partial<LegacyFormDialogStateProps>>(
   'SHOW_EDIT_DIALOG'
 );
 

@@ -149,22 +149,16 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }));
         break;
       }
-      case 'form':
-      case 'template':
-      case 'controller': {
-        const path = getPath(type);
-        let src = `${defaultSrc}site=${site}&path=${path}&type=${type}`;
-        if (embeddedParentPath && type === 'form') {
-          src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
-        }
+      case 'form': {
+        const path = embeddedParentPath ? embeddedParentPath : models[modelId].craftercms.path;
+        const src = embeddedParentPath
+          ? `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
+          : `${defaultSrc}site=${site}&path=${path}&type=${type}`;
 
         const editProps = {
           src,
           type,
-          inProgress: true,
-          showController: !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page',
-          itemModel: models[modelId],
-          embeddedParentPath
+          inProgress: true
         };
 
         dispatch(showWorkflowCancellationDialog({
@@ -176,20 +170,58 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           (items) => {
             if (items?.length > 0) {
               // update items state
-              dispatch(showWorkflowCancellationDialog({
-                items
-              }));
+              dispatch(showWorkflowCancellationDialog({ items }));
             } else {
               dispatch(
                 closeWorkflowCancellationDialog()
               );
-              dispatch(
-                showEditDialog(editProps)
-              );
+              dispatch(showEditDialog(editProps));
             }
 
           }
         );
+        break;
+      }
+      case 'template':
+      case 'controller': {
+        // const path = getPath(type);
+        // let src = `${defaultSrc}site=${site}&path=${path}&type=${type}`;
+        // if (embeddedParentPath && type === 'form') {
+        //   src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
+        // }
+        //
+        // const editProps = {
+        //   src,
+        //   type,
+        //   inProgress: true,
+        //   showController: !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page',
+        //   itemModel: models[modelId],
+        //   embeddedParentPath
+        // };
+        //
+        // dispatch(showWorkflowCancellationDialog({
+        //   items: null,
+        //   onContinue: showEditDialog(editProps)
+        // }));
+        //
+        // fetchWorkflowAffectedItems(siteId, path).subscribe(
+        //   (items) => {
+        //     if (items?.length > 0) {
+        //       // update items state
+        //       dispatch(showWorkflowCancellationDialog({
+        //         items
+        //       }));
+        //     } else {
+        //       dispatch(
+        //         closeWorkflowCancellationDialog()
+        //       );
+        //       dispatch(
+        //         showEditDialog(editProps)
+        //       );
+        //     }
+        //
+        //   }
+        // );
 
         break;
       }

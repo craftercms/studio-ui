@@ -24,13 +24,15 @@ import LoadingState from '../../components/SystemStatus/LoadingState';
 import clsx from 'clsx';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
-import { useSelection, useSpreadState, useUnmount } from '../../utils/hooks';
+import { useMinimizeDialog, useSelection, useSpreadState, useUnmount } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
   EDIT_FORM_CHANGE_TAB,
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
+  EMBEDDED_LEGACY_FORM_MINIMIZE,
   EMBEDDED_LEGACY_FORM_PENDING_CHANGES,
+  EMBEDDED_LEGACY_FORM_PREVIEW_REFRESH,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
   RELOAD_REQUEST
@@ -44,6 +46,7 @@ import StandardAction from '../../models/StandardAction';
 import { updateEditConfig } from '../../state/reducers/dialogs/edit';
 import { popPiece } from '../../utils/string';
 import ContentInstance from '../../models/ContentInstance';
+import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 
 const translations = defineMessages({
   contentForm: {
@@ -104,16 +107,15 @@ interface EmbeddedLegacyEditorsBaseProps {
   showTabs?: boolean;
   itemModel?: ContentInstance;
   embeddedParentPath?: string;
+  onMinimized?(): void;
 }
 
-export type EmbeddedLegacyEditorsProps = PropsWithChildren<
-  EmbeddedLegacyEditorsBaseProps & {
-    onClose?(): any;
-    onClosed?(): any;
-    onDismiss?(): any;
-    onSaveSuccess?(response?: any): any;
-  }
->;
+export type EmbeddedLegacyEditorsProps = PropsWithChildren<EmbeddedLegacyEditorsBaseProps & {
+  onClose?(): any;
+  onClosed?(): any;
+  onDismiss?(): any;
+  onSaveSuccess?(response?: any): any;
+}>;
 
 export interface EmbeddedLegacyEditorsStateProps extends EmbeddedLegacyEditorsBaseProps {
   onSaveSuccess?: StandardAction;
@@ -132,7 +134,8 @@ function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
     embeddedParentPath,
     onSaveSuccess,
     onDismiss,
-    onClosed
+    onClosed,
+    onMinimized
   } = props;
 
   const { formatMessage } = useIntl();
@@ -218,6 +221,14 @@ function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
     const messagesSubscription = messages.subscribe((e: any) => {
       let tab = e.data.tab || 'form';
       switch (e.data.type) {
+        case EMBEDDED_LEGACY_FORM_MINIMIZE: {
+          onMinimized();
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_PREVIEW_REFRESH: {
+          getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          break;
+        }
         case EMBEDDED_LEGACY_FORM_CLOSE: {
           closeEmbeddedLegacyForm(e.data.refresh, tab);
           break;
@@ -233,8 +244,8 @@ function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
           break;
         }
         case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
-          if (tabsState[tab].pendingChanges === false) {
-            setTabsState({ [tab]: { loaded: true, pendingChanges: true } });
+          if (tabsState[tab].pendingChanges !== e.data.refresh) {
+            setTabsState({ [tab]: { loaded: true, pendingChanges: e.data.refresh } });
           }
           break;
         }
@@ -325,10 +336,30 @@ function EmbeddedLegacyEditors(props: EmbeddedLegacyEditorsProps) {
   );
 }
 
-export default function(props: EmbeddedLegacyEditorsProps) {
+export default function (props: EmbeddedLegacyEditorsProps) {
+  const id = 'legacy-editor';
+  const dispatch = useDispatch();
+
+  const minimized = useMinimizeDialog({
+    id,
+    title: null,
+    minimized: false
+  });
+
+  //updateDialog
+
+  const onMinimized = () => {
+    dispatch(minimizeDialog({ id }));
+  };
+
   return (
-    <Dialog fullScreen open={props.open} onClose={props.onClose}>
-      <EmbeddedLegacyEditors {...props} />
+    <Dialog
+      open={props.open && !minimized}
+      keepMounted={minimized}
+      fullScreen
+      onClose={props.onClose}
+    >
+      <EmbeddedLegacyEditors {...props} onMinimized={onMinimized} />
     </Dialog>
   );
 }

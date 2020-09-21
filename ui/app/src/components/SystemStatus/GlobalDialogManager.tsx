@@ -39,8 +39,8 @@ const DependenciesDialog = lazy(() =>
   import('../../modules/Content/Dependencies/DependenciesDialog')
 );
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
-const EmbeddedLegacyEditors = lazy(() => import('../../modules/Preview/EmbeddedLegacyEditors'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
+const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -125,20 +125,19 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region Edit (Embedded Legacy Editor) */}
-      <EmbeddedLegacyEditors
+      {/* region Edit (LegacyFormDialog) */}
+      <LegacyFormDialog
         open={state.edit.open}
         src={state.edit.src}
-        type={state.edit.type}
         inProgress={state.edit.inProgress}
-        showTabs={state.edit.showTabs}
-        showController={state.edit.showController}
-        itemModel={state.edit.itemModel}
-        embeddedParentPath={state.edit.embeddedParentPath}
         onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
         onClose={createCallback(state.edit.onClose, dispatch)}
         onDismiss={createCallback(state.edit.onDismiss, dispatch)}
       />
+      {/* endregion */}
+
+      {/* region LegacyCodeEditorDialog */}
+
       {/* endregion */}
 
       {/* region Publish */}

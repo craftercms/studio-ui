@@ -193,12 +193,6 @@
                                       }
                                     });
                                   }
-                                },
-                                pendingChanges: () => {
-                                  window.top.postMessage({
-                                    type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
-                                    tab: type
-                                  }, '*');
                                 }
                               },
                               aux,
@@ -255,12 +249,6 @@
                     },
                     renderComplete: () => {
                       window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                    },
-                    pendingChanges: () => {
-                      window.top.postMessage({
-                        type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
-                        tab: type
-                      }, '*');
                     }
                   },
                   null
@@ -272,9 +260,13 @@
       case 'controller':
       case 'template': {
         CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
-          success: function () {
+          success: function (type) {
             window.top.postMessage({
-              type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+              type: type === 'refresh'
+                      ? 'EMBEDDED_LEGACY_FORM_PREVIEW_REFRESH'
+                      : type === 'minimize'
+                              ? 'EMBEDDED_LEGACY_FORM_MINIMIZE'
+                              : 'EMBEDDED_LEGACY_FORM_CLOSE',
               refresh: true,
               tab: type,
               action: 'success'
@@ -294,9 +286,10 @@
           renderComplete: function () {
             window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab: type }, '*');
           },
-          pendingChanges: function () {
+          pendingChanges: function (pending) {
             window.top.postMessage({
               type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
+              pending,
               tab: type
             }, '*');
           },
