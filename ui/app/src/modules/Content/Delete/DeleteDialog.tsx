@@ -41,6 +41,8 @@ import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../../models/GlobalState';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -277,7 +279,9 @@ export default function DeleteDialog(props: DeleteDialogProps) {
 function DeleteDialogWrapper(props: DeleteDialogProps) {
   const { items, onClose, onDismiss, onSuccess } = props;
   const [submissionComment, setSubmissionComment] = useState('');
-  const submissionCommentMaxLength = 250;
+  const submissionCommentMaxLength = useSelector<GlobalState, number>((state) =>
+    state.configuration.publishing.submission.commentMaxLength
+  );
   const [apiState, setApiState] = useSpreadState({
     error: null,
     submitting: false

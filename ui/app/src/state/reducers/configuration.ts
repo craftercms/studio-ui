@@ -15,7 +15,7 @@
  */
 
 import { GlobalState } from '../../models/GlobalState';
-import { combineReducers, createReducer } from '@reduxjs/toolkit';
+import { createReducer } from '@reduxjs/toolkit';
 import {
   fetchSidebarConfig,
   fetchSidebarConfigComplete,
@@ -27,28 +27,40 @@ const initialState: GlobalState['configuration'] = {
     error: null,
     isFetching: false,
     items: null
+  },
+  publishing: {
+    submission: {
+      commentMaxLength: 250
+    }
   }
 };
 
-const sidebar = createReducer<GlobalState['configuration']['sidebar']>(initialState.sidebar, {
+const reducer = createReducer<GlobalState['configuration']>(initialState, {
   [fetchSidebarConfig.type]: (state) => ({
     ...state,
-    isFetching: true,
-    error: null
+    sidebar: {
+      ...state.sidebar,
+      isFetching: true,
+      error: null
+    }
   }),
   [fetchSidebarConfigComplete.type]: (state, { payload }) => ({
     ...state,
-    isFetching: false,
-    error: null,
-    items: payload
+    sidebar: {
+      ...state.sidebar,
+      isFetching: false,
+      error: null,
+      items: payload
+    }
   }),
   [fetchSidebarConfigFailed.type]: (state, { payload }) => ({
     ...state,
-    isFetching: false,
-    error: payload
+    sidebar: {
+      ...state.sidebar,
+      isFetching: false,
+      error: payload
+    }
   })
 });
-
-const reducer = combineReducers({ sidebar });
 
 export default reducer;
