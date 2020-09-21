@@ -31,14 +31,15 @@ import { fetchItemVersions } from '../state/reducers/versions';
 import {
   closeDeleteDialog,
   closeWorkflowCancellationDialog,
+  showCodeEditorDialog,
   showDeleteDialog,
   showDependenciesDialog,
+  showEditDialog,
   showHistoryDialog,
   showPublishDialog,
   showRejectDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { showEditDialog } from '../state/reducers/dialogs/edit';
 import { batchActions } from '../state/actions/misc';
 import palette from '../styles/palette';
 
@@ -155,15 +156,9 @@ export default function ComponentMenu(props: ComponentMenuProps) {
           ? `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
           : `${defaultSrc}site=${site}&path=${path}&type=${type}`;
 
-        const editProps = {
-          src,
-          type,
-          inProgress: true
-        };
-
         dispatch(showWorkflowCancellationDialog({
           items: null,
-          onContinue: showEditDialog(editProps)
+          onContinue: showEditDialog({ src })
         }));
 
         fetchWorkflowAffectedItems(siteId, path).subscribe(
@@ -175,7 +170,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
               dispatch(
                 closeWorkflowCancellationDialog()
               );
-              dispatch(showEditDialog(editProps));
+              dispatch(showEditDialog({ src }));
             }
 
           }
@@ -184,66 +179,36 @@ export default function ComponentMenu(props: ComponentMenuProps) {
       }
       case 'template':
       case 'controller': {
-        // const path = getPath(type);
-        // let src = `${defaultSrc}site=${site}&path=${path}&type=${type}`;
-        // if (embeddedParentPath && type === 'form') {
-        //   src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
-        // }
-        //
-        // const editProps = {
-        //   src,
-        //   type,
-        //   inProgress: true,
-        //   showController: !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page',
-        //   itemModel: models[modelId],
-        //   embeddedParentPath
-        // };
-        //
-        // dispatch(showWorkflowCancellationDialog({
-        //   items: null,
-        //   onContinue: showEditDialog(editProps)
-        // }));
-        //
-        // fetchWorkflowAffectedItems(siteId, path).subscribe(
-        //   (items) => {
-        //     if (items?.length > 0) {
-        //       // update items state
-        //       dispatch(showWorkflowCancellationDialog({
-        //         items
-        //       }));
-        //     } else {
-        //       dispatch(
-        //         closeWorkflowCancellationDialog()
-        //       );
-        //       dispatch(
-        //         showEditDialog(editProps)
-        //       );
-        //     }
-        //
-        //   }
-        // );
+        const path = type === 'template'
+          ? contentTypesBranch.byId[models[modelId].craftercms.contentTypeId].displayTemplate
+          : `/scripts/pages/${popPiece(models[modelId].craftercms.contentTypeId, '/')}.groovy`;
+        let src = `${defaultSrc}site=${site}&path=${path}&type=${type}`;
+
+        dispatch(showWorkflowCancellationDialog({
+          items: null,
+          onContinue: showCodeEditorDialog({ src })
+        }));
+
+        fetchWorkflowAffectedItems(siteId, path).subscribe(
+          (items) => {
+            if (items?.length > 0) {
+              // update items state
+              dispatch(showWorkflowCancellationDialog({
+                items
+              }));
+            } else {
+              dispatch(
+                closeWorkflowCancellationDialog()
+              );
+              dispatch(
+                showCodeEditorDialog({ src })
+              );
+            }
+
+          }
+        );
 
         break;
-      }
-    }
-  };
-
-  const getPath = (type?: string) => {
-    switch (type) {
-      case 'publish':
-      case 'form': {
-        if (embeddedParentPath) return embeddedParentPath;
-        return models[modelId].craftercms.path;
-      }
-      case 'template': {
-        return contentTypesBranch.byId[models[modelId].craftercms.contentTypeId].displayTemplate;
-      }
-      case 'controller': {
-        let pageName = popPiece(models[modelId].craftercms.contentTypeId, '/');
-        return `/scripts/pages/${pageName}.groovy`;
-      }
-      default: {
-        return models[modelId].craftercms.path;
       }
     }
   };

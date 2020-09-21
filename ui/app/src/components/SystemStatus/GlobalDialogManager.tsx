@@ -29,6 +29,7 @@ import { isPlainObject } from '../../utils/object';
 import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
 import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
 import RejectDialog from '../Dialogs/RejectDialog';
+import LegacyCodeEditorDialog from '../Dialogs/LegacyCodeEditorDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -137,7 +138,15 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region LegacyCodeEditorDialog */}
-
+      <LegacyCodeEditorDialog
+        open={state.codeEditor.open}
+        src={state.codeEditor.src}
+        inProgress={state.codeEditor.inProgress}
+        onClose={createCallback(state.codeEditor.onClose, dispatch)}
+        onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
+        onDismiss={createCallback(state.codeEditor.onDismiss, dispatch)}
+        onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Publish */}

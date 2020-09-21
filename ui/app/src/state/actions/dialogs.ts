@@ -27,6 +27,8 @@ import { NewContentDialogStateProps } from '../../modules/Content/Authoring/NewC
 import { DependenciesDialogStateProps } from '../../modules/Content/Dependencies/DependenciesDialog';
 import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/WorkflowCancellationDialog';
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
+import { LegacyCodeEditorDialogStateProps } from '../../components/Dialogs/LegacyCodeEditorDialog';
+import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -91,4 +93,19 @@ export const workflowCancellationDialogClosed = createAction('WORKFLOW_CANCELLAT
 export const showRejectDialog = createAction<Partial<RejectDialogStateProps>>('SHOW_REJECT_DIALOG');
 export const closeRejectDialog = createAction<StandardAction>('CLOSE_REJECT_DIALOG');
 export const rejectDialogClosed = createAction('REJECT_DIALOG_CLOSED');
+// endregion
+
+// region Code Editor
+export const showEditDialog = createAction<Partial<LegacyFormDialogStateProps>>('SHOW_EDIT_DIALOG');
+export const closeEditDialog = createAction<StandardAction>('CLOSE_EDIT_DIALOG');
+export const editDialogClosed = createAction<StandardAction>('EDIT_DIALOG_CLOSED');
+export const newContentCreationComplete = createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');
+export const updateEditConfig = createAction<any>('UPDATE_EDIT_CONFIG');
+// endregion
+
+// region Code Editor
+export const showCodeEditorDialog = createAction<Partial<LegacyCodeEditorDialogStateProps>>('SHOW_CODE_EDITOR_DIALOG');
+export const closeCodeEditorDialog = createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');
+export const codeEditorDialogClosed = createAction('CODE_EDITOR_DIALOG_CLOSED');
+export const updateCodeEditorDialog = createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
 // endregion

@@ -42,6 +42,7 @@ import { RejectDialogStateProps } from '../components/Dialogs/RejectDialog';
 import { SidebarConfigItem } from '../services/configuration';
 import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
+import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -135,6 +136,7 @@ export interface GlobalState {
     dependencies: DependenciesDialogStateProps;
     delete: DeleteDialogStateProps;
     edit: LegacyFormDialogStateProps;
+    codeEditor: LegacyCodeEditorDialogStateProps;
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
   };

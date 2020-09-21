@@ -378,7 +378,6 @@ CStudioAuthoring.Module.requireModule(
 
                         aceEditor.getSession().on('change', function () {
                           aceEditor.isModified = true;
-                          onSaveCb.pendingChanges && onSaveCb.pendingChanges(true);
                         });
 
                         return aceEditor;
@@ -676,14 +675,16 @@ CStudioAuthoring.Module.requireModule(
                           callback: () => {
                             me.save(modalEl, aceEditor, templatePath, onSaveCb, true, 'saveAndClose');
                           }
-                        },
-                        {
+                        }
+                      ];
+                      if (onSaveCb.id) {
+                        options.push({
                           label: formatMessage(messages.saveAndMinimize),
                           callback: () => {
                             me.save(modalEl, aceEditor, templatePath, onSaveCb, false, 'saveAndMinimize');
                           }
-                        }
-                      ];
+                        });
+                      }
                       CrafterCMSNext.render(saveEl, 'SplitButton', {
                         options,
                         defaultSelected: 1
@@ -842,18 +843,13 @@ CStudioAuthoring.Module.requireModule(
                     if (data && data.result && data.result.success) {
                       //update pending changes state;
                       aceEditor.isModified = false;
-                      onSaveCb.pendingChanges && onSaveCb.pendingChanges(false);
                       CStudioAuthoring.Utils.showNotification(formatMessage(messages.saved));
                       if (type === 'saveAndClose') {
                         const event = new CustomEvent('legacyTemplateEditor.closed');
                         document.dispatchEvent(event);
                         modalEl.parentNode.removeChild(modalEl);
-                        onSaveCb.success && onSaveCb.success();
-                      } else if (type === 'save') {
-                        onSaveCb.success && onSaveCb.success('refresh');
-                      } else {
-                        onSaveCb.success && onSaveCb.success('minimize');
                       }
+                      onSaveCb.success && onSaveCb.success(type);
                     }
                   });
               }

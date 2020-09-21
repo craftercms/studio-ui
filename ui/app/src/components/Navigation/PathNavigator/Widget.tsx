@@ -60,16 +60,17 @@ import {
   closeConfirmDialog,
   closeDeleteDialog,
   closeNewContentDialog,
+  showCodeEditorDialog,
   showConfirmDialog,
   showDeleteDialog,
   showDependenciesDialog,
+  showEditDialog,
   showHistoryDialog,
   showNewContentDialog,
   showPublishDialog,
   showWorkflowCancellationDialog
 } from '../../../state/actions/dialogs';
 import ContentLoader from 'react-content-loader';
-import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 import CreateNewFolderDialog from '../../Dialogs/CreateNewFolderDialog';
 import BulkUploadDialog, { DropZoneStatus } from '../../Dialogs/BulkUploadDialog';
 import CreateNewFileDialog from '../../Dialogs/CreateNewFileDialog';
@@ -91,7 +92,7 @@ import {
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
 
-const MyLoader = React.memo(function() {
+const MyLoader = React.memo(function () {
   const [items] = useState(() => {
     const numOfItems = 5;
     const start = 20;
@@ -249,12 +250,12 @@ function generateMenuSections(
     sections.push(
       menuState.hasClipboard
         ? [
-            menuOptions.cut,
-            menuOptions.copy,
-            menuOptions.paste,
-            menuOptions.duplicate,
-            menuOptions.delete
-          ]
+          menuOptions.cut,
+          menuOptions.copy,
+          menuOptions.paste,
+          menuOptions.duplicate,
+          menuOptions.delete
+        ]
         : [menuOptions.cut, menuOptions.copy, menuOptions.duplicate, menuOptions.delete]
     );
     if (options.translation) {
@@ -322,6 +323,7 @@ function generateMenuSections(
       case 'asset': {
         sections.push([
           menuOptions.delete,
+          menuOptions.edit,
           menuOptions.publish,
           menuOptions.history,
           menuOptions.dependencies
@@ -387,7 +389,7 @@ export interface WidgetState {
 }
 
 // PathNavigator
-export default function(props: WidgetProps) {
+export default function (props: WidgetProps) {
   const { title, icon, path, id = removeSpaces(props.title) } = props;
   const pathNavigator = useSelection((state) => state.pathNavigator);
   const state = pathNavigator[id];
@@ -451,9 +453,9 @@ export default function(props: WidgetProps) {
       checked
         ? pathNavigatorItemChecked({ id, item })
         : pathNavigatorItemUnchecked({
-            id,
-            item
-          })
+          id,
+          item
+        })
     );
 
   const translationDialogItemChange = (item: SandboxItem) => {
@@ -476,57 +478,40 @@ export default function(props: WidgetProps) {
 
   const openItemLegacyForm = (
     item: SandboxItem,
-    type: 'controller' | 'template' | 'form',
+    type: 'form',
     readonly: boolean = false
   ) => {
-    getContentInstance(site, item.path, contentTypes).subscribe((response) => {
-      let src = `${defaultSrc}site=${site}&path=${item.path}&type=${type}&${readonly &&
-        'readonly=true'}`;
-      const editProps = {
-        src,
-        type: type,
-        inProgress: true,
-        showController: !readonly && item.contentTypeId.includes('/page/'),
-        showTabs: !readonly,
-        itemModel: response
-      };
-      fetchWorkflowAffectedItems(site, item.path).subscribe((items) => {
-        if (items?.length > 0) {
-          dispatch(
-            showWorkflowCancellationDialog({
-              items,
-              onContinue: showEditDialog(editProps)
-            })
-          );
-        } else {
-          dispatch(showEditDialog(editProps));
-        }
-      });
+    let src = `${defaultSrc}site=${site}&path=${item.path}&type=${type}&${readonly && 'readonly=true'}`;
+    fetchWorkflowAffectedItems(site, item.path).subscribe((items) => {
+      if (items?.length > 0) {
+        dispatch(
+          showWorkflowCancellationDialog({
+            items,
+            onContinue: showEditDialog({ src })
+          })
+        );
+      } else {
+        dispatch(showEditDialog({ src }));
+      }
     });
   };
 
   const openFileLegacyForm = (
     path: string,
-    type: 'controller' | 'template',
+    type: 'controller' | 'template' | 'asset',
     readonly: boolean = false
   ) => {
     let src = `${defaultSrc}site=${site}&path=${path}&type=${type}&${readonly && 'readonly=true'}`;
-    const editProps = {
-      src,
-      type: type,
-      inProgress: true,
-      showTabs: false
-    };
     fetchWorkflowAffectedItems(site, path).subscribe((items) => {
       if (items?.length > 0) {
         dispatch(
           showWorkflowCancellationDialog({
             items,
-            onContinue: showEditDialog(editProps)
+            onContinue: showCodeEditorDialog({ src })
           })
         );
       } else {
-        dispatch(showEditDialog(editProps));
+        dispatch(showCodeEditorDialog({ src }));
       }
     });
   };
@@ -548,10 +533,10 @@ export default function(props: WidgetProps) {
       case 'view':
       case 'edit': {
         let type = menu.activeItem.systemType;
-        if (type === 'template' || type === 'script') {
+        if (type === 'template' || type === 'script' || type === 'asset') {
           openFileLegacyForm(
             menu.activeItem.path,
-            type === 'script' ? 'controller' : 'template',
+            type === 'script' ? 'controller' : type,
             true
           );
         } else {
@@ -784,24 +769,16 @@ export default function(props: WidgetProps) {
               if (contentTypes) {
                 getContentInstance(site, activeItem.path, contentTypes).subscribe((response) => {
                   let src = `${defaultSrc}site=${site}&path=${activeItem.path}&type=form&changeTemplate=${contentType}`;
-                  const editProps = {
-                    src,
-                    type: 'form',
-                    inProgress: true,
-                    showController: false,
-                    showTabs: false,
-                    itemModel: response
-                  };
                   fetchWorkflowAffectedItems(site, activeItem.path).subscribe((items) => {
                     if (items?.length > 0) {
                       dispatch(
                         showWorkflowCancellationDialog({
                           items,
-                          onContinue: showEditDialog(editProps)
+                          onContinue: showEditDialog({ src })
                         })
                       );
                     } else {
-                      dispatch(showEditDialog(editProps));
+                      dispatch(showEditDialog({ src }));
                     }
                   });
                 });

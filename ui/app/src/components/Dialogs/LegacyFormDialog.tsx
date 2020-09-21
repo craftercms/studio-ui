@@ -37,22 +37,14 @@ import { filter } from 'rxjs/operators';
 import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
-import { updateEditConfig } from '../../state/reducers/dialogs/edit';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { updateEditConfig } from '../../state/actions/dialogs';
 
 const translations = defineMessages({
-  contentForm: {
-    id: 'craftercms.edit.contentForm',
+  title: {
+    id: 'craftercms.edit.title',
     defaultMessage: 'Content Form'
-  },
-  template: {
-    id: 'craftercms.edit.template',
-    defaultMessage: 'Template'
-  },
-  controller: {
-    id: 'craftercms.edit.controller',
-    defaultMessage: 'Controller'
   },
   loadingForm: {
     id: 'craftercms.edit.loadingForm',
@@ -198,14 +190,13 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
 export default function (props: LegacyFormDialogProps) {
   const id = 'legacy-editor';
   const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
 
   const minimized = useMinimizeDialog({
     id,
-    title: 'edito',
+    title: formatMessage(translations.title),
     minimized: false
   });
-
-  //updateDialog
 
   const onMinimized = () => {
     dispatch(minimizeDialog({ id }));

@@ -139,9 +139,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
       const onQuickCreateItemSelected = (src) => {
         showEditDialog({
           src,
-          type: 'form',
           inProgress: false,
-          showTabs: false
         });
       };
 

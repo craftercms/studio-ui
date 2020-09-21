@@ -257,45 +257,31 @@
 
         break;
       }
+      case 'asset':
       case 'controller':
       case 'template': {
         CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
-          success: function (type) {
+          success: function (action) {
             window.top.postMessage({
-              type: type === 'refresh'
-                      ? 'EMBEDDED_LEGACY_FORM_PREVIEW_REFRESH'
-                      : type === 'minimize'
-                              ? 'EMBEDDED_LEGACY_FORM_MINIMIZE'
-                              : 'EMBEDDED_LEGACY_FORM_CLOSE',
-              refresh: true,
-              tab: type,
-              action: 'success'
+              type: 'LEGACY_CODE_EDITOR_SUCCESS',
+              action
             }, '*');
-          },
-          failure: function () {
-            console.log('failure');
           },
           cancelled: function () {
             window.top.postMessage({
-              type: 'EMBEDDED_LEGACY_FORM_CLOSE',
-              refresh: false,
-              tab: type,
+              type: 'LEGACY_CODE_EDITOR_CLOSE',
               action: 'cancelled'
             }, '*');
           },
           renderComplete: function () {
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab: type }, '*');
-          },
-          pendingChanges: function (pending) {
             window.top.postMessage({
-              type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
-              pending,
-              tab: type
+              type: 'LEGACY_CODE_EDITOR_RENDERED',
+              action: 'renderComplete'
             }, '*');
           },
           id: type,
           callingWindow: window
-        }, null, null);
+        }, null, null, true);
         break;
       }
     }

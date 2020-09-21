@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useRef } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
@@ -24,38 +24,25 @@ import { createStyles } from '@material-ui/core';
 import { useMinimizeDialog, useUnmount } from '../../utils/hooks';
 import { defineMessages, useIntl } from 'react-intl';
 import {
-  EMBEDDED_LEGACY_FORM_CLOSE,
-  EMBEDDED_LEGACY_FORM_FAILURE,
-  EMBEDDED_LEGACY_FORM_MINIMIZE,
-  EMBEDDED_LEGACY_FORM_PREVIEW_REFRESH,
-  EMBEDDED_LEGACY_FORM_RENDERED,
-  EMBEDDED_LEGACY_FORM_SAVE,
+  LEGACY_CODE_EDITOR_CLOSE,
+  LEGACY_CODE_EDITOR_RENDERED,
+  LEGACY_CODE_EDITOR_SUCCESS,
   RELOAD_REQUEST
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import ErrorDialog from '../../components/SystemStatus/ErrorDialog';
-import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
-import { updateEditConfig } from '../../state/reducers/dialogs/edit';
 import { minimizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { updateCodeEditorDialog } from '../../state/actions/dialogs';
 
 const translations = defineMessages({
-  contentForm: {
-    id: 'craftercms.edit.contentForm',
-    defaultMessage: 'Content Form'
-  },
-  template: {
-    id: 'craftercms.edit.template',
-    defaultMessage: 'Template'
-  },
-  controller: {
-    id: 'craftercms.edit.controller',
-    defaultMessage: 'Controller'
+  title: {
+    id: 'craftercms.codeEditor.title',
+    defaultMessage: 'Code Editor'
   },
   loadingForm: {
-    id: 'craftercms.edit.loadingForm',
+    id: 'craftercms.codeEditor.loadingForm',
     defaultMessage: 'Loading...'
   }
 });
@@ -89,14 +76,14 @@ interface LegacyCodeEditorDialogBaseProps {
 }
 
 export type LegacyCodeEditorDialogProps = PropsWithChildren<LegacyCodeEditorDialogBaseProps & {
-  onSave?(response?: any): void;
+  onSuccess?(response?: any): void;
   onClose?(): void;
   onClosed?(): void;
   onDismiss?(): void;
 }>;
 
 export interface LegacyCodeEditorDialogStateProps extends LegacyCodeEditorDialogBaseProps {
-  onSave: StandardAction;
+  onSuccess?: StandardAction;
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onDismiss?: StandardAction;
@@ -106,7 +93,7 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
   const {
     src,
     inProgress,
-    onSave,
+    onSuccess,
     onDismiss,
     onClosed,
     onMinimized
@@ -116,56 +103,39 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
   const classes = styles({});
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
-  const [error, setError] = useState<ApiResponse>(null);
 
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
-
-  const onErrorClose = () => {
-    setError(null);
-    closeEmbeddedLegacyForm(false);
-  };
-
-  const closeEmbeddedLegacyForm = useCallback(
-    (refresh: boolean) => {
-      onDismiss();
-      if (refresh) {
-        getHostToGuestBus().next({ type: RELOAD_REQUEST });
-      }
-    },
-    [onDismiss]
-  );
 
   useEffect(() => {
     const messagesSubscription = messages.subscribe((e: any) => {
       switch (e.data.type) {
-        case EMBEDDED_LEGACY_FORM_MINIMIZE: {
-          onMinimized();
-          break;
-        }
-        case EMBEDDED_LEGACY_FORM_PREVIEW_REFRESH: {
+        case LEGACY_CODE_EDITOR_SUCCESS: {
+          onSuccess?.();
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
-          break;
-        }
-        case EMBEDDED_LEGACY_FORM_CLOSE: {
-          closeEmbeddedLegacyForm(e.data.refresh);
-          break;
-        }
-        case EMBEDDED_LEGACY_FORM_RENDERED: {
-          if (inProgress) {
-            const config = { inProgress: false };
-            dispatch(updateEditConfig(config));
+          switch (e.data.action) {
+            case 'save': {
+              break;
+            }
+            case 'saveAndClose': {
+              onDismiss();
+              break;
+            }
+            case 'saveAndMinimize': {
+              onMinimized();
+              break;
+            }
           }
           break;
         }
-        case EMBEDDED_LEGACY_FORM_SAVE: {
-          closeEmbeddedLegacyForm(e.data.refresh);
-          onSave?.(e.data);
+        case LEGACY_CODE_EDITOR_CLOSE: {
+          onDismiss();
           break;
         }
-        case EMBEDDED_LEGACY_FORM_FAILURE: {
-          setError({
-            message: e.data.message
-          });
+        case LEGACY_CODE_EDITOR_RENDERED: {
+          if (inProgress) {
+            const config = { inProgress: false };
+            dispatch(updateCodeEditorDialog(config));
+          }
           break;
         }
       }
@@ -173,7 +143,7 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSave, messages, closeEmbeddedLegacyForm, dispatch, onMinimized]);
+  }, [inProgress, onSuccess, messages, dispatch, onMinimized, onDismiss]);
 
   useUnmount(onClosed);
 
@@ -188,10 +158,9 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
       <iframe
         ref={iframeRef}
         src={src}
-        title="Embedded Legacy Form"
+        title="Embedded Legacy Code Editor"
         className={clsx(classes.iframe, !inProgress && 'complete')}
       />
-      <ErrorDialog open={Boolean(error)} error={error} onDismiss={onErrorClose} />
     </>
   );
 }
@@ -199,14 +168,13 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
 export default function (props: LegacyCodeEditorDialogProps) {
   const id = 'legacy-code-editor';
   const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
 
   const minimized = useMinimizeDialog({
     id,
-    title: 'Code editor',
+    title: formatMessage(translations.title),
     minimized: false
   });
-
-  //updateDialog
 
   const onMinimized = () => {
     dispatch(minimizeDialog({ id }));
