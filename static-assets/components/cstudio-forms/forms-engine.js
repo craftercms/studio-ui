@@ -1289,7 +1289,7 @@ var CStudioForms =
           var editorId = CStudioAuthoring.Utils.getQueryVariable(queryString, 'editorId');
           var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
 
-          var saveFn = function(preview, draft, embeddedIceDraft) {
+          var saveFn = function (preview, draft, embeddedIceDraft, action) {
             showWarnMsg = false;
             var saveDraft = draft == true ? true : false;
 
@@ -1410,7 +1410,7 @@ var CStudioForms =
                           contentTO.initialModel = CStudioForms.initialModel;
                           contentTO.updatedModel = CStudioForms.updatedModel;
 
-                          iceWindowCallback.success(contentTO, editorId, name, value, draft);
+                          iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                             saveDraftDialog();
@@ -1731,21 +1731,21 @@ var CStudioForms =
           });
 
           if (!form.readOnly) {
+            var saveButtonDraftEl = document.createElement('input');
+            saveButtonDraftEl.id = 'cstudioSaveAndCloseDraft';
+            saveButtonDraftEl.type = 'button';
+            saveButtonDraftEl.value = formatMessage(formEngineMessages.save);
+            saveButtonDraftEl.onclick = () => saveFn(false, true, null, 'save');
+            YDom.addClass(saveButtonDraftEl, 'btn btn-primary cstudio-button-first');
+            formButtonContainerEl.appendChild(saveButtonDraftEl);
+
             var saveButtonEl = document.createElement('input');
             saveButtonEl.id = 'cstudioSaveAndClose';
             saveButtonEl.type = 'button';
             saveButtonEl.value = CMgs.format(formsLangBundle, 'saveAndClose');
-            saveButtonEl.onclick = () => saveFn(false, false);
+            saveButtonEl.onclick = () => saveFn(false, false, null, 'saveAndClose');
             YDom.addClass(saveButtonEl, 'btn btn-primary cstudio-button-first');
             formButtonContainerEl.appendChild(saveButtonEl);
-
-            var saveButtonDraftEl = document.createElement('input');
-            saveButtonDraftEl.id = 'cstudioSaveAndCloseDraft';
-            saveButtonDraftEl.type = 'button';
-            saveButtonDraftEl.value = CMgs.format(formsLangBundle, 'saveAndCloseDraft');
-            saveButtonDraftEl.onclick = () => saveFn(false, true);
-            YDom.addClass(saveButtonDraftEl, 'btn btn-primary cstudio-button-first');
-            formButtonContainerEl.appendChild(saveButtonDraftEl);
 
             var previewButtonEl = document.createElement('input');
             previewButtonEl.id = 'cstudioSaveAndPreview';
@@ -1761,7 +1761,7 @@ var CStudioForms =
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
               success: function(type) {
-                if (type.previewable && type.previewable == 'true') {
+                if (type.previewable) {
                   previewButtonEl.style.display = 'inline';
                 }
               },
@@ -1808,7 +1808,11 @@ var CStudioForms =
             colExpButtonEl,
             'click',
             function() {
-              collapseFn();
+              if (iceWindowCallback.id) {
+                saveFn(false, true, null, 'saveAndMinimize');
+              } else {
+                collapseFn();
+              }
             },
             me
           );

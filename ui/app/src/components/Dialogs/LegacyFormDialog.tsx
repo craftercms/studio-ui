@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useDispatch } from 'react-redux';
 import LoadingState from '../../components/SystemStatus/LoadingState';
@@ -26,10 +26,9 @@ import { defineMessages, useIntl } from 'react-intl';
 import {
   EMBEDDED_LEGACY_FORM_CLOSE,
   EMBEDDED_LEGACY_FORM_FAILURE,
-  EMBEDDED_LEGACY_FORM_MINIMIZE,
-  EMBEDDED_LEGACY_FORM_PREVIEW_REFRESH,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
+  EMBEDDED_LEGACY_FORM_SUCCESS,
   RELOAD_REQUEST
 } from '../../state/actions/preview';
 import { fromEvent } from 'rxjs';
@@ -114,32 +113,34 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
 
   const onErrorClose = () => {
     setError(null);
-    closeEmbeddedLegacyForm(false);
+    onDismiss();
   };
-
-  const closeEmbeddedLegacyForm = useCallback(
-    (refresh: boolean) => {
-      onDismiss();
-      if (refresh) {
-        getHostToGuestBus().next({ type: RELOAD_REQUEST });
-      }
-    },
-    [onDismiss]
-  );
 
   useEffect(() => {
     const messagesSubscription = messages.subscribe((e: any) => {
       switch (e.data.type) {
-        case EMBEDDED_LEGACY_FORM_MINIMIZE: {
-          onMinimized();
-          break;
-        }
-        case EMBEDDED_LEGACY_FORM_PREVIEW_REFRESH: {
+        case EMBEDDED_LEGACY_FORM_SUCCESS: {
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          switch (e.data.action) {
+            case 'save': {
+              break;
+            }
+            case 'saveAndClose': {
+              onDismiss();
+              break;
+            }
+            case 'saveAndMinimize': {
+              onMinimized();
+              break;
+            }
+          }
           break;
         }
         case EMBEDDED_LEGACY_FORM_CLOSE: {
-          closeEmbeddedLegacyForm(e.data.refresh);
+          onDismiss();
+          if (e.data.refresh) {
+            getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          }
           break;
         }
         case EMBEDDED_LEGACY_FORM_RENDERED: {
@@ -150,8 +151,23 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE: {
-          closeEmbeddedLegacyForm(e.data.refresh);
+          if (e.data.refresh) {
+            getHostToGuestBus().next({ type: RELOAD_REQUEST });
+          }
           onSaveSuccess?.(e.data);
+          switch (e.data.action) {
+            case 'save': {
+              break;
+            }
+            case 'saveAndClose': {
+              onDismiss();
+              break;
+            }
+            case 'saveAndMinimize': {
+              onMinimized();
+              break;
+            }
+          }
           break;
         }
         case EMBEDDED_LEGACY_FORM_FAILURE: {
@@ -165,7 +181,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSaveSuccess, messages, closeEmbeddedLegacyForm, dispatch, onMinimized]);
+  }, [inProgress, onSaveSuccess, messages, dispatch, onMinimized, onDismiss]);
 
   useUnmount(onClosed);
 

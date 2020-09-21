@@ -646,6 +646,10 @@ const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
     defaultMessage: 'Draft Save Completed'
+  },
+  save: {
+    id: 'words.save',
+    defaultMessage: 'Save'
   }
 });
 

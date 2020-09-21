@@ -86,49 +86,6 @@
 
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
-  const changeTab = (e) => {
-    if (e.data.type === 'EDIT_FORM_CHANGE_TAB') {
-      let tab = e.data.tab;
-      let path = e.data.path;
-      switch (tab) {
-        case 'form': {
-          $('.cstudio-template-editor-container-modal').hide();
-          if ($('.studio-form-modal').length) {
-            $('.studio-form-modal').show();
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab }, '*');
-          } else {
-            openDialog(tab, path);
-          }
-          break;
-        }
-        case 'template': {
-          $('.cstudio-template-editor-container-modal.controller').hide();
-          $('.studio-form-modal').hide();
-          if ($('.cstudio-template-editor-container-modal.template').length) {
-            $('.cstudio-template-editor-container-modal.template').show();
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab }, '*');
-          } else {
-            openDialog(tab, path);
-          }
-          break;
-        }
-        case 'controller': {
-          $('.cstudio-template-editor-container-modal.template').hide();
-          $('.studio-form-modal').hide();
-          if ($('.cstudio-template-editor-container-modal.controller').length) {
-            $('.cstudio-template-editor-container-modal.controller').show();
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab }, '*');
-          } else {
-            openDialog(tab, path);
-          }
-          break;
-        }
-      }
-    }
-  };
-
-  window.addEventListener('message', changeTab, false);
-
   function openDialog(type, path) {
     switch (type) {
       case 'form': {
@@ -152,12 +109,12 @@
                               '',
                               true,
                               {
-                                success: () => {
+                                success: (response, editorId, name, value, draft, action) => {
                                   window.top.postMessage({
-                                    type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+                                    type: 'EMBEDDED_LEGACY_FORM_SUCCESS',
                                     refresh: true,
                                     tab: type,
-                                    action: 'success'
+                                    action
                                   }, '*');
                                 },
                                 failure: error => {
@@ -193,7 +150,8 @@
                                       }
                                     });
                                   }
-                                }
+                                },
+                                id: type
                               },
                               aux,
                               null,
@@ -221,14 +179,14 @@
                   false,
                   false,
                   {
-                    success: (response) => {
+                    success: (response, editorId, name, value, draft, action) => {
                       window.top.postMessage({
                         ...response,
                         type: 'EMBEDDED_LEGACY_FORM_SAVE',
                         refresh: false,
                         tab: type,
-                        action: 'success',
-                        redirectUrl: response.item?.browserUri
+                        redirectUrl: response.item?.browserUri,
+                        action
                       }, '*');
                     },
                     failure: (error) => {
@@ -249,7 +207,8 @@
                     },
                     renderComplete: () => {
                       window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                    }
+                    },
+                    id: type
                   },
                   null
           );
