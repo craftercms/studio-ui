@@ -131,9 +131,10 @@ function GlobalDialogManager() {
         open={state.edit.open}
         src={state.edit.src}
         inProgress={state.edit.inProgress}
-        onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
         onClose={createCallback(state.edit.onClose, dispatch)}
+        onClosed={createCallback(state.edit.onClosed, dispatch)}
         onDismiss={createCallback(state.edit.onDismiss, dispatch)}
+        onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
       />
       {/* endregion */}
 

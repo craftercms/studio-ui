@@ -90,6 +90,7 @@ export type LegacyFormDialogProps = PropsWithChildren<LegacyFormDialogBaseProps 
 export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
   onSaveSuccess?: StandardAction;
   onClose?: StandardAction;
+  onClosed?: StandardAction;
   onDismiss?: StandardAction;
 }
 
