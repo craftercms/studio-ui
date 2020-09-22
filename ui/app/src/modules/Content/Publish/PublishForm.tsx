@@ -33,6 +33,9 @@ import Link from '@material-ui/core/Link';
 import DateTimePicker from '../../../components/Controls/DateTimePicker';
 import moment from 'moment';
 import palette from '../../../styles/palette';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../../models/GlobalState';
+import { CommentCountUI } from '../../../components/CommentCount';
 
 const messages = defineMessages({
   emailLabel: {
@@ -192,6 +195,10 @@ function PublishForm(props: PublishFormProps) {
     setSubmitDisabled,
     disabled = true
   } = props;
+
+  const submissionCommentMaxLength = useSelector<GlobalState, number>((state) =>
+    state.configuration.publishing.submission.commentMaxLength
+  );
 
   useEffect(
     () => {
@@ -392,8 +399,14 @@ function PublishForm(props: PublishFormProps) {
         InputProps={{
           className: classes.textField
         }}
+        inputProps={{ maxLength: submissionCommentMaxLength }}
         disabled={disabled}
       />
+
+      <CommentCountUI
+        commentLength={inputs.submissionComment.length}
+        commentMaxLength={submissionCommentMaxLength}
+      ></CommentCountUI>
     </form>
   );
 }

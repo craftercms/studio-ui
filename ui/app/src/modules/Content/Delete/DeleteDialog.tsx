@@ -40,9 +40,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
-import { Typography } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
+import { CommentCountUI } from '../../../components/CommentCount';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -178,28 +178,10 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
             />
           </form>
 
-          <Grid
-            container
-            direction="row"
-            justify="space-between"
-            className={classes.countContainer}
-          >
-            <Grid item>
-              <Typography className={classes.submissionCommentCount}>
-                <FormattedMessage
-                  id="deleteDialog.maxCharacters"
-                  defaultMessage="Max {maxLength} characters"
-                  values={{ maxLength: submissionCommentMaxLength }}
-                />
-              </Typography>
-            </Grid>
-
-            <Grid item>
-              <Typography className={classes.submissionCommentCount}>
-                {submissionComment.length}/{submissionCommentMaxLength}
-              </Typography>
-            </Grid>
-          </Grid>
+          <CommentCountUI
+            commentLength={submissionComment.length}
+            commentMaxLength={submissionCommentMaxLength}
+          ></CommentCountUI>
         </Grid>
       </Grid>
     </>

@@ -46,6 +46,9 @@ import { reject } from '../../services/publishing';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fetchCannedMessage } from '../../services/configuration';
 import { getCurrentLocale } from '../CrafterCMSNextBridge';
+import { CommentCountUI } from '../CommentCount';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../models/GlobalState';
 
 // region Typings
 
@@ -65,6 +68,7 @@ interface RejectDialogUIProps {
   checkedItems: string[];
   rejectionReason: string;
   rejectionComment: string;
+  submissionCommentMaxLength: number;
   setRejectionReason?(value: string): void;
   setRejectionComment?(value: string): void;
   onUpdateChecked?(value?: string): void;
@@ -166,6 +170,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
     rejectionComment,
     setRejectionReason,
     setRejectionComment,
+    submissionCommentMaxLength,
     onUpdateChecked,
     onClose,
     onDismiss,
@@ -266,8 +271,14 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                 InputProps={{
                   className: classes.textField
                 }}
+                inputProps={{ maxLength: submissionCommentMaxLength }}
               />
             </form>
+
+            <CommentCountUI
+              commentLength={rejectionComment.length}
+              commentMaxLength={submissionCommentMaxLength}
+            ></CommentCountUI>
           </Grid>
         </Grid>
       </DialogBody>
@@ -325,6 +336,9 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     error: null,
     submitting: false
   });
+  const submissionCommentMaxLength = useSelector<GlobalState, number>((state) =>
+    state.configuration.publishing.submission.commentMaxLength
+  );
 
   // check all items as default
   useEffect(() => {
@@ -399,6 +413,7 @@ function RejectDialogWrapper(props: RejectDialogProps) {
       onDismiss={onDismiss}
       onReject={onReject}
       classes={useStyles()}
+      submissionCommentMaxLength={submissionCommentMaxLength}
     />
   );
 }
