@@ -89,20 +89,20 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, ({ output }) => {
-          if (output) {
+        CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, (response) => {
+          if (response) {
             const page = CStudioAuthoring.Utils.getQueryParameterURL('page');
             const acnDraftContent = $('.acnDraftContent').get(0);
-            eventYS.data = output.item;
+            eventYS.data = response.item;
             eventYS.typeAction = 'createContent';
             eventYS.oldPath = null;
-            eventYS.parent = output.item.path === '/site/website' ? null : false;
+            eventYS.parent = response.item.path === '/site/website' ? null : false;
             document.dispatchEvent(eventYS);
 
-            if (output.item.isPage) {
-              CStudioAuthoring.Operations.refreshPreview(output.item);
-              if (page === output.item.browserUri && acnDraftContent) {
-                CStudioAuthoring.SelectedContent.setContent(output.item);
+            if (response.item.isPage) {
+              CStudioAuthoring.Operations.refreshPreview(response.item);
+              if (page === response.item.browserUri && acnDraftContent) {
+                CStudioAuthoring.SelectedContent.setContent(response.item);
               }
             } else {
               CStudioAuthoring.Operations.refreshPreview();
@@ -130,8 +130,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
 
         CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, (response) => {
           if (response) {
-            const payload = response.payload ?? response.output;
-            showEditDialog(payload);
+            showEditDialog(response);
           }
         });
       };
