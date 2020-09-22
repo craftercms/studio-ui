@@ -1775,7 +1775,8 @@ var CStudioForms =
                 }
                 CrafterCMSNext.render(buttonsContainer, 'SplitButton', {
                   options,
-                  defaultSelected: 1
+                  defaultSelected: 1,
+                  disablePortal: false
                 });
               },
               failure: function() {}

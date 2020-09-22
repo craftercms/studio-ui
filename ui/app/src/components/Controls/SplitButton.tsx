@@ -31,10 +31,11 @@ interface SplitButtonProps {
     callback(): void;
   }[];
   defaultSelected?: number;
+  disablePortal?: boolean;
 }
 
 export default function SplitButton(props: SplitButtonProps) {
-  const { options, defaultSelected = 0 } = props;
+  const { options, defaultSelected = 0 , disablePortal = true} = props;
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = React.useState(defaultSelected);
@@ -80,7 +81,7 @@ export default function SplitButton(props: SplitButtonProps) {
           <ArrowDropDownIcon />
         </Button>
       </ButtonGroup>
-      <Popper open={open} anchorEl={anchorRef.current} transition>
+      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal={disablePortal}>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
