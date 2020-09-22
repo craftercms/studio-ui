@@ -88,6 +88,7 @@ import {
   pathNavigatorSetKeyword,
   pathNavigatorSetLocaleCode
 } from '../../../state/actions/pathNavigator';
+import { getStoredPreviewChoice } from '../../../utils/state';
 
 const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 const createRand = () => rand(70, 85);
@@ -966,7 +967,8 @@ export default function (props: WidgetProps) {
 
   const onItemClicked = (item: SandboxItem) => {
     if (item.previewUrl) {
-      window.location.href = `${authoringBase}/preview/#/?page=${item.previewUrl}&site=${site}`;
+      let previewBase = getStoredPreviewChoice(site) === '2'? 'next/preview' : 'preview';
+      window.location.href = `${authoringBase}/${previewBase}/#/?page=${item.previewUrl}&site=${site}`;
     }
   };
 
