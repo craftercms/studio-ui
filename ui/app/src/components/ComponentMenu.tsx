@@ -221,77 +221,90 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         onClose={handleClose}
         anchorOrigin={anchorOrigin}
       >
-        <MenuItem onClick={() => handleEdit('form')}>
-          <FormattedMessage
-            id="previewToolBar.menu.edit"
-            defaultMessage="Edit"
-          />
-        </MenuItem>
         {
-          (sandboxItem && !sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
-          <MenuItem onClick={() => handleEdit('schedule')}>
-            <FormattedMessage
-              id="previewToolBar.menu.schedule"
-              defaultMessage="Schedule"
-            />
-          </MenuItem>
-        }
-        {
-          (sandboxItem && !sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
-          <MenuItem onClick={() => handleEdit('publish')}>
-            <FormattedMessage
-              id="previewToolBar.menu.publish"
-              defaultMessage="Publish"
-            />
-          </MenuItem>
-        }
-        {
-          (sandboxItem && (sandboxItem.stateMap.submitted || sandboxItem.stateMap.scheduled || sandboxItem.stateMap.deleted)) &&
-          <MenuItem onClick={() => handleEdit('reject')}>
-            <FormattedMessage
-              id="previewToolBar.menu.reject"
-              defaultMessage="Reject"
-            />
-          </MenuItem>
-        }
-        <MenuItem onClick={() => handleEdit('history')}>
-          <FormattedMessage
-            id="previewToolBar.menu.history"
-            defaultMessage="History"
-          />
-        </MenuItem>
-        <MenuItem onClick={() => handleEdit('dependencies')}>
-          <FormattedMessage
-            id="previewToolBar.menu.dependencies"
-            defaultMessage="Dependencies"
-          />
-        </MenuItem>
-        <MenuItem onClick={() => handleEdit('delete')}>
-          <FormattedMessage
-            id="previewToolBar.menu.delete"
-            defaultMessage="Delete"
-          />
-        </MenuItem>
-        <MenuItem onClick={handleClose} className={classes.separator}>
-          <FormattedMessage
-            id="previewToolBar.menu.infoSheet"
-            defaultMessage="Info Sheet"
-          />
-        </MenuItem>
-        <MenuItem onClick={() => handleEdit('template')}>
-          <FormattedMessage
-            id="previewToolBar.menu.editTemplate"
-            defaultMessage="Edit Template"
-          />
-        </MenuItem>
-        {
-          sandboxItem && !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page' &&
-          <MenuItem onClick={() => handleEdit('controller')}>
-            <FormattedMessage
-              id="previewToolBar.menu.editController"
-              defaultMessage="Edit Controller"
-            />
-          </MenuItem>
+          sandboxItem ? (
+            <div>
+              <MenuItem onClick={() => handleEdit('form')}>
+                <FormattedMessage
+                  id="componentMenu.edit"
+                  defaultMessage="Edit"
+                />
+              </MenuItem>
+              {
+                (!sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
+                <MenuItem onClick={() => handleEdit('schedule')}>
+                  <FormattedMessage
+                    id="componentMenu.schedule"
+                    defaultMessage="Schedule"
+                  />
+                </MenuItem>
+              }
+              {
+                (!sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
+                <MenuItem onClick={() => handleEdit('publish')}>
+                  <FormattedMessage
+                    id="componentMenu.publish"
+                    defaultMessage="Publish"
+                  />
+                </MenuItem>
+              }
+              {
+                (sandboxItem.stateMap.submitted || sandboxItem.stateMap.scheduled || sandboxItem.stateMap.deleted) &&
+                <MenuItem onClick={() => handleEdit('reject')}>
+                  <FormattedMessage
+                    id="componentMenu.reject"
+                    defaultMessage="Reject"
+                  />
+                </MenuItem>
+              }
+              <MenuItem onClick={() => handleEdit('history')}>
+                <FormattedMessage
+                  id="componentMenu.history"
+                  defaultMessage="History"
+                />
+              </MenuItem>
+              <MenuItem onClick={() => handleEdit('dependencies')}>
+                <FormattedMessage
+                  id="componentMenu.dependencies"
+                  defaultMessage="Dependencies"
+                />
+              </MenuItem>
+              <MenuItem onClick={() => handleEdit('delete')}>
+                <FormattedMessage
+                  id="componentMenu.delete"
+                  defaultMessage="Delete"
+                />
+              </MenuItem>
+              <MenuItem onClick={handleClose} className={classes.separator}>
+                <FormattedMessage
+                  id="componentMenu.infoSheet"
+                  defaultMessage="Info Sheet"
+                />
+              </MenuItem>
+              <MenuItem onClick={() => handleEdit('template')}>
+                <FormattedMessage
+                  id="componentMenu.editTemplate"
+                  defaultMessage="Edit Template"
+                />
+              </MenuItem>
+              {
+                !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page' &&
+                <MenuItem onClick={() => handleEdit('controller')}>
+                  <FormattedMessage
+                    id="componentMenu.editController"
+                    defaultMessage="Edit Controller"
+                  />
+                </MenuItem>
+              }
+            </div>
+          ) : (
+            <MenuItem>
+              <FormattedMessage
+                id="componentMenu.loading"
+                defaultMessage="Loading..."
+              />
+            </MenuItem>
+          )
         }
       </Menu>
     </>
