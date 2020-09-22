@@ -151,6 +151,11 @@ export interface GlobalState {
       error: ApiResponse;
       items: Array<SidebarConfigItem>;
       isFetching: boolean;
+    },
+    publishing: {
+      submission: {
+        commentMaxLength: number
+      }
     }
   };
   pathNavigator: {
