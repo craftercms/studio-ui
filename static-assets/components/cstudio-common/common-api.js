@@ -9560,7 +9560,7 @@ CStudioAuthoring.InContextEdit = {
           .height()
           .toString()
       );
-      $(dialog).attr('style', 'height: 49px !important');
+      $(dialog).attr('style', 'height: 57px !important');
       ctrlBar.css({ backgroundColor: '#7E9DBB' });
       ctrlBar.addClass('collapseForm');
       overlayContainer && overlayContainer.addClass('overlay-collapsed');
