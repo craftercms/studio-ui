@@ -73,14 +73,14 @@ export default function SplitButton(props: SplitButtonProps) {
           size="small"
           aria-controls={open ? 'split-button-menu' : undefined}
           aria-expanded={open ? 'true' : undefined}
-          aria-label="select merge strategy"
+          aria-label="select option"
           aria-haspopup="menu"
           onClick={handleToggle}
         >
           <ArrowDropDownIcon />
         </Button>
       </ButtonGroup>
-      <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+      <Popper open={open} anchorEl={anchorRef.current} transition>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}

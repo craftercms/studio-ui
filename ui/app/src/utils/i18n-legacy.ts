@@ -650,6 +650,18 @@ const formEngineMessages = defineMessages({
   save: {
     id: 'words.save',
     defaultMessage: 'Save'
+  },
+  saveAndMinimize: {
+    id: 'formEngine.saveAndMinimize',
+    defaultMessage: 'Save & Minimize'
+  },
+  saveAndClose: {
+    id: 'formEngine.saveAndClose',
+    defaultMessage: 'Save & Close'
+  },
+  saveAndPreview: {
+    id: 'formEngine.saveAndPreview',
+    defaultMessage: 'Save & Preview'
   }
 });
 
