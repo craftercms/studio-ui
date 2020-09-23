@@ -164,6 +164,8 @@
                 _self.validate(_self);
               }
             }
+          } else {
+            containerEl.style.display = 'none';
           }
 
         }
