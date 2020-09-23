@@ -38,7 +38,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import palette from '../../styles/palette';
@@ -46,9 +45,7 @@ import { reject } from '../../services/publishing';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fetchCannedMessage } from '../../services/configuration';
 import { getCurrentLocale } from '../CrafterCMSNextBridge';
-import { CommentCountUI } from '../CommentCount';
-import { useSelector } from 'react-redux';
-import GlobalState from '../../models/GlobalState';
+import { TextFieldWithMax } from '../TextFieldWithMax';
 
 // region Typings
 
@@ -68,7 +65,6 @@ interface RejectDialogUIProps {
   checkedItems: string[];
   rejectionReason: string;
   rejectionComment: string;
-  submissionCommentMaxLength: number;
   setRejectionReason?(value: string): void;
   setRejectionComment?(value: string): void;
   onUpdateChecked?(value?: string): void;
@@ -170,7 +166,6 @@ function RejectDialogUI(props: RejectDialogUIProps) {
     rejectionComment,
     setRejectionReason,
     setRejectionComment,
-    submissionCommentMaxLength,
     onUpdateChecked,
     onClose,
     onDismiss,
@@ -258,7 +253,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                 </Select>
               </FormControl>
 
-              <TextField
+              <TextFieldWithMax
                 className={classes.submissionTextField}
                 label={<FormattedMessage
                   id="rejectDialog.rejectCommentLabel" defaultMessage="Rejection Comment"
@@ -271,14 +266,8 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                 InputProps={{
                   className: classes.textField
                 }}
-                inputProps={{ maxLength: submissionCommentMaxLength }}
               />
             </form>
-
-            <CommentCountUI
-              commentLength={rejectionComment.length}
-              commentMaxLength={submissionCommentMaxLength}
-            ></CommentCountUI>
           </Grid>
         </Grid>
       </DialogBody>
@@ -336,9 +325,6 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     error: null,
     submitting: false
   });
-  const submissionCommentMaxLength = useSelector<GlobalState, number>((state) =>
-    state.configuration.publishing.submission.commentMaxLength
-  );
 
   // check all items as default
   useEffect(() => {
@@ -413,7 +399,6 @@ function RejectDialogWrapper(props: RejectDialogProps) {
       onDismiss={onDismiss}
       onReject={onReject}
       classes={useStyles()}
-      submissionCommentMaxLength={submissionCommentMaxLength}
     />
   );
 }

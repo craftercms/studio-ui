@@ -121,9 +121,12 @@
                   <span ng-show="publish.isValidateCommentOn">*</span>
                 </label>
                 <textarea
-                  class="form-control submission-comment" id="submissionComment"
-                  maxlength="250" name="submissionComment"
-                  ng-model="publish.submissionComment" ng-required="publish.isValidateCommentOn"
+                  class="form-control submission-comment"
+                  id="submissionComment"
+                  maxlength="{{ publish.maxCommentLength }}"
+                  name="submissionComment"
+                  ng-model="publish.submissionComment"
+                  ng-required="publish.isValidateCommentOn"
                 >
                                     </textarea>
                 <div id="bulkPublishCount" style="max-width: 500px"></div>
@@ -227,10 +230,13 @@
                   <span ng-show="publish.isValidateCommitPublishCommentOn">*</span>
                 </label>
                 <textarea
-                  class="form-control" id="publishComment" maxlength="250"
+                  class="form-control"
+                  id="publishComment"
+                  maxlength="{{ publish.maxCommentLength }}"
                   name="publishComment" ng-model="publish.publishComment"
                   ng-required="publish.isValidateCommitPublishCommentOn"
-                ></textarea>
+                >
+                </textarea>
 
                 <div id="publishCommentCount" style="max-width: 500px"></div>
                 <div

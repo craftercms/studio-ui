@@ -961,13 +961,15 @@
       var publish = $scope.publish;
       publish.error = '';
 
-      publish.initQueque = function() {
+      publish.maxCommentLength = CrafterCMSNext.system.store.getState().configuration.publishing.submission.commentMaxLength;
+
+      publish.initQueque = function () {
         CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
           siteId: $location.search().site
         });
       };
 
-      publish.showModal = function(template, size, verticalCentered, styleClass) {
+      publish.showModal = function (template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
           windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
