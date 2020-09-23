@@ -17,9 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { PopoverOrigin } from '@material-ui/core/Popover';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages } from 'react-intl';
 import { useActiveSiteId, useSelection } from '../utils/hooks';
 import { fetchWorkflowAffectedItems, getDetailedItem, getSandboxItem } from '../services/content';
 import { popPiece } from '../utils/string';
@@ -42,6 +40,7 @@ import {
 } from '../state/actions/dialogs';
 import { batchActions } from '../state/actions/misc';
 import palette from '../styles/palette';
+import ContextMenu, { SectionItem } from './ContextMenu';
 
 const useStyles = makeStyles(() => createStyles({
   separator: {
@@ -49,6 +48,100 @@ const useStyles = makeStyles(() => createStyles({
     borderBottom: `1px solid ${palette.gray.light3}`
   }
 }));
+
+export const translations = defineMessages({
+  edit: {
+    id: 'words.edit',
+    defaultMessage: 'Edit'
+  },
+  schedule: {
+    id: 'words.schedule',
+    defaultMessage: 'Schedule'
+  },
+  publish: {
+    id: 'words.publish',
+    defaultMessage: 'Publish'
+  },
+  reject: {
+    id: 'words.reject',
+    defaultMessage: 'Reject'
+  },
+  history: {
+    id: 'words.history',
+    defaultMessage: 'History'
+  },
+  dependencies: {
+    id: 'words.dependencies',
+    defaultMessage: 'Dependencies'
+  },
+  delete: {
+    id: 'words.delete',
+    defaultMessage: 'Delete'
+  },
+  controller: {
+    id: 'componentMenu.controller',
+    defaultMessage: 'Edit Controller'
+  },
+  template: {
+    id: 'componentMenu.template',
+    defaultMessage: 'Edit Template'
+  },
+  infoSheet: {
+    id: 'componentMenu.infoSheet',
+    defaultMessage: 'Info Sheet.'
+  },
+  loading: {
+    id: 'componentMenu.loading',
+    defaultMessage: 'Loading...'
+  }
+});
+
+const menuOptions = {
+  loading: {
+    id: 'loading',
+    label: translations.loading
+  },
+  form: {
+    id: 'form',
+    label: translations.edit
+  },
+  schedule: {
+    id: 'schedule',
+    label: translations.schedule
+  },
+  publish: {
+    id: 'schedule',
+    label: translations.publish
+  },
+  reject: {
+    id: 'reject',
+    label: translations.reject
+  },
+  history: {
+    id: 'history',
+    label: translations.history
+  },
+  dependencies: {
+    id: 'dependencies',
+    label: translations.dependencies
+  },
+  delete: {
+    id: 'delete',
+    label: translations.delete
+  },
+  controller: {
+    id: 'controller',
+    label: translations.controller
+  },
+  template: {
+    id: 'template',
+    label: translations.template
+  },
+  infoSheet: {
+    id: 'infoSheet',
+    label: translations.infoSheet
+  }
+};
 
 interface ComponentMenuProps {
   anchorEl: Element;
@@ -72,6 +165,53 @@ export default function ComponentMenu(props: ComponentMenuProps) {
 
   const [sandboxItem, setSandboxItem] = useState(null);
   const [detailedItem, setDetailedItem] = useState(null);
+
+  //region permissions
+  const [options, setOptions] = useState<any>([[menuOptions.loading]]);
+  const currentPath = models?.[modelId].craftercms.path;
+  const permissions = useSelection((state) => state.content.permissions);
+  const write = permissions?.[currentPath]?.['write'];
+  const publish = permissions?.[currentPath]?.['publish'];
+  const reject = permissions?.[currentPath]?.['cancel_publish'];
+  const deleteContent = permissions?.[currentPath]?.['delete_content'];
+  const editController = !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem?.contentTypeId]?.type === 'page';
+  //endregion
+
+  useEffect(() => {
+    if (sandboxItem) {
+      let _optionsA = [];
+      let _optionsB = [];
+      if (write) {
+        _optionsA.push(menuOptions.form);
+        if (publish && !sandboxItem?.lockOwner && !sandboxItem?.isLive) {
+          _optionsA.push(menuOptions.schedule);
+          _optionsA.push(menuOptions.publish);
+        }
+        if (reject && (sandboxItem.stateMap.submitted || sandboxItem.stateMap.scheduled || sandboxItem.stateMap.deleted)) {
+          _optionsA.push(menuOptions.reject);
+        }
+
+        // TODO: review this permissions;
+        _optionsA.push(menuOptions.history);
+        _optionsA.push(menuOptions.dependencies);
+
+        if (deleteContent) {
+          _optionsA.push(menuOptions.delete);
+        }
+        _optionsB.push(menuOptions.template);
+        if (editController) {
+          _optionsB.push(menuOptions.controller);
+        }
+      }
+      setOptions(
+        [
+          [..._optionsA],
+          [menuOptions.infoSheet],
+          [..._optionsB]
+        ]
+      );
+    }
+  }, [write, publish, reject, deleteContent, editController, sandboxItem]);
 
   useEffect(() => {
     if (modelId && models && anchorEl && sandboxItem === null) {
@@ -107,7 +247,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
     };
   }, [models, modelId, site, embeddedParentPath, dispatch, sandboxItem, anchorEl]);
 
-  const handleEdit = (type: string) => {
+  const handleEdit = ({ id: type }: SectionItem) => {
     handleClose();
     switch (type) {
       case 'schedule': {
@@ -214,99 +354,13 @@ export default function ComponentMenu(props: ComponentMenuProps) {
   };
 
   return (
-    <>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        anchorOrigin={anchorOrigin}
-      >
-        {
-          sandboxItem ? (
-            <div>
-              <MenuItem onClick={() => handleEdit('form')}>
-                <FormattedMessage
-                  id="componentMenu.edit"
-                  defaultMessage="Edit"
-                />
-              </MenuItem>
-              {
-                (!sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
-                <MenuItem onClick={() => handleEdit('schedule')}>
-                  <FormattedMessage
-                    id="componentMenu.schedule"
-                    defaultMessage="Schedule"
-                  />
-                </MenuItem>
-              }
-              {
-                (!sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
-                <MenuItem onClick={() => handleEdit('publish')}>
-                  <FormattedMessage
-                    id="componentMenu.publish"
-                    defaultMessage="Publish"
-                  />
-                </MenuItem>
-              }
-              {
-                (sandboxItem.stateMap.submitted || sandboxItem.stateMap.scheduled || sandboxItem.stateMap.deleted) &&
-                <MenuItem onClick={() => handleEdit('reject')}>
-                  <FormattedMessage
-                    id="componentMenu.reject"
-                    defaultMessage="Reject"
-                  />
-                </MenuItem>
-              }
-              <MenuItem onClick={() => handleEdit('history')}>
-                <FormattedMessage
-                  id="componentMenu.history"
-                  defaultMessage="History"
-                />
-              </MenuItem>
-              <MenuItem onClick={() => handleEdit('dependencies')}>
-                <FormattedMessage
-                  id="componentMenu.dependencies"
-                  defaultMessage="Dependencies"
-                />
-              </MenuItem>
-              <MenuItem onClick={() => handleEdit('delete')}>
-                <FormattedMessage
-                  id="componentMenu.delete"
-                  defaultMessage="Delete"
-                />
-              </MenuItem>
-              <MenuItem onClick={handleClose} className={classes.separator}>
-                <FormattedMessage
-                  id="componentMenu.infoSheet"
-                  defaultMessage="Info Sheet"
-                />
-              </MenuItem>
-              <MenuItem onClick={() => handleEdit('template')}>
-                <FormattedMessage
-                  id="componentMenu.editTemplate"
-                  defaultMessage="Edit Template"
-                />
-              </MenuItem>
-              {
-                !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page' &&
-                <MenuItem onClick={() => handleEdit('controller')}>
-                  <FormattedMessage
-                    id="componentMenu.editController"
-                    defaultMessage="Edit Controller"
-                  />
-                </MenuItem>
-              }
-            </div>
-          ) : (
-            <MenuItem>
-              <FormattedMessage
-                id="componentMenu.loading"
-                defaultMessage="Loading..."
-              />
-            </MenuItem>
-          )
-        }
-      </Menu>
-    </>
+    <ContextMenu
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      onClose={handleClose}
+      sections={options}
+      onMenuItemClicked={(section) => handleEdit(section)}
+      anchorOrigin={anchorOrigin}
+    />
   );
 }
