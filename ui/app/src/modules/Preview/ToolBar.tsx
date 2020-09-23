@@ -285,6 +285,12 @@ export default function ToolBar() {
   } : null;
   const { enqueueSnackbar } = useSnackbar();
 
+  //region permissions
+  const permissions = useSelection((state) => state.content.permissions);
+  const write = permissions?.[item?.path]?.['write'];
+  const createContent = permissions?.[item?.path]?.['create_content'];
+  //endregion
+
   return (
     <AppBar position="static" color="default">
       <Toolbar className={classes.toolBar}>
@@ -295,22 +301,28 @@ export default function ToolBar() {
           >
             <CustomMenu />
           </IconButton>
-          <QuickCreate />
-          <Tooltip title={formatMessage(translations.toggleEditMode)}>
-            <EditSwitch
-              color="default"
-              checked={editMode}
-              onChange={(e) => {
-                // prettier-ignore
-                enqueueSnackbar(formatMessage(
-                  e.target.checked
-                    ? translations.editModeOn
-                    : translations.editModeOff
-                ));
-                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-              }}
-            />
-          </Tooltip>
+          {
+            createContent &&
+            <QuickCreate />
+          }
+          {
+            write &&
+            <Tooltip title={formatMessage(translations.toggleEditMode)}>
+              <EditSwitch
+                color="default"
+                checked={editMode}
+                onChange={(e) => {
+                  // prettier-ignore
+                  enqueueSnackbar(formatMessage(
+                    e.target.checked
+                      ? translations.editModeOn
+                      : translations.editModeOff
+                  ));
+                  dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+                }}
+              />
+            </Tooltip>
+          }
         </section>
         <section className={classes.addressBarContainer}>
           <AddressBar

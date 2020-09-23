@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import LookupTable from '../models/LookupTable';
+
 export function forEach<T = any>(
   array: T[],
   fn: (item: T, index: number, array: T[]) => any,
@@ -37,6 +39,12 @@ export function forEach<T = any>(
 
 export function asArray<T = unknown>(value: T): T[] {
   return Array.isArray(value) ? value : [value];
+}
+
+export function createPresenceTable(list: string[]): LookupTable<boolean> {
+  const table = {};
+  list.forEach(value => table[value.replaceAll(' ', '_')] = true);
+  return table;
 }
 
 export default {

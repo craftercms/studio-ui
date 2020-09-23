@@ -16,9 +16,13 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
+import { AjaxError } from 'rxjs/ajax';
 
 // region Quick Create
 export const fetchQuickCreateList = createAction('FETCH_QUICK_CREATE_LIST');
 export const fetchQuickCreateListComplete = createAction<QuickCreateItem[]>('FETCH_QUICK_CREATE_LIST_COMPLETE');
 export const fetchQuickCreateListFailed = createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion
+
+export const getUserPermissionsComplete = createAction<any>('GET_USER_PERMISSIONS_COMPLETE');
+export const getUserPermissionsFailed = createAction<AjaxError>('GET_USER_PERMISSIONS_FAILED');

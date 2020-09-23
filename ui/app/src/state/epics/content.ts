@@ -19,12 +19,16 @@ import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   fetchQuickCreateList as fetchQuickCreateListAction,
   fetchQuickCreateListComplete,
-  fetchQuickCreateListFailed
+  fetchQuickCreateListFailed,
+  getUserPermissionsComplete,
+  getUserPermissionsFailed
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchQuickCreateList } from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
+import { GUEST_CHECK_IN } from '../actions/preview';
+import { getUserPermissions } from '../../services/security';
 
 export default [
   // region Quick Create
@@ -36,6 +40,20 @@ export default [
         fetchQuickCreateList(active).pipe(
           map(fetchQuickCreateListComplete),
           catchAjaxError(fetchQuickCreateListFailed)
+        )
+      )
+    ),
+  // endregion
+  // region getUserPermissions
+  (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(GUEST_CHECK_IN),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        //TODO: check if path already exist on permissions.content[path] return NEVER
+        getUserPermissions(payload.site, payload.path, state.user.username).pipe(
+          map((permissions) => getUserPermissionsComplete({ path: payload.path, permissions })),
+          catchAjaxError(getUserPermissionsFailed)
         )
       )
     )

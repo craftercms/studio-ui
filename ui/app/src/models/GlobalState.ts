@@ -85,6 +85,7 @@ export interface GlobalState {
       isFetching: boolean;
       items: QuickCreateItem[];
     };
+    permissions: LookupTable<LookupTable<boolean>>;
     // contentTypes: EntityState<ContentType>;
   }
   contentTypes: EntityState<ContentType>;

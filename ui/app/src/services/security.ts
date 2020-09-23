@@ -14,9 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { postJSON } from '../utils/ajax';
+import { get, postJSON } from '../utils/ajax';
 import { pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { toQueryString } from '../utils/object';
 
 export function encrypt(text: string): Observable<string>;
 export function encrypt(text: string, site: string): Observable<string>;
@@ -26,6 +27,14 @@ export function encrypt(text: string, site: string = ''): Observable<string> {
   );
 }
 
+export function getUserPermissions(site: string, path: string, user: string): Observable<any> {
+  const qs = toQueryString({ site, path, user });
+  return get(`/studio/api/1/services/api/1/security/get-user-permissions.json${qs}`).pipe(
+    pluck('response', 'permissions')
+  );
+}
+
 export default {
-  encrypt
+  encrypt,
+  getUserPermissions
 };

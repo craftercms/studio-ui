@@ -100,7 +100,7 @@ function cleanseUrl(url: string) {
 }
 
 const reducer = createReducer<GlobalState['preview']>({
-  editMode: true,
+  editMode: false,
   // What's shown to the user across the board (url, address bar, etc)
   computedUrl: '',
   // The src of the iframe

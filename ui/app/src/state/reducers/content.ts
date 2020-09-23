@@ -14,42 +14,63 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineReducers, createReducer } from '@reduxjs/toolkit';
+import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
 import {
   fetchQuickCreateList,
   fetchQuickCreateListComplete,
-  fetchQuickCreateListFailed
+  fetchQuickCreateListFailed,
+  getUserPermissionsComplete
 } from '../actions/content';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
+import { createPresenceTable } from '../../utils/array';
 
 type ContentState = GlobalState['content'];
-type QuickCreateState = GlobalState['content']['quickCreate'];
 
 const initialState: ContentState = {
   quickCreate: {
     error: null,
     isFetching: false,
     items: null
-  }
+  },
+  permissions: null
 };
 
-const quickCreate = createReducer<QuickCreateState>(initialState.quickCreate, {
-  [fetchQuickCreateList.type]: (state) => ({ ...state, isFetching: true }),
+const reducer = createReducer<ContentState>(initialState, {
+  [fetchQuickCreateList.type]: (state) => ({
+    ...state,
+    quickCreate: {
+      ...state.quickCreate,
+      isFetching: true
+    }
+  }),
   [fetchQuickCreateListComplete.type]: (state, { payload }: StandardAction<QuickCreateItem[]>) => ({
     ...state,
-    items: payload,
-    isFetching: false
+    quickCreate: {
+      ...state.quickCreate,
+      items: payload,
+      isFetching: false
+    }
   }),
   [fetchQuickCreateListFailed.type]: (state, error: StandardAction<AjaxError>) => ({
     ...state,
-    isFetching: false,
-    error: error.payload.response
-  })
+    quickCreate: {
+      ...state.quickCreate,
+      isFetching: false,
+      error: error.payload.response
+    }
+  }),
+  [getUserPermissionsComplete.type]: (state, { payload }) => {
+    return {
+      ...state,
+      permissions: {
+        ...state.permissions,
+        [payload.path]: createPresenceTable(payload.permissions)
+      }
+    };
+  }
 });
 
-export default combineReducers({
-  quickCreate
-});
+export default reducer;

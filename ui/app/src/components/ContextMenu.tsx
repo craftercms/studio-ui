@@ -22,6 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import { MessageDescriptor, useIntl } from 'react-intl';
 import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { PopoverOrigin } from '@material-ui/core';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
@@ -52,6 +53,7 @@ interface CustomMenuProps {
     helperText?: any;
   }
   sections: SectionItem[][];
+  anchorOrigin?: PopoverOrigin;
   emptyState?: {
     icon?: ElementType;
     message: string;
@@ -63,7 +65,7 @@ interface CustomMenuProps {
 }
 
 export default function ContextMenu(props: CustomMenuProps) {
-  const { sections, classes, onClose, open, anchorEl, onMenuItemClicked, emptyState } = props;
+  const { sections, classes, onClose, open, anchorEl, onMenuItemClicked, emptyState, anchorOrigin = undefined } = props;
   const { formatMessage } = useIntl();
   const emptyStyles = useStyles({});
 
@@ -73,6 +75,7 @@ export default function ContextMenu(props: CustomMenuProps) {
       open={open}
       classes={{ paper: classes?.paper, list: classes?.menuList }}
       onClose={onClose}
+      anchorOrigin={anchorOrigin}
     >
       {
         sections.map((section: any, i: number) =>
