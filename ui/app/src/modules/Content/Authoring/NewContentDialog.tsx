@@ -45,8 +45,8 @@ import { useDispatch } from 'react-redux';
 import SingleItemSelector from './SingleItemSelector';
 import { SandboxItem } from '../../../models/Item';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
-import { newContentCreationComplete } from '../../../state/reducers/dialogs/edit';
 import palette from '../../../styles/palette';
+import { newContentCreationComplete } from '../../../state/actions/dialogs';
 
 const translations = defineMessages({
   title: {

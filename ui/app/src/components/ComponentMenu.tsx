@@ -31,14 +31,15 @@ import { fetchItemVersions } from '../state/reducers/versions';
 import {
   closeDeleteDialog,
   closeWorkflowCancellationDialog,
+  showCodeEditorDialog,
   showDeleteDialog,
   showDependenciesDialog,
+  showEditDialog,
   showHistoryDialog,
   showPublishDialog,
   showRejectDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { showEditDialog } from '../state/reducers/dialogs/edit';
 import { batchActions } from '../state/actions/misc';
 import palette from '../styles/palette';
 
@@ -149,27 +150,43 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         }));
         break;
       }
-      case 'form':
-      case 'template':
-      case 'controller': {
-        const path = getPath(type);
-        let src = `${defaultSrc}site=${site}&path=${path}&type=${type}`;
-        if (embeddedParentPath && type === 'form') {
-          src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`;
-        }
-
-        const editProps = {
-          src,
-          type,
-          inProgress: true,
-          showController: !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page',
-          itemModel: models[modelId],
-          embeddedParentPath
-        };
+      case 'form': {
+        const path = embeddedParentPath ? embeddedParentPath : models[modelId].craftercms.path;
+        const src = embeddedParentPath
+          ? `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
+          : `${defaultSrc}site=${site}&path=${path}&type=${type}`;
 
         dispatch(showWorkflowCancellationDialog({
           items: null,
-          onContinue: showEditDialog(editProps)
+          onContinue: showEditDialog({ src })
+        }));
+
+        fetchWorkflowAffectedItems(siteId, path).subscribe(
+          (items) => {
+            if (items?.length > 0) {
+              // update items state
+              dispatch(showWorkflowCancellationDialog({ items }));
+            } else {
+              dispatch(
+                closeWorkflowCancellationDialog()
+              );
+              dispatch(showEditDialog({ src }));
+            }
+
+          }
+        );
+        break;
+      }
+      case 'template':
+      case 'controller': {
+        const path = type === 'template'
+          ? contentTypesBranch.byId[models[modelId].craftercms.contentTypeId].displayTemplate
+          : `/scripts/pages/${popPiece(models[modelId].craftercms.contentTypeId, '/')}.groovy`;
+        let src = `${defaultSrc}site=${site}&path=${path}&type=${type}`;
+
+        dispatch(showWorkflowCancellationDialog({
+          items: null,
+          onContinue: showCodeEditorDialog({ src })
         }));
 
         fetchWorkflowAffectedItems(siteId, path).subscribe(
@@ -184,7 +201,7 @@ export default function ComponentMenu(props: ComponentMenuProps) {
                 closeWorkflowCancellationDialog()
               );
               dispatch(
-                showEditDialog(editProps)
+                showCodeEditorDialog({ src })
               );
             }
 
@@ -192,26 +209,6 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         );
 
         break;
-      }
-    }
-  };
-
-  const getPath = (type?: string) => {
-    switch (type) {
-      case 'publish':
-      case 'form': {
-        if (embeddedParentPath) return embeddedParentPath;
-        return models[modelId].craftercms.path;
-      }
-      case 'template': {
-        return contentTypesBranch.byId[models[modelId].craftercms.contentTypeId].displayTemplate;
-      }
-      case 'controller': {
-        let pageName = popPiece(models[modelId].craftercms.contentTypeId, '/');
-        return `/scripts/pages/${pageName}.groovy`;
-      }
-      default: {
-        return models[modelId].craftercms.path;
       }
     }
   };
@@ -224,77 +221,90 @@ export default function ComponentMenu(props: ComponentMenuProps) {
         onClose={handleClose}
         anchorOrigin={anchorOrigin}
       >
-        <MenuItem onClick={() => handleEdit('form')}>
-          <FormattedMessage
-            id="previewToolBar.menu.edit"
-            defaultMessage="Edit"
-          />
-        </MenuItem>
         {
-          (sandboxItem && !sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
-          <MenuItem onClick={() => handleEdit('schedule')}>
-            <FormattedMessage
-              id="previewToolBar.menu.schedule"
-              defaultMessage="Schedule"
-            />
-          </MenuItem>
-        }
-        {
-          (sandboxItem && !sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
-          <MenuItem onClick={() => handleEdit('publish')}>
-            <FormattedMessage
-              id="previewToolBar.menu.publish"
-              defaultMessage="Publish"
-            />
-          </MenuItem>
-        }
-        {
-          (sandboxItem && (sandboxItem.stateMap.submitted || sandboxItem.stateMap.scheduled || sandboxItem.stateMap.deleted)) &&
-          <MenuItem onClick={() => handleEdit('reject')}>
-            <FormattedMessage
-              id="previewToolBar.menu.reject"
-              defaultMessage="Reject"
-            />
-          </MenuItem>
-        }
-        <MenuItem onClick={() => handleEdit('history')}>
-          <FormattedMessage
-            id="previewToolBar.menu.history"
-            defaultMessage="History"
-          />
-        </MenuItem>
-        <MenuItem onClick={() => handleEdit('dependencies')}>
-          <FormattedMessage
-            id="previewToolBar.menu.dependencies"
-            defaultMessage="Dependencies"
-          />
-        </MenuItem>
-        <MenuItem onClick={() => handleEdit('delete')}>
-          <FormattedMessage
-            id="previewToolBar.menu.delete"
-            defaultMessage="Delete"
-          />
-        </MenuItem>
-        <MenuItem onClick={handleClose} className={classes.separator}>
-          <FormattedMessage
-            id="previewToolBar.menu.infoSheet"
-            defaultMessage="Info Sheet"
-          />
-        </MenuItem>
-        <MenuItem onClick={() => handleEdit('template')}>
-          <FormattedMessage
-            id="previewToolBar.menu.editTemplate"
-            defaultMessage="Edit Template"
-          />
-        </MenuItem>
-        {
-          sandboxItem && !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page' &&
-          <MenuItem onClick={() => handleEdit('controller')}>
-            <FormattedMessage
-              id="previewToolBar.menu.editController"
-              defaultMessage="Edit Controller"
-            />
-          </MenuItem>
+          sandboxItem ? (
+            <div>
+              <MenuItem onClick={() => handleEdit('form')}>
+                <FormattedMessage
+                  id="componentMenu.edit"
+                  defaultMessage="Edit"
+                />
+              </MenuItem>
+              {
+                (!sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
+                <MenuItem onClick={() => handleEdit('schedule')}>
+                  <FormattedMessage
+                    id="componentMenu.schedule"
+                    defaultMessage="Schedule"
+                  />
+                </MenuItem>
+              }
+              {
+                (!sandboxItem?.lockOwner && !sandboxItem?.isLive) &&
+                <MenuItem onClick={() => handleEdit('publish')}>
+                  <FormattedMessage
+                    id="componentMenu.publish"
+                    defaultMessage="Publish"
+                  />
+                </MenuItem>
+              }
+              {
+                (sandboxItem.stateMap.submitted || sandboxItem.stateMap.scheduled || sandboxItem.stateMap.deleted) &&
+                <MenuItem onClick={() => handleEdit('reject')}>
+                  <FormattedMessage
+                    id="componentMenu.reject"
+                    defaultMessage="Reject"
+                  />
+                </MenuItem>
+              }
+              <MenuItem onClick={() => handleEdit('history')}>
+                <FormattedMessage
+                  id="componentMenu.history"
+                  defaultMessage="History"
+                />
+              </MenuItem>
+              <MenuItem onClick={() => handleEdit('dependencies')}>
+                <FormattedMessage
+                  id="componentMenu.dependencies"
+                  defaultMessage="Dependencies"
+                />
+              </MenuItem>
+              <MenuItem onClick={() => handleEdit('delete')}>
+                <FormattedMessage
+                  id="componentMenu.delete"
+                  defaultMessage="Delete"
+                />
+              </MenuItem>
+              <MenuItem onClick={handleClose} className={classes.separator}>
+                <FormattedMessage
+                  id="componentMenu.infoSheet"
+                  defaultMessage="Info Sheet"
+                />
+              </MenuItem>
+              <MenuItem onClick={() => handleEdit('template')}>
+                <FormattedMessage
+                  id="componentMenu.editTemplate"
+                  defaultMessage="Edit Template"
+                />
+              </MenuItem>
+              {
+                !embeddedParentPath && contentTypesBranch.byId?.[sandboxItem.contentTypeId]?.type === 'page' &&
+                <MenuItem onClick={() => handleEdit('controller')}>
+                  <FormattedMessage
+                    id="componentMenu.editController"
+                    defaultMessage="Edit Controller"
+                  />
+                </MenuItem>
+              }
+            </div>
+          ) : (
+            <MenuItem>
+              <FormattedMessage
+                id="componentMenu.loading"
+                defaultMessage="Loading..."
+              />
+            </MenuItem>
+          )
         }
       </Menu>
     </>

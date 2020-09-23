@@ -31,6 +31,7 @@
   <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <#-- Lang resources -->
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
   <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
@@ -85,49 +86,6 @@
 
   CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
-  const changeTab = (e) => {
-    if (e.data.type === 'EDIT_FORM_CHANGE_TAB') {
-      let tab = e.data.tab;
-      let path = e.data.path;
-      switch (tab) {
-        case 'form': {
-          $('.cstudio-template-editor-container-modal').hide();
-          if ($('.studio-form-modal').length) {
-            $('.studio-form-modal').show();
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab }, '*');
-          } else {
-            openDialog(tab, path);
-          }
-          break;
-        }
-        case 'template': {
-          $('.cstudio-template-editor-container-modal.controller').hide();
-          $('.studio-form-modal').hide();
-          if ($('.cstudio-template-editor-container-modal.template').length) {
-            $('.cstudio-template-editor-container-modal.template').show();
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab }, '*');
-          } else {
-            openDialog(tab, path);
-          }
-          break;
-        }
-        case 'controller': {
-          $('.cstudio-template-editor-container-modal.template').hide();
-          $('.studio-form-modal').hide();
-          if ($('.cstudio-template-editor-container-modal.controller').length) {
-            $('.cstudio-template-editor-container-modal.controller').show();
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab }, '*');
-          } else {
-            openDialog(tab, path);
-          }
-          break;
-        }
-      }
-    }
-  };
-
-  window.addEventListener('message', changeTab, false);
-
   function openDialog(type, path) {
     switch (type) {
       case 'form': {
@@ -151,12 +109,12 @@
                               '',
                               true,
                               {
-                                success: () => {
+                                success: (response, editorId, name, value, draft, action) => {
                                   window.top.postMessage({
-                                    type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+                                    type: 'EMBEDDED_LEGACY_FORM_SUCCESS',
                                     refresh: true,
                                     tab: type,
-                                    action: 'success'
+                                    action
                                   }, '*');
                                 },
                                 failure: error => {
@@ -193,12 +151,7 @@
                                     });
                                   }
                                 },
-                                pendingChanges: () => {
-                                  window.top.postMessage({
-                                    type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
-                                    tab: type
-                                  }, '*');
-                                }
+                                id: type
                               },
                               aux,
                               null,
@@ -226,14 +179,14 @@
                   false,
                   false,
                   {
-                    success: (response) => {
+                    success: (response, editorId, name, value, draft, action) => {
                       window.top.postMessage({
                         ...response,
                         type: 'EMBEDDED_LEGACY_FORM_SAVE',
                         refresh: false,
                         tab: type,
-                        action: 'success',
-                        redirectUrl: response.item?.browserUri
+                        redirectUrl: response.item?.browserUri,
+                        action
                       }, '*');
                     },
                     failure: (error) => {
@@ -255,12 +208,7 @@
                     renderComplete: () => {
                       window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
                     },
-                    pendingChanges: () => {
-                      window.top.postMessage({
-                        type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
-                        tab: type
-                      }, '*');
-                    }
+                    id: type
                   },
                   null
           );
@@ -268,40 +216,31 @@
 
         break;
       }
+      case 'asset':
       case 'controller':
       case 'template': {
         CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
-          success: function () {
+          success: function (action) {
             window.top.postMessage({
-              type: 'EMBEDDED_LEGACY_FORM_CLOSE',
-              refresh: true,
-              tab: type,
-              action: 'success'
+              type: 'LEGACY_CODE_EDITOR_SUCCESS',
+              action
             }, '*');
-          },
-          failure: function () {
-            console.log('failure');
           },
           cancelled: function () {
             window.top.postMessage({
-              type: 'EMBEDDED_LEGACY_FORM_CLOSE',
-              refresh: false,
-              tab: type,
+              type: 'LEGACY_CODE_EDITOR_CLOSE',
               action: 'cancelled'
             }, '*');
           },
           renderComplete: function () {
-            window.top.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', tab: type }, '*');
-          },
-          pendingChanges: function () {
             window.top.postMessage({
-              type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
-              tab: type
+              type: 'LEGACY_CODE_EDITOR_RENDERED',
+              action: 'renderComplete'
             }, '*');
           },
           id: type,
           callingWindow: window
-        }, null, null);
+        }, null, null, true);
         break;
       }
     }

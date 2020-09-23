@@ -29,8 +29,8 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createStyles } from '@material-ui/core';
 import { findParentModelId } from '../../../utils/object';
 import { popPiece } from '../../../utils/string';
-import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 import { ModelHelper } from '../../../utils/model';
+import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
 
 const translations = defineMessages({
   openComponentForm: {
@@ -132,15 +132,20 @@ export default function EditFormPanel() {
   }, [childrenMap, contentTypes, defaultSrc, model, models, path, selectedContentType, selectedId, site]);
 
   function openDialog(type: string) {
-    dispatch(
-      showEditDialog({
-        src: getSrc(type),
-        type,
-        inProgress: true,
-        showController: selectedContentType.includes('/page'),
-        itemModel: model
-      })
-    );
+    if (type === 'form') {
+      dispatch(
+        showEditDialog({
+          src: getSrc(type)
+        })
+      );
+    } else {
+      dispatch(
+        showCodeEditorDialog({
+          src: getSrc(type)
+        })
+      );
+    }
+
   }
 
   useEffect(() => {

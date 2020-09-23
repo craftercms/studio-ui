@@ -160,7 +160,7 @@
           var configValue = (savedValue && savedValue !== '') ? savedValue : defaultLocaleCode;
 
           for (var x = 0; x < _self.inputEl.options.length; x++) {
-            if (_self.inputEl.options[x].value.toLowerCase() === configValue.toLowerCase()) {
+            if (_self.inputEl.options[x].value?.toLowerCase() === configValue?.toLowerCase()) {
               _self.inputEl.value = configValue; // set value
               _self.validate(_self);
             }

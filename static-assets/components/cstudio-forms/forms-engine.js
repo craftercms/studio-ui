@@ -544,13 +544,6 @@ var CStudioForms =
             YAHOO.util.Dom.addClass(indicatorEl, 'fa-check');
           }
         }
-      },
-
-      pendingChanges: function() {
-        if (this.iceWindowCallback && this.iceWindowCallback.pendingChanges) {
-          let callback = getCustomCallback(this.iceWindowCallback.pendingChanges);
-          callback();
-        }
       }
     };
 
@@ -1164,14 +1157,6 @@ var CStudioForms =
         form.definition.pageLocation = this._getPageLocation(path);
         form.containerEl = document.getElementById('formContainer');
 
-        $(form.containerEl).on('change', '.datum', () => {
-          var flag = isModified();
-          if (flag && iceWindowCallback && iceWindowCallback.pendingChanges) {
-            let callback = getCustomCallback(iceWindowCallback.pendingChanges);
-            callback();
-          }
-        });
-
         this._loadDatasources(form, function(loaded, notLoaded) {
           var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
           var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceComponent');
@@ -1304,7 +1289,7 @@ var CStudioForms =
           var editorId = CStudioAuthoring.Utils.getQueryVariable(queryString, 'editorId');
           var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
 
-          var saveFn = function(preview, draft, embeddedIceDraft) {
+          var saveFn = function (preview, draft, embeddedIceDraft, action) {
             showWarnMsg = false;
             var saveDraft = draft == true ? true : false;
 
@@ -1430,7 +1415,7 @@ var CStudioForms =
                           contentTO.initialModel = CStudioForms.initialModel;
                           contentTO.updatedModel = CStudioForms.updatedModel;
 
-                          iceWindowCallback.success(contentTO, editorId, name, value, draft);
+                          iceWindowCallback.success(contentTO, editorId, name, value, draft, action);
                           if (draft) {
                             CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                             saveDraftDialog();
@@ -1635,12 +1620,6 @@ var CStudioForms =
 
             var flag = isModified();
 
-            // calling pendingChanges cb if present
-            if (flag && iceWindowCallback && iceWindowCallback.pendingChanges) {
-              let callback = getCustomCallback(iceWindowCallback.pendingChanges);
-              callback();
-            }
-
             if (showWarnMsg && (flag || repeatEdited)) {
               if (CStudioAuthoring.InContextEdit.isDialogCollapsed()) {
                 collapseFn();
@@ -1757,46 +1736,56 @@ var CStudioForms =
           });
 
           if (!form.readOnly) {
-            var saveButtonEl = document.createElement('input');
-            saveButtonEl.id = 'cstudioSaveAndClose';
-            saveButtonEl.type = 'button';
-            saveButtonEl.value = CMgs.format(formsLangBundle, 'saveAndClose');
-            saveButtonEl.onclick = () => saveFn(false, false);
-            YDom.addClass(saveButtonEl, 'btn btn-primary cstudio-button-first');
-            formButtonContainerEl.appendChild(saveButtonEl);
-
-            var saveButtonDraftEl = document.createElement('input');
-            saveButtonDraftEl.id = 'cstudioSaveAndCloseDraft';
-            saveButtonDraftEl.type = 'button';
-            saveButtonDraftEl.value = CMgs.format(formsLangBundle, 'saveAndCloseDraft');
-            saveButtonDraftEl.onclick = () => saveFn(false, true);
-            YDom.addClass(saveButtonDraftEl, 'btn btn-primary cstudio-button-first');
-            formButtonContainerEl.appendChild(saveButtonDraftEl);
-
-            var previewButtonEl = document.createElement('input');
-            previewButtonEl.id = 'cstudioSaveAndPreview';
-            previewButtonEl.style.display = 'none';
-            previewButtonEl.type = 'button';
-            previewButtonEl.value = CMgs.format(formsLangBundle, 'saveAndPreview');
-            YDom.addClass(previewButtonEl, 'btn btn-default cstudio-button-first');
-            formButtonContainerEl.appendChild(previewButtonEl);
+            const buttonsContainer = document.createElement('div');
+            formButtonContainerEl.appendChild(buttonsContainer);
 
             //In Context Edit, the preview button must not be shown
             var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
 
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
-              success: function(type) {
-                if (type.previewable && type.previewable == 'true') {
-                  previewButtonEl.style.display = 'inline';
+              success: function (type) {
+                const options = [
+                  {
+                    label: formatMessage(formEngineMessages.save),
+                    callback: () => {
+                      saveFn(false, true, null, 'save');
+                    }
+                  },
+                  {
+                    label: formatMessage(formEngineMessages.saveAndClose),
+                    callback: () => {
+                      saveFn(false, false, null, 'saveAndClose');
+                    }
+                  }
+                ];
+                //this means the editor was open on a legacyFormDialog
+                if (iceWindowCallback.id) {
+                  options.push({
+                    label: formatMessage(formEngineMessages.saveAndMinimize),
+                    callback: () => {
+                      saveFn(false, true, null, 'saveAndMinimize');
+                    }
+                  });
                 }
+                if (type.previewable) {
+                  options.push(
+                    {
+                      label: formatMessage(formEngineMessages.saveAndPreview),
+                      callback: () => {
+                        saveFn(true, false, null, 'saveAndPreview');
+                      }
+                    }
+                  );
+                }
+                CrafterCMSNext.render(buttonsContainer, 'SplitButton', {
+                  options,
+                  defaultSelected: 1,
+                  disablePortal: false
+                });
               },
               failure: function() {}
             });
-
-            previewButtonEl.onclick = function() {
-              saveFn(true, false);
-            };
 
             var cancelButtonEl = document.createElement('input');
             cancelButtonEl.id = 'cancelBtn';
@@ -1819,30 +1808,31 @@ var CStudioForms =
             YAHOO.util.Event.addListener(closeButtonEl, 'click', cancelFn, me);
 
             var focusEl = window;
-            setTimeout(function() {
+            setTimeout(function () {
               focusEl.focus();
             }, 500);
           }
-          var colExpButtonEl = document.createElement('input');
-          colExpButtonEl.id = 'colExpButtonBtn';
-          YDom.addClass(colExpButtonEl, 'btn');
-          YDom.addClass(colExpButtonEl, 'btn-default');
-          colExpButtonEl.type = 'button';
-          colExpButtonEl.value = 'Collapse';
-          formControlBarEl.appendChild(colExpButtonEl);
-          YAHOO.util.Event.addListener(
-            colExpButtonEl,
-            'click',
-            function() {
-              collapseFn();
-            },
-            me
-          );
+          if (!iceWindowCallback.id) {
+            var colExpButtonEl = document.createElement('input');
+            colExpButtonEl.id = 'colExpButtonBtn';
+            YDom.addClass(colExpButtonEl, 'btn btn-default');
+            colExpButtonEl.type = 'button';
+            colExpButtonEl.value = 'Collapse';
+            formControlBarEl.appendChild(colExpButtonEl);
+            YAHOO.util.Event.addListener(
+              colExpButtonEl,
+              'click',
+              function () {
+                collapseFn();
+              },
+              me
+            );
+          }
 
           var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
           YDom.addClass(overlayContainer, 'overlay');
 
-          $(document).on('keyup', function(e) {
+          $(document).on('keyup', function (e) {
             if (e.keyCode === 27) {
               // esc
               if (e.currentTarget.activeElement) {
