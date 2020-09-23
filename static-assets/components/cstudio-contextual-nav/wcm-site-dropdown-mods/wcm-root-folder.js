@@ -358,9 +358,9 @@
 
         // reduce call if not necessary
         if (this.pathOnlyHasCannedSearch(rootPath, instance)) {
-          var dummy = new Object();
+          var dummy = {};
           dummy.path = rootPath;
-          var items = new Array();
+          var items = [];
           items.push(dummy);
           Self.drawTree(items, tree, path, instance, pathFlag);
           YDom.removeClass(label, 'loading');
@@ -470,7 +470,7 @@
         self = this;
 
         var treeNodes = [];
-        var treeNodesLabels = new Array();
+        var treeNodesLabels = [];
         var currentLevelPath = null;
         var remainingPath = null;
         var nodeToOpen = null;
@@ -792,8 +792,8 @@
        * render method called on sub root level elements
        */
       drawSubtree: function(treeItems, root, pathToOpenTo, instance) {
-        var treeNodes = new Array();
-        var treeNodesLabels = new Array();
+        var treeNodes = [];
+        var treeNodesLabels = [];
         var nodeToOpen = null;
         var currentLevelPath = null;
         var remainingPath = null;
@@ -809,7 +809,7 @@
         }
 
         var parentCannedSearch = instance.cannedSearchCache[root.treeNodeTO.path];
-        var replaceChildren = new Array();
+        var replaceChildren = [];
 
         if (parentCannedSearch) {
           for (var j = 0; j < parentCannedSearch.length; j++) {
@@ -1397,9 +1397,9 @@
           };
           tree.setDynamicLoad(this.onLoadNodeDataOnClick);
           if (this.pathOnlyHasCannedSearch(rootPath, instance)) {
-            var dummy = new Object();
+            var dummy = {};
             dummy.path = rootPath;
-            var items = new Array();
+            var items = [];
             items.push(dummy);
             Self.drawTree(items, tree, null, instance, pathFlag);
             YDom.removeClass(label, 'loading');
@@ -1579,7 +1579,7 @@
           };
         }
         /* free up once current ones registered */
-        Self.searchesToWire = new Array();
+        Self.searchesToWire = [];
       },
       /**
        * method fired when tree node is expanded for first time
@@ -1723,7 +1723,7 @@
           if (path.indexOf(instance.openArray[num][i]) > -1) {
             instance.openArray[num].splice(i, 1);
             i--;
-            continue;
+
           } else {
             var aux = path;
             if (fileName) {
@@ -2250,7 +2250,7 @@
        * create a transfer object for a node
        */
       createTreeNodeTransferObject: function(treeItem) {
-        var retTransferObj = new Object();
+        var retTransferObj = {};
         retTransferObj.site = CStudioAuthoringContext.site;
         retTransferObj.internalName = treeItem.internalName;
         retTransferObj.link = 'UNSET';
@@ -3674,35 +3674,51 @@
               );
               YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
             },
-            failure: function(response) {}
+            failure: function (response) {
+            }
           };
 
           YConnect.asyncRequest('GET', getTreeItemReuest, cutCb);
         };
 
-        CStudioAuthoring.Operations.getWorkflowAffectedFiles(params, {
-          success: function(content) {
-            if (content && content.length) {
-              CStudioAuthoring.Operations._showDialogueView({
-                controller: 'viewcontroller-cancel-workflow',
-                fn: function(oAjaxCfg) {
-                  // because _showDialogueView was designed to load the body from a
-                  // webscript, must simulate the ajax process here
-                  oAjaxCfg.success({ responseText: '' });
+        const eventIdSuccess = 'workflowCancellationDialogContinue';
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+          payload: {
+            open: true,
+            items: null,
+            onContinue: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdSuccess }
                 },
-                callback: function() {
-                  var view = this;
-                  view.setContent(content);
-                  view.on('continue', function() {
-                    doCut();
-                  });
-                }
-              });
-            } else {
-              doCut();
+                { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
+              ]
             }
           }
         });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+          doCut();
+        });
+
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
+          (items) => {
+            if (items && items.length) {
+              const eventIdSuccess = 'workflowCancellationDialogContinue';
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                payload: { items }
+              });
+            } else {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+              });
+              doCut();
+            }
+          }
+        );
       },
       /**
        * paste content to selected location
@@ -3969,7 +3985,7 @@
               /* reload dashboard is heavy, to reflect changed content-type */
               //window.location.reload(true);
               //this.activeNode.data.formId = selectedType;
-              var auxParams = new Array();
+              var auxParams = [];
               var param1 = {};
               param1['name'] = 'draft';
               param1['value'] = 'true';
