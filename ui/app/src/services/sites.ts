@@ -34,7 +34,7 @@ export function fetchSites(paginationOptions?: PaginationOptions): Observable<Pa
     map(({ response }) => Object.assign(
       response.sites.map(site => ({
         id: site.siteId,
-        name: site.siteId,
+        name: site.siteId,    // TODO: need to get site.name when API is ready
         description: site.desc
       })),
       {

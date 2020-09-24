@@ -62,6 +62,10 @@ const messages = defineMessages({
     id: 'createSiteDialog.siteId',
     defaultMessage: 'Site ID'
   },
+  siteName: {
+    id: 'createSiteDialog.siteName',
+    defaultMessage: 'Site Name'
+  },
   description: {
     id: 'createSiteDialog.description',
     defaultMessage: 'Description'
@@ -69,6 +73,10 @@ const messages = defineMessages({
   siteFormat: {
     id: 'createSiteDialog.siteFormat',
     defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_).'
+  },
+  idExist: {
+    id: 'createSiteDialog.idExist',
+    defaultMessage: 'The ID already exist.'
   },
   nameExist: {
     id: 'createSiteDialog.nameExist',
@@ -142,10 +150,18 @@ function BlueprintForm(props: BlueprintFormProps) {
   };
 
   function checkSites(event: any) {
-    if (sites && sites.find((site: any) => site.siteId === event.target.value)) {
+    if (sites && sites.find((site: any) => site.id === event.target.value)) {
       setInputs({ siteIdExist: true });
     } else {
       setInputs({ siteIdExist: false });
+    }
+  }
+
+  function checkSiteNames(event: any) {
+    if (sites && sites.find((site: any) => site.name === event.target.value)) {
+      setInputs({ siteNameExist: true });
+    } else {
+      setInputs({ siteNameExist: false });
     }
   }
 
@@ -154,7 +170,7 @@ function BlueprintForm(props: BlueprintFormProps) {
       return formatMessage(messages.cantStart);
     }
     if (siteIdExist) {
-      return formatMessage(messages.nameExist);
+      return formatMessage(messages.idExist);
     } else if (required && !value && submitted) {
       return formatMessage(messages.required, { name: name });
     } else {
@@ -188,6 +204,25 @@ function BlueprintForm(props: BlueprintFormProps) {
                 true,
                 inputs.submitted,
                 inputs.siteIdExist)
+            }
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            id="siteName"
+            name="siteName"
+            label={formatMessage(messages.siteName)}
+            // required    // TODO: is this required?
+            fullWidth
+            onBlur={event => checkSiteNames(event)}
+            onKeyPress={onKeyPress}
+            onKeyUp={(event) => checkSiteNames(event)}
+            onChange={(event) => handleInputChange(event)}
+            value={inputs.siteName}
+            inputProps={{ maxLength: 50 }}
+            error={( /*(inputs.submitted && !inputs.siteName) ||*/ inputs.siteNameExist)}     //TODO: remove commented if field not required
+            helperText={
+              inputs.siteNameExist ? formatMessage(messages.nameExist) : ''
             }
           />
         </Grid>
