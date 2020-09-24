@@ -34,16 +34,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface CommentCountProps {
+interface CharCountStatusContainerProps {
   commentLength: number;
 }
 
-interface CommentCountUIProps {
+interface CharCountStatusProps {
   commentLength: number;
   commentMaxLength: number;
 }
 
-export function CommentCountUI(props: CommentCountUIProps) {
+function CharCountStatus(props: CharCountStatusProps) {
   const classes = useStyles({});
   const {
     commentLength,
@@ -76,7 +76,7 @@ export function CommentCountUI(props: CommentCountUIProps) {
   );
 }
 
-function CommentCount(props: CommentCountProps) {
+export function CharCountStatusContainer(props: CharCountStatusContainerProps) {
   const {
     commentLength
   } = props;
@@ -86,10 +86,11 @@ function CommentCount(props: CommentCountProps) {
   );
 
   return (
-    <CommentCountUI
-      commentLength={commentLength} commentMaxLength={commentMaxLength}
-    ></CommentCountUI>
+    <CharCountStatus
+      commentLength={commentLength}
+      commentMaxLength={commentMaxLength}
+    ></CharCountStatus>
   );
 }
 
-export default CommentCount;
+export default CharCountStatus;

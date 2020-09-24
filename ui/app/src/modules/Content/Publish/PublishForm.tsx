@@ -32,7 +32,7 @@ import Link from '@material-ui/core/Link';
 import DateTimePicker from '../../../components/Controls/DateTimePicker';
 import moment from 'moment';
 import palette from '../../../styles/palette';
-import { TextFieldWithMax } from '../../../components/TextFieldWithMax';
+import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 
 const messages = defineMessages({
   emailLabel: {

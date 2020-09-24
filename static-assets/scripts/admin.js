@@ -1175,13 +1175,13 @@
       };
 
       angular.element(document).ready(function () {
-        const el = document.getElementById('bulkPublishCount');
-        CrafterCMSNext.render(el, 'CommentCount', {
+        const el = document.getElementById('bulkPublishCharCountStatus');
+        CrafterCMSNext.render(el, 'CharCountStatusContainer', {
           commentLength: publish && publish.submissionComment ? publish.submissionComment.length : 0
         });
 
         document.getElementById('submissionComment').addEventListener('keyup', function (e) {
-          CrafterCMSNext.render(el, 'CommentCount', {
+          CrafterCMSNext.render(el, 'CharCountStatusContainer', {
             commentLength: publish.submissionComment.length
           });
         });
@@ -1224,13 +1224,13 @@
       };
 
       angular.element(document).ready(function () {
-        const el = document.getElementById('publishCommentCount');
-        CrafterCMSNext.render(el, 'CommentCount', {
+        const el = document.getElementById('publishCommentCharCountStatus');
+        CrafterCMSNext.render(el, 'CharCountStatusContainer', {
           commentLength: publish && publish.publishComment ? publish.publishComment.length : 0
         });
 
         document.getElementById('publishComment').addEventListener('keyup', function (e) {
-          CrafterCMSNext.render(el, 'CommentCount', {
+          CrafterCMSNext.render(el, 'CharCountStatusContainer', {
             commentLength: publish.publishComment.length ?? 0
           });
         });

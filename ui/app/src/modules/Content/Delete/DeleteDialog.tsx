@@ -39,7 +39,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
-import { TextFieldWithMax } from '../../../components/TextFieldWithMax';
+import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;

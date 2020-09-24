@@ -16,38 +16,28 @@
 
 import React from 'react';
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import { CommentCountUI } from './CommentCount';
 import { useSelector } from 'react-redux';
-import GlobalState from '../models/GlobalState';
-import { nullOrUndefined } from '../utils/object';
+import GlobalState from '../../models/GlobalState';
+import CharCountStatus from '../CharCountStatus';
 
 interface TextFieldWithMaxProps {
   maxLength?: number;
 }
 
-export function TextFieldWithMax(props: TextFieldProps & TextFieldWithMaxProps) {
-
+function TextFieldWithMax(props: TextFieldProps & TextFieldWithMaxProps) {
   // This value will be used by default, if a custom value is needed,
-  // maxLength property from inputProps needs to be set as a prop
-  const configMaxLength = useSelector<GlobalState, number>((state) =>
-    state.configuration.publishing.submission.commentMaxLength
+  // maxLength prop needs to be supplied.
+  const configMaxLength = useSelector<GlobalState, number>(
+    (state) => state.configuration.publishing.submission.commentMaxLength
   );
-  const maxLength = props.maxLength
-    ? props.maxLength
-    : configMaxLength;
+  const maxLength = props.maxLength ? props.maxLength : configMaxLength;
 
-  const value = !nullOrUndefined(props.value) ? props.value as string : props.defaultValue as string;
+  const value = props.value ?? props.defaultValue ?? '';
 
   return (
     <>
-      <TextField
-        {...props}
-        inputProps={{ ...props.inputProps, maxLength }}
-      />
-      <CommentCountUI
-        commentLength={value.length}
-        commentMaxLength={maxLength}
-      />
+      <TextField {...props} inputProps={{ ...props.inputProps, maxLength }} />
+      <CharCountStatus commentLength={(value as string).length} commentMaxLength={maxLength} />
     </>
   );
 }

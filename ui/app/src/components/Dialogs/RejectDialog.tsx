@@ -45,11 +45,11 @@ import { reject } from '../../services/publishing';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fetchCannedMessage } from '../../services/configuration';
 import { getCurrentLocale } from '../CrafterCMSNextBridge';
-import { TextFieldWithMax } from '../TextFieldWithMax';
+import TextFieldWithMax from '../Controls/TextFieldWithMax';
 
 // region Typings
 
-type ApiState = { error: ApiResponse, submitting: boolean };
+type ApiState = { error: ApiResponse; submitting: boolean };
 type Source = SandboxItem[];
 type Return = Source;
 
@@ -79,12 +79,14 @@ interface RejectDialogBaseProps {
   items?: SandboxItem[];
 }
 
-export type RejectDialogProps = PropsWithChildren<RejectDialogBaseProps & {
-  onClose?(response?: any): any;
-  onClosed?(response?: any): any;
-  onDismiss?(response?: any): any;
-  onRejectSuccess?(response?: any): any;
-}>;
+export type RejectDialogProps = PropsWithChildren<
+  RejectDialogBaseProps & {
+    onClose?(response?: any): any;
+    onClosed?(response?: any): any;
+    onDismiss?(response?: any): any;
+    onRejectSuccess?(response?: any): any;
+  }
+>;
 
 export interface RejectDialogStateProps extends RejectDialogBaseProps {
   onClose?: StandardAction;
@@ -115,45 +117,40 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const SelectInput = withStyles(() => createStyles({
-  input: {
-    borderRadius: 4
-  }
-}))(InputBase);
+const SelectInput = withStyles(() =>
+  createStyles({
+    input: {
+      borderRadius: 4
+    }
+  })
+)(InputBase);
 
 function RejectDialogContentUI(props: RejectDialogContentUIProps) {
-  const {
-    resource,
-    checkedItems,
-    onUpdateChecked,
-    classes
-  } = props;
+  const { resource, checkedItems, onUpdateChecked, classes } = props;
 
   const rejectItems = resource.read();
 
   return (
     <List className={classes.itemsList}>
-      {
-        rejectItems.map(item => {
-          const labelId = `checkbox-list-label-${item.path}`;
+      {rejectItems.map((item) => {
+        const labelId = `checkbox-list-label-${item.path}`;
 
-          return (
-            <ListItem key={item.path} onClick={() => onUpdateChecked(item.path)} button>
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={checkedItems.includes(item.path)}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': labelId }}
-                  color="primary"
-                />
-              </ListItemIcon>
-              <ListItemText primary={item.label} secondary={item.path} id={labelId} />
-            </ListItem>
-          );
-        })
-      }
+        return (
+          <ListItem key={item.path} onClick={() => onUpdateChecked(item.path)} button>
+            <ListItemIcon>
+              <Checkbox
+                edge="start"
+                checked={checkedItems.includes(item.path)}
+                tabIndex={-1}
+                disableRipple
+                inputProps={{ 'aria-labelledby': labelId }}
+                color="primary"
+              />
+            </ListItemIcon>
+            <ListItemText primary={item.label} secondary={item.path} id={labelId} />
+          </ListItem>
+        );
+      })}
     </List>
   );
 }
@@ -177,11 +174,7 @@ function RejectDialogUI(props: RejectDialogUIProps) {
     <>
       <DialogHeader
         id="workflowCancellationDialogTitle"
-        title={
-          <FormattedMessage
-            id="workflowCancellation.title" defaultMessage="Reject"
-          />
-        }
+        title={<FormattedMessage id="workflowCancellation.title" defaultMessage="Reject" />}
         subtitle={
           <FormattedMessage
             id="workflowCancellation.subtitle"
@@ -213,7 +206,6 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                 onUpdateChecked={onUpdateChecked}
                 classes={classes}
               />
-
             </SuspenseWithEmptyState>
           </Grid>
 
@@ -222,8 +214,10 @@ function RejectDialogUI(props: RejectDialogUIProps) {
               <FormControl fullWidth>
                 <InputLabel className={classes.sectionLabel}>
                   <FormattedMessage
-                    id="rejectDialog.rejectionReason" defaultMessage="Rejection Reason"
-                  />:
+                    id="rejectDialog.rejectionReason"
+                    defaultMessage="Rejection Reason"
+                  />
+                  :
                 </InputLabel>
                 <Select
                   fullWidth
@@ -236,7 +230,8 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                   </MenuItem>
                   <MenuItem value="IB">
                     <FormattedMessage
-                      id="rejectDialog.incorrectBranding" defaultMessage="Incorrect Branding"
+                      id="rejectDialog.incorrectBranding"
+                      defaultMessage="Incorrect Branding"
                     />
                   </MenuItem>
                   <MenuItem value="Typos">
@@ -247,7 +242,8 @@ function RejectDialogUI(props: RejectDialogUIProps) {
                   </MenuItem>
                   <MenuItem value="NSOA">
                     <FormattedMessage
-                      id="rejectDialog.nsoa" defaultMessage="Needs Section Owner's Approval"
+                      id="rejectDialog.nsoa"
+                      defaultMessage="Needs Section Owner's Approval"
                     />
                   </MenuItem>
                 </Select>
@@ -255,9 +251,12 @@ function RejectDialogUI(props: RejectDialogUIProps) {
 
               <TextFieldWithMax
                 className={classes.submissionTextField}
-                label={<FormattedMessage
-                  id="rejectDialog.rejectCommentLabel" defaultMessage="Rejection Comment"
-                />}
+                label={
+                  <FormattedMessage
+                    id="rejectDialog.rejectCommentLabel"
+                    defaultMessage="Rejection Comment"
+                  />
+                }
                 fullWidth
                 multiline
                 rows={8}
@@ -283,7 +282,9 @@ function RejectDialogUI(props: RejectDialogUIProps) {
             variant="contained"
             color="primary"
             autoFocus
-            disabled={checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''}
+            disabled={
+              checkedItems.length === 0 || rejectionComment === '' || rejectionReason === ''
+            }
           >
             <FormattedMessage id="rejectDialog.continue" defaultMessage="Reject" />
           </Button>
@@ -308,13 +309,7 @@ export default function RejectDialog(props: RejectDialogProps) {
 }
 
 function RejectDialogWrapper(props: RejectDialogProps) {
-  const {
-    items,
-    onClose,
-    onClosed,
-    onDismiss,
-    onRejectSuccess
-  } = props;
+  const { items, onClose, onClosed, onDismiss, onRejectSuccess } = props;
   useUnmount(onClosed);
   const [checkedItems, setCheckedItems] = useState([]);
   const [rejectionReason, setRejectionReason] = useState('');
@@ -342,11 +337,9 @@ function RejectDialogWrapper(props: RejectDialogProps) {
     if (rejectionReason === '') {
       setRejectionComment('');
     } else {
-      fetchCannedMessage(siteId, currentLocale, rejectionReason).subscribe(
-        (message) => {
-          setRejectionComment(message);
-        }
-      );
+      fetchCannedMessage(siteId, currentLocale, rejectionReason).subscribe((message) => {
+        setRejectionComment(message);
+      });
     }
   }, [rejectionReason, setRejectionComment, currentLocale, siteId]);
 

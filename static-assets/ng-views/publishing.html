@@ -129,7 +129,7 @@
                   ng-required="publish.isValidateCommentOn"
                 >
                                     </textarea>
-                <div id="bulkPublishCount" style="max-width: 500px"></div>
+                <div id="bulkPublishCharCountStatus" style="max-width: 500px"></div>
                 <div
                   class="error-container"
                   ng-show="(bulkOperationForm.submissionComment.$dirty && bulkOperationForm.submissionComment.$invalid) || (bulkOperationForm.submissionComment.$touched && bulkOperationForm.submissionComment.$invalid)"
@@ -238,7 +238,7 @@
                 >
                 </textarea>
 
-                <div id="publishCommentCount" style="max-width: 500px"></div>
+                <div id="publishCommentCharCountStatus" style="max-width: 500px"></div>
                 <div
                   class="error-container"
                   ng-show="(commitsForm.publishComment.$dirty && commitsForm.publishComment.$invalid) || (commitsForm.publishComment.$touched && commitsForm.publishComment.$invalid)"
