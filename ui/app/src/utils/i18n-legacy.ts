@@ -500,13 +500,29 @@ const codeEditorMessages = defineMessages({
     id: 'words.base',
     defaultMessage: 'Base'
   },
-  insert: {
-    id: 'words.insert',
-    defaultMessage: 'Insert'
-  },
   copy: {
     id: 'words.copy',
     defaultMessage: 'Copy'
+  },
+  save: {
+    id: 'words.save',
+    defaultMessage: 'Save'
+  },
+  insertCode: {
+    id: 'codeEditor.insertCode',
+    defaultMessage: 'Insert Code'
+  },
+  saved: {
+    id: 'codeEditor.saved',
+    defaultMessage: 'Save successful'
+  },
+  saveAndClose: {
+    id: 'codeEditor.saveAndClose',
+    defaultMessage: 'Save & Close'
+  },
+  saveAndMinimize: {
+    id: 'codeEditor.saveAndMinimize',
+    defaultMessage: 'Save & Minimize'
   },
   localesHelperText: {
     id: 'codeEditor.localesHelperText',
@@ -630,6 +646,22 @@ const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
     defaultMessage: 'Draft Save Completed'
+  },
+  save: {
+    id: 'words.save',
+    defaultMessage: 'Save'
+  },
+  saveAndMinimize: {
+    id: 'formEngine.saveAndMinimize',
+    defaultMessage: 'Save & Minimize'
+  },
+  saveAndClose: {
+    id: 'formEngine.saveAndClose',
+    defaultMessage: 'Save & Close'
+  },
+  saveAndPreview: {
+    id: 'formEngine.saveAndPreview',
+    defaultMessage: 'Save & Preview'
   }
 });
 

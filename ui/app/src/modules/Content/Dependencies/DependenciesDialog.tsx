@@ -56,11 +56,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Radio from '@material-ui/core/Radio';
 import { useDispatch } from 'react-redux';
-import { showEditDialog } from '../../../state/reducers/dialogs/edit';
 import { ApiResponse } from '../../../models/ApiResponse';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
+import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
 
 const assetsTypes = {
   'all-deps': {
@@ -570,16 +570,14 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     } else if (item.contentTypeId === 'renderingTemplate') {
       type = 'template';
     }
-    let src = `${defaultFormSrc}?site=${siteId}&path=${item.path}&type=${type}`;
 
-    dispatch(
-      showEditDialog({
-        src,
-        type,
-        inProgress: true,
-        showTabs: false
-      })
-    );
+    const src = `${defaultFormSrc}?site=${siteId}&path=${item.path}&type=${type}`;
+
+    if (type === 'form') {
+      dispatch(showEditDialog({ src }));
+    } else {
+      dispatch(showCodeEditorDialog({ src }));
+    }
   };
 
   const depsSource = useMemo(() => {

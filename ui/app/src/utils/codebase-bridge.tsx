@@ -145,7 +145,8 @@ export function createCodebaseBridge() {
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog')),
       PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog')),
-      PathSelectionDialog: lazy(() => import('../components/Dialogs/PathSelectionDialog'))
+      PathSelectionDialog: lazy(() => import('../components/Dialogs/PathSelectionDialog')),
+      SplitButton: lazy(() => import('../components/Controls/SplitButton'))
     },
 
     system: { generateClassName, theme, palette, store: null },
