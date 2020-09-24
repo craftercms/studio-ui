@@ -358,9 +358,9 @@
 
         // reduce call if not necessary
         if (this.pathOnlyHasCannedSearch(rootPath, instance)) {
-          var dummy = {};
+          var dummy = new Object();
           dummy.path = rootPath;
-          var items = [];
+          var items = new Array();
           items.push(dummy);
           Self.drawTree(items, tree, path, instance, pathFlag);
           YDom.removeClass(label, 'loading');
@@ -470,7 +470,7 @@
         self = this;
 
         var treeNodes = [];
-        var treeNodesLabels = [];
+        var treeNodesLabels = new Array();
         var currentLevelPath = null;
         var remainingPath = null;
         var nodeToOpen = null;
@@ -792,8 +792,8 @@
        * render method called on sub root level elements
        */
       drawSubtree: function(treeItems, root, pathToOpenTo, instance) {
-        var treeNodes = [];
-        var treeNodesLabels = [];
+        var treeNodes = new Array();
+        var treeNodesLabels = new Array();
         var nodeToOpen = null;
         var currentLevelPath = null;
         var remainingPath = null;
@@ -809,7 +809,7 @@
         }
 
         var parentCannedSearch = instance.cannedSearchCache[root.treeNodeTO.path];
-        var replaceChildren = [];
+        var replaceChildren = new Array();
 
         if (parentCannedSearch) {
           for (var j = 0; j < parentCannedSearch.length; j++) {
@@ -1397,9 +1397,9 @@
           };
           tree.setDynamicLoad(this.onLoadNodeDataOnClick);
           if (this.pathOnlyHasCannedSearch(rootPath, instance)) {
-            var dummy = {};
+            var dummy = new Object();
             dummy.path = rootPath;
-            var items = [];
+            var items = new Array();
             items.push(dummy);
             Self.drawTree(items, tree, null, instance, pathFlag);
             YDom.removeClass(label, 'loading');
@@ -1579,7 +1579,7 @@
           };
         }
         /* free up once current ones registered */
-        Self.searchesToWire = [];
+        Self.searchesToWire = new Array();
       },
       /**
        * method fired when tree node is expanded for first time
@@ -1723,7 +1723,7 @@
           if (path.indexOf(instance.openArray[num][i]) > -1) {
             instance.openArray[num].splice(i, 1);
             i--;
-
+            continue;
           } else {
             var aux = path;
             if (fileName) {
@@ -2250,7 +2250,7 @@
        * create a transfer object for a node
        */
       createTreeNodeTransferObject: function(treeItem) {
-        var retTransferObj = {};
+        var retTransferObj = new Object();
         retTransferObj.site = CStudioAuthoringContext.site;
         retTransferObj.internalName = treeItem.internalName;
         retTransferObj.link = 'UNSET';
@@ -3674,8 +3674,7 @@
               );
               YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
             },
-            failure: function (response) {
-            }
+            failure: function(response) {}
           };
 
           YConnect.asyncRequest('GET', getTreeItemReuest, cutCb);
@@ -3985,7 +3984,7 @@
               /* reload dashboard is heavy, to reflect changed content-type */
               //window.location.reload(true);
               //this.activeNode.data.formId = selectedType;
-              var auxParams = [];
+              var auxParams = new Array();
               var param1 = {};
               param1['name'] = 'draft';
               param1['value'] = 'true';
