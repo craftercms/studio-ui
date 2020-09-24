@@ -89,82 +89,85 @@
 
       CrafterCMSNext.services.translation.getSiteLocales(CStudioAuthoringContext.site).subscribe(
         ({ localeCodes, defaultLocaleCode }) => {
-          var titleEl = document.createElement('span');
-
-          YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
-          titleEl.innerHTML = config.title;
-
-          if (!_self.controlWidgetContainerEl) {
-            var controlWidgetContainerEl = document.createElement('div');
-            YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-dropdown-container');
-
-            var validEl = document.createElement('span');
-            YAHOO.util.Dom.addClass(validEl, 'validation-hint');
-            YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-            controlWidgetContainerEl.appendChild(validEl);
-
-            var inputEl = document.createElement('select');
-            _self.inputEl = inputEl;
-            YAHOO.util.Dom.addClass(inputEl, 'datum');
-            YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-dropdown');
-
-            _self.controlWidgetContainerEl = controlWidgetContainerEl;
-            _self.controlWidgetContainerEl.inputEl = inputEl;
-
-            inputEl.value = _self.value === '_not-set' ? config.defaultValue : _self.value;
-            _self.controlWidgetContainerEl.appendChild(inputEl);
-            YAHOO.util.Event.on(
-              inputEl,
-              'focus',
-              function (evt, context) {
-                context.form.setFocusedField(context);
-              },
-              _self
-            );
-            YAHOO.util.Event.on(inputEl, 'change', _self._onChangeVal, _self);
-
-            _self.renderHelp(config, _self.controlWidgetContainerEl);
-
-            var descriptionEl = document.createElement('span');
-            YAHOO.util.Dom.addClass(descriptionEl, 'description');
-            YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-            descriptionEl.innerHTML = config.description;
-
-            containerEl.appendChild(titleEl);
-            containerEl.appendChild(_self.controlWidgetContainerEl);
-            containerEl.appendChild(descriptionEl);
-          }
-
-          if (_self.controlWidgetContainerEl.inputEl.options.length <= 0) {
-            var optionElEmpty = document.createElement('option');
-            optionElEmpty.classList.add('hide');
-            optionElEmpty.disabled = true;
-            optionElEmpty.selected = 'selected';
-            _self.controlWidgetContainerEl.inputEl.add(optionElEmpty);
-          }
-
           if (localeCodes) {
+            var titleEl = document.createElement('span');
+
+            YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
+            titleEl.innerHTML = config.title;
+
+            if (!_self.controlWidgetContainerEl) {
+              var controlWidgetContainerEl = document.createElement('div');
+              YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-dropdown-container');
+
+              var validEl = document.createElement('span');
+              YAHOO.util.Dom.addClass(validEl, 'validation-hint');
+              YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
+              controlWidgetContainerEl.appendChild(validEl);
+
+              var inputEl = document.createElement('select');
+              _self.inputEl = inputEl;
+              YAHOO.util.Dom.addClass(inputEl, 'datum');
+              YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-dropdown');
+
+              _self.controlWidgetContainerEl = controlWidgetContainerEl;
+              _self.controlWidgetContainerEl.inputEl = inputEl;
+
+              inputEl.value = _self.value === '_not-set' ? config.defaultValue : _self.value;
+              _self.controlWidgetContainerEl.appendChild(inputEl);
+              YAHOO.util.Event.on(
+                inputEl,
+                'focus',
+                function (evt, context) {
+                  context.form.setFocusedField(context);
+                },
+                _self
+              );
+              YAHOO.util.Event.on(inputEl, 'change', _self._onChangeVal, _self);
+
+              _self.renderHelp(config, _self.controlWidgetContainerEl);
+
+              var descriptionEl = document.createElement('span');
+              YAHOO.util.Dom.addClass(descriptionEl, 'description');
+              YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
+              descriptionEl.innerHTML = config.description;
+
+              containerEl.appendChild(titleEl);
+              containerEl.appendChild(_self.controlWidgetContainerEl);
+              containerEl.appendChild(descriptionEl);
+            }
+
+            if (_self.controlWidgetContainerEl.inputEl.options.length <= 0) {
+              var optionElEmpty = document.createElement('option');
+              optionElEmpty.classList.add('hide');
+              optionElEmpty.disabled = true;
+              optionElEmpty.selected = 'selected';
+              _self.controlWidgetContainerEl.inputEl.add(optionElEmpty);
+            }
+
             localeCodes.forEach(localeCode => {
               var optionEl = document.createElement('option');
               optionEl.text = formatLanguageMessage(localeCode);
               optionEl.value = localeCode;
               _self.controlWidgetContainerEl.inputEl.add(optionEl);
             });
-          }
 
-          if (_self.readonly === true) {
-            inputEl.disabled = true;
-          }
-
-          var savedValue = _self.getValue();
-          var configValue = (savedValue && savedValue !== '') ? savedValue : defaultLocaleCode;
-
-          for (var x = 0; x < _self.inputEl.options.length; x++) {
-            if (_self.inputEl.options[x].value.toLowerCase() === configValue.toLowerCase()) {
-              _self.inputEl.value = configValue; // set value
-              _self.validate(_self);
+            if (_self.readonly === true) {
+              inputEl.disabled = true;
             }
+
+            var savedValue = _self.getValue();
+            var configValue = (savedValue && savedValue !== '') ? savedValue : defaultLocaleCode;
+
+            for (var x = 0; x < _self.inputEl.options.length; x++) {
+              if (_self.inputEl.options[x].value.toLowerCase() === configValue.toLowerCase()) {
+                _self.inputEl.value = configValue; // set value
+                _self.validate(_self);
+              }
+            }
+          } else {
+            containerEl.style.display = 'none';
           }
+
         }
       );
 

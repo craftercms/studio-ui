@@ -30,6 +30,10 @@
     padding-right: 15px;
 }
 
+.container h1 {
+  word-break: break-all;
+}
+
 .container .content {
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -37,6 +41,7 @@
     padding: 20px;
     margin-bottom: 20px;
 }
+
 
 .container.as-dialog .content {
     margin-bottom: 70px;
@@ -50,6 +55,10 @@
 .container .content table tr td:nth-child(1){
     text-align: right;
     padding-right: 40px;
+}
+
+.container .content table tr td:nth-child(2) {
+  word-break: break-all;
 }
 
 .container:before, .container:after {
@@ -86,7 +95,7 @@
 
 
 
- 
+
 span.diff-tag-html {
   font-family: "Andale Mono" monospace;
   font-size: 80%;
@@ -154,12 +163,12 @@ span.diff-html-removed img{
 
 span.diff-html-changed img{
  border: 2px dotted #000099;
- 
+
 }
 
 div.diff-removed-image, div.diff-added-image, div.diff-conflict-image {
   height: 300px;
-  width: 200px;  
+  width: 200px;
   position: absolute;
   opacity : 0.55;
   filter: alpha(opacity=55);
@@ -204,8 +213,8 @@ table.diff-tooltip-link, table.diff-tooltip-link-changed {
 }
 
 table.diff-tooltip-link-changed {
-    border-top: thin dashed #000000; 
-    margin-top: 3px; 
+    border-top: thin dashed #000000;
+    margin-top: 3px;
     padding-top: 3px
 }
 td.diff-tooltip-prev {

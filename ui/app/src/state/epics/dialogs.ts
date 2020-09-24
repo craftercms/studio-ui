@@ -30,14 +30,14 @@ import {
   closeViewVersionDialog,
   fetchContentVersion,
   fetchContentVersionComplete,
-  fetchContentVersionFailed
+  fetchContentVersionFailed,
+  newContentCreationComplete
 } from '../actions/dialogs';
 import { getVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
-import { newContentCreationComplete } from '../reducers/dialogs/edit';
 import { changeCurrentUrl } from '../actions/preview'; // TODO: update to actions/dialogs
 
 function getDialogNameFromType(type: string): string {

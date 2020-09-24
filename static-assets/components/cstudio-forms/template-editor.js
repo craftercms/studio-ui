@@ -248,12 +248,6 @@ CStudioAuthoring.Module.requireModule(
 
                     formHTML +=
                       '<div class=\'template-editor-toolbar\'><div class=\'template-editor-toolbar-variable\'></div>' +
-                      '<div class=\'\' style=\'position: absolute; right: 20px; bottom: 18px;\'>' +
-                      '<select id=\'themeSelector\'>' +
-                      '<option value=\'chrome\'>Light Theme</option>' +
-                      '<option value=\'tomorrow_night\'>Dark Theme</option>' +
-                      '</select>' +
-                      '</div>' +
                       '</div>' +
                       '<div class=\'editor-container\'>' +
                       '</div>' +
@@ -262,14 +256,18 @@ CStudioAuthoring.Module.requireModule(
                     if (isWrite == true) {
                       formHTML +=
                         '<div class=\'edit-buttons-container\'>' +
-                        '<div class=\'template-editor-update-button btn btn-primary cstudio-template-editor-button\'>' +
+                        '<select id=\'themeSelector\'>' +
+                        '<option value=\'chrome\'>Light Theme</option>' +
+                        '<option value=\'tomorrow_night\'>Dark Theme</option>' +
+                        '</select>' +
+                        '<div class=\'template-editor-update-button\'>' +
                         formatMessage(words.update) +
                         '</div>' +
                         '<div class=\'dropup inline-block relative\'>' +
-                        '<span data-toggle=\'dropdown\' aria-haspopup=\'true\' aria-expanded=\'false\' class=\'template-editor-cancel-button btn btn-default cstudio-template-editor-button\'>' +
+                        '<button data-toggle=\'dropdown\' aria-haspopup=\'true\' aria-expanded=\'false\' class=\'template-editor-cancel-button\'>' +
                         formatMessage(words.cancel) +
-                        '</span>' +
-                        '<ul class=\'dropdown-menu\' aria-labelledby=\'template-editor-cancel-button\'>' +
+                        '</button>' +
+                        '<ul class=\'dropdown-menu dropdown-menu-right\' aria-labelledby=\'template-editor-cancel-button\'>' +
                         '<li><a class=\'cancel\' href=\'#\' onclick=\'return false;\'>' +
                         formatMessage(messages.stay) +
                         '</a></li>' +
@@ -380,7 +378,6 @@ CStudioAuthoring.Module.requireModule(
 
                         aceEditor.getSession().on('change', function () {
                           aceEditor.isModified = true;
-                          onSaveCb.pendingChanges && onSaveCb.pendingChanges();
                         });
 
                         return aceEditor;
@@ -477,34 +474,6 @@ CStudioAuthoring.Module.requireModule(
 
                       return variables;
                     };
-                    var _addVarsSelect = function () {
-                      var selectVarList = document.createElement('select');
-                      selectVarList.className = 'varNames';
-                      selectVarList.style.marginLeft = '10px';
-                      $(modalEl)
-                        .find('.variable')
-                        .after(selectVarList);
-                      $(selectVarList).hide();
-
-                      //fill variables on select item
-                      var sectionsCallBack = {
-                        success: function (response) {
-                          var variables = _getVarsFromSections(response.sections.section);
-
-                          for (var i = 0; i < variables.length; i++) {
-                            var option = document.createElement('option');
-                            option.value = variables[i].value;
-                            option.text = variables[i].label;
-                            selectVarList.appendChild(option);
-                          }
-                        },
-                        failure: function () {
-                        }
-                      };
-
-                      var path = '/content-types' + contentType + '/form-definition.xml';
-                      CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, path, sectionsCallBack);
-                    };
 
                     var templateEditorToolbarVarElt = modalEl.querySelector('.template-editor-toolbar-variable');
                     var filename = templatePath.substring(templatePath.lastIndexOf('/') + 1);
@@ -566,74 +535,73 @@ CStudioAuthoring.Module.requireModule(
 
                       //Create and append select list
                       if (Object.entries(variableOpts).length > 0) {
-                        var variableLabel = document.createElement('label');
-                        variableLabel.innerHTML = CMgs.format(contextNavLangBundle, 'variableLabel');
-
                         var selectList = document.createElement('select');
                         selectList.className = 'variable';
                         templateEditorToolbarVarElt.appendChild(selectList);
+                        let option = document.createElement('option');
+                        option.value = '';
+                        option.text = formatMessage(messages.insertCode);
+                        option.disabled = true;
+                        option.selected = true;
+                        selectList.appendChild(option);
 
-                        Object.keys(variableOpts).map(function (key) {
-                          let option = document.createElement('option');
-                          option.value = key;
-                          option.text = variableOpts[key].label;
-                          selectList.appendChild(option);
-                        });
-
-                        //Create and append add button
-                        var addButton = document.createElement('button');
-                        addButton.className = 'addButtonVar btn btn-primary';
-                        addButton.innerHTML = formatMessage(messages.insert);
-                        templateEditorToolbarVarElt.appendChild(addButton);
-
+                        //add variablesNames
                         if (contentType && contentType !== '') {
-                          _addVarsSelect();
-
-                          var selectedLabel = $(modalEl)
-                            .find('.variable')
-                            .find('option:selected')
-                            .text(),
-                            $varsSelect = $(modalEl).find('.varNames');
-                          if (selectedLabel == 'Content variable') {
-                            $varsSelect.show();
-                          }
-
-                          selectList.onchange = function () {
-                            var selectedLabel = $(this)
-                              .find('option:selected')
-                              .text();
-
-                            if (selectedLabel == 'Content variable') {
-                              if ($varsSelect.length) {
-                                $varsSelect.show();
-                              }
-                            } else {
-                              $varsSelect.hide();
+                          var path = '/content-types' + contentType + '/form-definition.xml';
+                          CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, path, {
+                            success: (response) => {
+                              const variables = _getVarsFromSections(response.sections.section);
+                              Object.keys(variableOpts).map(function (key) {
+                                if (key === 'content-variable') {
+                                  let optgroup = document.createElement('optgroup');
+                                  optgroup.label = variableOpts[key].label;
+                                  variables.forEach(variable => {
+                                    let subOption = document.createElement('option');
+                                    subOption.value = variable.value;
+                                    subOption.text = variable.label;
+                                    subOption.setAttribute('content-variable', true);
+                                    optgroup.appendChild(subOption);
+                                    selectList.appendChild(optgroup);
+                                  });
+                                } else {
+                                  let option = document.createElement('option');
+                                  option.value = key;
+                                  option.text = variableOpts[key].label;
+                                  selectList.appendChild(option);
+                                }
+                              });
                             }
-                          };
+                          });
+                        } else {
+                          Object.keys(variableOpts).map(function (key) {
+                            let option = document.createElement('option');
+                            option.value = key;
+                            option.text = variableOpts[key].label;
+                            selectList.appendChild(option);
+                          });
                         }
 
-                        addButton.onclick = () => {
-                          const cursorPosition = aceEditor.getCursorPosition(),
-                            itemKey = selectList.options[selectList.selectedIndex].value,
-                            $varDropdown = $(modalEl).find('.varNames');
-
-                          let snippet = variableOpts[itemKey].value;
-
-                          if ($varDropdown.length > 0) {
-                            const variable = $varDropdown.val();
-
-                            if (variable.includes('-')) {
-                              snippet = snippet.replace('.VARIABLENAME', variable);
+                        $(selectList).on('change', function (event) {
+                          const cursorPosition = aceEditor.getCursorPosition();
+                          const itemKey = this.value;
+                          let snippet;
+                          if (this.options[this.selectedIndex].getAttribute('content-variable')) {
+                            snippet = variableOpts['content-variable'].value;
+                            if (itemKey.includes('-')) {
+                              snippet = snippet.replace('.VARIABLENAME', itemKey);
                             } else {
-                              snippet = snippet.replace('VARIABLENAME', variable);
+                              snippet = snippet.replace('VARIABLENAME', itemKey);
                             }
+                          } else {
+                            snippet = variableOpts[itemKey].value;
                           }
 
                           // Insert snippet (second argument) in given position
                           aceEditor.session.insert(cursorPosition, snippet);
                           aceEditor.focus();
-                        };
+                          $(selectList).val('');
+                        });
+
                       }
                     }
 
@@ -694,50 +662,33 @@ CStudioAuthoring.Module.requireModule(
 
                     if (isWrite == true) {
                       var saveEl = modalEl.querySelector('.template-editor-update-button');
-                      saveEl.onclick = function () {
-                        var value = aceEditor.getValue();
-                        var path = templatePath.substring(0, templatePath.lastIndexOf('/'));
-                        var filename = templatePath.substring(templatePath.lastIndexOf('/') + 1);
-
-                        if (filename.indexOf('.ftl') != -1) {
-                          const $select = $('#locale-selector');
-                          const baseName = $select.data('baseName');
-                          const localeCode = $select.val();
-                          filename = localeCode ? `${baseName}_${localeCode}.ftl` : `${baseName}.ftl`;
+                      let unmount;
+                      const options = [
+                        {
+                          label: formatMessage(messages.save),
+                          callback: () => {
+                            me.save(modalEl, aceEditor, templatePath, onSaveCb, false, 'save');
+                          }
+                        },
+                        {
+                          label: formatMessage(messages.saveAndClose),
+                          callback: () => {
+                            me.save(modalEl, aceEditor, templatePath, onSaveCb, true, 'saveAndClose');
+                          }
                         }
-
-                        var writeServiceUrl =
-                          '/api/1/services/api/1/content/write-content.json' +
-                          '?site=' +
-                          CStudioAuthoringContext.site +
-                          '&phase=onSave' +
-                          '&path=' +
-                          path +
-                          '&fileName=' +
-                          encodeURI(filename) +
-                          '&user=' +
-                          CStudioAuthoringContext.user +
-                          '&unlock=true';
-
-                        fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
-                          method: 'POST',
-                          credentials: 'same-origin',
-                          headers: {
-                            'Content-Type': `text/plain; charset=utf-8`,
-                            [CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken()
-                          },
-                          body: value
-                        })
-                          .then((res) => res.json())
-                          .then((data) => {
-                            if (data && data.result && data.result.success) {
-                              var event = new CustomEvent('legacyTemplateEditor.closed');
-                              document.dispatchEvent(event);
-                              modalEl.parentNode.removeChild(modalEl);
-                              onSaveCb.success && onSaveCb.success();
-                            }
-                          });
-                      };
+                      ];
+                      if (onSaveCb.id) {
+                        options.push({
+                          label: formatMessage(messages.saveAndMinimize),
+                          callback: () => {
+                            me.save(modalEl, aceEditor, templatePath, onSaveCb, false, 'saveAndMinimize');
+                          }
+                        });
+                      }
+                      CrafterCMSNext.render(saveEl, 'SplitButton', {
+                        options,
+                        defaultSelected: 1
+                      }).then((done) => (unmount = done.unmount));
                     }
                     if (onSaveCb.renderComplete) {
                       onSaveCb.renderComplete();
@@ -863,6 +814,44 @@ CStudioAuthoring.Module.requireModule(
                     });
                   }
                 );
+              },
+              save: (modalEl, aceEditor, templatePath, onSaveCb, unlock, type) => {
+                const value = aceEditor.getValue();
+                const path = templatePath.substring(0, templatePath.lastIndexOf('/'));
+                let filename = templatePath.substring(templatePath.lastIndexOf('/') + 1);
+                const $select = $('#locale-selector');
+
+                if (filename.indexOf('.ftl') !== -1 && $select.length) {
+                  const baseName = $select.data('baseName');
+                  const localeCode = $select.val();
+                  filename = localeCode ? `${baseName}_${localeCode}.ftl` : `${baseName}.ftl`;
+                }
+
+                const writeServiceUrl = `/api/1/services/api/1/content/write-content.json?site=${CStudioAuthoringContext.site}&phase=onSave&path=${path}&fileName=${encodeURI(filename)}&user=${CStudioAuthoringContext.user}&unlock=${unlock}`;
+
+                fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
+                  method: 'POST',
+                  credentials: 'same-origin',
+                  headers: {
+                    'Content-Type': `text/plain; charset=utf-8`,
+                    [CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken()
+                  },
+                  body: value
+                })
+                  .then((res) => res.json())
+                  .then((data) => {
+                    if (data && data.result && data.result.success) {
+                      //update pending changes state;
+                      aceEditor.isModified = false;
+                      CStudioAuthoring.Utils.showNotification(formatMessage(messages.saved));
+                      if (type === 'saveAndClose') {
+                        const event = new CustomEvent('legacyTemplateEditor.closed');
+                        document.dispatchEvent(event);
+                        modalEl.parentNode.removeChild(modalEl);
+                      }
+                      onSaveCb.success && onSaveCb.success(type);
+                    }
+                  });
               }
             };
 

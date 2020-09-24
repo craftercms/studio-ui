@@ -146,7 +146,9 @@ export function createCodebaseBridge() {
       NewContentDialog: lazy(() => import('../modules/Content/Authoring/NewContentDialog')),
       PreviewCompatDialog: lazy(() => import('../components/Dialogs/PreviewCompatibilityDialog')),
       PathSelectionDialog: lazy(() => import('../components/Dialogs/PathSelectionDialog')),
-      CharCountStatusContainer: lazy(() => import ('../components/CharCountStatus').then((module) => ({
+      SplitButton: lazy(() => import('../components/Controls/SplitButton')),
+      CharCountStatusContainer: lazy(() =>
+        import ('../components/CharCountStatus').then((module) => ({
           default: module.CharCountStatusContainer
         }))
       )

@@ -17,37 +17,37 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import {
-  closeEditDialog,
-  editDialogClosed,
-  showEditDialog,
-  updateEditConfig
+  closeCodeEditorDialog,
+  codeEditorDialogClosed,
+  showCodeEditorDialog,
+  updateCodeEditorDialog
 } from '../../actions/dialogs';
-import { LegacyFormDialogStateProps } from '../../../components/Dialogs/LegacyFormDialog';
+import { LegacyCodeEditorDialogStateProps } from '../../../components/Dialogs/LegacyCodeEditorDialog';
 
-const initialState: LegacyFormDialogStateProps = {
+const initialState: LegacyCodeEditorDialogStateProps = {
   open: false,
   inProgress: true
 };
 
-export default createReducer<GlobalState['dialogs']['edit']>(
+export default createReducer<GlobalState['dialogs']['codeEditor']>(
   initialState,
   {
-    [showEditDialog.type]: (state, { payload }) => ({
+    [showCodeEditorDialog.type]: (state, { payload }) => ({
       ...state,
-      onClose: closeEditDialog(),
-      onClosed: editDialogClosed(),
-      onDismiss: closeEditDialog(),
+      onClose: closeCodeEditorDialog(),
+      onClosed: codeEditorDialogClosed(),
+      onDismiss: closeCodeEditorDialog(),
       ...payload,
       open: true
     }),
-    [updateEditConfig.type]: (state, { payload }) => ({
+    [updateCodeEditorDialog.type]: (state, { payload }) => ({
       ...state,
       ...payload
     }),
-    [closeEditDialog.type]: (state) => ({
+    [closeCodeEditorDialog.type]: (state) => ({
       ...state,
       open: false
     }),
-    [editDialogClosed.type]: () => initialState
+    [codeEditorDialogClosed.type]: () => initialState
   }
 );

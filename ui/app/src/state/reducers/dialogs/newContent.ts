@@ -17,11 +17,11 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
   closeNewContentDialog,
+  newContentCreationComplete,
   newContentDialogClosed,
   showNewContentDialog
 } from '../../actions/dialogs';
 import { NewContentDialogStateProps } from '../../../modules/Content/Authoring/NewContentDialog';
-import { newContentCreationComplete } from './edit';
 
 const initialState: NewContentDialogStateProps = {
   open: false,

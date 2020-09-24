@@ -29,6 +29,7 @@ import { isPlainObject } from '../../utils/object';
 import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
 import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
 import RejectDialog from '../Dialogs/RejectDialog';
+import LegacyCodeEditorDialog from '../Dialogs/LegacyCodeEditorDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -39,8 +40,8 @@ const DependenciesDialog = lazy(() =>
   import('../../modules/Content/Dependencies/DependenciesDialog')
 );
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
-const EmbeddedLegacyEditors = lazy(() => import('../../modules/Preview/EmbeddedLegacyEditors'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
+const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -125,19 +126,27 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region Edit (Embedded Legacy Editor) */}
-      <EmbeddedLegacyEditors
+      {/* region Edit (LegacyFormDialog) */}
+      <LegacyFormDialog
         open={state.edit.open}
         src={state.edit.src}
-        type={state.edit.type}
         inProgress={state.edit.inProgress}
-        showTabs={state.edit.showTabs}
-        showController={state.edit.showController}
-        itemModel={state.edit.itemModel}
-        embeddedParentPath={state.edit.embeddedParentPath}
-        onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
         onClose={createCallback(state.edit.onClose, dispatch)}
+        onClosed={createCallback(state.edit.onClosed, dispatch)}
         onDismiss={createCallback(state.edit.onDismiss, dispatch)}
+        onSaveSuccess={createCallback(state.edit.onSaveSuccess, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region LegacyCodeEditorDialog */}
+      <LegacyCodeEditorDialog
+        open={state.codeEditor.open}
+        src={state.codeEditor.src}
+        inProgress={state.codeEditor.inProgress}
+        onClose={createCallback(state.codeEditor.onClose, dispatch)}
+        onClosed={createCallback(state.codeEditor.onClosed, dispatch)}
+        onDismiss={createCallback(state.codeEditor.onDismiss, dispatch)}
+        onSuccess={createCallback(state.codeEditor.onSuccess, dispatch)}
       />
       {/* endregion */}
 

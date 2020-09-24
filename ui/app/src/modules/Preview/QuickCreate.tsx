@@ -30,8 +30,11 @@ import {
   useSystemVersionResource
 } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { showNewContentDialog } from '../../state/actions/dialogs';
-import { newContentCreationComplete, showEditDialog } from '../../state/reducers/dialogs/edit';
+import {
+  newContentCreationComplete,
+  showEditDialog,
+  showNewContentDialog
+} from '../../state/actions/dialogs';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -282,9 +285,7 @@ export default function() {
     dispatch(
       showEditDialog({
         src,
-        type: 'form',
         inProgress: false,
-        showTabs: false,
         onSaveSuccess: newContentCreationComplete()
       })
     );
