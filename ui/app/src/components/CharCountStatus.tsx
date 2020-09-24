@@ -45,18 +45,10 @@ interface CharCountStatusProps {
 
 function CharCountStatus(props: CharCountStatusProps) {
   const classes = useStyles({});
-  const {
-    commentLength,
-    commentMaxLength
-  } = props;
+  const { commentLength, commentMaxLength } = props;
 
   return (
-    <Grid
-      container
-      direction="row"
-      justify="space-between"
-      className={classes.countContainer}
-    >
+    <Grid container direction="row" justify="space-between" className={classes.countContainer}>
       <Grid item>
         <Typography className={classes.submissionCommentCount}>
           <FormattedMessage
@@ -77,12 +69,10 @@ function CharCountStatus(props: CharCountStatusProps) {
 }
 
 export function CharCountStatusContainer(props: CharCountStatusContainerProps) {
-  const {
-    commentLength
-  } = props;
+  const { commentLength } = props;
 
-  const commentMaxLength = useSelector<GlobalState, number>((state) =>
-    state.configuration.publishing.submission.commentMaxLength
+  const commentMaxLength = useSelector<GlobalState, number>(
+    (state) => state.configuration.publishing.submission.commentMaxLength
   );
 
   return (
