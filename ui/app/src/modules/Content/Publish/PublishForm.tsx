@@ -20,7 +20,6 @@ import { defineMessages, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import InputLabel from '@material-ui/core/InputLabel';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -33,6 +32,7 @@ import Link from '@material-ui/core/Link';
 import DateTimePicker from '../../../components/Controls/DateTimePicker';
 import moment from 'moment';
 import palette from '../../../styles/palette';
+import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 
 const messages = defineMessages({
   emailLabel: {
@@ -379,7 +379,7 @@ function PublishForm(props: PublishFormProps) {
         </FormControl>
       </div>
 
-      <TextField
+      <TextFieldWithMax
         className={classes.submissionTextField}
         id="sandboxBranch"
         name="sandboxBranch"

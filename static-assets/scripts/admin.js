@@ -961,13 +961,15 @@
       var publish = $scope.publish;
       publish.error = '';
 
-      publish.initQueque = function() {
+      publish.maxCommentLength = CrafterCMSNext.system.store.getState().configuration.publishing.submission.commentMaxLength;
+
+      publish.initQueque = function () {
         CrafterCMSNext.render(document.getElementsByClassName('publishingQueue')[0], 'PublishingQueue', {
           siteId: $location.search().site
         });
       };
 
-      publish.showModal = function(template, size, verticalCentered, styleClass) {
+      publish.showModal = function (template, size, verticalCentered, styleClass) {
         var modalInstance = $uibModal.open({
           templateUrl: template,
           windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
@@ -1159,12 +1161,12 @@
 
         adminService
           .bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel, publish.submissionComment)
-          .success(function(data) {
+          .success(function (data) {
             publish.disable = false;
             spinnerOverlay.close();
             $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
           })
-          .error(function(err) {
+          .error(function (err) {
             publish.error = err.message;
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
             spinnerOverlay.close();
@@ -1172,12 +1174,25 @@
           });
       };
 
+      angular.element(document).ready(function () {
+        const el = document.getElementById('bulkPublishCharCountStatus');
+        CrafterCMSNext.render(el, 'CharCountStatusContainer', {
+          commentLength: publish && publish.submissionComment ? publish.submissionComment.length : 0
+        });
+
+        document.getElementById('submissionComment').addEventListener('keyup', function (e) {
+          CrafterCMSNext.render(el, 'CharCountStatusContainer', {
+            commentLength: publish.submissionComment.length
+          });
+        });
+      });
+
       //COMMITS PUBLISH
 
       publish.commitIds;
       publish.publishComment = '';
 
-      publish.commitsPublish = function() {
+      publish.commitsPublish = function () {
         var spinnerOverlay,
           data = {},
           selectedChannelCommit = publish.commitIds.replace(/ /g, '').split(',');
@@ -1190,7 +1205,7 @@
 
         adminService
           .commitsPublish(data)
-          .success(function(data) {
+          .success(function (data) {
             publish.commitIdsDisable = false;
             spinnerOverlay.close();
             publish.notification(
@@ -1200,13 +1215,26 @@
               'studioMedium green'
             );
           })
-          .error(function(err) {
+          .error(function (err) {
             publish.error = err.message;
             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
             spinnerOverlay.close();
             publish.commitIdsDisable = false;
           });
       };
+
+      angular.element(document).ready(function () {
+        const el = document.getElementById('publishCommentCharCountStatus');
+        CrafterCMSNext.render(el, 'CharCountStatusContainer', {
+          commentLength: publish && publish.publishComment ? publish.publishComment.length : 0
+        });
+
+        document.getElementById('publishComment').addEventListener('keyup', function (e) {
+          CrafterCMSNext.render(el, 'CharCountStatusContainer', {
+            commentLength: publish.publishComment.length ?? 0
+          });
+        });
+      });
     }
   ]);
 

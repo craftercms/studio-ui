@@ -30,7 +30,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import createStyles from '@material-ui/core/styles/createStyles';
 import { Resource } from '../../../models/Resource';
-import TextField from '@material-ui/core/TextField';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../components/Dialogs/DialogBody';
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
@@ -40,15 +39,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
-import { Typography } from '@material-ui/core';
-import { useSelector } from 'react-redux';
-import GlobalState from '../../../models/GlobalState';
+import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
   items: SandboxItem[];
   submissionComment: string;
-  submissionCommentMaxLength: number;
   setSubmissionComment: Function;
   onSelectionChange?: Function;
 }
@@ -58,7 +54,6 @@ interface DeleteDialogUIProps {
   items: SandboxItem[];
   selectedItems: SandboxItem[];
   submissionComment: string;
-  submissionCommentMaxLength: number;
   setSubmissionComment: Function;
   apiState: any;
   handleSubmit: any;
@@ -138,7 +133,6 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
     resource,
     items,
     submissionComment,
-    submissionCommentMaxLength,
     setSubmissionComment,
     onSelectionChange
   } = props;
@@ -158,7 +152,7 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
 
         <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
           <form className={classes.submissionCommentField} noValidate autoComplete="off">
-            <TextField
+            <TextFieldWithMax
               label={
                 <FormattedMessage
                   id="deleteDialog.submissionCommentLabel"
@@ -174,32 +168,9 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
               InputProps={{
                 className: classes.textField
               }}
-              inputProps={{ maxLength: submissionCommentMaxLength }}
             />
           </form>
 
-          <Grid
-            container
-            direction="row"
-            justify="space-between"
-            className={classes.countContainer}
-          >
-            <Grid item>
-              <Typography className={classes.submissionCommentCount}>
-                <FormattedMessage
-                  id="deleteDialog.maxCharacters"
-                  defaultMessage="Max {maxLength} characters"
-                  values={{ maxLength: submissionCommentMaxLength }}
-                />
-              </Typography>
-            </Grid>
-
-            <Grid item>
-              <Typography className={classes.submissionCommentCount}>
-                {submissionComment.length}/{submissionCommentMaxLength}
-              </Typography>
-            </Grid>
-          </Grid>
         </Grid>
       </Grid>
     </>
@@ -212,7 +183,6 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
     items,
     selectedItems,
     submissionComment,
-    submissionCommentMaxLength,
     setSubmissionComment,
     apiState,
     handleSubmit,
@@ -235,7 +205,6 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
             resource={resource}
             items={items}
             submissionComment={submissionComment}
-            submissionCommentMaxLength={submissionCommentMaxLength}
             setSubmissionComment={setSubmissionComment}
             onSelectionChange={onSelectionChange}
           />
@@ -279,9 +248,6 @@ export default function DeleteDialog(props: DeleteDialogProps) {
 function DeleteDialogWrapper(props: DeleteDialogProps) {
   const { items, onClose, onDismiss, onSuccess } = props;
   const [submissionComment, setSubmissionComment] = useState('');
-  const submissionCommentMaxLength = useSelector<GlobalState, number>((state) =>
-    state.configuration.publishing.submission.commentMaxLength
-  );
   const [apiState, setApiState] = useSpreadState({
     error: null,
     submitting: false
@@ -343,7 +309,6 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
       items={items}
       selectedItems={selectedItems}
       submissionComment={submissionComment}
-      submissionCommentMaxLength={submissionCommentMaxLength}
       setSubmissionComment={setSubmissionComment}
       apiState={apiState}
       handleSubmit={handleSubmit}
