@@ -76,11 +76,11 @@ const messages = defineMessages({
   },
   idExist: {
     id: 'createSiteDialog.idExist',
-    defaultMessage: 'The ID already exist.'
+    defaultMessage: 'The ID already exists.'
   },
   nameExist: {
     id: 'createSiteDialog.nameExist',
-    defaultMessage: 'The name already exist.'
+    defaultMessage: 'The name already exists.'
   },
   pushSiteToRemote: {
     id: 'createSiteDialog.pushSiteToRemote',
@@ -135,6 +135,22 @@ function BlueprintForm(props: BlueprintFormProps) {
         [e.target.name]: e.target.value.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase(),
         invalidSiteId: invalidSiteId
       });
+    } else if (e.target.name === 'siteName') {
+      const currentSiteNameParsed = getSiteId(inputs.siteName);
+
+      // if current siteId has been edited directly (different to siteName processed)
+      // or if siteId is empty -> do not change it.
+      if(inputs.siteId === currentSiteNameParsed || inputs.siteId === '') {
+        const siteId = getSiteId(e.target.value);
+        const invalidSiteId = (siteId.startsWith('0') || siteId.startsWith('-') || siteId.startsWith('_'));
+        setInputs({
+          [e.target.name]: e.target.value,
+          siteId,
+          invalidSiteId
+        });
+      } else {
+        setInputs({ [e.target.name]: e.target.value });
+      }
     } else if (type === 'blueprintFields') {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
@@ -178,16 +194,49 @@ function BlueprintForm(props: BlueprintFormProps) {
     }
   }
 
+  function getSiteId(siteName: string): string {
+    let siteId = siteName.replace(/[^a-zA-Z0-9\s]/g, '').toLowerCase();
+    siteId = siteId.replace(/\s/g, '-');
+    if (siteId.startsWith('0') || siteId.startsWith('-') || siteId.startsWith('_')) {
+      siteId = siteId.replace(/0|-|_/, '');
+    }
+
+    return siteId;
+  }
+
   return (
     <form className={clsx(classes.form, classesProp?.root)}>
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <TextField
+            id="siteName"
+            name="siteName"
+            label={formatMessage(messages.siteName)}
+            required
+            autoFocus
+            fullWidth
+            onBlur={event => checkSiteNames(event)}
+            onKeyPress={onKeyPress}
+            onKeyUp={(event) => checkSiteNames(event)}
+            onChange={(event) => handleInputChange(event)}
+            value={inputs.siteName}
+            inputProps={{ maxLength: 50 }}
+            error={( (inputs.submitted && !inputs.siteName) || inputs.siteNameExist )}
+            helperText={
+              inputs.submitted && !inputs.siteName
+                ? formatMessage(messages.required, { name: formatMessage(messages.siteName) })
+                : inputs.siteNameExist
+                ? formatMessage(messages.nameExist)
+                : ''
+            }
+          />
+        </Grid>
         <Grid item xs={12}>
           <TextField
             id="siteId"
             name="siteId"
             label={formatMessage(messages.siteId)}
             required
-            autoFocus
             fullWidth
             onBlur={() => onCheckNameExist(inputs.siteId)}
             onKeyPress={onKeyPress}
@@ -204,25 +253,6 @@ function BlueprintForm(props: BlueprintFormProps) {
                 true,
                 inputs.submitted,
                 inputs.siteIdExist)
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="siteName"
-            name="siteName"
-            label={formatMessage(messages.siteName)}
-            // required    // TODO: is this required?
-            fullWidth
-            onBlur={event => checkSiteNames(event)}
-            onKeyPress={onKeyPress}
-            onKeyUp={(event) => checkSiteNames(event)}
-            onChange={(event) => handleInputChange(event)}
-            value={inputs.siteName}
-            inputProps={{ maxLength: 50 }}
-            error={( /*(inputs.submitted && !inputs.siteName) ||*/ inputs.siteNameExist)}     //TODO: remove commented if field not required
-            helperText={
-              inputs.siteNameExist ? formatMessage(messages.nameExist) : ''
             }
           />
         </Grid>

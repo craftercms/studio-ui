@@ -30,6 +30,7 @@ import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
 import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
 import RejectDialog from '../Dialogs/RejectDialog';
 import LegacyCodeEditorDialog from '../Dialogs/LegacyCodeEditorDialog';
+import EditSiteDialog from '../../modules/System/Sites/Edit/EditSiteDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -277,6 +278,17 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.reject.onClosed, dispatch)}
         onDismiss={createCallback(state.reject.onDismiss, dispatch)}
         onRejectSuccess={createCallback(state.reject.onRejectSuccess, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region EditSite */}
+      <EditSiteDialog
+        open={state.editSite.open}
+        site={state.editSite.site}
+        onClose={createCallback(state.editSite.onClose, dispatch)}
+        onClosed={createCallback(state.editSite.onClosed, dispatch)}
+        onDismiss={createCallback(state.editSite.onDismiss, dispatch)}
+        onSaveSuccess={createCallback(state.editSite.onSaveSuccess, dispatch)}
       />
       {/* endregion */}
     </Suspense>

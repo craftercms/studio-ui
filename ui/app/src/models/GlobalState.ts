@@ -43,6 +43,7 @@ import { SidebarConfigItem } from '../services/configuration';
 import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
+import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -139,6 +140,7 @@ export interface GlobalState {
     codeEditor: LegacyCodeEditorDialogStateProps;
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
+    editSite: EditSiteDialogStateProps;
   };
   translation: {
     siteLocales: {

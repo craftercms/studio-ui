@@ -17,9 +17,10 @@
 import { get, postJSON } from '../utils/ajax';
 import { CreateSiteMeta, Site } from '../models/Site';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { PaginationOptions } from '../models/PaginationOptions';
+import ApiResponse from '../models/ApiResponse';
 
 export function fetchBlueprints() {
   return get('/studio/api/2/sites/available_blueprints');
@@ -52,6 +53,20 @@ export function createSite(site: CreateSiteMeta) {
 
 export function deleteSite(id: string) {
   return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id });
+}
+
+export function editSite(site: Site) {
+  // endpoint pending
+  const response: ApiResponse = {
+    code: 200,
+    title: 'Saved',
+    message: 'Site saved'
+  }
+
+  return new Observable((observer: Observer<any>) => {
+    observer.next(response);
+    observer.complete();
+  });
 }
 
 export function checkHandleAvailability(name: string) {

@@ -630,11 +630,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         siteId: site.siteId,
         singleBranch: false,
         createAsOrphan: site.createAsOrphan,
-        ...(
-          (site.siteName && site.siteName !== '')
-          ? { name: site.siteName }
-          : {}
-        )
+        name: site.siteName
       };
       if (site.blueprint.id !== 'GIT') {
         params.blueprint = site.blueprint.id;
