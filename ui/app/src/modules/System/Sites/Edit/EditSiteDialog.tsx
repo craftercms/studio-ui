@@ -38,8 +38,8 @@ type ApiState = { error: ApiResponse, submitting: boolean };
 interface EditSiteDialogUIProps {
   resource: Resource<Return>;
   apiState: ApiState;
-  handleInputChange: Function;
-  handleSubmit: Function;
+  onHandleInputChange: Function;
+  onHandleSubmit: Function;
   onClose?(response?: any): any;
 }
 
@@ -66,8 +66,8 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
   const {
     resource,
     apiState,
-    handleInputChange,
-    handleSubmit,
+    onHandleInputChange,
+    onHandleSubmit,
     onClose
   } = props;
 
@@ -96,8 +96,10 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
                   />
                 }
                 fullWidth
-                onChange={(event) => handleInputChange(event)}
+                onChange={(event) => onHandleInputChange(event)}
                 value={site.name}
+                inputProps={{ maxLength: 50 }}
+                autoFocus
               />
             </Grid>
 
@@ -111,8 +113,9 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
                   />
                 }
                 fullWidth
-                onChange={(event) => handleInputChange(event)}
+                onChange={(event) => onHandleInputChange(event)}
                 value={site.description??''}
+                inputProps={{ maxLength: 4000 }}
               />
             </Grid>
           </Grid>
@@ -126,8 +129,8 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
           </Button>
         )}
         {
-          handleSubmit && (
-          <Button onClick={() => handleSubmit()} variant="contained" color="primary" autoFocus disabled={apiState.submitting}>
+          onHandleSubmit && (
+          <Button onClick={() => onHandleSubmit()} variant="contained" color="primary" autoFocus disabled={apiState.submitting}>
             <FormattedMessage id="editSiteDialog.continue" defaultMessage="Continue" />
           </Button>
         )}
@@ -169,8 +172,6 @@ function EditSiteDialog(props: EditSiteDialogProps) {
   const handleInputChange = (event) => {
     event.persist();
 
-    console.log('event', event.target.name);
-
     setSiteData({
       [event.target.name]: event.target.value
     });
@@ -181,9 +182,8 @@ function EditSiteDialog(props: EditSiteDialogProps) {
 
     editSite(siteData).subscribe(
       (response) => {
-        console.log(response);
         setApiState({ submitting: false });
-        onSaveSuccess?.();
+        onSaveSuccess?.(response);
         onClose?.();
       },
       (e) => {
@@ -206,8 +206,8 @@ function EditSiteDialog(props: EditSiteDialogProps) {
         <EditSiteDialogUI
           resource={resource}
           apiState={apiState}
-          handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
+          onHandleInputChange={handleInputChange}
+          onHandleSubmit={handleSubmit}
           onClose={onClose}
         />
       </SuspenseWithEmptyState>

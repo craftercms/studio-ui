@@ -59,7 +59,6 @@ export function editSite(site: Site) {
   // endpoint pending
   const response: ApiResponse = {
     code: 200,
-    title: 'Saved',
     message: 'Site saved'
   }
 
