@@ -197,7 +197,6 @@ export default function (props: WidgetProps) {
   };
 
   const onOpenItemMenu = (element: Element, item: DetailedItem) => {
-    // TODO: the nav is already fetching item parents and childrens but not permissions;
     dispatch(fetchDetailedItem({ site, path: item.path }));
     dispatch(fetchUserPermissions({ site, path: item.path }));
     setItemMenu({

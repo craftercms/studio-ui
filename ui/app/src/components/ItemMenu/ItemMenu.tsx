@@ -22,7 +22,7 @@ import { LookupTable } from '../../models/LookupTable';
 import { useActiveSiteId, useLogicResource, useSelection } from '../../utils/hooks';
 import { generateMenuOptions } from './utils';
 import Menu from '@material-ui/core/Menu';
-import { PopoverOrigin } from '@material-ui/core';
+import { PopoverOrigin, Typography } from '@material-ui/core';
 import {
   closeConfirmDialog,
   closeCopyDialog,
@@ -50,7 +50,7 @@ import {
   paste
 } from '../../services/content';
 import { useDispatch } from 'react-redux';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from '../Navigation/PathNavigator/translations';
 import { batchActions, changeContentType, editTemplate } from '../../state/actions/misc';
@@ -59,6 +59,9 @@ import StandardAction from '../../models/StandardAction';
 import { withoutIndex } from '../../utils/path';
 import { setClipBoard, unSetClipBoard } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import makeStyles from '@material-ui/styles/makeStyles';
+import createStyles from '@material-ui/styles/createStyles';
 
 interface ItemMenuProps {
   path: string;
@@ -76,8 +79,21 @@ interface ItemMenuUIProps {
   onMenuItemClicked(section: SectionItem): void;
 }
 
+const useStyles = makeStyles(() =>
+  createStyles({
+    loadingWrapper: {
+      display: 'flex',
+      padding: '0px 10px',
+      alignItems: 'center',
+      '& > p': {
+        marginLeft: '10px'
+      }
+    }
+  }));
+
 export function ItemMenu(props: ItemMenuProps) {
-  const { path, classes, onClose, onItemMenuActionSuccessCreator } = props;
+  const { path, onClose, onItemMenuActionSuccessCreator } = props;
+  const classes = useStyles({});
   const site = useActiveSiteId();
   const permissions = useSelection((state) => state.content.permissions);
   const items = useSelection((state) => state.content.items);
@@ -89,7 +105,7 @@ export function ItemMenu(props: ItemMenuProps) {
   const { formatMessage } = useIntl();
 
   const resourceItem = useLogicResource<DetailedItem, DetailedItem>(item, {
-    shouldResolve: (source) => Boolean(source),
+    shouldResolve: (source) => Boolean(source) && false,
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => source,
@@ -352,10 +368,19 @@ export function ItemMenu(props: ItemMenuProps) {
       onClose={props.onClose}
       anchorOrigin={props.anchorOrigin}
     >
-      <Suspense fallback="loading">
+      <Suspense
+        fallback={
+          <div className={classes.loadingWrapper}>
+            <CircularProgress size={16} />
+            <Typography>
+              <FormattedMessage id="words.loading" defaultMessage="Loading" />
+            </Typography>
+          </div>
+        }
+      >
         <ItemMenuUI
           resource={{ item: resourceItem, permissions: resourcePermissions }}
-          classes={classes}
+          classes={props.classes}
           onMenuItemClicked={onMenuItemClicked}
         />
       </Suspense>
