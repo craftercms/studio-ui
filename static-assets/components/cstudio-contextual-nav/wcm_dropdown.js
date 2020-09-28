@@ -49,7 +49,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
     var mainContainerEl = YDom.get('acn-dropdown-wrapper');
 
     var navBarSiteNameEl = YDom.get('navbar-site-name');
-    navBarSiteNameEl.innerHTML = CStudioAuthoringContext.site;
+    navBarSiteNameEl.innerHTML = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site].name;
 
     if (
       window.location.pathname.indexOf('browse') > -1 ||
