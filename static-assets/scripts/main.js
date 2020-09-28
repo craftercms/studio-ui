@@ -47,10 +47,9 @@
     'authService',
     'sitesService',
     'Constants',
-    '$http',
-    '$cookies',
-    '$location',
-    function($rootScope, $state, $stateParams, authService, sitesService, Constants) {
+    '$uibModal',
+    '$timeout',
+    function($rootScope, $state, $stateParams, authService, sitesService, Constants, $uibModal, $timeout) {
       $rootScope.$state = $state;
       $rootScope.$stateParams = $stateParams;
 
@@ -120,6 +119,35 @@
       });
 
       sitesService.getLanguages($rootScope, true);
+
+      $rootScope.showModal = function(template, size, verticalCentered, styleClass) {
+        var modalInstance = $uibModal.open({
+          templateUrl: template,
+          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+          backdrop: 'static',
+          keyboard: true,
+          scope: $rootScope,
+          size: size ? size : ''
+        });
+
+        return modalInstance;
+      };
+
+      $rootScope.notification = function(notificationText, showOnTop, styleClass) {
+        var verticalAlign = showOnTop ? false : true;
+        $rootScope.notificationText = notificationText;
+        $rootScope.notificationType = 'check-circle';
+
+        var modal = $rootScope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
+
+        $timeout(
+          function() {
+            modal.close();
+          },
+          1500,
+          false
+        );
+      };
 
       CrafterCMSNext.renderBackgroundUI();
     }
@@ -520,11 +548,11 @@
       };
 
       this.editSite = function(site) {
-        me.setCookie('crafterSite', site.siteId);
+        me.setCookie('crafterSite', site.id);
         $timeout(
           function() {
             $window.location.href =
-              CrafterCMSNext.util.state.getStoredPreviewChoice(site.siteId) === '2'
+              CrafterCMSNext.util.state.getStoredPreviewChoice(site.id) === '2'
                 ? '/studio/next/preview'
                 : '/studio/preview';
           },
@@ -533,8 +561,34 @@
         );
       };
 
+      this.editSiteData = function(site, onEditSuccess) {
+        const eventIdSuccess = 'editSiteDialogSuccess';
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_EDIT_SITE_DIALOG',
+          payload: {
+            open: true,
+            site,
+            onSaveSuccess: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_EDIT_SITE_DIALOG' }
+              ]
+            }
+          }
+        });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+          $rootScope.notification(formatMessage(globalMenuMessages.siteEdited), '', 'studioMedium green');
+          onEditSuccess(response);
+        });
+
+      };
+
       this.goToDashboard = function(site) {
-        me.setCookie('crafterSite', site.siteId);
+        me.setCookie('crafterSite', site.id);
         $timeout(
           function() {
             $window.location.href = '/studio/site-dashboard';
@@ -556,7 +610,7 @@
 
       this.removeSite = function(site) {
         return $http.post(api('delete-site'), {
-          siteId: site.siteId
+          siteId: site.id
         });
       };
 
@@ -1247,6 +1301,14 @@
 
       $scope.editSite = sitesService.editSite;
 
+      $scope.editSiteData = function(site) {
+        const onEditSuccess = (response) => {
+          getSites();
+        };
+
+        sitesService.editSiteData(site, onEditSuccess);
+      }
+
       $scope.goToDashboard = sitesService.goToDashboard;
 
       $scope.createSites = false;
@@ -1276,15 +1338,18 @@
       };
 
       function getSites(params) {
-        sitesService
-          .getSitesPerUser('me', params)
-          .success(function(data) {
-            $scope.totalSites = data.total ? data.total : null;
-            $scope.sites = data.sites;
+        if (params) {
+          $scope.paginationData = params;
+        }
+
+        CrafterCMSNext.services.sites.fetchSites($scope.paginationData)
+          .subscribe(data => {
+            $scope.totalSites = data.total;
+            $scope.sites = data;
             isRemove();
             createSitePermission();
-          })
-          .error(function() {
+          },
+          () => {
             $scope.sites = null;
           });
       }
@@ -1618,7 +1683,7 @@
     '$modalInstance',
     'siteToRemove',
     function($scope, $state, sitesService, $modalInstance, siteToRemove) {
-      $scope.siteToRemove = siteToRemove.siteId;
+      $scope.siteToRemove = siteToRemove.id;
       $scope.confirmationSubmitDisabled = false;
 
       function removeSiteSitesModal(site) {

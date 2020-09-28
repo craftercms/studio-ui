@@ -801,6 +801,10 @@ const globalMenuMessages = defineMessages({
   'login.recover': {
     id: 'GlobalMenu.Recover',
     defaultMessage: 'Password Recovery'
+  },
+  siteEdited: {
+    id: 'globalMenu.siteEdited',
+    defaultMessage: 'Site Edited.'
   }
 });
 
