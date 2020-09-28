@@ -17,18 +17,23 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
+  fetchDetailedItem,
+  fetchDetailedItemComplete,
+  fetchDetailedItemFailed,
   fetchQuickCreateList as fetchQuickCreateListAction,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
-  getUserPermissionsComplete,
-  getUserPermissionsFailed
+  fetchUserPermissions,
+  fetchUserPermissionsComplete,
+  fetchUserPermissionsFailed
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
-import { fetchQuickCreateList } from '../../services/content';
+import { fetchQuickCreateList, getDetailedItem } from '../../services/content';
 import StandardAction from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
+import { NEVER } from 'rxjs';
 
 export default [
   // region Quick Create
@@ -47,14 +52,36 @@ export default [
   // region getUserPermissions
   (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(GUEST_CHECK_IN),
+      ofType(GUEST_CHECK_IN, fetchUserPermissions.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) =>
-        //TODO: check if path already exist on permissions.content[path] return NEVER
-        getUserPermissions(payload.site, payload.path, state.user.username).pipe(
-          map((permissions) => getUserPermissionsComplete({ path: payload.path, permissions })),
-          catchAjaxError(getUserPermissionsFailed)
-        )
+      switchMap(([{ payload }, state]) => {
+          if (state.content.permissions?.[payload.path]) {
+            return NEVER;
+          } else {
+            return getUserPermissions(payload.site, payload.path, state.user.username).pipe(
+              map((permissions) => fetchUserPermissionsComplete({ path: payload.path, permissions })),
+              catchAjaxError(fetchUserPermissionsFailed)
+            );
+          }
+        }
+      )
+    ),
+  // endregion
+  // region Items fetchDetailedItem
+  (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(fetchDetailedItem.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+          if (state.content.items.byId?.[payload.path]) {
+            return NEVER;
+          } else {
+            return getDetailedItem(payload.site, payload.path).pipe(
+              map((item) => fetchDetailedItemComplete(item)),
+              catchAjaxError(fetchDetailedItemFailed)
+            );
+          }
+        }
       )
     )
   // endregion

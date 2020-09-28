@@ -43,6 +43,9 @@ import { SidebarConfigItem } from '../services/configuration';
 import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
+import { DetailedItem } from './Item';
+import { CreateFolderPropsStateProps } from '../components/Dialogs/CreateFolderDialog';
+import { CopyItemsDialogStateProps } from '../components/Dialogs/CopyItemsDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -63,6 +66,7 @@ export interface GuestData {
   models: LookupTable<ContentInstance>;
   childrenMap: LookupTable<string[]>;
   modelId: string;
+  path: string;
   selected: EditSelection[];
   itemBeingDragged: boolean;
 }
@@ -87,6 +91,10 @@ export interface GlobalState {
       items: QuickCreateItem[];
     };
     permissions: LookupTable<LookupTable<boolean>>;
+    items: {
+      byId: LookupTable<DetailedItem>
+    };
+    clipboard?: string;
     // contentTypes: EntityState<ContentType>;
   }
   contentTypes: EntityState<ContentType>;
@@ -140,6 +148,8 @@ export interface GlobalState {
     codeEditor: LegacyCodeEditorDialogStateProps;
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
+    createFolder: CreateFolderPropsStateProps;
+    copy: CopyItemsDialogStateProps;
   };
   translation: {
     siteLocales: {

@@ -19,8 +19,8 @@ import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'r
 import { catchAjaxError } from '../../utils/ajax';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
-import { getParentsFromPath, withIndex } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
+import { getParentsFromPath, withIndex, withoutIndex } from '../../utils/path';
+import { forkJoin, NEVER, Observable } from 'rxjs';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import {
   pathNavigatorFetchParentItems,
@@ -28,6 +28,7 @@ import {
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
   pathNavigatorInit,
+  pathNavigatorItemActionSuccess,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorUpdate
@@ -46,7 +47,10 @@ export default [
         );
         return [
           storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
-          pathNavigatorFetchParentItems({ id, path: storedState ? storedState.currentPath : payload.path })
+          pathNavigatorFetchParentItems({
+            id,
+            path: storedState ? storedState.currentPath : payload.path
+          })
         ].filter(Boolean);
       })
     ),
@@ -67,12 +71,12 @@ export default [
       withLatestFrom(state$),
       mergeMap(
         ([
-          {
-            type,
-            payload: { id, path }
-          },
-          state
-        ]) => {
+           {
+             type,
+             payload: { id, path }
+           },
+           state
+         ]) => {
           const site = state.sites.active;
           const parentsPath = [...getParentsFromPath(path, state.pathNavigator[id].rootPath), path];
           const requests: Observable<GetChildrenResponse>[] = [];
@@ -104,12 +108,12 @@ export default [
       withLatestFrom(state$),
       tap(
         ([
-          {
-            type,
-            payload: { id }
-          },
-          state
-        ]) => {
+           {
+             type,
+             payload: { id }
+           },
+           state
+         ]) => {
           localStorage.setItem(
             `craftercms.pathNavigator.${state.sites.active}.${id}`,
             JSON.stringify({
@@ -120,5 +124,45 @@ export default [
         }
       ),
       ignoreElements()
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(pathNavigatorItemActionSuccess.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        console.log(payload);
+        let currentPath = state.pathNavigator[payload.id].currentPath;
+        switch (payload.option) {
+          case 'delete': {
+            if (withoutIndex(payload.item.path) !== withoutIndex(currentPath)) {
+              return [pathNavigatorSetCurrentPath({
+                id: payload.id,
+                path: state.pathNavigator[payload.id].currentPath
+              })];
+            } else {
+              return NEVER;
+            }
+          }
+          case 'createFolder': {
+            if (withoutIndex(payload.item.path) === withoutIndex(currentPath)) {
+              return [pathNavigatorSetCurrentPath({
+                id: payload.id,
+                path: state.pathNavigator[payload.id].currentPath
+              })];
+            } else {
+              return NEVER;
+            }
+          }
+          case 'refresh': {
+            return [pathNavigatorSetCurrentPath({
+              id: payload.id,
+              path: state.pathNavigator[payload.id].currentPath
+            })];
+          }
+          default: {
+            return NEVER;
+          }
+        }
+      })
     )
 ] as Epic[];

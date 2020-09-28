@@ -296,13 +296,16 @@ export function createCodebaseBridge() {
       });
     },
 
-    createLegacyCallbackListener(id: string, listener: EventListener) {
+    createLegacyCallbackListener(id: string, listener: EventListener): Function {
       let callback;
       callback = (e) => {
         listener(e.detail);
         document.removeEventListener(id, callback, false);
       };
       document.addEventListener(id, callback, false);
+      return () => {
+        document.removeEventListener(id, callback, false);
+      };
     }
 
   };

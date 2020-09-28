@@ -19,10 +19,10 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 import { FetchContentVersion, VersionsResponse, VersionsStateProps } from '../../models/Version';
 import { createLookupTable } from '../../utils/object';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem } from '../../models/Item';
 
 interface HistoryConfigProps {
-  item: SandboxItem;
+  item: DetailedItem;
   rootPath?: string;
   environment?: string;
   module?: string;
@@ -37,7 +37,7 @@ export const fetchItemVersionsFailed = createAction<AjaxError>('FETCH_ITEM_VERSI
 
 export const versionsChangePage = createAction<{ page: number }>('VERSIONS_CHANGE_PAGE');
 
-export const versionsChangeItem = createAction<{ item: SandboxItem }>('VERSIONS_CHANGE_ITEM');
+export const versionsChangeItem = createAction<{ item: DetailedItem }>('VERSIONS_CHANGE_ITEM');
 
 export const compareVersion = createAction<{ id: string }>('COMPARE_VERSIONS');
 

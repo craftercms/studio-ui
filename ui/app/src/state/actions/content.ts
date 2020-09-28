@@ -17,6 +17,8 @@
 import { createAction } from '@reduxjs/toolkit';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import { AjaxError } from 'rxjs/ajax';
+import { DetailedItem } from '../../models/Item';
+import LookupTable from '../../models/LookupTable';
 
 // region Quick Create
 export const fetchQuickCreateList = createAction('FETCH_QUICK_CREATE_LIST');
@@ -24,5 +26,21 @@ export const fetchQuickCreateListComplete = createAction<QuickCreateItem[]>('FET
 export const fetchQuickCreateListFailed = createAction('FETCH_QUICK_CREATE_LIST_FAILED');
 // endregion
 
-export const getUserPermissionsComplete = createAction<any>('GET_USER_PERMISSIONS_COMPLETE');
-export const getUserPermissionsFailed = createAction<AjaxError>('GET_USER_PERMISSIONS_FAILED');
+// region Permissions
+export const fetchUserPermissions = createAction<{ site: string, path: string }>('FETCH_USER_PERMISSIONS');
+export const fetchUserPermissionsComplete = createAction<{ path: string; permissions: LookupTable<boolean> }>('FETCH_USER_PERMISSIONS_COMPLETE');
+export const fetchUserPermissionsFailed = createAction<AjaxError>('FETCH_USER_PERMISSIONS_FAILED');
+// endregion
+
+// region Items
+export const fetchDetailedItem = createAction<{ site: string, path: string }>('FETCH_DETAILED_ITEM');
+export const fetchDetailedItemComplete = createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
+export const fetchDetailedItemFailed = createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
+// endregion
+
+// region clipboard
+export const setClipBoard = createAction<{ path: string }>('SET_CLIPBOARD');
+export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
+
+
+

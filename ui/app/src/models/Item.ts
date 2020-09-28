@@ -58,7 +58,7 @@ export interface SandboxItem extends BaseItem, SandboxEnvProps {
 }
 
 export interface DetailedItem extends BaseItem {
-  sandbox: PublishEnvProps;
+  sandbox: SandboxEnvProps;
   staging: PublishEnvProps;
   live: PublishEnvProps;
 }

@@ -716,6 +716,7 @@ var nodeOpen = false,
 
       deleteContent: function (items, requestDelete, callback) {
         const eventIdSuccess = 'deleteDialogSuccess';
+        const eventIdCancel = 'deleteDialogCancel';
 
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_DELETE_DIALOG',
@@ -731,11 +732,15 @@ var nodeOpen = false,
                 },
                 { type: 'CLOSE_DELETE_DIALOG' }
               ]
+            },
+            onClosed: {
+              type: 'DISPATCH_DOM_EVENT',
+              payload: { id: eventIdCancel }
             }
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           if (response) {
             eventNS.data = items;
             eventNS.typeAction = '';
@@ -743,6 +748,10 @@ var nodeOpen = false,
             document.dispatchEvent(eventNS);
             callback && callback();
           }
+        });
+
+        CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+          unsubscribe();
         });
 
       },

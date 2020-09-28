@@ -29,6 +29,7 @@ import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/W
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 import { LegacyCodeEditorDialogStateProps } from '../../components/Dialogs/LegacyCodeEditorDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
+import { CreateFolderPropsStateProps } from '../../components/Dialogs/CreateFolderDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -95,7 +96,7 @@ export const closeRejectDialog = createAction<StandardAction>('CLOSE_REJECT_DIAL
 export const rejectDialogClosed = createAction('REJECT_DIALOG_CLOSED');
 // endregion
 
-// region Code Editor
+// region Legacy Form
 export const showEditDialog = createAction<Partial<LegacyFormDialogStateProps>>('SHOW_EDIT_DIALOG');
 export const closeEditDialog = createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = createAction<StandardAction>('EDIT_DIALOG_CLOSED');
@@ -103,9 +104,21 @@ export const newContentCreationComplete = createAction<StandardAction>('NEW_CONT
 export const updateEditConfig = createAction<any>('UPDATE_EDIT_CONFIG');
 // endregion
 
-// region Code Editor
+// region Legacy Code Editor
 export const showCodeEditorDialog = createAction<Partial<LegacyCodeEditorDialogStateProps>>('SHOW_CODE_EDITOR_DIALOG');
 export const closeCodeEditorDialog = createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');
 export const codeEditorDialogClosed = createAction('CODE_EDITOR_DIALOG_CLOSED');
 export const updateCodeEditorDialog = createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
+// endregion
+
+// region New Folder Dialog
+export const showCreateFolderDialog = createAction<Partial<CreateFolderPropsStateProps>>('SHOW_CREATE_FOLDER_DIALOG');
+export const closeCreateFolderDialog = createAction<StandardAction>('CLOSE_CREATE_FOLDER_DIALOG');
+export const createFolderDialogClosed = createAction('CREATE_FOLDER_DIALOG_CLOSED');
+// endregion
+
+// region Copy Dialog
+export const showCopyDialog = createAction<Partial<CreateFolderPropsStateProps>>('SHOW_COPY_DIALOG');
+export const closeCopyDialog = createAction<StandardAction>('CLOSE_COPY_DIALOG');
+export const copyDialogClosed = createAction('COPY_DIALOG_CLOSED');
 // endregion

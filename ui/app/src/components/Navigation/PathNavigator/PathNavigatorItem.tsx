@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from '../../../models/Item';
+import { DetailedItem } from '../../../models/Item';
 import React, { useState } from 'react';
 import { useStyles } from './styles';
 import ListItem from '@material-ui/core/ListItem';
@@ -31,14 +31,14 @@ import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import { isNavigable } from './utils';
 
 interface NavItemProps {
-  item: SandboxItem;
+  item: DetailedItem;
   locale: string;
   isLeaf: boolean;
   isSelectMode?: boolean;
-  onItemClicked?(item: SandboxItem, event: React.MouseEvent): void;
-  onChangeParent?(item: SandboxItem): void;
-  onItemChecked?(item: SandboxItem, unselect: boolean): void;
-  onOpenItemMenu?(element: Element, item: SandboxItem): void;
+  onItemClicked?(item: DetailedItem, event: React.MouseEvent): void;
+  onChangeParent?(item: DetailedItem): void;
+  onItemChecked?(item: DetailedItem, unselect: boolean): void;
+  onOpenItemMenu?(element: Element, item: DetailedItem): void;
 }
 
 // PathNavigatorListItem

@@ -16,7 +16,7 @@
 
 import { parse } from 'query-string';
 import { LookupTable } from '../models/LookupTable';
-import { SandboxItem } from '../models/Item';
+import { DetailedItem } from '../models/Item';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string) {
@@ -62,7 +62,7 @@ export function parseQueryString() {
 }
 
 // TODO: an initial path with trailing `/` breaks
-export function itemsFromPath(path: string, root: string, items: LookupTable<SandboxItem>): SandboxItem[] {
+export function itemsFromPath(path: string, root: string, items: LookupTable<DetailedItem>): DetailedItem[] {
   const rootWithIndex = withIndex(root);
   const rootWithoutIndex = withoutIndex(root);
   const rootItem = items[rootWithIndex] ?? items[root];

@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from './Item';
+import { DetailedItem } from './Item';
 
-export interface GetChildrenResponse extends Array<SandboxItem> {
-  parent: SandboxItem;
+export interface GetChildrenResponse extends Array<DetailedItem> {
+  parent: DetailedItem;
   // levelDescriptor: Item;
 }

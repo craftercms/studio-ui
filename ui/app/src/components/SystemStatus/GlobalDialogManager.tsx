@@ -30,6 +30,8 @@ import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
 import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
 import RejectDialog from '../Dialogs/RejectDialog';
 import LegacyCodeEditorDialog from '../Dialogs/LegacyCodeEditorDialog';
+import CreateFolderDialog from '../Dialogs/CreateFolderDialog';
+import CopyItemsDialog from '../Dialogs/CopyItemsDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -277,6 +279,31 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.reject.onClosed, dispatch)}
         onDismiss={createCallback(state.reject.onDismiss, dispatch)}
         onRejectSuccess={createCallback(state.reject.onRejectSuccess, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Create Folder */}
+      <CreateFolderDialog
+        open={state.createFolder.open}
+        path={state.createFolder.path}
+        rename={state.createFolder.rename}
+        value={state.createFolder.value}
+        allowBraces={state.createFolder.allowBraces}
+        onClose={createCallback(state.createFolder.onClose, dispatch)}
+        onClosed={createCallback(state.createFolder.onClosed, dispatch)}
+        onCreated={createCallback(state.createFolder.onCreated, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Create Folder */}
+      <CopyItemsDialog
+        open={state.copy.open}
+        title={state.copy.title}
+        subtitle={state.copy.subtitle}
+        item={state.copy.item}
+        onClose={createCallback(state.copy.onClose, dispatch)}
+        onClosed={createCallback(state.copy.onClosed, dispatch)}
+        onOk={createCallback(state.copy.onOk, dispatch)}
       />
       {/* endregion */}
     </Suspense>

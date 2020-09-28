@@ -20,3 +20,8 @@ import StandardAction from '../../models/StandardAction';
 // region Batch Actions
 export const batchActions = createAction<StandardAction[]>('BATCH_ACTIONS');
 // endregion
+
+// region TemplateActions
+export const changeContentType = createAction<{ contentTypeId: string, path: string }>('CHANGE_CONTENT_TYPE');
+export const editTemplate = createAction<{ contentTypeId: string }>('EDIT_TEMPLATE');
+// endregion

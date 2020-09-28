@@ -43,7 +43,6 @@ import { useActiveSiteId, usePreviewGuest, usePreviewState, useSelection } from 
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import ComponentMenu from '../../components/ComponentMenu';
 import QuickCreate from './QuickCreate';
 import { changeSite } from '../../state/reducers/sites';
 import Switch from '@material-ui/core/Switch';
@@ -52,7 +51,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { useSnackbar } from 'notistack';
 import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ItemMenu } from '../../components/ItemMenu/ItemMenu';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -181,7 +181,7 @@ export function AddressBar(props: AddressBarProps) {
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
   const [anchorEl, setAnchorEl] = useState(null);
-  const modelId = useSelection<string>((state) => state.preview.guest?.modelId);
+  const path = useSelection<string>((state) => state.preview.guest?.path);
   const [openSelector, setOpenSelector] = useState(false);
 
   useEffect(() => {
@@ -243,7 +243,7 @@ export function AddressBar(props: AddressBarProps) {
         <SingleItemSelector
           disabled={noSiteSet}
           rootPath='/site/website'
-          selectedItem={item as SandboxItem}
+          selectedItem={item as DetailedItem}
           open={openSelector}
           onClose={() => setOpenSelector(false)}
           onDropdownClick={() => setOpenSelector(!openSelector)}
@@ -261,7 +261,12 @@ export function AddressBar(props: AddressBarProps) {
       <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <MoreVertRounded />
       </IconButton>
-      <ComponentMenu anchorEl={anchorEl} handleClose={handleClose} site={site} modelId={modelId} />
+      <ItemMenu
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        path={path}
+      />
     </>
   );
 }

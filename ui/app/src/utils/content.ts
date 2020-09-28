@@ -154,7 +154,14 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
 
   return {
     ...parseLegacyItemToBaseItem(item),
-    sandbox: null,
+    sandbox: {
+      creator: null,
+      createdDate: null,
+      modifier: null,
+      lastModifiedDate: null,
+      commitId: null,
+      sizeInBytes: null
+    },
     staging: null,
     live: {
       lastScheduledDate: item.scheduledDate,

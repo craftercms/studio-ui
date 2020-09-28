@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from '../../../models/Item';
+import { DetailedItem } from '../../../models/Item';
 
-export function isNavigable(item: SandboxItem): boolean {
+export function isNavigable(item: DetailedItem): boolean {
   return item.systemType === 'page'
     || item.systemType === 'component'
     || item.systemType === 'asset'

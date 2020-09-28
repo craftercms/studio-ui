@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -27,6 +27,7 @@ import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import StandardAction from '../../models/StandardAction';
 
 export const translations = defineMessages({
   placeholder: {
@@ -35,18 +36,27 @@ export const translations = defineMessages({
   }
 });
 
-interface CreateNewFolderProps {
+interface CreateFolderBaseProps {
   open: boolean;
   path?: string;
   rename?: boolean;
   value?: string;
   allowBraces?: boolean;
-  onClose(): void;
-  onClosed?(): void;
-  onCreated?(path: string, name: string, rename: boolean): void;
 }
 
-export default function (props: CreateNewFolderProps) {
+export type CreateFolderProps = PropsWithChildren<CreateFolderBaseProps & {
+  onClose(): void;
+  onClosed?(): void;
+  onCreated?(response: { path: string, name: string, rename: boolean }): void;
+}>;
+
+export interface CreateFolderPropsStateProps extends CreateFolderBaseProps {
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
+  onCreated?: StandardAction;
+}
+
+export default function (props: CreateFolderProps) {
   const { open, onClose } = props;
   const [state, setState] = useState({
     submitted: null,
@@ -61,7 +71,7 @@ export default function (props: CreateNewFolderProps) {
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
     >
-      <CreateNewFolderUI
+      <CreateFolderUI
         {...props}
         submitted={state.submitted}
         inProgress={state.inProgress}
@@ -71,13 +81,13 @@ export default function (props: CreateNewFolderProps) {
   );
 }
 
-interface CreateNewFolderUIProps extends CreateNewFolderProps {
+interface CreateFolderUIProps extends CreateFolderProps {
   submitted: boolean;
   inProgress: boolean;
   setState(values: object): void;
 }
 
-function CreateNewFolderUI(props: CreateNewFolderUIProps) {
+function CreateFolderUI(props: CreateFolderUIProps) {
   const { onClosed, onClose, path, submitted, inProgress, setState, onCreated, rename = false, value = '', allowBraces = false } = props;
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
@@ -93,8 +103,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
       if (rename) {
         renameFolder(site, path, encodeURI(name)).subscribe(
           (response) => {
-            onClose();
-            onCreated?.(path, name, rename);
+            onCreated?.({ path, name, rename });
           },
           (response) => {
             setState({ inProgress: false, submitted: true });
@@ -104,8 +113,7 @@ function CreateNewFolderUI(props: CreateNewFolderUIProps) {
       } else {
         createNewFolder(site, path, encodeURI(name)).subscribe(
           (resp) => {
-            onClose();
-            onCreated?.(path, name, rename);
+            onCreated?.({ path, name, rename });
           },
           (response) => {
             setState({ inProgress: false, submitted: true });

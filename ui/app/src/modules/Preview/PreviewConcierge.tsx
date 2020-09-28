@@ -94,6 +94,7 @@ import {
   getStoredPreviewChoice,
   setStoredPreviewChoice
 } from '../../utils/state';
+import { fetchDetailedItem } from '../../state/actions/content';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -154,25 +155,33 @@ export function PreviewConcierge(props: any) {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
   }, [authoringBase, computedUrl, site]);
 
-  //region permissions
-  const currentItemPath = models?.[guest?.modelId].craftercms.path;
+  //region permissions and fetchDetailedItem
+  const currentItemPath = guest?.path;
   const permissions = useSelection((state) => state.content.permissions);
   const write = permissions?.[currentItemPath]?.write;
 
   useEffect(() => {
-    if (currentItemPath && site && write) {
-      const localEditMode = getStoredEditModeChoice(site);
-      const editMode = nnou(localEditMode) ? localEditMode === 'true' : true;
-      dispatch(setPreviewEditMode({ editMode }));
-      if (editMode) {
-        getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
-      }
+    if (currentItemPath && site) {
+      dispatch(fetchDetailedItem({ site, path: currentItemPath }));
     }
-  }, [currentItemPath, dispatch, site, write]);
+  }, [dispatch, currentItemPath, site]);
+
+  useEffect(() => {
+    if (write && editMode) {
+      getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
+    }
+  }, [dispatch, write, editMode]);
   //endregion
 
-  // Guest detection, document domain restoring and misc cleanup.
+  // Guest detection, document domain restoring, editMode preference retrieval
+  // and contentType subject cleanup.
   useMount(() => {
+
+    const localEditMode = getStoredEditModeChoice(site);
+    if (editMode !== (localEditMode === 'true')) {
+      dispatch(setPreviewEditMode({ editMode }));
+    }
+
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
     const storedTool = window.localStorage.getItem(`craftercms.previewSelectedTool.${site}`);
     if (storedTool) {

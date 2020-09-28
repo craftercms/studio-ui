@@ -28,7 +28,7 @@ import FolderBrowserTreeView, {
 } from '../Navigation/FolderBrowserTreeView';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import CreateNewFolderDialog from './CreateNewFolderDialog';
+import CreateFolderDialog from './CreateFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
 import Suspencified from '../SystemStatus/Suspencified';
@@ -178,7 +178,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
     setCreateFolder(false);
   };
 
-  const onFolderCreated = (path: string, name: string) => {
+  const onFolderCreated = ({ path, name }: { path: string, name: string }) => {
     setCreateFolder(false);
     let id = `${path}/${name}`;
     nodesLookupRef.current[currentPath].children.push({
@@ -261,7 +261,8 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
           {formatMessage(messages.ok)}
         </Button>
       </DialogFooter>
-      <CreateNewFolderDialog
+      {/* TODO: use Dispatch*/}
+      <CreateFolderDialog
         path={currentPath}
         open={createFolder}
         onClose={onCloseCreateFolder}

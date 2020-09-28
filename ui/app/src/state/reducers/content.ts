@@ -17,10 +17,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../models/GlobalState';
 import {
+  fetchDetailedItemComplete,
   fetchQuickCreateList,
   fetchQuickCreateListComplete,
   fetchQuickCreateListFailed,
-  getUserPermissionsComplete
+  fetchUserPermissionsComplete,
+  setClipBoard,
+  unSetClipBoard
 } from '../actions/content';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
@@ -35,7 +38,11 @@ const initialState: ContentState = {
     isFetching: false,
     items: null
   },
-  permissions: null
+  permissions: null,
+  items: {
+    byId: null
+  },
+  clipboard: null
 };
 
 const reducer = createReducer<ContentState>(initialState, {
@@ -62,15 +69,30 @@ const reducer = createReducer<ContentState>(initialState, {
       error: error.payload.response
     }
   }),
-  [getUserPermissionsComplete.type]: (state, { payload }) => {
+  [fetchUserPermissionsComplete.type]: (state, { payload }) => ({
+    ...state,
+    permissions: {
+      ...state.permissions,
+      [payload.path]: createPresenceTable(payload.permissions)
+    }
+  }),
+  [fetchDetailedItemComplete.type]: (state, { payload }) => {
     return {
       ...state,
-      permissions: {
-        ...state.permissions,
-        [payload.path]: createPresenceTable(payload.permissions)
+      items: {
+        ...state.items,
+        byId: { ...state.items.byId, [payload.id]: payload }
       }
     };
-  }
+  },
+  [setClipBoard.type]: (state, { payload }) => ({
+    ...state,
+    clipboard: payload.path
+  }),
+  [unSetClipBoard.type]: (state) => ({
+    ...state,
+    clipboard: null
+  })
 });
 
 export default reducer;

@@ -60,7 +60,7 @@ import palette from '../../../styles/palette';
 import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import ComponentMenu from '../../../components/ComponentMenu';
+import { ItemMenu } from '../../../components/ItemMenu/ItemMenu';
 
 const rootPrefix = '{root}_';
 
@@ -488,7 +488,8 @@ export default function PageExplorer() {
   const [optionsMenu, setOptionsMenu] = React.useState({
     modelId: null,
     embeddedParentPath: null,
-    anchorEl: null
+    anchorEl: null,
+    path: null
   });
 
   const [state, setState] = React.useState<any>({
@@ -699,6 +700,7 @@ export default function PageExplorer() {
       ...optionsMenu,
       modelId: node.modelId,
       embeddedParentPath,
+      path,
       anchorEl: event.currentTarget.parentElement
     });
   };
@@ -751,6 +753,7 @@ interface PageExplorerUIProps {
     modelId: string;
     embeddedParentPath: string;
     anchorEl: Element;
+    path: null;
   };
   site: string;
   rootPrefix: string;
@@ -872,12 +875,11 @@ function PageExplorerUI(props: PageExplorerUIProps) {
           />
         )
       }
-      <ComponentMenu
+      <ItemMenu
+        path={optionsMenu.path}
+        open={Boolean(optionsMenu.anchorEl)}
         anchorEl={optionsMenu.anchorEl}
-        handleClose={handleClose}
-        site={site}
-        modelId={optionsMenu.modelId}
-        embeddedParentPath={optionsMenu.embeddedParentPath}
+        onClose={handleClose}
         anchorOrigin={{
           vertical: 'top',
           horizontal: DRAWER_WIDTH - 60
