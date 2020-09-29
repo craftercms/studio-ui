@@ -135,8 +135,8 @@
   align-items: center;
 }
 
-.template-editor-button-container .edit-buttons-container.viewer {
-  width: 58px;
+.template-editor-button-container .edit-buttons-container.viewer .template-editor-cancel-button {
+  margin-left: auto;
 }
 
 .template-editor-update-button {

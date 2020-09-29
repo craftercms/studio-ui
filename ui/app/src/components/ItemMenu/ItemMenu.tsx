@@ -384,6 +384,16 @@ export function ItemMenu(props: ItemMenuProps) {
         }));
         break;
       }
+      case 'codeEditor': {
+        let src = `${defaultSrc}site=${site}&path=${item.path}&type=asset`;
+        dispatch(showCodeEditorDialog({ src }));
+        break;
+      }
+      case 'viewCodeEditor': {
+        let src = `${defaultSrc}site=${site}&path=${item.path}&type=asset&readonly=true`;
+        dispatch(showCodeEditorDialog({ src }));
+        break;
+      }
       case 'upload': {
         dispatch(showUploadDialog({
           path: item.path,
