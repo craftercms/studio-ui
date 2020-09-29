@@ -733,7 +733,6 @@ export default function PageExplorer() {
             handleScroll={handleScroll}
             optionsMenu={optionsMenu}
             rootPrefix={rootPrefix}
-            site={site}
             handleOptions={handleOptions}
             resource={resource}
             nodeLookup={nodeLookup}
@@ -755,7 +754,6 @@ interface PageExplorerUIProps {
     anchorEl: Element;
     path: null;
   };
-  site: string;
   rootPrefix: string;
   handleScroll(node: RenderTree): void;
   handleClick(node: RenderTree): void;
@@ -777,7 +775,6 @@ function PageExplorerUI(props: PageExplorerUIProps) {
     handleClose,
     handleBreadCrumbClick,
     optionsMenu,
-    site,
     rootPrefix,
     nodeLookup,
     selected,

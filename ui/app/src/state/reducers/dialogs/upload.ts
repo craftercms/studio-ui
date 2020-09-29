@@ -16,33 +16,31 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import {
-  closeCreateFolderDialog,
-  createFolderDialogClosed,
-  showCreateFolderDialog
-} from '../../actions/dialogs';
+import { closeUploadDialog, showUploadDialog, uploadDialogClosed } from '../../actions/dialogs';
+import { BulkUploadStateProps } from '../../../components/Dialogs/BulkUploadDialog';
 
-import { CreateFolderStateProps } from '../../../components/Dialogs/CreateFolderDialog';
-
-const initialState: CreateFolderStateProps = {
-  open: false
+const initialState: BulkUploadStateProps = {
+  open: false,
+  path: null,
+  maxSimultaneousUploads: 1,
+  site: null
 };
 
-export default createReducer<GlobalState['dialogs']['createFolder']>(
+export default createReducer<GlobalState['dialogs']['upload']>(
   initialState,
   {
-    [showCreateFolderDialog.type]: (state, { payload }) => ({
+    [showUploadDialog.type]: (state, { payload }) => ({
       ...state,
-      onClose: closeCreateFolderDialog(),
-      onClosed: createFolderDialogClosed(),
-      onCreate: closeCreateFolderDialog(),
+      onClose: closeUploadDialog(),
+      onClosed: uploadDialogClosed(),
+      onCreate: closeUploadDialog(),
       ...payload,
       open: true
     }),
-    [closeCreateFolderDialog.type]: (state) => ({
+    [closeUploadDialog.type]: (state) => ({
       ...state,
       open: false
     }),
-    [createFolderDialogClosed.type]: () => initialState
+    [uploadDialogClosed.type]: () => initialState
   }
 );

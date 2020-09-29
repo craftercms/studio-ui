@@ -50,7 +50,7 @@ export type CreateFolderProps = PropsWithChildren<CreateFolderBaseProps & {
   onCreated?(response: { path: string, name: string, rename: boolean }): void;
 }>;
 
-export interface CreateFolderPropsStateProps extends CreateFolderBaseProps {
+export interface CreateFolderStateProps extends CreateFolderBaseProps {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onCreated?: StandardAction;

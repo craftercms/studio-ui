@@ -17,32 +17,33 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import {
-  closeCreateFolderDialog,
-  createFolderDialogClosed,
-  showCreateFolderDialog
+  closeCreateFileDialog,
+  createFileDialogClosed,
+  showCreateFileDialog
 } from '../../actions/dialogs';
+import { CreateFileStateProps } from '../../../components/Dialogs/CreateFileDialog';
 
-import { CreateFolderStateProps } from '../../../components/Dialogs/CreateFolderDialog';
-
-const initialState: CreateFolderStateProps = {
-  open: false
+const initialState: CreateFileStateProps = {
+  open: false,
+  path: null,
+  type: null
 };
 
-export default createReducer<GlobalState['dialogs']['createFolder']>(
+export default createReducer<GlobalState['dialogs']['createFile']>(
   initialState,
   {
-    [showCreateFolderDialog.type]: (state, { payload }) => ({
+    [showCreateFileDialog.type]: (state, { payload }) => ({
       ...state,
-      onClose: closeCreateFolderDialog(),
-      onClosed: createFolderDialogClosed(),
-      onCreate: closeCreateFolderDialog(),
+      onClose: closeCreateFileDialog(),
+      onClosed: createFileDialogClosed(),
+      onCreate: closeCreateFileDialog(),
       ...payload,
       open: true
     }),
-    [closeCreateFolderDialog.type]: (state) => ({
+    [closeCreateFileDialog.type]: (state) => ({
       ...state,
       open: false
     }),
-    [createFolderDialogClosed.type]: () => initialState
+    [createFileDialogClosed.type]: () => initialState
   }
 );

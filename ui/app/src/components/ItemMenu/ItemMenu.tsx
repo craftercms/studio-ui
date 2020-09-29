@@ -26,12 +26,15 @@ import { PopoverOrigin, Typography } from '@material-ui/core';
 import {
   closeConfirmDialog,
   closeCopyDialog,
+  closeCreateFileDialog,
   closeCreateFolderDialog,
   closeDeleteDialog,
   closeNewContentDialog,
+  closeUploadDialog,
   showCodeEditorDialog,
   showConfirmDialog,
   showCopyDialog,
+  showCreateFileDialog,
   showCreateFolderDialog,
   showDeleteDialog,
   showDependenciesDialog,
@@ -39,6 +42,7 @@ import {
   showHistoryDialog,
   showNewContentDialog,
   showPublishDialog,
+  showUploadDialog,
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
 import {
@@ -76,6 +80,7 @@ interface ItemMenuProps {
 interface ItemMenuUIProps {
   resource: { item: Resource<DetailedItem>; permissions: Resource<LookupTable<boolean>> };
   classes?: Partial<Record<'helperText' | 'itemRoot', string>>;
+  hasClipboard?: boolean;
   onMenuItemClicked(section: SectionItem): void;
 }
 
@@ -97,6 +102,7 @@ export function ItemMenu(props: ItemMenuProps) {
   const site = useActiveSiteId();
   const permissions = useSelection((state) => state.content.permissions);
   const items = useSelection((state) => state.content.items);
+  const hasClipboard = useSelection((state) => state.content.clipboard);
   const item = items.byId?.[path];
   const itemPermissions = permissions?.[path];
   const authoringBase = useSelection<string>(state => state.env.authoringBase);
@@ -105,7 +111,7 @@ export function ItemMenu(props: ItemMenuProps) {
   const { formatMessage } = useIntl();
 
   const resourceItem = useLogicResource<DetailedItem, DetailedItem>(item, {
-    shouldResolve: (source) => Boolean(source) && false,
+    shouldResolve: (source) => Boolean(source),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => source,
@@ -356,6 +362,39 @@ export function ItemMenu(props: ItemMenuProps) {
         );
         break;
       }
+      case 'createTemplate': {
+        dispatch(showCreateFileDialog({
+          path: withoutIndex(item.path),
+          type: 'template',
+          onCreated: batchActions([
+            closeCreateFileDialog(),
+            onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+          ])
+        }));
+        break;
+      }
+      case 'createController': {
+        dispatch(showCreateFileDialog({
+          path: withoutIndex(item.path),
+          type: 'controller',
+          onCreated: batchActions([
+            closeCreateFileDialog(),
+            onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+          ])
+        }));
+        break;
+      }
+      case 'upload': {
+        dispatch(showUploadDialog({
+          path: item.path,
+          site,
+          onClose: batchActions([
+            closeUploadDialog(),
+            onItemMenuActionSuccessCreator?.({ item, option: 'upload' })
+          ])
+        }));
+        break;
+      }
       default:
         break;
     }
@@ -372,7 +411,7 @@ export function ItemMenu(props: ItemMenuProps) {
         fallback={
           <div className={classes.loadingWrapper}>
             <CircularProgress size={16} />
-            <Typography>
+            <Typography variant="body2">
               <FormattedMessage id="words.loading" defaultMessage="Loading" />
             </Typography>
           </div>
@@ -382,6 +421,7 @@ export function ItemMenu(props: ItemMenuProps) {
           resource={{ item: resourceItem, permissions: resourcePermissions }}
           classes={props.classes}
           onMenuItemClicked={onMenuItemClicked}
+          hasClipboard={Boolean(hasClipboard)}
         />
       </Suspense>
     </Menu>
@@ -389,10 +429,10 @@ export function ItemMenu(props: ItemMenuProps) {
 }
 
 function ItemMenuUI(props: ItemMenuUIProps) {
-  const { resource, classes, onMenuItemClicked } = props;
+  const { resource, classes, onMenuItemClicked, hasClipboard } = props;
   const item = resource.item.read();
-  const permissions = resource.permissions.read();
-  const options = generateMenuOptions(item, permissions);
+  let permissions = resource.permissions.read();
+  const options = generateMenuOptions(item, { hasClipboard, ...permissions });
 
   return (
     <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />

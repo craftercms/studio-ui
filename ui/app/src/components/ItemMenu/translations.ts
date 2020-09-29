@@ -33,6 +33,10 @@ export const translations = defineMessages({
     id: 'itemMenu.createFolder',
     defaultMessage: 'Create Folder'
   },
+  renameFolder: {
+    id: 'itemMenu.renameFolder',
+    defaultMessage: 'Rename Folder'
+  },
   changeContentType: {
     id: 'itemMenu.changeContentType',
     defaultMessage: 'Change Template'
@@ -72,6 +76,10 @@ export const translations = defineMessages({
   paste: {
     id: 'words.paste',
     defaultMessage: 'Paste'
+  },
+  upload: {
+    id: 'words.upload',
+    defaultMessage: 'Upload'
   },
   duplicate: {
     id: 'words.duplicate',

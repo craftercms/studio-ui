@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from './DialogHeader';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -27,14 +27,24 @@ import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import StandardAction from '../../models/StandardAction';
 
-interface CreateNewFileProps {
+interface CreateFileBaseProps {
   open: boolean;
   type: 'controller' | 'template';
   path: string;
+}
+
+export type CreateFileProps = PropsWithChildren<CreateFileBaseProps & {
   onClose(): void;
   onClosed?(): void;
-  onCreated?(path: string, fileName: string, type: string): void;
+  onCreated?(response: { path: string, fileName: string, type: string }): void;
+}>;
+
+export interface CreateFileStateProps extends CreateFileBaseProps {
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
+  onCreated?: StandardAction;
 }
 
 export const translations = defineMessages({
@@ -44,7 +54,7 @@ export const translations = defineMessages({
   }
 });
 
-export default function (props: CreateNewFileProps) {
+export default function (props: CreateFileProps) {
   const { open, onClose } = props;
   const [state, setState] = useState({
     submitted: null,
@@ -59,7 +69,7 @@ export default function (props: CreateNewFileProps) {
       onEscapeKeyDown={onClose}
       onExited={() => setState({ inProgress: null, submitted: null })}
     >
-      <CreateNewFileUI
+      <CreateFileUI
         {...props}
         submitted={state.submitted}
         inProgress={state.inProgress}
@@ -69,13 +79,13 @@ export default function (props: CreateNewFileProps) {
   );
 }
 
-interface CreateNewFileUIProps extends CreateNewFileProps {
+interface CreateFileUIProps extends CreateFileProps {
   submitted: boolean;
   inProgress: boolean;
   setState(values: object): void;
 }
 
-function CreateNewFileUI(props: CreateNewFileUIProps) {
+function CreateFileUI(props: CreateFileUIProps) {
   const { onClosed, onClose, submitted, inProgress, setState, onCreated, type, path } = props;
   const [name, setName] = useState('');
   const dispatch = useDispatch();
@@ -91,8 +101,7 @@ function CreateNewFileUI(props: CreateNewFileUIProps) {
       const fileName = (type === 'controller') ? `${name}.groovy` : `${name}.ftl`;
       createNewFile(site, path, fileName).subscribe(
         () => {
-          onClose();
-          onCreated?.(path, fileName, type);
+          onCreated?.({ path, fileName, type });
         },
         (response) => {
           setState({ inProgress: false, submitted: true });

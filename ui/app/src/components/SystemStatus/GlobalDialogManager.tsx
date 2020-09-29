@@ -32,6 +32,8 @@ import RejectDialog from '../Dialogs/RejectDialog';
 import LegacyCodeEditorDialog from '../Dialogs/LegacyCodeEditorDialog';
 import CreateFolderDialog from '../Dialogs/CreateFolderDialog';
 import CopyItemsDialog from '../Dialogs/CopyItemsDialog';
+import CreateFileDialog from '../Dialogs/CreateFileDialog';
+import BulkUploadDialog from '../Dialogs/BulkUploadDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -295,6 +297,17 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
+      {/* region Create File */}
+      <CreateFileDialog
+        open={state.createFile.open}
+        path={state.createFile.path}
+        type={state.createFile.type}
+        onClose={createCallback(state.createFile.onClose, dispatch)}
+        onClosed={createCallback(state.createFile.onClosed, dispatch)}
+        onCreated={createCallback(state.createFile.onCreated, dispatch)}
+      />
+      {/* endregion */}
+
       {/* region Create Folder */}
       <CopyItemsDialog
         open={state.copy.open}
@@ -304,6 +317,17 @@ function GlobalDialogManager() {
         onClose={createCallback(state.copy.onClose, dispatch)}
         onClosed={createCallback(state.copy.onClosed, dispatch)}
         onOk={createCallback(state.copy.onOk, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Bulk Upload*/}
+      <BulkUploadDialog
+        open={state.upload.open}
+        path={state.upload.path}
+        site={state.upload.site}
+        maxSimultaneousUploads={state.upload.maxSimultaneousUploads}
+        onClose={createCallback(state.upload.onClose, dispatch)}
+        onClosed={createCallback(state.upload.onClosed, dispatch)}
       />
       {/* endregion */}
     </Suspense>

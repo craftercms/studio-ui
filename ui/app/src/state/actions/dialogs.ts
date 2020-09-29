@@ -29,7 +29,9 @@ import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/W
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 import { LegacyCodeEditorDialogStateProps } from '../../components/Dialogs/LegacyCodeEditorDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
-import { CreateFolderPropsStateProps } from '../../components/Dialogs/CreateFolderDialog';
+import { CreateFolderStateProps } from '../../components/Dialogs/CreateFolderDialog';
+import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
+import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -111,14 +113,26 @@ export const codeEditorDialogClosed = createAction('CODE_EDITOR_DIALOG_CLOSED');
 export const updateCodeEditorDialog = createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
 // endregion
 
-// region New Folder Dialog
-export const showCreateFolderDialog = createAction<Partial<CreateFolderPropsStateProps>>('SHOW_CREATE_FOLDER_DIALOG');
+// region Create Folder Dialog
+export const showCreateFolderDialog = createAction<Partial<CreateFolderStateProps>>('SHOW_CREATE_FOLDER_DIALOG');
 export const closeCreateFolderDialog = createAction<StandardAction>('CLOSE_CREATE_FOLDER_DIALOG');
 export const createFolderDialogClosed = createAction('CREATE_FOLDER_DIALOG_CLOSED');
 // endregion
 
+// region Create File Dialog
+export const showCreateFileDialog = createAction<Partial<CreateFileStateProps>>('SHOW_CREATE_FILE_DIALOG');
+export const closeCreateFileDialog = createAction<StandardAction>('CLOSE_CREATE_FILE_DIALOG');
+export const createFileDialogClosed = createAction('CREATE_FILE_DIALOG_CLOSED');
+// endregion
+
 // region Copy Dialog
-export const showCopyDialog = createAction<Partial<CreateFolderPropsStateProps>>('SHOW_COPY_DIALOG');
+export const showCopyDialog = createAction<Partial<CreateFolderStateProps>>('SHOW_COPY_DIALOG');
 export const closeCopyDialog = createAction<StandardAction>('CLOSE_COPY_DIALOG');
 export const copyDialogClosed = createAction('COPY_DIALOG_CLOSED');
+// endregion
+
+// region Upload Dialog
+export const showUploadDialog = createAction<Partial<BulkUploadStateProps>>('SHOW_UPLOAD_DIALOG');
+export const closeUploadDialog = createAction<StandardAction>('CLOSE_UPLOAD_DIALOG');
+export const uploadDialogClosed = createAction('UPLOAD_DIALOG_CLOSED');
 // endregion

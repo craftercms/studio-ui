@@ -44,8 +44,10 @@ import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
 import { DetailedItem } from './Item';
-import { CreateFolderPropsStateProps } from '../components/Dialogs/CreateFolderDialog';
+import { CreateFolderStateProps } from '../components/Dialogs/CreateFolderDialog';
 import { CopyItemsDialogStateProps } from '../components/Dialogs/CopyItemsDialog';
+import { CreateFileStateProps } from '../components/Dialogs/CreateFileDialog';
+import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -148,8 +150,10 @@ export interface GlobalState {
     codeEditor: LegacyCodeEditorDialogStateProps;
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
-    createFolder: CreateFolderPropsStateProps;
+    createFolder: CreateFolderStateProps;
+    createFile: CreateFileStateProps;
     copy: CopyItemsDialogStateProps;
+    upload: BulkUploadStateProps;
   };
   translation: {
     siteLocales: {

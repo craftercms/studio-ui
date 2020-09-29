@@ -25,8 +25,16 @@ const menuOptions = {
     id: 'edit',
     label: translations.edit
   },
+  codeEditor: {
+    id: 'codeEditor',
+    label: translations.edit
+  },
   view: {
     id: 'view',
+    label: translations.view
+  },
+  viewCodeEditor: {
+    id: 'viewCodeEditor',
     label: translations.view
   },
   createContent: {
@@ -36,6 +44,10 @@ const menuOptions = {
   createFolder: {
     id: 'createFolder',
     label: translations.createFolder
+  },
+  renameFolder: {
+    id: 'renameFolder',
+    label: translations.renameFolder
   },
   delete: {
     id: 'delete',
@@ -56,6 +68,10 @@ const menuOptions = {
   paste: {
     id: 'paste',
     label: translations.paste
+  },
+  upload: {
+    id: 'upload',
+    label: translations.upload
   },
   duplicate: {
     id: 'duplicate',
@@ -92,6 +108,14 @@ const menuOptions = {
   editTemplate: {
     id: 'editTemplate',
     label: translations.editTemplate
+  },
+  createController: {
+    id: 'createController',
+    label: translations.createController
+  },
+  createTemplate: {
+    id: 'createTemplate',
+    label: translations.createTemplate
   }
 };
 
@@ -105,6 +129,12 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
   const createFolder = permissions.create_folder;
   const createContent = permissions.create_content;
   const changeContentType = permissions.change_content_type;
+  const hasClipboard = permissions.hasClipboard;
+  const isAsset = ['/templates', '/static-assets', '/scripts'].some(str => item.path.includes(str));
+  const isTemplate = item.path.includes('/templates');
+  const isController = item.path.includes('/scripts');
+  const isWebsite = withoutIndex(item.path) === '/site/website';
+  const renameFolder = !isTemplate && !isController && !isWebsite;
 
   switch (item.systemType) {
     case 'page': {
@@ -126,13 +156,14 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
         if (changeContentType) {
           _optionsA.push(menuOptions.changeContentType);
         }
-        if (withoutIndex(item.path) !== '/site/website') {
+        if (!isWebsite) {
           _optionsA.push(menuOptions.cut);
           _optionsA.push(menuOptions.copy);
           _optionsA.push(menuOptions.duplicate);
         }
-        // TODO: Check clipboard;
-        _optionsA.push(menuOptions.paste);
+        if (hasClipboard) {
+          _optionsA.push(menuOptions.paste);
+        }
         if (publish && !item.lockOwner && !item.stateMap.live) {
           _optionsA.push(menuOptions.schedule);
           _optionsA.push(menuOptions.publish);
@@ -147,6 +178,87 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
         _optionsA.push(menuOptions.editController);
       } else if (read) {
         _optionsA.push(menuOptions.view);
+        _optionsA.push(menuOptions.history);
+      }
+      options.push(_optionsA);
+      return options;
+    }
+    case 'folder': {
+      let _optionsA = [];
+      if (write) {
+        if (createContent && !isAsset) {
+          _optionsA.push(menuOptions.createContent);
+        }
+        if (createFolder) {
+          _optionsA.push(menuOptions.createFolder);
+        }
+        if (renameFolder) {
+          _optionsA.push(menuOptions.renameFolder);
+        }
+        if (deleteItem) {
+          _optionsA.push(menuOptions.delete);
+        }
+        _optionsA.push(menuOptions.cut);
+        _optionsA.push(menuOptions.copy);
+        if (hasClipboard) {
+          _optionsA.push(menuOptions.paste);
+        }
+        if (isAsset) {
+          _optionsA.push(menuOptions.upload);
+        }
+        if (isTemplate) {
+          _optionsA.push(menuOptions.createTemplate);
+        }
+        if (isController) {
+          _optionsA.push(menuOptions.createController);
+        }
+
+      }
+      options.push(_optionsA);
+      return options;
+    }
+    case 'taxonomy':
+    case 'component':
+    case 'template':
+    case 'script':
+    case 'asset': {
+      let _optionsA = [];
+      if (write) {
+        if (item.systemType === 'taxonomy' || item.systemType === 'component') {
+          _optionsA.push(menuOptions.edit);
+          if (read) {
+            _optionsA.push(menuOptions.view);
+          }
+        } else {
+          _optionsA.push(menuOptions.codeEditor);
+          _optionsA.push(menuOptions.viewCodeEditor);
+        }
+        if (deleteItem) {
+          _optionsA.push(menuOptions.delete);
+        }
+        if (item.systemType === 'taxonomy' || item.systemType === 'component') {
+          _optionsA.push(menuOptions.changeContentType);
+        }
+        if (isWebsite) {
+          _optionsA.push(menuOptions.cut);
+          _optionsA.push(menuOptions.copy);
+          _optionsA.push(menuOptions.duplicate);
+        }
+        if (hasClipboard) {
+          _optionsA.push(menuOptions.paste);
+        }
+        if (publish && !item.lockOwner && !item.stateMap.live) {
+          _optionsA.push(menuOptions.schedule);
+          _optionsA.push(menuOptions.publish);
+        }
+        _optionsA.push(menuOptions.history);
+        _optionsA.push(menuOptions.dependencies);
+        if (isAsset) {
+          _optionsA.push(menuOptions.upload);
+        }
+      } else if (read) {
+        _optionsA.push(menuOptions.view);
+        _optionsA.push(menuOptions.history);
       }
       options.push(_optionsA);
       return options;
@@ -155,4 +267,5 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
       return options;
     }
   }
+
 }

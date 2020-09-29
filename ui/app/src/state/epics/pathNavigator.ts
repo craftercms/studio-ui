@@ -130,14 +130,13 @@ export default [
       ofType(pathNavigatorItemActionSuccess.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        console.log(payload);
         let currentPath = state.pathNavigator[payload.id].currentPath;
         switch (payload.option) {
           case 'delete': {
             if (withoutIndex(payload.item.path) !== withoutIndex(currentPath)) {
               return [pathNavigatorSetCurrentPath({
                 id: payload.id,
-                path: state.pathNavigator[payload.id].currentPath
+                path: currentPath
               })];
             } else {
               return NEVER;
@@ -147,7 +146,17 @@ export default [
             if (withoutIndex(payload.item.path) === withoutIndex(currentPath)) {
               return [pathNavigatorSetCurrentPath({
                 id: payload.id,
-                path: state.pathNavigator[payload.id].currentPath
+                path: currentPath
+              })];
+            } else {
+              return NEVER;
+            }
+          }
+          case 'upload': {
+            if (payload.dropZoneStatus.uploadedFiles > 0 && withoutIndex(payload.item.path) === withoutIndex(currentPath)) {
+              return [pathNavigatorSetCurrentPath({
+                id: payload.id,
+                path: currentPath
               })];
             } else {
               return NEVER;
@@ -156,7 +165,7 @@ export default [
           case 'refresh': {
             return [pathNavigatorSetCurrentPath({
               id: payload.id,
-              path: state.pathNavigator[payload.id].currentPath
+              path: currentPath
             })];
           }
           default: {
