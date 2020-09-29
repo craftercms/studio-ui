@@ -27,7 +27,6 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { Site } from '../../../../models/Site';
 import { SuspenseWithEmptyState } from '../../../../components/SystemStatus/Suspencified';
-import { Resource } from '../../../../models/Resource';
 import { ApiResponse } from '../../../../models/ApiResponse';
 import { editSite } from '../../../../services/sites';
 
@@ -36,10 +35,12 @@ type Return = Omit<Source, 'error'>;
 type ApiState = { error: ApiResponse, submitting: boolean };
 
 interface EditSiteDialogUIProps {
-  resource: Resource<Return>;
-  apiState: ApiState;
-  onHandleInputChange: Function;
-  onHandleSubmit: Function;
+  siteName: string;
+  siteDescription: string;
+  onSiteNameChange: Function;
+  onSiteDescriptionChange: Function;
+  submitting: boolean;
+  onSubmit: Function;
   onClose?(response?: any): any;
 }
 
@@ -64,14 +65,14 @@ export interface EditSiteDialogStateProps extends EditSiteDialogBaseProps {
 
 function EditSiteDialogUI(props: EditSiteDialogUIProps) {
   const {
-    resource,
-    apiState,
-    onHandleInputChange,
-    onHandleSubmit,
+    siteName,
+    siteDescription,
+    onSiteNameChange,
+    onSiteDescriptionChange,
+    submitting,
+    onSubmit,
     onClose
   } = props;
-
-  const site = resource.read();
 
   return (
     <>
@@ -96,8 +97,8 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
                   />
                 }
                 fullWidth
-                onChange={(event) => onHandleInputChange(event)}
-                value={site.name}
+                onChange={(event) => onSiteNameChange(event.target.value)}
+                value={siteName}
                 inputProps={{ maxLength: 50 }}
                 autoFocus
               />
@@ -113,8 +114,8 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
                   />
                 }
                 fullWidth
-                onChange={(event) => onHandleInputChange(event)}
-                value={site.description??''}
+                onChange={(event) => onSiteDescriptionChange(event.target.value)}
+                value={siteDescription??''}
                 inputProps={{ maxLength: 4000 }}
               />
             </Grid>
@@ -129,8 +130,8 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
           </Button>
         )}
         {
-          onHandleSubmit && (
-          <Button onClick={() => onHandleSubmit()} variant="contained" color="primary" autoFocus disabled={apiState.submitting}>
+          onSubmit && (
+          <Button onClick={() => onSubmit()} variant="contained" color="primary" autoFocus disabled={submitting}>
             <FormattedMessage id="editSiteDialog.continue" defaultMessage="Continue" />
           </Button>
         )}
@@ -147,7 +148,11 @@ function EditSiteDialog(props: EditSiteDialogProps) {
     onClose,
     onSaveSuccess
   } = props;
-  const [siteData, setSiteData] = useSpreadState(null);
+  const [siteData, setSiteData] = useSpreadState({
+    id: '',
+    name: '',
+    description: ''
+  });
   const [apiState, setApiState] = useSpreadState<ApiState>({
     error: null,
     submitting: false
@@ -155,7 +160,7 @@ function EditSiteDialog(props: EditSiteDialogProps) {
 
   useUnmount(onClosed);
 
-  const resource = useLogicResource<Return, Source>(siteData, {
+  const resource = useLogicResource<Return, Source>(site, {
     shouldResolve: (source) => Boolean(source),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
@@ -169,13 +174,13 @@ function EditSiteDialog(props: EditSiteDialogProps) {
     }
   }, [site, setSiteData]);
 
-  const handleInputChange = (event) => {
-    event.persist();
+  const onSiteNameChange = (name: string) => {
+    setSiteData({ name });
+  }
 
-    setSiteData({
-      [event.target.name]: event.target.value
-    });
-  };
+  const onSiteDescriptionChange = (description: string) => {
+    setSiteData({ description });
+  }
 
   const handleSubmit = () => {
     setApiState({ submitting: true });
@@ -204,10 +209,12 @@ function EditSiteDialog(props: EditSiteDialogProps) {
         resource={resource}
       >
         <EditSiteDialogUI
-          resource={resource}
-          apiState={apiState}
-          onHandleInputChange={handleInputChange}
-          onHandleSubmit={handleSubmit}
+          siteName={siteData.name}
+          siteDescription={siteData.description}
+          onSiteNameChange={onSiteNameChange}
+          onSiteDescriptionChange={onSiteDescriptionChange}
+          submitting={apiState.submitting}
+          onSubmit={handleSubmit}
           onClose={onClose}
         />
       </SuspenseWithEmptyState>
