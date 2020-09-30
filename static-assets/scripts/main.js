@@ -120,34 +120,71 @@
 
       sitesService.getLanguages($rootScope, true);
 
-      $rootScope.showModal = function(template, size, verticalCentered, styleClass) {
-        var modalInstance = $uibModal.open({
-          templateUrl: template,
-          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
-          backdrop: 'static',
-          keyboard: true,
-          scope: $rootScope,
-          size: size ? size : ''
+      //More configuration on https://notifyjs.com/
+      $rootScope.showNotification = function (
+        message,
+        positionx,
+        positiony,
+        type,
+        originalx,
+        originaly,
+        classElt
+      ) {
+        var globalPositionx = positionx ? positionx : 'top',
+          globalPositiony = positiony ? positiony : 'right',
+          globalPosition = globalPositionx + ' ' + globalPositiony,
+          type = type ? type : 'success',
+          currentClassElt = classElt ? ' ' + classElt : '';
+        const currentType = type + currentClassElt;
+        originalx = originalx ? originalx : 0;
+        originaly = originaly ? originaly : 0;
+        let html;
+
+        if (type === 'success') {
+          html =
+            '<div><svg class="notifyjs-material-icon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.76,4 13.5,4.11 14.2, 4.31L15.77,2.74C14.61,2.26 13.34,2 12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0, 0 22,12M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z"></path></svg><span data-notify-text/></div>';
+        } else if (type === 'error') {
+          html =
+            '<div><svg class="notifyjs-material-icon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg><span data-notify-text/></div>';
+        } else {
+          html = '<div><span data-notify-text/></div>';
+        }
+
+        $.notify.addStyle('material', {
+          html
         });
 
-        return modalInstance;
-      };
+        $.notify(message, {
+          globalPosition: globalPosition,
+          className: currentType,
+          style: 'material',
+          autoHideDelay: 4000
+        });
 
-      $rootScope.notification = function(notificationText, showOnTop, styleClass) {
-        var verticalAlign = showOnTop ? false : true;
-        $rootScope.notificationText = notificationText;
-        $rootScope.notificationType = 'check-circle';
+        var element;
+        if (classElt) {
+          element = $('.notifyjs-corner').has('.' + classElt);
+        } else {
+          element = $('.notifyjs-corner').has('.notifyjs-bootstrap-' + type);
+        }
 
-        var modal = $rootScope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
-
-        $timeout(
-          function() {
-            modal.close();
-          },
-          1500,
-          false
-        );
-      };
+        if (positionx == 'top') {
+          if (positiony == 'left') element.css({ top: originalx + 'px', left: originaly + 'px' });
+          if (positiony == 'right') element.css({ top: originalx + 'px', right: originaly + 'px' });
+        }
+        if (positionx == 'bottom') {
+          if (positiony == 'left')
+            element.css({
+              bottom: originalx + 'px',
+              left: originaly + 'px'
+            });
+          if (positiony == 'right')
+            element.css({
+              bottom: originalx + 'px',
+              right: originaly + 'px'
+            });
+        }
+      },
 
       CrafterCMSNext.renderBackgroundUI();
     }
@@ -581,7 +618,7 @@
           }
         });
         CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
-          $rootScope.notification(formatMessage(globalMenuMessages.siteEdited), '', 'studioMedium green');
+          $rootScope.showNotification(formatMessage(globalMenuMessages.siteEdited));
           onEditSuccess(response);
         });
 

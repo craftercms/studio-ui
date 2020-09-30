@@ -87,8 +87,19 @@ const usersAdminMessages = defineMessages({
   lastName: {
     id: 'usersAdmin.lastName',
     defaultMessage: 'Last Name'
+  },
+  userCreated: {
+    id: 'usersAdmin.userCreated',
+    defaultMessage: '{username} created.'
+  },
+  userEdited: {
+    id: 'usersAdmin.userEdited',
+    defaultMessage: '{username} edited.'
+  },
+  userDeleted: {
+    id: 'usersAdmin.userDeleted',
+    defaultMessage: '{username} deleted.'
   }
-
 });
 
 export const passwordRequirementMessages = defineMessages({
@@ -166,6 +177,26 @@ const groupsAdminMessages = defineMessages({
   displayName: {
     id: 'groupsAdmin.displayName',
     defaultMessage: 'Display Name'
+  },
+  groupCreated: {
+    id: 'groupsAdmin.groupCreated',
+    defaultMessage: '{group} created.'
+  },
+  groupEdited: {
+    id: 'groupsAdmin.groupEdited',
+    defaultMessage: '{group} edited.'
+  },
+  groupDeleted: {
+    id: 'groupsAdmin.groupDeleted',
+    defaultMessage: '{group} deleted.'
+  },
+  usersAdded: {
+    id: 'groupsAdmin.usersAdded',
+    defaultMessage: 'User(s) successfully added.'
+  },
+  userRemoved: {
+    id: 'groupsAdmin.usereRemoved',
+    defaultMessage: '{username} successfully removed from {group}'
   }
 });
 
@@ -617,7 +648,8 @@ const publishingMessages = defineMessages({
   queued: {
     id: 'publishing.queued',
     defaultMessage: 'Queued'
-  }
+  },
+
 });
 
 const browseCMISMessages = defineMessages({
@@ -1035,6 +1067,13 @@ const localeSelectorControlMessages = defineMessages({
   }
 });
 
+const clusterAdminMessages = defineMessages({
+  clusterDeleted: {
+    id: 'clusterAdminMessages',
+    defaultMessage: '{cluster} deleted.'
+  }
+})
+
 export const languages = defineMessages({
   af: { id: 'languages.af', defaultMessage: 'Afrikaans' },
   sq: { id: 'languages.sq', defaultMessage: 'Albanian' },
@@ -1342,5 +1381,6 @@ export default {
   receptaclesMessages,
   wcmRootFolder,
   localeSelectorControlMessages,
-  languages
+  languages,
+  clusterAdminMessages
 };
