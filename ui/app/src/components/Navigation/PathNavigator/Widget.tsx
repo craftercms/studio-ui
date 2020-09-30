@@ -33,7 +33,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { Resource } from '../../../models/Resource';
 import { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
-import { withoutIndex } from '../../../utils/path';
+import { withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
@@ -188,10 +188,14 @@ export default function (props: WidgetProps) {
   };
 
   const onCurrentParentMenu = (element: Element) => {
-    dispatch(fetchDetailedItem({ site, path: state.currentPath }));
-    dispatch(fetchUserPermissions({ site, path: state.currentPath }));
+    let path = state.currentPath;
+    if (path === '/site/website') {
+      path = withIndex(state.currentPath);
+    }
+    dispatch(fetchDetailedItem({ site, path }));
+    dispatch(fetchUserPermissions({ site, path }));
     setItemMenu({
-      path: state.currentPath,
+      path,
       anchorEl: element
     });
   };

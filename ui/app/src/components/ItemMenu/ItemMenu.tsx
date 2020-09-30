@@ -30,6 +30,7 @@ import {
   closeCreateFolderDialog,
   closeDeleteDialog,
   closeNewContentDialog,
+  closePublishDialog,
   closeUploadDialog,
   showCodeEditorDialog,
   showConfirmDialog,
@@ -59,7 +60,7 @@ import {
 import { fetchItemVersions } from '../../state/reducers/versions';
 import StandardAction from '../../models/StandardAction';
 import { withoutIndex } from '../../utils/path';
-import { setClipBoard, unSetClipBoard } from '../../state/actions/content';
+import { setClipBoard, unSetClipBoard, updateDetailedItem } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import makeStyles from '@material-ui/styles/makeStyles';
@@ -128,10 +129,15 @@ export function ItemMenu(props: ItemMenuProps) {
   const onMenuItemClicked = (option: SectionItem) => {
     onClose();
     switch (option.id) {
-      case 'view':
+      case 'view': {
+        const path = item.path;
+        const src = `${defaultSrc}site=${site}&path=${path}&type=form&readonly=true`;
+        dispatch(showEditDialog({ src }));
+        break;
+      }
       case 'edit': {
         const path = item.path;
-        const src = `${defaultSrc}site=${site}&path=${path}&type=form&${option.id === 'view' && 'readonly=true'}`;
+        const src = `${defaultSrc}site=${site}&path=${path}&type=form`;
         // TODO: open a embedded neeeds the following:
         //src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 
@@ -326,7 +332,11 @@ export function ItemMenu(props: ItemMenuProps) {
       case 'publish': {
         dispatch(showPublishDialog({
           items: [item],
-          scheduling: 'now'
+          scheduling: 'now',
+          onSuccess: batchActions([
+            updateDetailedItem({ site, path: item.path }),
+            closePublishDialog()
+          ])
         }));
         break;
       }

@@ -25,7 +25,8 @@ import {
   fetchQuickCreateListFailed,
   fetchUserPermissions,
   fetchUserPermissionsComplete,
-  fetchUserPermissionsFailed
+  fetchUserPermissionsFailed,
+  updateDetailedItem
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchQuickCreateList, getDetailedItem } from '../../services/content';
@@ -70,10 +71,10 @@ export default [
   // region Items fetchDetailedItem
   (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchDetailedItem.type),
+      ofType(fetchDetailedItem.type, updateDetailedItem.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-          if (state.content.items.byId?.[payload.path]) {
+      switchMap(([{ payload, type }, state]) => {
+          if (type !== updateDetailedItem.type && state.content.items.byId?.[payload.path]) {
             return NEVER;
           } else {
             return getDetailedItem(payload.site, payload.path).pipe(

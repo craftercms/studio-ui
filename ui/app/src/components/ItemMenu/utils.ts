@@ -139,8 +139,9 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
   const isController = item.path.includes('/scripts');
   const isWebsite = withoutIndex(item.path) === '/site/website';
   const renameFolder = !isTemplate && !isController && !isWebsite;
+  let type = item.systemType;
 
-  switch (item.systemType) {
+  switch (type) {
     case 'page': {
       let _optionsA = [];
       if (write) {
@@ -228,7 +229,7 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
     case 'asset': {
       let _optionsA = [];
       if (write) {
-        if (item.systemType === 'taxonomy' || item.systemType === 'component') {
+        if (type === 'taxonomy' || type === 'component') {
           _optionsA.push(menuOptions.edit);
           if (read) {
             _optionsA.push(menuOptions.view);
@@ -240,7 +241,7 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
         if (deleteItem) {
           _optionsA.push(menuOptions.delete);
         }
-        if (item.systemType === 'taxonomy' || item.systemType === 'component') {
+        if (type === 'taxonomy' || type === 'component') {
           _optionsA.push(menuOptions.changeContentType);
         }
         _optionsA.push(menuOptions.cut);

@@ -34,6 +34,7 @@ export const fetchUserPermissionsFailed = createAction<AjaxError>('FETCH_USER_PE
 
 // region Items
 export const fetchDetailedItem = createAction<{ site: string, path: string }>('FETCH_DETAILED_ITEM');
+export const updateDetailedItem = createAction<{ site: string, path: string }>('UPDATE_DETAILED_ITEM');
 export const fetchDetailedItemComplete = createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
 export const fetchDetailedItemFailed = createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
 // endregion
