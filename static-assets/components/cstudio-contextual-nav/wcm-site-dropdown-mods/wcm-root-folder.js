@@ -3680,29 +3680,44 @@
           YConnect.asyncRequest('GET', getTreeItemReuest, cutCb);
         };
 
-        CStudioAuthoring.Operations.getWorkflowAffectedFiles(params, {
-          success: function(content) {
-            if (content && content.length) {
-              CStudioAuthoring.Operations._showDialogueView({
-                controller: 'viewcontroller-cancel-workflow',
-                fn: function(oAjaxCfg) {
-                  // because _showDialogueView was designed to load the body from a
-                  // webscript, must simulate the ajax process here
-                  oAjaxCfg.success({ responseText: '' });
+        const eventIdSuccess = 'workflowCancellationDialogContinue';
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+          payload: {
+            open: true,
+            items: null,
+            onContinue: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdSuccess }
                 },
-                callback: function() {
-                  var view = this;
-                  view.setContent(content);
-                  view.on('continue', function() {
-                    doCut();
-                  });
-                }
-              });
-            } else {
-              doCut();
+                { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
+              ]
             }
           }
         });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+          doCut();
+        });
+
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
+          (items) => {
+            if (items && items.length) {
+              const eventIdSuccess = 'workflowCancellationDialogContinue';
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                payload: { items }
+              });
+            } else {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+              });
+              doCut();
+            }
+          }
+        );
       },
       /**
        * paste content to selected location

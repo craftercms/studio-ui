@@ -143,13 +143,6 @@
 
   Loader.addModule({
     type: 'js',
-    name: 'viewcontroller-cancel-workflow',
-    path: 'components/cstudio-view-controllers/cancel-workflow.js?version=' + CStudioAuthoring.UIBuildId,
-    requires: ['viewcontroller-base', 'template-cancel-workflow']
-  });
-
-  Loader.addModule({
-    type: 'js',
     name: 'jquery-datetimepicker',
     path: 'libs/datetimepicker/jquery.datetimepicker.js?version=' + CStudioAuthoring.UIBuildId,
     requires: ['jquery-datetimepicker-css']
