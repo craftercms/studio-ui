@@ -592,7 +592,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function validateForm() {
-    if (!site.siteId || site.siteIdExist || site.siteNameExist || site.invalidSiteId) {
+    if (!site.siteId || site.siteIdExist || !site.siteName || site.siteNameExist || site.invalidSiteId) {
       return false;
     } else if (!site.repoUrl && site.blueprint.id === 'GIT') {
       return false;
