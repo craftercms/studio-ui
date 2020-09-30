@@ -77,6 +77,10 @@ const menuOptions = {
     id: 'duplicate',
     label: translations.duplicate
   },
+  duplicateAsset: {
+    id: 'duplicateAsset',
+    label: translations.duplicate
+  },
   schedule: {
     id: 'schedule',
     label: translations.schedule
@@ -239,11 +243,9 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
         if (item.systemType === 'taxonomy' || item.systemType === 'component') {
           _optionsA.push(menuOptions.changeContentType);
         }
-        if (isWebsite) {
-          _optionsA.push(menuOptions.cut);
-          _optionsA.push(menuOptions.copy);
-          _optionsA.push(menuOptions.duplicate);
-        }
+        _optionsA.push(menuOptions.cut);
+        _optionsA.push(menuOptions.copy);
+        _optionsA.push(menuOptions.duplicateAsset);
         if (hasClipboard) {
           _optionsA.push(menuOptions.paste);
         }

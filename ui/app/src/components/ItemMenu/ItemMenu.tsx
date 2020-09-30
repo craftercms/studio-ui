@@ -56,8 +56,13 @@ import {
 import { useDispatch } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { translations } from '../Navigation/PathNavigator/translations';
-import { batchActions, changeContentType, editTemplate } from '../../state/actions/misc';
+import {
+  assetDuplicate,
+  batchActions,
+  changeContentType,
+  editTemplate,
+  itemDuplicate
+} from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/reducers/versions';
 import StandardAction from '../../models/StandardAction';
 import { withoutIndex } from '../../utils/path';
@@ -66,6 +71,7 @@ import { popPiece } from '../../utils/string';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
+import { translations } from './translations';
 
 interface ItemMenuProps {
   path: string;
@@ -283,30 +289,38 @@ export function ItemMenu(props: ItemMenuProps) {
         );
         break;
       }
+      case 'duplicateAsset': {
+        dispatch(
+          showConfirmDialog({
+            title: formatMessage(translations.duplicate),
+            body: formatMessage(translations.duplicateDialogBody),
+            onCancel: closeConfirmDialog(),
+            onOk: batchActions([
+              closeConfirmDialog(),
+              assetDuplicate({
+                path: item.path,
+                onSuccess: onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+              })
+            ])
+          })
+        );
+        break;
+      }
       case 'duplicate': {
-        // fetch or widgetShould dispatch FetchDetailedItem??
-        //TODO: Where is the ParentITEM??
-        // const parentItem = null;
-        // dispatch(
-        //   showConfirmDialog({
-        //     title: formatMessage(translations.duplicate),
-        //     body: formatMessage(translations.duplicateDialogBody),
-        //     onCancel: closeConfirmDialog(),
-        //     onOk: {
-        //       type: 'DISPATCH_DOM_EVENT',
-        //       payload: { id: option.id }
-        //     }
-        //   })
-        // );
-        //
-        // const callback = (e) => {
-        //   duplicate(site, item, parentItem).subscribe((item: DetailedItem) => {
-        //     //TODO: Open FORM
-        //   });
-        //   dispatch(closeConfirmDialog());
-        //   document.removeEventListener(option.id, callback, false);
-        // };
-        // document.addEventListener(option.id, callback, true);
+        dispatch(
+          showConfirmDialog({
+            title: formatMessage(translations.duplicate),
+            body: formatMessage(translations.duplicateDialogBody),
+            onCancel: closeConfirmDialog(),
+            onOk: batchActions([
+              closeConfirmDialog(),
+              itemDuplicate({
+                path: item.path,
+                onSuccess: onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+              })
+            ])
+          })
+        );
         break;
       }
       case 'schedule': {

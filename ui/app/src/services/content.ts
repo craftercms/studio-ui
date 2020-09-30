@@ -68,6 +68,7 @@ import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import { parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
+import { withoutIndex } from '../utils/path';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -1493,7 +1494,13 @@ export function duplicate(
   site: string,
   path: string
 ): Observable<string> {
-  const parentPath = '';
+  let parentPath: any = path;
+  if (path.endsWith('index.xml')) {
+    parentPath = withoutIndex(path);
+  }
+  parentPath = parentPath.split('/');
+  parentPath.pop();
+  parentPath = parentPath.join('/');
   return forkJoin({
     copy: copy(site, path),
     newItem: paste(site, parentPath)

@@ -120,6 +120,7 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
     const messagesSubscription = messages.subscribe((e: any) => {
       switch (e.data.type) {
         case EMBEDDED_LEGACY_FORM_SUCCESS: {
+          onSaveSuccess?.(e.data);
           getHostToGuestBus().next({ type: RELOAD_REQUEST });
           switch (e.data.action) {
             case 'save': {
@@ -151,10 +152,10 @@ function EmbeddedLegacyEditor(props: LegacyFormDialogProps) {
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE: {
+          onSaveSuccess?.(e.data);
           if (e.data.refresh) {
             getHostToGuestBus().next({ type: RELOAD_REQUEST });
           }
-          onSaveSuccess?.(e.data);
           switch (e.data.action) {
             case 'save': {
               break;

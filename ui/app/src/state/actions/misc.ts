@@ -24,4 +24,6 @@ export const batchActions = createAction<StandardAction[]>('BATCH_ACTIONS');
 // region TemplateActions
 export const changeContentType = createAction<{ contentTypeId: string, path: string }>('CHANGE_CONTENT_TYPE');
 export const editTemplate = createAction<{ contentTypeId: string }>('EDIT_TEMPLATE');
+export const itemDuplicate = createAction<{ path: string, onSuccess: StandardAction }>('ITEM_DUPlICATE');
+export const assetDuplicate = createAction<{ path: string, onSuccess: StandardAction }>('ASSET_DUPlICATE');
 // endregion

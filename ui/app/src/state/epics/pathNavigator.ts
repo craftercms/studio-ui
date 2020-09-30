@@ -173,5 +173,5 @@ export default [
           }
         }
       })
-    )
+    ),
 ] as Epic[];
