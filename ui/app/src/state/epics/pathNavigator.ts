@@ -104,23 +104,25 @@ export default [
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(pathNavigatorSetCurrentPath.type, pathNavigatorSetCollapsed.type),
+      ofType(pathNavigatorFetchPathComplete.type, pathNavigatorSetCollapsed.type),
       withLatestFrom(state$),
       tap(
         ([
            {
              type,
-             payload: { id }
+             payload: { id, response }
            },
            state
          ]) => {
-          localStorage.setItem(
-            `craftercms.pathNavigator.${state.sites.active}.${id}`,
-            JSON.stringify({
-              currentPath: state.pathNavigator[id].currentPath,
-              collapsed: state.pathNavigator[id].collapsed
-            })
-          );
+          if (response.length > 0) {
+            localStorage.setItem(
+              `craftercms.pathNavigator.${state.sites.active}.${id}`,
+              JSON.stringify({
+                currentPath: state.pathNavigator[id].currentPath,
+                collapsed: state.pathNavigator[id].collapsed
+              })
+            );
+          }
         }
       ),
       ignoreElements()
@@ -173,5 +175,5 @@ export default [
           }
         }
       })
-    ),
+    )
 ] as Epic[];

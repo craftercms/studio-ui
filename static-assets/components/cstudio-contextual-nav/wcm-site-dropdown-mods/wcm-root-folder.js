@@ -3290,6 +3290,7 @@
        */
       createContent: function() {
         const contentDialogTypeSelectedId = 'contentDialogTypeSelected';
+        const contentDialogCancel = 'contentDialogCancel';
         const { site, internalName, uri } = oCurrentTextNode.data;
 
         CrafterCMSNext.system.store.dispatch({
@@ -3304,26 +3305,41 @@
             onContentTypeSelected: {
               type: 'DISPATCH_DOM_EVENT',
               payload: { id: contentDialogTypeSelectedId }
+            },
+            onClosed: {
+              type: 'DISPATCH_DOM_EVENT',
+              payload: { id: contentDialogCancel }
             }
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(contentDialogTypeSelectedId, (response) => {
+        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogTypeSelectedId, (response) => {
           if (response) {
             const eventIdSuccess = 'editDialogSuccess';
+            const eventIdCancel = 'editDialogCancel';
 
             CrafterCMSNext.system.store.dispatch({
               type: 'SHOW_EDIT_DIALOG',
               payload: {
                 ...response.output,
                 onSaveSuccess: {
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: eventIdSuccess }
+                    },
+                    { type: 'CLOSE_NEW_CONTENT_DIALOG' }
+                  ]
+                },
+                onClosed: {
                   type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventIdSuccess }
+                  payload: { id: eventIdCancel }
                 }
               }
             });
 
-            CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+            const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
               if (response) {
                 const data = response.output;
                 const acnDraftContent = YDom.getElementsByClassName(
@@ -3349,9 +3365,13 @@
                   CStudioAuthoring.Operations.refreshPreview();
                 }
               }
-              CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
+              cancelUnsubscribe();
             });
           }
+        });
+
+        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, () => {
+          unsubscribe();
         });
 
       },

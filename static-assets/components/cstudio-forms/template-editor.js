@@ -785,14 +785,14 @@ CStudioAuthoring.Module.requireModule(
                                   type: 'DISPATCH_DOM_EVENT',
                                   payload: { id: createTemplateOnOk }
                                 },
-                                onCancel: {
+                                onClosed: {
                                   type: 'DISPATCH_DOM_EVENT',
                                   payload: { id: createTemplateOnCancel }
                                 }
                               }
                             });
 
-                            CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
+                            const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
                               $(headerEl).find('.fileName')[0].innerText = this.value ? `${baseName}_${this.value}.ftl` : `${baseName}.ftl`;
                               aceEditor.setValue('');
                               CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
@@ -804,11 +804,12 @@ CStudioAuthoring.Module.requireModule(
                                   aceEditor.setValue(defaultContent);
                                 }
                               );
+                              cancelUnsubscribe();
                             });
 
-                            CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
+                            const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
                               $select.val($select.data('prev'));
-                              CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
+                              unsubscribe();
                             });
 
                           }

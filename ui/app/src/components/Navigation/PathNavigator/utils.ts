@@ -21,5 +21,6 @@ export function isNavigable(item: DetailedItem): boolean {
     || item.systemType === 'component'
     || item.systemType === 'asset'
     || item.systemType === 'template'
-    || item.systemType === 'script';
+    || item.systemType === 'script'
+    || item.systemType === 'taxonomy';
 }
