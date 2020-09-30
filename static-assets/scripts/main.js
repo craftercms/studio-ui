@@ -1302,7 +1302,10 @@
       $scope.editSite = sitesService.editSite;
 
       $scope.editSiteData = function(site) {
-        const onEditSuccess = (response) => {
+        const onEditSuccess = () => {
+          CrafterCMSNext.system.store.dispatch({
+            type: 'CLOSE_EDIT_SITE_DIALOG',
+          });
           getSites();
         };
 

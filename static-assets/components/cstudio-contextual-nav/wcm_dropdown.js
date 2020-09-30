@@ -50,7 +50,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
 
     var navBarSiteNameEl = YDom.get('navbar-site-name');
     const siteName = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site].name;
-    navBarSiteNameEl.innerHTML = siteName??CStudioAuthoringContext.site;
+    navBarSiteNameEl.innerHTML = siteName ? siteName : CStudioAuthoringContext.site;
 
     if (
       window.location.pathname.indexOf('browse') > -1 ||

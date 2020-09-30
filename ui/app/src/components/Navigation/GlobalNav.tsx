@@ -506,7 +506,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                   sites.map((site, i) => (
                     <SiteCard
                       key={i}
-                      title={site.name??site.id}
+                      title={site.name}
                       value={site.id}
                       options={true}
                       classes={{ root: classes.titleCard }}

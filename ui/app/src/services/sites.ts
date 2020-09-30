@@ -35,7 +35,7 @@ export function fetchSites(paginationOptions?: PaginationOptions): Observable<Pa
     map(({ response }) => Object.assign(
       response.sites.map(site => ({
         id: site.siteId,
-        name: site.siteId,    // TODO: need to get site.name when API is ready
+        name: site.name ?? site.siteId,
         description: site.desc
       })),
       {
@@ -55,7 +55,7 @@ export function deleteSite(id: string) {
   return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id });
 }
 
-export function editSite(site: Site) {
+export function updateSite(site: Site) {
   // endpoint pending
   const response: ApiResponse = {
     code: 200,

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../../components/Dialogs/DialogBody';
@@ -27,12 +27,10 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { Site } from '../../../../models/Site';
 import { SuspenseWithEmptyState } from '../../../../components/SystemStatus/Suspencified';
-import { ApiResponse } from '../../../../models/ApiResponse';
-import { editSite } from '../../../../services/sites';
+import { updateSite } from '../../../../services/sites';
 
-type Source = Site;
+type Source = { site: Site; error: Error };
 type Return = Omit<Source, 'error'>;
-type ApiState = { error: ApiResponse, submitting: boolean };
 
 interface EditSiteDialogUIProps {
   siteName: string;
@@ -153,19 +151,23 @@ function EditSiteDialog(props: EditSiteDialogProps) {
     name: '',
     description: ''
   });
-  const [apiState, setApiState] = useSpreadState<ApiState>({
-    error: null,
-    submitting: false
-  })
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
 
   useUnmount(onClosed);
 
-  const resource = useLogicResource<Return, Source>(site, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
+  const dialogResource = useMemo(() => ({
+    site,
+    error
+  }), [site, error]);
+
+  const resource = useLogicResource<Return, Source>(dialogResource, {
+    shouldResolve: (source) => Boolean(source.site),
+    shouldReject: (source) => Boolean(source.error),
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => source,
-    errorSelector: (source) => null
+    errorSelector: (source) => source.error
   });
 
   useEffect(() => {
@@ -183,16 +185,16 @@ function EditSiteDialog(props: EditSiteDialogProps) {
   }
 
   const handleSubmit = () => {
-    setApiState({ submitting: true });
+    setSubmitting( true );
 
-    editSite(siteData).subscribe(
+    updateSite(siteData).subscribe(
       (response) => {
-        setApiState({ submitting: false });
+        setSubmitting( false );
         onSaveSuccess?.(response);
-        onClose?.();
       },
       (e) => {
-        setApiState({ error: e, submitting: false });
+        setSubmitting( false );
+        setError(e);
       }
     )
   };
@@ -213,7 +215,7 @@ function EditSiteDialog(props: EditSiteDialogProps) {
           siteDescription={siteData.description}
           onSiteNameChange={onSiteNameChange}
           onSiteDescriptionChange={onSiteDescriptionChange}
-          submitting={apiState.submitting}
+          submitting={submitting}
           onSubmit={handleSubmit}
           onClose={onClose}
         />
