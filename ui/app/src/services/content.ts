@@ -61,7 +61,7 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
+import { CopyItem, DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
@@ -1463,11 +1463,11 @@ export function getChildrenByPath(
   );
 }
 
-export function copy(site: string, item: Partial<LegacyItem>): Observable<{ success: boolean }> {
-  let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
+export function copy(site: string, path: string, copyItem?: CopyItem): Observable<{ success: boolean }> {
+  let item = path ? { item: [{ uri: path }] } : { item: [copyItem] };
   return post(
     `/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`,
-    _item,
+    item,
     CONTENT_TYPE_JSON
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
@@ -1482,22 +1482,22 @@ export function cut(site: string, item: DetailedItem): Observable<any> {
 
 export function paste(
   site: string,
-  item: DetailedItem
+  path: string
 ): Observable<{ site: string; status: string[] }> {
   return get(
-    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`
+    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${path}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function duplicate(
   site: string,
-  item: DetailedItem,
-  parentItem: DetailedItem
-): Observable<DetailedItem> {
+  path: string
+): Observable<string> {
+  const parentPath = '';
   return forkJoin({
-    copy: copy(site, item),
-    newItem: paste(site, parentItem)
-  }).pipe(map(({ copy, newItem }) => ({ ...item, path: newItem.status[0] })));
+    copy: copy(site, path),
+    newItem: paste(site, parentPath)
+  }).pipe(map(({ copy, newItem }) => newItem.status[0]));
 }
 
 export function getPages(site: string, item: DetailedItem): Observable<any> {

@@ -242,7 +242,7 @@ export function ItemMenu(props: ItemMenuProps) {
                 ])
               }));
             } else {
-              copy(site, item).subscribe(
+              copy(site, item.path).subscribe(
                 (response) => {
                   if (response.success) {
                     dispatch(setClipBoard({ path: item.path }));
@@ -269,7 +269,7 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'paste': {
-        paste(site, item).subscribe(
+        paste(site, item.path).subscribe(
           () => {
             dispatch(unSetClipBoard());
           },
@@ -286,27 +286,27 @@ export function ItemMenu(props: ItemMenuProps) {
       case 'duplicate': {
         // fetch or widgetShould dispatch FetchDetailedItem??
         //TODO: Where is the ParentITEM??
-        const parentItem = null;
-        dispatch(
-          showConfirmDialog({
-            title: formatMessage(translations.duplicate),
-            body: formatMessage(translations.duplicateDialogBody),
-            onCancel: closeConfirmDialog(),
-            onOk: {
-              type: 'DISPATCH_DOM_EVENT',
-              payload: { id: option.id }
-            }
-          })
-        );
-
-        const callback = (e) => {
-          duplicate(site, item, parentItem).subscribe((item: DetailedItem) => {
-            //TODO: Open FORM
-          });
-          dispatch(closeConfirmDialog());
-          document.removeEventListener(option.id, callback, false);
-        };
-        document.addEventListener(option.id, callback, true);
+        // const parentItem = null;
+        // dispatch(
+        //   showConfirmDialog({
+        //     title: formatMessage(translations.duplicate),
+        //     body: formatMessage(translations.duplicateDialogBody),
+        //     onCancel: closeConfirmDialog(),
+        //     onOk: {
+        //       type: 'DISPATCH_DOM_EVENT',
+        //       payload: { id: option.id }
+        //     }
+        //   })
+        // );
+        //
+        // const callback = (e) => {
+        //   duplicate(site, item, parentItem).subscribe((item: DetailedItem) => {
+        //     //TODO: Open FORM
+        //   });
+        //   dispatch(closeConfirmDialog());
+        //   document.removeEventListener(option.id, callback, false);
+        // };
+        // document.addEventListener(option.id, callback, true);
         break;
       }
       case 'schedule': {

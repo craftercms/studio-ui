@@ -19,7 +19,7 @@ import React, { PropsWithChildren, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
-import { LegacyItem } from '../../models/Item';
+import { CopyItem, LegacyItem } from '../../models/Item';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { TreeView } from '@material-ui/lab';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -103,7 +103,7 @@ interface CopyItemsBaseProps {
 export type CopyItemsDialogProps = PropsWithChildren<CopyItemsBaseProps & {
   onClose(): void;
   onClosed?(): void;
-  onOk?(item: Partial<LegacyItem>): void;
+  onOk?(item: CopyItem): void;
 }>;
 
 export interface CopyItemsDialogStateProps extends CopyItemsBaseProps {
@@ -278,12 +278,12 @@ function CopyItemsDialogUI(props: CopyItemsDialogProps) {
   };
 
   const onCopy = () => {
-    let CopyItem: Partial<LegacyItem> = {};
-    CopyItem = getChildrenTree(item.uri, children);
-    copy(site, item).subscribe(
+    let copyItem: CopyItem = {};
+    copyItem = getChildrenTree(item.uri, children);
+    copy(site, null, copyItem).subscribe(
       (response) => {
         if (response.success) {
-          onOk?.(CopyItem);
+          onOk?.(copyItem);
         }
       },
       (response) => {

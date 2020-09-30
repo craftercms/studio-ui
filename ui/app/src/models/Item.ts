@@ -93,3 +93,8 @@ export interface LegacyItem {
   children: LegacyItem[];
   [prop: string]: any;
 }
+
+export interface CopyItem {
+  uri?: string;
+  children?: CopyItem[]
+}
