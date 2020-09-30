@@ -3315,8 +3315,8 @@
             CrafterCMSNext.system.store.dispatch({
               type: 'SHOW_EDIT_DIALOG',
               payload: {
-                inProgress:response.inProgress,
-                src:response.src,
+                inProgress: response.inProgress,
+                src: response.src,
                 onSaveSuccess: {
                   type: 'DISPATCH_DOM_EVENT',
                   payload: { id: eventIdSuccess }
