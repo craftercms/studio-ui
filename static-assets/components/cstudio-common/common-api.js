@@ -746,11 +746,12 @@ var nodeOpen = false,
             eventNS.typeAction = '';
             eventNS.oldPath = null;
             document.dispatchEvent(eventNS);
+            cancelUnsubscribe();
             callback && callback();
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
           unsubscribe();
         });
 
@@ -803,15 +804,9 @@ var nodeOpen = false,
             {
               type: 'SHOW_HISTORY_DIALOG',
               payload: {
-                onClose: {
-                  type: 'BATCH_ACTIONS',
-                  payload: [
-                    {
-                      type: 'DISPATCH_DOM_EVENT',
-                      payload: { id: eventIdOnClose }
-                    },
-                    { type: 'CLOSE_HISTORY_DIALOG' }
-                  ]
+                onClosed: {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdOnClose }
                 }
               }
             }
@@ -834,6 +829,7 @@ var nodeOpen = false,
         const scheduling = approveType ? 'custom' : 'now';
 
         const eventIdSuccess = 'publishDialogSuccess';
+        const eventIdCancel = 'publishDialogCancel';
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
@@ -849,11 +845,21 @@ var nodeOpen = false,
                 },
                 { type: 'CLOSE_PUBLISH_DIALOG' }
               ]
+            },
+            onClosed: {
+              type: 'DISPATCH_DOM_EVENT',
+              payload: { id: eventIdCancel }
             }
           }
         });
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+
+        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
+          cancelUnsubscribe();
+        });
+
+        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+          unsubscribe();
         });
       },
 
@@ -875,6 +881,7 @@ var nodeOpen = false,
         const _self = this;
 
         const eventIdSuccess = 'publishDialogSuccess';
+        const eventIdCancel = 'publishDialogCancel';
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
@@ -889,11 +896,21 @@ var nodeOpen = false,
                 },
                 { type: 'CLOSE_PUBLISH_DIALOG' }
               ]
+            },
+            onClosed: {
+              type: 'DISPATCH_DOM_EVENT',
+              payload: { id: eventIdCancel }
             }
           }
         });
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+
+        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
+          cancelUnsubscribe();
+        });
+
+        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+          unsubscribe();
         });
       },
 
@@ -2554,6 +2571,7 @@ var nodeOpen = false,
         }
 
         const eventIdSuccess = 'workflowCancellationDialogContinue';
+        const eventIdCancel = 'workflowCancellationDialogCancel';
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
           payload: {
@@ -2568,11 +2586,21 @@ var nodeOpen = false,
                 },
                 { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
               ]
+            },
+            onClosed:{
+              type: 'DISPATCH_DOM_EVENT',
+              payload: { id: eventIdCancel }
             }
           }
         });
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+
+        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
           doEdit();
+          cancelUnsubscribe();
+        });
+
+        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+          unsubscribe();
         });
 
         CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
