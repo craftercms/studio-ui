@@ -3315,7 +3315,8 @@
             CrafterCMSNext.system.store.dispatch({
               type: 'SHOW_EDIT_DIALOG',
               payload: {
-                ...response.output,
+                inProgress: response.inProgress,
+                src: response.src,
                 onSaveSuccess: {
                   type: 'DISPATCH_DOM_EVENT',
                   payload: { id: eventIdSuccess }
@@ -3325,7 +3326,6 @@
 
             CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
               if (response) {
-                const data = response.output;
                 const acnDraftContent = YDom.getElementsByClassName(
                   'acnDraftContent',
                   null,
@@ -3337,13 +3337,13 @@
                 eventYS.parent = oCurrentTextNode.data.path == '/site/website' ? null : false;
                 document.dispatchEvent(eventYS);
 
-                if (data.item.isPage) {
-                  CStudioAuthoring.Operations.refreshPreview(data.item);
+                if (response.item.isPage) {
+                  CStudioAuthoring.Operations.refreshPreview(response.item);
                   if (
-                    CStudioAuthoring.Utils.getQueryParameterURL('page') == data.redirectUrl &&
+                    CStudioAuthoring.Utils.getQueryParameterURL('page') == response.redirectUrl &&
                     acnDraftContent
                   ) {
-                    CStudioAuthoring.SelectedContent.setContent(data.item);
+                    CStudioAuthoring.SelectedContent.setContent(response.item);
                   }
                 } else {
                   CStudioAuthoring.Operations.refreshPreview();
