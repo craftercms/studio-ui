@@ -31,6 +31,7 @@ CStudioForms.Controls.RTETINYMCE5 =
     this.rteHeight = 300;
     this.pencilMode = pencilMode;
     this.supportedPostFixes = ['_html'];
+    this.enableSpellCheck = true;
 
     this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
     this.words = CrafterCMSNext.i18n.messages.words;
@@ -146,6 +147,12 @@ CStudioAuthoring.Module.requireModule(
               name: 'autoGrow',
               type: 'boolean',
               defaultValue: 'false'
+            },
+            {
+              label: this.formatMessage(this.contentTypesMessages.enableSpellCheck),
+              name: 'enableSpellCheck',
+              type: 'boolean',
+              defaultValue: 'true'
             },
             {
               label: this.formatMessage(this.contentTypesMessages.forceRootBlockP),
@@ -271,6 +278,9 @@ CStudioAuthoring.Module.requireModule(
               case 'forceRootBlockPTag':
                 var forceRootBlockPTag = prop.value == 'false' ? false : 'p';
                 break;
+              case 'enableSpellCheck':
+                this.enableSpellCheck = !prop.value || prop.value === 'true';
+                break;
             }
           }
 
@@ -334,6 +344,8 @@ CStudioAuthoring.Module.requireModule(
             autoresize_on_init: false,
             autoresize_bottom_margin: 0,
             extended_valid_elements: extendedValidElements,
+            browser_spellcheck: this.enableSpellCheck,
+            contextmenu: !this.enableSpellCheck,
 
             menu: {
               tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
