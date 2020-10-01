@@ -334,7 +334,7 @@ export function ItemMenu(props: ItemMenuProps) {
           items: [item],
           scheduling: 'now',
           onSuccess: batchActions([
-            updateDetailedItem({ site, path: item.path }),
+            updateDetailedItem({ path: item.path }),
             closePublishDialog()
           ])
         }));

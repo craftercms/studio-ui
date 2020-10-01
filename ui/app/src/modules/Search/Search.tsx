@@ -556,9 +556,9 @@ function Search(props: SearchProps) {
             height={600}
           />);
       case 'Template':
-        return <Editor mode={'ace/mode/html'} data={preview.data} />;
+        return <Editor mode="ace/mode/ftl" data={preview.data} />;
       case 'Groovy':
-        return <Editor mode={'ace/mode/java'} data={preview.data} />;
+        return <Editor mode="ace/mode/java" data={preview.data} />;
       default:
         break;
     }

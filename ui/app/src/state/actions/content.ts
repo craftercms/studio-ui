@@ -27,14 +27,14 @@ export const fetchQuickCreateListFailed = createAction('FETCH_QUICK_CREATE_LIST_
 // endregion
 
 // region Permissions
-export const fetchUserPermissions = createAction<{ site: string, path: string }>('FETCH_USER_PERMISSIONS');
+export const fetchUserPermissions = createAction<{ path: string }>('FETCH_USER_PERMISSIONS');
 export const fetchUserPermissionsComplete = createAction<{ path: string; permissions: LookupTable<boolean> }>('FETCH_USER_PERMISSIONS_COMPLETE');
 export const fetchUserPermissionsFailed = createAction<AjaxError>('FETCH_USER_PERMISSIONS_FAILED');
 // endregion
 
 // region Items
-export const fetchDetailedItem = createAction<{ site: string, path: string }>('FETCH_DETAILED_ITEM');
-export const updateDetailedItem = createAction<{ site: string, path: string }>('UPDATE_DETAILED_ITEM');
+export const fetchDetailedItem = createAction<{ path: string }>('FETCH_DETAILED_ITEM');
+export const updateDetailedItem = createAction<{ path: string }>('UPDATE_DETAILED_ITEM');
 export const fetchDetailedItemComplete = createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
 export const fetchDetailedItemFailed = createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
 // endregion

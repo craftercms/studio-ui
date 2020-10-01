@@ -192,8 +192,8 @@ export default function (props: WidgetProps) {
     if (path === '/site/website') {
       path = withIndex(state.currentPath);
     }
-    dispatch(fetchDetailedItem({ site, path }));
-    dispatch(fetchUserPermissions({ site, path }));
+    dispatch(fetchDetailedItem({ path }));
+    dispatch(fetchUserPermissions({ path }));
     setItemMenu({
       path,
       anchorEl: element
@@ -201,8 +201,8 @@ export default function (props: WidgetProps) {
   };
 
   const onOpenItemMenu = (element: Element, item: DetailedItem) => {
-    dispatch(fetchDetailedItem({ site, path: item.path }));
-    dispatch(fetchUserPermissions({ site, path: item.path }));
+    dispatch(fetchDetailedItem({ path: item.path }));
+    dispatch(fetchUserPermissions({ path: item.path }));
     setItemMenu({
       path: item.path,
       anchorEl: element

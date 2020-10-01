@@ -162,7 +162,7 @@ export function PreviewConcierge(props: any) {
 
   useEffect(() => {
     if (currentItemPath && site) {
-      dispatch(fetchDetailedItem({ site, path: currentItemPath }));
+      dispatch(fetchDetailedItem({ path: currentItemPath }));
     }
   }, [dispatch, currentItemPath, site]);
 

@@ -59,8 +59,11 @@ export default [
           if (state.content.permissions?.[payload.path]) {
             return NEVER;
           } else {
-            return getUserPermissions(payload.site, payload.path, state.user.username).pipe(
-              map((permissions) => fetchUserPermissionsComplete({ path: payload.path, permissions })),
+            return getUserPermissions(state.sites.active, payload.path, state.user.username).pipe(
+              map((permissions) => fetchUserPermissionsComplete({
+                path: payload.path,
+                permissions
+              })),
               catchAjaxError(fetchUserPermissionsFailed)
             );
           }
@@ -77,7 +80,7 @@ export default [
           if (type !== updateDetailedItem.type && state.content.items.byId?.[payload.path]) {
             return NEVER;
           } else {
-            return getDetailedItem(payload.site, payload.path).pipe(
+            return getDetailedItem(state.sites.active, payload.path).pipe(
               map((item) => fetchDetailedItemComplete(item)),
               catchAjaxError(fetchDetailedItemFailed)
             );
