@@ -833,10 +833,6 @@ const globalMenuMessages = defineMessages({
   'login.recover': {
     id: 'GlobalMenu.Recover',
     defaultMessage: 'Password Recovery'
-  },
-  siteEdited: {
-    id: 'globalMenu.siteEdited',
-    defaultMessage: 'Site Edited.'
   }
 });
 
@@ -1069,10 +1065,17 @@ const localeSelectorControlMessages = defineMessages({
 
 const clusterAdminMessages = defineMessages({
   clusterDeleted: {
-    id: 'clusterAdminMessages',
+    id: 'clusterAdminMessages.clusterDeleted',
     defaultMessage: '{cluster} deleted.'
   }
-})
+});
+
+const sitesViewMessages = defineMessages({
+  siteEdited: {
+    id: 'globalMenu.siteEdited',
+    defaultMessage: 'Site Edited.'
+  }
+});
 
 export const languages = defineMessages({
   af: { id: 'languages.af', defaultMessage: 'Afrikaans' },
@@ -1382,5 +1385,6 @@ export default {
   wcmRootFolder,
   localeSelectorControlMessages,
   languages,
-  clusterAdminMessages
+  clusterAdminMessages,
+  sitesViewMessages
 };

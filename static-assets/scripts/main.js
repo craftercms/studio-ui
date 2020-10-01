@@ -38,7 +38,8 @@
     globalConfigMessages = i18n.messages.globalConfigMessages,
     words = i18n.messages.words,
     profileSettingsMessages = i18n.messages.profileSettingsMessages,
-    globalMenuMessages = i18n.messages.globalMenuMessages;
+    globalMenuMessages = i18n.messages.globalMenuMessages,
+    sitesViewMessages = i18n.messages.sitesViewMessages;
 
   app.run([
     '$rootScope',
@@ -618,7 +619,7 @@
           }
         });
         CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
-          $rootScope.showNotification(formatMessage(globalMenuMessages.siteEdited));
+          $rootScope.showNotification(formatMessage(sitesViewMessages.siteEdited));
           onEditSuccess(response);
         });
 
