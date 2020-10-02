@@ -66,7 +66,7 @@
         <#list sites as site>
         "${site.siteId!""}": {
           "id": "${site.siteId!""}",
-          "name": "${site.siteId!""}",
+          "name": "${site.name!site.siteId!""}",
           "description": "${(site.desc!"")?json_string}"
         }<#sep>,</#sep>
         </#list>
