@@ -181,6 +181,12 @@ export default function (props: WidgetProps) {
     if (item.systemType === 'component' || item.systemType === 'taxonomy') {
       const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form&readonly=true`;
       dispatch(showEditDialog({ src }));
+    } else if (item.mimeType.startsWith('image/')) {
+      dispatch(showPreviewDialog({
+        type: 'image',
+        title: item.label,
+        url: item.path
+      }));
     } else {
       getContent(site, item.path).subscribe(
         (content) => {
@@ -197,7 +203,7 @@ export default function (props: WidgetProps) {
           }
 
           dispatch(showPreviewDialog({
-            type: item.mimeType.startsWith('image/') ? 'image' : 'editor',
+            type: 'editor',
             title: item.label,
             url: item.path,
             mode,

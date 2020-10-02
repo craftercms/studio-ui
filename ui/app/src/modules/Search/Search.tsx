@@ -18,13 +18,12 @@ import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import AppsIcon from '@material-ui/icons/Apps';
-import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import MediaCard from '../../components/MediaCard';
 import { search } from '../../services/search';
 import { setRequestForgeryToken } from '../../utils/auth';
-import { ElasticParams, Filter, MediaItem, Preview } from '../../models/Search';
+import { ElasticParams, Filter, MediaItem } from '../../models/Search';
 import Spinner from '../../components/SystemStatus/Spinner';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -35,15 +34,11 @@ import queryString from 'query-string';
 import ErrorState from '../../components/SystemStatus/ErrorState';
 import TablePagination from '@material-ui/core/TablePagination';
 import Typography from '@material-ui/core/Typography';
-import AsyncVideoPlayer from '../../components/AsyncVideoPlayer';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import clsx from 'clsx';
-import Editor from '../../components/Editor';
-import IFrame from '../../components/IFrame';
-import { getPreviewURLFromPath } from '../../utils/path';
 import { History, Location } from 'history';
 import { getContent } from '../../services/content';
 import SearchBar from '../../components/Controls/SearchBar';
@@ -52,8 +47,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import { isEditableAsset } from '../../utils/content';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import DialogHeader from '../../components/Dialogs/DialogHeader';
 import palette from '../../styles/palette';
+import { showPreviewDialog } from '../../state/actions/dialogs';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -258,14 +254,8 @@ function Search(props: SearchProps) {
   const [currentView, setCurrentView] = useState('grid');
   const [searchResults, setSearchResults] = useState(null);
   const [selected, setSelected] = useState([]);
-  const [preview, setPreview] = useState({
-    url: null,
-    type: null,
-    name: null,
-    open: false,
-    data: null
-  });
   const onSearch$ = useMemo(() => new Subject<string>(), []);
+  const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
@@ -350,7 +340,9 @@ function Search(props: SearchProps) {
       });
 
     } else {
-      return <EmptyState title={formatMessage(messages.noResults)} subtitle={formatMessage(messages.changeQuery)} />;
+      return <EmptyState
+        title={formatMessage(messages.noResults)} subtitle={formatMessage(messages.changeQuery)}
+      />;
     }
   }
 
@@ -477,17 +469,29 @@ function Search(props: SearchProps) {
   function handlePreviewAsset(url: string, type: string, name: string) {
     if (type === 'Template' || type === 'Groovy') {
       getContent(siteId, url).subscribe(
-        (response) => {
-          setPreview({ url, open: true, type, name, data: response });
+        (content) => {
+          let mode = 'txt';
+          if (type === 'Template') {
+            mode = 'ftl';
+          } else if (type === 'Groovy') {
+            mode = 'java';
+          }
+          dispatch(showPreviewDialog({
+            type: 'editor',
+            title: name,
+            url,
+            mode,
+            content
+          }));
         }
       );
     } else {
-      setPreview({ url, open: true, type, name, data: null });
+      dispatch(showPreviewDialog({
+        type: type === 'Image' ? 'image' : 'page',
+        title: name,
+        url
+      }));
     }
-  }
-
-  function handleClosePreview() {
-    setPreview({ ...preview, url: null, open: false, type: null, name: null, data: null });
   }
 
   function handleSelect(path: string, isSelected: boolean) {
@@ -535,33 +539,6 @@ function Search(props: SearchProps) {
   function areAllSelected() {
     if (!searchResults || searchResults.items.length === 0) return false;
     return !searchResults.items.some((item: any) => !selected.includes(item.path));
-  }
-
-  function renderPreview(preview: Preview) {
-    switch (preview.type) {
-      case 'Image':
-        return <img src={preview.url} alt='' />;
-      case 'Video':
-        return (
-          <AsyncVideoPlayer
-            playerOptions={{ src: preview.url, autoplay: true }}
-            nonPlayableMessage={formatMessage(messages.videoProcessed)}
-          />);
-      case 'Page':
-        return (
-          <IFrame
-            url={getPreviewURLFromPath(previewAppBaseUri, preview.url)}
-            title={preview.name}
-            width={960}
-            height={600}
-          />);
-      case 'Template':
-        return <Editor mode="ace/mode/ftl" data={preview.data} />;
-      case 'Groovy':
-        return <Editor mode="ace/mode/java" data={preview.data} />;
-      default:
-        break;
-    }
   }
 
   function handleHeaderButtonClick(event: any, item: MediaItem) {
@@ -688,7 +665,10 @@ function Search(props: SearchProps) {
             <ErrorState error={apiState.errorResponse} />
             :
             (
-              <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
+              <Grid
+                container spacing={3}
+                className={searchResults?.items.length === 0 ? classes.empty : ''}
+              >
                 {
                   searchResults === null
                     ? <Spinner background="inherit" />
@@ -698,12 +678,6 @@ function Search(props: SearchProps) {
             )
         }
       </section>
-      <Dialog onClose={handleClosePreview} aria-labelledby="preview" open={preview.open} maxWidth='md'>
-        <DialogHeader title={preview.name} onDismiss={handleClosePreview}/>
-        <div className={classes.mediaPreview}>
-          {renderPreview(preview)}
-        </div>
-      </Dialog>
       <Menu
         anchorEl={anchorEl}
         keepMounted
