@@ -22,21 +22,15 @@ export function translateElements(
   messages: { [key: string]: MessageDescriptor },
   formats: any = {}
 ) {
-  messages = Object.entries(messages)
-    .reduce(
-      (table: any, [key, descriptor]) => {
-        table[descriptor.id] = descriptor;
-        return table;
-      },
-      {}
-    );
+  messages = Object.entries(messages).reduce((table: any, [key, descriptor]) => {
+    table[descriptor.id] = descriptor;
+    return table;
+  }, {});
   elements.forEach((elem) => {
     const key = elem.getAttribute('data-i18n');
     if (key) {
       const message = intl.formatMessage(messages[key], formats);
-      elem.innerHTML = (
-        Array.isArray(message) ? message.join('') : message
-      );
+      elem.innerHTML = Array.isArray(message) ? message.join('') : message;
     }
   });
 }
@@ -48,7 +42,8 @@ const approveDialogMessages = defineMessages({
   },
   differentPublishDateWarning: {
     id: 'publishDialog.differentPublishDateWarning',
-    defaultMessage: '<strong>Warning</strong> The items you have selected for approval were submitted with different requested publish dates/times.'
+    defaultMessage:
+      '<strong>Warning</strong> The items you have selected for approval were submitted with different requested publish dates/times.'
   },
   publishingScheduleTitle: {
     id: 'publishDialog.publishingScheduleTitle',
@@ -56,7 +51,8 @@ const approveDialogMessages = defineMessages({
   },
   introductoryText: {
     id: 'publishDialog.introductoryText',
-    defaultMessage: 'Selected files will be published. Hard dependencies are automatically included. Soft dependencies are optional and you may choose which to include.'
+    defaultMessage:
+      'Selected files will be published. Hard dependencies are automatically included. Soft dependencies are optional and you may choose which to include.'
   },
   submissionCommentFieldError: {
     id: 'publishDialog.submissionCommentFieldError',
@@ -74,7 +70,7 @@ const deleteDialogMessages = defineMessages({
 const usersAdminMessages = defineMessages({
   maxLengthError: {
     id: 'usersAdmin.maxLengthError',
-    defaultMessage: '{field} can\'t be longer than {size} characters'
+    defaultMessage: "{field} can't be longer than {size} characters"
   },
   userName: {
     id: 'usersAdmin.userName',
@@ -165,14 +161,14 @@ export const passwordRequirementMessages = defineMessages({
   },
   passwordConfirmationMismatch: {
     id: 'passwordRequirement.passwordConfirmationMismatch',
-    defaultMessage: 'Passwords don\'t match'
+    defaultMessage: "Passwords don't match"
   }
 });
 
 const groupsAdminMessages = defineMessages({
   maxLengthError: {
     id: 'groupsAdmin.maxLengthError',
-    defaultMessage: '{field} can\'t be longer than {size} characters'
+    defaultMessage: "{field} can't be longer than {size} characters"
   },
   displayName: {
     id: 'groupsAdmin.displayName',
@@ -246,7 +242,7 @@ const numericInputControlMessages = defineMessages({
   },
   noDecimalsErrMessage: {
     id: 'numericInputControl.noDecimalsErrMessage',
-    defaultMessage: 'Decimals aren\'t allowed on this input.'
+    defaultMessage: "Decimals aren't allowed on this input."
   }
 });
 
@@ -293,7 +289,8 @@ const contentTypesMessages = defineMessages({
   },
   contenTypeWarningMessage: {
     id: 'contentType.contenTypeWarningMessage',
-    defaultMessage: 'Please note Child Content datasource is being phased out of Crafter CMS. For components that need to be shared across pages or components, please use Shared Content instead. For components that belong exclusively to this content object, please use Embedded Content.'
+    defaultMessage:
+      'Please note Child Content datasource is being phased out of Crafter CMS. For components that need to be shared across pages or components, please use Shared Content instead. For components that belong exclusively to this content object, please use Embedded Content.'
   },
   useSharedContent: {
     id: 'contentType.useSharedContent',
@@ -313,7 +310,8 @@ const contentTypesMessages = defineMessages({
   },
   fileNameErrorMessage: {
     id: 'contentType.fileNameErrorMessage',
-    defaultMessage: 'Content types require a file name. Please add either a "File Name" or "Auto Filename" control to this content type definition.'
+    defaultMessage:
+      'Content types require a file name. Please add either a "File Name" or "Auto Filename" control to this content type definition.'
   },
   internalNameErrorMessage: {
     id: 'contentType.internalNameErrorMessage',
@@ -329,7 +327,8 @@ const contentTypesMessages = defineMessages({
   },
   noTemplateAssoc: {
     id: 'contentType.noTemplateAssoc',
-    defaultMessage: 'There is no template associated with this content type. Click Save to proceed with save operation or Continue to update the content type (under Basic Content Type Properties) with a template.'
+    defaultMessage:
+      'There is no template associated with this content type. Click Save to proceed with save operation or Continue to update the content type (under Basic Content Type Properties) with a template.'
   },
   continueEditing: {
     id: 'contentType.continueEditing',
@@ -557,7 +556,8 @@ const codeEditorMessages = defineMessages({
   },
   localesHelperText: {
     id: 'codeEditor.localesHelperText',
-    defaultMessage: 'Select the locale for which to create/edit a template. Locales, like \'en\' will cover sub-locales like \'en_us\' or \'en_uk\'.'
+    defaultMessage:
+      "Select the locale for which to create/edit a template. Locales, like 'en' will cover sub-locales like 'en_us' or 'en_uk'."
   },
   localesConfirmTitle: {
     id: 'codeEditor.localesConfirmTitle',
@@ -565,7 +565,8 @@ const codeEditorMessages = defineMessages({
   },
   localesConfirmBody: {
     id: 'codeEditor.localesConfirmBody',
-    defaultMessage: 'The template for the locale you selected does not exist. Do you want to create it now?'
+    defaultMessage:
+      'The template for the locale you selected does not exist. Do you want to create it now?'
   },
   localesSnackBarTitle: {
     id: 'codeEditor.localesSnackBarTitle',
@@ -648,8 +649,7 @@ const publishingMessages = defineMessages({
   queued: {
     id: 'publishing.queued',
     defaultMessage: 'Queued'
-  },
-
+  }
 });
 
 const browseCMISMessages = defineMessages({
@@ -700,35 +700,43 @@ const formEngineMessages = defineMessages({
 const dragAndDropMessages = defineMessages({
   componentNotWelcomeWithinDropZone: {
     id: 'dragAndDropMessages.componentNotWelcomeWithinDropZone',
-    defaultMessage: 'The drop zone does not support this type of component. Check your content model.'
+    defaultMessage:
+      'The drop zone does not support this type of component. Check your content model.'
   },
   embeddedComponentsDndNotSupported: {
     id: 'dragAndDropMessages.embeddedComponentsDndNotSupported',
-    defaultMessage: 'Drag and drop on embedded components it\'s not supported yet. Please use the forms to edit content.'
+    defaultMessage:
+      "Drag and drop on embedded components it's not supported yet. Please use the forms to edit content."
   },
   embeddedComponentsDragWithinParentOnly: {
     id: 'dragAndDropMessages.embeddedComponentsDragWithinParentOnly',
-    defaultMessage: 'On this release, embedded components may only be dragged within their current parent. Please use the forms to edit content.'
+    defaultMessage:
+      'On this release, embedded components may only be dragged within their current parent. Please use the forms to edit content.'
   },
   moveOutEmbeddedComponentsNotSupported: {
     id: 'dragAndDropMessages.moveOutEmbeddedComponentsNotSupported',
-    defaultMessage: 'Moving components out of an embedded drop zone component is not supported yet. Please use the forms to edit content.'
+    defaultMessage:
+      'Moving components out of an embedded drop zone component is not supported yet. Please use the forms to edit content.'
   },
   embeddedComponentsDeleteChildNotSupported: {
     id: 'dragAndDropMessages.embeddedComponentsDeleteChildNotSupported',
-    defaultMessage: 'Deleting components from an embedded drop zone component is not supported yet. Please use the forms to edit content.'
+    defaultMessage:
+      'Deleting components from an embedded drop zone component is not supported yet. Please use the forms to edit content.'
   },
   contentTypeNotFound: {
     id: 'dragAndDropMessages.contentTypeNotFound',
-    defaultMessage: 'The content type id was not found in your template. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
+    defaultMessage:
+      'The content type id was not found in your template. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   },
   pathNotFound: {
     id: 'dragAndDropMessages.pathNotFound',
-    defaultMessage: 'Path is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
+    defaultMessage:
+      'Path is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   },
   objectIdNotFound: {
     id: 'dragAndDropMessages.objectIdNotFound',
-    defaultMessage: 'Object id is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
+    defaultMessage:
+      'Object id is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   }
 });
 
@@ -826,7 +834,7 @@ const globalMenuMessages = defineMessages({
     id: 'GlobalMenu.Settings',
     defaultMessage: 'Account Management'
   },
-  'login': {
+  login: {
     id: 'GlobalMenu.Login',
     defaultMessage: 'Login'
   },
@@ -847,11 +855,13 @@ const adminConfigurationMessages = defineMessages({
   },
   noEncryptItems: {
     id: 'adminConfigurations.noEncryptItems',
-    defaultMessage: 'No items to encrypt were found in XML markup. Add attribute `encrypted=""` to mark for encryption.'
+    defaultMessage:
+      'No items to encrypt were found in XML markup. Add attribute `encrypted=""` to mark for encryption.'
   },
   allEncrypted: {
     id: 'adminConfigurations.allEncrypted',
-    defaultMessage: 'All marked items are already encrypted. The `encrypted` attribute should have a blank value to be marked for encryption (e.g. `encrypted=""`)'
+    defaultMessage:
+      'All marked items are already encrypted. The `encrypted` attribute should have a blank value to be marked for encryption (e.g. `encrypted=""`)'
   },
   xmlContainsErrors: {
     id: 'adminConfigurations.xmlContainsErrors',
@@ -863,16 +873,19 @@ const adminConfigurationMessages = defineMessages({
   },
   pendingEncryptions: {
     id: 'adminConfigurations.pendingEncryptions',
-    defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t}' +
-      'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
+    defaultMessage:
+      "{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn't}" +
+      "other {Tag names: \n {tags}\nare marked for encryption but haven't}} been encrypted, please trigger encryption or remove the tag flagging."
   },
   encryptHintPt1: {
     id: 'adminConfigurations.encryptHinPt1',
-    defaultMessage: 'To encrypt the content of a tag, (1) mark the desired tags for encryption, then (2) click on the "Encrypt Marked" button.'
+    defaultMessage:
+      'To encrypt the content of a tag, (1) mark the desired tags for encryption, then (2) click on the "Encrypt Marked" button.'
   },
   encryptHintPt2: {
     id: 'adminConfigurations.encryptHinPt2',
-    defaultMessage: '(1) Mark your tags for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
+    defaultMessage:
+      '(1) Mark your tags for encryption by adding the attribute <bold>`encrypted=""`</bold>. '
   },
   encryptHintPt3: {
     id: 'adminConfigurations.encryptHinPt3',
@@ -880,12 +893,14 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHintPt4: {
     id: 'adminConfigurations.encryptHinPt4',
-    defaultMessage: '(2) Click on the <bold>`Encrypt Marked`</bold> button. Once the process completes, your tag should now look like:'
+    defaultMessage:
+      '(2) Click on the <bold>`Encrypt Marked`</bold> button. Once the process completes, your tag should now look like:'
   },
   encryptHintPt5: {
     id: 'adminConfigurations.encryptHinPt5',
     // eslint-disable-next-line no-template-curly-in-string
-    defaultMessage: '{lt}accessKey encrypted="true"{gt}${lc}enc:xeJW23SomeEncryptedValuesListedHere{rc}{lt}/accessKey{gt}'
+    defaultMessage:
+      '{lt}accessKey encrypted="true"{gt}${lc}enc:xeJW23SomeEncryptedValuesListedHere{rc}{lt}/accessKey{gt}'
   },
   encryptHintPt6: {
     id: 'adminConfigurations.encryptHinPt6',
@@ -893,11 +908,13 @@ const adminConfigurationMessages = defineMessages({
   },
   encryptHintPt7: {
     id: 'adminConfigurations.encryptHinPt7',
-    defaultMessage: 'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).'
+    defaultMessage:
+      'Use the `encrypted=””` attribute only on tags which directly hold the value to be encrypted (text).'
   },
   encryptHintPt8: {
     id: 'adminConfigurations.encryptHinPt8',
-    defaultMessage: 'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML.'
+    defaultMessage:
+      'Don’t add the attribute on tags that contain other tags - unless you actually want to encrypt a chunk of XML.'
   },
   encryptHintPt9: {
     id: 'adminConfigurations.encryptHinPt9',
@@ -954,14 +971,16 @@ const rteControlMessages = defineMessages({
   },
   incompatibleDatasource: {
     id: 'rteControlMessages.incompatibleDatasource',
-    defaultMessage: 'The data source configured for browse is not compatible with the Rich Text Editor. Please contact your administrator.'
+    defaultMessage:
+      'The data source configured for browse is not compatible with the Rich Text Editor. Please contact your administrator.'
   }
 });
 
 const ossAttribution = defineMessages({
   attribution: {
     id: 'aboutView.attribution',
-    defaultMessage: 'Crafter CMS is made possible by these other <a>open source software projects</a>.'
+    defaultMessage:
+      'Crafter CMS is made possible by these other <a>open source software projects</a>.'
   }
 });
 
@@ -979,14 +998,16 @@ const bulkUploadConfirmDialogMessages = defineMessages({
   },
   description: {
     id: 'bulkUploadConfirmDialogMessages.description',
-    defaultMessage: 'There is still a bulk upload in progress. Only one bulk upload can be executed at the same time.'
+    defaultMessage:
+      'There is still a bulk upload in progress. Only one bulk upload can be executed at the same time.'
   }
 });
 
 const embeddedLegacyFormMessages = defineMessages({
   contentFormFailedToLoadErrorMessage: {
     id: 'embeddedLegacyFormMessages.openContentFormFailedError',
-    defaultMessage: 'An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.'
+    defaultMessage:
+      'An error occurred opening the content form. Please try again momentarily. Contact the administrator if the error persists.'
   }
 });
 
