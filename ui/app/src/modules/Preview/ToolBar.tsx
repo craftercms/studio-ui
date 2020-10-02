@@ -266,6 +266,7 @@ export function AddressBar(props: AddressBarProps) {
         anchorEl={anchorEl}
         onClose={handleClose}
         path={path}
+        loaderItems={13}
       />
     </>
   );

@@ -551,7 +551,7 @@ function Search(props: SearchProps) {
         return (
           <IFrame
             url={getPreviewURLFromPath(previewAppBaseUri, preview.url)}
-            name={preview.name}
+            title={preview.name}
             width={960}
             height={600}
           />);

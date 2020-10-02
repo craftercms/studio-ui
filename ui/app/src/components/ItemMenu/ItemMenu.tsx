@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense } from 'react';
+import React, { Fragment, Suspense, useState } from 'react';
 import { ContextMenuItems, SectionItem } from '../ContextMenu';
 import { Resource } from '../../models/Resource';
 import { DetailedItem, LegacyItem } from '../../models/Item';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, useLogicResource, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, useLogicResource, useSelection } from '../../utils/hooks';
 import { generateMenuOptions } from './utils';
 import Menu from '@material-ui/core/Menu';
-import { PopoverOrigin, Typography } from '@material-ui/core';
+import { PopoverOrigin } from '@material-ui/core';
 import {
   closeConfirmDialog,
   closeCopyDialog,
@@ -48,7 +48,7 @@ import {
 } from '../../state/actions/dialogs';
 import { copy, cut, fetchWorkflowAffectedItems, getPages, paste } from '../../services/content';
 import { useDispatch } from 'react-redux';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import {
   assetDuplicate,
@@ -62,10 +62,11 @@ import StandardAction from '../../models/StandardAction';
 import { withoutIndex } from '../../utils/path';
 import { setClipBoard, unSetClipBoard, updateDetailedItem } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
 import { translations } from './translations';
+import ContentLoader from 'react-content-loader';
+import { rand } from '../Navigation/PathNavigator/utils';
 
 interface ItemMenuProps {
   path: string;
@@ -73,6 +74,7 @@ interface ItemMenuProps {
   anchorEl: Element;
   classes?: Partial<Record<'paper' | 'itemRoot' | 'menuList' | 'helperText', string>>;
   anchorOrigin?: PopoverOrigin;
+  loaderItems?: number;
   onClose(): void;
   onItemMenuActionSuccessCreator?(args: object): StandardAction;
 }
@@ -87,17 +89,13 @@ interface ItemMenuUIProps {
 const useStyles = makeStyles(() =>
   createStyles({
     loadingWrapper: {
-      display: 'flex',
-      padding: '0px 10px',
-      alignItems: 'center',
-      '& > p': {
-        marginLeft: '10px'
-      }
+      width: '135px',
+      padding: '0px 15px'
     }
   }));
 
 export function ItemMenu(props: ItemMenuProps) {
-  const { path, onClose, onItemMenuActionSuccessCreator } = props;
+  const { path, onClose, onItemMenuActionSuccessCreator, loaderItems = 8 } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
   const permissions = useSelection((state) => state.content.permissions);
@@ -105,8 +103,8 @@ export function ItemMenu(props: ItemMenuProps) {
   const hasClipboard = useSelection((state) => state.content.clipboard);
   const item = items.byId?.[path];
   const itemPermissions = permissions?.[path];
-  const authoringBase = useSelection<string>(state => state.env.authoringBase);
-  const defaultSrc = `${authoringBase}/legacy/form?`;
+  const { authoringBase } = useEnv();
+  const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -131,13 +129,13 @@ export function ItemMenu(props: ItemMenuProps) {
     switch (option.id) {
       case 'view': {
         const path = item.path;
-        const src = `${defaultSrc}site=${site}&path=${path}&type=form&readonly=true`;
+        const src = `${legacyFormSrc}site=${site}&path=${path}&type=form&readonly=true`;
         dispatch(showEditDialog({ src }));
         break;
       }
       case 'edit': {
         const path = item.path;
-        const src = `${defaultSrc}site=${site}&path=${path}&type=form`;
+        const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
         // TODO: open a embedded neeeds the following:
         //src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 
@@ -361,7 +359,7 @@ export function ItemMenu(props: ItemMenuProps) {
       }
       case 'editController': {
         const path = `/scripts/pages/${popPiece(item.contentTypeId, '/')}.groovy`;
-        let src = `${defaultSrc}site=${site}&path=${path}&type=controller`;
+        let src = `${legacyFormSrc}site=${site}&path=${path}&type=controller`;
 
         fetchWorkflowAffectedItems(site, path).subscribe(
           (items) => {
@@ -402,12 +400,12 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'codeEditor': {
-        let src = `${defaultSrc}site=${site}&path=${item.path}&type=asset`;
+        let src = `${legacyFormSrc}site=${site}&path=${item.path}&type=asset`;
         dispatch(showCodeEditorDialog({ src }));
         break;
       }
       case 'viewCodeEditor': {
-        let src = `${defaultSrc}site=${site}&path=${item.path}&type=asset&readonly=true`;
+        let src = `${legacyFormSrc}site=${site}&path=${item.path}&type=asset&readonly=true`;
         dispatch(showCodeEditorDialog({ src }));
         break;
       }
@@ -437,10 +435,7 @@ export function ItemMenu(props: ItemMenuProps) {
       <Suspense
         fallback={
           <div className={classes.loadingWrapper}>
-            <CircularProgress size={16} />
-            <Typography variant="body2">
-              <FormattedMessage id="words.loading" defaultMessage="Loading" />
-            </Typography>
+            <Loader loaderItems={loaderItems} />
           </div>
         }
       >
@@ -463,6 +458,32 @@ function ItemMenuUI(props: ItemMenuUIProps) {
 
   return (
     <ContextMenuItems classes={classes} sections={options} onMenuItemClicked={onMenuItemClicked} />
+  );
+}
+
+function Loader(props) {
+  const [items] = useState(() => {
+    const numOfItems = props.loaderItems;
+    const start = 20;
+    return new Array(numOfItems).fill(null).map((_, i) => ({
+      y: start + 32 * i,
+      width: rand(85, 100)
+    }));
+  });
+  return (
+    <ContentLoader
+      speed={2}
+      width="100%"
+      height={`${props.loaderItems * 32}`}
+      backgroundColor="#f3f3f3"
+      foregroundColor="#ecebeb"
+    >
+      {items.map(({ y, width }, i) => (
+        <Fragment key={i}>
+          <rect x="0" y={y - 5} rx="5" ry="5" width={`${width}%`} height="10" />
+        </Fragment>
+      ))}
+    </ContentLoader>
   );
 }
 

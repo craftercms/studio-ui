@@ -48,6 +48,7 @@ import { CreateFolderStateProps } from '../components/Dialogs/CreateFolderDialog
 import { CopyItemsDialogStateProps } from '../components/Dialogs/CopyItemsDialog';
 import { CreateFileStateProps } from '../components/Dialogs/CreateFileDialog';
 import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
+import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -154,6 +155,7 @@ export interface GlobalState {
     createFile: CreateFileStateProps;
     copy: CopyItemsDialogStateProps;
     upload: BulkUploadStateProps;
+    preview: PreviewDialogStateProps;
   };
   translation: {
     siteLocales: {

@@ -32,6 +32,7 @@ import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormD
 import { CreateFolderStateProps } from '../../components/Dialogs/CreateFolderDialog';
 import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
 import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog';
+import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -135,4 +136,10 @@ export const copyDialogClosed = createAction('COPY_DIALOG_CLOSED');
 export const showUploadDialog = createAction<Partial<BulkUploadStateProps>>('SHOW_UPLOAD_DIALOG');
 export const closeUploadDialog = createAction<StandardAction>('CLOSE_UPLOAD_DIALOG');
 export const uploadDialogClosed = createAction('UPLOAD_DIALOG_CLOSED');
+// endregion
+
+// region Preview Dialog
+export const showPreviewDialog = createAction<Partial<PreviewDialogStateProps>>('SHOW_PREVIEW_DIALOG');
+export const closePreviewDialog = createAction<StandardAction>('CLOSE_PREVIEW_DIALOG');
+export const previewDialogClosed = createAction('PREVIEW_DIALOG_CLOSED');
 // endregion

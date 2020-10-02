@@ -84,6 +84,9 @@ function getLegacyItemSystemType(item: LegacyItem) {
     case item.contentType === 'script': {
       return 'script';
     }
+    case item.contentType === 'folder': {
+      return 'folder';
+    }
     case item.asset: {
       return 'asset';
     }
@@ -115,7 +118,7 @@ export function parseLegacyItemToBaseItem(item: LegacyItem): BaseItem {
     // Assuming folders aren't navigable
     previewUrl: item.uri?.includes('index.xml') ? (item.browserUri || '/') : null,
     systemType: getLegacyItemSystemType(item),
-    mimeType: null,
+    mimeType: item.mimeType,
     state: null,
     stateMap: getStateMapFromLegacyItem(item),
     lockOwner: null,

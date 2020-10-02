@@ -53,9 +53,9 @@ import {
 import { getStoredPreviewChoice } from '../../../utils/state';
 import { ItemMenu } from '../../ItemMenu/ItemMenu';
 import { fetchDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
-
-const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
-const createRand = () => rand(70, 85);
+import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
+import { getContent } from '../../../services/content';
+import { getLoaderItems, rand } from './utils';
 
 const MyLoader = React.memo(function () {
   const [items] = useState(() => {
@@ -63,7 +63,7 @@ const MyLoader = React.memo(function () {
     const start = 20;
     return new Array(numOfItems).fill(null).map((_, i) => ({
       y: start + 30 * i,
-      width: createRand()
+      width: rand(70, 85)
     }));
   });
   return (
@@ -103,6 +103,7 @@ interface Menu {
   path?: string;
   sections: SectionItem[][];
   anchorEl: Element;
+  loaderItems?: number;
   emptyState?: {
     icon?: ElementType;
     message: string;
@@ -135,6 +136,7 @@ export default function (props: WidgetProps) {
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
+  const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [simpleMenu, setSimpleMenu] = useState<Menu>({
@@ -146,7 +148,8 @@ export default function (props: WidgetProps) {
   const [itemMenu, setItemMenu] = useSpreadState<Menu>({
     path,
     sections: [],
-    anchorEl: null
+    anchorEl: null,
+    loaderItems: null
   });
 
   const siteLocales = useSiteLocales();
@@ -174,6 +177,38 @@ export default function (props: WidgetProps) {
     );
   };
 
+  const onPreview = (item: DetailedItem) => {
+    if (item.systemType === 'component' || item.systemType === 'taxonomy') {
+      const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form&readonly=true`;
+      dispatch(showEditDialog({ src }));
+    } else {
+      getContent(site, item.path).subscribe(
+        (content) => {
+          let mode = 'txt';
+
+          if (item.systemType === 'template') {
+            mode = 'ftl';
+          } else if (item.systemType === 'script') {
+            mode = 'java';
+          } else if (item.mimeType === 'application/javascript') {
+            mode = 'js';
+          } else if (item.mimeType === 'text/css') {
+            mode = 'css';
+          }
+
+          dispatch(showPreviewDialog({
+            type: item.mimeType.startsWith('image/') ? 'image' : 'editor',
+            title: item.label,
+            url: item.path,
+            mode,
+            content
+          }));
+        }
+      );
+    }
+
+  };
+
   const onPageChanged = (page: number) => void 0;
 
   const onSelectItem = (item: DetailedItem, checked: boolean) => {
@@ -196,7 +231,8 @@ export default function (props: WidgetProps) {
     dispatch(fetchUserPermissions({ path }));
     setItemMenu({
       path,
-      anchorEl: element
+      anchorEl: element,
+      loaderItems: getLoaderItems(state.items[state.currentPath])
     });
   };
 
@@ -205,7 +241,8 @@ export default function (props: WidgetProps) {
     dispatch(fetchUserPermissions({ path: item.path }));
     setItemMenu({
       path: item.path,
-      anchorEl: element
+      anchorEl: element,
+      loaderItems: getLoaderItems(item)
     });
   };
 
@@ -311,6 +348,7 @@ export default function (props: WidgetProps) {
             resource={itemsResource}
             onSelectItem={onSelectItem}
             onPathSelected={onPathSelected}
+            onPreview={onPreview}
             onOpenItemMenu={onOpenItemMenu}
             onItemClicked={onItemClicked}
           />
@@ -335,6 +373,7 @@ export default function (props: WidgetProps) {
       <ItemMenu
         path={itemMenu.path}
         open={Boolean(itemMenu.anchorEl)}
+        loaderItems={itemMenu.loaderItems}
         anchorEl={itemMenu.anchorEl}
         onClose={onCloseItemMenu}
         onItemMenuActionSuccessCreator={onItemMenuActionSuccessCreator}

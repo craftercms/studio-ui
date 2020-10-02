@@ -29,11 +29,6 @@ import { isPlainObject } from '../../utils/object';
 import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
 import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
 import RejectDialog from '../Dialogs/RejectDialog';
-import LegacyCodeEditorDialog from '../Dialogs/LegacyCodeEditorDialog';
-import CreateFolderDialog from '../Dialogs/CreateFolderDialog';
-import CopyItemsDialog from '../Dialogs/CopyItemsDialog';
-import CreateFileDialog from '../Dialogs/CreateFileDialog';
-import BulkUploadDialog from '../Dialogs/BulkUploadDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
@@ -46,6 +41,12 @@ const DependenciesDialog = lazy(() =>
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
+const LegacyCodeEditorDialog = lazy(() => import( '../Dialogs/LegacyCodeEditorDialog'));
+const CreateFolderDialog = lazy(() => import( '../Dialogs/CreateFolderDialog'));
+const CopyItemsDialog = lazy(() => import( '../Dialogs/CopyItemsDialog'));
+const CreateFileDialog = lazy(() => import( '../Dialogs/CreateFileDialog'));
+const BulkUploadDialog = lazy(() => import( '../Dialogs/BulkUploadDialog'));
+const PreviewDialog = lazy(() => import( '../Dialogs/PreviewDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -328,6 +329,19 @@ function GlobalDialogManager() {
         maxSimultaneousUploads={state.upload.maxSimultaneousUploads}
         onClose={createCallback(state.upload.onClose, dispatch)}
         onClosed={createCallback(state.upload.onClosed, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Bulk Upload*/}
+      <PreviewDialog
+        open={state.preview.open}
+        url={state.preview.url}
+        type={state.preview.type}
+        mode={state.preview.mode}
+        title={state.preview.title}
+        content={state.preview.content}
+        onClose={createCallback(state.preview.onClose, dispatch)}
+        onClosed={createCallback(state.preview.onClosed, dispatch)}
       />
       {/* endregion */}
     </Suspense>

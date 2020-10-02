@@ -28,6 +28,7 @@ interface NavProps {
   onItemClicked(item: DetailedItem): void;
   onSelectItem?(item: DetailedItem, unselect: boolean): void;
   onPathSelected(item: DetailedItem): void;
+  onPreview?(item: DetailedItem): void;
   onOpenItemMenu?(element: Element, item: DetailedItem): void;
 }
 
@@ -36,6 +37,7 @@ export default function (props: NavProps) {
   const {
     resource,
     onPathSelected,
+    onPreview,
     locale,
     isSelectMode,
     onSelectItem,
@@ -53,6 +55,7 @@ export default function (props: NavProps) {
           isLeaf={leafs.includes(item.id)}
           locale={locale}
           onChangeParent={onPathSelected}
+          onPreview={onPreview}
           isSelectMode={isSelectMode}
           onItemChecked={onSelectItem}
           onOpenItemMenu={onOpenItemMenu}

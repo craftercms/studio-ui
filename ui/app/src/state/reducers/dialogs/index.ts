@@ -33,6 +33,7 @@ import createFolder from './createFolder';
 import createFile from './createFile';
 import copy from './copy';
 import upload from './upload';
+import preview from './preview';
 
 export default combineReducers({
   confirm,
@@ -52,5 +53,6 @@ export default combineReducers({
   createFolder,
   createFile,
   copy,
-  upload
+  upload,
+  preview
 });

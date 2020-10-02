@@ -114,7 +114,7 @@ export default [
            },
            state
          ]) => {
-          if (response.length > 0) {
+          if (response?.length > 0) {
             localStorage.setItem(
               `craftercms.pathNavigator.${state.sites.active}.${id}`,
               JSON.stringify({

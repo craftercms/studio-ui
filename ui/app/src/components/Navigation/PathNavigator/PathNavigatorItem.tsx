@@ -21,14 +21,15 @@ import ListItem from '@material-ui/core/ListItem';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
 import LeafIcon from '@material-ui/icons/EcoRounded';
-import PageIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import FolderIcon from '@material-ui/icons/FolderOpenRounded';
 import Typography from '@material-ui/core/Typography';
 import FlagRoundedIcon from '@material-ui/icons/FlagRounded';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
-import { isNavigable } from './utils';
+import { isFolder, isNavigable, isPreviewable } from './utils';
+import Component from '../../Icons/Component';
+import Page from '../../Icons/Page';
 
 interface NavItemProps {
   item: DetailedItem;
@@ -37,6 +38,7 @@ interface NavItemProps {
   isSelectMode?: boolean;
   onItemClicked?(item: DetailedItem, event: React.MouseEvent): void;
   onChangeParent?(item: DetailedItem): void;
+  onPreview?(item: DetailedItem): void;
   onItemChecked?(item: DetailedItem, unselect: boolean): void;
   onOpenItemMenu?(element: Element, item: DetailedItem): void;
 }
@@ -48,6 +50,7 @@ export default function (props: NavItemProps) {
     item,
     onItemClicked,
     onChangeParent,
+    onPreview,
     locale,
     isSelectMode,
     onItemChecked,
@@ -59,13 +62,16 @@ export default function (props: NavItemProps) {
   const onMouseLeave = isSelectMode ? null : () => setOver(false);
   const onClick = (e) => onItemClicked?.(item, e);
   const navigable = isNavigable(item);
+  const previewable = isPreviewable(item);
+  const folder = isFolder(item);
+
   return (
     <ListItem
       button={!isSelectMode as true}
       className={clsx(classes.navItem, isSelectMode && 'noLeftPadding')}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
-      onClick={navigable ? onClick : () => onChangeParent?.(item)}
+      onClick={navigable ? onClick : folder ? () => onChangeParent?.(item) : previewable ? () => onPreview(item) : null}
     >
       {isSelectMode ? (
         <Checkbox
@@ -81,10 +87,10 @@ export default function (props: NavItemProps) {
         isLeaf ? (
           <LeafIcon className={classes.typeIcon} />
         ) : (
-          <PageIcon className={classes.typeIcon} />
+          <Page className={classes.typeIcon} />
         )
       ) : (
-        <FolderIcon className={classes.typeIcon} />
+        <RenderIcon classes={{ iconClass: classes.typeIcon }} item={item} />
       )}
       <Typography
         variant="body2"
@@ -118,12 +124,33 @@ export default function (props: NavItemProps) {
           className={classes.itemIconButton}
           onClick={(event) => {
             event.stopPropagation();
-            onChangeParent(item);
+            if (navigable || folder) {
+              onChangeParent?.(item);
+            } else if (previewable) {
+              onPreview(item);
+            }
           }}
         >
           <ChevronRightRoundedIcon className={classes.icon} />
         </IconButton>
       </div>
     </ListItem>
+  );
+}
+
+function RenderIcon(props) {
+  let Icon = Page;
+  switch (props.item.systemType) {
+    case 'folder': {
+      Icon = FolderIcon;
+      break;
+    }
+    case 'component':
+    case 'taxonomy': {
+      Icon = Component;
+    }
+  }
+  return (
+    <Icon className={props.classes.iconClass} />
   );
 }
