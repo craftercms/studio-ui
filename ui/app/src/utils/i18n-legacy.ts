@@ -1063,17 +1063,14 @@ const localeSelectorControlMessages = defineMessages({
   }
 });
 
-const clusterAdminMessages = defineMessages({
+const adminDashboardMessages = defineMessages({
   clusterDeleted: {
-    id: 'clusterAdminMessages.clusterDeleted',
+    id: 'clusterAdmin.clusterDeleted',
     defaultMessage: '{cluster} deleted.'
-  }
-});
-
-const sitesViewMessages = defineMessages({
-  siteEdited: {
-    id: 'globalMenu.siteEdited',
-    defaultMessage: 'Site Edited.'
+  },
+  siteUpdated: {
+    id: 'sitesAdmin.siteUpdated',
+    defaultMessage: 'Site Updated.'
   }
 });
 
@@ -1385,6 +1382,5 @@ export default {
   wcmRootFolder,
   localeSelectorControlMessages,
   languages,
-  clusterAdminMessages,
-  sitesViewMessages
+  adminDashboardMessages
 };

@@ -26,7 +26,7 @@
     usersAdminMessages = i18n.messages.usersAdminMessages,
     groupsAdminMessages = i18n.messages.groupsAdminMessages,
     publishingMessages = i18n.messages.publishingMessages,
-    clusterAdminMessages = i18n.messages.clusterAdminMessages,
+    adminDashboardMessages = i18n.messages.adminDashboardMessages,
     words = i18n.messages.words;
 
   app.service('adminService', [
@@ -1615,7 +1615,7 @@
               if (index !== -1) {
                 $scope.membersCollection.splice(index, 1);
               }
-              $rootScope.showNotification(formatMessage(clusterAdminMessages.clusterDeleted, { cluster: clusterMember.gitUrl }));
+              $rootScope.showNotification(formatMessage(adminDashboardMessages.clusterDeleted, { cluster: clusterMember.gitUrl }));
             })
             .error(function(data) {
               $scope.error = data.response.message;

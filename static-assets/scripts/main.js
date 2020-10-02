@@ -39,7 +39,7 @@
     words = i18n.messages.words,
     profileSettingsMessages = i18n.messages.profileSettingsMessages,
     globalMenuMessages = i18n.messages.globalMenuMessages,
-    sitesViewMessages = i18n.messages.sitesViewMessages;
+    adminDashboardMessages = i18n.messages.adminDashboardMessages;
 
   app.run([
     '$rootScope',
@@ -619,7 +619,7 @@
           }
         });
         CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
-          $rootScope.showNotification(formatMessage(sitesViewMessages.siteEdited));
+          $rootScope.showNotification(formatMessage(adminDashboardMessages.siteUpdated));
           onEditSuccess(response);
         });
 
