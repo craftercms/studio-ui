@@ -14,20 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { PropsWithChildren, useMemo, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogHeader from '../../../../components/Dialogs/DialogHeader';
 import DialogBody from '../../../../components/Dialogs/DialogBody';
 import DialogFooter from '../../../../components/Dialogs/DialogFooter';
 import { FormattedMessage } from 'react-intl';
 import StandardAction from '../../../../models/StandardAction';
-import { useLogicResource, useSpreadState, useUnmount } from '../../../../utils/hooks';
+import { useLogicResource, useUnmount } from '../../../../utils/hooks';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { Site } from '../../../../models/Site';
 import { SuspenseWithEmptyState } from '../../../../components/SystemStatus/Suspencified';
 import { updateSite } from '../../../../services/sites';
+import { Resource } from '../../../../models/Resource';
 
 type Source = { site: Site; error: Error };
 type Return = Omit<Source, 'error'>;
@@ -37,6 +38,13 @@ interface EditSiteDialogUIProps {
   siteDescription: string;
   onSiteNameChange: Function;
   onSiteDescriptionChange: Function;
+  submitting: boolean;
+  onSubmit: Function;
+  onClose?(response?: any): any;
+}
+
+interface EditSiteDialogUIContainerProps {
+  resource: Resource<Pick<Source, "site">>;
   submitting: boolean;
   onSubmit: Function;
   onClose?(response?: any): any;
@@ -59,6 +67,93 @@ export interface EditSiteDialogStateProps extends EditSiteDialogBaseProps {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onDismiss?: StandardAction;
+}
+
+function EditSiteDialog(props: EditSiteDialogProps) {
+  const {
+    site,
+    open,
+    onClosed,
+    onClose,
+    onSaveSuccess
+  } = props;
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  useUnmount(onClosed);
+
+  const dialogResource = useMemo(() => ({
+    site,
+    error
+  }), [site, error]);
+
+  const resource = useLogicResource<Return, Source>(dialogResource, {
+    shouldResolve: (source) => Boolean(source.site),
+    shouldReject: (source) => Boolean(source.error),
+    shouldRenew: (source, resource) => resource.complete,
+    resultSelector: (source) => source,
+    errorSelector: (source) => source.error
+  });
+
+  const handleSubmit = (id: string, name: string, description: string) => {
+    setSubmitting( true );
+
+    updateSite({id, name, description}).subscribe(
+      (response) => {
+        setSubmitting( false );
+        onSaveSuccess?.(response);
+      },
+      (e) => {
+        setSubmitting( false );
+        setError(e);
+      }
+    )
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClosed}
+      aria-labelledby="editSiteDialogTitle"
+      fullWidth
+      maxWidth="sm"
+    >
+      <SuspenseWithEmptyState
+        resource={resource}
+      >
+        <EditSiteDialogUIContainer
+          resource={resource}
+          submitting={submitting}
+          onSubmit={handleSubmit}
+          onClose={onClose}
+        />
+      </SuspenseWithEmptyState>
+    </Dialog>
+  );
+}
+
+function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
+  const {
+    resource,
+    submitting,
+    onSubmit,
+    onClose
+  } = props;
+  const site = resource.read().site;
+  const [name, setName] = useState(site.name);
+  const [description, setDescription] = useState(site.description);
+
+  return (
+    <EditSiteDialogUI
+      siteName={name}
+      siteDescription={description}
+      onSiteNameChange={setName}
+      onSiteDescriptionChange={setDescription}
+      submitting={submitting}
+      onSubmit={ () => onSubmit(site.id, name, description) }
+      onClose={onClose}
+    />
+  )
 }
 
 function EditSiteDialogUI(props: EditSiteDialogUIProps) {
@@ -135,92 +230,6 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
         )}
       </DialogFooter>
     </>
-  );
-}
-
-function EditSiteDialog(props: EditSiteDialogProps) {
-  const {
-    site,
-    open,
-    onClosed,
-    onClose,
-    onSaveSuccess
-  } = props;
-  const [siteData, setSiteData] = useSpreadState({
-    id: '',
-    name: '',
-    description: ''
-  });
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-
-
-  useUnmount(onClosed);
-
-  const dialogResource = useMemo(() => ({
-    site,
-    error
-  }), [site, error]);
-
-  const resource = useLogicResource<Return, Source>(dialogResource, {
-    shouldResolve: (source) => Boolean(source.site),
-    shouldReject: (source) => Boolean(source.error),
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source,
-    errorSelector: (source) => source.error
-  });
-
-  useEffect(() => {
-    if (site) {
-      setSiteData(site);
-    }
-  }, [site, setSiteData]);
-
-  const onSiteNameChange = (name: string) => {
-    setSiteData({ name });
-  }
-
-  const onSiteDescriptionChange = (description: string) => {
-    setSiteData({ description });
-  }
-
-  const handleSubmit = () => {
-    setSubmitting( true );
-
-    updateSite(siteData).subscribe(
-      (response) => {
-        setSubmitting( false );
-        onSaveSuccess?.(response);
-      },
-      (e) => {
-        setSubmitting( false );
-        setError(e);
-      }
-    )
-  };
-
-  return (
-    <Dialog
-      open={open}
-      onClose={onClosed}
-      aria-labelledby="editSiteDialogTitle"
-      fullWidth
-      maxWidth="sm"
-    >
-      <SuspenseWithEmptyState
-        resource={resource}
-      >
-        <EditSiteDialogUI
-          siteName={siteData.name}
-          siteDescription={siteData.description}
-          onSiteNameChange={onSiteNameChange}
-          onSiteDescriptionChange={onSiteDescriptionChange}
-          submitting={submitting}
-          onSubmit={handleSubmit}
-          onClose={onClose}
-        />
-      </SuspenseWithEmptyState>
-    </Dialog>
   );
 }
 
