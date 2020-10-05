@@ -467,7 +467,13 @@ function Search(props: SearchProps) {
   }
 
   function handlePreviewAsset(url: string, type: string, name: string) {
-    if (type === 'Template' || type === 'Groovy') {
+    if (type === 'Image') {
+      dispatch(showPreviewDialog({
+        type: type === 'Image' ? 'image' : 'page',
+        title: name,
+        url
+      }));
+    } else {
       getContent(siteId, url).subscribe(
         (content) => {
           let mode = 'txt';
@@ -485,12 +491,6 @@ function Search(props: SearchProps) {
           }));
         }
       );
-    } else {
-      dispatch(showPreviewDialog({
-        type: type === 'Image' ? 'image' : 'page',
-        title: name,
-        url
-      }));
     }
   }
 

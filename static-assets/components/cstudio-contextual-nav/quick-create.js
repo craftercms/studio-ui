@@ -100,7 +100,9 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           }
         });
 
-        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, (response) => {
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, (response) => {
           if (response) {
             const page = CStudioAuthoring.Utils.getQueryParameterURL('page');
             const acnDraftContent = $('.acnDraftContent').get(0);
@@ -122,7 +124,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           cancelUnsubscribe();
         });
 
-        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, (response) => {
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, (response) => {
           unsubscribe();
         });
 
@@ -149,14 +151,16 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           }
         });
 
-        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, (response) => {
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, (response) => {
           if (response) {
             showEditDialog(response);
           }
           cancelUnsubscribe();
         });
 
-        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, () => {
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, () => {
           unsubscribe();
         });
       };

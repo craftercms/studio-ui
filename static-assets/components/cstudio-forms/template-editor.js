@@ -792,7 +792,9 @@ CStudioAuthoring.Module.requireModule(
                               }
                             });
 
-                            const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
+                            let unsubscribe, cancelUnsubscribe;
+
+                            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
                               $(headerEl).find('.fileName')[0].innerText = this.value ? `${baseName}_${this.value}.ftl` : `${baseName}.ftl`;
                               aceEditor.setValue('');
                               CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
@@ -807,7 +809,7 @@ CStudioAuthoring.Module.requireModule(
                               cancelUnsubscribe();
                             });
 
-                            const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
+                            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
                               $select.val($select.data('prev'));
                               unsubscribe();
                             });

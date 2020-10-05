@@ -3339,7 +3339,9 @@
               }
             });
 
-            const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+            let unsubscribe, cancelUnsubscribe;
+
+            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
               if (response) {
                 const data = response.output;
                 const acnDraftContent = YDom.getElementsByClassName(
@@ -3367,13 +3369,13 @@
               }
               cancelUnsubscribe();
             });
+
+            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, () => {
+              unsubscribe();
+            });
+
           }
         });
-
-        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, () => {
-          unsubscribe();
-        });
-
       },
       /**
        * Edits the label of the TextNode that was the target of the

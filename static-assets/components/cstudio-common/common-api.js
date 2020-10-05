@@ -740,7 +740,9 @@ var nodeOpen = false,
           }
         });
 
-        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           if (response) {
             eventNS.data = items;
             eventNS.typeAction = '';
@@ -751,7 +753,7 @@ var nodeOpen = false,
           }
         });
 
-        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
           unsubscribe();
         });
 
@@ -853,12 +855,14 @@ var nodeOpen = false,
           }
         });
 
-        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
           cancelUnsubscribe();
         });
 
-        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
           unsubscribe();
         });
       },
@@ -904,12 +908,14 @@ var nodeOpen = false,
           }
         });
 
-        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
           cancelUnsubscribe();
         });
 
-        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
           unsubscribe();
         });
       },
@@ -2594,12 +2600,14 @@ var nodeOpen = false,
           }
         });
 
-        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
           doEdit();
           cancelUnsubscribe();
         });
 
-        const cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
           unsubscribe();
         });
 
