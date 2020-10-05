@@ -3323,7 +3323,8 @@
             CrafterCMSNext.system.store.dispatch({
               type: 'SHOW_EDIT_DIALOG',
               payload: {
-                ...response.output,
+                inProgress: response.inProgress,
+                src: response.src,
                 onSaveSuccess: {
                   type: 'BATCH_ACTIONS',
                   payload: [
@@ -3345,7 +3346,6 @@
 
             unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
               if (response) {
-                const data = response.output;
                 const acnDraftContent = YDom.getElementsByClassName(
                   'acnDraftContent',
                   null,
@@ -3357,13 +3357,13 @@
                 eventYS.parent = oCurrentTextNode.data.path == '/site/website' ? null : false;
                 document.dispatchEvent(eventYS);
 
-                if (data.item.isPage) {
-                  CStudioAuthoring.Operations.refreshPreview(data.item);
+                if (response.item.isPage) {
+                  CStudioAuthoring.Operations.refreshPreview(response.item);
                   if (
-                    CStudioAuthoring.Utils.getQueryParameterURL('page') == data.redirectUrl &&
+                    CStudioAuthoring.Utils.getQueryParameterURL('page') == response.redirectUrl &&
                     acnDraftContent
                   ) {
-                    CStudioAuthoring.SelectedContent.setContent(data.item);
+                    CStudioAuthoring.SelectedContent.setContent(response.item);
                   }
                 } else {
                   CStudioAuthoring.Operations.refreshPreview();
@@ -3710,29 +3710,44 @@
           YConnect.asyncRequest('GET', getTreeItemReuest, cutCb);
         };
 
-        CStudioAuthoring.Operations.getWorkflowAffectedFiles(params, {
-          success: function(content) {
-            if (content && content.length) {
-              CStudioAuthoring.Operations._showDialogueView({
-                controller: 'viewcontroller-cancel-workflow',
-                fn: function(oAjaxCfg) {
-                  // because _showDialogueView was designed to load the body from a
-                  // webscript, must simulate the ajax process here
-                  oAjaxCfg.success({ responseText: '' });
+        const eventIdSuccess = 'workflowCancellationDialogContinue';
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+          payload: {
+            open: true,
+            items: null,
+            onContinue: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdSuccess }
                 },
-                callback: function() {
-                  var view = this;
-                  view.setContent(content);
-                  view.on('continue', function() {
-                    doCut();
-                  });
-                }
-              });
-            } else {
-              doCut();
+                { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
+              ]
             }
           }
         });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+          doCut();
+        });
+
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
+          (items) => {
+            if (items && items.length) {
+              const eventIdSuccess = 'workflowCancellationDialogContinue';
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                payload: { items }
+              });
+            } else {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+              });
+              doCut();
+            }
+          }
+        );
       },
       /**
        * paste content to selected location
