@@ -254,7 +254,10 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
   });
   const siteId = useActiveSiteId();
   // Dependency selection
-  const [deleteDependencies, setDeleteDependencies] = useState<DeleteDependencies>();
+  const [deleteDependencies, setDeleteDependencies] = useState<DeleteDependencies>({
+    childItems: [],
+    dependentItems: []
+  });
   const [selectedItems, setSelectedItems] = useState([]);
 
   const depsSource = useMemo(() => ({ deleteDependencies, apiState }), [
@@ -272,17 +275,19 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
   });
 
   useEffect(() => {
-    fetchDeleteDependencies(siteId, selectedItems).subscribe(
-      (response: any) => {
-        setDeleteDependencies({
-          childItems: response.items.childItems,
-          dependentItems: response.items.dependentItems
-        });
-      },
-      (error) => {
-        setApiState({ error });
-      }
-    );
+    if (selectedItems.length) {
+      fetchDeleteDependencies(siteId, selectedItems).subscribe(
+        (response: any) => {
+          setDeleteDependencies({
+            childItems: response.items.childItems,
+            dependentItems: response.items.dependentItems
+          });
+        },
+        (error) => {
+          setApiState({ error });
+        }
+      );
+    }
   }, [selectedItems, setApiState, siteId]);
 
   const handleSubmit = () => {
