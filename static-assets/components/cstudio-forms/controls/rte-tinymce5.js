@@ -754,7 +754,7 @@ CStudioAuthoring.Module.requireModule(
          * call this instead of calling editor.save()
          */
         save: function (a) {
-          this.updateModel(this.editor.getContent());
+          this.updateModel(CStudioForms.Util.escapeXml(this.editor.getContent()));
         }
       });
 
