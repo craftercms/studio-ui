@@ -3372,7 +3372,7 @@
               cancelUnsubscribe();
             });
 
-            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, () => {
+            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
               unsubscribe();
             });
 
@@ -3380,9 +3380,9 @@
           newContentCancelUnsubscribe();
         });
 
-        newContentCancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogTypeSelectedId, (response) => {
+        newContentCancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogCancel, (response) => {
           newContentUnsubscribe();
-        };
+        });
 
       },
       /**
