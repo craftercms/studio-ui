@@ -19,7 +19,6 @@ import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../../models/Item';
 import clsx from 'clsx';
-import { LookupTable } from '../../../models/LookupTable';
 import ContextMenu, { SectionItem } from '../../ContextMenu';
 import {
   useActiveSiteId,
@@ -118,8 +117,7 @@ export interface WidgetState {
   isSelectMode: boolean;
   hasClipboard: boolean;
   itemsInPath: string[];
-  items: LookupTable<DetailedItem>;
-  breadcrumb: DetailedItem[];
+  breadcrumb: string[];
   selectedItems: string[];
   leafs: string[];
   count: number; // Number of items in the current path
@@ -343,7 +341,7 @@ export default function (props: WidgetProps) {
         >
           <Breadcrumbs
             keyword={state?.keyword}
-            breadcrumb={state?.breadcrumb}
+            breadcrumb={state?.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
             onMenu={onCurrentParentMenu}
             onSearch={(keyword) => dispatch(pathNavigatorSetKeyword({ id, keyword }))}
             onCrumbSelected={onBreadcrumbSelected}

@@ -19,7 +19,7 @@ import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'r
 import { catchAjaxError } from '../../utils/ajax';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
-import { getParentsFromPath, withIndex, withoutIndex } from '../../utils/path';
+import { getParentsFromPath, withoutIndex } from '../../utils/path';
 import { forkJoin, NEVER, Observable } from 'rxjs';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import {
@@ -82,12 +82,7 @@ export default [
           const requests: Observable<GetChildrenResponse>[] = [];
           if (parentsPath.length) {
             parentsPath.forEach((parentPath) => {
-              if (
-                !state.pathNavigator[id].items[parentPath] &&
-                !state.pathNavigator[id].items[withIndex(parentPath)]
-              ) {
-                requests.push(getChildrenByPath(site, parentPath));
-              }
+              requests.push(getChildrenByPath(site, parentPath));
             });
             return forkJoin(requests).pipe(
               map((response) => pathNavigatorFetchParentItemsComplete({ id, response })),
