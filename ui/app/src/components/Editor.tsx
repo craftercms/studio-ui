@@ -54,6 +54,7 @@ export default function Editor(props: EditorProps) {
       });
       aceEditor.setValue(data, -1);
       aceEditor.focus();
+      initialized = true;
     };
     if (!window.ace) {
       const script = document.createElement('script');
