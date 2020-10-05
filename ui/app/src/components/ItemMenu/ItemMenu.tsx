@@ -60,7 +60,7 @@ import {
 import { fetchItemVersions } from '../../state/reducers/versions';
 import StandardAction from '../../models/StandardAction';
 import { withoutIndex } from '../../utils/path';
-import { setClipBoard, unSetClipBoard, updateDetailedItem } from '../../state/actions/content';
+import { reloadDetailedItem, setClipBoard, unSetClipBoard } from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
@@ -332,7 +332,7 @@ export function ItemMenu(props: ItemMenuProps) {
           items: [item],
           scheduling: 'now',
           onSuccess: batchActions([
-            updateDetailedItem({ path: item.path }),
+            reloadDetailedItem({ path: item.path }),
             closePublishDialog()
           ])
         }));

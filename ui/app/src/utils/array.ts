@@ -43,7 +43,7 @@ export function asArray<T = unknown>(value: T): T[] {
 
 export function createPresenceTable(list: string[]): LookupTable<boolean> {
   const table = {};
-  list.forEach(value => table[value.replaceAll(' ', '_')] = true);
+  list.forEach(value => table[value] = true);
   return table;
 }
 
