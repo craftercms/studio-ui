@@ -33,24 +33,45 @@ interface EditorProps {
   data: any;
 }
 
+declare global {
+  interface Window {
+    ace: any;
+  }
+}
+
 export default function Editor(props: EditorProps) {
   const { data, mode } = props;
   const classes = useStyles({});
   const editor = useRef(null);
   useEffect(() => {
-    // @ts-ignore
-    var aceEditor = ace.edit(editor.current, {
-      mode: mode,
-      showPrintMargin: false,
-      fontSize: '12px',
-      readOnly: true
-    });
-    aceEditor.setValue(data, -1);
-    aceEditor.focus();
+    let initialized = false;
+    const init = () => {
+      const aceEditor = window.ace.edit(editor.current, {
+        mode,
+        showPrintMargin: false,
+        fontSize: '12px',
+        readOnly: true
+      });
+      aceEditor.setValue(data, -1);
+      aceEditor.focus();
+      initialized = true;
+    };
+    if (!window.ace) {
+      const script = document.createElement('script');
+      script.src = '/studio/static-assets/components/cstudio-common/ace/ace.js';
+      script.onload = init;
+      document.head.appendChild(script);
+    } else {
+      init();
+    }
+    return () => {
+      if (initialized) {
+        // TODO: destroy
+      }
+    }
   }, [data, mode]);
-
   return (
-    <pre ref={editor} className={classes.previewEditor}></pre>
+    <pre ref={editor} className={classes.previewEditor} />
   );
 }
 
