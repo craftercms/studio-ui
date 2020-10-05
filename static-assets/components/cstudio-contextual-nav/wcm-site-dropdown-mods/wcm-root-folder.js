@@ -3313,7 +3313,9 @@
           }
         });
 
-        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogTypeSelectedId, (response) => {
+        let newContentUnsubscribe, newContentCancelUnsubscribe;
+
+        newContentUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogTypeSelectedId, (response) => {
           if (response) {
             const eventIdSuccess = 'editDialogSuccess';
             const eventIdCancel = 'editDialogCancel';
@@ -3375,7 +3377,13 @@
             });
 
           }
+          newContentCancelUnsubscribe();
         });
+
+        newContentCancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogTypeSelectedId, (response) => {
+          newContentUnsubscribe();
+        };
+
       },
       /**
        * Edits the label of the TextNode that was the target of the
