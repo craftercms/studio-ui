@@ -1314,6 +1314,7 @@
   ]);
 
   app.controller('SitesCtrl', [
+    '$rootScope',
     '$scope',
     '$state',
     '$location',
@@ -1325,6 +1326,7 @@
     'Constants',
 
     function(
+      $rootScope,
       $scope,
       $state,
       $location,
@@ -1390,7 +1392,8 @@
             isRemove();
             createSitePermission();
           },
-          () => {
+          (e) => {
+            $rootScope.showNotification(e.message, null, null, 'error');
             $scope.sites = null;
           });
       }
