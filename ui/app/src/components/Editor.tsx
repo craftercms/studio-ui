@@ -55,9 +55,8 @@ export default function Editor(props: EditorProps) {
       aceEditor.setValue(data, -1);
       aceEditor.focus();
     };
-    if (!window.ace && !document.querySelector('#aceEditorScript')) {
+    if (!window.ace) {
       const script = document.createElement('script');
-      script.id = 'aceEditorScript';
       script.src = '/studio/static-assets/components/cstudio-common/ace/ace.js';
       script.onload = init;
       document.head.appendChild(script);
