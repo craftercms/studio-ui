@@ -40,7 +40,7 @@ const initialState: ContentState = {
   },
   permissions: null,
   items: {
-    byId: null
+    byPath: null
   },
   clipboard: null
 };
@@ -81,7 +81,7 @@ const reducer = createReducer<ContentState>(initialState, {
       ...state,
       items: {
         ...state.items,
-        byId: { ...state.items.byId, [payload.id]: payload }
+        byPath: { ...state.items.byPath, [payload.id]: payload }
       }
     };
   },
