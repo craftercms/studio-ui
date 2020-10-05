@@ -33,7 +33,7 @@ export function getItemLocales(site: string, path: string): Observable<any> {
 }
 
 export function getTargetLocales(site: string, path: string): Observable<any> {
-  ///studio/api/2/translation/list_target_locales
+  // /studio/api/2/translation/list_target_locales
   const response = {
     response: {},
     items: [
