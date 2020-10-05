@@ -101,7 +101,7 @@ export function ItemMenu(props: ItemMenuProps) {
   const permissions = useSelection((state) => state.content.permissions);
   const items = useSelection((state) => state.content.items);
   const hasClipboard = useSelection((state) => state.content.clipboard);
-  const item = items.byId?.[path];
+  const item = items.byPath?.[path];
   const itemPermissions = permissions?.[path];
   const { authoringBase } = useEnv();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
@@ -232,7 +232,7 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'copy': {
-        getPages(site, item).subscribe(
+        getPages(site, item.path).subscribe(
           (legacyItem: LegacyItem) => {
             if (legacyItem.children.length) {
               dispatch(showCopyDialog({

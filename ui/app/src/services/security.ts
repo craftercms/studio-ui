@@ -27,7 +27,7 @@ export function encrypt(text: string, site: string = ''): Observable<string> {
   );
 }
 
-export function getUserPermissions(site: string, path: string, user: string): Observable<any> {
+export function getUserPermissions(site: string, path: string, user: string): Observable<string[]> {
   const qs = toQueryString({ site, path, user });
   return get(`/studio/api/1/services/api/1/security/get-user-permissions.json${qs}`).pipe(
     pluck('response', 'permissions')

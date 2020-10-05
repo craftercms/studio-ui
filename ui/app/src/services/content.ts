@@ -1507,9 +1507,9 @@ export function duplicate(
   }).pipe(map(({ copy, newItem }) => newItem.status[0]));
 }
 
-export function getPages(site: string, item: DetailedItem): Observable<any> {
+export function getPages(site: string, path: string): Observable<LegacyItem> {
   return get(
-    `/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`
+    `/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${path}&depth=1000&order=default`
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 

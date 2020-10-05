@@ -80,7 +80,7 @@ export default [
       ofType(fetchDetailedItem.type, reloadDetailedItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload, type }, state]) => {
-          if (type !== reloadDetailedItem.type && state.content.items.byId?.[payload.path]) {
+          if (type !== reloadDetailedItem.type && state.content.items.byPath?.[payload.path]) {
             return NEVER;
           } else {
             return getDetailedItem(state.sites.active, payload.path).pipe(

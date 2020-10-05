@@ -87,7 +87,6 @@ export interface GlobalState {
     byId: LookupTable<Site>;
   };
   content: {
-    // items: any;
     quickCreate: {
       error: ApiResponse;
       isFetching: boolean;
@@ -95,10 +94,9 @@ export interface GlobalState {
     };
     permissions: LookupTable<LookupTable<boolean>>;
     items: {
-      byId: LookupTable<DetailedItem>
+      byPath: LookupTable<DetailedItem>
     };
-    clipboard?: string;
-    // contentTypes: EntityState<ContentType>;
+    clipboard: string;
   }
   contentTypes: EntityState<ContentType>;
   env: {

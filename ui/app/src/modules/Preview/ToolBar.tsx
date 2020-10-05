@@ -291,11 +291,11 @@ export default function ToolBar() {
   } : null;
   const { enqueueSnackbar } = useSnackbar();
 
-  //region permissions
+  // region permissions
   const permissions = useSelection((state) => state.content.permissions);
   const write = permissions?.[item?.path]?.['write'];
   const createContent = permissions?.[item?.path]?.['create_content'];
-  //endregion
+  // endregion
 
   return (
     <AppBar position="static" color="default">
