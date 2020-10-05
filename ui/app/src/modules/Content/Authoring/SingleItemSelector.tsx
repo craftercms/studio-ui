@@ -186,7 +186,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
     }
     case fetchParentsItemsComplete.type: {
       const { currentPath, rootPath, byId } = state;
-      let nextItems = { ...byId };
+      let nextItems: any = { ...byId };
       let items = [];
       let parentPath = withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
 

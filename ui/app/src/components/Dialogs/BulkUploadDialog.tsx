@@ -660,7 +660,7 @@ export default function (props: BulkUploadProps) {
       })}
       onClose={() => onClose({ dropZoneStatus, path })}
       fullWidth
-      maxWidth={'sm'}
+      maxWidth="sm"
     >
       <BulkUploadUI
         {...props}

@@ -55,7 +55,7 @@ import { ItemMenu } from '../../ItemMenu/ItemMenu';
 import { fetchDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContent } from '../../../services/content';
-import { getLoaderItems, rand } from './utils';
+import { getNumOfMenuOptionsForItem, rand } from './utils';
 
 const MyLoader = React.memo(function () {
   const [items] = useState(() => {
@@ -238,7 +238,7 @@ export default function (props: WidgetProps) {
     setItemMenu({
       path,
       anchorEl: element,
-      loaderItems: getLoaderItems(state.items[state.currentPath])
+      loaderItems: getNumOfMenuOptionsForItem(state.items[state.currentPath])
     });
   };
 
@@ -248,7 +248,7 @@ export default function (props: WidgetProps) {
     setItemMenu({
       path: item.path,
       anchorEl: element,
-      loaderItems: getLoaderItems(item)
+      loaderItems: getNumOfMenuOptionsForItem(item)
     });
   };
 

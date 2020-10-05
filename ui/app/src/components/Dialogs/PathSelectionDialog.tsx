@@ -261,7 +261,6 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
           {formatMessage(messages.ok)}
         </Button>
       </DialogFooter>
-      {/* TODO: use Dispatch*/}
       <CreateFolderDialog
         path={currentPath}
         open={createFolder}

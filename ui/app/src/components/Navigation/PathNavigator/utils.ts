@@ -32,7 +32,7 @@ export function isFolder(item: DetailedItem): boolean {
   return item.systemType === 'folder';
 }
 
-export function getLoaderItems(item: DetailedItem): number {
+export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   if (isNavigable(item)) {
     return 16;
   } else if (isFolder(item)) {
