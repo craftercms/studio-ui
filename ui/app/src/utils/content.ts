@@ -16,6 +16,7 @@
 
 import { BaseItem, DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { getStateMapFromLegacyItem } from './state';
+import { reversePluckProps } from './object';
 
 export function isEditableAsset(path: string) {
   return (
@@ -172,6 +173,28 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       publisher: item.user,
       commitId: null
     }
+  };
+}
+
+export function parseSandBoxItemToDetailedItem(item: SandboxItem): DetailedItem;
+export function parseSandBoxItemToDetailedItem(item: SandboxItem[]): DetailedItem[];
+export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]): DetailedItem | DetailedItem[] {
+  if (Array.isArray(item)) {
+    // including level descriptors to avoid issues on pathNavigator;
+    return item.flatMap(i => [parseSandBoxItemToDetailedItem(i)]);
+  }
+  return {
+    sandbox: {
+      creator: item.creator,
+      createdDate: item.createdDate,
+      modifier: item.modifier,
+      lastModifiedDate: item.lastModifiedDate,
+      commitId: item.commitId,
+      sizeInBytes: item.sizeInBytes
+    },
+    staging: null,
+    live: null,
+    ...reversePluckProps(item, 'creator', 'createdDate', 'modifier', 'lastModifiedDate', 'commitId', 'sizeInBytes') as BaseItem
   };
 }
 

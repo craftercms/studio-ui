@@ -132,6 +132,7 @@ export interface WidgetState {
 export default function (props: WidgetProps) {
   const { title, icon, path, id = removeSpaces(props.title), locale } = props;
   const pathNavigator = useSelection((state) => state.pathNavigator);
+  const itemsByPath = useSelection((state) => state.content.items).byPath;
   const state = pathNavigator[id];
   const classes = useStyles({});
   const site = useActiveSiteId();
@@ -164,7 +165,7 @@ export default function (props: WidgetProps) {
     shouldResolve: (items) => Boolean(items),
     shouldRenew: (items, resource) => resource.complete,
     shouldReject: () => false,
-    resultSelector: (items) => items.map((path) => state.items[path]),
+    resultSelector: (items) => items.map((path) => itemsByPath[path]),
     errorSelector: null
   });
 
@@ -238,7 +239,7 @@ export default function (props: WidgetProps) {
     setItemMenu({
       path,
       anchorEl: element,
-      loaderItems: getNumOfMenuOptionsForItem(state.items[state.currentPath])
+      loaderItems: getNumOfMenuOptionsForItem(itemsByPath[state.currentPath])
     });
   };
 
@@ -376,14 +377,17 @@ export default function (props: WidgetProps) {
           />
         </SuspenseWithEmptyState>
       </div>
-      <ItemMenu
-        path={itemMenu.path}
-        open={Boolean(itemMenu.anchorEl)}
-        loaderItems={itemMenu.loaderItems}
-        anchorEl={itemMenu.anchorEl}
-        onClose={onCloseItemMenu}
-        onItemMenuActionSuccessCreator={onItemMenuActionSuccessCreator}
-      />
+      {
+        Boolean(itemMenu.anchorEl) &&
+        <ItemMenu
+          path={itemMenu.path}
+          open={true}
+          loaderItems={itemMenu.loaderItems}
+          anchorEl={itemMenu.anchorEl}
+          onClose={onCloseItemMenu}
+          onItemMenuActionSuccessCreator={onItemMenuActionSuccessCreator}
+        />
+      }
       <ContextMenu
         anchorEl={simpleMenu.anchorEl}
         sections={simpleMenu.sections}

@@ -50,17 +50,17 @@ import { copy, cut, fetchWorkflowAffectedItems, getPages, paste } from '../../se
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import {
-  assetDuplicate,
-  batchActions,
-  changeContentType,
-  editTemplate,
-  itemDuplicate
-} from '../../state/actions/misc';
+import { batchActions, changeContentType, editTemplate } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/reducers/versions';
 import StandardAction from '../../models/StandardAction';
 import { withoutIndex } from '../../utils/path';
-import { reloadDetailedItem, setClipBoard, unSetClipBoard } from '../../state/actions/content';
+import {
+  assetDuplicate,
+  itemDuplicate,
+  reloadDetailedItem,
+  setClipBoard,
+  unSetClipBoard
+} from '../../state/actions/content';
 import { popPiece } from '../../utils/string';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';

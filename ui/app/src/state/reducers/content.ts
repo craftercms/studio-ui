@@ -29,6 +29,13 @@ import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
 import { createPresenceTable } from '../../utils/array';
+import {
+  pathNavigatorFetchParentItemsComplete,
+  pathNavigatorFetchPathComplete
+} from '../actions/pathNavigator';
+import { parseSandBoxItemToDetailedItem } from '../../utils/content';
+import { createLookupTable } from '../../utils/object';
+import { SandboxItem } from '../../models/Item';
 
 type ContentState = GlobalState['content'];
 
@@ -92,7 +99,37 @@ const reducer = createReducer<ContentState>(initialState, {
   [unSetClipBoard.type]: (state) => ({
     ...state,
     clipboard: null
-  })
+  }),
+  [pathNavigatorFetchPathComplete.type]: (state, { payload: { response } }) => {
+    return {
+      ...state,
+      items: {
+        ...state.items,
+        byPath: {
+          ...state.items.byPath,
+          [response.parent.path]: parseSandBoxItemToDetailedItem(response.parent),
+          ...createLookupTable(parseSandBoxItemToDetailedItem(response as SandboxItem[]))
+        }
+      }
+    };
+  },
+  [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { response } }) => {
+    let items = [];
+    response.forEach(childResponse => {
+      items.push(parseSandBoxItemToDetailedItem(childResponse.parent));
+      items = [...items, ...parseSandBoxItemToDetailedItem(childResponse as SandboxItem[])];
+    });
+    return {
+      ...state,
+      items: {
+        ...state.items,
+        byPath: {
+          ...state.items.byPath,
+          ...createLookupTable(items)
+        }
+      }
+    };
+  }
 });
 
 export default reducer;

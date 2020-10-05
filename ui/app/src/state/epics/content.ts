@@ -17,6 +17,7 @@
 import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
+  assetDuplicate,
   fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
@@ -26,6 +27,7 @@ import {
   fetchUserPermissions,
   fetchUserPermissionsComplete,
   fetchUserPermissionsFailed,
+  itemDuplicate,
   reloadDetailedItem
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
@@ -35,7 +37,6 @@ import GlobalState from '../../models/GlobalState';
 import { GUEST_CHECK_IN } from '../actions/preview';
 import { getUserPermissions } from '../../services/security';
 import { NEVER } from 'rxjs';
-import { assetDuplicate, itemDuplicate } from '../actions/misc';
 import { showCodeEditorDialog, showEditDialog } from '../actions/dialogs';
 import { isEditableAsset } from '../../utils/content';
 

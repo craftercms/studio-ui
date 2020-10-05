@@ -34,7 +34,7 @@ export function isFolder(item: DetailedItem): boolean {
 
 export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
   if (isNavigable(item)) {
-    return 16;
+    return 13;
   } else if (isFolder(item)) {
     return 6;
   } else if (isPreviewable(item)) {

@@ -18,6 +18,7 @@ import { createAction } from '@reduxjs/toolkit';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
 import { AjaxError } from 'rxjs/ajax';
 import { DetailedItem } from '../../models/Item';
+import StandardAction from '../../models/StandardAction';
 
 // region Quick Create
 export const fetchQuickCreateList = createAction('FETCH_QUICK_CREATE_LIST');
@@ -41,6 +42,11 @@ export const fetchDetailedItemFailed = createAction<AjaxError>('FETCH_DETAILED_I
 // region clipboard
 export const setClipBoard = createAction<{ path: string }>('SET_CLIPBOARD');
 export const unSetClipBoard = createAction('UNSET_CLIPBOARD');
+// endregion
+
+// region duplicate
+export const itemDuplicate = createAction<{ path: string, onSuccess: StandardAction }>('ITEM_DUPlICATE');
+export const assetDuplicate = createAction<{ path: string, onSuccess: StandardAction }>('ASSET_DUPlICATE');
 // endregion
 
 

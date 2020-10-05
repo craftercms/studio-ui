@@ -261,13 +261,16 @@ export function AddressBar(props: AddressBarProps) {
       <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <MoreVertRounded />
       </IconButton>
-      <ItemMenu
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        path={path}
-        loaderItems={13}
-      />
+      {
+        Boolean(anchorEl) &&
+        <ItemMenu
+          open={true}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          path={path}
+          loaderItems={13}
+        />
+      }
     </>
   );
 }
