@@ -32,7 +32,7 @@ export function setStoredPreviewChoice(site: string, value: string) {
   return window.localStorage.setItem(`craftercms.previewCompatChoice.${site}`, value);
 }
 
-export function getStoredEditModeChoice(site: string) {
+export function getStoredEditModeChoice(site: string): string {
   return window.localStorage.getItem(`craftercms.editModeChoice.${site}`);
 }
 

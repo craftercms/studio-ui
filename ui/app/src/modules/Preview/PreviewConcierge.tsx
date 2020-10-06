@@ -177,9 +177,9 @@ export function PreviewConcierge(props: any) {
   // and contentType subject cleanup.
   useMount(() => {
 
-    const localEditMode = getStoredEditModeChoice(site);
-    if (editMode !== (localEditMode === 'true')) {
-      dispatch(setPreviewEditMode({ editMode }));
+    const localEditMode = getStoredEditModeChoice(site) === 'true';
+    if (editMode !== localEditMode) {
+      dispatch(setPreviewEditMode({ editMode: localEditMode }));
     }
 
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
@@ -231,7 +231,7 @@ export function PreviewConcierge(props: any) {
           }
           break;
         case GUEST_CHECK_IN: {
-
+          getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
           dispatch(checkInGuest(payload));
 
           if (payload.documentDomain) {

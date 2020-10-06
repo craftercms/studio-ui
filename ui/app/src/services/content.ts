@@ -102,7 +102,7 @@ export function getLegacyItemsTree(
   options?: Partial<{ depth: number; order: string }>
 ): Observable<LegacyItem> {
   return get(
-    `/studio/api/1/services/api/1/content/get-pages.json${toQueryString({
+    `/studio/api/1/services/api/1/content/get-items-tree.json${toQueryString({
       site_id: site,
       path,
       ...options
