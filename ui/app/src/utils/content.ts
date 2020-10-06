@@ -181,7 +181,7 @@ export function parseSandBoxItemToDetailedItem(item: SandboxItem[]): DetailedIte
 export function parseSandBoxItemToDetailedItem(item: SandboxItem | SandboxItem[]): DetailedItem | DetailedItem[] {
   if (Array.isArray(item)) {
     // including level descriptors to avoid issues on pathNavigator;
-    return item.flatMap(i => [parseSandBoxItemToDetailedItem(i)]);
+    return item.map(i => parseSandBoxItemToDetailedItem(i));
   }
   return {
     sandbox: {

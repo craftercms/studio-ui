@@ -30,6 +30,7 @@ import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import { isFolder, isNavigable, isPreviewable } from './utils';
 import Component from '../../Icons/Component';
 import Page from '../../Icons/Page';
+import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
 
 interface NavItemProps {
   item: DetailedItem;
@@ -138,9 +139,9 @@ export default function (props: NavItemProps) {
   );
 }
 
-function RenderIcon(props) {
+function RenderIcon({ item, classes }: { item: DetailedItem, classes: any }) {
   let Icon = Page;
-  switch (props.item.systemType) {
+  switch (item.systemType) {
     case 'folder': {
       Icon = FolderIcon;
       break;
@@ -148,9 +149,16 @@ function RenderIcon(props) {
     case 'component':
     case 'taxonomy': {
       Icon = Component;
+      break;
+    }
+    case 'asset': {
+      if (item.mimeType.startsWith('image/')) {
+        Icon = CropOriginalRoundedIcon;
+      }
+      break;
     }
   }
   return (
-    <Icon className={props.classes.iconClass} />
+    <Icon className={classes.iconClass} />
   );
 }
