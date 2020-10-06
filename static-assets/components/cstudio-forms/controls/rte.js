@@ -40,6 +40,10 @@ CStudioForms.Controls.RTE =
     this.delayedInit = true; // Flag that indicates that this control takes a while to initialize
     this.pencilMode = pencilMode;
     this.supportedPostFixes = ['_html'];
+    this.enableSpellCheck = true;
+
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
 
     return this;
   };
@@ -164,6 +168,12 @@ CStudioAuthoring.Module.requireModule(
             { label: CMgs.format(langBundle, 'height'), name: 'height', type: 'int' },
             { label: CMgs.format(langBundle, 'maxLength'), name: 'maxlength', type: 'int' },
             { label: CMgs.format(langBundle, 'allowResize'), name: 'allowResize', type: 'boolean' },
+            {
+              label: this.formatMessage(this.contentTypesMessages.enableSpellCheck),
+              name: 'enableSpellCheck',
+              type: 'boolean',
+              defaultValue: 'true'
+            },
             {
               label: CMgs.format(langBundle, 'forceRootBlockP'),
               name: 'forceRootBlockPTag',
@@ -542,6 +552,9 @@ CStudioAuthoring.Module.requireModule(
               case 'forceRootBlockPTag':
                 var forceRootBlockPTag = prop.value == 'false' ? false : 'p';
                 break;
+              case 'enableSpellCheck':
+                this.enableSpellCheck = !prop.value || prop.value === 'true';
+                break;
             }
           }
 
@@ -591,9 +604,9 @@ CStudioAuthoring.Module.requireModule(
             valid_elements: '+*[*]',
             extended_valid_elements: '+*[*]',
             valid_children: '+*[*]',
-            valid_elements: '+*[*]',
             paste_auto_cleanup_on_paste: true,
             relative_urls: false,
+            browser_spellcheck: this.enableSpellCheck,
 
             readonly: _thisControl.readonly,
             force_p_newlines: forcePTags,

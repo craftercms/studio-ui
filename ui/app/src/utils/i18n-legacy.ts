@@ -212,6 +212,10 @@ const numericInputControlMessages = defineMessages({
   maximun: {
     id: 'numericInputControl.maximun',
     defaultMessage: 'Maximum'
+  },
+  noDecimalsErrMessage: {
+    id: 'numericInputControl.noDecimalsErrMessage',
+    defaultMessage: 'Decimals aren\'t allowed on this input.'
   }
 });
 
@@ -311,6 +315,10 @@ const contentTypesMessages = defineMessages({
   autoGrow: {
     id: 'contentType.autoGrow',
     defaultMessage: 'Auto Grow'
+  },
+  enableSpellCheck: {
+    id: 'contentType.enableSpellCheck',
+    defaultMessage: 'Enable Spell Check'
   },
   forceRootBlockP: {
     id: 'contentType.forceRootBlockP',
