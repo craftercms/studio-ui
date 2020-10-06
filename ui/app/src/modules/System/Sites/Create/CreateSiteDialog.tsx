@@ -611,6 +611,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function createMarketplaceParams() {
     const params: MarketplaceSite = {
       siteId: site.siteId,
+      name: site.siteName,
       description: site.description,
       blueprintId: site.blueprint.id,
       blueprintVersion: {

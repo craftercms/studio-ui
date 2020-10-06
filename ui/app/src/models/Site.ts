@@ -89,6 +89,7 @@ export interface CreateSiteMeta {
 
 export interface MarketplaceSite {
   siteId: string;
+  name?: string;
   blueprintId: string;
   blueprintVersion: {
     major: number,

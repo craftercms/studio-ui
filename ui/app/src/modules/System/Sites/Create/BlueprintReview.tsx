@@ -297,10 +297,10 @@ function BlueprintReview(props: BlueprintReviewProps) {
             </IconButton>
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.siteId)}: </span> {inputs.siteId}
+            <span className={classes.bold}>{formatMessage(messages.siteName)}: </span> {inputs.siteName}
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.siteName)}: </span> {inputs.siteName}
+            <span className={classes.bold}>{formatMessage(messages.siteId)}: </span> {inputs.siteId}
           </Typography>
           <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{formatMessage(messages.description)}:</span>
