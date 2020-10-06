@@ -264,9 +264,7 @@ function NewContentDialogWrapper(props: NewContentDialogProps) {
   const onTypeOpen = (contentType: LegacyFormConfig) => () => {
     onContentTypeSelected?.({
       src: `${defaultFormSrc}?isNewContent=true&contentTypeId=${contentType.form}&path=${path}&type=form`,
-      type: 'form',
       inProgress: false,
-      showTabs: false,
       onSaveSuccess: newContentCreationComplete()
     });
   };

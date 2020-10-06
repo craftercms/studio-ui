@@ -346,6 +346,10 @@ const contentTypesMessages = defineMessages({
     id: 'contentType.autoGrow',
     defaultMessage: 'Auto Grow'
   },
+  enableSpellCheck: {
+    id: 'contentType.enableSpellCheck',
+    defaultMessage: 'Enable Spell Check'
+  },
   forceRootBlockP: {
     id: 'contentType.forceRootBlockP',
     defaultMessage: 'Force Root Block p Tag'

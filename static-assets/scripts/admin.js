@@ -1661,7 +1661,7 @@
       $scope.groups = {};
       var groups = $scope.groups;
       groups.site = $location.search().site;
-      groups.maxInputLength = 32;
+      groups.maxInputLength = 512;
       groups.messages = {
         groupNameMaxLength: formatMessage(groupsAdminMessages.maxLengthError, {
           field: formatMessage(groupsAdminMessages.displayName),
