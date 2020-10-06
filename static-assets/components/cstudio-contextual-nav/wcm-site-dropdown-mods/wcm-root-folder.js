@@ -673,7 +673,6 @@
               function (e) {
                 /*eventCM.typeAction = e.typeAction;
                             document.dispatchEvent(eventCM);*/
-
                 try {
                   if (e.data && e.data.length) {
                     for (var i = 0; i < e.data.length; i++) {
@@ -681,7 +680,12 @@
                         (e.data &&
                           e.data.children &&
                           e.data.children.length > 0 &&
-                          e.data.data.path != '/site/website') ||
+                          e.data.path != '/site/website') ||
+                        (
+                          e.data &&
+                          CStudioAuthoring.SelectedContent.getSelectedContent()[0] &&
+                          e.data[i].browserUri !== CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri
+                        ) ||
                         e.changeStructure
                           ? true
                           : false;
@@ -706,7 +710,12 @@
                       (e.data &&
                         e.data.children &&
                         e.data.children.length > 0 &&
-                        e.data.data.path != '/site/website') ||
+                        e.data.path != '/site/website') ||
+                      (
+                        e.data &&
+                        CStudioAuthoring.SelectedContent.getSelectedContent()[0] &&
+                        e.data.browserUri !== CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri
+                      ) ||
                       e.changeStructure
                         ? true
                         : false;
