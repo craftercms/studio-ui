@@ -56,16 +56,7 @@ export function deleteSite(id: string) {
 }
 
 export function updateSite(site: Site) {
-  // endpoint pending
-  const response: ApiResponse = {
-    code: 200,
-    message: 'Site saved'
-  }
-
-  return new Observable((observer: Observer<any>) => {
-    observer.next(response);
-    observer.complete();
-  });
+  return postJSON(`/studio/api/2/sites/${site.id}`, { name: site.name, description: site.description });
 }
 
 export function checkHandleAvailability(name: string) {

@@ -1403,7 +1403,6 @@
           .subscribe(data => {
             $scope.totalSites = data.total;
             $scope.sites = data;
-            console.log(data);
             isRemove();
             createSitePermission();
           },
