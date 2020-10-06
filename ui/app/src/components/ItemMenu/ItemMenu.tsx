@@ -46,7 +46,13 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
-import { copy, cut, fetchWorkflowAffectedItems, getPages, paste } from '../../services/content';
+import {
+  copy,
+  cut,
+  fetchWorkflowAffectedItems,
+  getLegacyItemsTree,
+  paste
+} from '../../services/content';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -231,7 +237,7 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'copy': {
-        getPages(site, item.path).subscribe(
+        getLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
           (legacyItem: LegacyItem) => {
             if (legacyItem.children.length) {
               dispatch(showCopyDialog({

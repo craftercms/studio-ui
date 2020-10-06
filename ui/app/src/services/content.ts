@@ -102,7 +102,7 @@ export function getLegacyItemsTree(
   options?: Partial<{ depth: number; order: string }>
 ): Observable<LegacyItem> {
   return get(
-    `/studio/api/1/services/api/1/content/get-item.json?${toQueryString({
+    `/studio/api/1/services/api/1/content/get-pages.json${toQueryString({
       site_id: site,
       path,
       ...options
@@ -1522,12 +1522,6 @@ export function duplicate(site: string, path: string): Observable<string> {
   }).pipe(map(({ copy, newItem }) => newItem.status[0]));
 }
 
-export function getPages(site: string, path: string): Observable<LegacyItem> {
-  return get(
-    `/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${path}&depth=1000&order=default`
-  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
-}
-
 export function deleteItems(
   site: string,
   submissionComment: string,
@@ -1598,7 +1592,6 @@ export default {
   copy,
   cut,
   paste,
-  getPages,
   getContentInstanceLookup,
   fetchContentTypes,
   fetchContentType,
