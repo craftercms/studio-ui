@@ -676,19 +676,22 @@
                 try {
                   if (e.data && e.data.length) {
                     for (var i = 0; i < e.data.length; i++) {
-                      var changeStructure =
-                        (e.data &&
-                          e.data.children &&
-                          e.data.children.length > 0 &&
-                          e.data.path != '/site/website') ||
-                        (
-                          e.data &&
-                          CStudioAuthoring.SelectedContent.getSelectedContent()[0] &&
-                          e.data[i].browserUri !== CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri
-                        ) ||
-                        e.changeStructure
-                          ? true
-                          : false;
+                      let changeStructure = Boolean(e.changeStructure);
+                      if (!changeStructure) {
+                        let sc = CStudioAuthoring.SelectedContent.getSelectedContent();
+                        // prettier-ignore
+                        changeStructure = (
+                          (e.data.children && e.data.children.length > 0) &&
+                          (
+                            (e.data.path && e.data.path !== '/site/website') ||
+                            (e.data.data && e.data.data.path && e.data.data.path !== '/site/website')
+                          )
+                        ) || (
+                          e.data[i] && sc[0] &&
+                          e.data[i].browserUri !== sc[0]?.browserUri
+                        );
+                      }
+
                       Self.refreshNodes(
                         e.data[i]
                           ? e.data[i]
@@ -706,19 +709,22 @@
                       );
                     }
                   } else {
-                    var changeStructure =
-                      (e.data &&
-                        e.data.children &&
-                        e.data.children.length > 0 &&
-                        e.data.path != '/site/website') ||
-                      (
-                        e.data &&
-                        CStudioAuthoring.SelectedContent.getSelectedContent()[0] &&
-                        e.data.browserUri !== CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri
-                      ) ||
-                      e.changeStructure
-                        ? true
-                        : false;
+                    let changeStructure = Boolean(e.changeStructure);
+                    if (!changeStructure) {
+                      let sc = CStudioAuthoring.SelectedContent.getSelectedContent();
+                      // prettier-ignore
+                      changeStructure = (
+                        (e.data.children && e.data.children.length > 0) &&
+                        (
+                          (e.data.path && e.data.path !== '/site/website') ||
+                          (e.data.data && e.data.data.path && e.data.data.path !== '/site/website')
+                        )
+                      ) || (
+                        e.data && sc[0] &&
+                        e.data.browserUri !== sc[0]?.browserUri
+                      );
+                    }
+
                     Self.refreshNodes(
                       e.data
                         ? e.data
