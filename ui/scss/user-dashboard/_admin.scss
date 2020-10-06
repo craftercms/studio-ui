@@ -443,6 +443,14 @@ table {
 
 }
 
+.groups-view {
+  .single-group-view {
+    .page-header {
+      word-wrap: break-word;
+    }
+  }
+}
+
 .log-details-view {
   .exception {
     padding: 20px;
