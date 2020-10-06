@@ -601,6 +601,7 @@
 
       this.editSiteData = function(site, onEditSuccess) {
         const eventIdSuccess = 'editSiteDialogSuccess';
+        const eventIdDismissed = 'editSiteDialogDismissed';
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_EDIT_SITE_DIALOG',
           payload: {
@@ -615,12 +616,25 @@
                 },
                 { type: 'CLOSE_EDIT_SITE_DIALOG' }
               ]
+            },
+            onClose: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdDismissed }
+                },
+                { type: 'CLOSE_EDIT_SITE_DIALOG' }
+              ]
             }
           }
         });
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        let cleanupSuccess = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           $rootScope.showNotification(formatMessage(adminDashboardMessages.siteUpdated));
           onEditSuccess(response);
+        });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdDismissed, () => {
+          cleanupSuccess();
         });
 
       };
@@ -1389,6 +1403,7 @@
           .subscribe(data => {
             $scope.totalSites = data.total;
             $scope.sites = data;
+            console.log(data);
             isRemove();
             createSitePermission();
           },
@@ -1443,8 +1458,16 @@
 
       function addingRemoveProperty(siteId) {
         for (var j = 0; j < $scope.sites.length; j++) {
-          if ($scope.sites[j].siteId == siteId) {
+          if ($scope.sites[j].id == siteId) {
             $scope.sites[j].remove = true;
+          }
+        }
+      }
+
+      function addingEditProperty(siteId) {
+        for (var j = 0; j < $scope.sites.length; j++) {
+          if ($scope.sites[j].id == siteId) {
+            $scope.sites[j].edit = true;
           }
         }
       }
@@ -1457,6 +1480,9 @@
               if (data.permissions[i] == 'delete') {
                 addingRemoveProperty(siteId);
               }
+              if (data.permissions[i] == 'edit_site') {
+                addingEditProperty(siteId);
+              }
             }
           })
           .error(function() {});
@@ -1464,7 +1490,7 @@
 
       function isRemove() {
         for (var j = 0; j < $scope.sites.length; j++) {
-          removePermissionPerSite($scope.sites[j].siteId);
+          removePermissionPerSite($scope.sites[j].id);
         }
       }
 

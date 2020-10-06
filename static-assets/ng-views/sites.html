@@ -48,7 +48,7 @@
                         <td class="preview"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
                         <td class="dashboard"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
                         <td class="remove">
-                          <a ng-show="site.remove"
+                          <a ng-show="site.edit"
                             tooltip-placement="bottom"
                             uib-tooltip="Edit"
                             ng-click="editSiteData(site)"
