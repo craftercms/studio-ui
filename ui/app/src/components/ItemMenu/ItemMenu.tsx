@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, Suspense, useState } from 'react';
 import { ContextMenuItems, SectionItem } from '../ContextMenu';
 import { Resource } from '../../models/Resource';
 import { DetailedItem, LegacyItem } from '../../models/Item';
@@ -107,7 +107,6 @@ export function ItemMenu(props: ItemMenuProps) {
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const [pendingOption, setPendingOption] = useState(null);
 
   const resourceItem = useLogicResource<DetailedItem, DetailedItem>(item, {
     shouldResolve: (source) => Boolean(source),
@@ -125,37 +124,6 @@ export function ItemMenu(props: ItemMenuProps) {
     errorSelector: (source) => null
   });
 
-  const publish = useCallback(() => {
-    dispatch(showPublishDialog({
-      items: [item],
-      scheduling: 'now',
-      onSuccess: batchActions([
-        reloadDetailedItem({ path: item.path }),
-        closePublishDialog()
-      ])
-    }));
-  }, [dispatch, item]);
-
-  const schedule = useCallback(() => {
-    dispatch(showPublishDialog({
-      items: [item],
-      scheduling: 'custom'
-    }));
-  }, [dispatch, item]);
-
-  useEffect(() => {
-    if (pendingOption !== null && item.live) {
-      if (pendingOption === 'publish') {
-        publish();
-        onClose();
-      } else {
-        schedule();
-        onClose();
-      }
-      setPendingOption(null);
-    }
-  }, [item.live, onClose, pendingOption, publish, schedule]);
-
   const onMenuItemClicked = (option: SectionItem) => {
     switch (option.id) {
       case 'view': {
@@ -167,7 +135,7 @@ export function ItemMenu(props: ItemMenuProps) {
       case 'edit': {
         const path = item.path;
         const src = `${legacyFormSrc}site=${site}&path=${path}&type=form`;
-        // TODO: open a embedded neeeds the following:
+        // TODO: open a embedded form needs the following:
         //src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 
         fetchWorkflowAffectedItems(site, path).subscribe(
@@ -352,21 +320,21 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'schedule': {
-        if (item.live) {
-          schedule();
-        } else {
-          setPendingOption('schedule');
-          dispatch(reloadDetailedItem({ path: item.path }));
-        }
+        dispatch(showPublishDialog({
+          items: [item],
+          scheduling: 'custom'
+        }));
         break;
       }
       case 'publish': {
-        if (item.live) {
-          publish();
-        } else {
-          setPendingOption('publish');
-          dispatch(reloadDetailedItem({ path: item.path }));
-        }
+        dispatch(showPublishDialog({
+          items: [item],
+          scheduling: 'now',
+          onSuccess: batchActions([
+            reloadDetailedItem({ path: item.path }),
+            closePublishDialog()
+          ])
+        }));
         break;
       }
       case 'history': {
@@ -453,12 +421,7 @@ export function ItemMenu(props: ItemMenuProps) {
       default:
         break;
     }
-    ;
-    if ((option.id === 'publish' || option.id === 'schedule') && !item.live) {
-      return;
-    } else {
-      onClose();
-    }
+    onClose();
   };
   return (
     <Menu

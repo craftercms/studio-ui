@@ -18,6 +18,7 @@ import { ActionsObservable, ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   assetDuplicate,
+  completeDetailedItem,
   fetchDetailedItem,
   fetchDetailedItemComplete,
   fetchDetailedItemFailed,
@@ -82,6 +83,22 @@ export default [
       withLatestFrom(state$),
       switchMap(([{ payload, type }, state]) => {
           if (type !== reloadDetailedItem.type && state.content.items.byPath?.[payload.path]) {
+            return NEVER;
+          } else {
+            return getDetailedItem(state.sites.active, payload.path).pipe(
+              map((item) => fetchDetailedItemComplete(item)),
+              catchAjaxError(fetchDetailedItemFailed)
+            );
+          }
+        }
+      )
+    ),
+  (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(completeDetailedItem.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload, type }, state]) => {
+          if (state.content.items.byPath?.[payload.path].live) {
             return NEVER;
           } else {
             return getDetailedItem(state.sites.active, payload.path).pipe(

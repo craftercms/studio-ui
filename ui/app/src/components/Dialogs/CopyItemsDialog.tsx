@@ -280,7 +280,7 @@ function CopyItemsDialogUI(props: CopyItemsDialogProps) {
   const onCopy = () => {
     let copyItem: CopyItem = {};
     copyItem = getChildrenTree(item.uri, children);
-    copy(site, null, copyItem).subscribe(
+    copy(site, copyItem).subscribe(
       (response) => {
         if (response.success) {
           onOk?.(copyItem);

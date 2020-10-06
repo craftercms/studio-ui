@@ -96,6 +96,20 @@ export function getLegacyItem(site: string, path: string): Observable<LegacyItem
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
+export function getLegacyItemsTree(
+  site: string,
+  path: string,
+  options?: Partial<{ depth: number; order: string }>
+): Observable<LegacyItem> {
+  return get(
+    `/studio/api/1/services/api/1/content/get-item.json?${toQueryString({
+      site_id: site,
+      path,
+      ...options
+    })}`
+  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
+}
+
 export function getSandboxItem(site: string, path: string): Observable<SandboxItem> {
   return getLegacyItem(site, path).pipe(map<LegacyItem, SandboxItem>(parseLegacyItemToSandBoxItem));
 }
@@ -1341,7 +1355,11 @@ interface VersionDescriptor {
 // Temporarily disabling getVersion(s) and returning just the necessary information to power
 // the previous "diff" view — without network requests — while we develop the backend
 
-export function getVersion(site: string, path: string, versionNumber: string): Observable<VersionDescriptor> {
+export function getVersion(
+  site: string,
+  path: string,
+  versionNumber: string
+): Observable<VersionDescriptor> {
   return of({
     site,
     path,
@@ -1464,8 +1482,14 @@ export function getChildrenByPath(
   );
 }
 
-export function copy(site: string, path: string, copyItem?: CopyItem): Observable<{ success: boolean }> {
-  let item = path ? { item: [{ uri: path }] } : { item: [copyItem] };
+export function copy(site: string, item: CopyItem): Observable<{ success: boolean }>;
+export function copy(site: string, path: string): Observable<{ success: boolean }>;
+export function copy(
+  site: string,
+  itemOrPath: string | CopyItem
+): Observable<{ success: boolean }> {
+  let item =
+    typeof itemOrPath === 'string' ? { item: [{ uri: itemOrPath }] } : { item: [itemOrPath] };
   return post(
     `/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`,
     item,
@@ -1481,19 +1505,13 @@ export function cut(site: string, item: DetailedItem): Observable<any> {
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function paste(
-  site: string,
-  path: string
-): Observable<{ site: string; status: string[] }> {
+export function paste(site: string, path: string): Observable<{ site: string; status: string[] }> {
   return get(
     `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${path}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function duplicate(
-  site: string,
-  path: string
-): Observable<string> {
+export function duplicate(site: string, path: string): Observable<string> {
   let parentPath: any = path;
   if (path.endsWith('index.xml')) {
     parentPath = withoutIndex(path);

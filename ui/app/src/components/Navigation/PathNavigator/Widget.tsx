@@ -51,7 +51,7 @@ import {
 } from '../../../state/actions/pathNavigator';
 import { getStoredPreviewChoice } from '../../../utils/state';
 import { ItemMenu } from '../../ItemMenu/ItemMenu';
-import { fetchDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
+import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContent } from '../../../services/content';
 import { getNumOfMenuOptionsForItem, rand } from './utils';
@@ -232,7 +232,7 @@ export default function (props: WidgetProps) {
     if (path === '/site/website') {
       path = withIndex(state.currentPath);
     }
-    dispatch(fetchDetailedItem({ path }));
+    dispatch(completeDetailedItem({ path }));
     dispatch(fetchUserPermissions({ path }));
     setItemMenu({
       path,
@@ -242,7 +242,7 @@ export default function (props: WidgetProps) {
   };
 
   const onOpenItemMenu = (element: Element, item: DetailedItem) => {
-    dispatch(fetchDetailedItem({ path: item.path }));
+    dispatch(completeDetailedItem({ path: item.path }));
     dispatch(fetchUserPermissions({ path: item.path }));
     setItemMenu({
       path: item.path,
