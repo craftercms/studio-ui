@@ -64,6 +64,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { getStoredPreviewChoice } from '../../utils/state';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -269,6 +270,7 @@ export default function Search(props: SearchProps) {
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const site = useActiveSiteId();
   const authoringBase = useSelection<string>(state => state.env.authoringBase);
+  const guestBase = useSelection<string>(state => state.env.guestBase);
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const permissions = useSelection((state) => state.content.permissions);
   const dispatch = useDispatch();
@@ -323,13 +325,12 @@ export default function Search(props: SearchProps) {
             <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
               <MediaCard
                 item={item}
-                onEdit={handleEdit}
-                onPreview={handlePreview}
-                onPreviewAsset={handlePreviewAsset}
+                onNavigate={onNavigate}
+                onPreview={onPreview}
                 onSelect={handleSelect}
                 selected={selected}
-                previewAppBaseUri={authoringBase}
-                onHeaderButtonClick={handleHeaderButtonClick}
+                previewAppBaseUri={guestBase}
+                onHeaderButtonClick={onHeaderButtonClick}
               />
             </Grid>
           ) : (
@@ -337,9 +338,7 @@ export default function Search(props: SearchProps) {
               <MediaCard
                 item={item}
                 isList={true}
-                onEdit={handleEdit}
-                onPreview={handlePreview}
-                onPreviewAsset={handlePreviewAsset}
+                onPreview={onPreview}
                 onSelect={handleSelect}
                 classes={{
                   root: classes.mediaCardListRoot,
@@ -349,8 +348,8 @@ export default function Search(props: SearchProps) {
                   mediaIcon: classes.mediaCardListMediaIcon
                 }}
                 selected={selected}
-                previewAppBaseUri={authoringBase}
-                onHeaderButtonClick={handleHeaderButtonClick}
+                previewAppBaseUri={guestBase}
+                onHeaderButtonClick={onHeaderButtonClick}
               />
             </Grid>
           )
@@ -476,42 +475,6 @@ export default function Search(props: SearchProps) {
     );
   }
 
-  function handleEdit(path: string, readonly: boolean = false) {
-    //onEdit(path, refreshSearch, readonly);
-  }
-
-  function handlePreview(url: string) {
-    //onPreview(url);
-  }
-
-  function handlePreviewAsset(url: string, type: string, name: string) {
-    if (type === 'Image') {
-      dispatch(showPreviewDialog({
-        type: type === 'Image' ? 'image' : 'page',
-        title: name,
-        url
-      }));
-    } else {
-      getContent(site, url).subscribe(
-        (content) => {
-          let mode = 'txt';
-          if (type === 'Template') {
-            mode = 'ftl';
-          } else if (type === 'Groovy') {
-            mode = 'java';
-          }
-          dispatch(showPreviewDialog({
-            type: 'editor',
-            title: name,
-            url,
-            mode,
-            content
-          }));
-        }
-      );
-    }
-  }
-
   function handleSelect(path: string, isSelected: boolean) {
     if (isSelected) {
       setSelected([...selected, path]);
@@ -559,13 +522,72 @@ export default function Search(props: SearchProps) {
     return !searchResults.items.some((item: any) => !selected.includes(item.path));
   }
 
-  function handleHeaderButtonClick(event: any, item: MediaItem) {
+  const onHeaderButtonClick = (event: any, item: MediaItem) => {
     dispatch(fetchUserPermissions({ path: item.path }));
     setSimpleMenu({
       item,
       anchorEl: event.target
     });
-  }
+  };
+
+  const onNavigate = (item: MediaItem) => {
+    if (item.previewUrl) {
+      let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
+      window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
+    }
+  };
+
+  const onPreview = (item: MediaItem) => {
+    const { type, name: title, path: url } = item;
+    switch (type) {
+      case 'Image': {
+        dispatch(showPreviewDialog({
+          type: 'image',
+          title,
+          url
+        }));
+        break;
+      }
+      case 'Page': {
+        dispatch(showPreviewDialog({
+          type: 'page',
+          title,
+          url
+        }));
+        break;
+      }
+      case 'Component':
+      case 'Taxonomy': {
+        const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form&readonly=true`;
+        dispatch(showEditDialog({ src }));
+        break;
+      }
+      default: {
+        getContent(site, url).subscribe(
+          (content) => {
+            let mode = 'txt';
+            if (type === 'Template') {
+              mode = 'ftl';
+            } else if (type === 'Groovy') {
+              mode = 'groovy';
+            } else if (type === 'JavaScript') {
+              mode = 'javascript';
+            } else if (type === 'CSS') {
+              mode = 'css';
+            }
+            dispatch(showPreviewDialog({
+              type: 'editor',
+              title,
+              url,
+              mode,
+              content
+            }));
+          }
+        );
+        break;
+      }
+    }
+  };
 
   const onEdit = (item: MediaItem) => {
     if (item.type === 'Page' || item.type === 'Taxonomy' || item.type === 'Component') {
@@ -580,7 +602,6 @@ export default function Search(props: SearchProps) {
           } else {
             dispatch(showEditDialog({ src }));
           }
-
         }
       );
     } else {
