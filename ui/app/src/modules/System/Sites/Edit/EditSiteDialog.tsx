@@ -151,7 +151,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
       onSubmit={ () => onSubmit(site.id, name, description) }
       onClose={onClose}
     />
-  )
+  );
 }
 
 function EditSiteDialogUI(props: EditSiteDialogUIProps) {
