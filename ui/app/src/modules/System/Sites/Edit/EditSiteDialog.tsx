@@ -26,7 +26,7 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { Site } from '../../../../models/Site';
-import { SuspenseWithEmptyState } from '../../../../components/SystemStatus/Suspencified';
+import Suspencified from '../../../../components/SystemStatus/Suspencified';
 import { updateSite } from '../../../../services/sites';
 import { Resource } from '../../../../models/Resource';
 
@@ -118,16 +118,14 @@ function EditSiteDialog(props: EditSiteDialogProps) {
       fullWidth
       maxWidth="sm"
     >
-      <SuspenseWithEmptyState
-        resource={resource}
-      >
+      <Suspencified>
         <EditSiteDialogUIContainer
           resource={resource}
           submitting={submitting}
           onSubmit={handleSubmit}
           onClose={onClose}
         />
-      </SuspenseWithEmptyState>
+      </Suspencified>
     </Dialog>
   );
 }

@@ -17,10 +17,9 @@
 import { get, postJSON } from '../utils/ajax';
 import { CreateSiteMeta, Site } from '../models/Site';
 import { map } from 'rxjs/operators';
-import { Observable, Observer } from 'rxjs';
+import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { PaginationOptions } from '../models/PaginationOptions';
-import ApiResponse from '../models/ApiResponse';
 
 export function fetchBlueprints() {
   return get('/studio/api/2/sites/available_blueprints');
