@@ -678,7 +678,6 @@
                     for (var i = 0; i < e.data.length; i++) {
                       let changeStructure = Boolean(e.changeStructure);
                       if (!changeStructure) {
-                        let sc = CStudioAuthoring.SelectedContent.getSelectedContent();
                         // prettier-ignore
                         changeStructure = (
                           (e.data.children && e.data.children.length > 0) &&
@@ -687,11 +686,10 @@
                             (e.data.data && e.data.data.path && e.data.data.path !== '/site/website')
                           )
                         ) || (
-                          e.data[i] && sc[0] &&
-                          e.data[i].browserUri !== sc[0]?.browserUri
+                          e.data[i] && e.oldPath &&
+                          e.data[i].uri !== e.oldPath
                         );
                       }
-
                       Self.refreshNodes(
                         e.data[i]
                           ? e.data[i]
@@ -711,7 +709,6 @@
                   } else {
                     let changeStructure = Boolean(e.changeStructure);
                     if (!changeStructure) {
-                      let sc = CStudioAuthoring.SelectedContent.getSelectedContent();
                       // prettier-ignore
                       changeStructure = (
                         (e.data.children && e.data.children.length > 0) &&
@@ -720,8 +717,8 @@
                           (e.data.data && e.data.data.path && e.data.data.path !== '/site/website')
                         )
                       ) || (
-                        e.data && sc[0] &&
-                        e.data.browserUri !== sc[0]?.browserUri
+                        e.data && e.oldPath &&
+                        e.data.uri !== e.oldPath
                       );
                     }
 
