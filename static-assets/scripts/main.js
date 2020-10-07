@@ -1364,7 +1364,7 @@
         };
 
         sitesService.editSiteData(site, onEditSuccess);
-      }
+      };
 
       $scope.goToDashboard = sitesService.goToDashboard;
 

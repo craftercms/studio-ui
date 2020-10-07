@@ -26,7 +26,7 @@ import { EditSiteDialogStateProps } from '../../../modules/System/Sites/Edit/Edi
 const initialState: EditSiteDialogStateProps = {
   open: false,
   site: null
-}
+};
 
 export default createReducer<GlobalState['dialogs']['editSite']>(
   initialState,
@@ -42,4 +42,4 @@ export default createReducer<GlobalState['dialogs']['editSite']>(
     [closeEditSiteDialog.type]: (state) => ({ ...state, open: false }),
     [editSiteDialogClosed.type]: (state) => initialState
   }
-)
+);

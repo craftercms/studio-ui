@@ -1408,8 +1408,7 @@
             $rootScope.showNotification(formatMessage(usersAdminMessages.userCreated, { username: user.username }));
           })
           .error(function(response) {
-            var response = response.response;
-            $rootScope.showNotification(response.message + '. ' + response.remedialAction, null, null, 'error');
+            $rootScope.showNotification(response.response.message + '. ' + response.response.remedialAction, null, null, 'error');
           });
       };
       users.resetPasswordDialog = function(user) {
@@ -2200,7 +2199,7 @@
               repositories.repositories.unreachable = repositories.repositories.unreachable.filter(
                 r => r !== repo
               );
-              $rootScope.showNotification("'" + repo.name + "' " + $translate.instant('admin.repositories.REPO_DELETED') + '.');
+              $rootScope.showNotification(`'${repo.name}' ${$translate.instant('admin.repositories.REPO_DELETED')}.`);
             })
             .error(function(error) {
               $scope.showError(error.response);

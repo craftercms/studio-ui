@@ -44,7 +44,7 @@ interface EditSiteDialogUIProps {
 }
 
 interface EditSiteDialogUIContainerProps {
-  resource: Resource<Pick<Source, "site">>;
+  resource: Resource<Pick<Source, 'site'>>;
   submitting: boolean;
   onSubmit: Function;
   onClose?(response?: any): any;
@@ -107,7 +107,7 @@ function EditSiteDialog(props: EditSiteDialogProps) {
         setSubmitting( false );
         setError(e);
       }
-    )
+    );
   };
 
   return (
