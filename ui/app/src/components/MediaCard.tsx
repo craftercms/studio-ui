@@ -187,6 +187,9 @@ function MediaCard(props: MediaCardProps) {
         iconName = `${iconClass} fa-file-code-o`;
         previewArea = true;
         break;
+      case 'Asset':
+        previewArea = true;
+        break;
       default:
         break;
     }

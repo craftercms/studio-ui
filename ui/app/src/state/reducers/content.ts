@@ -80,7 +80,7 @@ const reducer = createReducer<ContentState>(initialState, {
     ...state,
     permissions: {
       ...state.permissions,
-      [payload.path]: createPresenceTable(payload.permissions)
+      [payload.path]: createPresenceTable(payload.permissions.map(value => value.replaceAll(' ', '_')))
     }
   }),
   [fetchDetailedItemComplete.type]: (state, { payload }) => {

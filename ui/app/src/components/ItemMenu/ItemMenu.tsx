@@ -466,7 +466,7 @@ function ItemMenuUI(props: ItemMenuUIProps) {
   );
 }
 
-function Loader(props) {
+export function Loader(props) {
   const [items] = useState(() => {
     const numOfItems = props.loaderItems;
     const start = 20;

@@ -19,8 +19,8 @@ import { Observable } from 'rxjs';
 import { pluck } from 'rxjs/operators';
 import { SearchResult } from '../models/Search';
 
-export function search(siteId: string, parameters: any = {}): Observable<SearchResult> {
-  return post(`/studio/api/2/search/search.json?siteId=${siteId}`, parameters, {
+export function search(site: string, parameters: any = {}): Observable<SearchResult> {
+  return post(`/studio/api/2/search/search.json?siteId=${site}`, parameters, {
     'Content-Type': 'application/json'
   }).pipe(pluck('response', 'result'));
 }

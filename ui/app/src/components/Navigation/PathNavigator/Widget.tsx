@@ -237,7 +237,7 @@ export default function (props: WidgetProps) {
     setItemMenu({
       path,
       anchorEl: element,
-      loaderItems: getNumOfMenuOptionsForItem(itemsByPath[state.currentPath])
+      loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
     });
   };
 
