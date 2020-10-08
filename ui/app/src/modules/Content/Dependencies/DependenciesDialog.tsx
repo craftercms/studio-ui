@@ -15,7 +15,7 @@
  */
 
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
-import { SandboxItem } from '../../../models/Item';
+import { DetailedItem, SandboxItem } from '../../../models/Item';
 import { getDependant, getSimpleDependencies } from '../../../services/dependencies';
 import {
   useActiveSiteId,
@@ -221,11 +221,11 @@ const dependenciesDialogStyles = makeStyles((theme) => createStyles({
 }));
 
 interface DependenciesListProps {
-  resource: Resource<SandboxItem[]>;
+  resource: Resource<DetailedItem[]>;
   compactView: boolean;
   showTypes: string;
 
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: SandboxItem): void;
+  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
 }
 
 function DependenciesList(props: DependenciesListProps) {
@@ -236,7 +236,7 @@ function DependenciesList(props: DependenciesListProps) {
     handleContextMenuClick
   } = props;
   const classes = dependenciesDialogStyles({});
-  const dependencies: SandboxItem[] = resource.read();
+  const dependencies: DetailedItem[] = resource.read();
 
   return (
     <List className={classes.dependenciesList}>
@@ -277,8 +277,8 @@ function DependenciesList(props: DependenciesListProps) {
 }
 
 interface DependenciesDialogUIProps {
-  resource: Resource<SandboxItem[]>
-  item: SandboxItem;
+  resource: Resource<DetailedItem[]>
+  item: DetailedItem;
   rootPath: string;
   setItem: Function;
   compactView: boolean;
@@ -289,10 +289,10 @@ interface DependenciesDialogUIProps {
   setDependenciesShown: Function;
   onDismiss?(): void;
   isEditableItem: Function;
-  handleEditorDisplay(item: SandboxItem): void;
+  handleEditorDisplay(item: DetailedItem): void;
   contextMenu: any;
 
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: SandboxItem): void;
+  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
 
   handleContextMenuClose(): void;
 }
@@ -506,7 +506,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 
 interface DependenciesDialogBaseProps {
   open: boolean;
-  item?: SandboxItem;
+  item?: DetailedItem;
   rootPath: string;
   dependenciesShown?: string;
 }
@@ -562,7 +562,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
   });
   const dispatch = useDispatch();
 
-  const handleEditorDisplay = (item: SandboxItem) => {
+  const handleEditorDisplay = (item: DetailedItem) => {
     let type = 'controller';
 
     if (item.systemType === 'component' || item.systemType === 'page') {
@@ -584,7 +584,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     return { deps, error };
   }, [deps, error]);
 
-  const resource = useLogicResource<SandboxItem[], { deps: SandboxItem[], error: ApiResponse }>(
+  const resource = useLogicResource<DetailedItem[], { deps: DetailedItem[], error: ApiResponse }>(
     depsSource,
     {
       shouldResolve: (source) => Boolean(source.deps),
@@ -662,7 +662,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     setDialog({ showTypes });
   };
 
-  const setItem = (item: SandboxItem) => {
+  const setItem = (item: DetailedItem) => {
     setDialog({ item });
   };
 
@@ -670,7 +670,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     setDialog({ dependenciesShown });
   };
 
-  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: SandboxItem) => {
+  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem) => {
     setContextMenu({
       el: event.currentTarget,
       dependency

@@ -43,6 +43,12 @@ const DependenciesDialog = lazy(() =>
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
+const LegacyCodeEditorDialog = lazy(() => import( '../Dialogs/LegacyCodeEditorDialog'));
+const CreateFolderDialog = lazy(() => import( '../Dialogs/CreateFolderDialog'));
+const CopyItemsDialog = lazy(() => import( '../Dialogs/CopyDialog'));
+const CreateFileDialog = lazy(() => import( '../Dialogs/CreateFileDialog'));
+const BulkUploadDialog = lazy(() => import( '../Dialogs/BulkUploadDialog'));
+const PreviewDialog = lazy(() => import( '../Dialogs/PreviewDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -278,6 +284,66 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.reject.onClosed, dispatch)}
         onDismiss={createCallback(state.reject.onDismiss, dispatch)}
         onRejectSuccess={createCallback(state.reject.onRejectSuccess, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Create Folder */}
+      <CreateFolderDialog
+        open={state.createFolder.open}
+        path={state.createFolder.path}
+        rename={state.createFolder.rename}
+        value={state.createFolder.value}
+        allowBraces={state.createFolder.allowBraces}
+        onClose={createCallback(state.createFolder.onClose, dispatch)}
+        onClosed={createCallback(state.createFolder.onClosed, dispatch)}
+        onCreated={createCallback(state.createFolder.onCreated, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Create File */}
+      <CreateFileDialog
+        open={state.createFile.open}
+        path={state.createFile.path}
+        type={state.createFile.type}
+        onClose={createCallback(state.createFile.onClose, dispatch)}
+        onClosed={createCallback(state.createFile.onClosed, dispatch)}
+        onCreated={createCallback(state.createFile.onCreated, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Create Folder */}
+      <CopyItemsDialog
+        open={state.copy.open}
+        title={state.copy.title}
+        subtitle={state.copy.subtitle}
+        item={state.copy.item}
+        onClose={createCallback(state.copy.onClose, dispatch)}
+        onClosed={createCallback(state.copy.onClosed, dispatch)}
+        onOk={createCallback(state.copy.onOk, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Bulk Upload*/}
+      <BulkUploadDialog
+        open={state.upload.open}
+        path={state.upload.path}
+        site={state.upload.site}
+        maxSimultaneousUploads={state.upload.maxSimultaneousUploads}
+        onClose={createCallback(state.upload.onClose, dispatch)}
+        onClosed={createCallback(state.upload.onClosed, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Bulk Upload*/}
+      <PreviewDialog
+        open={state.preview.open}
+        url={state.preview.url}
+        type={state.preview.type}
+        mode={state.preview.mode}
+        title={state.preview.title}
+        content={state.preview.content}
+        onClose={createCallback(state.preview.onClose, dispatch)}
+        onClosed={createCallback(state.preview.onClosed, dispatch)}
       />
       {/* endregion */}
 

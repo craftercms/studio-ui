@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from '../../../models/Item';
+import { DetailedItem } from '../../../models/Item';
 import { useStyles } from './styles';
 import React, { useState } from 'react';
 import clsx from 'clsx';
@@ -30,10 +30,10 @@ import { isNavigable } from './utils';
 
 interface BreadcrumbsProps {
   keyword?: string;
-  breadcrumb: SandboxItem[];
+  breadcrumb: DetailedItem[];
   onMenu?(element: Element): void;
   onSearch?(keyword: string): void;
-  onCrumbSelected(breadcrumb: SandboxItem): void;
+  onCrumbSelected(breadcrumb: DetailedItem): void;
   classes?: Partial<Record<'searchRoot', string>>;
 }
 
@@ -78,7 +78,7 @@ export default function (props: BreadcrumbsProps) {
               separator: classes.breadcrumbsSeparator
             }}
           >
-            {breadcrumb.map((item: SandboxItem, i: number) =>
+            {breadcrumb.map((item: DetailedItem, i: number) =>
               maxIndex !== i || (maxIndex === i && isNavigable(item)) ? (
                 <Link
                   key={item.id}

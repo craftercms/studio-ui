@@ -61,13 +61,14 @@ import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Sear
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
-import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
+import { CopyItem, DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import { parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
+import { getParentPath, withoutIndex } from '../utils/path';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -92,6 +93,20 @@ export function getContent(
 export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
   return get(
     `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`
+  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
+}
+
+export function getLegacyItemsTree(
+  site: string,
+  path: string,
+  options?: Partial<{ depth: number; order: string }>
+): Observable<LegacyItem> {
+  return get(
+    `/studio/api/1/services/api/1/content/get-items-tree.json${toQueryString({
+      site_id: site,
+      path,
+      ...options
+    })}`
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
@@ -1340,7 +1355,11 @@ interface VersionDescriptor {
 // Temporarily disabling getVersion(s) and returning just the necessary information to power
 // the previous "diff" view — without network requests — while we develop the backend
 
-export function getVersion(site: string, path: string, versionNumber: string): Observable<VersionDescriptor> {
+export function getVersion(
+  site: string,
+  path: string,
+  versionNumber: string
+): Observable<VersionDescriptor> {
   return of({
     site,
     path,
@@ -1445,7 +1464,7 @@ export function getVersions(
 export function getChildrenByPath(
   site: string,
   path: string,
-  options?: GetChildrenOptions
+  options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
   // TODO: Waiting for API. Temporarily calling API1's get-items-tree
   // return get(`/studio/api/2/content/children_by_path?siteId=${site}&path=${path}`).pipe(
@@ -1463,16 +1482,22 @@ export function getChildrenByPath(
   );
 }
 
-export function copy(site: string, item: Partial<LegacyItem>): Observable<{ success: boolean }> {
-  let _item = item.children ? { item: [item] } : { item: [{ uri: item.path }] };
+export function copy(site: string, item: CopyItem): Observable<{ success: boolean }>;
+export function copy(site: string, path: string): Observable<{ success: boolean }>;
+export function copy(
+  site: string,
+  itemOrPath: string | CopyItem
+): Observable<{ success: boolean }> {
+  let item =
+    typeof itemOrPath === 'string' ? { item: [{ uri: itemOrPath }] } : { item: [itemOrPath] };
   return post(
     `/studio/api/1/services/api/1/clipboard/copy-item.json?site=${site}`,
-    _item,
+    item,
     CONTENT_TYPE_JSON
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function cut(site: string, item: SandboxItem): Observable<any> {
+export function cut(site: string, item: DetailedItem): Observable<any> {
   return post(
     `/studio/api/1/services/api/1/clipboard/cut-item.json?site=${site}`,
     { item: [{ uri: item.path }] },
@@ -1480,30 +1505,21 @@ export function cut(site: string, item: SandboxItem): Observable<any> {
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function paste(
-  site: string,
-  item: SandboxItem
-): Observable<{ site: string; status: string[] }> {
+export function paste(site: string, path: string): Observable<{ site: string; status: string[] }> {
   return get(
-    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${item.path}`
+    `/studio/api/1/services/api/1/clipboard/paste-item.json?site=${site}&parentPath=${path}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function duplicate(
-  site: string,
-  item: SandboxItem,
-  parentItem: SandboxItem
-): Observable<SandboxItem> {
+export function duplicate(site: string, path: string): Observable<string> {
+  let parentPath: any = path;
+  if (path.endsWith('index.xml')) {
+    parentPath = withoutIndex(path);
+  }
   return forkJoin({
-    copy: copy(site, item),
-    newItem: paste(site, parentItem)
-  }).pipe(map(({ copy, newItem }) => ({ ...item, path: newItem.status[0] })));
-}
-
-export function getPages(site: string, item: any): Observable<any> {
-  return get(
-    `/studio/api/1/services/api/1/content/get-pages.json?site=${site}&path=${item.path}&depth=1000&order=default`
-  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
+    copy: copy(site, path),
+    newItem: paste(site, getParentPath(parentPath))
+  }).pipe(map(({ copy, newItem }) => newItem.status[0]));
 }
 
 export function deleteItems(
@@ -1576,7 +1592,6 @@ export default {
   copy,
   cut,
   paste,
-  getPages,
   getContentInstanceLookup,
   fetchContentTypes,
   fetchContentType,

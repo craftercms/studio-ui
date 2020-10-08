@@ -14,18 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { Epic, ofType, StateObservable } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
-  SELECT_TOOL,
   fetchPreviewToolsConfig,
   fetchPreviewToolsConfigComplete,
   fetchPreviewToolsConfigFailed,
+  SELECT_TOOL,
   setPreviewEditMode
 } from '../actions/preview';
 import { getPreviewToolsConfig } from '../../services/configuration';
 import { catchAjaxError } from '../../utils/ajax';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
+import { setStoredEditModeChoice } from '../../utils/state';
+import GlobalState from '../../models/GlobalState';
 
 export default [
   (action$, state$) => action$.pipe(
@@ -53,11 +55,16 @@ export default [
     ),
   // endregion
   // region setPreviewEditMode
-  (action$) =>
+  (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(setPreviewEditMode.type),
-      tap((action) => getHostToGuestBus().next(action)),
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        setStoredEditModeChoice(state.sites.active, action.payload.editMode);
+        getHostToGuestBus().next(action);
+      }),
       ignoreElements()
-    ),
+    )
   // endregion
+
 ] as Epic[];

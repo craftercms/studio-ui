@@ -253,7 +253,7 @@ CStudioAuthoring.Module.requireModule(
                       '</div>' +
                       '<div class=\'template-editor-button-container\'>';
 
-                    if (isWrite == true) {
+                    if (isWrite == true && !isRead) {
                       formHTML +=
                         '<div class=\'edit-buttons-container\'>' +
                         '<select id=\'themeSelector\'>' +
@@ -281,7 +281,7 @@ CStudioAuthoring.Module.requireModule(
                     } else {
                       formHTML +=
                         '<div class=\'edit-buttons-container viewer\'>' +
-                        '<div style=\'right: 120px;\' class=\'template-editor-cancel-button btn btn-default cstudio-template-editor-button\'>Close</div>';
+                        '<div class=\'template-editor-cancel-button btn btn-default cstudio-template-editor-button\'>Close</div>';
                       ('<div/>');
                     }
 
@@ -362,7 +362,8 @@ CStudioAuthoring.Module.requireModule(
                           enableSnippets: true,
                           showPrintMargin: false,
                           fontSize: fontSize,
-                          tabSize: tabSize
+                          tabSize: tabSize,
+                          readOnly: isRead
                         });
 
                         $(modalEl)
@@ -511,7 +512,9 @@ CStudioAuthoring.Module.requireModule(
                         langTools.addCompleter(customCompleter);
                       } else if (templatePath.indexOf('.ftl') != -1) {
 
-                        me.addLocales(nameWrapper, aceEditor, templatePath, filename, content);
+                        if (!isRead) {
+                          me.addLocales(nameWrapper, aceEditor, templatePath, filename, content);
+                        }
 
                         variableOpts = codeSnippets.freemarker;
 
@@ -534,7 +537,7 @@ CStudioAuthoring.Module.requireModule(
                       }
 
                       //Create and append select list
-                      if (Object.entries(variableOpts).length > 0) {
+                      if (!isRead && Object.entries(variableOpts).length > 0) {
                         var selectList = document.createElement('select');
                         selectList.className = 'variable';
                         templateEditorToolbarVarElt.appendChild(selectList);
@@ -660,7 +663,7 @@ CStudioAuthoring.Module.requireModule(
                         }
                       });
 
-                    if (isWrite == true) {
+                    if (isWrite == true && !isRead) {
                       var saveEl = modalEl.querySelector('.template-editor-update-button');
                       let unmount;
                       const options = [
@@ -782,14 +785,16 @@ CStudioAuthoring.Module.requireModule(
                                   type: 'DISPATCH_DOM_EVENT',
                                   payload: { id: createTemplateOnOk }
                                 },
-                                onCancel: {
+                                onClosed: {
                                   type: 'DISPATCH_DOM_EVENT',
                                   payload: { id: createTemplateOnCancel }
                                 }
                               }
                             });
 
-                            CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
+                            let unsubscribe, cancelUnsubscribe;
+
+                            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
                               $(headerEl).find('.fileName')[0].innerText = this.value ? `${baseName}_${this.value}.ftl` : `${baseName}.ftl`;
                               aceEditor.setValue('');
                               CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
@@ -801,11 +806,12 @@ CStudioAuthoring.Module.requireModule(
                                   aceEditor.setValue(defaultContent);
                                 }
                               );
+                              cancelUnsubscribe();
                             });
 
-                            CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
+                            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
                               $select.val($select.data('prev'));
-                              CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
+                              unsubscribe();
                             });
 
                           }

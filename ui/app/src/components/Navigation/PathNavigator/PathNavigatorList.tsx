@@ -15,20 +15,21 @@
  */
 
 import List from '@material-ui/core/List';
-import { SandboxItem } from '../../../models/Item';
+import { DetailedItem } from '../../../models/Item';
 import NavItem from './PathNavigatorItem';
 import React from 'react';
 import { Resource } from '../../../models/Resource';
 
 interface NavProps {
   locale: string;
-  resource: Resource<SandboxItem[]>;
+  resource: Resource<DetailedItem[]>;
   isSelectMode?: boolean;
   leafs: string[];
-  onItemClicked(item: SandboxItem): void;
-  onSelectItem?(item: SandboxItem, unselect: boolean): void;
-  onPathSelected(item: SandboxItem): void;
-  onOpenItemMenu?(element: Element, item: SandboxItem): void;
+  onItemClicked(item: DetailedItem): void;
+  onSelectItem?(item: DetailedItem, unselect: boolean): void;
+  onPathSelected(item: DetailedItem): void;
+  onPreview?(item: DetailedItem): void;
+  onOpenItemMenu?(element: Element, item: DetailedItem): void;
 }
 
 // PathNavigatorList
@@ -36,6 +37,7 @@ export default function (props: NavProps) {
   const {
     resource,
     onPathSelected,
+    onPreview,
     locale,
     isSelectMode,
     onSelectItem,
@@ -46,13 +48,14 @@ export default function (props: NavProps) {
   const items = resource.read();
   return (
     <List component="nav" disablePadding={true}>
-      {items.map((item: SandboxItem) => (
+      {items.map((item: DetailedItem) => (
         <NavItem
           item={item}
           key={item.id}
           isLeaf={leafs.includes(item.id)}
           locale={locale}
           onChangeParent={onPathSelected}
+          onPreview={onPreview}
           isSelectMode={isSelectMode}
           onItemChecked={onSelectItem}
           onOpenItemMenu={onOpenItemMenu}

@@ -14,12 +14,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from '../../../models/Item';
+import { DetailedItem } from '../../../models/Item';
 
-export function isNavigable(item: SandboxItem): boolean {
-  return item.systemType === 'page'
-    || item.systemType === 'component'
+export function isNavigable(item: DetailedItem): boolean {
+  return item.systemType === 'page';
+}
+
+export function isPreviewable(item: DetailedItem): boolean {
+  return item.systemType === 'component'
     || item.systemType === 'asset'
     || item.systemType === 'template'
-    || item.systemType === 'script';
+    || item.systemType === 'script'
+    || item.systemType === 'taxonomy';
+}
+
+export function isFolder(item: DetailedItem): boolean {
+  return item.systemType === 'folder';
+}
+
+export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
+  if (isNavigable(item)) {
+    return 13;
+  } else if (isFolder(item)) {
+    return 6;
+  } else if (isPreviewable(item)) {
+    return 11;
+  }
+}
+export function rand(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }

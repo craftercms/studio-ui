@@ -14,23 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import React, { useState } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Link from '@material-ui/core/Link';
-import { LegacyItem } from '../../models/Item';
+import { CopyItem, LegacyItem } from '../../models/Item';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { TreeView } from '@material-ui/lab';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LookupTable } from '../../models/LookupTable';
-import DialogTitle, { DialogTitleProps } from './DialogTitle';
 import palette from '../../styles/palette';
-
+import StandardAction from '../../models/StandardAction';
+import { useActiveSiteId, useUnmount } from '../../utils/hooks';
+import Dialog from '@material-ui/core/Dialog';
+import DialogHeader from './DialogHeader';
+import DialogBody from './DialogBody';
+import DialogFooter from './DialogFooter';
+import { copy } from '../../services/content';
+import { useDispatch } from 'react-redux';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const messages = defineMessages({
   copy: {
@@ -89,6 +93,25 @@ interface ItemSelectorTreeProps {
   toggleSelectAll(): void;
 }
 
+interface CopyBaseProps {
+  title: string;
+  subtitle?: string;
+  open: boolean;
+  item: LegacyItem;
+}
+
+export type CopyDialogProps = PropsWithChildren<CopyBaseProps & {
+  onClose(): void;
+  onClosed?(): void;
+  onOk?(item: CopyItem): void;
+}>;
+
+export interface CopyDialogStateProps extends CopyBaseProps {
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
+  onOk?: StandardAction;
+}
+
 function ItemSelectorTree(props: ItemSelectorTreeProps) {
   const { formatMessage } = useIntl();
   const classes = simpleItemsSelectionsStyles({});
@@ -102,7 +125,7 @@ function ItemSelectorTree(props: ItemSelectorTreeProps) {
         <FormControlLabel
           onFocus={(event) => {
             event.stopPropagation();
-            event.preventDefault()
+            event.preventDefault();
           }}
           control={
             <Checkbox
@@ -148,31 +171,25 @@ function ItemSelectorTree(props: ItemSelectorTreeProps) {
         {renderTree(item)}
       </TreeView>
     </section>
-  )
+  );
 }
 
-const dialogStyles = makeStyles((theme: Theme) => ({
-  dialogContentRoot: {
-    padding: theme.spacing(2),
-    backgroundColor: palette.gray.light0
-  },
-  dialogActionsRoot: {
-    margin: 0,
-    padding: theme.spacing(1)
-  }
-}));
-
-interface CopyItemsDialogProps extends DialogTitleProps {
-  open: boolean;
-  item: LegacyItem;
-
-  onOk(item: Partial<LegacyItem>): void;
+export default function CopyDialog(props: CopyDialogProps) {
+  return (
+    <Dialog
+      open={props.open}
+      onClose={props.onClose}
+    >
+      <CopyDialogUI {...props} />
+    </Dialog>
+  );
 }
 
-export default function CopyItemsDialog(props: CopyItemsDialogProps) {
-  const { open, onOk, onClose, title, subtitle, item } = props;
+function CopyDialogUI(props: CopyDialogProps) {
+  const { onOk, onClose, title, subtitle, item, onClosed } = props;
   const { formatMessage } = useIntl();
-  const classes = dialogStyles({});
+  const site = useActiveSiteId();
+  const dispatch = useDispatch();
   let parents: LookupTable<string> = {};
   let children: LookupTable<Array<string>> = {};
   let expanded: string[] = [];
@@ -199,10 +216,10 @@ export default function CopyItemsDialog(props: CopyItemsDialogProps) {
       const parentsId = getParentsId(nodes.uri, parents);
       parentsId.forEach(id => {
         if (!_selected.includes(id)) {
-          _selected.push(id)
+          _selected.push(id);
         }
       });
-      _selected.push(nodes.uri)
+      _selected.push(nodes.uri);
     } else {
       const childrenId = getChildrenId(nodes.uri, children);
       childrenId.forEach(id => {
@@ -219,7 +236,7 @@ export default function CopyItemsDialog(props: CopyItemsDialogProps) {
   function getParentsId(id: string, parents: LookupTable<string>, ids: string[] = []) {
     if (parents[id]) {
       ids.push(parents[id]);
-      getParentsId(parents[id], parents, ids)
+      getParentsId(parents[id], parents, ids);
     }
     return ids;
   }
@@ -228,8 +245,8 @@ export default function CopyItemsDialog(props: CopyItemsDialogProps) {
     if (children[id]) {
       children[id].forEach(childId => {
         ids.push(childId);
-        getChildrenId(childId, children, ids)
-      })
+        getChildrenId(childId, children, ids);
+      });
     }
     return ids;
   }
@@ -247,7 +264,7 @@ export default function CopyItemsDialog(props: CopyItemsDialogProps) {
             tree.children.push({ uri: item.uri });
           }
         }
-      })
+      });
     }
     return tree;
   }
@@ -261,22 +278,30 @@ export default function CopyItemsDialog(props: CopyItemsDialogProps) {
   };
 
   const onCopy = () => {
-    let CopyItem: Partial<LegacyItem> = {};
-    CopyItem = getChildrenTree(item.uri, children);
-    onOk(CopyItem);
+    let copyItem: CopyItem = {};
+    copyItem = getChildrenTree(item.uri, children);
+    copy(site, copyItem).subscribe(
+      (response) => {
+        if (response.success) {
+          onOk?.(copyItem);
+        }
+      },
+      (response) => {
+        dispatch(
+          showErrorDialog({
+            error: response
+          })
+        );
+      }
+    );
   };
 
+  useUnmount(onClosed);
+
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      disableBackdropClick={true}
-    >
-      {
-        title &&
-        <DialogTitle title={title} subtitle={subtitle} onClose={onClose}/>
-      }
-      <DialogContent dividers classes={{ root: classes.dialogContentRoot }}>
+    <>
+      <DialogHeader title={title} subtitle={subtitle} onDismiss={onClose} />
+      <DialogBody>
         <ItemSelectorTree
           item={item}
           selected={selected}
@@ -284,15 +309,15 @@ export default function CopyItemsDialog(props: CopyItemsDialogProps) {
           handleSelect={handleSelect}
           toggleSelectAll={toggleSelectAll}
         />
-      </DialogContent>
-      <DialogActions classes={{ root: classes.dialogActionsRoot }}>
+      </DialogBody>
+      <DialogFooter>
         <Button onClick={onClose} variant="contained">
           {formatMessage(messages.cancel)}
         </Button>
         <Button onClick={onCopy} variant="contained" color="primary">
           {formatMessage(messages.copy)}
         </Button>
-      </DialogActions>
-    </Dialog>
-  )
+      </DialogFooter>
+    </>
+  );
 }

@@ -58,7 +58,7 @@ export interface SandboxItem extends BaseItem, SandboxEnvProps {
 }
 
 export interface DetailedItem extends BaseItem {
-  sandbox: PublishEnvProps;
+  sandbox: SandboxEnvProps;
   staging: PublishEnvProps;
   live: PublishEnvProps;
 }
@@ -92,4 +92,9 @@ export interface LegacyItem {
   internalName: string;
   children: LegacyItem[];
   [prop: string]: any;
+}
+
+export interface CopyItem {
+  uri?: string;
+  children?: CopyItem[]
 }

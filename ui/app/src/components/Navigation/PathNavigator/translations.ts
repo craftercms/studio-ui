@@ -29,87 +29,6 @@ export const translations = defineMessages({
     id: 'craftercms.pages.widget.itemsSelected',
     defaultMessage: '{count, plural, one {{count} Item selected} other {{count} Items selected}}'
   },
-  copyDialogTitle: {
-    id: 'craftercms.copy.dialog.title',
-    defaultMessage: 'Copy'
-  },
-  copyDialogSubtitle: {
-    id: 'craftercms.copy.dialog.subtitle',
-    defaultMessage:
-      'Please select any of the sub-pages you would like to batch copy. When pasting, any selected sub-pages and their positional heirarchy will be retained.'
-  },
-  edit: {
-    id: 'words.edit',
-    defaultMessage: 'Edit'
-  },
-  view: {
-    id: 'words.view',
-    defaultMessage: 'View'
-  },
-  newContent: {
-    id: 'craftercms.pages.option.newContent',
-    defaultMessage: 'New Content'
-  },
-  newFolder: {
-    id: 'craftercms.pages.option.newFolder',
-    defaultMessage: 'New Folder'
-  },
-  renameFolder: {
-    id: 'craftercms.pages.option.renameFolder',
-    defaultMessage: 'Rename Folder'
-  },
-  changeTemplate: {
-    id: 'craftercms.pages.option.changeTemplate',
-    defaultMessage: 'Change Template'
-  },
-  createTemplate: {
-    id: 'craftercms.pages.option.createTemplate',
-    defaultMessage: 'Create Template'
-  },
-  createController: {
-    id: 'craftercms.pages.option.createController',
-    defaultMessage: 'Create Controller'
-  },
-  cut: {
-    id: 'words.cut',
-    defaultMessage: 'Cut'
-  },
-  copy: {
-    id: 'words.copy',
-    defaultMessage: 'Copy'
-  },
-  paste: {
-    id: 'words.paste',
-    defaultMessage: 'Paste'
-  },
-  duplicate: {
-    id: 'words.duplicate',
-    defaultMessage: 'Duplicate'
-  },
-  delete: {
-    id: 'words.delete',
-    defaultMessage: 'Delete'
-  },
-  dependencies: {
-    id: 'words.dependencies',
-    defaultMessage: 'Dependencies'
-  },
-  publish: {
-    id: 'craftercms.pages.option.publish',
-    defaultMessage: 'Approve & Publish'
-  },
-  history: {
-    id: 'words.history',
-    defaultMessage: 'History'
-  },
-  translation: {
-    id: 'words.translation',
-    defaultMessage: 'Translation'
-  },
-  upload: {
-    id: 'words.upload',
-    defaultMessage: 'Upload'
-  },
   select: {
     id: 'words.select',
     defaultMessage: 'Select'
@@ -117,18 +36,6 @@ export const translations = defineMessages({
   terminateSelection: {
     id: 'craftercms.pages.option.terminateSelection',
     defaultMessage: 'Terminate Selection'
-  },
-  duplicateDialogBody: {
-    id: 'duplicate.dialog.body',
-    defaultMessage: 'A new copy of this item and all of it\'s item specific content will be created. Are you sure you wish to proceed?'
-  },
-  changeContentType: {
-    id: 'change.contentType.dialog.title',
-    defaultMessage: 'Warning: Change Content Type'
-  },
-  changeContentTypeBody: {
-    id: 'change.contentType.dialog.body',
-    defaultMessage: 'The following operation may result in data loss. Would you like to proceed?'
   },
   refresh: {
     id: 'words.refresh',

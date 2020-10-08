@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import { interval, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
@@ -39,7 +39,7 @@ import Button from '@material-ui/core/Button';
 import { getBulkUploadUrl } from '../../services/content';
 import { LookupTable } from '../../models/LookupTable';
 import { bytesToSize } from '../../utils/string';
-import { useMinimizeDialog, useSpreadState, useSubject } from '../../utils/hooks';
+import { useMinimizeDialog, useSpreadState, useSubject, useUnmount } from '../../utils/hooks';
 import clsx from 'clsx';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import RemoveRoundedIcon from '@material-ui/icons/RemoveRounded';
@@ -50,6 +50,7 @@ import { minimizeDialog, updateDialog } from '../../state/reducers/dialogs/minim
 import { useDispatch } from 'react-redux';
 import { ProgressBar } from '../SystemStatus/ProgressBar';
 import palette from '../../styles/palette';
+import StandardAction from '../../models/StandardAction';
 
 const translations = defineMessages({
   title: {
@@ -591,13 +592,21 @@ const initialDropZoneStatus: DropZoneStatus = {
   progress: 0
 };
 
-interface BulkUploadProps {
+interface BulkUploadBaseProps {
   open: boolean;
   path: string;
   site: string;
   maxSimultaneousUploads?: number;
-  onClose?(dropZoneStatus: DropZoneStatus, path?: string): void;
-  onDismiss?(dropZoneStatus: DropZoneStatus, path?: string): void;
+}
+
+export type BulkUploadProps = PropsWithChildren<BulkUploadBaseProps & {
+  onClose(response: { dropZoneStatus: DropZoneStatus, path?: string }): void;
+  onClosed?(): void;
+}>;
+
+export interface BulkUploadStateProps extends BulkUploadBaseProps {
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
 }
 
 export default function (props: BulkUploadProps) {
@@ -605,18 +614,12 @@ export default function (props: BulkUploadProps) {
   const dispatch = useDispatch();
   // NOTE: this id needs to changed if we added support to many dialogs at the same time;
   const id = 'bulkUpload';
-  const classes = useStyles({});
   const {
     open,
-    site,
     path,
-    onClose,
-    onDismiss,
-    maxSimultaneousUploads = 1
+    onClose
   } = props;
   const [dropZoneStatus, setDropZoneStatus] = useSpreadState<DropZoneStatus>(initialDropZoneStatus);
-  const inputRef = useRef(null);
-  const cancelRef = useRef(null);
 
   const minimized = useMinimizeDialog({
     id,
@@ -628,17 +631,70 @@ export default function (props: BulkUploadProps) {
     dispatch(minimizeDialog({ id }));
   };
 
-  const cancelRequestObservable$ = useSubject<void>();
+  const preventWrongDrop = (e: React.DragEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
 
   const onStatusChange = useCallback((status: DropZoneStatus) => {
-    setDropZoneStatus({
-      ...status,
-      progress: percentageCalculator(status.uploadedFiles, status.files)
-    });
+    console.log(status);
+    setDropZoneStatus(status);
     if (minimized) {
       dispatch(updateDialog({ id, status }));
     }
   }, [setDropZoneStatus, minimized, dispatch]);
+
+  return (
+    <Dialog
+      open={open && !minimized}
+      keepMounted={minimized}
+      onDrop={preventWrongDrop}
+      onDragOver={preventWrongDrop}
+      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose({
+        dropZoneStatus,
+        path
+      })}
+      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose({
+        dropZoneStatus,
+        path
+      })}
+      onClose={() => onClose({ dropZoneStatus, path })}
+      fullWidth
+      maxWidth="sm"
+    >
+      <BulkUploadUI
+        {...props}
+        onMinimized={onMinimized}
+        dropZoneStatus={dropZoneStatus}
+        onStatusChange={onStatusChange}
+      />
+    </Dialog>
+  );
+}
+
+interface BulkUploadUIProps extends BulkUploadProps {
+  dropZoneStatus: DropZoneStatus;
+  onMinimized?(): void;
+  onStatusChange(status: DropZoneStatus): void;
+}
+
+function BulkUploadUI(props: BulkUploadUIProps) {
+  const { formatMessage } = useIntl();
+  const classes = useStyles({});
+  const {
+    site,
+    path,
+    onClose,
+    onClosed,
+    maxSimultaneousUploads = 1,
+    onMinimized,
+    onStatusChange,
+    dropZoneStatus
+  } = props;
+  const inputRef = useRef(null);
+  const cancelRef = useRef(null);
+
+  const cancelRequestObservable$ = useSubject<void>();
 
   const onBrowse = () => {
     inputRef.current.click();
@@ -646,11 +702,6 @@ export default function (props: BulkUploadProps) {
 
   const onCancel = () => {
     cancelRequestObservable$.next();
-  };
-
-  const preventWrongDrop = (e: React.DragEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
   };
 
   useEffect(() => {
@@ -667,22 +718,17 @@ export default function (props: BulkUploadProps) {
     };
   }, [dropZoneStatus.status, formatMessage]);
 
+  useUnmount(onClosed);
+
   return (
-    <Dialog
-      open={open && !minimized}
-      keepMounted={minimized}
-      onDrop={preventWrongDrop}
-      onDragOver={preventWrongDrop}
-      onBackdropClick={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus, path)}
-      onEscapeKeyDown={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus, path)}
-      onClose={() => onClose(dropZoneStatus, path)}
-      fullWidth
-      maxWidth={'sm'}
-    >
+    <>
       <DialogHeader
         title={formatMessage(translations.title)}
         subtitle={formatMessage(translations.subtitle)}
-        onDismiss={dropZoneStatus.status === 'uploading' ? onMinimized : () => onDismiss(dropZoneStatus, path)}
+        onDismiss={dropZoneStatus.status === 'uploading' ? onMinimized : () => onClose({
+          dropZoneStatus,
+          path
+        })}
         closeIcon={dropZoneStatus.status === 'uploading' ? RemoveRoundedIcon : CloseRoundedIcon}
       />
       <DialogBody className={classes.dialogContent}>
@@ -732,7 +778,7 @@ export default function (props: BulkUploadProps) {
           </Button>
         </DialogFooter>
       }
-    </Dialog>
+    </>
   );
 }
 
