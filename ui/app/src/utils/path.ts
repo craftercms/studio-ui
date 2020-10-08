@@ -19,7 +19,7 @@ import { LookupTable } from '../models/LookupTable';
 import { DetailedItem } from '../models/Item';
 
 // Originally from ComponentPanel.getPreviewPagePath
-export function getPathFromPreviewURL(previewURL: string) {
+export function getPathFromPreviewURL(previewURL: string): string {
   let pagePath = previewURL;
 
   if (pagePath.indexOf('?') > 0) {
