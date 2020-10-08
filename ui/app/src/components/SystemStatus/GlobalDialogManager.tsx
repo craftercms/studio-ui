@@ -29,7 +29,6 @@ import { isPlainObject } from '../../utils/object';
 import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
 import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
 import RejectDialog from '../Dialogs/RejectDialog';
-import LegacyCodeEditorDialog from '../Dialogs/LegacyCodeEditorDialog';
 import EditSiteDialog from '../../modules/System/Sites/Edit/EditSiteDialog';
 
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
