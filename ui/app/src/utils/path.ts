@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { parse } from 'query-string';
+import { parse, ParsedQuery } from 'query-string';
 import { LookupTable } from '../models/LookupTable';
 import { DetailedItem } from '../models/Item';
 
@@ -44,20 +44,17 @@ export function getPathFromPreviewURL(previewURL: string) {
   return `/site/website${pagePath}`;
 }
 
-export function getPreviewURLFromPath(baseUrl: string, path: string) {
-  if (path.endsWith('.xml')) {
-    path = path.replace('.xml', '.html');
-  }
-  path = path.replace('/site/website', '');
-  return `${baseUrl}${path}`;
+export function getPreviewURLFromPath(path: string): string {
+  path = withoutIndex(path).replace('/site/website', '');
+  return path;
 }
 
-export function getQueryVariable(query: string, variable: string) {
+export function getQueryVariable(query: string, variable: string): string | string[] {
   let qs = parse(query);
   return qs[variable] ?? null;
 }
 
-export function parseQueryString() {
+export function parseQueryString(): ParsedQuery {
   return parse(window.location.search);
 }
 

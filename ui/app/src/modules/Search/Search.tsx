@@ -65,6 +65,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { getStoredPreviewChoice } from '../../utils/state';
+import { getPreviewURLFromPath } from '../../utils/path';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -531,9 +532,9 @@ export default function Search(props: SearchProps) {
   };
 
   const onNavigate = (item: MediaItem) => {
-    if (item.previewUrl) {
+    if (item.path) {
       let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
-      window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
+      window.location.href = `${authoringBase}/${previewBase}#/?page=${getPreviewURLFromPath(item.path)}&site=${site}`;
     }
   };
 
@@ -552,7 +553,7 @@ export default function Search(props: SearchProps) {
         dispatch(showPreviewDialog({
           type: 'page',
           title,
-          url
+          url: `${guestBase}${getPreviewURLFromPath(item.path)}`
         }));
         break;
       }
