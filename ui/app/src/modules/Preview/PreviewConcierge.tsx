@@ -155,7 +155,7 @@ export function PreviewConcierge(props: any) {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
   }, [authoringBase, computedUrl, site]);
 
-  //region permissions and fetchDetailedItem
+  // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
   const permissions = useSelection((state) => state.content.permissions);
   const write = permissions?.[currentItemPath]?.write;
