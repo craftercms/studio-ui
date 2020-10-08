@@ -43,7 +43,7 @@ const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancell
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
 const LegacyCodeEditorDialog = lazy(() => import( '../Dialogs/LegacyCodeEditorDialog'));
 const CreateFolderDialog = lazy(() => import( '../Dialogs/CreateFolderDialog'));
-const CopyItemsDialog = lazy(() => import( '../Dialogs/CopyItemsDialog'));
+const CopyItemsDialog = lazy(() => import( '../Dialogs/CopyDialog'));
 const CreateFileDialog = lazy(() => import( '../Dialogs/CreateFileDialog'));
 const BulkUploadDialog = lazy(() => import( '../Dialogs/BulkUploadDialog'));
 const PreviewDialog = lazy(() => import( '../Dialogs/PreviewDialog'));

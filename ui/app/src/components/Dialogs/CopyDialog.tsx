@@ -93,20 +93,20 @@ interface ItemSelectorTreeProps {
   toggleSelectAll(): void;
 }
 
-interface CopyItemsBaseProps {
+interface CopyBaseProps {
   title: string;
   subtitle?: string;
   open: boolean;
   item: LegacyItem;
 }
 
-export type CopyItemsDialogProps = PropsWithChildren<CopyItemsBaseProps & {
+export type CopyDialogProps = PropsWithChildren<CopyBaseProps & {
   onClose(): void;
   onClosed?(): void;
   onOk?(item: CopyItem): void;
 }>;
 
-export interface CopyItemsDialogStateProps extends CopyItemsBaseProps {
+export interface CopyDialogStateProps extends CopyBaseProps {
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onOk?: StandardAction;
@@ -174,18 +174,18 @@ function ItemSelectorTree(props: ItemSelectorTreeProps) {
   );
 }
 
-export default function CopyItemsDialog(props: CopyItemsDialogProps) {
+export default function CopyDialog(props: CopyDialogProps) {
   return (
     <Dialog
       open={props.open}
       onClose={props.onClose}
     >
-      <CopyItemsDialogUI {...props} />
+      <CopyDialogUI {...props} />
     </Dialog>
   );
 }
 
-function CopyItemsDialogUI(props: CopyItemsDialogProps) {
+function CopyDialogUI(props: CopyDialogProps) {
   const { onOk, onClose, title, subtitle, item, onClosed } = props;
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();

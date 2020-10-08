@@ -1464,7 +1464,7 @@ export function getVersions(
 export function getChildrenByPath(
   site: string,
   path: string,
-  options?: GetChildrenOptions
+  options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
   // TODO: Waiting for API. Temporarily calling API1's get-items-tree
   // return get(`/studio/api/2/content/children_by_path?siteId=${site}&path=${path}`).pipe(

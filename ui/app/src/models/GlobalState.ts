@@ -45,7 +45,7 @@ import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDial
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
 import { DetailedItem } from './Item';
 import { CreateFolderStateProps } from '../components/Dialogs/CreateFolderDialog';
-import { CopyItemsDialogStateProps } from '../components/Dialogs/CopyItemsDialog';
+import { CopyDialogStateProps } from '../components/Dialogs/CopyDialog';
 import { CreateFileStateProps } from '../components/Dialogs/CreateFileDialog';
 import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
 import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
@@ -151,7 +151,7 @@ export interface GlobalState {
     reject: RejectDialogStateProps;
     createFolder: CreateFolderStateProps;
     createFile: CreateFileStateProps;
-    copy: CopyItemsDialogStateProps;
+    copy: CopyDialogStateProps;
     upload: BulkUploadStateProps;
     preview: PreviewDialogStateProps;
   };

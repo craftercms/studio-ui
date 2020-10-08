@@ -31,6 +31,7 @@ import {
   pathNavigatorItemActionSuccess,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
+  pathNavigatorSetKeyword,
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
 
@@ -60,6 +61,17 @@ export default [
       withLatestFrom(state$),
       mergeMap(([{ type, payload: { id, path } }, state]) =>
         getChildrenByPath(state.sites.active, path).pipe(
+          map((response) => pathNavigatorFetchPathComplete({ id, response })),
+          catchAjaxError(pathNavigatorFetchPathFailed)
+        )
+      )
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(pathNavigatorSetKeyword.type),
+      withLatestFrom(state$),
+      mergeMap(([{ type, payload: { id, keyword } }, state]) =>
+        getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, { keyword }).pipe(
           map((response) => pathNavigatorFetchPathComplete({ id, response })),
           catchAjaxError(pathNavigatorFetchPathFailed)
         )
