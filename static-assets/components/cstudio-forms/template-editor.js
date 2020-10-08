@@ -307,16 +307,18 @@ CStudioAuthoring.Module.requireModule(
                         var modePath = 'ace/mode/';
                         var mode = modePath + 'htmlmixed';
 
-                        if (templatePath.indexOf('.css') != -1) {
+                        if (templatePath.indexOf('.css') !== -1) {
                           mode = modePath + 'css';
-                        } else if (templatePath.indexOf('.js') != -1) {
+                        } else if (templatePath.indexOf('.js') !== -1) {
                           mode = modePath + 'javascript';
-                        } else if (templatePath.indexOf('.groovy') != -1) {
+                        } else if (templatePath.indexOf('.groovy') !== -1) {
                           mode = modePath + 'groovy';
-                        } else if (templatePath.indexOf('.ftl') != -1) {
+                        } else if (templatePath.indexOf('.ftl') !== -1) {
                           mode = modePath + 'ftl';
-                        } else if (templatePath.indexOf('.xml') != -1) {
+                        } else if (templatePath.indexOf('.xml') !== -1) {
                           mode = modePath + 'xml';
+                        } else if (templatePath.indexOf('.sh') !== -1) {
+                          mode = modePath + 'sh';
                         }
 
                         langTools = ace.require('ace/ext/language_tools');

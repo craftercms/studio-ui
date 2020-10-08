@@ -218,7 +218,7 @@
           CStudioAuthoring.Operations.editContent(
             contentTO.form,
             CStudioAuthoringContext.siteId,
-            contentTO.uri,
+            contentTO.mimeType,
             contentTO.nodeRef,
             contentTO.uri,
             false,

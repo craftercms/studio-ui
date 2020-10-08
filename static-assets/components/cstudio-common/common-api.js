@@ -2503,16 +2503,16 @@ var nodeOpen = false,
        * =>=>=>=> viewcontroller-in-context-edit.initializeContent
        * =>=>=>=>=> constructUrlWebFormSimpleEngine
        */
-      editContent: function (formId, site, id, nodeRef, path, asPopup, callback, auxParams, mode, isFlattenedInclude) {
+      editContent: function (formId, site, mimeType, nodeRef, path, asPopup, callback, auxParams, mode, isFlattenedInclude) {
         var CSA = CStudioAuthoring,
-          uri = id.replace('//', '/'),
+          uri = path.replace('//', '/'),
           params = { site: site || CStudioAuthoringContext.site, path: path };
 
         function doEdit() {
           if (uri.indexOf('/site') === 0) {
             CSA.Operations.openContentWebForm(
               formId,
-              id,
+              path,
               nodeRef,
               path,
               true,
@@ -2521,7 +2521,7 @@ var nodeOpen = false,
               auxParams,
               isFlattenedInclude
             );
-          } else if (CStudioAuthoring.Utils.isEditableFormAsset(uri)) {
+          } else if (CStudioAuthoring.Utils.isEditableFormAsset(mimeType)) {
             CStudioAuthoring.Operations.openTemplateEditor(
               uri,
               'default',
@@ -2655,11 +2655,11 @@ var nodeOpen = false,
                               }
                             };
 
-                            if (CStudioAuthoring.Utils.isEditableFormAsset(parentItemTo.item.uri)) {
+                            if (CStudioAuthoring.Utils.isEditableFormAsset(parentItemTo.item.mimeTyp)) {
                               CStudioAuthoring.Operations.editContent(
                                 contentTO.contentType,
                                 CStudioAuthoringContext.site,
-                                filePath,
+                                contentTO.mimeType,
                                 '',
                                 filePath,
                                 false,
@@ -8540,24 +8540,17 @@ var nodeOpen = false,
       /**
        * Is Editable Form Asset
        */
-      isEditableFormAsset: function (uri) {
-        //TODO: We should make this a MIME type and make the MIME types a constant
-        if (
-          uri.indexOf('.ftl') != -1 ||
-          uri.indexOf('.css') != -1 ||
-          uri.indexOf('.js') != -1 ||
-          uri.indexOf('.groovy') != -1 ||
-          uri.indexOf('.txt') != -1 ||
-          uri.indexOf('.html') != -1 ||
-          uri.indexOf('.hbs') != -1 ||
-          uri.indexOf('.xml') != -1 ||
-          uri.indexOf('.tmpl') != -1 ||
-          uri.indexOf('.htm') != -1
-        ) {
-          return true;
-        } else {
-          return false;
-        }
+      isEditableFormAsset: function (mimeType) {
+        return (
+          mimeType &&
+          (
+            mimeType.match(/text\//) ||
+            mimeType === 'application/javascript' ||
+            mimeType === 'application/xml' ||
+            mimeType === 'application/json' ||
+            mimeType === 'application/x-sh'
+          )
+        );
       },
 
       /**
