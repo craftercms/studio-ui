@@ -123,7 +123,10 @@ const menuOptions = {
   }
 };
 
-export function generateMenuOptions(item: DetailedItem, permissions: LookupTable<boolean>): SectionItem[][] {
+export function generateMenuOptions(
+  item: DetailedItem,
+  permissions: LookupTable<boolean>
+): SectionItem[][] {
   let options: SectionItem[][] = [];
   const write = permissions.write;
   const read = permissions.read;
@@ -134,11 +137,18 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
   const createContent = permissions.create_content;
   const changeContentType = permissions.change_content_type;
   const hasClipboard = permissions.hasClipboard;
-  const isAsset = ['/templates', '/static-assets', '/scripts'].some(str => item.path.includes(str));
+  const isAsset = ['/templates', '/static-assets', '/scripts'].some((str) =>
+    item.path.includes(str)
+  );
   const isTemplate = item.path.includes('/templates');
   const isController = item.path.includes('/scripts');
   const isWebsite = withoutIndex(item.path) === '/site/website';
-  const renameFolder = !isTemplate && !isController && !isWebsite;
+  const isRootFolder =
+    item.path === '/site/templates' ||
+    item.path === '/site/static-assets' ||
+    item.path === '/site/components' ||
+    item.path === '/site/taxonomy' ||
+    item.path === '/site/scripts';
   let type = item.systemType;
 
   switch (type) {
@@ -197,7 +207,7 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
         if (createFolder) {
           _optionsA.push(menuOptions.createFolder);
         }
-        if (renameFolder) {
+        if (!isRootFolder) {
           _optionsA.push(menuOptions.renameFolder);
         }
         if (deleteItem) {
@@ -217,7 +227,6 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
         if (isController) {
           _optionsA.push(menuOptions.createController);
         }
-
       }
       options.push(_optionsA);
       return options;
@@ -270,5 +279,4 @@ export function generateMenuOptions(item: DetailedItem, permissions: LookupTable
       return options;
     }
   }
-
 }

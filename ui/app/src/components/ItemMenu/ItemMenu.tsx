@@ -170,6 +170,19 @@ export function ItemMenu(props: ItemMenuProps) {
         }));
         break;
       }
+      case 'renameFolder': {
+        dispatch(showCreateFolderDialog({
+          path: withoutIndex(item.path),
+          allowBraces: item.path.startsWith('/scripts/rest'),
+          rename: true,
+          value: item.label,
+          onCreated: batchActions([
+            closeCreateFolderDialog(),
+            onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+          ])
+        }));
+        break;
+      }
       case 'createContent': {
         dispatch(
           showNewContentDialog({
