@@ -29,6 +29,7 @@ import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/W
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 import { LegacyCodeEditorDialogStateProps } from '../../components/Dialogs/LegacyCodeEditorDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
+import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -108,4 +109,10 @@ export const showCodeEditorDialog = createAction<Partial<LegacyCodeEditorDialogS
 export const closeCodeEditorDialog = createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');
 export const codeEditorDialogClosed = createAction('CODE_EDITOR_DIALOG_CLOSED');
 export const updateCodeEditorDialog = createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
+// endregion
+
+// region Edit Site
+export const showEditSiteDialog = createAction<Partial<EditSiteDialogStateProps>>('SHOW_EDIT_SITE_DIALOG');
+export const closeEditSiteDialog = createAction<StandardAction>('CLOSE_EDIT_SITE_DIALOG');
+export const editSiteDialogClosed = createAction('EDIT_SITE_DIALOG_CLOSED');
 // endregion
