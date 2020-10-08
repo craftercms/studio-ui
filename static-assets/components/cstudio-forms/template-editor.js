@@ -319,6 +319,18 @@ CStudioAuthoring.Module.requireModule(
                           mode = modePath + 'xml';
                         } else if (templatePath.indexOf('.sh') !== -1) {
                           mode = modePath + 'sh';
+                        } else if (templatePath.indexOf('.jsx') !== -1) {
+                          mode = modePath + 'jsx';
+                        } else if (templatePath.indexOf('.ts') !== -1) {
+                          mode = modePath + 'tsx';
+                        } else if (templatePath.indexOf('.less') !== -1) {
+                          mode = modePath + 'less';
+                        } else if (templatePath.indexOf('.sass') !== -1) {
+                          mode = modePath + 'sass';
+                        } else if (templatePath.indexOf('.scss') !== -1) {
+                          mode = modePath + 'scss';
+                        } else if (templatePath.indexOf('.tsx') !== -1) {
+                          mode = modePath + 'tsx';
                         }
 
                         langTools = ace.require('ace/ext/language_tools');

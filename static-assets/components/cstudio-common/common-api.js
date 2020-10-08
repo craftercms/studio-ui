@@ -8546,6 +8546,7 @@ var nodeOpen = false,
           (
             mimeType.match(/text\//) ||
             mimeType === 'application/javascript' ||
+            mimeType === 'application/x-javascript+xml' ||
             mimeType === 'application/xml' ||
             mimeType === 'application/json' ||
             mimeType === 'application/x-sh'
