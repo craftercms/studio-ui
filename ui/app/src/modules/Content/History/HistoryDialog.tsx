@@ -185,7 +185,6 @@ interface HistoryDialogBaseProps {
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   versionsBranch: VersionsStateProps;
-  permissions: LookupTable<LookupTable<boolean>>;
   onClose?(): void;
   onClosed?(): void;
   onDismiss?(): void;
@@ -211,7 +210,7 @@ export default function HistoryDialogWrapper(props: HistoryDialogProps) {
 }
 
 function HistoryDialog(props: HistoryDialogProps) {
-  const { onDismiss, versionsBranch, permissions} = props;
+  const { onDismiss, versionsBranch } = props;
   const { count, page, limit, current, item, rootPath } = versionsBranch;
   const path = item ? item.path : '';
   const [openSelector, setOpenSelector] = useState(false);
@@ -226,32 +225,23 @@ function HistoryDialog(props: HistoryDialogProps) {
   const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
     shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
-    shouldRenew: (versionsBranch, resource) => resource.complete,
+    shouldRenew: (versionsBranch, resource) => (
+      resource.complete
+    ),
     resultSelector: (versionsBranch) => versionsBranch.versions,
     errorSelector: (versionsBranch) => versionsBranch.error
   });
 
-  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<LookupTable<boolean>>>(permissions, {
-    shouldResolve: (versionsBranch) => Boolean(permissions[item.path]),
-    shouldReject: (versionsBranch) => false,
-    shouldRenew: (versionsBranch, resource) => resource.complete,
-    resultSelector: (versionsBranch) => permissions[item.path],
-    errorSelector: (versionsBranch) => null
-  });
-
   const handleOpenMenu = useCallback(
-    (anchorEl, version, isCurrent = false, permissions) => {
-      const write = permissions?.write;
+    (anchorEl, version, isCurrent = false) => {
       if (isCurrent) {
         let sections = count > 1 ? [
           [menuOptions.view],
           [menuOptions.compareTo, menuOptions.compareToPrevious],
+          [menuOptions.revertToPrevious]
         ] : [
           [menuOptions.view]
         ];
-        if(write && count > 1) {
-          sections.push([menuOptions.revertToPrevious])
-        }
         setMenu({
           sections: sections,
           anchorEl,
@@ -265,9 +255,6 @@ function HistoryDialog(props: HistoryDialogProps) {
         ] : [
           [menuOptions.view]
         ];
-        if(write && count > 1) {
-          sections.push([menuOptions.revertToThisVersion])
-        }
         setMenu({
           sections: sections,
           anchorEl,
@@ -405,7 +392,6 @@ function HistoryDialog(props: HistoryDialogProps) {
         <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
             resource={versionsResource}
-            permissionsResource={permissionsResource}
             onOpenMenu={handleOpenMenu}
             onItemClick={handleViewItem}
             current={current}
