@@ -1566,26 +1566,52 @@ var storage = CStudioAuthoring.Storage;
             var perms = results.permissions,
               isWrite = CSA.Service.isWrite(perms),
               isDeleteAllowed = CSA.Service.isDeleteAllowed(perms),
-              isCreateFolder = CSA.Service.isCreateFolder(perms);
+              isCreateFolder = CSA.Service.isCreateFolder(perms),
+              renameFolder = !(oCurrentTextNode.data.path === '/static-assets' || oCurrentTextNode.data.path === '/templates' || oCurrentTextNode.data.path === '/scripts');
 
             if (isWrite == true) {
               RootFolder().IS_WRITE = true;
               if (this.isContainer) {
                 this.menuWidth = '130px';
-                if (isDeleteAllowed) {
-                  if (isCreateFolder) {
-                    this.aMenuItems = this.menuItems['assetsFolderMenu'].slice();
-                  } else {
-                    this.aMenuItems = this.menuItems['assetsFolderMenuNoCreateFolder'].slice();
-                  }
-                } else {
-                  if (isCreateFolder) {
-                    this.aMenuItems = this.menuItems['assetsFolderMenuNoDelete'].slice();
-                  } else {
-                    this.aMenuItems = this.menuItems[
-                      'assetsFolderMenuNoDeleteNoCreateFolder'
-                    ].slice();
-                  }
+                this.aMenuItems = [];
+                this.aMenuItems.push(
+                  {
+                    text: CMgs.format(siteDropdownLangBundle, 'upload'),
+                      onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.uploadAsset, obj: tree }
+                  },
+                )
+                if(isDeleteAllowed){
+                  this.aMenuItems.push(
+                    {
+                      text: CMgs.format(siteDropdownLangBundle, 'delete'),
+                      onclick: {
+                        fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContainer,
+                        obj: tree
+                      }
+                    }
+                  )
+                }
+                if(isCreateFolder){
+                  this.aMenuItems.push(
+                    {
+                      text: CMgs.format(siteDropdownLangBundle, 'createFolder'),
+                      onclick: {
+                        fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.createContainer,
+                        obj: tree
+                      }
+                    },
+                  )
+                }
+                if(renameFolder){
+                  this.aMenuItems.push(
+                    {
+                      text: CMgs.format(siteDropdownLangBundle, 'renameFolder'),
+                      onclick: {
+                        fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.renameContainer,
+                        obj: tree
+                      }
+                    },
+                  )
                 }
               } else {
                 this.menuWidth = '130px';

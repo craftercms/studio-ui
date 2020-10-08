@@ -2522,6 +2522,7 @@
         var checkPermissionsCb = {
           success: function(results) {
             var isCreateFolder = CStudioAuthoring.Service.isCreateFolder(results.permissions);
+            var renameFolder = !(oCurrentTextNode.data.path === '/site/components');
             var isCreateContentAllowed = CStudioAuthoring.Service.isCreateContentAllowed(
               results.permissions
             );
@@ -2842,7 +2843,9 @@
                         p_aArgs.addItems([menuItems.newContentOption]);
                       }
                       p_aArgs.addItems([menuItems.newFolderOption]);
-                      p_aArgs.addItems([menuItems.renameFolderOption]);
+                      if(renameFolder){
+                        p_aArgs.addItems([menuItems.renameFolderOption]);
+                      }
                     }
                     if (isUserAllowed) {
                       if (isDeleteAllowed || (!isFolder && isChangeContentTypeAllowed)) {
