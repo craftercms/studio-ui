@@ -29,6 +29,12 @@ import edit from './edit';
 import codeEditor from './codeEditor';
 import workflowCancellation from './workflowCancellation';
 import reject from './reject';
+import createFolder from './createFolder';
+import createFile from './createFile';
+import copy from './copy';
+import upload from './upload';
+import preview from './preview';
+import editSite from './editSite';
 
 export default combineReducers({
   confirm,
@@ -44,5 +50,12 @@ export default combineReducers({
   edit,
   codeEditor,
   workflowCancellation,
-  reject
+  reject,
+  editSite
+  reject,
+  createFolder,
+  createFile,
+  copy,
+  upload,
+  preview
 });

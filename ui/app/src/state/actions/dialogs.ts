@@ -29,6 +29,11 @@ import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/W
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 import { LegacyCodeEditorDialogStateProps } from '../../components/Dialogs/LegacyCodeEditorDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
+import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
+import { CreateFolderStateProps } from '../../components/Dialogs/CreateFolderDialog';
+import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
+import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog';
+import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -95,7 +100,7 @@ export const closeRejectDialog = createAction<StandardAction>('CLOSE_REJECT_DIAL
 export const rejectDialogClosed = createAction('REJECT_DIALOG_CLOSED');
 // endregion
 
-// region Code Editor
+// region Legacy Form
 export const showEditDialog = createAction<Partial<LegacyFormDialogStateProps>>('SHOW_EDIT_DIALOG');
 export const closeEditDialog = createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = createAction<StandardAction>('EDIT_DIALOG_CLOSED');
@@ -103,9 +108,45 @@ export const newContentCreationComplete = createAction<StandardAction>('NEW_CONT
 export const updateEditConfig = createAction<any>('UPDATE_EDIT_CONFIG');
 // endregion
 
-// region Code Editor
+// region Legacy Code Editor
 export const showCodeEditorDialog = createAction<Partial<LegacyCodeEditorDialogStateProps>>('SHOW_CODE_EDITOR_DIALOG');
 export const closeCodeEditorDialog = createAction<StandardAction>('CLOSE_CODE_EDITOR_DIALOG');
 export const codeEditorDialogClosed = createAction('CODE_EDITOR_DIALOG_CLOSED');
 export const updateCodeEditorDialog = createAction<any>('UPDATE_CODE_EDITOR_DIALOG');
+// endregion
+
+// region Create Folder Dialog
+export const showCreateFolderDialog = createAction<Partial<CreateFolderStateProps>>('SHOW_CREATE_FOLDER_DIALOG');
+export const closeCreateFolderDialog = createAction<StandardAction>('CLOSE_CREATE_FOLDER_DIALOG');
+export const createFolderDialogClosed = createAction('CREATE_FOLDER_DIALOG_CLOSED');
+// endregion
+
+// region Create File Dialog
+export const showCreateFileDialog = createAction<Partial<CreateFileStateProps>>('SHOW_CREATE_FILE_DIALOG');
+export const closeCreateFileDialog = createAction<StandardAction>('CLOSE_CREATE_FILE_DIALOG');
+export const createFileDialogClosed = createAction('CREATE_FILE_DIALOG_CLOSED');
+// endregion
+
+// region Copy Dialog
+export const showCopyDialog = createAction<Partial<CreateFolderStateProps>>('SHOW_COPY_DIALOG');
+export const closeCopyDialog = createAction<StandardAction>('CLOSE_COPY_DIALOG');
+export const copyDialogClosed = createAction('COPY_DIALOG_CLOSED');
+// endregion
+
+// region Upload Dialog
+export const showUploadDialog = createAction<Partial<BulkUploadStateProps>>('SHOW_UPLOAD_DIALOG');
+export const closeUploadDialog = createAction<StandardAction>('CLOSE_UPLOAD_DIALOG');
+export const uploadDialogClosed = createAction('UPLOAD_DIALOG_CLOSED');
+// endregion
+
+// region Preview Dialog
+export const showPreviewDialog = createAction<Partial<PreviewDialogStateProps>>('SHOW_PREVIEW_DIALOG');
+export const closePreviewDialog = createAction<StandardAction>('CLOSE_PREVIEW_DIALOG');
+export const previewDialogClosed = createAction('PREVIEW_DIALOG_CLOSED');
+// endregion
+
+// region Edit Site
+export const showEditSiteDialog = createAction<Partial<EditSiteDialogStateProps>>('SHOW_EDIT_SITE_DIALOG');
+export const closeEditSiteDialog = createAction<StandardAction>('CLOSE_EDIT_SITE_DIALOG');
+export const editSiteDialogClosed = createAction('EDIT_SITE_DIALOG_CLOSED');
 // endregion

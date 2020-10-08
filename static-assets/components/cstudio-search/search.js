@@ -52,14 +52,8 @@
     this.bindEvents();
     const container = document.querySelector('.cstudio-search');
     CrafterCMSNext.render(container, 'Search', {
-      onEdit: CStudioSearch.editElement,
-      onDelete: CStudioSearch.deleteElement,
-      onPreview: CStudioSearch.previewElement,
       onSelect: CStudioSearch.changeSelectStatus,
-      onGetUserPermissions: CStudioSearch.getUserPermissions,
       mode: this.searchContext.mode,
-      siteId: CStudioAuthoringContext.siteId,
-      previewAppBaseUri: CStudioAuthoringContext.previewAppBaseUri
     });
   };
 
@@ -206,72 +200,4 @@
     }
   };
 
-  CStudioSearch.editElement = function(path, refreshSearch, readonly) {
-    var editCallback = {
-        success: function() {
-          refreshSearch();
-        }
-      },
-      callback = {
-        success: function(contentTO) {
-          var contentTO = contentTO.item;
-          CStudioAuthoring.Operations.editContent(
-            contentTO.form,
-            CStudioAuthoringContext.siteId,
-            contentTO.mimeType,
-            contentTO.nodeRef,
-            contentTO.uri,
-            false,
-            editCallback,
-            readonly ? [{ name: 'readonly' }] : null
-          );
-        },
-        failure: function(error) {
-          console.error(error);
-        }
-      };
-
-    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
-  };
-
-  CStudioSearch.deleteElement = function(path, refreshSearch) {
-    var callback = {
-      success: function(contentTO) {
-        var contentTO = contentTO.item;
-        CStudioAuthoring.Operations.deleteContent([contentTO], null, refreshSearch);
-      },
-      failure: function(error) {
-        console.error(error);
-      }
-    };
-
-    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
-  };
-
-  CStudioSearch.previewElement = function(url) {
-    CStudioAuthoring.Service.lookupContentItem(
-      CStudioAuthoringContext.site,
-      url,
-      {
-        success: function(to) {
-          CStudioAuthoring.Operations.openPreview(to.item, 'undefined', false, false);
-        },
-        failure: function() {}
-      },
-      false
-    );
-  };
-
-  CStudioSearch.getUserPermissions = function(path) {
-    return new Promise((resolve, reject) => {
-      CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, path, {
-        success: function(results) {
-          resolve(results);
-        },
-        failure: function() {
-          reject('unableToRetrieveUserPermissions');
-        }
-      });
-    });
-  };
 })(window, jQuery, Handlebars);

@@ -49,7 +49,16 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
     var mainContainerEl = YDom.get('acn-dropdown-wrapper');
 
     var navBarSiteNameEl = YDom.get('navbar-site-name');
-    navBarSiteNameEl.innerHTML = CStudioAuthoringContext.site;
+
+    let unsubscribe;
+    unsubscribe = CrafterCMSNext.system.store.subscribe(() => {
+      const stateSite = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site];
+      if (stateSite) {
+        const siteName = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site].name;
+        navBarSiteNameEl.innerHTML = siteName ? siteName : CStudioAuthoringContext.site;
+        unsubscribe();
+      }
+    });
 
     if (
       window.location.pathname.indexOf('browse') > -1 ||

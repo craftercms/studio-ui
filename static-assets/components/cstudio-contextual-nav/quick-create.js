@@ -76,6 +76,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
         };
       }
       const editDialogSuccess = 'editDialogSuccess';
+      const editDialogCancel = 'editDialogCancel';
 
       const showEditDialog = function (payload) {
         CrafterCMSNext.system.store.dispatch({
@@ -83,13 +84,25 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           payload: {
             ...payload,
             onSaveSuccess: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: editDialogSuccess }
+                },
+                { type: 'CLOSE_NEW_CONTENT_DIALOG' }
+              ]
+            },
+            onClosed: {
               type: 'DISPATCH_DOM_EVENT',
-              payload: { id: editDialogSuccess }
+              payload: { id: editDialogCancel }
             }
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, (response) => {
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, (response) => {
           if (response) {
             const page = CStudioAuthoring.Utils.getQueryParameterURL('page');
             const acnDraftContent = $('.acnDraftContent').get(0);
@@ -108,12 +121,18 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
               CStudioAuthoring.Operations.refreshPreview();
             }
           }
-          CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_NEW_CONTENT_DIALOG' });
+          cancelUnsubscribe();
         });
+
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, (response) => {
+          unsubscribe();
+        });
+
       };
 
       const onNewContentSelected = function () {
         const contentTypeSelected = 'contentTypeSelected';
+        const contentDialogCancel = 'contentDialogCancel';
 
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_NEW_CONTENT_DIALOG',
@@ -124,14 +143,25 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
             onContentTypeSelected: {
               type: 'DISPATCH_DOM_EVENT',
               payload: { id: contentTypeSelected }
+            },
+            onClosed: {
+              type: 'DISPATCH_DOM_EVENT',
+              payload: { id: contentDialogCancel }
             }
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, (response) => {
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, (response) => {
           if (response) {
             showEditDialog(response);
           }
+          cancelUnsubscribe();
+        });
+
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, () => {
+          unsubscribe();
         });
       };
 

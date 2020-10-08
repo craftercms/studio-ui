@@ -43,6 +43,13 @@ import { SidebarConfigItem } from '../services/configuration';
 import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
+import { DetailedItem } from './Item';
+import { CreateFolderStateProps } from '../components/Dialogs/CreateFolderDialog';
+import { CopyDialogStateProps } from '../components/Dialogs/CopyDialog';
+import { CreateFileStateProps } from '../components/Dialogs/CreateFileDialog';
+import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
+import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
+import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -63,6 +70,7 @@ export interface GuestData {
   models: LookupTable<ContentInstance>;
   childrenMap: LookupTable<string[]>;
   modelId: string;
+  path: string;
   selected: EditSelection[];
   itemBeingDragged: boolean;
 }
@@ -80,13 +88,16 @@ export interface GlobalState {
     byId: LookupTable<Site>;
   };
   content: {
-    // items: any;
     quickCreate: {
       error: ApiResponse;
       isFetching: boolean;
       items: QuickCreateItem[];
     };
-    // contentTypes: EntityState<ContentType>;
+    permissions: LookupTable<LookupTable<boolean>>;
+    items: {
+      byPath: LookupTable<DetailedItem>
+    };
+    clipboard: string;
   }
   contentTypes: EntityState<ContentType>;
   env: {
@@ -139,6 +150,12 @@ export interface GlobalState {
     codeEditor: LegacyCodeEditorDialogStateProps;
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
+    createFolder: CreateFolderStateProps;
+    createFile: CreateFileStateProps;
+    copy: CopyDialogStateProps;
+    upload: BulkUploadStateProps;
+    preview: PreviewDialogStateProps;
+    editSite: EditSiteDialogStateProps;
   };
   translation: {
     siteLocales: {

@@ -43,7 +43,6 @@ import { useActiveSiteId, usePreviewGuest, usePreviewState, useSelection } from 
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import ComponentMenu from '../../components/ComponentMenu';
 import QuickCreate from './QuickCreate';
 import { changeSite } from '../../state/reducers/sites';
 import Switch from '@material-ui/core/Switch';
@@ -52,7 +51,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { useSnackbar } from 'notistack';
 import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ItemMenu } from '../../components/ItemMenu/ItemMenu';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -181,7 +181,7 @@ export function AddressBar(props: AddressBarProps) {
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
   const [anchorEl, setAnchorEl] = useState(null);
-  const modelId = useSelection<string>((state) => state.preview.guest?.modelId);
+  const path = useSelection<string>((state) => state.preview.guest?.path);
   const [openSelector, setOpenSelector] = useState(false);
 
   useEffect(() => {
@@ -243,7 +243,7 @@ export function AddressBar(props: AddressBarProps) {
         <SingleItemSelector
           disabled={noSiteSet}
           rootPath='/site/website'
-          selectedItem={item as SandboxItem}
+          selectedItem={item as DetailedItem}
           open={openSelector}
           onClose={() => setOpenSelector(false)}
           onDropdownClick={() => setOpenSelector(!openSelector)}
@@ -261,7 +261,16 @@ export function AddressBar(props: AddressBarProps) {
       <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <MoreVertRounded />
       </IconButton>
-      <ComponentMenu anchorEl={anchorEl} handleClose={handleClose} site={site} modelId={modelId} />
+      {
+        Boolean(anchorEl) &&
+        <ItemMenu
+          open={true}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          path={path}
+          loaderItems={13}
+        />
+      }
     </>
   );
 }
@@ -285,6 +294,12 @@ export default function ToolBar() {
   } : null;
   const { enqueueSnackbar } = useSnackbar();
 
+  // region permissions
+  const permissions = useSelection((state) => state.content.permissions);
+  const write = permissions?.[item?.path]?.['write'];
+  const createContent = permissions?.[item?.path]?.['create_content'];
+  // endregion
+
   return (
     <AppBar position="static" color="default">
       <Toolbar className={classes.toolBar}>
@@ -295,22 +310,28 @@ export default function ToolBar() {
           >
             <CustomMenu />
           </IconButton>
-          <QuickCreate />
-          <Tooltip title={formatMessage(translations.toggleEditMode)}>
-            <EditSwitch
-              color="default"
-              checked={editMode}
-              onChange={(e) => {
-                // prettier-ignore
-                enqueueSnackbar(formatMessage(
-                  e.target.checked
-                    ? translations.editModeOn
-                    : translations.editModeOff
-                ));
-                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-              }}
-            />
-          </Tooltip>
+          {
+            createContent &&
+            <QuickCreate />
+          }
+          {
+            write &&
+            <Tooltip title={formatMessage(translations.toggleEditMode)}>
+              <EditSwitch
+                color="default"
+                checked={editMode}
+                onChange={(e) => {
+                  // prettier-ignore
+                  enqueueSnackbar(formatMessage(
+                    e.target.checked
+                      ? translations.editModeOn
+                      : translations.editModeOff
+                  ));
+                  dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+                }}
+              />
+            </Tooltip>
+          }
         </section>
         <section className={classes.addressBarContainer}>
           <AddressBar

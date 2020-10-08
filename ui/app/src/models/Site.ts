@@ -29,7 +29,9 @@ export interface Views {
 export interface SiteState {
   blueprint: Blueprint;
   siteId: string;
+  siteName: string;
   siteIdExist: boolean;
+  siteNameExist: boolean;
   invalidSiteId: boolean;
   description: string;
   pushSite: boolean;
@@ -62,6 +64,7 @@ export interface SiteState {
 
 export interface CreateSiteMeta {
   siteId: string;
+  siteName?: string;
   description?: string;
   singleBranch?: boolean;
   authenticationType?: string;
@@ -86,6 +89,7 @@ export interface CreateSiteMeta {
 
 export interface MarketplaceSite {
   siteId: string;
+  name?: string;
   blueprintId: string;
   blueprintVersion: {
     major: number,

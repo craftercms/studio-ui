@@ -34,7 +34,7 @@ export function fetchSites(paginationOptions?: PaginationOptions): Observable<Pa
     map(({ response }) => Object.assign(
       response.sites.map(site => ({
         id: site.siteId,
-        name: site.siteId,
+        name: site.name ?? site.siteId,
         description: site.desc
       })),
       {
@@ -52,6 +52,10 @@ export function createSite(site: CreateSiteMeta) {
 
 export function deleteSite(id: string) {
   return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id });
+}
+
+export function updateSite(site: Site) {
+  return postJSON(`/studio/api/2/sites/${site.id}`, { name: site.name, description: site.description });
 }
 
 export function checkHandleAvailability(name: string) {

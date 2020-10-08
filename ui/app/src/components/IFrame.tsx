@@ -40,7 +40,7 @@ const useStyles = makeStyles(() => createStyles({
 
 interface IFrameProps {
   url: string;
-  name: string;
+  title: string;
   width?: string | number;
   height?: string | number;
   className?: string;
@@ -51,7 +51,7 @@ export default function IFrame(props: IFrameProps) {
   const classes = useStyles({});
   const {
     url,
-    name,
+    title,
     width,
     height,
     border,
@@ -68,7 +68,7 @@ export default function IFrame(props: IFrameProps) {
   return (
     <iframe
       style={{ width, height }}
-      title={name}
+      title={title}
       src={url || 'about:blank'}
       className={cls}
     />

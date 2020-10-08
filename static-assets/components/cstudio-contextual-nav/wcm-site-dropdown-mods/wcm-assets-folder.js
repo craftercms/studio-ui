@@ -2022,7 +2022,7 @@ var storage = CStudioAuthoring.Storage;
         const bulkUpload = document.createElement('div');
         bulkUpload.setAttribute('id', 'bulkUpload');
         document.documentElement.append(bulkUpload);
-        const onDismiss = (dropZoneStatus) => {
+        const onClose = ({ dropZoneStatus }) => {
           CrafterCMSNext.ReactDOM.unmountComponentAtNode(bulkUpload);
           bulkUpload.remove();
           if (dropZoneStatus.uploadedFiles > 0) {
@@ -2033,7 +2033,7 @@ var storage = CStudioAuthoring.Storage;
           path: oCurrentTextNode.data.path,
           site: oCurrentTextNode.data.site,
           maxSimultaneousUploads: 2,
-          onDismiss: onDismiss,
+          onClose: onClose,
           open: true
         });
       }
