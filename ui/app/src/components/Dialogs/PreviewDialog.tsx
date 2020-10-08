@@ -70,7 +70,7 @@ export default function (props: PreviewDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-      maxWidth='md'
+      maxWidth="md"
     >
       <PreviewDialogUI {...props} />
     </Dialog>
@@ -85,7 +85,7 @@ function PreviewDialogUI(props: PreviewDialogProps) {
   const renderPreview = () => {
     switch (props.type) {
       case 'image':
-        return <img src={props.url} alt='' />;
+        return <img src={props.url} alt="" />;
       case 'video':
         return (
           <AsyncVideoPlayer

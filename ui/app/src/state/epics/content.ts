@@ -119,7 +119,6 @@ export default [
         return duplicate(state.sites.active, payload.path).pipe(
           map((path) => {
             const src = `${state.env.authoringBase}/legacy/form?site=${state.sites.active}&path=${path}&type=form`;
-            debugger;
             return showEditDialog({ src, onSaveSuccess: payload.onSuccess });
           })
         );
