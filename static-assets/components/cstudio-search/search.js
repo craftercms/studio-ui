@@ -52,14 +52,8 @@
     this.bindEvents();
     const container = document.querySelector('.cstudio-search');
     CrafterCMSNext.render(container, 'Search', {
-      onEdit: CStudioSearch.editElement,
-      onDelete: CStudioSearch.deleteElement,
-      onPreview: CStudioSearch.previewElement,
       onSelect: CStudioSearch.changeSelectStatus,
-      onGetUserPermissions: CStudioSearch.getUserPermissions,
       mode: this.searchContext.mode,
-      siteId: CStudioAuthoringContext.siteId,
-      previewAppBaseUri: CStudioAuthoringContext.previewAppBaseUri
     });
   };
 

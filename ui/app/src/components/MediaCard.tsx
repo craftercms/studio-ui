@@ -176,6 +176,8 @@ function MediaCard(props: MediaCardProps) {
         iconName = `${iconClass} fa-puzzle-piece`;
         break;
       case 'Groovy':
+      case 'JavaScript':
+      case 'CSS':
         iconName = `${iconClass} fa-file-code-o`;
         break;
       default:
