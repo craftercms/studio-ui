@@ -34,6 +34,7 @@ import createFile from './createFile';
 import copy from './copy';
 import upload from './upload';
 import preview from './preview';
+import editSite from './editSite';
 
 export default combineReducers({
   confirm,
@@ -49,6 +50,8 @@ export default combineReducers({
   edit,
   codeEditor,
   workflowCancellation,
+  reject,
+  editSite
   reject,
   createFolder,
   createFile,

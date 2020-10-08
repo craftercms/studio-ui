@@ -29,6 +29,7 @@ import { WorkflowCancellationDialogStateProps } from '../../components/Dialogs/W
 import { RejectDialogStateProps } from '../../components/Dialogs/RejectDialog';
 import { LegacyCodeEditorDialogStateProps } from '../../components/Dialogs/LegacyCodeEditorDialog';
 import { LegacyFormDialogStateProps } from '../../components/Dialogs/LegacyFormDialog';
+import { EditSiteDialogStateProps } from '../../modules/System/Sites/Edit/EditSiteDialog';
 import { CreateFolderStateProps } from '../../components/Dialogs/CreateFolderDialog';
 import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
 import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog';
@@ -142,4 +143,10 @@ export const uploadDialogClosed = createAction('UPLOAD_DIALOG_CLOSED');
 export const showPreviewDialog = createAction<Partial<PreviewDialogStateProps>>('SHOW_PREVIEW_DIALOG');
 export const closePreviewDialog = createAction<StandardAction>('CLOSE_PREVIEW_DIALOG');
 export const previewDialogClosed = createAction('PREVIEW_DIALOG_CLOSED');
+// endregion
+
+// region Edit Site
+export const showEditSiteDialog = createAction<Partial<EditSiteDialogStateProps>>('SHOW_EDIT_SITE_DIALOG');
+export const closeEditSiteDialog = createAction<StandardAction>('CLOSE_EDIT_SITE_DIALOG');
+export const editSiteDialogClosed = createAction('EDIT_SITE_DIALOG_CLOSED');
 // endregion
