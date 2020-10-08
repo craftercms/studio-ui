@@ -194,9 +194,9 @@ export default function (props: WidgetProps) {
           if (item.systemType === 'template') {
             mode = 'ftl';
           } else if (item.systemType === 'script') {
-            mode = 'java';
+            mode = 'groovy';
           } else if (item.mimeType === 'application/javascript') {
-            mode = 'js';
+            mode = 'javascript';
           } else if (item.mimeType === 'text/css') {
             mode = 'css';
           }
