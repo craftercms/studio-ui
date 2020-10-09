@@ -682,7 +682,6 @@
                           e.data.children &&
                           e.data.children.length > 0 &&
                           e.data.data.path != '/site/website') ||
-                        e.data.browserUri !== CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri ||
                         e.changeStructure
                           ? true
                           : false;
@@ -708,7 +707,6 @@
                         e.data.children &&
                         e.data.children.length > 0 &&
                         e.data.data.path != '/site/website') ||
-                      e.data.browserUri !== CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri ||
                       e.changeStructure
                         ? true
                         : false;
