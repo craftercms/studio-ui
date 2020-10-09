@@ -673,18 +673,23 @@
               function (e) {
                 /*eventCM.typeAction = e.typeAction;
                             document.dispatchEvent(eventCM);*/
-
                 try {
                   if (e.data && e.data.length) {
                     for (var i = 0; i < e.data.length; i++) {
-                      var changeStructure =
-                        (e.data &&
-                          e.data.children &&
-                          e.data.children.length > 0 &&
-                          e.data.data.path != '/site/website') ||
-                        e.changeStructure
-                          ? true
-                          : false;
+                      let changeStructure = Boolean(e.changeStructure);
+                      if (!changeStructure) {
+                        // prettier-ignore
+                        changeStructure = (
+                          (e.data.children && e.data.children.length > 0) &&
+                          (
+                            (e.data.path && e.data.path !== '/site/website') ||
+                            (e.data.data && e.data.data.path && e.data.data.path !== '/site/website')
+                          )
+                        ) || (
+                          e.data[i] && e.oldPath &&
+                          e.data[i].uri !== e.oldPath
+                        );
+                      }
                       Self.refreshNodes(
                         e.data[i]
                           ? e.data[i]
@@ -702,14 +707,21 @@
                       );
                     }
                   } else {
-                    var changeStructure =
-                      (e.data &&
-                        e.data.children &&
-                        e.data.children.length > 0 &&
-                        e.data.data.path != '/site/website') ||
-                      e.changeStructure
-                        ? true
-                        : false;
+                    let changeStructure = Boolean(e.changeStructure);
+                    if (!changeStructure) {
+                      // prettier-ignore
+                      changeStructure = (
+                        (e.data.children && e.data.children.length > 0) &&
+                        (
+                          (e.data.path && e.data.path !== '/site/website') ||
+                          (e.data.data && e.data.data.path && e.data.data.path !== '/site/website')
+                        )
+                      ) || (
+                        e.data && e.oldPath &&
+                        e.data.uri !== e.oldPath
+                      );
+                    }
+
                     Self.refreshNodes(
                       e.data
                         ? e.data

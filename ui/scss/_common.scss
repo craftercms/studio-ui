@@ -22,3 +22,9 @@
   text-overflow: ellipsis;
   margin-bottom: -5px;
 }
+
+.group-name.trim {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
