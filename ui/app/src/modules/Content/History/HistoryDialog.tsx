@@ -185,7 +185,7 @@ interface HistoryDialogBaseProps {
 
 export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
   versionsBranch: VersionsStateProps;
-  permissions: LookupTable<LookupTable<boolean>>;
+  permissions: LookupTable<boolean>;
   onClose?(): void;
   onClosed?(): void;
   onDismiss?(): void;
@@ -231,12 +231,12 @@ function HistoryDialog(props: HistoryDialogProps) {
     errorSelector: (versionsBranch) => versionsBranch.error
   });
 
-  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<LookupTable<boolean>>>(permissions, {
-    shouldResolve: (versionsBranch) => Boolean(permissions[item.path]),
-    shouldReject: (versionsBranch) => false,
-    shouldRenew: (versionsBranch, resource) => resource.complete,
-    resultSelector: (versionsBranch) => permissions[item.path],
-    errorSelector: (versionsBranch) => null
+  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(permissions, {
+    shouldResolve: (permissions) => Boolean(permissions),
+    shouldReject: (permissions) => false,
+    shouldRenew: (permissions, resource) => resource.complete,
+    resultSelector: (permissions) => permissions,
+    errorSelector: (permissions) => null
   });
 
   const handleOpenMenu = useCallback(
@@ -245,7 +245,7 @@ function HistoryDialog(props: HistoryDialogProps) {
       if (isCurrent) {
         let sections = count > 1 ? [
           [menuOptions.view],
-          [menuOptions.compareTo, menuOptions.compareToPrevious],
+          [menuOptions.compareTo, menuOptions.compareToPrevious]
         ] : [
           [menuOptions.view]
         ];
@@ -404,8 +404,8 @@ function HistoryDialog(props: HistoryDialogProps) {
         />
         <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
-            resource={versionsResource}
-            permissionsResource={permissionsResource}
+            versions={versionsResource}
+            permissions={permissionsResource}
             onOpenMenu={handleOpenMenu}
             onItemClick={handleViewItem}
             current={current}

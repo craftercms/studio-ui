@@ -209,7 +209,7 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         versionsBranch={versionsBranch}
-        permissions={permissions}
+        permissions={permissions?.[versionsBranch?.item?.path]}
         onClose={createCallback(state.history.onClose, dispatch)}
         onClosed={createCallback(state.history.onClosed, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}

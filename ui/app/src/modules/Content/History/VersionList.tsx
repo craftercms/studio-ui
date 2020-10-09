@@ -121,8 +121,8 @@ export function FancyFormattedDate(props: FancyFormattedDateProps) {
 }
 
 interface VersionListProps {
-  resource: Resource<LegacyVersion[]>;
-  permissionsResource?: Resource<LookupTable<boolean>>;
+  versions: Resource<LegacyVersion[]>;
+  permissions?: Resource<LookupTable<boolean>>;
   selected?: string[];
   current?: string;
   onItemClick(version: LegacyVersion): void;
@@ -131,8 +131,8 @@ interface VersionListProps {
 
 export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
-  const { resource, onOpenMenu, onItemClick, current, selected, permissionsResource } = props;
-  const versions = resource.read();
+  const { versions: versionsResource, onOpenMenu, onItemClick, current, selected, permissions: permissionsResource } = props;
+  const versions = versionsResource.read();
   const permissions = permissionsResource?.read();
 
   return (
