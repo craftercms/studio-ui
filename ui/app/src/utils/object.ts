@@ -21,18 +21,20 @@ import { forEach } from './array';
 import { EntityState } from '../models/EntityState';
 import { stringify, StringifyOptions } from 'query-string';
 
-export function pluckProps(source: object, ...props: string[]): object {
-  const object = {};
+export function pluckProps<T extends object, K extends keyof T>(source: T, ...props: K[]): Pick<T, K> {
+  const object: any = {};
   if (!source) {
     return object;
   }
-  props.forEach((prop) => {
+  props.forEach((_prop_) => {
+    const prop = String(_prop_);
     const propName = prop.substr(prop.lastIndexOf('.') + 1);
     object[propName] = retrieveProperty(source, prop);
   });
   return object;
 }
 
+export function reversePluckProps<T, K extends string>(source: T, ...props: K[]): Omit<T, K>;
 export function reversePluckProps(source: object, ...props: string[]): object {
   const object = {};
   if (!source) {
@@ -112,21 +114,22 @@ export function setProperty(object: object, prop: string, value: any) {
       target = retrieveProperty(object, props.join('.'));
     }
     target[propToSet] = value;
-    return true;
   }
-  return false;
+  return object;
 }
+
+let UND;
 
 // Not Null Or Undefined (nnou)
 export function nnou(object: any): boolean {
-  return object != null;
+  return object !== null && object !== UND;
 }
 
 export const notNullOrUndefined = nnou;
 
 // Null Or Undefined (nou)
 export function nou(object: any): boolean {
-  return object == null;
+  return object === null || object === UND;
 }
 
 export const nullOrUndefined = nou;
@@ -246,5 +249,5 @@ export default {
   findParentModelId,
   isPlainObject,
   extend,
-  toUrlSearch: toQueryString
+  toQueryString
 };

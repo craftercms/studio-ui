@@ -28,7 +28,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
 import { isFolder, isNavigable, isPreviewable } from './utils';
-import Component from '../../Icons/Component';
+import ComponentIcon from '../../Icons/Component';
 import Page from '../../Icons/Page';
 import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
 
@@ -95,6 +95,7 @@ export default function (props: NavItemProps) {
       )}
       <Typography
         variant="body2"
+        title={item.label}
         className={clsx(
           classes.navItemText,
           !isSelectMode && locale !== item.localeCode && 'opacity',
@@ -148,7 +149,7 @@ function RenderIcon({ item, classes }: { item: DetailedItem, classes: any }) {
     }
     case 'component':
     case 'taxonomy': {
-      Icon = Component;
+      Icon = ComponentIcon;
       break;
     }
     case 'asset': {
