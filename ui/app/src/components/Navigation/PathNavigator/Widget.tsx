@@ -318,7 +318,7 @@ export default function (props: WidgetProps) {
         locale={state?.localeCode}
         onClick={() => dispatch(pathNavigatorSetCollapsed({ id, collapsed: !state?.collapsed }))}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
-        onLanguageMenu={(anchor) => onHeaderButtonClick(anchor, 'language')}
+        onLanguageMenu={siteLocales?.localeCodes?.length ? (anchor) => onHeaderButtonClick(anchor, 'language') : null}
       />
       <div {...(state?.collapsed ? { hidden: true } : {})} className={clsx(props.classes?.body)}>
         <SuspenseWithEmptyState
@@ -389,6 +389,7 @@ export default function (props: WidgetProps) {
       <ContextMenu
         anchorEl={simpleMenu.anchorEl}
         sections={simpleMenu.sections}
+        emptyState={simpleMenu.emptyState}
         open={Boolean(simpleMenu.anchorEl)}
         onClose={onCloseSimpleMenu}
         onMenuItemClicked={onSimpleMenuClick}

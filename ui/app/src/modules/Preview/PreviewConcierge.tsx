@@ -94,7 +94,7 @@ import {
   getStoredPreviewChoice,
   setStoredPreviewChoice
 } from '../../utils/state';
-import { reloadDetailedItem } from '../../state/actions/content';
+import { completeDetailedItem } from '../../state/actions/content';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -162,7 +162,7 @@ export function PreviewConcierge(props: any) {
 
   useEffect(() => {
     if (currentItemPath && site) {
-      dispatch(reloadDetailedItem({ path: currentItemPath }));
+      dispatch(completeDetailedItem({ path: currentItemPath }));
     }
   }, [dispatch, currentItemPath, site]);
 

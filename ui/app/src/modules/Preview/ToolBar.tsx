@@ -147,6 +147,9 @@ const useStyles = makeStyles((theme: Theme) =>
     selectorPopoverRoot: {
       width: 400,
       marginLeft: '4px'
+    },
+    hidden: {
+      visibility: 'hidden'
     }
   })
 );
@@ -310,28 +313,26 @@ export default function ToolBar() {
           >
             <CustomMenu />
           </IconButton>
-          {
-            createContent &&
+          <section className={!createContent && classes.hidden}>
             <QuickCreate />
-          }
-          {
-            write &&
-            <Tooltip title={formatMessage(translations.toggleEditMode)}>
-              <EditSwitch
-                color="default"
-                checked={editMode}
-                onChange={(e) => {
-                  // prettier-ignore
-                  enqueueSnackbar(formatMessage(
-                    e.target.checked
-                      ? translations.editModeOn
-                      : translations.editModeOff
-                  ));
-                  dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-                }}
-              />
-            </Tooltip>
-          }
+          </section>
+          <Tooltip
+            title={formatMessage(translations.toggleEditMode)} className={!write && classes.hidden}
+          >
+            <EditSwitch
+              color="default"
+              checked={editMode}
+              onChange={(e) => {
+                // prettier-ignore
+                enqueueSnackbar(formatMessage(
+                  e.target.checked
+                    ? translations.editModeOn
+                    : translations.editModeOff
+                ));
+                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+              }}
+            />
+          </Tooltip>
         </section>
         <section className={classes.addressBarContainer}>
           <AddressBar
