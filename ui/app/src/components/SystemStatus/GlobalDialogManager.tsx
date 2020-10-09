@@ -26,20 +26,17 @@ import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
-import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
-import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
-import RejectDialog from '../Dialogs/RejectDialog';
-import LegacyCodeEditorDialog from '../Dialogs/LegacyCodeEditorDialog';
-import EditSiteDialog from '../../modules/System/Sites/Edit/EditSiteDialog';
 
+const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
+const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
+const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
+const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
-const DependenciesDialog = lazy(() =>
-  import('../../modules/Content/Dependencies/DependenciesDialog')
-);
+const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
