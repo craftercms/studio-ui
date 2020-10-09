@@ -250,7 +250,7 @@ function HistoryDialog(props: HistoryDialogProps) {
           [menuOptions.view]
         ];
         if(write && count > 1) {
-          sections.push([menuOptions.revertToPrevious])
+          sections.push([menuOptions.revertToPrevious]);
         }
         setMenu({
           sections: sections,
@@ -266,7 +266,7 @@ function HistoryDialog(props: HistoryDialogProps) {
           [menuOptions.view]
         ];
         if(write && count > 1) {
-          sections.push([menuOptions.revertToThisVersion])
+          sections.push([menuOptions.revertToThisVersion]);
         }
         setMenu({
           sections: sections,
