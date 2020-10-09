@@ -18,7 +18,7 @@ var YDom = YAHOO.util.Dom;
 var YEvent = YAHOO.util.Event;
 var storage = CStudioAuthoring.Storage;
 
-(function () {
+(function() {
   function RootFolder() {
     return CStudioAuthoring.ContextualNav.WcmRootFolder;
   }
@@ -51,7 +51,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      * initialize module
      */
-    initialize: function (config) {
+    initialize: function(config) {
       // When initializing, check if it's in preview and set the current previewed item into tree cookie
       if (CStudioAuthoringContext.isPreview && config.params.path === '/static-assets') {
         var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
@@ -163,7 +163,7 @@ var storage = CStudioAuthoring.Storage;
 
         this.addContentTreeRootFolder(instance);
 
-        window.setTimeout(function () {
+        window.setTimeout(function() {
           CStudioAuthoring.ContextualNav.WcmAssetsFolder.openLatest(instance);
         }, 1000);
       }
@@ -172,7 +172,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      * add a root level folder to the content drop down
      */
-    addContentTreeRootFolder: function (instance) {
+    addContentTreeRootFolder: function(instance) {
       var folderListEl = instance.config.containerEl;
       var WcmAssets = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
 
@@ -222,7 +222,7 @@ var storage = CStudioAuthoring.Storage;
      * initialize the content tree for the dropdown.
      * There are many methods involved, but it all starts here.
      */
-    initializeContentTree: function (treeEl, path, instance) {
+    initializeContentTree: function(treeEl, path, instance) {
       var site = treeEl.rootFolderSite;
       var rootPath = treeEl.rootFolderPath;
       var pathToOpen = path != undefined ? path : null;
@@ -239,7 +239,7 @@ var storage = CStudioAuthoring.Storage;
 
       CStudioAuthoring.Service.lookupSiteContent(site, rootPath, 1, 'default', {
         openToPath: pathToOpen,
-        success: function (treeData) {
+        success: function(treeData) {
           var items = treeData.item.children;
 
           if (instance.showRootItem) {
@@ -250,13 +250,13 @@ var storage = CStudioAuthoring.Storage;
 
           YDom.removeClass(label, 'loading');
         },
-        failure: function () {
+        failure: function() {
           YDom.removeClass(label, 'loading');
         }
       });
     },
 
-    getStoredPathKey: function (instance) {
+    getStoredPathKey: function(instance) {
       return `${CStudioAuthoringContext.site}-${instance.label
         .replace(' ', '')
         .toLowerCase()}-opened`;
@@ -265,7 +265,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      * render function called on root level elements
      */
-    drawTree: function (treeItems, tree, pathToOpenTo, instance, uniquePath) {
+    drawTree: function(treeItems, tree, pathToOpenTo, instance, uniquePath) {
       var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
       var treeNodes = new Array();
       var treeNodesLabels = new Array();
@@ -315,15 +315,15 @@ var storage = CStudioAuthoring.Storage;
         container: 'acn-context-tooltip'
       });
 
-      tree.subscribe('clickEvent', function (args) {
+      tree.subscribe('clickEvent', function(args) {
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTreeNodeClick(args.node);
       });
 
-      tree.subscribe('dblClickEvent', function (node) {
+      tree.subscribe('dblClickEvent', function(node) {
         return false;
       });
 
-      tree.subscribe('expand', function (node) {
+      tree.subscribe('expand', function(node) {
         var id = node.labelElId;
         var nodeId = YDom.get(id);
 
@@ -352,7 +352,7 @@ var storage = CStudioAuthoring.Storage;
         return true;
       });
 
-      tree.subscribe('collapse', function (node) {
+      tree.subscribe('collapse', function(node) {
         var id = node.labelElId;
         var nodeId = YDom.get(id);
         var collapsedNodeStyle = nodeId.className;
@@ -382,10 +382,10 @@ var storage = CStudioAuthoring.Storage;
       var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
       nodeOpen = true;
       WcmAssetsFolder.treePaths.push(tree.id);
-      (function (t, inst) {
+      (function(t, inst) {
         document.addEventListener(
           'crafter.refresh',
-          function (e) {
+          function(e) {
             /*document.dispatchEvent(eventCM);*/
             try {
               if (e.data && e.data.length) {
@@ -475,7 +475,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      * render method called on sub root level elements
      */
-    drawSubtree: function (treeItems, root, pathToOpenTo, instance) {
+    drawSubtree: function(treeItems, root, pathToOpenTo, instance) {
       var treeNodes = new Array();
       var treeNodesLabels = new Array();
       var nodeToOpen = null;
@@ -534,7 +534,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      * render a tree item
      */
-    drawTreeItem: function (treeNodeTO, root, instance) {
+    drawTreeItem: function(treeNodeTO, root, instance) {
       var WcmAssets = CStudioAuthoring.ContextualNav.WcmAssetsFolder,
         isPreview = CStudioAuthoringContext.isPreview,
         isLevelDescriptor = '/component/level-descriptor' === treeNodeTO.contentType,
@@ -616,7 +616,7 @@ var storage = CStudioAuthoring.Storage;
         treeNode.nowrap = true;
 
         if (highlight) {
-          window.setTimeout(function () {
+          window.setTimeout(function() {
             CStudioAuthoring.ContextualNav.WcmRootFolder.scrollToHighlighted();
           }, 500);
         }
@@ -641,7 +641,7 @@ var storage = CStudioAuthoring.Storage;
         zIndex: 1030
       });
 
-      CStudioAuthoring.ContextualNav.WcmRootFolder.manualContextMenu(tree, function (
+      CStudioAuthoring.ContextualNav.WcmRootFolder.manualContextMenu(tree, function(
         tree,
         target,
         offsetLeft,
@@ -659,7 +659,7 @@ var storage = CStudioAuthoring.Storage;
 
       contextMenu.subscribe(
         'beforeShow',
-        function () {
+        function() {
           if (this.manualTrigger) {
             let $contextMenu = $('#' + tree.oContextMenu.id);
             $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
@@ -678,7 +678,7 @@ var storage = CStudioAuthoring.Storage;
 
       contextMenu.subscribe(
         'beforeHide',
-        function (e) {
+        function(e) {
           this.manualTrigger = false;
         },
         tree,
@@ -687,7 +687,7 @@ var storage = CStudioAuthoring.Storage;
 
       contextMenu.subscribe(
         'show',
-        function () {
+        function() {
           if (!this.manualTrigger && !YDom.isAncestor(tree.id, this.contextEventTarget)) {
             this.hide();
           }
@@ -704,7 +704,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      * method fired when user clicks on the root level folder
      */
-    onRootFolderClick: function () {
+    onRootFolderClick: function() {
       var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
 
       WcmAssetsFolder.toggleFolderState(this.componentInstance, WcmAssetsFolder.ROOT_TOGGLE);
@@ -713,7 +713,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      * toggle folder state
      */
-    toggleFolderState: function (instance, forceState, path) {
+    toggleFolderState: function(instance, forceState, path) {
       var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
 
       var $el;
@@ -754,13 +754,13 @@ var storage = CStudioAuthoring.Storage;
     /**
      * method fired when tree node is expanded for first time
      */
-    onLoadNodeDataOnClick: function (node, fnLoadComplete) {
+    onLoadNodeDataOnClick: function(node, fnLoadComplete) {
       var path = encodeURI(node.treeNodeTO.path);
       var site = node.treeNodeTO.site;
       var pathToOpenTo = node.openToPath;
 
       CStudioAuthoring.Service.lookupSiteContent(site, path, 1, 'default', {
-        success: function (treeData, args) {
+        success: function(treeData, args) {
           CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawSubtree(
             treeData.item.children,
             node,
@@ -771,7 +771,7 @@ var storage = CStudioAuthoring.Storage;
           args.fnLoadComplete();
         },
 
-        failure: function (err, args) {
+        failure: function(err, args) {
           args.fnLoadComplete();
         },
 
@@ -787,7 +787,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      * method fired when tree item is clicked
      */
-    onTreeNodeClick: function (node) {
+    onTreeNodeClick: function(node) {
       if (node.data.previewable == true) {
         if (!node.data.isLevelDescriptor && !node.data.isContainer) {
           CStudioAuthoring.Operations.openPreview(node.data, '', false, false);
@@ -797,7 +797,7 @@ var storage = CStudioAuthoring.Storage;
       return false;
     },
 
-    expandTree: function (node, fnLoadComplete) {
+    expandTree: function(node, fnLoadComplete) {
       if (node) {
         var iniPath;
         try {
@@ -812,7 +812,7 @@ var storage = CStudioAuthoring.Storage;
           num = el.getAttribute('num');
         plainpath = roothpath == '/site' ? 'root-folder' : plainpath;
         if (!num) {
-          while ((el = el.parentElement) && !el.hasAttribute('num')) ;
+          while ((el = el.parentElement) && !el.hasAttribute('num'));
         }
         if (el) {
           CStudioAuthoring.ContextualNav.WcmAssetsFolder.save(
@@ -835,7 +835,7 @@ var storage = CStudioAuthoring.Storage;
       }
     },
 
-    collapseTree: function (node, fnLoadComplete) {
+    collapseTree: function(node, fnLoadComplete) {
       var iniPath;
       try {
         iniPath = node.treeNodeTO.path;
@@ -849,7 +849,7 @@ var storage = CStudioAuthoring.Storage;
         (num = el.getAttribute('num'));
       plainpath = plainpath == '/site' || path == num ? 'root-folder' : plainpath;
       if (!num) {
-        while ((el = el.parentElement) && !el.hasAttribute('num')) ;
+        while ((el = el.parentElement) && !el.hasAttribute('num'));
       }
 
       CStudioAuthoring.ContextualNav.WcmAssetsFolder.save(
@@ -870,7 +870,7 @@ var storage = CStudioAuthoring.Storage;
       $el.addClass('closed');
     },
 
-    save: function (instance, path, fileName, num, mode) {
+    save: function(instance, path, fileName, num, mode) {
       var flag = true;
       if (!instance.openArray[num]) {
         instance.openArray[num] = [];
@@ -930,7 +930,7 @@ var storage = CStudioAuthoring.Storage;
       );
     },
 
-    openLatest: function (instance) {
+    openLatest: function(instance) {
       var latestStored = instance.openArray;
       var index = instance.indexPath;
 
@@ -947,12 +947,12 @@ var storage = CStudioAuthoring.Storage;
           k = {},
           pathTrace = {},
           rooth = {},
-          updatePathTrace = function (j, key) {
+          updatePathTrace = function(j, key) {
             var appendedPath = paths[key] && paths[key][j] ? paths[key][j][counter[key][j]++] : '';
             appendedPath = appendedPath !== '' ? '/' + appendedPath : '';
             return (pathTrace[key][j] = pathTrace[key][j] + appendedPath);
           },
-          nextPathTrace = function (j, key) {
+          nextPathTrace = function(j, key) {
             var cont = j == 0 ? 0 : counter[key][j] + 1;
             return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
           };
@@ -962,8 +962,8 @@ var storage = CStudioAuthoring.Storage;
         var YSelector = YAHOO.util.Selector.query;
         var label = instance.rootFolderEl.previousElementSibling;
         YDom.addClass(label, 'loading');
-        var doCall = function (n, j, key) {
-          CStudioAuthoring.ContextualNav.WcmAssetsFolder.onLoadNodeDataOnClick(n, function () {
+        var doCall = function(n, j, key) {
+          CStudioAuthoring.ContextualNav.WcmAssetsFolder.onLoadNodeDataOnClick(n, function() {
             n.loadComplete();
 
             var WcmAssets = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
@@ -981,7 +981,7 @@ var storage = CStudioAuthoring.Storage;
               updatePathTrace(j, key);
               var node = tree.getNodesByProperty('path', pathTrace[key][j]);
               if (node != null) {
-                RootFolder().getNumKey(node, key, function (currentNode) {
+                RootFolder().getNumKey(node, key, function(currentNode) {
                   var loadEl = YSelector('.ygtvtp', currentNode.getEl(), true);
                   loadEl == null && (loadEl = YSelector('.ygtvlp', currentNode.getEl(), true));
                   YDom.addClass(loadEl, 'ygtvloading');
@@ -997,13 +997,13 @@ var storage = CStudioAuthoring.Storage;
               if (latestStored[key].length > k[key]) {
                 pathTrace[key][k[key]] = rooth[key];
                 counter[key][k[key]] = 0;
-                (function () {
+                (function() {
                   tmp[key][k[key]] = latestStored[key][k[key]].replace(rooth[key], '');
                   paths[key][k[key]] = tmp[key][k[key]].length
                     ? (tmp[key][k[key]].charAt(0) == '/'
                         ? tmp[key][k[key]].substr(1)
                         : tmp[key][k[key]]
-                    ).split('/')
+                      ).split('/')
                     : null;
                   recursiveCalls[key][k[key]] = tmp[key][k[key]].length
                     ? paths[key][k[key]].length
@@ -1021,7 +1021,7 @@ var storage = CStudioAuthoring.Storage;
                 }
 
                 if (node != null) {
-                  RootFolder().getNumKey(node, key, function (currentNode) {
+                  RootFolder().getNumKey(node, key, function(currentNode) {
                     var loadEl = YSelector('.ygtvtp', currentNode.getEl(), true);
                     loadEl == null && (loadEl = YSelector('.ygtvlp', currentNode.getEl(), true));
                     YDom.addClass(loadEl, 'ygtvloading');
@@ -1061,10 +1061,10 @@ var storage = CStudioAuthoring.Storage;
             servPath = rootPath;
           }
 
-          (function (ind) {
+          (function(ind) {
             function treePrint(servPath) {
               CStudioAuthoring.Service.lookupSiteContent(site, servPath, 1, 'default', {
-                success: function (treeData) {
+                success: function(treeData) {
                   var key = treeData.item.path.replace(/\//g, '').toLowerCase();
                   (paths[key] = []),
                     (counter[key] = []),
@@ -1103,13 +1103,13 @@ var storage = CStudioAuthoring.Storage;
                   if (latestStored[key] && latestStored[key][[key]] != RootFolder().ROOT_OPENED) {
                     pathTrace[key][k[key]] = treeData.item.path;
                     counter[key][k[key]] = 0;
-                    (function () {
+                    (function() {
                       tmp[key][k[key]] = latestStored[key][k[key]].replace(treeData.item.path, '');
                       paths[key][k[key]] = tmp[key][k[key]].length
                         ? (tmp[key][k[key]].charAt(0) == '/'
                             ? tmp[key][k[key]].substr(1)
                             : tmp[key][k[key]]
-                        ).split('/')
+                          ).split('/')
                         : null;
                       recursiveCalls[key][k[key]] = tmp[key][k[key]].length
                         ? paths[key][k[key]].length
@@ -1118,7 +1118,7 @@ var storage = CStudioAuthoring.Storage;
                     var nodes, node, loadEl;
                     nodes = tree.getNodesByProperty('path', treeData.item.path);
                     if (nodes != null) {
-                      RootFolder().getNumKey(nodes, key, function (currentNode) {
+                      RootFolder().getNumKey(nodes, key, function(currentNode) {
                         node = currentNode;
                       });
                     }
@@ -1154,8 +1154,7 @@ var storage = CStudioAuthoring.Storage;
                     treePrint(servPath);
                   }
                 },
-                failure: function () {
-                }
+                failure: function() {}
               });
             }
 
@@ -1170,7 +1169,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      * create a transfer object for a node
      */
-    createTreeNodeTransferObject: function (treeItem) {
+    createTreeNodeTransferObject: function(treeItem) {
       var retTransferObj = new Object();
       retTransferObj.site = CStudioAuthoringContext.site;
       retTransferObj.internalName = treeItem.internalName;
@@ -1270,8 +1269,8 @@ var storage = CStudioAuthoring.Storage;
       }
 
       var icon = treeItem.folder
-        ? CStudioAuthoring.Utils.createIcon('', RootFolder().defaultIcons.childClosed)
-        : CStudioAuthoring.Utils.getContentItemIcon(treeItem),
+          ? CStudioAuthoring.Utils.createIcon('', RootFolder().defaultIcons.childClosed)
+          : CStudioAuthoring.Utils.getContentItemIcon(treeItem),
         contentType =
           'unknown' != retTransferObj.contentType
             ? retTransferObj.contentType
@@ -1323,7 +1322,7 @@ var storage = CStudioAuthoring.Storage;
      * build the HTML for the scheduled tool tip.
      *
      */
-    buildToolTipRegular: function (
+    buildToolTipRegular: function(
       label,
       contentType,
       style,
@@ -1359,7 +1358,7 @@ var storage = CStudioAuthoring.Storage;
      * build the HTML for the scheduled tool tip.
      *
      */
-    buildToolTipScheduled: function (
+    buildToolTipScheduled: function(
       label,
       contentType,
       style,
@@ -1397,7 +1396,7 @@ var storage = CStudioAuthoring.Storage;
       return toolTip;
     },
 
-    onTriggerContextMenu: function (tree, p_aArgs, contextMenuId, target, position) {
+    onTriggerContextMenu: function(tree, p_aArgs, contextMenuId, target, position) {
       var isManualTrigger = target ? position : false,
         target = target ? target : p_aArgs.contextEventTarget;
 
@@ -1561,7 +1560,7 @@ var storage = CStudioAuthoring.Storage;
 
         //Get user permissions to get read write operations
         var checkPermissionsCb = {
-          success: function (results) {
+          success: function(results) {
             var perms = results.permissions,
               isWrite = CSA.Service.isWrite(perms),
               isDeleteAllowed = CSA.Service.isDeleteAllowed(perms),
@@ -1675,9 +1674,9 @@ var storage = CStudioAuthoring.Storage;
                 this.aMenuItems.push({
                   text: CMgs.format(siteDropdownLangBundle, 'wcmContentApprove'),
                   onclick: {
-                    fn: function () {
+                    fn: function() {
                       var callback = {
-                        success: function (contentTO) {
+                        success: function(contentTO) {
                           var selectedContent = [];
                           selectedContent.push(contentTO.item);
 
@@ -1687,8 +1686,7 @@ var storage = CStudioAuthoring.Storage;
                             false
                           );
                         },
-                        failure: function () {
-                        }
+                        failure: function() {}
                       };
 
                       CStudioAuthoring.Service.lookupContentItem(
@@ -1705,9 +1703,9 @@ var storage = CStudioAuthoring.Storage;
                 this.aMenuItems.push({
                   text: CMgs.format(siteDropdownLangBundle, 'wcmContentSubmit'),
                   onclick: {
-                    fn: function () {
+                    fn: function() {
                       var callback = {
-                        success: function (contentTO) {
+                        success: function(contentTO) {
                           var selectedContent = [];
                           selectedContent.push(contentTO.item);
 
@@ -1716,8 +1714,7 @@ var storage = CStudioAuthoring.Storage;
                             selectedContent
                           );
                         },
-                        failure: function () {
-                        }
+                        failure: function() {}
                       };
 
                       CStudioAuthoring.Service.lookupContentItem(
@@ -1746,9 +1743,9 @@ var storage = CStudioAuthoring.Storage;
             this.aMenuItems.push({
               text: CMgs.format(siteDropdownLangBundle, 'wcmContentDependencies'),
               onclick: {
-                fn: function () {
+                fn: function() {
                   var callback = {
-                    success: function (contentTO) {
+                    success: function(contentTO) {
                       var selectedContent = [];
                       selectedContent.push(contentTO.item);
 
@@ -1758,8 +1755,7 @@ var storage = CStudioAuthoring.Storage;
                         false
                       );
                     },
-                    failure: function () {
-                    }
+                    failure: function() {}
                   };
 
                   CStudioAuthoring.Service.lookupContentItem(
@@ -1787,7 +1783,7 @@ var storage = CStudioAuthoring.Storage;
               });
 
               var checkClipboardCb = {
-                success: function (collection) {
+                success: function(collection) {
                   if (oCurrentTextNode.data.isContainer) {
                     if (collection.count > 0) {
                       if (isWrite == true) {
@@ -1817,8 +1813,7 @@ var storage = CStudioAuthoring.Storage;
                   this.args.show();
                 },
 
-                failure: function () {
-                },
+                failure: function() {},
 
                 args: this.p_aArgs,
                 menuItems: this.aMenuItems,
@@ -1846,8 +1841,7 @@ var storage = CStudioAuthoring.Storage;
               }
             }
           },
-          failure: function () {
-          }
+          failure: function() {}
         };
         checkPermissionsCb.menuItems = menuItems;
         checkPermissionsCb.aMenuItems = aMenuItems;
@@ -1867,14 +1861,13 @@ var storage = CStudioAuthoring.Storage;
     /**
      * Creates new container, Opens a dialog box to enter folder name
      */
-    createContainer: function () {
+    createContainer: function() {
       var createCb = {
-        success: function () {
+        success: function() {
           RootFolder().refreshNodes(this.tree, false, false, null, null, true);
         },
 
-        failure: function () {
-        },
+        failure: function() {},
 
         callingWindow: window,
         tree: oCurrentTextNode
@@ -1888,14 +1881,13 @@ var storage = CStudioAuthoring.Storage;
       );
     },
 
-    renameContainer: function () {
+    renameContainer: function() {
       var createCb = {
-        success: function () {
+        success: function() {
           RootFolder().refreshNodes(this.tree.parent, false, false, null, null, true);
         },
 
-        failure: function () {
-        },
+        failure: function() {},
 
         callingWindow: window,
         tree: oCurrentTextNode
@@ -1914,11 +1906,11 @@ var storage = CStudioAuthoring.Storage;
      * "contextmenu" event that triggered the display of the
      * ContextMenu instance.
      */
-    editContent: function (contentTO, editorId, name, value, draft) {
+    editContent: function(contentTO, editorId, name, value, draft) {
       var path = oCurrentTextNode.data.uri;
 
       var editCb = {
-        success: function () {
+        success: function() {
           if (CStudioAuthoringContext.isPreview) {
             try {
               CStudioAuthoring.Operations.refreshPreview();
@@ -1937,8 +1929,7 @@ var storage = CStudioAuthoring.Storage;
           document.dispatchEvent(eventNS);
         },
 
-        failure: function () {
-        },
+        failure: function() {},
 
         callingWindow: window
       };
@@ -1954,7 +1945,7 @@ var storage = CStudioAuthoring.Storage;
       );
     },
 
-    editTemplate: function (p_sType, p_aArgs, mode) {
+    editTemplate: function(p_sType, p_aArgs, mode) {
       var path = oCurrentTextNode.data.uri;
 
       this.element.firstChild.style.pointerEvents = 'none';
@@ -1964,7 +1955,7 @@ var storage = CStudioAuthoring.Storage;
       CStudioAuthoring.editDisabled.push(this.element.firstChild);
 
       var editCb = {
-        success: function () {
+        success: function() {
           if (CStudioAuthoringContext.isPreview) {
             try {
               CStudioAuthoring.Operations.refreshPreview();
@@ -1980,8 +1971,7 @@ var storage = CStudioAuthoring.Storage;
           document.dispatchEvent(eventNS);
         },
 
-        failure: function () {
-        },
+        failure: function() {},
 
         callingWindow: window
       };
@@ -2000,12 +1990,12 @@ var storage = CStudioAuthoring.Storage;
       );
     },
 
-    createNewTemplate: function () {
+    createNewTemplate: function() {
       CStudioAuthoring.Operations.createNewTemplate(oCurrentTextNode.data.uri, {
-        success: function (templatePath) {
+        success: function(templatePath) {
           RootFolder().refreshNodes(this.tree, false, false, null, null, true);
         },
-        failure: function () {
+        failure: function() {
           //this.callingWindow.location.reload(true);
         },
 
@@ -2014,13 +2004,12 @@ var storage = CStudioAuthoring.Storage;
       });
     },
 
-    createNewScript: function () {
+    createNewScript: function() {
       CStudioAuthoring.Operations.createNewScript(oCurrentTextNode.data.uri, {
-        success: function (templatePath) {
+        success: function(templatePath) {
           RootFolder().refreshNodes(this.tree, false, false, null, null, true);
         },
-        failure: function () {
-        },
+        failure: function() {},
         tree: oCurrentTextNode
       });
     },
@@ -2028,15 +2017,14 @@ var storage = CStudioAuthoring.Storage;
     /**
      *  upload an asset to the target folder if it's a new asset
      */
-    uploadAsset: function () {
+    uploadAsset: function() {
       var uploadCb = {
-        success: function () {
+        success: function() {
           CStudioAuthoring.Operations.refreshPreview();
           RootFolder().refreshNodes(this.tree, false, false, null, null, true);
         },
 
-        failure: function () {
-        },
+        failure: function() {},
 
         callingWindow: window,
         tree: oCurrentTextNode
@@ -2050,7 +2038,7 @@ var storage = CStudioAuthoring.Storage;
       );
     },
 
-    bulkUpload: function () {
+    bulkUpload: function() {
       if (document.querySelector('#bulkUpload')) {
         const messages = CrafterCMSNext.i18n.messages.bulkUploadConfirmDialogMessages;
         CrafterCMSNext.system.store.dispatch({
@@ -2085,14 +2073,13 @@ var storage = CStudioAuthoring.Storage;
     /**
      *  upload an asset to the target folder if it's a new asset
      */
-    overwriteAsset: function () {
+    overwriteAsset: function() {
       var uploadCb = {
-        success: function () {
+        success: function() {
           RootFolder().refreshNodes(this.tree, false, false, null, null, true);
         },
 
-        failure: function () {
-        },
+        failure: function() {},
 
         callingWindow: window,
         tree: oCurrentTextNode
@@ -2110,7 +2097,7 @@ var storage = CStudioAuthoring.Storage;
      * Deletes the TextNode that was the target of the "contextmenu"
      * event that triggered the display of the ContextMenu instance.
      */
-    deleteContent: function (p_sType, p_aArgs, tree) {
+    deleteContent: function(p_sType, p_aArgs, tree) {
       CStudioAuthoring.Operations.deleteContent([oCurrentTextNode.data]);
     },
 
@@ -2118,7 +2105,7 @@ var storage = CStudioAuthoring.Storage;
      * History
      *
      */
-    revertContent: function (p_sType, p_aArgs, tree) {
+    revertContent: function(p_sType, p_aArgs, tree) {
       CStudioAuthoring.Operations.viewContentHistory(
         oCurrentTextNode.data,
         RootFolder().IS_WRITE,
@@ -2129,7 +2116,7 @@ var storage = CStudioAuthoring.Storage;
     /**
      *  Deletes a folder and contents in the target folder
      */
-    deleteContainer: function (p_sType, p_aArgs, tree) {
+    deleteContainer: function(p_sType, p_aArgs, tree) {
       CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContent(p_sType, p_aArgs, tree);
     }
   };
@@ -2138,7 +2125,7 @@ var storage = CStudioAuthoring.Storage;
    * instance object
    * CStudioAuthoring.ContextualNav.WcmAssetsFolder is static
    */
-  CStudioAuthoring.ContextualNav.WcmAssetsFolderInstance = function (config) {
+  CStudioAuthoring.ContextualNav.WcmAssetsFolderInstance = function(config) {
     this._self = this;
     this._toggleState = CStudioAuthoring.ContextualNav.WcmAssetsFolder.ROOT_CLOSED;
     this.rootFolderEl = null;
