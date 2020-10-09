@@ -80,6 +80,7 @@ import {
   useActiveSiteId,
   useContentTypeList,
   useMount,
+  usePermissions,
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
@@ -157,7 +158,7 @@ export function PreviewConcierge(props: any) {
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
-  const permissions = useSelection((state) => state.content.permissions);
+  const permissions = usePermissions();
   const write = permissions?.[currentItemPath]?.write;
 
   useEffect(() => {

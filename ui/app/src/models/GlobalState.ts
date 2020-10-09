@@ -93,9 +93,9 @@ export interface GlobalState {
       isFetching: boolean;
       items: QuickCreateItem[];
     };
-    permissions: LookupTable<LookupTable<boolean>>;
     items: {
       byPath: LookupTable<DetailedItem>
+      permissionsByPath: LookupTable<LookupTable<boolean>>;
     };
     clipboard: string;
   }

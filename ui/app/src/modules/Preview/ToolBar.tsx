@@ -39,7 +39,13 @@ import {
 import { useDispatch } from 'react-redux';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, usePreviewGuest, usePreviewState, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  usePermissions,
+  usePreviewGuest,
+  usePreviewState,
+  useSelection
+} from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -298,7 +304,7 @@ export default function ToolBar() {
   const { enqueueSnackbar } = useSnackbar();
 
   // region permissions
-  const permissions = useSelection((state) => state.content.permissions);
+  const permissions = usePermissions();
   const write = permissions?.[item?.path]?.['write'];
   const createContent = permissions?.[item?.path]?.['create_content'];
   // endregion
@@ -313,11 +319,12 @@ export default function ToolBar() {
           >
             <CustomMenu />
           </IconButton>
-          <section className={!createContent && classes.hidden}>
+          <section className={!createContent ? classes.hidden : ''}>
             <QuickCreate />
           </section>
           <Tooltip
-            title={formatMessage(translations.toggleEditMode)} className={!write && classes.hidden}
+            title={formatMessage(translations.toggleEditMode)}
+            className={!write ? classes.hidden : ''}
           >
             <EditSwitch
               color="default"

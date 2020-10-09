@@ -19,7 +19,13 @@ import { ContextMenuItems, SectionItem } from '../ContextMenu';
 import { Resource } from '../../models/Resource';
 import { DetailedItem, LegacyItem } from '../../models/Item';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, useEnv, useLogicResource, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useEnv,
+  useLogicResource,
+  usePermissions,
+  useSelection
+} from '../../utils/hooks';
 import { generateMenuOptions } from './utils';
 import Menu from '@material-ui/core/Menu';
 import { PopoverOrigin } from '@material-ui/core';
@@ -104,7 +110,7 @@ export function ItemMenu(props: ItemMenuProps) {
   const { path, onClose, onItemMenuActionSuccessCreator, loaderItems = 8 } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
-  const permissions = useSelection((state) => state.content.permissions);
+  const permissions = usePermissions();
   const items = useSelection((state) => state.content.items);
   const hasClipboard = useSelection((state) => state.content.clipboard);
   const item = items.byPath?.[path];

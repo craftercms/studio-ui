@@ -61,11 +61,11 @@ export default [
       ofType(GUEST_CHECK_IN, fetchUserPermissions.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-          if (state.content.permissions?.[payload.path]) {
+          if (state.content.items.permissionsByPath?.[payload.path]) {
             return NEVER;
           } else {
             return getUserPermissions(state.sites.active, payload.path, state.user.username).pipe(
-              map((permissions) => fetchUserPermissionsComplete({
+              map((permissions: string[]) => fetchUserPermissionsComplete({
                 path: payload.path,
                 permissions
               })),
