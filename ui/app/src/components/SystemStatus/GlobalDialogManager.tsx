@@ -40,12 +40,12 @@ const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
-const LegacyCodeEditorDialog = lazy(() => import( '../Dialogs/LegacyCodeEditorDialog'));
-const CreateFolderDialog = lazy(() => import( '../Dialogs/CreateFolderDialog'));
-const CopyItemsDialog = lazy(() => import( '../Dialogs/CopyDialog'));
-const CreateFileDialog = lazy(() => import( '../Dialogs/CreateFileDialog'));
-const BulkUploadDialog = lazy(() => import( '../Dialogs/BulkUploadDialog'));
-const PreviewDialog = lazy(() => import( '../Dialogs/PreviewDialog'));
+const LegacyCodeEditorDialog = lazy(() => import('../Dialogs/LegacyCodeEditorDialog'));
+const CreateFolderDialog = lazy(() => import('../Dialogs/CreateFolderDialog'));
+const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
+const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
+const BulkUploadDialog = lazy(() => import('../Dialogs/BulkUploadDialog'));
+const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -358,10 +358,11 @@ function GlobalDialogManager() {
   );
 }
 
+// @formatter:off
 function MinimizedDialogManager({
-                                  state,
-                                  dispatch
-                                }: {
+  state,
+  dispatch
+}: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {
@@ -385,18 +386,19 @@ function MinimizedDialogManager({
   }, [el, inventory]);
   return inventory.length
     ? ReactDOM.createPortal(
-      inventory.map(({ id, title, subtitle, status }) => (
-        <MinimizedBar
-          key={id}
-          title={title}
-          subtitle={subtitle}
-          status={status}
-          onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
-        />
-      )),
-      el
-    )
+        inventory.map(({ id, title, subtitle, status }) => (
+          <MinimizedBar
+            key={id}
+            title={title}
+            subtitle={subtitle}
+            status={status}
+            onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
+          />
+        )),
+        el
+      )
     : null;
 }
+// @formatter:on
 
 export default React.memo(GlobalDialogManager);

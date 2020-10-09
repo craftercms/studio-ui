@@ -176,7 +176,7 @@ export default function AssetsPanel() {
       resultSelector: (source) => {
         const items = source.page[source.pageNumber].map((id) => source.byId[id]);
         return {
-          ...pluckProps(source, 'count', 'query.limit', 'pageNumber'),
+          ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber'),
           items
         } as AssetResource;
       }

@@ -64,7 +64,7 @@ const useLinkIconStyles = makeStyles(() =>
       paddingTop: 0,
       paddingLeft: 9,
       paddingBottom: 0,
-      textDecoration: 'none'
+      textDecoration: 'none !important'
     },
     icon: {
       marginRight: 3
