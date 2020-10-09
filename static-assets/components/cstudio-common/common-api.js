@@ -8589,7 +8589,7 @@ var nodeOpen = false,
         return (
           mimeType &&
           (
-            mimeType.match(/text\//) ||
+            mimeType.match(/^text\//) ||
             mimeType === 'application/javascript' ||
             mimeType === 'application/x-javascript+xml' ||
             mimeType === 'application/xml' ||
