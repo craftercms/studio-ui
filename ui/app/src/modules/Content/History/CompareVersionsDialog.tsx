@@ -239,7 +239,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
           <SuspenseWithEmptyState resource={versionsResource}>
             <VersionList
               selected={selected}
-              resource={versionsResource}
+              versions={versionsResource}
               current={current}
               onItemClick={handleItemClick}
             />
