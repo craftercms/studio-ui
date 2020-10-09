@@ -257,9 +257,9 @@ var storage = CStudioAuthoring.Storage;
     },
 
     getStoredPathKey: function(instance) {
-      return (
-        `${CStudioAuthoringContext.site}-${instance.label.replace(' ', '').toLowerCase()}-opened`
-      );
+      return `${CStudioAuthoringContext.site}-${instance.label
+        .replace(' ', '')
+        .toLowerCase()}-opened`;
     },
 
     /**
@@ -572,16 +572,8 @@ var storage = CStudioAuthoring.Storage;
             openConfig.icon.stackedclass = null;
           }
 
-          var childClosed = CStudioAuthoring.Utils.createIcon(
-            closedConfig,
-            '',
-            'on-closed'
-          );
-          var childOpen = CStudioAuthoring.Utils.createIcon(
-            openConfig,
-            '',
-            'on-open'
-          );
+          var childClosed = CStudioAuthoring.Utils.createIcon(closedConfig, '', 'on-closed');
+          var childOpen = CStudioAuthoring.Utils.createIcon(openConfig, '', 'on-open');
 
           nodeSpan.appendChild(childClosed);
           nodeSpan.appendChild(childOpen);
@@ -649,7 +641,12 @@ var storage = CStudioAuthoring.Storage;
         zIndex: 1030
       });
 
-      CStudioAuthoring.ContextualNav.WcmRootFolder.manualContextMenu(tree, function (tree, target, offsetLeft, offsetTop) {
+      CStudioAuthoring.ContextualNav.WcmRootFolder.manualContextMenu(tree, function(
+        tree,
+        target,
+        offsetLeft,
+        offsetTop
+      ) {
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(
           tree,
           tree.oContextMenu,
@@ -662,7 +659,7 @@ var storage = CStudioAuthoring.Storage;
 
       contextMenu.subscribe(
         'beforeShow',
-        function () {
+        function() {
           if (this.manualTrigger) {
             let $contextMenu = $('#' + tree.oContextMenu.id);
             $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
@@ -681,7 +678,7 @@ var storage = CStudioAuthoring.Storage;
 
       contextMenu.subscribe(
         'beforeHide',
-        function (e) {
+        function(e) {
           this.manualTrigger = false;
         },
         tree,
@@ -690,7 +687,7 @@ var storage = CStudioAuthoring.Storage;
 
       contextMenu.subscribe(
         'show',
-        function () {
+        function() {
           if (!this.manualTrigger && !YDom.isAncestor(tree.id, this.contextEventTarget)) {
             this.hide();
           }
@@ -950,12 +947,12 @@ var storage = CStudioAuthoring.Storage;
           k = {},
           pathTrace = {},
           rooth = {},
-          updatePathTrace = function (j, key) {
+          updatePathTrace = function(j, key) {
             var appendedPath = paths[key] && paths[key][j] ? paths[key][j][counter[key][j]++] : '';
             appendedPath = appendedPath !== '' ? '/' + appendedPath : '';
             return (pathTrace[key][j] = pathTrace[key][j] + appendedPath);
           },
-          nextPathTrace = function (j, key) {
+          nextPathTrace = function(j, key) {
             var cont = j == 0 ? 0 : counter[key][j] + 1;
             return pathTrace[key][j] + '/' + paths[key][j][counter[key][j]];
           };
@@ -965,8 +962,8 @@ var storage = CStudioAuthoring.Storage;
         var YSelector = YAHOO.util.Selector.query;
         var label = instance.rootFolderEl.previousElementSibling;
         YDom.addClass(label, 'loading');
-        var doCall = function (n, j, key) {
-          CStudioAuthoring.ContextualNav.WcmAssetsFolder.onLoadNodeDataOnClick(n, function () {
+        var doCall = function(n, j, key) {
+          CStudioAuthoring.ContextualNav.WcmAssetsFolder.onLoadNodeDataOnClick(n, function() {
             n.loadComplete();
 
             var WcmAssets = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
@@ -1160,6 +1157,7 @@ var storage = CStudioAuthoring.Storage;
                 failure: function() {}
               });
             }
+
             treePrint(servPath);
           })(ind);
         }
@@ -1398,7 +1396,7 @@ var storage = CStudioAuthoring.Storage;
       return toolTip;
     },
 
-    onTriggerContextMenu: function (tree, p_aArgs, contextMenuId, target, position) {
+    onTriggerContextMenu: function(tree, p_aArgs, contextMenuId, target, position) {
       var isManualTrigger = target ? position : false,
         target = target ? target : p_aArgs.contextEventTarget;
 
@@ -1412,8 +1410,8 @@ var storage = CStudioAuthoring.Storage;
           disabled: true,
           classname: 'menu-separator'
         },
-        'separator': [{ text: '<div>&nbsp;</div>', disabled: true, classname: 'menu-separator' }],
-        'assetsFolderMenu': [
+        separator: [{ text: '<div>&nbsp;</div>', disabled: true, classname: 'menu-separator' }],
+        assetsFolderMenu: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'upload'),
             onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.uploadAsset, obj: tree }
@@ -1440,7 +1438,7 @@ var storage = CStudioAuthoring.Storage;
             }
           }
         ],
-        'assetsFolderMenuNoDelete': [
+        assetsFolderMenuNoDelete: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'upload'),
             onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.uploadAsset, obj: tree }
@@ -1453,7 +1451,7 @@ var storage = CStudioAuthoring.Storage;
             }
           }
         ],
-        'assetsFolderMenuNoCreateFolder': [
+        assetsFolderMenuNoCreateFolder: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'upload'),
             onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.uploadAsset, obj: tree }
@@ -1466,19 +1464,19 @@ var storage = CStudioAuthoring.Storage;
             }
           }
         ],
-        'assetsFolderMenuNoDeleteNoCreateFolder': [
+        assetsFolderMenuNoDeleteNoCreateFolder: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'upload'),
             onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.uploadAsset, obj: tree }
           }
         ],
-        'assetsMenu': [
+        assetsMenu: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'delete'),
             onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContent, obj: tree }
           }
         ],
-        'assetsMenuNoDelete': [
+        assetsMenuNoDelete: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'upload'),
             onclick: {
@@ -1487,7 +1485,7 @@ var storage = CStudioAuthoring.Storage;
             }
           }
         ],
-        'assetsFolderMenuRead': [
+        assetsFolderMenuRead: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'noActionsAvailable'),
             disabled: true,
@@ -1495,7 +1493,7 @@ var storage = CStudioAuthoring.Storage;
           }
         ],
 
-        'assetsFolderTemplate': [
+        assetsFolderTemplate: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'createTemplate'),
             disabled: false,
@@ -1506,7 +1504,7 @@ var storage = CStudioAuthoring.Storage;
           }
         ],
 
-        'assetsFolderScript': [
+        assetsFolderScript: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'createController'),
             disabled: false,
@@ -1517,7 +1515,7 @@ var storage = CStudioAuthoring.Storage;
           }
         ],
 
-        'assetsMenuRead': [
+        assetsMenuRead: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'upload'),
             disabled: true,
@@ -1533,7 +1531,7 @@ var storage = CStudioAuthoring.Storage;
           }
         ],
 
-        'assetsMenuView': [
+        assetsMenuView: [
           {
             text: CMgs.format(siteDropdownLangBundle, 'view'),
             disabled: false,
@@ -1566,26 +1564,49 @@ var storage = CStudioAuthoring.Storage;
             var perms = results.permissions,
               isWrite = CSA.Service.isWrite(perms),
               isDeleteAllowed = CSA.Service.isDeleteAllowed(perms),
-              isCreateFolder = CSA.Service.isCreateFolder(perms);
+              isCreateFolder = CSA.Service.isCreateFolder(perms),
+              renameFolder = !['/static-assets', '/templates', '/scripts'].includes(
+                oCurrentTextNode.data.path
+              );
 
             if (isWrite == true) {
               RootFolder().IS_WRITE = true;
               if (this.isContainer) {
                 this.menuWidth = '130px';
+                this.aMenuItems = [];
+                this.aMenuItems.push({
+                  text: CMgs.format(siteDropdownLangBundle, 'upload'),
+                  onclick: {
+                    fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.uploadAsset,
+                    obj: tree
+                  }
+                });
                 if (isDeleteAllowed) {
-                  if (isCreateFolder) {
-                    this.aMenuItems = this.menuItems['assetsFolderMenu'].slice();
-                  } else {
-                    this.aMenuItems = this.menuItems['assetsFolderMenuNoCreateFolder'].slice();
-                  }
-                } else {
-                  if (isCreateFolder) {
-                    this.aMenuItems = this.menuItems['assetsFolderMenuNoDelete'].slice();
-                  } else {
-                    this.aMenuItems = this.menuItems[
-                      'assetsFolderMenuNoDeleteNoCreateFolder'
-                    ].slice();
-                  }
+                  this.aMenuItems.push({
+                    text: CMgs.format(siteDropdownLangBundle, 'delete'),
+                    onclick: {
+                      fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContainer,
+                      obj: tree
+                    }
+                  });
+                }
+                if (isCreateFolder) {
+                  this.aMenuItems.push({
+                    text: CMgs.format(siteDropdownLangBundle, 'createFolder'),
+                    onclick: {
+                      fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.createContainer,
+                      obj: tree
+                    }
+                  });
+                }
+                if (renameFolder) {
+                  this.aMenuItems.push({
+                    text: CMgs.format(siteDropdownLangBundle, 'renameFolder'),
+                    onclick: {
+                      fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.renameContainer,
+                      obj: tree
+                    }
+                  });
                 }
               } else {
                 this.menuWidth = '130px';
@@ -1994,7 +2015,7 @@ var storage = CStudioAuthoring.Storage;
     },
 
     /**
-     *	upload an asset to the target folder if it's a new asset
+     *  upload an asset to the target folder if it's a new asset
      */
     uploadAsset: function() {
       var uploadCb = {
@@ -2027,8 +2048,7 @@ var storage = CStudioAuthoring.Storage;
             title: CrafterCMSNext.i18n.intl.formatMessage(messages.title),
             body: CrafterCMSNext.i18n.intl.formatMessage(messages.description)
           }
-        })
-
+        });
       } else {
         const bulkUpload = document.createElement('div');
         bulkUpload.setAttribute('id', 'bulkUpload');
@@ -2051,7 +2071,7 @@ var storage = CStudioAuthoring.Storage;
     },
 
     /**
-     *	upload an asset to the target folder if it's a new asset
+     *  upload an asset to the target folder if it's a new asset
      */
     overwriteAsset: function() {
       var uploadCb = {
@@ -2094,12 +2114,11 @@ var storage = CStudioAuthoring.Storage;
     },
 
     /**
-     *	Deletes a folder and contents in the target folder
+     *  Deletes a folder and contents in the target folder
      */
     deleteContainer: function(p_sType, p_aArgs, tree) {
       CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContent(p_sType, p_aArgs, tree);
     }
-
   };
 
   /**
