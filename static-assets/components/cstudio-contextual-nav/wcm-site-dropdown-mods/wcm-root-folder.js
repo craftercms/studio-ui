@@ -1026,12 +1026,16 @@
 
           nodeSpan.innerHTML += treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label;
           const tooltip = treeNodeTO.statusObj.deleted
-            ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound, { path: treeNodeTO.path })}</div>`
+            ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(
+              CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound,
+              { path: treeNodeTO.path }
+            )}</div>`
             : treeNodeTO.title;
           nodeSpan.setAttribute('title', tooltip);
-          nodeSpan.className = `${treeNodeTO.style} yui-resize-label treenode-label over-effect-set ${
-            treeNodeTO.statusObj.deleted && 'warning'
-          } ${highlight && 'highlighted'}`;
+          nodeSpan.className = `${
+            treeNodeTO.style
+          } yui-resize-label treenode-label over-effect-set ${treeNodeTO.statusObj.deleted &&
+          'warning'} ${highlight && 'highlighted'}`;
 
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
@@ -1091,7 +1095,10 @@
             }
 
             tree.oContextMenu.clearContent('');
-            if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
+            if (
+              !this.manualTrigger &&
+              !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted
+            ) {
               Self.onTriggerContextMenu(tree, this);
             }
           },
@@ -1264,7 +1271,9 @@
       },
 
       getStoredPathKey: function (instance) {
-        return `${CStudioAuthoringContext.site}-${instance.label.replace(' ', '').toLowerCase()}-opened`;
+        return `${CStudioAuthoringContext.site}-${instance.label
+          .replace(' ', '')
+          .toLowerCase()}-opened`;
       },
 
       getNumKey: function (nodes, key, callback) {
@@ -2718,7 +2727,6 @@
 
                   this.args.render();
                   menuId.removeChild(d);
-
                 },
                 failure: function () {
                 },
@@ -2805,7 +2813,6 @@
 
               p_aArgs.render();
               menuId.removeChild(d);
-
             } else {
               if (isComponent == true || isLevelDescriptor == true || isTaxonomy == true) {
                 if (formPath == '' || formPath == undefined) {
@@ -3079,7 +3086,6 @@
                   }
 
                   this.args.render(); // Render the site dropdown's context menu
-
                 },
                 failure: function () {
                 },
@@ -3368,7 +3374,6 @@
             });
           }
         });
-
       },
       /**
        * Edits the label of the TextNode that was the target of the
@@ -3727,8 +3732,9 @@
           doCut();
         });
 
-        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
-          (items) => {
+        CrafterCMSNext.services.content
+          .fetchWorkflowAffectedItems(params.site, params.path)
+          .subscribe((items) => {
             if (items && items.length) {
               const eventIdSuccess = 'workflowCancellationDialogContinue';
               CrafterCMSNext.system.store.dispatch({
@@ -3741,8 +3747,7 @@
               });
               doCut();
             }
-          }
-        );
+          });
       },
       /**
        * paste content to selected location
@@ -3829,7 +3834,8 @@
                 CStudioAuthoring.Operations.duplicateContent(
                   CStudioAuthoringContext.site,
                   oCurrentTextNode.data.uri,
-                  duplicateContentCallback);
+                  duplicateContentCallback
+                );
               },
               isDefault: false
             },
