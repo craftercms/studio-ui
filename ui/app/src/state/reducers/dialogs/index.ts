@@ -51,8 +51,7 @@ export default combineReducers({
   codeEditor,
   workflowCancellation,
   reject,
-  editSite
-  reject,
+  editSite,
   createFolder,
   createFile,
   copy,
