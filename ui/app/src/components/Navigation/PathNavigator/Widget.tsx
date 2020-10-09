@@ -31,7 +31,7 @@ import {
 } from '../../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { Resource } from '../../../models/Resource';
-import { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
+import Suspencified, { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
 import { withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
 import { translations } from './translations';
@@ -93,11 +93,6 @@ export interface WidgetProps {
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
 }
 
-interface MenuState {
-  selectMode: boolean;
-  hasClipboard: boolean;
-}
-
 interface Menu {
   path?: string;
   sections: SectionItem[][];
@@ -129,10 +124,8 @@ export interface WidgetState {
 // PathNavigator
 export default function (props: WidgetProps) {
   const { title, icon, path, id = removeSpaces(props.title), locale } = props;
-  const pathNavigator = useSelection((state) => state.pathNavigator);
+  const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
-  const state = pathNavigator[id];
-  const classes = useStyles({});
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
@@ -159,11 +152,19 @@ export default function (props: WidgetProps) {
     }
   });
 
-  const itemsResource: Resource<DetailedItem[]> = useLogicResource(state?.itemsInPath, {
+  const stateResource = useLogicResource(state, {
+    shouldResolve: (state) => Boolean(state),
+    shouldRenew: (state, resource) => resource.complete,
+    shouldReject: () => false,
+    resultSelector: (state) => state,
+    errorSelector: null
+  });
+
+  const itemsResource = useLogicResource(itemsByPath, {
     shouldResolve: (items) => Boolean(items),
     shouldRenew: (items, resource) => resource.complete,
     shouldReject: () => false,
-    resultSelector: (items) => items.map((path) => itemsByPath[path]),
+    resultSelector: (items) => items,
     errorSelector: null
   });
 
@@ -310,19 +311,101 @@ export default function (props: WidgetProps) {
     payload: { id, ...args }
   });
 
+  const onHeaderClick = (collapsed: boolean) => {
+    dispatch(pathNavigatorSetCollapsed({ id, collapsed }));
+  };
+
+  const onSearch = (keyword: string) => {
+    dispatch(pathNavigatorSetKeyword({ id, keyword }));
+  };
+
+  return (
+    <Suspencified>
+      <WidgetUI
+        resources={{ state: stateResource, items: itemsResource }}
+        icon={icon}
+        title={title}
+        itemMenu={itemMenu}
+        simpleMenu={simpleMenu}
+        onHeaderClick={onHeaderClick}
+        onHeaderButtonClick={onHeaderButtonClick}
+        onCurrentParentMenu={onCurrentParentMenu}
+        siteLocales={siteLocales}
+        onSearch={onSearch}
+        onBreadcrumbSelected={onBreadcrumbSelected}
+        onSelectItem={onSelectItem}
+        onPathSelected={onPathSelected}
+        onPreview={onPreview}
+        onOpenItemMenu={onOpenItemMenu}
+        onItemClicked={onItemClicked}
+        onPageChanged={onPageChanged}
+        onCloseItemMenu={onCloseItemMenu}
+        onCloseSimpleMenu={onCloseSimpleMenu}
+        onSimpleMenuClick={onSimpleMenuClick}
+        onItemMenuActionSuccessCreator={onItemMenuActionSuccessCreator}
+      />
+    </Suspencified>
+  );
+}
+
+function WidgetUI(props: any) {
+  const classes = useStyles({});
+  const {
+    resources,
+    icon,
+    title,
+    itemMenu,
+    simpleMenu,
+    onHeaderClick,
+    onHeaderButtonClick,
+    onCurrentParentMenu,
+    siteLocales,
+    onSearch,
+    onBreadcrumbSelected,
+    onSelectItem,
+    onPathSelected,
+    onPreview,
+    onOpenItemMenu,
+    onItemClicked,
+    onPageChanged,
+    onCloseItemMenu,
+    onCloseSimpleMenu,
+    onSimpleMenuClick,
+    onItemMenuActionSuccessCreator
+  } = props;
+  const state = resources.state.read();
+  const itemsByPath = resources.items.read();
+  const { formatMessage } = useIntl();
+
+  const resource: Resource<DetailedItem[]> = useLogicResource(state.itemsInPath, {
+    shouldResolve: (items) => Boolean(items),
+    shouldRenew: (items, resource) => resource.complete,
+    shouldReject: () => false,
+    resultSelector: (items) => items.map((path) => itemsByPath[path]),
+    errorSelector: null
+  });
+
   return (
     <section className={clsx(classes.root, props.classes?.root, state?.collapsed && 'collapsed')}>
       <Header
         icon={icon}
         title={title}
         locale={state?.localeCode}
-        onClick={() => dispatch(pathNavigatorSetCollapsed({ id, collapsed: !state?.collapsed }))}
+        onClick={() => onHeaderClick(!state?.collapsed)}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={siteLocales?.localeCodes?.length ? (anchor) => onHeaderButtonClick(anchor, 'language') : null}
       />
       <div {...(state?.collapsed ? { hidden: true } : {})} className={clsx(props.classes?.body)}>
+        <Breadcrumbs
+          keyword={state?.keyword}
+          breadcrumb={state?.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
+          onMenu={onCurrentParentMenu}
+          onSearch={(keyword) => onSearch(keyword)}
+          onCrumbSelected={onBreadcrumbSelected}
+          classes={{ searchRoot: props.classes?.searchRoot }}
+        />
         <SuspenseWithEmptyState
-          resource={itemsResource}
+          resource={resource}
           loadingStateProps={{
             graphicProps: { className: classes.stateGraphics }
           }}
@@ -339,41 +422,33 @@ export default function (props: WidgetProps) {
             fallback: <MyLoader />
           }}
         >
-          <Breadcrumbs
-            keyword={state?.keyword}
-            breadcrumb={state?.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
-            onMenu={onCurrentParentMenu}
-            onSearch={(keyword) => dispatch(pathNavigatorSetKeyword({ id, keyword }))}
-            onCrumbSelected={onBreadcrumbSelected}
-            classes={{ searchRoot: props.classes?.searchRoot }}
-          />
           <Nav
             leafs={state?.leafs}
             locale={state?.localeCode}
-            resource={itemsResource}
+            resource={resource}
             onSelectItem={onSelectItem}
             onPathSelected={onPathSelected}
             onPreview={onPreview}
             onOpenItemMenu={onOpenItemMenu}
             onItemClicked={onItemClicked}
           />
-          <TablePagination
-            className={classes.pagination}
-            classes={{
-              root: classes.pagination,
-              selectRoot: 'hidden',
-              toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
-            }}
-            component="div"
-            labelRowsPerPage=""
-            count={state?.count}
-            rowsPerPage={state?.limit}
-            page={state && Math.ceil(state.offset / state.limit)}
-            backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-            nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-            onChangePage={(e, page: number) => onPageChanged(page)}
-          />
         </SuspenseWithEmptyState>
+        <TablePagination
+          className={classes.pagination}
+          classes={{
+            root: classes.pagination,
+            selectRoot: 'hidden',
+            toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
+          }}
+          component="div"
+          labelRowsPerPage=""
+          count={state?.count}
+          rowsPerPage={state?.limit}
+          page={state && Math.ceil(state.offset / state.limit)}
+          backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
+          nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+          onChangePage={(e, page: number) => onPageChanged(page)}
+        />
       </div>
       {
         Boolean(itemMenu.anchorEl) &&

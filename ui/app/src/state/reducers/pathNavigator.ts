@@ -32,6 +32,7 @@ import {
   pathNavigatorSetKeyword,
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
+import { changeSite } from './sites';
 
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
@@ -183,7 +184,11 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         }
       };
     },
-    [pathNavigatorUpdate.type]: (state, { payload }) => ({ ...state, [payload.id]: { ...state[payload.id], ...payload } })
+    [pathNavigatorUpdate.type]: (state, { payload }) => ({
+      ...state,
+      [payload.id]: { ...state[payload.id], ...payload }
+    }),
+    [changeSite.type]: () => ({})
   }
 );
 
