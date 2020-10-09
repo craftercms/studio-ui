@@ -1896,7 +1896,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
         CStudioAuthoring.Operations.editContent(
           oCurrentTextNode.data.formId,
           CStudioAuthoringContext.site,
-          path,
+          oCurrentTextNode.data.mimeType,
           oCurrentTextNode.data.nodeRef,
           path,
           false,
@@ -2320,7 +2320,7 @@ CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/site
               CStudioAuthoring.Operations.editContent(
                 selectedType,
                 CStudioAuthoringContext.site,
-                path,
+                this.activeNode.data.mimeType,
                 this.activeNode.data.nodeRef,
                 path,
                 false,

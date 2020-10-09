@@ -1626,19 +1626,8 @@ var storage = CStudioAuthoring.Storage;
                 this.aMenuItems.push(this.menuItems['assetsFolderScript']);
               }
 
-              if (
-                oCurrentTextNode.data.uri.indexOf('.ftl') != -1 ||
-                oCurrentTextNode.data.uri.indexOf('.js') != -1 ||
-                oCurrentTextNode.data.uri.indexOf('.css') != -1 ||
-                oCurrentTextNode.data.uri.indexOf('.groovy') != -1 ||
-                oCurrentTextNode.data.uri.indexOf('.html') != -1 ||
-                oCurrentTextNode.data.uri.indexOf('.hbs') != -1 ||
-                oCurrentTextNode.data.uri.indexOf('.xml') != -1 ||
-                oCurrentTextNode.data.uri.indexOf('.tmpl') != -1 ||
-                oCurrentTextNode.data.uri.indexOf('.htm') != -1
-              ) {
+              if (CStudioAuthoring.Utils.isEditableFormAsset(oCurrentTextNode.data.mimeType)) {
                 // item is a template
-
                 this.aMenuItems.push({
                   text: CMgs.format(siteDropdownLangBundle, 'edit'),
                   disabled: false,
@@ -1937,7 +1926,7 @@ var storage = CStudioAuthoring.Storage;
       CStudioAuthoring.Operations.editContent(
         oCurrentTextNode.data.formId,
         CStudioAuthoringContext.site,
-        path,
+        oCurrentTextNode.data.mimeType,
         oCurrentTextNode.data.nodeRef,
         path,
         false,
@@ -1980,7 +1969,7 @@ var storage = CStudioAuthoring.Storage;
       CStudioAuthoring.Operations.editContent(
         oCurrentTextNode.data.formId,
         CStudioAuthoringContext.site,
-        path,
+        oCurrentTextNode.data.mimeType,
         oCurrentTextNode.data.nodeRef,
         path,
         false,
