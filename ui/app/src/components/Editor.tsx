@@ -58,7 +58,7 @@ export default function Editor(props: EditorProps) {
     };
     if (!window.ace) {
       const script = document.createElement('script');
-      script.src = '/studio/static-assets/components/cstudio-common/ace/ace.js';
+      script.src = '/studio/static-assets/libs/ace/ace.js';
       script.onload = init;
       document.head.appendChild(script);
     } else {
