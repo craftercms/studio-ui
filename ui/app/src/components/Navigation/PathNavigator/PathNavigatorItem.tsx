@@ -20,7 +20,6 @@ import { useStyles } from './styles';
 import ListItem from '@material-ui/core/ListItem';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
-import LeafIcon from '@material-ui/icons/EcoRounded';
 import FolderIcon from '@material-ui/icons/FolderOpenRounded';
 import Typography from '@material-ui/core/Typography';
 import FlagRoundedIcon from '@material-ui/icons/FlagRounded';
@@ -31,6 +30,8 @@ import { isFolder, isNavigable, isPreviewable } from './utils';
 import Component from '../../Icons/Component';
 import Page from '../../Icons/Page';
 import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
+import { Tooltip } from '@material-ui/core';
+import { FormattedMessage } from 'react-intl';
 
 interface NavItemProps {
   item: DetailedItem;
@@ -45,7 +46,7 @@ interface NavItemProps {
 }
 
 // PathNavigatorListItem
-export default function (props: NavItemProps) {
+export default function(props: NavItemProps) {
   const classes = useStyles(props);
   const {
     item,
@@ -72,7 +73,15 @@ export default function (props: NavItemProps) {
       className={clsx(classes.navItem, isSelectMode && 'noLeftPadding')}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
-      onClick={navigable ? onClick : folder ? () => onChangeParent?.(item) : previewable ? () => onPreview(item) : null}
+      onClick={
+        navigable
+          ? onClick
+          : folder
+          ? () => onChangeParent?.(item)
+          : previewable
+          ? () => onPreview(item)
+          : null
+      }
     >
       {isSelectMode ? (
         <Checkbox
@@ -84,12 +93,6 @@ export default function (props: NavItemProps) {
           }}
           value="primary"
         />
-      ) : navigable ? (
-        isLeaf ? (
-          <LeafIcon className={classes.typeIcon} />
-        ) : (
-          <Page className={classes.typeIcon} />
-        )
       ) : (
         <RenderIcon classes={{ iconClass: classes.typeIcon }} item={item} />
       )}
@@ -99,15 +102,14 @@ export default function (props: NavItemProps) {
           classes.navItemText,
           !isSelectMode && locale !== item.localeCode && 'opacity',
           isSelectMode && 'select-mode',
-          !navigable && 'non-navigable'
+          folder && 'non-navigable'
         )}
       >
         {item.label}
         {locale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
       </Typography>
       <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
-        {
-          onOpenItemMenu &&
+        {onOpenItemMenu && (
           <IconButton
             aria-label="Options"
             className={classes.itemIconButton}
@@ -118,28 +120,39 @@ export default function (props: NavItemProps) {
           >
             <MoreVertIcon className={classes.icon} />
           </IconButton>
-        }
-        <IconButton
-          disabled={isLeaf}
-          aria-label="Options"
-          className={classes.itemIconButton}
-          onClick={(event) => {
-            event.stopPropagation();
-            if (navigable || folder) {
-              onChangeParent?.(item);
-            } else if (previewable) {
-              onPreview(item);
-            }
-          }}
+        )}
+        <Tooltip
+          title={
+            isLeaf ? (
+              <FormattedMessage id="navigator.isLeaf" defaultMessage="Item has no children" />
+            ) : (
+              <FormattedMessage id="words.view" defaultMessage="View" />
+            )
+          }
         >
-          <ChevronRightRoundedIcon className={classes.icon} />
-        </IconButton>
+          <IconButton
+            aria-label="Options"
+            className={classes.itemIconButton}
+            onClick={(event) => {
+              event.stopPropagation();
+              if (isLeaf) {
+                return;
+              } else if (navigable || folder) {
+                onChangeParent?.(item);
+              } else if (previewable) {
+                onPreview(item);
+              }
+            }}
+          >
+            <ChevronRightRoundedIcon className={classes.icon} />
+          </IconButton>
+        </Tooltip>
       </div>
     </ListItem>
   );
 }
 
-function RenderIcon({ item, classes }: { item: DetailedItem, classes: any }) {
+function RenderIcon({ item, classes }: { item: DetailedItem; classes: any }) {
   let Icon = Page;
   switch (item.systemType) {
     case 'folder': {
@@ -158,7 +171,5 @@ function RenderIcon({ item, classes }: { item: DetailedItem, classes: any }) {
       break;
     }
   }
-  return (
-    <Icon className={classes.iconClass} />
-  );
+  return <Icon className={classes.iconClass} />;
 }
