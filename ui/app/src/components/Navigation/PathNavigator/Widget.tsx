@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, Fragment, useState } from 'react';
+import React, { ElementType, Fragment, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TablePagination from '@material-ui/core/TablePagination';
 import { DetailedItem } from '../../../models/Item';
@@ -30,7 +30,6 @@ import {
   useSpreadState
 } from '../../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import { Resource } from '../../../models/Resource';
 import Suspencified, { SuspenseWithEmptyState } from '../../SystemStatus/Suspencified';
 import { withIndex, withoutIndex } from '../../../utils/path';
 import { useStyles } from './styles';
@@ -55,8 +54,10 @@ import { completeDetailedItem, fetchUserPermissions } from '../../../state/actio
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContent } from '../../../services/content';
 import { getNumOfMenuOptionsForItem, rand } from './utils';
+import LoadingState from '../../SystemStatus/LoadingState';
+import LookupTable from '../../../models/LookupTable';
 
-const MyLoader = React.memo(function () {
+const MyLoader = React.memo(function() {
   const [items] = useState(() => {
     const numOfItems = 5;
     const start = 20;
@@ -122,7 +123,7 @@ export interface WidgetState {
 }
 
 // PathNavigator
-export default function (props: WidgetProps) {
+export default function(props: WidgetProps) {
   const { title, icon, path, id = removeSpaces(props.title), locale } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
@@ -152,21 +153,9 @@ export default function (props: WidgetProps) {
     }
   });
 
-  const stateResource = useLogicResource(state, {
-    shouldResolve: (state) => Boolean(state),
-    shouldRenew: (state, resource) => resource.complete,
-    shouldReject: () => false,
-    resultSelector: (state) => state,
-    errorSelector: null
-  });
-
-  const itemsResource = useLogicResource(itemsByPath, {
-    shouldResolve: (items) => Boolean(items),
-    shouldRenew: (items, resource) => resource.complete,
-    shouldReject: () => false,
-    resultSelector: (items) => items,
-    errorSelector: null
-  });
+  if (!state) {
+    return <LoadingState />;
+  }
 
   const onPathSelected = (item: DetailedItem) => {
     dispatch(
@@ -182,37 +171,38 @@ export default function (props: WidgetProps) {
       const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form&readonly=true`;
       dispatch(showEditDialog({ src }));
     } else if (item.mimeType.startsWith('image/')) {
-      dispatch(showPreviewDialog({
-        type: 'image',
-        title: item.label,
-        url: item.path
-      }));
+      dispatch(
+        showPreviewDialog({
+          type: 'image',
+          title: item.label,
+          url: item.path
+        })
+      );
     } else {
-      getContent(site, item.path).subscribe(
-        (content) => {
-          let mode = 'txt';
+      getContent(site, item.path).subscribe((content) => {
+        let mode = 'txt';
 
-          if (item.systemType === 'template') {
-            mode = 'ftl';
-          } else if (item.systemType === 'script') {
-            mode = 'groovy';
-          } else if (item.mimeType === 'application/javascript') {
-            mode = 'javascript';
-          } else if (item.mimeType === 'text/css') {
-            mode = 'css';
-          }
+        if (item.systemType === 'template') {
+          mode = 'ftl';
+        } else if (item.systemType === 'script') {
+          mode = 'groovy';
+        } else if (item.mimeType === 'application/javascript') {
+          mode = 'javascript';
+        } else if (item.mimeType === 'text/css') {
+          mode = 'css';
+        }
 
-          dispatch(showPreviewDialog({
+        dispatch(
+          showPreviewDialog({
             type: 'editor',
             title: item.label,
             url: item.path,
             mode,
             content
-          }));
-        }
-      );
+          })
+        );
+      });
     }
-
   };
 
   const onPageChanged = (page: number) => void 0;
@@ -222,9 +212,9 @@ export default function (props: WidgetProps) {
       checked
         ? pathNavigatorItemChecked({ id, item })
         : pathNavigatorItemUnchecked({
-          id,
-          item
-        })
+            id,
+            item
+          })
     );
   };
 
@@ -322,7 +312,8 @@ export default function (props: WidgetProps) {
   return (
     <Suspencified>
       <WidgetUI
-        resources={{ state: stateResource, items: itemsResource }}
+        state={state}
+        itemsByPath={itemsByPath}
         icon={icon}
         title={title}
         itemMenu={itemMenu}
@@ -351,7 +342,8 @@ export default function (props: WidgetProps) {
 function WidgetUI(props: any) {
   const classes = useStyles({});
   const {
-    resources,
+    state,
+    itemsByPath,
     icon,
     title,
     itemMenu,
@@ -373,17 +365,26 @@ function WidgetUI(props: any) {
     onSimpleMenuClick,
     onItemMenuActionSuccessCreator
   } = props;
-  const state = resources.state.read();
-  const itemsByPath = resources.items.read();
   const { formatMessage } = useIntl();
 
-  const resource: Resource<DetailedItem[]> = useLogicResource(state.itemsInPath, {
-    shouldResolve: (items) => Boolean(items),
-    shouldRenew: (items, resource) => resource.complete,
-    shouldReject: () => false,
-    resultSelector: (items) => items.map((path) => itemsByPath[path]),
-    errorSelector: null
-  });
+  const resource = useLogicResource<
+    DetailedItem[],
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
+  >(
+    // TODO: At this moment itemsByPath is already updated, we only want to renew the state when itemsInPath changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useMemo(() => ({ itemsByPath, itemsInPath: state.itemsInPath }), [state.itemsInPath]),
+    {
+      shouldResolve: ({ itemsInPath, itemsByPath }) => {
+        return Boolean(itemsInPath) && !itemsInPath.some((path) => !itemsByPath[path]);
+      },
+      shouldRenew: (items, resource) => resource.complete,
+      shouldReject: () => false,
+      resultSelector: ({ itemsInPath, itemsByPath }) =>
+        itemsInPath.map((path) => itemsByPath[path]),
+      errorSelector: null
+    }
+  );
 
   return (
     <section className={clsx(classes.root, props.classes?.root, state?.collapsed && 'collapsed')}>
@@ -393,12 +394,18 @@ function WidgetUI(props: any) {
         locale={state?.localeCode}
         onClick={() => onHeaderClick(!state?.collapsed)}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
-        onLanguageMenu={siteLocales?.localeCodes?.length ? (anchor) => onHeaderButtonClick(anchor, 'language') : null}
+        onLanguageMenu={
+          siteLocales?.localeCodes?.length
+            ? (anchor) => onHeaderButtonClick(anchor, 'language')
+            : null
+        }
       />
       <div {...(state?.collapsed ? { hidden: true } : {})} className={clsx(props.classes?.body)}>
         <Breadcrumbs
           keyword={state?.keyword}
-          breadcrumb={state?.breadcrumb.map((path) => itemsByPath[path] ?? itemsByPath[withIndex(path)])}
+          breadcrumb={state?.breadcrumb.map(
+            (path) => itemsByPath[path] ?? itemsByPath[withIndex(path)]
+          )}
           onMenu={onCurrentParentMenu}
           onSearch={(keyword) => onSearch(keyword)}
           onCrumbSelected={onBreadcrumbSelected}
@@ -450,8 +457,7 @@ function WidgetUI(props: any) {
           onChangePage={(e, page: number) => onPageChanged(page)}
         />
       </div>
-      {
-        Boolean(itemMenu.anchorEl) &&
+      {Boolean(itemMenu.anchorEl) && (
         <ItemMenu
           path={itemMenu.path}
           open={true}
@@ -460,7 +466,7 @@ function WidgetUI(props: any) {
           onClose={onCloseItemMenu}
           onItemMenuActionSuccessCreator={onItemMenuActionSuccessCreator}
         />
-      }
+      )}
       <ContextMenu
         anchorEl={simpleMenu.anchorEl}
         sections={simpleMenu.sections}

@@ -468,13 +468,6 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   );
 }
 
-function createBackHandler(dispatch) {
-  const hostToGuest$ = getHostToGuestBus();
-  return () => {
-    hostToGuest$.next({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED });
-  };
-}
-
 export default function PageExplorer() {
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
@@ -617,15 +610,15 @@ export default function PageExplorer() {
   useEffect(() => {
     const handler = (e) => {
       if (e.keyCode === 27) {
-        createBackHandler(dispatch)();
+        hostToGuest$.next({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED });
       }
     };
     document.addEventListener('keydown', handler, false);
     return () => document.removeEventListener('keydown', handler, false);
-  }, [dispatch]);
+  }, [dispatch, hostToGuest$]);
 
   const onBack = () => {
-    createBackHandler(dispatch)();
+    hostToGuest$.next({ type: 'CLEAR_CONTENT_TREE_FIELD_SELECTED' });
     dispatch(selectTool());
   };
 
