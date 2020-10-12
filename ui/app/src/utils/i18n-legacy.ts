@@ -1099,6 +1099,13 @@ const adminDashboardMessages = defineMessages({
   }
 });
 
+const controlsCommonMessages = defineMessages({
+  escapeScripts: {
+    id: 'controlsCommonMessages.escapeScripts',
+    defaultMessage: 'Escape Scripts'
+  }
+});
+
 export const languages = defineMessages({
   af: { id: 'languages.af', defaultMessage: 'Afrikaans' },
   sq: { id: 'languages.sq', defaultMessage: 'Albanian' },
@@ -1407,5 +1414,6 @@ export default {
   wcmRootFolder,
   localeSelectorControlMessages,
   languages,
-  adminDashboardMessages
+  adminDashboardMessages,
+  controlsCommonMessages
 };
