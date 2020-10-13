@@ -371,7 +371,8 @@ function WidgetUI(props: any) {
     DetailedItem[],
     { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
   >(
-    // TODO: At this moment itemsByPath is already updated, we only want to renew the state when itemsInPath changes
+    // We only want to renew the state when itemsInPath changes. 
+    // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useMemo(() => ({ itemsByPath, itemsInPath: state.itemsInPath }), [state.itemsInPath]),
     {
