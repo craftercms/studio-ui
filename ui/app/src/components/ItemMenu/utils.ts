@@ -37,6 +37,10 @@ const menuOptions = {
     id: 'viewCodeEditor',
     label: translations.view
   },
+  viewImage: {
+    id: 'viewImage',
+    label: translations.view
+  },
   createContent: {
     id: 'createContent',
     label: translations.createContent
@@ -143,6 +147,7 @@ export function generateMenuOptions(
   const isTemplate = item.path.includes('/templates');
   const isController = item.path.includes('/scripts');
   const isWebsite = withoutIndex(item.path) === '/site/website';
+  const isImage = item.mimeType.startsWith('image/');
   const isRootFolder =
     item.path === '/site/templates' ||
     item.path === '/site/static-assets' ||
@@ -243,6 +248,9 @@ export function generateMenuOptions(
           if (read) {
             _optionsA.push(menuOptions.view);
           }
+        }
+        if (isImage) {
+          _optionsA.push(menuOptions.viewImage);
         } else {
           _optionsA.push(menuOptions.codeEditor);
           _optionsA.push(menuOptions.viewCodeEditor);

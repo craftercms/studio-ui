@@ -62,26 +62,33 @@ export default function (props: HeaderProps) {
         className={classes.headerTitle}
         children={title}
       />
-      <IconButton
-        aria-label="language select"
-        className={classes.iconButton}
-        onClick={(e) => {
-          e.stopPropagation();
-          onLanguageMenu(e.currentTarget);
-        }}
-      >
-        {currentFlag(locale)}
-      </IconButton>
-      <IconButton
-        aria-label="options"
-        className={classes.iconButton}
-        onClick={(e) => {
-          e.stopPropagation();
-          onContextMenu(e.currentTarget);
-        }}
-      >
-        <MoreVertIcon />
-      </IconButton>
+
+      {
+        onLanguageMenu &&
+        <IconButton
+          aria-label="language select"
+          className={classes.iconButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            onLanguageMenu(e.currentTarget);
+          }}
+        >
+          {currentFlag(locale)}
+        </IconButton>
+      }
+      {
+        onContextMenu &&
+        <IconButton
+          aria-label="options"
+          className={classes.iconButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            onContextMenu(e.currentTarget);
+          }}
+        >
+          <MoreVertIcon />
+        </IconButton>
+      }
     </header>
   );
 }

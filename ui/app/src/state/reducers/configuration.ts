@@ -21,6 +21,7 @@ import {
   fetchSidebarConfigComplete,
   fetchSidebarConfigFailed
 } from '../actions/configuration';
+import { changeSite } from './sites';
 
 const initialState: GlobalState['configuration'] = {
   sidebar: {
@@ -60,7 +61,8 @@ const reducer = createReducer<GlobalState['configuration']>(initialState, {
       isFetching: false,
       error: payload
     }
-  })
+  }),
+  [changeSite.type]: () => initialState
 });
 
 export default reducer;

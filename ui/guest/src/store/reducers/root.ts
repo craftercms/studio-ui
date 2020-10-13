@@ -381,7 +381,7 @@ const content_tree_switch_field: GuestReducer = (state, action) => {
 const clear_content_tree_field_selected: GuestReducer = (state) => {
   return {
     ...state,
-    status: EditingStatus.LISTENING,
+    status: state.status === EditingStatus.OFF ? EditingStatus.OFF : EditingStatus.LISTENING,
     draggable: {},
     highlighted: {},
     fieldSwitcher: null
