@@ -28,7 +28,9 @@ import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
-const CompareVersionsDialog = lazy(() => import('../../modules/Content/History/CompareVersionsDialog'));
+const CompareVersionsDialog = lazy(() =>
+  import('../../modules/Content/History/CompareVersionsDialog')
+);
 const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
 const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
@@ -36,7 +38,9 @@ const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
 const HistoryDialog = lazy(() => import('../../modules/Content/History/HistoryDialog'));
 const PublishDialog = lazy(() => import('../../modules/Content/Publish/PublishDialog'));
-const DependenciesDialog = lazy(() => import('../../modules/Content/Dependencies/DependenciesDialog'));
+const DependenciesDialog = lazy(() =>
+  import('../../modules/Content/Dependencies/DependenciesDialog')
+);
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
@@ -103,7 +107,7 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
-  const permissions = useSelection((state) => state.content.permissions);
+  const permissions = useSelection((state) => state.content.items.permissionsByPath);
   const dispatch = useDispatch();
   return (
     <Suspense fallback="">
