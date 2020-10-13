@@ -296,7 +296,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
               <EditIcon />
             </IconButton>
           </Typography>
-          <Typography variant="body2" gutterBottom>
+          <Typography variant="body2" gutterBottom noWrap>
             <span className={classes.bold}>{formatMessage(messages.siteName)}: </span> {inputs.siteName}
           </Typography>
           <Typography variant="body2" gutterBottom>

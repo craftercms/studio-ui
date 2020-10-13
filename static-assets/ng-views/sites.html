@@ -44,7 +44,7 @@
                 </thead>
                 <tbody>
                     <tr id="site-row-{{site.id}}" dir-paginate="site in sites | filter:q | itemsPerPage: sitesPag.sitesPerPage" current-page="pagination" total-items="totalSites">
-                        <td class="name">{{site.name ? site.name : site.id }}</td>
+                        <td class="name site-name trim">{{site.name ? site.name : site.id }}</td>
                         <td class="preview"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
                         <td class="dashboard"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
                         <td class="remove">
