@@ -106,9 +106,9 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
       if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
         setInvalidPath(false);
       } else {
-        const allPaths = getIndividualPaths(currentPath).filter(
-          (path) => !nodesLookup[path] || !nodesLookup[path].fetched
-        );
+        const allPaths = getIndividualPaths(currentPath)
+          .filter((path) => !nodesLookup[path] || !nodesLookup[path].fetched)
+          .reverse();
         const requests: Observable<AjaxResponse>[] = [];
         allPaths.forEach((nextPath) => {
           requests.push(
@@ -178,7 +178,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
     setCreateFolder(false);
   };
 
-  const onFolderCreated = ({ path, name }: { path: string, name: string }) => {
+  const onFolderCreated = ({ path, name }: { path: string; name: string }) => {
     setCreateFolder(false);
     let id = `${path}/${name}`;
     nodesLookupRef.current[currentPath].children.push({
