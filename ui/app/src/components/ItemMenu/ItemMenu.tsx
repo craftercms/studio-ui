@@ -48,6 +48,7 @@ import {
   showEditDialog,
   showHistoryDialog,
   showNewContentDialog,
+  showPreviewDialog,
   showPublishDialog,
   showUploadDialog,
   showWorkflowCancellationDialog
@@ -104,7 +105,8 @@ const useStyles = makeStyles(() =>
       width: '135px',
       padding: '0px 15px'
     }
-  }));
+  })
+);
 
 export function ItemMenu(props: ItemMenuProps) {
   const { path, onClose, onItemMenuActionSuccessCreator, loaderItems = 8 } = props;
@@ -128,13 +130,16 @@ export function ItemMenu(props: ItemMenuProps) {
     errorSelector: (source) => null
   });
 
-  const resourcePermissions = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(itemPermissions, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source,
-    errorSelector: (source) => null
-  });
+  const resourcePermissions = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(
+    itemPermissions,
+    {
+      shouldResolve: (source) => Boolean(source),
+      shouldReject: (source) => false,
+      shouldRenew: (source, resource) => resource.complete,
+      resultSelector: (source) => source,
+      errorSelector: (source) => null
+    }
+  );
 
   const onMenuItemClicked = (option: SectionItem) => {
     switch (option.id) {
@@ -150,43 +155,46 @@ export function ItemMenu(props: ItemMenuProps) {
         // TODO: open a embedded form needs the following:
         //src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
 
-        fetchWorkflowAffectedItems(site, path).subscribe(
-          (items) => {
-            if (items?.length > 0) {
-              dispatch(showWorkflowCancellationDialog({
+        fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+          if (items?.length > 0) {
+            dispatch(
+              showWorkflowCancellationDialog({
                 items,
                 onContinue: showEditDialog({ src })
-              }));
-            } else {
-              dispatch(showEditDialog({ src }));
-            }
-
+              })
+            );
+          } else {
+            dispatch(showEditDialog({ src }));
           }
-        );
+        });
         break;
       }
       case 'createFolder': {
-        dispatch(showCreateFolderDialog({
-          path: withoutIndex(item.path),
-          allowBraces: item.path.startsWith('/scripts/rest'),
-          onCreated: batchActions([
-            closeCreateFolderDialog(),
-            onItemMenuActionSuccessCreator?.({ item, option: option.id })
-          ])
-        }));
+        dispatch(
+          showCreateFolderDialog({
+            path: withoutIndex(item.path),
+            allowBraces: item.path.startsWith('/scripts/rest'),
+            onCreated: batchActions([
+              closeCreateFolderDialog(),
+              onItemMenuActionSuccessCreator?.({ item, option: option.id })
+            ])
+          })
+        );
         break;
       }
       case 'renameFolder': {
-        dispatch(showCreateFolderDialog({
-          path: withoutIndex(item.path),
-          allowBraces: item.path.startsWith('/scripts/rest'),
-          rename: true,
-          value: item.label,
-          onCreated: batchActions([
-            closeCreateFolderDialog(),
-            onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
-          ])
-        }));
+        dispatch(
+          showCreateFolderDialog({
+            path: withoutIndex(item.path),
+            allowBraces: item.path.startsWith('/scripts/rest'),
+            rename: true,
+            value: item.label,
+            onCreated: batchActions([
+              closeCreateFolderDialog(),
+              onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+            ])
+          })
+        );
         break;
       }
       case 'createContent': {
@@ -206,10 +214,12 @@ export function ItemMenu(props: ItemMenuProps) {
         dispatch(
           showDeleteDialog({
             items,
-            onSuccess: batchActions([
-              onItemMenuActionSuccessCreator?.({ item, option: option.id }),
-              closeDeleteDialog()
-            ].filter(Boolean))
+            onSuccess: batchActions(
+              [
+                onItemMenuActionSuccessCreator?.({ item, option: option.id }),
+                closeDeleteDialog()
+              ].filter(Boolean)
+            )
           })
         );
         break;
@@ -259,15 +269,14 @@ export function ItemMenu(props: ItemMenuProps) {
         getLegacyItemsTree(site, item.path, { depth: 1000, order: 'default' }).subscribe(
           (legacyItem: LegacyItem) => {
             if (legacyItem.children.length) {
-              dispatch(showCopyDialog({
-                title: formatMessage(translations.copyDialogTitle),
-                subtitle: formatMessage(translations.copyDialogSubtitle),
-                item: legacyItem,
-                onOk: batchActions([
-                  closeCopyDialog(),
-                  setClipBoard({ path: item.path })
-                ])
-              }));
+              dispatch(
+                showCopyDialog({
+                  title: formatMessage(translations.copyDialogTitle),
+                  subtitle: formatMessage(translations.copyDialogSubtitle),
+                  item: legacyItem,
+                  onOk: batchActions([closeCopyDialog(), setClipBoard({ path: item.path })])
+                })
+              );
             } else {
               copy(site, item.path).subscribe(
                 (response) => {
@@ -345,28 +354,26 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'schedule': {
-        dispatch(showPublishDialog({
-          items: [item],
-          scheduling: 'custom'
-        }));
+        dispatch(
+          showPublishDialog({
+            items: [item],
+            scheduling: 'custom'
+          })
+        );
         break;
       }
       case 'publish': {
-        dispatch(showPublishDialog({
-          items: [item],
-          scheduling: 'now',
-          onSuccess: batchActions([
-            reloadDetailedItem({ path: item.path }),
-            closePublishDialog()
-          ])
-        }));
+        dispatch(
+          showPublishDialog({
+            items: [item],
+            scheduling: 'now',
+            onSuccess: batchActions([reloadDetailedItem({ path: item.path }), closePublishDialog()])
+          })
+        );
         break;
       }
       case 'history': {
-        dispatch(batchActions([
-          fetchItemVersions({ item }),
-          showHistoryDialog({})
-        ]));
+        dispatch(batchActions([fetchItemVersions({ item }), showHistoryDialog({})]));
         break;
       }
       case 'dependencies': {
@@ -384,42 +391,44 @@ export function ItemMenu(props: ItemMenuProps) {
         const path = `/scripts/pages/${popPiece(item.contentTypeId, '/')}.groovy`;
         let src = `${legacyFormSrc}site=${site}&path=${path}&type=controller`;
 
-        fetchWorkflowAffectedItems(site, path).subscribe(
-          (items) => {
-            if (items?.length > 0) {
-              dispatch(showWorkflowCancellationDialog({
+        fetchWorkflowAffectedItems(site, path).subscribe((items) => {
+          if (items?.length > 0) {
+            dispatch(
+              showWorkflowCancellationDialog({
                 items,
                 onContinue: showCodeEditorDialog({ src })
-              }));
-            } else {
-              dispatch(
-                showCodeEditorDialog({ src })
-              );
-            }
+              })
+            );
+          } else {
+            dispatch(showCodeEditorDialog({ src }));
           }
-        );
+        });
         break;
       }
       case 'createTemplate': {
-        dispatch(showCreateFileDialog({
-          path: withoutIndex(item.path),
-          type: 'template',
-          onCreated: batchActions([
-            closeCreateFileDialog(),
-            onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
-          ])
-        }));
+        dispatch(
+          showCreateFileDialog({
+            path: withoutIndex(item.path),
+            type: 'template',
+            onCreated: batchActions([
+              closeCreateFileDialog(),
+              onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+            ])
+          })
+        );
         break;
       }
       case 'createController': {
-        dispatch(showCreateFileDialog({
-          path: withoutIndex(item.path),
-          type: 'controller',
-          onCreated: batchActions([
-            closeCreateFileDialog(),
-            onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
-          ])
-        }));
+        dispatch(
+          showCreateFileDialog({
+            path: withoutIndex(item.path),
+            type: 'controller',
+            onCreated: batchActions([
+              closeCreateFileDialog(),
+              onItemMenuActionSuccessCreator?.({ item, option: 'refresh' })
+            ])
+          })
+        );
         break;
       }
       case 'codeEditor': {
@@ -432,15 +441,27 @@ export function ItemMenu(props: ItemMenuProps) {
         dispatch(showCodeEditorDialog({ src }));
         break;
       }
+      case 'viewImage': {
+        dispatch(
+          showPreviewDialog({
+            type: 'image',
+            title: item.label,
+            url: item.path
+          })
+        );
+        break;
+      }
       case 'upload': {
-        dispatch(showUploadDialog({
-          path: item.path,
-          site,
-          onClose: batchActions([
-            closeUploadDialog(),
-            onItemMenuActionSuccessCreator?.({ item, option: 'upload' })
-          ])
-        }));
+        dispatch(
+          showUploadDialog({
+            path: item.path,
+            site,
+            onClose: batchActions([
+              closeUploadDialog(),
+              onItemMenuActionSuccessCreator?.({ item, option: 'upload' })
+            ])
+          })
+        );
         break;
       }
       default:
@@ -510,4 +531,3 @@ export function Loader(props) {
     </ContentLoader>
   );
 }
-

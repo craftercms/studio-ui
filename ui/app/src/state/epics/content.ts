@@ -61,19 +61,20 @@ export default [
       ofType(GUEST_CHECK_IN, fetchUserPermissions.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-          if (state.content.items.permissionsByPath?.[payload.path]) {
-            return NEVER;
-          } else {
-            return getUserPermissions(state.sites.active, payload.path, state.user.username).pipe(
-              map((permissions: string[]) => fetchUserPermissionsComplete({
+        if (state.content.items.permissionsByPath?.[payload.path]) {
+          return NEVER;
+        } else {
+          return getUserPermissions(state.sites.active, payload.path, state.user.username).pipe(
+            map((permissions: string[]) =>
+              fetchUserPermissionsComplete({
                 path: payload.path,
                 permissions
-              })),
-              catchAjaxError(fetchUserPermissionsFailed)
-            );
-          }
+              })
+            ),
+            catchAjaxError(fetchUserPermissionsFailed)
+          );
         }
-      )
+      })
     ),
   // endregion
   // region Items fetchDetailedItem
@@ -82,32 +83,30 @@ export default [
       ofType(fetchDetailedItem.type, reloadDetailedItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload, type }, state]) => {
-          if (type !== reloadDetailedItem.type && state.content.items.byPath?.[payload.path]) {
-            return NEVER;
-          } else {
-            return getDetailedItem(state.sites.active, payload.path).pipe(
-              map((item) => fetchDetailedItemComplete(item)),
-              catchAjaxError(fetchDetailedItemFailed)
-            );
-          }
+        if (type !== reloadDetailedItem.type && state.content.items.byPath?.[payload.path]) {
+          return NEVER;
+        } else {
+          return getDetailedItem(state.sites.active, payload.path).pipe(
+            map((item) => fetchDetailedItemComplete(item)),
+            catchAjaxError(fetchDetailedItemFailed)
+          );
         }
-      )
+      })
     ),
   (action$: ActionsObservable<StandardAction>, state$: StateObservable<GlobalState>) =>
     action$.pipe(
       ofType(completeDetailedItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload, type }, state]) => {
-          if (state.content.items.byPath?.[payload.path].live) {
-            return NEVER;
-          } else {
-            return getDetailedItem(state.sites.active, payload.path).pipe(
-              map((item) => fetchDetailedItemComplete(item)),
-              catchAjaxError(fetchDetailedItemFailed)
-            );
-          }
+        if (state.content.items.byPath?.[payload.path]?.live) {
+          return NEVER;
+        } else {
+          return getDetailedItem(state.sites.active, payload.path).pipe(
+            map((item) => fetchDetailedItemComplete(item)),
+            catchAjaxError(fetchDetailedItemFailed)
+          );
         }
-      )
+      })
     ),
   // endregion
   // region itemDuplicate
