@@ -86,7 +86,7 @@ const messages = defineMessages({
     id: 'editSiteDialog.sitenameExists',
     defaultMessage: 'The name already exist.'
   }
-})
+});
 
 function EditSiteDialog(props: EditSiteDialogProps) {
   const {
