@@ -30,7 +30,7 @@ import { isFolder, isNavigable, isPreviewable } from './utils';
 import ComponentIcon from '../../Icons/Component';
 import Page from '../../Icons/Page';
 import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
-import { Tooltip } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import { FormattedMessage } from 'react-intl';
 
 interface NavItemProps {
