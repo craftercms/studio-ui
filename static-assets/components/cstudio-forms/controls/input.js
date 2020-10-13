@@ -31,7 +31,7 @@ CStudioForms.Controls.Input =
     this.id = id;
     this.readonly = readonly;
     this.supportedPostFixes = ['_s', '_t'];
-    this.escapeScripts = false;
+    this.escapeContent = false;
 
     this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
     this.controlsCommonMessages = CrafterCMSNext.i18n.messages.controlsCommonMessages;
@@ -94,7 +94,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     obj.renderValidation(validationExist, validationResult);
     obj.owner.notifyValidation();
 
-    const valueToSet = this.escapeScripts ? CStudioForms.Util.escapeXml(obj.getValue()) : obj.getValue();
+    const valueToSet = obj.escapeContent ? CStudioForms.Util.escapeXml(obj.getValue()) : obj.getValue();
     obj.form.updateModel(obj.id, valueToSet);
   },
 
@@ -176,7 +176,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(inputEl, 'datum');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
 
-    const valueToSet = this.escapeScripts ? CStudioForms.Util.unEscapeXml(this.value) : this.value;
+    const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(this.value) : this.value;
     inputEl.value = (this.value = '_not-set') ? config.defaultValue : valueToSet;
     controlWidgetContainerEl.appendChild(inputEl);
 
@@ -207,8 +207,8 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
         this.readonly = true;
       }
 
-      if (prop.name === 'escapeScripts' && prop.value === 'true') {
-        this.escapeScripts = true;
+      if (prop.name === 'escapeContent' && prop.value === 'true') {
+        this.escapeContent = true;
       }
     }
 
@@ -250,7 +250,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
   },
 
   setValue: function (value) {
-    const valueToSet = this.escapeScripts ? CStudioForms.Util.unEscapeXml(value) : value;
+    const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(value) : value;
 
     this.value = valueToSet;
     this.inputEl.value = valueToSet;
@@ -280,8 +280,8 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
       { label: 'Tokenize for Indexing', name: 'tokenize', type: 'boolean', defaultValue: 'false' },
       {
-        label: this.formatMessage(this.controlsCommonMessages.escapeScripts),
-        name: 'escapeScripts',
+        label: this.formatMessage(this.controlsCommonMessages.escapeContent),
+        name: 'escapeContent',
         type: 'boolean',
         defaultValue: 'false'
       }
