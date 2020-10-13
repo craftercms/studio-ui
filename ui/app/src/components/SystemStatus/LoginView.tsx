@@ -801,7 +801,7 @@ export default function(props: LoginViewProps) {
           />
         </DialogTitle>
         <CurrentView {...currentViewProps} />
-        {mode !== 'reset' && (
+        {mode === 'login' && (
           <DialogActions>
             <Button
               type="button"

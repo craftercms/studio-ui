@@ -412,6 +412,7 @@
                 }
               });
             }
+
             treePrint(servPath);
           })(ind);
         }
@@ -1025,12 +1026,16 @@
 
           nodeSpan.innerHTML += treeNodeTO.statusObj.deleted ? treeNodeTO.path : treeNodeTO.label;
           const tooltip = treeNodeTO.statusObj.deleted
-            ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound, { path: treeNodeTO.path })}</div>`
+            ? `<div class=\'width300 acn-tooltip\'>${CrafterCMSNext.i18n.intl.formatMessage(
+                CrafterCMSNext.i18n.messages.wcmRootFolder.pathNotFound,
+                { path: treeNodeTO.path }
+              )}</div>`
             : treeNodeTO.title;
           nodeSpan.setAttribute('title', tooltip);
-          nodeSpan.className = `${treeNodeTO.style} yui-resize-label treenode-label over-effect-set ${
-            treeNodeTO.statusObj.deleted && 'warning'
-          } ${highlight && 'highlighted'}`;
+          nodeSpan.className = `${
+            treeNodeTO.style
+          } yui-resize-label treenode-label over-effect-set ${treeNodeTO.statusObj.deleted &&
+            'warning'} ${highlight && 'highlighted'}`;
 
           if (!isLevelDescriptor) {
             nodeSpan.dataset.uri = treeNodeTO.uri;
@@ -1082,7 +1087,7 @@
 
         oContextMenu.subscribe(
           'beforeShow',
-          function (e) {
+          function(e) {
             if (this.manualTrigger) {
               let $contextMenu = $('#' + tree.oContextMenu.id);
               $contextMenu.css('left', this.manualTrigger.offsetLeft + 'px');
@@ -1090,7 +1095,10 @@
             }
 
             tree.oContextMenu.clearContent('');
-            if (!this.manualTrigger && !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted) {
+            if (
+              !this.manualTrigger &&
+              !tree.getNodeByElement(this.contextEventTarget).treeNodeTO.statusObj.deleted
+            ) {
               Self.onTriggerContextMenu(tree, this);
             }
           },
@@ -1100,7 +1108,7 @@
 
         oContextMenu.subscribe(
           'beforeHide',
-          function (e) {
+          function(e) {
             this.manualTrigger = false;
           },
           tree,
@@ -1120,7 +1128,7 @@
       /**
        *
        */
-      manualContextMenu: function (tree, callback) {
+      manualContextMenu: function(tree, callback) {
         const $treeParent = $('#' + tree.id).parent(),
           $dropdownMenu = $('#acn-dropdown-menu').parent();
 
@@ -1143,7 +1151,7 @@
                 .closest('.ygtvitem')[0]
                 .getBoundingClientRect().top - 48;
 
-          if(!$(target).hasClass('deleted-lock')) {
+          if (!$(target).hasClass('deleted-lock')) {
             $contextMenuEllipsis.show();
             $contextMenuEllipsis.attr('data-tree', tree.id);
             $contextMenuEllipsis.data('target', target);
@@ -1263,7 +1271,9 @@
       },
 
       getStoredPathKey: function(instance) {
-        return `${CStudioAuthoringContext.site}-${instance.label.replace(' ', '').toLowerCase()}-opened`;
+        return `${CStudioAuthoringContext.site}-${instance.label
+          .replace(' ', '')
+          .toLowerCase()}-opened`;
       },
 
       getNumKey: function(nodes, key, callback) {
@@ -1320,8 +1330,8 @@
           YSelector = YAHOO.util.Selector.query;
           var label = instance.rootFolderEl.previousElementSibling;
           YDom.addClass(label, 'loading');
-          var doCall = function (n, j, key) {
-            Self.onLoadNodeDataOnClick(n, function () {
+          var doCall = function(n, j, key) {
+            Self.onLoadNodeDataOnClick(n, function() {
               n.loadComplete();
 
               if (n.expanded && n.data.style.match(/\bfolder\b/)) {
@@ -1505,6 +1515,7 @@
                   failure: function() {}
                 });
               }
+
               treePrint(servPath);
             })(ind);
           }
@@ -2522,6 +2533,7 @@
         var checkPermissionsCb = {
           success: function(results) {
             var isCreateFolder = CStudioAuthoring.Service.isCreateFolder(results.permissions);
+            var renameFolder = !(oCurrentTextNode.data.path === '/site/components');
             var isCreateContentAllowed = CStudioAuthoring.Service.isCreateContentAllowed(
               results.permissions
             );
@@ -2709,7 +2721,6 @@
 
                   this.args.render();
                   menuId.removeChild(d);
-
                 },
                 failure: function() {},
                 args: p_aArgs,
@@ -2795,7 +2806,6 @@
 
               p_aArgs.render();
               menuId.removeChild(d);
-
             } else {
               if (isComponent == true || isLevelDescriptor == true || isTaxonomy == true) {
                 if (formPath == '' || formPath == undefined) {
@@ -2842,7 +2852,9 @@
                         p_aArgs.addItems([menuItems.newContentOption]);
                       }
                       p_aArgs.addItems([menuItems.newFolderOption]);
-                      p_aArgs.addItems([menuItems.renameFolderOption]);
+                      if (renameFolder) {
+                        p_aArgs.addItems([menuItems.renameFolderOption]);
+                      }
                     }
                     if (isUserAllowed) {
                       if (isDeleteAllowed || (!isFolder && isChangeContentTypeAllowed)) {
@@ -3067,7 +3079,6 @@
                   }
 
                   this.args.render(); // Render the site dropdown's context menu
-
                 },
                 failure: function() {},
                 args: p_aArgs,
@@ -3383,7 +3394,6 @@
         newContentCancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogCancel, (response) => {
           newContentUnsubscribe();
         });
-
       },
       /**
        * Edits the label of the TextNode that was the target of the
@@ -3501,7 +3511,7 @@
         CStudioAuthoring.Operations.editContent(
           oCurrentTextNode.data.formId,
           CStudioAuthoringContext.site,
-          path,
+          oCurrentTextNode.data.mimeType,
           oCurrentTextNode.data.nodeRef,
           path,
           false,
@@ -3732,8 +3742,9 @@
           doCut();
         });
 
-        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
-          (items) => {
+        CrafterCMSNext.services.content
+          .fetchWorkflowAffectedItems(params.site, params.path)
+          .subscribe((items) => {
             if (items && items.length) {
               const eventIdSuccess = 'workflowCancellationDialogContinue';
               CrafterCMSNext.system.store.dispatch({
@@ -3746,8 +3757,7 @@
               });
               doCut();
             }
-          }
-        );
+          });
       },
       /**
        * paste content to selected location
@@ -3824,22 +3834,23 @@
           'duplicate-dialog',
           CStudioAuthoring.Operations.simpleDialogTypeINFO,
           'Duplicate',
-          'A new copy of this item and all of it\'s item specific content will be created. Are you sure you wish to proceed?',
+          "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
           [
             {
               text: 'Duplicate',
-              handler: function () {
+              handler: function() {
                 this.destroy();
                 CStudioAuthoring.Operations.duplicateContent(
                   CStudioAuthoringContext.site,
                   oCurrentTextNode.data.uri,
-                  duplicateContentCallback);
+                  duplicateContentCallback
+                );
               },
               isDefault: false
             },
             {
               text: CMgs.format(formsLangBundle, 'cancel'),
-              handler: function () {
+              handler: function() {
                 this.destroy();
               },
               isDefault: true
@@ -4026,7 +4037,7 @@
               CStudioAuthoring.Operations.editContent(
                 selectedType,
                 CStudioAuthoringContext.site,
-                path,
+                this.activeNode.data.mimeType,
                 this.activeNode.data.nodeRef,
                 path,
                 false,
