@@ -458,6 +458,11 @@ table {
       word-wrap: break-word;
     }
   }
+
+  .group-description {
+    word-wrap: break-word;
+    max-width: 300px;
+  }
 }
 
 .log-details-view {
