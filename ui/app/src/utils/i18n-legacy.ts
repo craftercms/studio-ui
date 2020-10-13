@@ -1100,9 +1100,9 @@ const adminDashboardMessages = defineMessages({
 });
 
 const controlsCommonMessages = defineMessages({
-  escapeScripts: {
-    id: 'controlsCommonMessages.escapeScripts',
-    defaultMessage: 'Escape Scripts'
+  escapeContent: {
+    id: 'controlsCommonMessages.escapeContent',
+    defaultMessage: 'Escape Content'
   }
 });
 
