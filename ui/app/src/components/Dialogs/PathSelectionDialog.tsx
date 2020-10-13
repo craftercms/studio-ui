@@ -18,7 +18,7 @@ import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import Button from '@material-ui/core/Button';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, useUnmount } from '../../utils/hooks';
@@ -35,6 +35,7 @@ import Suspencified from '../SystemStatus/Suspencified';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
+import StandardAction from '../../models/StandardAction';
 
 const messages = defineMessages({
   ok: {
@@ -65,14 +66,23 @@ const useStyles = makeStyles(() =>
   })
 );
 
-interface PathSelectionDialogProps {
+interface PathSelectionDialogBaseProps {
   open: boolean;
   rootPath: string;
   initialPath?: string;
   title?: string;
+}
+
+export type PathSelectionDialogProps = PropsWithChildren<PathSelectionDialogBaseProps> & {
   onClose(): void;
   onClosed?(): void;
-  onOk(selectedPath: string): void;
+  onOk?(selectedPath: string): void;
+}
+
+export interface PathSelectionDialogStateProps extends PathSelectionDialogBaseProps {
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
+  onOk?: StandardAction;
 }
 
 export default function PathSelectionDialog(props: PathSelectionDialogProps) {

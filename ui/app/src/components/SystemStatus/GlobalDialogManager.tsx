@@ -26,6 +26,7 @@ import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
+import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
 
 const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() =>
@@ -350,7 +351,7 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region EditSite */}
+      {/* region Edit Site */}
       <EditSiteDialog
         open={state.editSite.open}
         site={state.editSite.site}
@@ -358,6 +359,18 @@ function GlobalDialogManager() {
         onClosed={createCallback(state.editSite.onClosed, dispatch)}
         onDismiss={createCallback(state.editSite.onDismiss, dispatch)}
         onSaveSuccess={createCallback(state.editSite.onSaveSuccess, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Path Selection */}
+      <PathSelectionDialog
+        open={state.pathSelection.open}
+        rootPath={state.pathSelection.rootPath}
+        initialPath={state.pathSelection.initialPath}
+        title={state.pathSelection.title}
+        onClose={createCallback(state.pathSelection.onClose, dispatch)}
+        onClosed={createCallback(state.pathSelection.onClosed, dispatch)}
+        onOk={createCallback(state.pathSelection.onOk, dispatch)}
       />
       {/* endregion */}
     </Suspense>

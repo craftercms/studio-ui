@@ -34,6 +34,7 @@ import { CreateFolderStateProps } from '../../components/Dialogs/CreateFolderDia
 import { CreateFileStateProps } from '../../components/Dialogs/CreateFileDialog';
 import { BulkUploadStateProps } from '../../components/Dialogs/BulkUploadDialog';
 import { PreviewDialogStateProps } from '../../components/Dialogs/PreviewDialog';
+import { PathSelectionDialogStateProps } from '../../components/Dialogs/PathSelectionDialog';
 
 //region History
 export const showHistoryDialog = createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -149,4 +150,10 @@ export const previewDialogClosed = createAction('PREVIEW_DIALOG_CLOSED');
 export const showEditSiteDialog = createAction<Partial<EditSiteDialogStateProps>>('SHOW_EDIT_SITE_DIALOG');
 export const closeEditSiteDialog = createAction<StandardAction>('CLOSE_EDIT_SITE_DIALOG');
 export const editSiteDialogClosed = createAction('EDIT_SITE_DIALOG_CLOSED');
+// endregion
+
+// region Path Selection Dialog
+export const showPathSelectionDialog= createAction<Partial<PathSelectionDialogStateProps>>('SHOW_PATH_SELECTION_DIALOG');
+export const closePathSelectionDialog = createAction<StandardAction>('CLOSE_PATH_SELECTION_DIALOG');
+export const pathSelectionDialogClosed = createAction('PATH_SELECTION_CLOSED');
 // endregion
