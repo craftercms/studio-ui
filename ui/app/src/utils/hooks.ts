@@ -68,6 +68,10 @@ export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 }
 
+export function usePermissions(): GlobalState['content']['items']['permissionsByPath'] {
+  return useSelector<GlobalState, GlobalState['content']['items']['permissionsByPath']>((state) => state.content.items.permissionsByPath);
+}
+
 export function useQuickCreateState(): GlobalState['content']['quickCreate'] {
   return useSelection((state) => state.content.quickCreate);
 }
@@ -204,11 +208,9 @@ interface CustomResourceSelectors<ReturnType = unknown, SourceType = unknown, Er
   errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
 }
 
-export function useSelectorResource<
-  ReturnType = unknown,
+export function useSelectorResource<ReturnType = unknown,
   SourceType = GlobalState,
-  ErrorType = unknown
->(
+  ErrorType = unknown>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {

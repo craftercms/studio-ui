@@ -308,7 +308,7 @@ function HistoryDialog(props: HistoryDialogProps) {
     dispatch(batchActions([
       fetchContentTypes(),
       compareVersion({ id: versionNumber }),
-      compareVersionDialogWithActions(),
+      compareVersionDialogWithActions()
     ]));
   };
 

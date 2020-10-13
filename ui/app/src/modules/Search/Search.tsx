@@ -52,7 +52,7 @@ import {
   showWorkflowCancellationDialog
 } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, useLogicResource, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useLogicResource, usePermissions, useSelection } from '../../utils/hooks';
 import { fetchUserPermissions } from '../../state/actions/content';
 import { Resource } from '../../models/Resource';
 import { LookupTable } from '../../models/LookupTable';
@@ -273,7 +273,7 @@ export default function Search(props: SearchProps) {
   const authoringBase = useSelection<string>(state => state.env.authoringBase);
   const guestBase = useSelection<string>(state => state.env.guestBase);
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
-  const permissions = useSelection((state) => state.content.permissions);
+  const permissions = usePermissions();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
