@@ -528,7 +528,7 @@ function SortBy(props: SortByProps) {
   const { queryParams, handleFilterChange, filterKeys } = props;
   return (
     <Select
-      value={queryParams['sortBy'] || '_score'}
+      value={filterKeys.includes(queryParams['sortBy']) ? queryParams['sortBy'] : '_score'}
       className={classes.Select}
       onChange={(event) => handleFilterChange({ name: 'sortBy', value: event.target.value })}
     >
@@ -598,11 +598,23 @@ interface PathSelectorProps {
 
 function PathSelector(props: PathSelectorProps) {
   const { handleFilterChange, value, disabled } = props;
-  const [keyword, setKeyword] = useState(value);
+  const [keyword, setKeyword] = useState(value ?? '');
   const dispatch = useDispatch();
   const rootPath = keyword.split('/')[1] ? `/${keyword.split('/')[1]}` : null;
   const idSuccess = 'pathSelectionSuccess';
   const idCancel = 'pathSelectionCancel';
+
+  const keywordToFilter = (keyword) => {
+    if (keyword) {
+      if (keyword.endsWith('/')) {
+        return `${keyword}.+`;
+      } else {
+        return `${keyword}/.+`;
+      }
+    } else {
+      return undefined;
+    }
+  };
 
   return (
     <SearchBar
@@ -613,18 +625,18 @@ function PathSelector(props: PathSelectorProps) {
         if (key === 'Enter') {
           handleFilterChange({
             name: 'path',
-            value: keyword.endsWith('/') ? `${keyword}.+` : `${keyword}/.+`
+            value: keywordToFilter(keyword)
           });
         }
       }}
       onChange={setKeyword}
-      showActionButton={Boolean(rootPath)}
+      showActionButton={!disabled}
       actionButtonIcon={SearchIcon}
       onActionButtonClick={() => {
         dispatch(
           showPathSelectionDialog({
-            rootPath: rootPath,
-            initialPath: keyword,
+            rootPath: rootPath ?? '/',
+            initialPath: rootPath ? keyword : null,
             onClosed: {
               type: 'BATCH_ACTIONS',
               payload: [dispatchDOMEvent({ id: idCancel }), pathSelectionDialogClosed()]
@@ -637,7 +649,12 @@ function PathSelector(props: PathSelectorProps) {
         );
 
         const successCallback = (e) => {
-          setKeyword(e.details.path);
+          const keyword = e.detail.path;
+          setKeyword(keyword);
+          handleFilterChange({
+            name: 'path',
+            value: keywordToFilter(keyword)
+          });
           document.removeEventListener(idSuccess, successCallback, false);
           document.removeEventListener(idCancel, cancelCallback, false);
         };
@@ -794,6 +811,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                 <Typography variant="body1">
                   <strong>{formatMessage(messages.path)}</strong>
                 </Typography>
+                {queryParams['path'] && <CheckIcon className={classes.filterChecked} />}
                 <ExpandMoreIcon
                   className={clsx(
                     classes.expand,
@@ -807,7 +825,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                 <PathSelector
                   value={queryParams['path']?.replace('.+', '')}
                   handleFilterChange={handleFilterChange}
-                  disabled={mode === 'search'}
+                  disabled={mode === 'select'}
                 />
               </div>
             </Collapse>
@@ -824,6 +842,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                 <Typography variant="body1">
                   <strong>{formatMessage(messages.sortBy)}</strong>
                 </Typography>
+                {queryParams['sortBy'] && <CheckIcon className={classes.filterChecked} />}
                 <ExpandMoreIcon
                   className={clsx(
                     classes.expand,
