@@ -59,7 +59,11 @@ export function parseQueryString(): ParsedQuery {
 }
 
 // TODO: an initial path with trailing `/` breaks
-export function itemsFromPath(path: string, root: string, items: LookupTable<DetailedItem>): DetailedItem[] {
+export function itemsFromPath(
+  path: string,
+  root: string,
+  items: LookupTable<DetailedItem>
+): DetailedItem[] {
   const rootWithIndex = withIndex(root);
   const rootWithoutIndex = withoutIndex(root);
   const rootItem = items[rootWithIndex] ?? items[root];
@@ -96,12 +100,17 @@ export function getParentPath(path: string): string {
 }
 
 export function getParentsFromPath(path: string, rootPath: string): string[] {
-  let splitPath = withoutIndex(path).replace(rootPath, '').split('/');
+  let splitPath = withoutIndex(path)
+    .replace(rootPath, '')
+    .split('/');
   splitPath.pop();
-  return [rootPath, ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(2)];
+  return [
+    rootPath,
+    ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(2)
+  ];
 }
 
-export function getIndividualPaths(path: string, rootPath?: string) {
+export function getIndividualPaths(path: string, rootPath?: string): string[] {
   let paths = [];
   let array = path.replace(/^\/|\/$/g, '').split('/');
   do {

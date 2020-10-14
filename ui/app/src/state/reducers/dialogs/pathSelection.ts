@@ -25,7 +25,8 @@ import { PathSelectionDialogStateProps } from '../../../components/Dialogs/PathS
 
 const initialState: PathSelectionDialogStateProps = {
   open: false,
-  rootPath: '/site'
+  rootPath: '/site',
+  showCreateFolder: true
 };
 
 export default createReducer<GlobalState['dialogs']['pathSelection']>(initialState, {

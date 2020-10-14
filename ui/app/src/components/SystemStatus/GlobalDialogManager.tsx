@@ -367,6 +367,7 @@ function GlobalDialogManager() {
         open={state.pathSelection.open}
         rootPath={state.pathSelection.rootPath}
         initialPath={state.pathSelection.initialPath}
+        showCreateFolder={state.pathSelection.showCreateFolder}
         title={state.pathSelection.title}
         onClose={createCallback(state.pathSelection.onClose, dispatch)}
         onClosed={createCallback(state.pathSelection.onClosed, dispatch)}

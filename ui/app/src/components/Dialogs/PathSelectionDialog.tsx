@@ -69,6 +69,7 @@ const useStyles = makeStyles(() =>
 interface PathSelectionDialogBaseProps {
   open: boolean;
   rootPath: string;
+  showCreateFolder?: boolean;
   initialPath?: string;
   title?: string;
 }
@@ -94,7 +95,7 @@ export default function PathSelectionDialog(props: PathSelectionDialogProps) {
 }
 
 function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
-  const { onClosed, onClose, onOk, rootPath, initialPath, title } = props;
+  const { onClosed, onClose, onOk, rootPath, initialPath, title, showCreateFolder = true } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
@@ -103,6 +104,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
     initialPath ? getIndividualPaths(initialPath) : [rootPath]
   );
   const [invalidPath, setInvalidPath] = useState(false);
+  const [dirtyInput, setDirtyInput] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
@@ -148,7 +150,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
               if (!nodesLookup['root']) {
                 parent = {
                   id: item.path,
-                  name: item.name,
+                  name: item.name ? item.name : 'root',
                   fetched: true,
                   children: legacyItemsToTreeNodes(item.children)
                 };
@@ -217,7 +219,12 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
 
   const onPathChanged = (path: string) => {
     setCurrentPath(path);
-    setExpanded(getIndividualPaths(path));
+    setDirtyInput(false);
+    setExpanded(rootPath === '/' ? ['/', ...getIndividualPaths(path)] : getIndividualPaths(path));
+  };
+
+  const onKeyPress = (event: React.KeyboardEvent) => {
+    setDirtyInput(true);
   };
 
   return (
@@ -246,25 +253,29 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
             expanded={expanded}
             selected={currentPath.replace(/\/$/, '')}
             resource={resource}
+            onKeyPress={onKeyPress}
             onPathChanged={onPathChanged}
             isFetching={isFetching}
           />
         </Suspencified>
       </DialogBody>
       <DialogFooter>
-        <Button
-          disabled={invalidPath || isFetching}
-          onClick={onCreateFolder}
-          variant="outlined"
-          className={classes.createFolderBtn}
-        >
-          {formatMessage(messages.create)}
-        </Button>
+        {showCreateFolder && (
+          <Button
+            disabled={invalidPath || isFetching}
+            onClick={onCreateFolder}
+            variant="outlined"
+            className={classes.createFolderBtn}
+          >
+            {formatMessage(messages.create)}
+          </Button>
+        )}
+
         <Button onClick={onClose} variant="outlined">
           {formatMessage(messages.cancel)}
         </Button>
         <Button
-          disabled={invalidPath || isFetching}
+          disabled={invalidPath || isFetching || dirtyInput}
           onClick={() => onOk({ path: currentPath })}
           variant="contained"
           color="primary"

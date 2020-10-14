@@ -129,7 +129,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexGrow: 1
   },
   pathSelectorSearchIcon: {
-    marginRight: '5px'
+    marginRight: '5px',
+    color: palette.gray.medium4
   },
   pathSelectorWrapper: {
     display: 'flex',
@@ -662,6 +663,7 @@ function PathSelector(props: PathSelectorProps) {
       showPathSelectionDialog({
         rootPath: rootPath ?? '/',
         initialPath: rootPath ? keyword : null,
+        showCreateFolder: false,
         onClosed: {
           type: 'BATCH_ACTIONS',
           payload: [dispatchDOMEvent({ id: idCancel }), pathSelectionDialogClosed()]
@@ -697,7 +699,7 @@ function PathSelector(props: PathSelectorProps) {
     <div className={classes.pathSelectorWrapper} onClick={onOpenPathSelectionDialog}>
       <InputBase
         classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
-        disabled
+        //disabled
         readOnly
         value={keyword}
         placeholder={formatMessage(messages.searchIn)}
@@ -710,29 +712,6 @@ function PathSelector(props: PathSelectorProps) {
           ) : null
         }
       />
-      {/*<SearchBar*/}
-      {/*  disabled={disabled}*/}
-      {/*  keyword={keyword}*/}
-      {/*  onBlur={onBlur}*/}
-      {/*  placeholder={formatMessage(messages.searchIn)}*/}
-      {/*  onKeyPress={(key) => {*/}
-      {/*    if (key === 'Enter') {*/}
-      {/*      onEnter();*/}
-      {/*    }*/}
-      {/*  }}*/}
-      {/*  onChange={setKeyword}*/}
-      {/*  showActionButton={!disabled}*/}
-      {/*  actionButtonIcon={SearchIcon}*/}
-      {/*  onActionButtonClick={onOpenPathSelectionDialog}*/}
-      {/*/>*/}
-      {/*{invalid && (*/}
-      {/*  <FormHelperText error>*/}
-      {/*    <FormattedMessage*/}
-      {/*      id="pathSelector.invalid"*/}
-      {/*      defaultMessage="The entered path doesn’t exist."*/}
-      {/*    />*/}
-      {/*  </FormHelperText>*/}
-      {/*)}*/}
     </div>
   );
 }
