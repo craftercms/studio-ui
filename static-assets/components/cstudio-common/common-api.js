@@ -734,8 +734,14 @@ var nodeOpen = false,
               ]
             },
             onClosed: {
-              type: 'DISPATCH_DOM_EVENT',
-              payload: { id: eventIdCancel }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdCancel }
+                },
+                { type: 'DELETE_DIALOG_CLOSED' }
+              ]
             }
           }
         });
@@ -807,8 +813,14 @@ var nodeOpen = false,
               type: 'SHOW_HISTORY_DIALOG',
               payload: {
                 onClosed: {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventIdOnClose }
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: eventIdOnClose }
+                    },
+                    { type: 'HISTORY_DIALOG_CLOSED' }
+                  ]
                 }
               }
             }
@@ -849,8 +861,14 @@ var nodeOpen = false,
               ]
             },
             onClosed: {
-              type: 'DISPATCH_DOM_EVENT',
-              payload: { id: eventIdCancel }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdCancel }
+                },
+                { type: 'PUBLISH_DIALOG_CLOSED' }
+              ]
             }
           }
         });
@@ -902,8 +920,14 @@ var nodeOpen = false,
               ]
             },
             onClosed: {
-              type: 'DISPATCH_DOM_EVENT',
-              payload: { id: eventIdCancel }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdCancel }
+                },
+                { type: 'PUBLISH_DIALOG_CLOSED' }
+              ]
             }
           }
         });
@@ -2593,9 +2617,15 @@ var nodeOpen = false,
                 { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
               ]
             },
-            onClosed:{
-              type: 'DISPATCH_DOM_EVENT',
-              payload: { id: eventIdCancel }
+            onClosed: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdCancel }
+                },
+                { type: 'WORKFLOW_CANCELLATION_DIALOG_CLOSED' }
+              ]
             }
           }
         });
