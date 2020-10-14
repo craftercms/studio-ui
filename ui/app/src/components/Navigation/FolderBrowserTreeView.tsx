@@ -125,23 +125,21 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
         invalidPath={invalidPath}
         isFetching={isFetching}
       />
-      {
-        treeNodes ? (
-          <TreeView
-            classes={{ root: props.classes?.treeViewRoot }}
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
-            expanded={expanded}
-            selected={selected}
-            onNodeToggle={onNodeToggle}
-            onNodeSelect={onNodeSelected}
-          >
-            <RenderTreeNode node={treeNodes} />
-          </TreeView>
-        ) : (
-          <LoadingState classes={{ root: classes.loadingState }} />
-        )
-      }
+      {treeNodes ? (
+        <TreeView
+          classes={{ root: props.classes?.treeViewRoot }}
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpandIcon={<ChevronRightIcon />}
+          expanded={expanded}
+          selected={selected}
+          onNodeToggle={onNodeToggle}
+          onNodeSelect={onNodeSelected}
+        >
+          <RenderTreeNode node={treeNodes} />
+        </TreeView>
+      ) : (
+        <LoadingState classes={{ root: classes.loadingState }} />
+      )}
     </section>
   );
 }
@@ -273,15 +271,14 @@ function PathSelected(props: PathSelectedProps) {
           endAdornment={isFetching ? <CircularProgress size={16} /> : null}
         />
       </section>
-      {
-        invalidPath &&
+      {invalidPath && (
         <FormHelperText error>
           <FormattedMessage
             id="folderBrowserTreeView.invalidPath"
-            defaultMessage={'The entered path doesn’t exist.'}
+            defaultMessage="The entered path doesn’t exist."
           />
         </FormHelperText>
-      }
+      )}
     </>
   );
 }

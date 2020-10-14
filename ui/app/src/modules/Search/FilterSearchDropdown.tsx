@@ -18,7 +18,7 @@ import Button from '@material-ui/core/Button';
 import React, { useEffect, useRef, useState } from 'react';
 import Popover from '@material-ui/core/Popover';
 import { defineMessages, useIntl } from 'react-intl';
-import { Theme } from '@material-ui/core';
+import { IconButton, InputBase, Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
 import Collapse from '@material-ui/core/Collapse';
@@ -41,7 +41,7 @@ import { LookupTable } from '../../models/LookupTable';
 import { nnou } from '../../utils/object';
 import palette from '../../styles/palette';
 import SearchIcon from '@material-ui/icons/SearchRounded';
-import SearchBar from '../../components/Controls/SearchBar';
+import CloseIcon from '@material-ui/icons/Close';
 import { useDispatch } from 'react-redux';
 import {
   closePathSelectionDialog,
@@ -92,10 +92,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginTop: '10px'
     }
   },
-  singleFilter: {
-    '& .filterActions': {
-      textAlign: 'right'
-    }
+  singleFilter: {},
+  filterActions: {
+    textAlign: 'right'
   },
   button: {
     margin: theme.spacing(1)
@@ -125,6 +124,32 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   rangeButton: {
     marginLeft: '10px'
+  },
+  pathSelectorInputRoot: {
+    flexGrow: 1
+  },
+  pathSelectorSearchIcon: {
+    marginRight: '5px'
+  },
+  pathSelectorWrapper: {
+    display: 'flex',
+    background: palette.white,
+    padding: '10px 0px 10px 12px',
+    border: `1px solid  ${palette.gray.light1}`,
+    borderRadius: '5px',
+    '&:hover': {
+      borderColor: palette.gray.light6
+    }
+  },
+  invisibleInput: {
+    padding: 0,
+    border: 0,
+    background: 'none',
+    height: '100%',
+    '&:focus': {
+      borderColor: 'none',
+      boxShadow: 'inherit'
+    }
   }
 }));
 
@@ -284,7 +309,7 @@ function Filter(props: FilterProps) {
 
   return (
     <div className={classes.singleFilter}>
-      <div className={'filterActions'}>
+      <div className={classes.filterActions}>
         <Button
           variant="outlined"
           className={classes.button}
@@ -597,14 +622,15 @@ function SortOrder(props: SortOrderProps) {
 interface PathSelectorProps {
   value: string;
   disabled: boolean;
-  placeholder?: string;
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
 
 function PathSelector(props: PathSelectorProps) {
-  const { handleFilterChange, value, disabled, placeholder } = props;
-  const [keyword, setKeyword] = useState(value ?? '');
+  const { handleFilterChange, value, disabled } = props;
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
+  const classes = useStyles({});
+  const [keyword, setKeyword] = useState(value ?? '');
   const rootPath = keyword.split('/')[1] ? `/${keyword.split('/')[1]}` : null;
   const idSuccess = 'pathSelectionSuccess';
   const idCancel = 'pathSelectionCancel';
@@ -621,58 +647,93 @@ function PathSelector(props: PathSelectorProps) {
     }
   };
 
-  return (
-    <SearchBar
-      disabled={disabled}
-      keyword={keyword}
-      placeholder={placeholder}
-      onKeyPress={(key) => {
-        if (key === 'Enter') {
-          handleFilterChange({
-            name: 'path',
-            value: keywordToFilter(keyword)
-          });
+  const onClean = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setKeyword('');
+    handleFilterChange({
+      name: 'path',
+      value: undefined
+    });
+  };
+
+  const onOpenPathSelectionDialog = () => {
+    dispatch(
+      showPathSelectionDialog({
+        rootPath: rootPath ?? '/',
+        initialPath: rootPath ? keyword : null,
+        onClosed: {
+          type: 'BATCH_ACTIONS',
+          payload: [dispatchDOMEvent({ id: idCancel }), pathSelectionDialogClosed()]
+        },
+        onOk: {
+          type: 'BATCH_ACTIONS',
+          payload: [dispatchDOMEvent({ id: idSuccess }), closePathSelectionDialog()]
         }
-      }}
-      onChange={setKeyword}
-      showActionButton={!disabled}
-      actionButtonIcon={SearchIcon}
-      onActionButtonClick={() => {
-        dispatch(
-          showPathSelectionDialog({
-            rootPath: rootPath ?? '/',
-            initialPath: rootPath ? keyword : null,
-            onClosed: {
-              type: 'BATCH_ACTIONS',
-              payload: [dispatchDOMEvent({ id: idCancel }), pathSelectionDialogClosed()]
-            },
-            onOk: {
-              type: 'BATCH_ACTIONS',
-              payload: [dispatchDOMEvent({ id: idSuccess }), closePathSelectionDialog()]
-            }
-          })
-        );
+      })
+    );
 
-        const successCallback = (e) => {
-          const keyword = e.detail.path;
-          setKeyword(keyword);
-          handleFilterChange({
-            name: 'path',
-            value: keywordToFilter(keyword)
-          });
-          document.removeEventListener(idSuccess, successCallback, false);
-          document.removeEventListener(idCancel, cancelCallback, false);
-        };
+    const successCallback = (e) => {
+      const keyword = e.detail.path;
+      setKeyword(keyword);
+      handleFilterChange({
+        name: 'path',
+        value: keywordToFilter(keyword)
+      });
+      document.removeEventListener(idSuccess, successCallback, false);
+      document.removeEventListener(idCancel, cancelCallback, false);
+    };
 
-        const cancelCallback = (e) => {
-          document.removeEventListener(idCancel, cancelCallback, false);
-          document.removeEventListener(idSuccess, successCallback, false);
-        };
+    const cancelCallback = () => {
+      document.removeEventListener(idCancel, cancelCallback, false);
+      document.removeEventListener(idSuccess, successCallback, false);
+    };
 
-        document.addEventListener(idSuccess, successCallback, false);
-        document.addEventListener(idCancel, cancelCallback, false);
-      }}
-    />
+    document.addEventListener(idSuccess, successCallback, false);
+    document.addEventListener(idCancel, cancelCallback, false);
+  };
+
+  return (
+    <div className={classes.pathSelectorWrapper} onClick={onOpenPathSelectionDialog}>
+      <InputBase
+        classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
+        disabled
+        readOnly
+        value={keyword}
+        placeholder={formatMessage(messages.searchIn)}
+        startAdornment={<SearchIcon className={classes.pathSelectorSearchIcon} />}
+        endAdornment={
+          !disabled && value ? (
+            <IconButton onClick={onClean} size="small">
+              <CloseIcon />
+            </IconButton>
+          ) : null
+        }
+      />
+      {/*<SearchBar*/}
+      {/*  disabled={disabled}*/}
+      {/*  keyword={keyword}*/}
+      {/*  onBlur={onBlur}*/}
+      {/*  placeholder={formatMessage(messages.searchIn)}*/}
+      {/*  onKeyPress={(key) => {*/}
+      {/*    if (key === 'Enter') {*/}
+      {/*      onEnter();*/}
+      {/*    }*/}
+      {/*  }}*/}
+      {/*  onChange={setKeyword}*/}
+      {/*  showActionButton={!disabled}*/}
+      {/*  actionButtonIcon={SearchIcon}*/}
+      {/*  onActionButtonClick={onOpenPathSelectionDialog}*/}
+      {/*/>*/}
+      {/*{invalid && (*/}
+      {/*  <FormHelperText error>*/}
+      {/*    <FormattedMessage*/}
+      {/*      id="pathSelector.invalid"*/}
+      {/*      defaultMessage="The entered path doesn’t exist."*/}
+      {/*    />*/}
+      {/*  </FormHelperText>*/}
+      {/*)}*/}
+    </div>
   );
 }
 
@@ -828,7 +889,6 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
             <Collapse in={expanded && expanded['path']} timeout={300} onEntered={refreshPopover}>
               <div className={classes.body}>
                 <PathSelector
-                  placeholder={formatMessage(messages.searchIn)}
                   value={queryParams['path']?.replace('.+', '')}
                   handleFilterChange={handleFilterChange}
                   disabled={mode === 'select'}

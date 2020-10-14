@@ -65,7 +65,8 @@ const useStyles = makeStyles((theme: Theme) =>
         boxShadow: 'none'
       }
     }
-  }));
+  })
+);
 
 const messages = defineMessages({
   placeholder: {
@@ -90,6 +91,7 @@ interface SearchBarProps {
     inputInput?: any;
     actionIcon?: any;
   };
+  onBlur?(): void;
   onChange(value: string): void;
   onKeyPress?(key: string): void;
   onActionButtonClick?(): void;
@@ -108,23 +110,29 @@ export default function SearchBar(props: SearchBarProps) {
     disabled = false,
     showDecoratorIcon = false,
     decoratorIcon: DecoratorIcon = SearchIcon,
-    onActionButtonClick
+    onActionButtonClick,
+    onBlur
   } = props;
   const [focus, setFocus] = useState(false);
   const { formatMessage } = useIntl();
   return (
     <div
-      className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
+      className={clsx(
+        classes.search,
+        focus && 'focus',
+        showActionButton && 'noPadded',
+        props.classes?.root
+      )}
     >
-      {
-        showDecoratorIcon &&
-        <DecoratorIcon className={classes.searchIcon} />
-      }
+      {showDecoratorIcon && <DecoratorIcon className={classes.searchIcon} />}
       <InputBase
-        onChange={e => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         onKeyPress={(e) => onKeyPress && onKeyPress(e.key)}
         onFocus={() => setFocus(true)}
-        onBlur={() => setFocus(false)}
+        onBlur={() => {
+          setFocus(false);
+          onBlur?.();
+        }}
         placeholder={placeholder || formatMessage(messages.placeholder)}
         autoFocus={autoFocus}
         disabled={disabled}
@@ -135,15 +143,14 @@ export default function SearchBar(props: SearchBarProps) {
         }}
         inputProps={{ 'aria-label': 'search' }}
       />
-      {
-        showActionButton &&
+      {showActionButton && (
         <IconButton
           onClick={onActionButtonClick ? onActionButtonClick : () => onChange('')}
           className={classes.icon}
         >
           <ActionButtonIcon className={clsx(classes.closeIcon, props.classes?.actionIcon)} />
         </IconButton>
-      }
+      )}
     </div>
   );
 }
