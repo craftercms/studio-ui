@@ -95,11 +95,11 @@ export interface GlobalState {
       items: QuickCreateItem[];
     };
     items: {
-      byPath: LookupTable<DetailedItem>
+      byPath: LookupTable<DetailedItem>;
       permissionsByPath: LookupTable<LookupTable<boolean>>;
     };
     clipboard: string;
-  }
+  };
   contentTypes: EntityState<ContentType>;
   env: {
     authoringBase: string;
@@ -161,23 +161,23 @@ export interface GlobalState {
   };
   translation: {
     siteLocales: {
-      error: ApiResponse
+      error: ApiResponse;
       isFetching: boolean;
-      localeCodes: string[],
-      defaultLocaleCode: string
-    }
-  }
+      localeCodes: string[];
+      defaultLocaleCode: string;
+    };
+  };
   configuration: {
     sidebar: {
       error: ApiResponse;
       items: Array<SidebarConfigItem>;
       isFetching: boolean;
-    },
+    };
     publishing: {
       submission: {
-        commentMaxLength: number
-      }
-    }
+        commentMaxLength: number;
+      };
+    };
   };
   pathNavigator: {
     [id: string]: WidgetState;

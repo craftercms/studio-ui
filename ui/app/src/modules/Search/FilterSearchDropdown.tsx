@@ -40,6 +40,15 @@ import CheckIcon from '@material-ui/icons/Check';
 import { LookupTable } from '../../models/LookupTable';
 import { nnou } from '../../utils/object';
 import palette from '../../styles/palette';
+import SearchIcon from '@material-ui/icons/SearchRounded';
+import SearchBar from '../../components/Controls/SearchBar';
+import { useDispatch } from 'react-redux';
+import {
+  closePathSelectionDialog,
+  pathSelectionDialogClosed,
+  showPathSelectionDialog
+} from '../../state/actions/dialogs';
+import { dispatchDOMEvent } from '../../state/actions/misc';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -120,6 +129,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const messages: any = defineMessages({
+  path: {
+    id: 'words.path',
+    defaultMessage: 'Path'
+  },
   sortBy: {
     id: 'searchFilter.sortBy',
     defaultMessage: 'Sort By'
@@ -207,16 +220,17 @@ interface FilterSearchDropdownProps {
   className: any;
   facets: [Facet];
   queryParams: Partial<ElasticParams>;
+  mode: string;
 
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
 }
 
 interface FilterProps {
   facet: string;
-  facetsLookupTable: LookupTable,
-  checkedFilters: LookupTable,
+  facetsLookupTable: LookupTable;
+  checkedFilters: LookupTable;
 
-  handleFilterChange(filter: FilterType, isFilter: boolean): any,
+  handleFilterChange(filter: FilterType, isFilter: boolean): any;
 
   setCheckedFilters(checkedFilters: object): any;
 }
@@ -274,46 +288,42 @@ function Filter(props: FilterProps) {
         >
           {formatMessage(messages.clean)}
         </Button>
-        {
-          facetsLookupTable[facet].multiple &&
+        {facetsLookupTable[facet].multiple && (
           <Button
             variant="contained"
-            color='primary'
+            color="primary"
             className={classes.button}
             onClick={() => handleApplyClick(facet)}
           >
             {formatMessage(messages.apply)}
           </Button>
-        }
+        )}
       </div>
       <div className={'filterBody'}>
-        {
-          (facetsLookupTable[facet].multiple) ? (
-            <FilterCheckboxes
+        {facetsLookupTable[facet].multiple ? (
+          <FilterCheckboxes
+            facetData={facetsLookupTable[facet]}
+            facet={facet}
+            handleCheckboxClick={handleCheckboxClick}
+            checkedFilters={checkedFilters}
+          />
+        ) : (
+          <>
+            <FilterRadios
               facetData={facetsLookupTable[facet]}
               facet={facet}
-              handleCheckboxClick={handleCheckboxClick}
+              handleRadioClick={handleRadioClick}
               checkedFilters={checkedFilters}
             />
-          ) : (
-            <>
-              <FilterRadios
-                facetData={facetsLookupTable[facet]}
+            {facetsLookupTable[facet].range && !facetsLookupTable[facet].date && (
+              <RangeSelector
                 facet={facet}
-                handleRadioClick={handleRadioClick}
+                handleFilterChange={handleFilterChange}
                 checkedFilters={checkedFilters}
               />
-              {
-                (facetsLookupTable[facet].range && !facetsLookupTable[facet].date) &&
-                <RangeSelector
-                  facet={facet}
-                  handleFilterChange={handleFilterChange}
-                  checkedFilters={checkedFilters}
-                />
-              }
-            </>
-          )
-        }
+            )}
+          </>
+        )}
       </div>
     </div>
   );
@@ -337,7 +347,9 @@ function FilterRadios(props: FilterRadiosProps) {
     if (facetData.date) {
       return `${value.from}TODATE${value.to}ID${facet}${key}`;
     } else if (facetData.range) {
-      return `${(value.from !== '-Infinity') ? value.from : ''}TO${(value.to !== 'Infinity') ? value.to : ''}`;
+      return `${value.from !== '-Infinity' ? value.from : ''}TO${
+        value.to !== 'Infinity' ? value.to : ''
+      }`;
     } else {
       return key;
     }
@@ -366,30 +378,28 @@ function FilterRadios(props: FilterRadiosProps) {
 
   return (
     <RadioGroup>
-      {
-        Object.keys(items).map((key) => {
-          let count = nnou(items[key].count) ? items[key].count : items[key];
-          let label = formatLabel(facet, key, items[key]);
-          let value = formatValue(facet, key, items[key]);
-          return (
-            <FormControlLabel
-              key={key}
-              name={key}
-              onChange={(e: any) => handleRadioClick(e.target.value, facet)}
-              control={
-                <Radio
-                  checked={(checkedFilters && checkedFilters[facet] === value)}
-                  color="primary"
-                  value={value}
-                />
-              }
-              label={`${label} (${count})`}
-              labelPlacement="start"
-              classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
-            />
-          );
-        })
-      }
+      {Object.keys(items).map((key) => {
+        let count = nnou(items[key].count) ? items[key].count : items[key];
+        let label = formatLabel(facet, key, items[key]);
+        let value = formatValue(facet, key, items[key]);
+        return (
+          <FormControlLabel
+            key={key}
+            name={key}
+            onChange={(e: any) => handleRadioClick(e.target.value, facet)}
+            control={
+              <Radio
+                checked={checkedFilters && checkedFilters[facet] === value}
+                color="primary"
+                value={value}
+              />
+            }
+            label={`${label} (${count})`}
+            labelPlacement="start"
+            classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
+          />
+        );
+      })}
     </RadioGroup>
   );
 }
@@ -409,29 +419,27 @@ function FilterCheckboxes(props: FilterCheckboxesProps) {
 
   return (
     <FormGroup>
-      {
-        Object.keys(items).map((key) => {
-          return (
-            <FormControlLabel
-              key={key}
-              name={key}
-              control={
-                <Checkbox
-                  color="primary"
-
-                  checked={(checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false}
-
-                  value={key}
-                  onChange={(e) => handleCheckboxClick(key, e.target.checked, facet)}
-                />
-              }
-              label={`${key} (${items[key]})`}
-              labelPlacement="start"
-              classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
-            />
-          );
-        })
-      }
+      {Object.keys(items).map((key) => {
+        return (
+          <FormControlLabel
+            key={key}
+            name={key}
+            control={
+              <Checkbox
+                color="primary"
+                checked={
+                  (checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false
+                }
+                value={key}
+                onChange={(e) => handleCheckboxClick(key, e.target.checked, facet)}
+              />
+            }
+            label={`${key} (${items[key]})`}
+            labelPlacement="start"
+            classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
+          />
+        );
+      })}
     </FormGroup>
   );
 }
@@ -449,17 +457,20 @@ function RangeSelector(props: RangeSelectorProps) {
   const { facet, handleFilterChange, checkedFilters } = props;
   const [range, setRange] = useState({ min: '', max: '' });
 
-  useEffect(function () {
-    let minMax = { min: '', max: '' };
-    if (checkedFilters && checkedFilters[facet]) {
-      let range = checkedFilters[facet].split('TO');
-      minMax = {
-        min: range[0],
-        max: range[1]
-      };
-    }
-    setRange(minMax);
-  }, [checkedFilters, facet]);
+  useEffect(
+    function() {
+      let minMax = { min: '', max: '' };
+      if (checkedFilters && checkedFilters[facet]) {
+        let range = checkedFilters[facet].split('TO');
+        minMax = {
+          min: range[0],
+          max: range[1]
+        };
+      }
+      setRange(minMax);
+    },
+    [checkedFilters, facet]
+  );
 
   const handleRangeSelector = (facet: string) => {
     let value = `${range.min}TO${range.max}`;
@@ -494,7 +505,7 @@ function RangeSelector(props: RangeSelectorProps) {
       />
       <Button
         variant="contained"
-        color='primary'
+        color="primary"
         className={classes.rangeButton}
         onClick={() => handleRangeSelector(facet)}
       >
@@ -521,13 +532,15 @@ function SortBy(props: SortByProps) {
       className={classes.Select}
       onChange={(event) => handleFilterChange({ name: 'sortBy', value: event.target.value })}
     >
-      <MenuItem value='_score'>{formatMessage(messages.relevance)}</MenuItem>
-      <MenuItem value='internalName'>{formatMessage(messages.internalName)}</MenuItem>
-      {
-        filterKeys.map((name: string, i: number) => {
-          return <MenuItem value={name} key={i}>{formatMessage(messages[camelize(name)])}</MenuItem>;
-        })
-      }
+      <MenuItem value="_score">{formatMessage(messages.relevance)}</MenuItem>
+      <MenuItem value="internalName">{formatMessage(messages.internalName)}</MenuItem>
+      {filterKeys.map((name: string, i: number) => {
+        return (
+          <MenuItem value={name} key={i}>
+            {formatMessage(messages[camelize(name)])}
+          </MenuItem>
+        );
+      })}
     </Select>
   );
 }
@@ -543,26 +556,28 @@ function SortOrder(props: SortOrderProps) {
   const { formatMessage } = useIntl();
   const { queryParams, handleFilterChange } = props;
   // queryParams['sortBy'] === undefined: this means the current filter is the default === _score
-  const isRelevance = (queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined);
-  const options = isRelevance ? [
-    {
-      name: formatMessage(messages.moreRelevantFirst),
-      value: 'desc'
-    },
-    {
-      name: formatMessage(messages.lessRelevantFirst),
-      value: 'asc'
-    }
-  ] : [
-    {
-      name: formatMessage(messages.asc),
-      value: 'asc'
-    },
-    {
-      name: formatMessage(messages.desc),
-      value: 'desc'
-    }
-  ];
+  const isRelevance = queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined;
+  const options = isRelevance
+    ? [
+        {
+          name: formatMessage(messages.moreRelevantFirst),
+          value: 'desc'
+        },
+        {
+          name: formatMessage(messages.lessRelevantFirst),
+          value: 'asc'
+        }
+      ]
+    : [
+        {
+          name: formatMessage(messages.asc),
+          value: 'asc'
+        },
+        {
+          name: formatMessage(messages.desc),
+          value: 'desc'
+        }
+      ];
   return (
     <Select
       value={queryParams['sortOrder'] || 'desc'}
@@ -575,19 +590,87 @@ function SortOrder(props: SortOrderProps) {
   );
 }
 
+interface PathSelectorProps {
+  value: string;
+  disabled: boolean;
+  handleFilterChange(filter: FilterType, isFilter?: boolean): any;
+}
+
+function PathSelector(props: PathSelectorProps) {
+  const { handleFilterChange, value, disabled } = props;
+  const [keyword, setKeyword] = useState(value);
+  const dispatch = useDispatch();
+  const rootPath = keyword.split('/')[1] ? `/${keyword.split('/')[1]}` : null;
+  const idSuccess = 'pathSelectionSuccess';
+  const idCancel = 'pathSelectionCancel';
+
+  return (
+    <SearchBar
+      disabled={disabled}
+      keyword={keyword}
+      placeholder="Browse path"
+      onKeyPress={(key) => {
+        if (key === 'Enter') {
+          handleFilterChange({
+            name: 'path',
+            value: keyword.endsWith('/') ? `${keyword}.+` : `${keyword}/.+`
+          });
+        }
+      }}
+      onChange={setKeyword}
+      showActionButton={Boolean(rootPath)}
+      actionButtonIcon={SearchIcon}
+      onActionButtonClick={() => {
+        dispatch(
+          showPathSelectionDialog({
+            rootPath: rootPath,
+            initialPath: keyword,
+            onClosed: {
+              type: 'BATCH_ACTIONS',
+              payload: [dispatchDOMEvent({ id: idCancel }), pathSelectionDialogClosed()]
+            },
+            onOk: {
+              type: 'BATCH_ACTIONS',
+              payload: [dispatchDOMEvent({ id: idSuccess }), closePathSelectionDialog()]
+            }
+          })
+        );
+
+        const successCallback = (e) => {
+          setKeyword(e.details.path);
+          document.removeEventListener(idSuccess, successCallback, false);
+          document.removeEventListener(idCancel, cancelCallback, false);
+        };
+
+        const cancelCallback = (e) => {
+          document.removeEventListener(idCancel, cancelCallback, false);
+          document.removeEventListener(idSuccess, successCallback, false);
+        };
+
+        document.addEventListener(idSuccess, successCallback, false);
+        document.addEventListener(idCancel, cancelCallback, false);
+      }}
+    />
+  );
+}
+
 export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   const classes = useStyles({});
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { text, className, facets, handleFilterChange, queryParams } = props;
+  const { text, className, facets, handleFilterChange, queryParams, mode } = props;
   const { formatMessage } = useIntl();
   const [expanded, setExpanded] = useState({
-    sortBy: false
+    sortBy: false,
+    path: false
   });
   const [checkedFilters, setCheckedFilters] = React.useState({});
 
-  useEffect(function () {
-    setCheckedFilters(setCheckedParameterFromURL(queryParams));
-  }, [queryParams]);
+  useEffect(
+    function() {
+      setCheckedFilters(setCheckedParameterFromURL(queryParams));
+    },
+    [queryParams]
+  );
 
   const setCheckedParameterFromURL = (queryParams: Partial<ElasticParams>) => {
     if (queryParams['filters']) {
@@ -633,40 +716,42 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   };
 
   const renderFilters = () => {
-    return (
-      filterKeys.map((key: string, i: number) => {
-        let name = camelize(key);
-        return (
-          <div key={i}>
-            <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick(name)}>
-              <header className={clsx(classes.header, !!(expanded && expanded[name]) && 'open')}>
-                <Typography variant="body1">
-                  <strong>{formatMessage(messages[name])}</strong>
-                </Typography>
-                {
-                  checkedFilters[key] &&
-                  <CheckIcon className={classes.filterChecked} />
-                }
-                <ExpandMoreIcon
-                  className={clsx(classes.expand, !!(expanded && expanded[name]) && classes.expandOpen)}
-                />
-              </header>
-            </ListItem>
-            <Collapse in={!!(expanded && expanded[name])} timeout={300} onEntered={refreshPopover}>
-              <div className={classes.body}>
-                <Filter
-                  facet={key}
-                  handleFilterChange={handleFilterChange}
-                  checkedFilters={checkedFilters}
-                  setCheckedFilters={setCheckedFilters}
-                  facetsLookupTable={facetsLookupTable}
-                />
-              </div>
-            </Collapse>
-          </div>
-        );
-      })
-    );
+    return filterKeys.map((key: string, i: number) => {
+      let name = camelize(key);
+      return (
+        <div key={i}>
+          <ListItem
+            button
+            classes={{ root: classes.listPadding }}
+            onClick={() => handleExpandClick(name)}
+          >
+            <header className={clsx(classes.header, !!(expanded && expanded[name]) && 'open')}>
+              <Typography variant="body1">
+                <strong>{formatMessage(messages[name])}</strong>
+              </Typography>
+              {checkedFilters[key] && <CheckIcon className={classes.filterChecked} />}
+              <ExpandMoreIcon
+                className={clsx(
+                  classes.expand,
+                  !!(expanded && expanded[name]) && classes.expandOpen
+                )}
+              />
+            </header>
+          </ListItem>
+          <Collapse in={!!(expanded && expanded[name])} timeout={300} onEntered={refreshPopover}>
+            <div className={classes.body}>
+              <Filter
+                facet={key}
+                handleFilterChange={handleFilterChange}
+                checkedFilters={checkedFilters}
+                setCheckedFilters={setCheckedFilters}
+                facetsLookupTable={facetsLookupTable}
+              />
+            </div>
+          </Collapse>
+        </div>
+      );
+    });
   };
 
   const refreshPopover = () => {
@@ -700,19 +785,60 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
       >
         <List classes={{ padding: classes.listPadding }}>
           <div>
-            <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
-              <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
+            <ListItem
+              button
+              classes={{ root: classes.listPadding }}
+              onClick={() => handleExpandClick('path')}
+            >
+              <header className={clsx(classes.header, !!(expanded && expanded['path']) && 'open')}>
+                <Typography variant="body1">
+                  <strong>{formatMessage(messages.path)}</strong>
+                </Typography>
+                <ExpandMoreIcon
+                  className={clsx(
+                    classes.expand,
+                    expanded && expanded['path'] && classes.expandOpen
+                  )}
+                />
+              </header>
+            </ListItem>
+            <Collapse in={expanded && expanded['path']} timeout={300} onEntered={refreshPopover}>
+              <div className={classes.body}>
+                <PathSelector
+                  value={queryParams['path']?.replace('.+', '')}
+                  handleFilterChange={handleFilterChange}
+                  disabled={mode === 'search'}
+                />
+              </div>
+            </Collapse>
+          </div>
+          <div>
+            <ListItem
+              button
+              classes={{ root: classes.listPadding }}
+              onClick={() => handleExpandClick('sortBy')}
+            >
+              <header
+                className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}
+              >
                 <Typography variant="body1">
                   <strong>{formatMessage(messages.sortBy)}</strong>
                 </Typography>
                 <ExpandMoreIcon
-                  className={clsx(classes.expand, (expanded && expanded['sortBy']) && classes.expandOpen)}
+                  className={clsx(
+                    classes.expand,
+                    expanded && expanded['sortBy'] && classes.expandOpen
+                  )}
                 />
               </header>
             </ListItem>
-            <Collapse in={(expanded && expanded['sortBy'])} timeout={300} onEntered={refreshPopover}>
+            <Collapse in={expanded && expanded['sortBy']} timeout={300} onEntered={refreshPopover}>
               <div className={classes.body}>
-                <SortBy queryParams={queryParams} filterKeys={filterKeys} handleFilterChange={handleFilterChange} />
+                <SortBy
+                  queryParams={queryParams}
+                  filterKeys={filterKeys}
+                  handleFilterChange={handleFilterChange}
+                />
                 <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange} />
               </div>
             </Collapse>

@@ -28,21 +28,18 @@ const initialState: PathSelectionDialogStateProps = {
   rootPath: '/site'
 };
 
-export default createReducer<GlobalState['dialogs']['pathSelection']>(
-  initialState,
-  {
-    [showPathSelectionDialog.type]: (state, { payload }) => ({
-      ...state,
-      onClose: closePathSelectionDialog(),
-      onClosed: pathSelectionDialogClosed(),
-      onOk: closePathSelectionDialog(),
-      ...payload,
-      open: true
-    }),
-    [closePathSelectionDialog.type]: (state) => ({
-      ...state,
-      open: false
-    }),
-    [pathSelectionDialogClosed.type]: () => initialState
-  }
-);
+export default createReducer<GlobalState['dialogs']['pathSelection']>(initialState, {
+  [showPathSelectionDialog.type]: (state, { payload }) => ({
+    ...state,
+    onClose: closePathSelectionDialog(),
+    onClosed: pathSelectionDialogClosed(),
+    onOk: closePathSelectionDialog(),
+    ...payload,
+    open: true
+  }),
+  [closePathSelectionDialog.type]: (state) => ({
+    ...state,
+    open: false
+  }),
+  [pathSelectionDialogClosed.type]: () => initialState
+});

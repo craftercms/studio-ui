@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function () {
-
+(function() {
   const { React, ReactDOM } = CrafterCMSNext;
   const { useState } = React;
 
@@ -43,7 +42,7 @@
         rootPath,
         initialPath: value ? value : rootPath,
         onClose: () => unmount(),
-        onOk: (path) => {
+        onOk: ({ path }) => {
           unmount();
           onChange(path);
         }
@@ -61,10 +60,7 @@
           onChange={(e) => onChange(e.target.value)}
         />
         <button className="content-path-input--icon" onClick={openPathBrowser}>
-          <i
-            className="fa fa-search"
-            aria-hidden="true"
-          />
+          <i className="fa fa-search" aria-hidden="true" />
         </button>
       </>
     );
@@ -106,5 +102,4 @@
     'cstudio-console-tools-content-types-proptype-content-path-input',
     ContentPathInput
   );
-
 })();

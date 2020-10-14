@@ -45,6 +45,7 @@ import SearchBar from '../../components/Controls/SearchBar';
 import palette from '../../styles/palette';
 import {
   closeDeleteDialog,
+  deleteDialogClosed,
   showCodeEditorDialog,
   showDeleteDialog,
   showEditDialog,
@@ -200,7 +201,8 @@ const loaderStyles = makeStyles(() =>
       color: palette.gray.medium3,
       marginRight: '5px'
     }
-  }));
+  })
+);
 
 const initialSearchParameters: ElasticParams = {
   query: '',
@@ -223,7 +225,8 @@ const messages = defineMessages({
   },
   videoProcessed: {
     id: 'search.videoProcessed',
-    defaultMessage: 'Video is being processed, preview will be available when processing is complete'
+    defaultMessage:
+      'Video is being processed, preview will be available when processing is complete'
   },
   selectAll: {
     id: 'search.selectAll',
@@ -263,15 +266,18 @@ export default function Search(props: SearchProps) {
   const { current: refs } = useRef<any>({});
   const { history, location, mode, onSelect } = props;
   const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
-  const searchParameters = useMemo(() => setSearchParameters(initialSearchParameters, queryParams), [queryParams]);
+  const searchParameters = useMemo(
+    () => setSearchParameters(initialSearchParameters, queryParams),
+    [queryParams]
+  );
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
   const [currentView, setCurrentView] = useState('grid');
   const [searchResults, setSearchResults] = useState(null);
   const [selected, setSelected] = useState([]);
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const site = useActiveSiteId();
-  const authoringBase = useSelection<string>(state => state.env.authoringBase);
-  const guestBase = useSelection<string>(state => state.env.guestBase);
+  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
+  const guestBase = useSelection<string>((state) => state.env.guestBase);
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const permissions = usePermissions();
   const dispatch = useDispatch();
@@ -304,63 +310,62 @@ export default function Search(props: SearchProps) {
   }, [searchParameters, site]);
 
   useEffect(() => {
-    const subscription = onSearch$.pipe(
-      debounceTime(400),
-      distinctUntilChanged()
-    ).subscribe((keywords: string) => {
-      if (!keywords) keywords = undefined;
-      let qs = refs.createQueryString({ name: 'keywords', value: keywords });
-      history.push({
-        pathname: '/',
-        search: `?${qs}`
+    const subscription = onSearch$
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe((keywords: string) => {
+        if (!keywords) keywords = undefined;
+        let qs = refs.createQueryString({ name: 'keywords', value: keywords });
+        history.push({
+          pathname: '/',
+          search: `?${qs}`
+        });
       });
-    });
     return () => subscription.unsubscribe();
   }, [history, onSearch$, refs]);
 
   function renderMediaCards(items: [MediaItem], currentView: string) {
     if (items.length > 0) {
       return items.map((item: MediaItem, i: number) => {
-        return (
-          (currentView === 'grid') ? (
-            <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
-              <MediaCard
-                item={item}
-                onNavigate={onNavigate}
-                onPreview={onPreview}
-                onSelect={handleSelect}
-                selected={selected}
-                previewAppBaseUri={guestBase}
-                onHeaderButtonClick={onHeaderButtonClick}
-              />
-            </Grid>
-          ) : (
-            <Grid key={i} item xs={12}>
-              <MediaCard
-                item={item}
-                isList={true}
-                onPreview={onPreview}
-                onSelect={handleSelect}
-                classes={{
-                  root: classes.mediaCardListRoot,
-                  checkbox: classes.mediaCardListCheckbox,
-                  header: classes.mediaCardListHeader,
-                  media: classes.mediaCardListMedia,
-                  mediaIcon: classes.mediaCardListMediaIcon
-                }}
-                selected={selected}
-                previewAppBaseUri={guestBase}
-                onHeaderButtonClick={onHeaderButtonClick}
-              />
-            </Grid>
-          )
+        return currentView === 'grid' ? (
+          <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
+            <MediaCard
+              item={item}
+              onNavigate={onNavigate}
+              onPreview={onPreview}
+              onSelect={handleSelect}
+              selected={selected}
+              previewAppBaseUri={guestBase}
+              onHeaderButtonClick={onHeaderButtonClick}
+            />
+          </Grid>
+        ) : (
+          <Grid key={i} item xs={12}>
+            <MediaCard
+              item={item}
+              isList={true}
+              onPreview={onPreview}
+              onSelect={handleSelect}
+              classes={{
+                root: classes.mediaCardListRoot,
+                checkbox: classes.mediaCardListCheckbox,
+                header: classes.mediaCardListHeader,
+                media: classes.mediaCardListMedia,
+                mediaIcon: classes.mediaCardListMediaIcon
+              }}
+              selected={selected}
+              previewAppBaseUri={guestBase}
+              onHeaderButtonClick={onHeaderButtonClick}
+            />
+          </Grid>
         );
       });
-
     } else {
-      return <EmptyState
-        title={formatMessage(messages.noResults)} subtitle={formatMessage(messages.changeQuery)}
-      />;
+      return (
+        <EmptyState
+          title={formatMessage(messages.noResults)}
+          subtitle={formatMessage(messages.changeQuery)}
+        />
+      );
     }
   }
 
@@ -408,9 +413,17 @@ export default function Search(props: SearchProps) {
         queryParams.filters = undefined;
       }
       // queryParams['sortBy'] === undefined: this means the current filter is the default === _score
-      if (filter.name === 'sortBy' && (queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined) && filter.value !== '_score') {
+      if (
+        filter.name === 'sortBy' &&
+        (queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined) &&
+        filter.value !== '_score'
+      ) {
         newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'asc' };
-      } else if (filter.name === 'sortBy' && queryParams['sortBy'] !== '_score' && filter.value === '_score') {
+      } else if (
+        filter.name === 'sortBy' &&
+        queryParams['sortBy'] !== '_score' &&
+        filter.value === '_score'
+      ) {
         newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'desc' };
       } else {
         newFilters = { ...queryParams, [filter.name]: filter.value };
@@ -419,7 +432,10 @@ export default function Search(props: SearchProps) {
     return queryString.stringify(newFilters);
   }
 
-  function setSearchParameters(initialSearchParameters: ElasticParams, queryParams: Partial<ElasticParams>) {
+  function setSearchParameters(
+    initialSearchParameters: ElasticParams,
+    queryParams: Partial<ElasticParams>
+  ) {
     let formatParameters = { ...queryParams };
     if (formatParameters.filters) {
       formatParameters.filters = JSON.parse(formatParameters.filters);
@@ -430,23 +446,25 @@ export default function Search(props: SearchProps) {
           formatParameters.filters[key] = {
             date: true,
             id: id[1],
-            min: (range[0] !== 'null') ? range[0] : null,
-            max: (range[1] !== 'null') ? range[1] : null
+            min: range[0] !== 'null' ? range[0] : null,
+            max: range[1] !== 'null' ? range[1] : null
           };
         } else if (formatParameters.filters[key].includes('TO')) {
           let range = formatParameters.filters[key].split('TO');
           formatParameters.filters[key] = {
-            min: (range[0] !== '-Infinity' && range[0] !== '') ? range[0] : null,
-            max: (range[1] !== 'Infinity' && range[1] !== '') ? range[1] : null
+            min: range[0] !== '-Infinity' && range[0] !== '' ? range[0] : null,
+            max: range[1] !== 'Infinity' && range[1] !== '' ? range[1] : null
           };
         }
-
       });
     }
     return { ...initialSearchParameters, ...formatParameters };
   }
 
-  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
+  function handleChangePage(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    newPage: number
+  ) {
     let offset = newPage * searchParameters.limit;
     let qs = refs.createQueryString({ name: 'offset', value: offset });
     history.push({
@@ -455,7 +473,9 @@ export default function Search(props: SearchProps) {
     });
   }
 
-  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function handleChangeRowsPerPage(
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
     let qs = refs.createQueryString({ name: 'limit', value: parseInt(event.target.value, 10) });
     history.push({
       pathname: '/',
@@ -512,7 +532,7 @@ export default function Search(props: SearchProps) {
   }
 
   function handleClearSelected() {
-    selected.forEach(path => {
+    selected.forEach((path) => {
       onSelect(path, false);
     });
     setSelected([]);
@@ -534,7 +554,9 @@ export default function Search(props: SearchProps) {
   const onNavigate = (item: MediaItem) => {
     if (item.path) {
       let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
-      window.location.href = `${authoringBase}/${previewBase}#/?page=${getPreviewURLFromPath(item.path)}&site=${site}`;
+      window.location.href = `${authoringBase}/${previewBase}#/?page=${getPreviewURLFromPath(
+        item.path
+      )}&site=${site}`;
     }
   };
 
@@ -542,19 +564,23 @@ export default function Search(props: SearchProps) {
     const { type, name: title, path: url } = item;
     switch (type) {
       case 'Image': {
-        dispatch(showPreviewDialog({
-          type: 'image',
-          title,
-          url
-        }));
+        dispatch(
+          showPreviewDialog({
+            type: 'image',
+            title,
+            url
+          })
+        );
         break;
       }
       case 'Page': {
-        dispatch(showPreviewDialog({
-          type: 'page',
-          title,
-          url: `${guestBase}${getPreviewURLFromPath(item.path)}`
-        }));
+        dispatch(
+          showPreviewDialog({
+            type: 'page',
+            title,
+            url: `${guestBase}${getPreviewURLFromPath(item.path)}`
+          })
+        );
         break;
       }
       case 'Component':
@@ -564,27 +590,27 @@ export default function Search(props: SearchProps) {
         break;
       }
       default: {
-        getContent(site, url).subscribe(
-          (content) => {
-            let mode = 'txt';
-            if (type === 'Template') {
-              mode = 'ftl';
-            } else if (type === 'Groovy') {
-              mode = 'groovy';
-            } else if (type === 'JavaScript') {
-              mode = 'javascript';
-            } else if (type === 'CSS') {
-              mode = 'css';
-            }
-            dispatch(showPreviewDialog({
+        getContent(site, url).subscribe((content) => {
+          let mode = 'txt';
+          if (type === 'Template') {
+            mode = 'ftl';
+          } else if (type === 'Groovy') {
+            mode = 'groovy';
+          } else if (type === 'JavaScript') {
+            mode = 'javascript';
+          } else if (type === 'CSS') {
+            mode = 'css';
+          }
+          dispatch(
+            showPreviewDialog({
               type: 'editor',
               title,
               url,
               mode,
               content
-            }));
-          }
-        );
+            })
+          );
+        });
         break;
       }
     }
@@ -593,48 +619,51 @@ export default function Search(props: SearchProps) {
   const onEdit = (item: MediaItem) => {
     if (item.type === 'Page' || item.type === 'Taxonomy' || item.type === 'Component') {
       const src = `${legacyFormSrc}site=${site}&path=${item.path}&type=form`;
-      fetchWorkflowAffectedItems(site, item.path).subscribe(
-        (items) => {
-          if (items?.length > 0) {
-            dispatch(showWorkflowCancellationDialog({
+      fetchWorkflowAffectedItems(site, item.path).subscribe((items) => {
+        if (items?.length > 0) {
+          dispatch(
+            showWorkflowCancellationDialog({
               items,
               onContinue: showEditDialog({ src })
-            }));
-          } else {
-            dispatch(showEditDialog({ src }));
-          }
+            })
+          );
+        } else {
+          dispatch(showEditDialog({ src }));
         }
-      );
+      });
     } else {
       let src = `${legacyFormSrc}site=${site}&path=${item.path}&type=asset`;
       dispatch(showCodeEditorDialog({ src }));
     }
-
   };
 
   const onDelete = (item: MediaItem) => {
     const idDialogSuccess = 'deleteDialogSuccess';
     const idDialogCancel = 'deleteDialogCancel';
-    //maybe it needs a sandbox item;
-    dispatch(showDeleteDialog({
-      items: [item],
-      onSuccess: batchActions([
-        dispatchDOMEvent({
-          id: idDialogSuccess
-        }),
-        closeDeleteDialog()
-      ]),
-      onClosed: dispatchDOMEvent({ id: idDialogCancel })
-    }));
+    dispatch(
+      showDeleteDialog({
+        items: [item],
+        onSuccess: batchActions([
+          dispatchDOMEvent({
+            id: idDialogSuccess
+          }),
+          closeDeleteDialog()
+        ]),
+        onClosed: batchActions([
+          dispatchDOMEvent({ id: idDialogCancel }),
+          deleteDialogClosed()
+        ])
+      })
+    );
 
     let unsubscribe, cancelUnsubscribe;
 
-    unsubscribe = createCallbackListener(idDialogSuccess, function () {
+    unsubscribe = createCallbackListener(idDialogSuccess, function() {
       refreshSearch();
       cancelUnsubscribe();
     });
 
-    cancelUnsubscribe = createCallbackListener(idDialogCancel, function () {
+    cancelUnsubscribe = createCallbackListener(idDialogCancel, function() {
       refreshSearch();
       unsubscribe();
     });
@@ -649,11 +678,10 @@ export default function Search(props: SearchProps) {
 
   return (
     <section
-      className={
-        clsx(classes.wrapper, {
-          'hasContent': (searchResults && searchResults.total),
-          'select': mode === 'select'
-        })}
+      className={clsx(classes.wrapper, {
+        hasContent: searchResults && searchResults.total,
+        select: mode === 'select'
+      })}
     >
       <header className={classes.searchHeader}>
         <div className={classes.search}>
@@ -665,41 +693,38 @@ export default function Search(props: SearchProps) {
           />
         </div>
         <div className={classes.helperContainer}>
-          {
-            searchResults && searchResults.facets &&
+          {searchResults && searchResults.facets && (
             <FilterSearchDropdown
+              mode={mode}
               text={'Filters'}
               className={classes.searchDropdown}
               facets={searchResults.facets}
               handleFilterChange={handleFilterChange}
               queryParams={queryParams}
             />
-          }
+          )}
           <IconButton className={classes.avatarContent} onClick={handleChangeView}>
             <Avatar className={classes.avatar}>
-              {
-                currentView === 'grid'
-                  ? <ViewListIcon />
-                  : <AppsIcon />
-              }
+              {currentView === 'grid' ? <ViewListIcon /> : <AppsIcon />}
             </Avatar>
           </IconButton>
         </div>
       </header>
-      {
-        (searchResults && !!searchResults.total) &&
+      {searchResults && !!searchResults.total && (
         <div className={classes.searchHelperBar}>
           <FormGroup>
             <FormControlLabel
-              control={<Checkbox
-                color="primary" checked={areAllSelected()}
-                onClick={(e: any) => handleSelectAll(e.target.checked)}
-              />}
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={areAllSelected()}
+                  onClick={(e: any) => handleSelectAll(e.target.checked)}
+                />
+              }
               label={formatMessage(messages.selectAll)}
             />
           </FormGroup>
-          {
-            (selected.length > 0) &&
+          {selected.length > 0 && (
             <Typography variant="body2" className={classes.resultsSelected} color={'textSecondary'}>
               {formatMessage(messages.resultsSelected, {
                 count: selected.length,
@@ -707,7 +732,7 @@ export default function Search(props: SearchProps) {
               })}
               <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected} />
             </Typography>
-          }
+          )}
           <TablePagination
             rowsPerPageOptions={[9, 15, 21]}
             className={classes.pagination}
@@ -726,28 +751,25 @@ export default function Search(props: SearchProps) {
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         </div>
-      }
+      )}
       <section className={classes.content}>
-        {
-          apiState.error ?
-            <ErrorState error={apiState.errorResponse} />
-            :
-            (
-              <Grid
-                container spacing={3}
-                className={searchResults?.items.length === 0 ? classes.empty : ''}
-              >
-                {
-                  searchResults === null
-                    ? <Spinner background="inherit" />
-                    : renderMediaCards(searchResults.items, currentView)
-                }
-              </Grid>
-            )
-        }
+        {apiState.error ? (
+          <ErrorState error={apiState.errorResponse} />
+        ) : (
+          <Grid
+            container
+            spacing={3}
+            className={searchResults?.items.length === 0 ? classes.empty : ''}
+          >
+            {searchResults === null ? (
+              <Spinner background="inherit" />
+            ) : (
+              renderMediaCards(searchResults.items, currentView)
+            )}
+          </Grid>
+        )}
       </section>
-      {
-        simpleMenu.item?.path &&
+      {simpleMenu.item?.path && (
         <SimpleMenu
           permissions={permissions?.[simpleMenu.item.path]}
           item={simpleMenu.item}
@@ -761,13 +783,13 @@ export default function Search(props: SearchProps) {
             noPermissions: formatMessage(messages.noPermissions)
           }}
         />
-      }
+      )}
     </section>
   );
 }
 
 interface SimpleMenuProps {
-  permissions: LookupTable<boolean>
+  permissions: LookupTable<boolean>;
   item: MediaItem;
   anchorEl: Element;
   messages: {
@@ -803,11 +825,7 @@ function SimpleMenu(props: SimpleMenuProps) {
     errorSelector: (source) => null
   });
   return (
-    <Menu
-      anchorEl={props.anchorEl}
-      open={Boolean(props.anchorEl)}
-      onClose={props.onClose}
-    >
+    <Menu anchorEl={props.anchorEl} open={Boolean(props.anchorEl)} onClose={props.onClose}>
       <Suspense
         fallback={
           <div className={classes.loadingWrapper}>
@@ -836,8 +854,7 @@ function SimpleMenuUI(props: SimpleMenuUIProps) {
   const isDeleteAllowed = permissions.delete;
   return (
     <>
-      {
-        editable && isWriteAllowed &&
+      {editable && isWriteAllowed && (
         <MenuItem
           onClick={() => {
             onClose();
@@ -847,9 +864,8 @@ function SimpleMenuUI(props: SimpleMenuUIProps) {
           <EditIcon className={classes.optionIcon} />
           {messages.edit}
         </MenuItem>
-      }
-      {
-        isDeleteAllowed &&
+      )}
+      {isDeleteAllowed && (
         <MenuItem
           onClick={() => {
             onClose();
@@ -859,11 +875,10 @@ function SimpleMenuUI(props: SimpleMenuUIProps) {
           <DeleteIcon className={classes.optionIcon} />
           {messages.delete}
         </MenuItem>
-      }
-      {
-        !isWriteAllowed && !isDeleteAllowed &&
+      )}
+      {!isWriteAllowed && !isDeleteAllowed && (
         <MenuItem onClick={onClose}>{messages.noPermissions}</MenuItem>
-      }
+      )}
     </>
   );
 }

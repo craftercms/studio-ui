@@ -76,8 +76,8 @@ interface PathSelectionDialogBaseProps {
 export type PathSelectionDialogProps = PropsWithChildren<PathSelectionDialogBaseProps> & {
   onClose(): void;
   onClosed?(): void;
-  onOk?(selectedPath: string): void;
-}
+  onOk?(response: { path: string }): void;
+};
 
 export interface PathSelectionDialogStateProps extends PathSelectionDialogBaseProps {
   onClose?: StandardAction;
@@ -107,6 +107,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
+
   useUnmount(onClosed);
 
   useEffect(() => {
@@ -264,7 +265,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
         </Button>
         <Button
           disabled={invalidPath || isFetching}
-          onClick={() => onOk(currentPath)}
+          onClick={() => onOk({ path: currentPath })}
           variant="contained"
           color="primary"
         >
