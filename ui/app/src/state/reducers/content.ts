@@ -36,6 +36,7 @@ import {
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
+import { changeSite } from './sites';
 
 type ContentState = GlobalState['content'];
 
@@ -45,9 +46,9 @@ const initialState: ContentState = {
     isFetching: false,
     items: null
   },
-  permissions: null,
   items: {
-    byPath: null
+    byPath: null,
+    permissionsByPath: null
   },
   clipboard: null
 };
@@ -78,9 +79,12 @@ const reducer = createReducer<ContentState>(initialState, {
   }),
   [fetchUserPermissionsComplete.type]: (state, { payload }) => ({
     ...state,
-    permissions: {
-      ...state.permissions,
-      [payload.path]: createPresenceTable(payload.permissions.map(value => value.replaceAll(' ', '_')))
+    items: {
+      ...state.items,
+      permissionsByPath: {
+        ...state.items.permissionsByPath,
+        [payload.path]: createPresenceTable(payload.permissions.map(value => value.replaceAll(' ', '_').replace(/-/g, '_')))
+      }
     }
   }),
   [fetchDetailedItemComplete.type]: (state, { payload }) => {
@@ -129,7 +133,8 @@ const reducer = createReducer<ContentState>(initialState, {
         }
       }
     };
-  }
+  },
+  [changeSite.type]: () => initialState
 });
 
 export default reducer;
