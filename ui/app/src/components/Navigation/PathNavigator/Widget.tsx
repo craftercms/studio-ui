@@ -358,7 +358,6 @@ export default function (props: WidgetProps) {
             onItemClicked={onItemClicked}
           />
           <TablePagination
-            className={classes.pagination}
             classes={{
               root: classes.pagination,
               selectRoot: 'hidden',
