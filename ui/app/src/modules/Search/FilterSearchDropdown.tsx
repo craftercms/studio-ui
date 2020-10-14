@@ -212,6 +212,10 @@ const messages: any = defineMessages({
   max: {
     id: 'searchFilter.max',
     defaultMessage: 'Max'
+  },
+  searchIn: {
+    id: 'searchFilter.searchIn',
+    defaultMessage: 'Search in:'
   }
 });
 
@@ -593,11 +597,12 @@ function SortOrder(props: SortOrderProps) {
 interface PathSelectorProps {
   value: string;
   disabled: boolean;
+  placeholder?: string;
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
 
 function PathSelector(props: PathSelectorProps) {
-  const { handleFilterChange, value, disabled } = props;
+  const { handleFilterChange, value, disabled, placeholder } = props;
   const [keyword, setKeyword] = useState(value ?? '');
   const dispatch = useDispatch();
   const rootPath = keyword.split('/')[1] ? `/${keyword.split('/')[1]}` : null;
@@ -620,7 +625,7 @@ function PathSelector(props: PathSelectorProps) {
     <SearchBar
       disabled={disabled}
       keyword={keyword}
-      placeholder="Browse path"
+      placeholder={placeholder}
       onKeyPress={(key) => {
         if (key === 'Enter') {
           handleFilterChange({
@@ -823,6 +828,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
             <Collapse in={expanded && expanded['path']} timeout={300} onEntered={refreshPopover}>
               <div className={classes.body}>
                 <PathSelector
+                  placeholder={formatMessage(messages.searchIn)}
                   value={queryParams['path']?.replace('.+', '')}
                   handleFilterChange={handleFilterChange}
                   disabled={mode === 'select'}

@@ -778,6 +778,12 @@ var nodeOpen = false,
           type: 'BATCH_ACTIONS',
           payload: [
             {
+              type: 'FETCH_USER_PERMISSIONS',
+              payload: {
+                path: item.path
+              }
+            },
+            {
               type: 'FETCH_ITEM_VERSIONS',
               payload: {
                 item,
@@ -798,6 +804,12 @@ var nodeOpen = false,
         CrafterCMSNext.system.store.dispatch({
           type: 'BATCH_ACTIONS',
           payload: [
+            {
+              type: 'FETCH_USER_PERMISSIONS',
+              payload: {
+                path: item.path
+              }
+            },
             {
               type: 'FETCH_ITEM_VERSIONS',
               payload: {
