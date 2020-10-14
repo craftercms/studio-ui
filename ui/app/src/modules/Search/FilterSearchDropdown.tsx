@@ -129,7 +129,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexGrow: 1
   },
   pathSelectorSearchIcon: {
-    marginRight: '5px',
+    marginRight: '3px 5px 3px 3px',
     color: palette.gray.medium4
   },
   pathSelectorWrapper: {
@@ -138,7 +138,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '10px 0px 10px 12px',
     border: `1px solid  ${palette.gray.light1}`,
     borderRadius: '5px',
-    '&:hover': {
+    '&.disabled': {
+      opacity: 0.7
+    },
+    '&:not(.disabled):hover': {
       borderColor: palette.gray.light6
     }
   },
@@ -696,10 +699,13 @@ function PathSelector(props: PathSelectorProps) {
   };
 
   return (
-    <div className={classes.pathSelectorWrapper} onClick={onOpenPathSelectionDialog}>
+    <div
+      className={clsx(classes.pathSelectorWrapper, disabled && 'disabled')}
+      onClick={disabled ? null : onOpenPathSelectionDialog}
+    >
       <InputBase
         classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
-        //disabled
+        disabled={disabled}
         readOnly
         value={keyword}
         placeholder={formatMessage(messages.searchIn)}
