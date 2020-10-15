@@ -22,7 +22,6 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
 import KeyboardArrowLeftRounded from '@material-ui/icons/KeyboardArrowLeftRounded';
 import KeyboardArrowRightRounded from '@material-ui/icons/KeyboardArrowRightRounded';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
@@ -59,6 +58,7 @@ import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { ItemMenu } from '../../components/ItemMenu/ItemMenu';
+import SearchAhead from '../../components/Controls/SearchAhead';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -150,6 +150,14 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 'calc(100% - 104px)',
       justifyContent: 'center'
     },
+    searchAheadContainer: {
+      display: 'flex',
+      width: '100%'
+    },
+    searchAheadPopoverRoot: {
+      width: 400,
+      marginTop: '10px'
+    },
     selectorPopoverRoot: {
       width: 400,
       marginLeft: '4px'
@@ -239,19 +247,21 @@ export function AddressBar(props: AddressBarProps) {
             </MenuItem>
           ))}
         </Select>
-        <InputBase
+        <SearchAhead
           value={internalUrl}
-          onChange={(e) => setInternalUrl(e.target.value)}
-          onKeyDown={createOnEnter((value) => onUrlChange(value), 'value')}
           placeholder={noSiteSet ? '' : '/'}
           disabled={noSiteSet}
-          className={classes.inputContainer}
-          classes={{ input: classes.input }}
-          inputProps={{ 'aria-label': '' }}
+          onKeyDown={createOnEnter((value) => onUrlChange(value), 'value')}
+          classes={{
+            container: classes.searchAheadContainer,
+            root: classes.inputContainer,
+            input: classes.input,
+            popoverRoot: classes.searchAheadPopoverRoot
+          }}
         />
         <SingleItemSelector
           disabled={noSiteSet}
-          rootPath='/site/website'
+          rootPath="/site/website"
           selectedItem={item as DetailedItem}
           open={openSelector}
           onClose={() => setOpenSelector(false)}
@@ -270,8 +280,7 @@ export function AddressBar(props: AddressBarProps) {
       <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <MoreVertRounded />
       </IconButton>
-      {
-        Boolean(anchorEl) &&
+      {Boolean(anchorEl) && (
         <ItemMenu
           open={true}
           anchorEl={anchorEl}
@@ -279,7 +288,7 @@ export function AddressBar(props: AddressBarProps) {
           path={path}
           loaderItems={13}
         />
-      }
+      )}
     </>
   );
 }
@@ -296,11 +305,13 @@ export default function ToolBar() {
   const guest = usePreviewGuest();
   const modelId = guest?.modelId;
   const models = guest?.models;
-  const item = models?.[modelId] ? {
-    id: models[modelId].craftercms.id,
-    path: models[modelId].craftercms.path,
-    label: models[modelId].craftercms.label
-  } : null;
+  const item = models?.[modelId]
+    ? {
+        id: models[modelId].craftercms.id,
+        path: models[modelId].craftercms.path,
+        label: models[modelId].craftercms.label
+      }
+    : null;
   const { enqueueSnackbar } = useSnackbar();
 
   // region permissions

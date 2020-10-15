@@ -38,6 +38,7 @@ interface NavItemProps {
   locale: string;
   isLeaf: boolean;
   isSelectMode?: boolean;
+  showArrow?: boolean;
   onItemClicked?(item: DetailedItem, event: React.MouseEvent): void;
   onChangeParent?(item: DetailedItem): void;
   onPreview?(item: DetailedItem): void;
@@ -53,11 +54,12 @@ export default function(props: NavItemProps) {
     onItemClicked,
     onChangeParent,
     onPreview,
-    locale,
+    locale = null,
     isSelectMode,
     onItemChecked,
     onOpenItemMenu,
-    isLeaf
+    isLeaf,
+    showArrow = false
   } = props;
   const [over, setOver] = useState(false);
   const onMouseOver = isSelectMode ? null : () => setOver(true);
@@ -122,32 +124,34 @@ export default function(props: NavItemProps) {
             <MoreVertIcon className={classes.icon} />
           </IconButton>
         )}
-        <Tooltip
-          title={
-            isLeaf ? (
-              <FormattedMessage id="navigator.isLeaf" defaultMessage="Item has no children" />
-            ) : (
-              <FormattedMessage id="words.view" defaultMessage="View" />
-            )
-          }
-        >
-          <IconButton
-            aria-label="Options"
-            className={classes.itemIconButton}
-            onClick={(event) => {
-              event.stopPropagation();
-              if (isLeaf) {
-                return;
-              } else if (navigable || folder) {
-                onChangeParent?.(item);
-              } else if (previewable) {
-                onPreview(item);
-              }
-            }}
+        {showArrow && (
+          <Tooltip
+            title={
+              isLeaf ? (
+                <FormattedMessage id="navigator.isLeaf" defaultMessage="Item has no children" />
+              ) : (
+                <FormattedMessage id="words.view" defaultMessage="View" />
+              )
+            }
           >
-            <ChevronRightRoundedIcon className={classes.icon} />
-          </IconButton>
-        </Tooltip>
+            <IconButton
+              aria-label="Options"
+              className={classes.itemIconButton}
+              onClick={(event) => {
+                event.stopPropagation();
+                if (isLeaf) {
+                  return;
+                } else if (navigable || folder) {
+                  onChangeParent?.(item);
+                } else if (previewable) {
+                  onPreview(item);
+                }
+              }}
+            >
+              <ChevronRightRoundedIcon className={classes.icon} />
+            </IconButton>
+          </Tooltip>
+        )}
       </div>
     </ListItem>
   );
