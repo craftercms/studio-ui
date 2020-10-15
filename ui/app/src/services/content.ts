@@ -1581,6 +1581,15 @@ export function changeContentType(
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
+export function existItem(site: string, path: string): Observable<boolean> {
+  return get(
+    `/studio/api/1/services/api/1/content/content-exists.json?site_id=${site}&path=${path}`
+  ).pipe(
+    map(({ response }) => response.content),
+    catchError(errorSelectorApi1)
+  );
+}
+
 export default {
   getComponentInstanceHTML,
   getContent,
@@ -1614,5 +1623,6 @@ export default {
   lock,
   unlock,
   fetchWorkflowAffectedItems,
-  changeContentType
+  changeContentType,
+  existItem
 };

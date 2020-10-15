@@ -50,6 +50,7 @@ import { CreateFileStateProps } from '../components/Dialogs/CreateFileDialog';
 import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
 import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
 import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
+import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -94,11 +95,11 @@ export interface GlobalState {
       items: QuickCreateItem[];
     };
     items: {
-      byPath: LookupTable<DetailedItem>
+      byPath: LookupTable<DetailedItem>;
       permissionsByPath: LookupTable<LookupTable<boolean>>;
     };
     clipboard: string;
-  }
+  };
   contentTypes: EntityState<ContentType>;
   env: {
     authoringBase: string;
@@ -156,26 +157,27 @@ export interface GlobalState {
     upload: BulkUploadStateProps;
     preview: PreviewDialogStateProps;
     editSite: EditSiteDialogStateProps;
+    pathSelection: PathSelectionDialogStateProps;
   };
   translation: {
     siteLocales: {
-      error: ApiResponse
+      error: ApiResponse;
       isFetching: boolean;
-      localeCodes: string[],
-      defaultLocaleCode: string
-    }
-  }
+      localeCodes: string[];
+      defaultLocaleCode: string;
+    };
+  };
   configuration: {
     sidebar: {
       error: ApiResponse;
       items: Array<SidebarConfigItem>;
       isFetching: boolean;
-    },
+    };
     publishing: {
       submission: {
-        commentMaxLength: number
-      }
-    }
+        commentMaxLength: number;
+      };
+    };
   };
   pathNavigator: {
     [id: string]: WidgetState;

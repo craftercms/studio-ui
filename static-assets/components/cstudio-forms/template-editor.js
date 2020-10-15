@@ -800,8 +800,14 @@ CStudioAuthoring.Module.requireModule(
                                   payload: { id: createTemplateOnOk }
                                 },
                                 onClosed: {
-                                  type: 'DISPATCH_DOM_EVENT',
-                                  payload: { id: createTemplateOnCancel }
+                                  type: 'BATCH_ACTIONS',
+                                  payload: [
+                                    {
+                                      type: 'DISPATCH_DOM_EVENT',
+                                      payload: { id: createTemplateOnCancel }
+                                    },
+                                    { type: 'CONFIRM_DIALOG_CLOSED' }
+                                  ]
                                 }
                               }
                             });
