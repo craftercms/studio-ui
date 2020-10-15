@@ -24,6 +24,7 @@ import { getLogoutInfoURL } from '../../services/auth';
 import GlobalState from '../../models/GlobalState';
 import { useActiveSiteId, useEnv, useMount, useSelection, useSiteList } from '../../utils/hooks';
 import palette from '../../styles/palette';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
   avatarClickable: {
@@ -61,6 +62,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const messages = defineMessages({
+  menu: {
+    id: 'words.menu',
+    defaultMessage: 'Menu'
+  },
   openDrawer: {
     id: 'toolbarGlobalNav.openMenuButtonText',
     defaultMessage: 'Open Menu'
@@ -93,13 +98,15 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
 
   return (
     <>
-      <IconButton
-        aria-label={formatMessage(messages.openDrawer)}
-        onClick={onMenuClick}
-        className={classes.appsButton}
-      >
-        <CrafterChevron className={classes.crafterIcon} />
-      </IconButton>
+      <Tooltip title={formatMessage(messages.menu)}>
+        <IconButton
+          aria-label={formatMessage(messages.openDrawer)}
+          onClick={onMenuClick}
+          className={classes.appsButton}
+        >
+          <CrafterChevron className={classes.crafterIcon} />
+        </IconButton>
+      </Tooltip>
       <GlobalNav
         site={useActiveSiteId()}
         sites={useSiteList()}

@@ -14,40 +14,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from '../../../models/Item';
+import { DetailedItem } from '../../../models/Item';
 import React, { useState } from 'react';
 import { useStyles } from './styles';
 import ListItem from '@material-ui/core/ListItem';
 import clsx from 'clsx';
 import Checkbox from '@material-ui/core/Checkbox';
-import LeafIcon from '@material-ui/icons/EcoRounded';
-import PageIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import FolderIcon from '@material-ui/icons/FolderOpenRounded';
 import Typography from '@material-ui/core/Typography';
 import FlagRoundedIcon from '@material-ui/icons/FlagRounded';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import ChevronRightRoundedIcon from '@material-ui/icons/ChevronRightRounded';
-import { isNavigable } from './utils';
+import { isFolder, isNavigable, isPreviewable } from './utils';
+import ComponentIcon from '../../Icons/Component';
+import Page from '../../Icons/Page';
+import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
+import Tooltip from '@material-ui/core/Tooltip';
+import { FormattedMessage } from 'react-intl';
 
 interface NavItemProps {
-  item: SandboxItem;
+  item: DetailedItem;
   locale: string;
   isLeaf: boolean;
   isSelectMode?: boolean;
-  onItemClicked?(item: SandboxItem, event: React.MouseEvent): void;
-  onChangeParent?(item: SandboxItem): void;
-  onItemChecked?(item: SandboxItem, unselect: boolean): void;
-  onOpenItemMenu?(element: Element, item: SandboxItem): void;
+  onItemClicked?(item: DetailedItem, event: React.MouseEvent): void;
+  onChangeParent?(item: DetailedItem): void;
+  onPreview?(item: DetailedItem): void;
+  onItemChecked?(item: DetailedItem, unselect: boolean): void;
+  onOpenItemMenu?(element: Element, item: DetailedItem): void;
 }
 
 // PathNavigatorListItem
-export default function (props: NavItemProps) {
+export default function(props: NavItemProps) {
   const classes = useStyles(props);
   const {
     item,
     onItemClicked,
     onChangeParent,
+    onPreview,
     locale,
     isSelectMode,
     onItemChecked,
@@ -59,13 +64,24 @@ export default function (props: NavItemProps) {
   const onMouseLeave = isSelectMode ? null : () => setOver(false);
   const onClick = (e) => onItemClicked?.(item, e);
   const navigable = isNavigable(item);
+  const previewable = isPreviewable(item);
+  const folder = isFolder(item);
+
   return (
     <ListItem
       button={!isSelectMode as true}
       className={clsx(classes.navItem, isSelectMode && 'noLeftPadding')}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
-      onClick={navigable ? onClick : () => onChangeParent?.(item)}
+      onClick={
+        navigable
+          ? onClick
+          : folder
+          ? () => onChangeParent?.(item)
+          : previewable
+          ? () => onPreview(item)
+          : null
+      }
     >
       {isSelectMode ? (
         <Checkbox
@@ -77,30 +93,24 @@ export default function (props: NavItemProps) {
           }}
           value="primary"
         />
-      ) : navigable ? (
-        isLeaf ? (
-          <LeafIcon className={classes.typeIcon} />
-        ) : (
-          <PageIcon className={classes.typeIcon} />
-        )
       ) : (
-        <FolderIcon className={classes.typeIcon} />
+        <RenderIcon classes={{ iconClass: classes.typeIcon }} item={item} />
       )}
       <Typography
         variant="body2"
+        title={item.label}
         className={clsx(
           classes.navItemText,
           !isSelectMode && locale !== item.localeCode && 'opacity',
           isSelectMode && 'select-mode',
-          !navigable && 'non-navigable'
+          folder && 'non-navigable'
         )}
       >
         {item.label}
         {locale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
       </Typography>
       <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
-        {
-          onOpenItemMenu &&
+        {onOpenItemMenu && (
           <IconButton
             aria-label="Options"
             className={classes.itemIconButton}
@@ -111,19 +121,56 @@ export default function (props: NavItemProps) {
           >
             <MoreVertIcon className={classes.icon} />
           </IconButton>
-        }
-        <IconButton
-          disabled={isLeaf}
-          aria-label="Options"
-          className={classes.itemIconButton}
-          onClick={(event) => {
-            event.stopPropagation();
-            onChangeParent(item);
-          }}
+        )}
+        <Tooltip
+          title={
+            isLeaf ? (
+              <FormattedMessage id="navigator.isLeaf" defaultMessage="Item has no children" />
+            ) : (
+              <FormattedMessage id="words.view" defaultMessage="View" />
+            )
+          }
         >
-          <ChevronRightRoundedIcon className={classes.icon} />
-        </IconButton>
+          <IconButton
+            aria-label="Options"
+            className={classes.itemIconButton}
+            onClick={(event) => {
+              event.stopPropagation();
+              if (isLeaf) {
+                return;
+              } else if (navigable || folder) {
+                onChangeParent?.(item);
+              } else if (previewable) {
+                onPreview(item);
+              }
+            }}
+          >
+            <ChevronRightRoundedIcon className={classes.icon} />
+          </IconButton>
+        </Tooltip>
       </div>
     </ListItem>
   );
+}
+
+function RenderIcon({ item, classes }: { item: DetailedItem; classes: any }) {
+  let Icon = Page;
+  switch (item.systemType) {
+    case 'folder': {
+      Icon = FolderIcon;
+      break;
+    }
+    case 'component':
+    case 'taxonomy': {
+      Icon = ComponentIcon;
+      break;
+    }
+    case 'asset': {
+      if (item.mimeType.startsWith('image/')) {
+        Icon = CropOriginalRoundedIcon;
+      }
+      break;
+    }
+  }
+  return <Icon className={classes.iconClass} />;
 }

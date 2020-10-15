@@ -18,8 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { WidgetState } from '../../components/Navigation/PathNavigator/Widget';
 import LookupTable from '../../models/LookupTable';
-import { itemsFromPath, withIndex, withoutIndex } from '../../utils/path';
-import { createLookupTable, nou } from '../../utils/object';
+import { getIndividualPaths, withoutIndex } from '../../utils/path';
 import {
   pathNavigatorClearChecked,
   pathNavigatorFetchParentItems,
@@ -33,6 +32,7 @@ import {
   pathNavigatorSetKeyword,
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
+import { changeSite } from './sites';
 
 const reducer = createReducer<LookupTable<WidgetState>>(
   {},
@@ -48,7 +48,6 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           isSelectMode: false,
           hasClipboard: false,
           itemsInPath: null,
-          items: {},
           breadcrumb: [],
           selectedItems: [],
           leafs: [],
@@ -85,9 +84,6 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           pieces.pop();
         }
         let nextPath = pieces.join('/');
-        if (nou(state[id].items[nextPath])) {
-          nextPath = withIndex(nextPath);
-        }
         return {
           ...state,
           [id]: {
@@ -98,16 +94,10 @@ const reducer = createReducer<LookupTable<WidgetState>>(
           }
         };
       } else {
-        const nextItems = {
-          ...state[id].items,
-          [response.parent.id]: response.parent,
-          ...createLookupTable(response)
-        };
         const widgetState = {
           ...state[id],
-          breadcrumb: itemsFromPath(path, state[id].rootPath, nextItems),
+          breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath).reverse(),
           itemsInPath: response.map((item) => item.id),
-          items: nextItems,
           count: response.length
         };
         return {
@@ -128,26 +118,20 @@ const reducer = createReducer<LookupTable<WidgetState>>(
     },
     [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { id, response } }) => {
       const { currentPath, rootPath } = state[id];
-      let nextItems = {};
-      let items = [];
+      let itemsInPath = [];
 
       response.forEach((resp: GetChildrenResponse, i: number) => {
         if (i === response.length - 1) {
-          items = resp.map((item) => item.id);
+          itemsInPath = resp.map((item) => item.id);
         }
-        nextItems = {
-          ...nextItems, ...createLookupTable(resp),
-          [resp.parent.id]: resp.parent
-        };
       });
 
       return {
         ...state,
         [id]: {
           ...state[id],
-          items: nextItems,
-          itemsInPath: items,
-          breadcrumb: [...itemsFromPath(currentPath, rootPath, nextItems)]
+          itemsInPath,
+          breadcrumb: getIndividualPaths(withoutIndex(currentPath), rootPath).reverse()
         }
       };
     },
@@ -200,7 +184,11 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         }
       };
     },
-    [pathNavigatorUpdate.type]: (state, { payload }) => ({ ...state, [payload.id]: { ...state[payload.id], ...payload } })
+    [pathNavigatorUpdate.type]: (state, { payload }) => ({
+      ...state,
+      [payload.id]: { ...state[payload.id], ...payload }
+    }),
+    [changeSite.type]: () => ({})
   }
 );
 

@@ -43,6 +43,14 @@ import { SidebarConfigItem } from '../services/configuration';
 import { WidgetState } from '../components/Navigation/PathNavigator/Widget';
 import { LegacyFormDialogStateProps } from '../components/Dialogs/LegacyFormDialog';
 import { LegacyCodeEditorDialogStateProps } from '../components/Dialogs/LegacyCodeEditorDialog';
+import { DetailedItem } from './Item';
+import { CreateFolderStateProps } from '../components/Dialogs/CreateFolderDialog';
+import { CopyDialogStateProps } from '../components/Dialogs/CopyDialog';
+import { CreateFileStateProps } from '../components/Dialogs/CreateFileDialog';
+import { BulkUploadStateProps } from '../components/Dialogs/BulkUploadDialog';
+import { PreviewDialogStateProps } from '../components/Dialogs/PreviewDialog';
+import { EditSiteDialogStateProps } from '../modules/System/Sites/Edit/EditSiteDialog';
+import { PathSelectionDialogStateProps } from '../components/Dialogs/PathSelectionDialog';
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
@@ -63,6 +71,7 @@ export interface GuestData {
   models: LookupTable<ContentInstance>;
   childrenMap: LookupTable<string[]>;
   modelId: string;
+  path: string;
   selected: EditSelection[];
   itemBeingDragged: boolean;
 }
@@ -80,14 +89,17 @@ export interface GlobalState {
     byId: LookupTable<Site>;
   };
   content: {
-    // items: any;
     quickCreate: {
       error: ApiResponse;
       isFetching: boolean;
       items: QuickCreateItem[];
     };
-    // contentTypes: EntityState<ContentType>;
-  }
+    items: {
+      byPath: LookupTable<DetailedItem>;
+      permissionsByPath: LookupTable<LookupTable<boolean>>;
+    };
+    clipboard: string;
+  };
   contentTypes: EntityState<ContentType>;
   env: {
     authoringBase: string;
@@ -139,26 +151,33 @@ export interface GlobalState {
     codeEditor: LegacyCodeEditorDialogStateProps;
     workflowCancellation: WorkflowCancellationDialogStateProps;
     reject: RejectDialogStateProps;
+    createFolder: CreateFolderStateProps;
+    createFile: CreateFileStateProps;
+    copy: CopyDialogStateProps;
+    upload: BulkUploadStateProps;
+    preview: PreviewDialogStateProps;
+    editSite: EditSiteDialogStateProps;
+    pathSelection: PathSelectionDialogStateProps;
   };
   translation: {
     siteLocales: {
-      error: ApiResponse
+      error: ApiResponse;
       isFetching: boolean;
-      localeCodes: string[],
-      defaultLocaleCode: string
-    }
-  }
+      localeCodes: string[];
+      defaultLocaleCode: string;
+    };
+  };
   configuration: {
     sidebar: {
       error: ApiResponse;
       items: Array<SidebarConfigItem>;
       isFetching: boolean;
-    },
+    };
     publishing: {
       submission: {
-        commentMaxLength: number
-      }
-    }
+        commentMaxLength: number;
+      };
+    };
   };
   pathNavigator: {
     [id: string]: WidgetState;

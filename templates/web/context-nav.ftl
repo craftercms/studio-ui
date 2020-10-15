@@ -21,7 +21,7 @@
       <ul class="nav navbar-nav">
         <li id="acn-dropdown-wrapper" class="acn-dropdown-wrapper"></li>
         <li>
-          <a id="navbar-site-name" href="/studio/site-dashboard"></a>
+          <a id="navbar-site-name" class="site-name trim" href="/studio/site-dashboard"></a>
         </li>
         <li class="dropdown quick-create hide" dropdown>
           <button

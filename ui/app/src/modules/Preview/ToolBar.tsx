@@ -39,11 +39,16 @@ import {
 import { useDispatch } from 'react-redux';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, usePreviewGuest, usePreviewState, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  usePermissions,
+  usePreviewGuest,
+  usePreviewState,
+  useSelection
+} from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import ComponentMenu from '../../components/ComponentMenu';
 import QuickCreate from './QuickCreate';
 import { changeSite } from '../../state/reducers/sites';
 import Switch from '@material-ui/core/Switch';
@@ -52,7 +57,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { useSnackbar } from 'notistack';
 import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem, SandboxItem } from '../../models/Item';
+import { ItemMenu } from '../../components/ItemMenu/ItemMenu';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -147,6 +153,9 @@ const useStyles = makeStyles((theme: Theme) =>
     selectorPopoverRoot: {
       width: 400,
       marginLeft: '4px'
+    },
+    hidden: {
+      visibility: 'hidden'
     }
   })
 );
@@ -181,7 +190,7 @@ export function AddressBar(props: AddressBarProps) {
   const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
   const [anchorEl, setAnchorEl] = useState(null);
-  const modelId = useSelection<string>((state) => state.preview.guest?.modelId);
+  const path = useSelection<string>((state) => state.preview.guest?.path);
   const [openSelector, setOpenSelector] = useState(false);
 
   useEffect(() => {
@@ -243,7 +252,7 @@ export function AddressBar(props: AddressBarProps) {
         <SingleItemSelector
           disabled={noSiteSet}
           rootPath='/site/website'
-          selectedItem={item as SandboxItem}
+          selectedItem={item as DetailedItem}
           open={openSelector}
           onClose={() => setOpenSelector(false)}
           onDropdownClick={() => setOpenSelector(!openSelector)}
@@ -261,7 +270,16 @@ export function AddressBar(props: AddressBarProps) {
       <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <MoreVertRounded />
       </IconButton>
-      <ComponentMenu anchorEl={anchorEl} handleClose={handleClose} site={site} modelId={modelId} />
+      {
+        Boolean(anchorEl) &&
+        <ItemMenu
+          open={true}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          path={path}
+          loaderItems={13}
+        />
+      }
     </>
   );
 }
@@ -285,6 +303,12 @@ export default function ToolBar() {
   } : null;
   const { enqueueSnackbar } = useSnackbar();
 
+  // region permissions
+  const permissions = usePermissions();
+  const write = permissions?.[item?.path]?.['write'];
+  const createContent = permissions?.[item?.path]?.['create_content'];
+  // endregion
+
   return (
     <AppBar position="static" color="default">
       <Toolbar className={classes.toolBar}>
@@ -295,8 +319,13 @@ export default function ToolBar() {
           >
             <CustomMenu />
           </IconButton>
-          <QuickCreate />
-          <Tooltip title={formatMessage(translations.toggleEditMode)}>
+          <section className={!createContent ? classes.hidden : ''}>
+            <QuickCreate />
+          </section>
+          <Tooltip
+            title={formatMessage(translations.toggleEditMode)}
+            className={!write ? classes.hidden : ''}
+          >
             <EditSwitch
               color="default"
               checked={editMode}

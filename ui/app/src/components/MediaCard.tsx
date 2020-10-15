@@ -125,11 +125,9 @@ interface MediaCardProps {
 
   onHeaderButtonClick?(...props: any): any;
 
-  onEdit?(path: string, readonly?: boolean): any;
+  onNavigate?(item: MediaItem): any;
 
-  onPreview?(url: string): any;
-
-  onPreviewAsset?(url: string, type: string, name: string): any;
+  onPreview?(item: MediaItem): any;
 
   onSelect?(path: string, selected: boolean): any;
 
@@ -141,9 +139,8 @@ interface MediaCardProps {
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
   const {
-    onEdit,
+    onNavigate,
     onPreview,
-    onPreviewAsset,
     onSelect,
     selected,
     item,
@@ -158,24 +155,19 @@ function MediaCard(props: MediaCardProps) {
   } = props;
   const { name, path, type } = item;
   const { formatMessage } = useIntl();
-  const hasOnAssetClick = (onPreviewAsset || onEdit) ? true : false;
 
-  const renderIcon = (type: string, path: string, name: string) => {
+  const renderIcon = (type: string) => {
     let iconClass = 'fa media-icon';
     let iconName = `${iconClass} fa-file`;
-    let previewArea = false;
     switch (type) {
       case 'Page':
         iconName = `${iconClass} fa-file`;
-        previewArea = true;
         break;
       case 'Video':
         iconName = `${iconClass} fa-file-video-o`;
-        previewArea = true;
         break;
       case 'Template':
         iconName = `${iconClass} fa-file-code-o`;
-        previewArea = true;
         break;
       case 'Taxonomy':
         iconName = `${iconClass} fa-tag`;
@@ -184,20 +176,17 @@ function MediaCard(props: MediaCardProps) {
         iconName = `${iconClass} fa-puzzle-piece`;
         break;
       case 'Groovy':
+      case 'JavaScript':
+      case 'CSS':
         iconName = `${iconClass} fa-file-code-o`;
-        previewArea = true;
         break;
       default:
         break;
     }
     return (
-      hasOnAssetClick ? (
+      onPreview ? (
         <CardActionArea
-          onClick={
-            previewArea
-              ? () => onPreviewAsset(path, type, name)
-              : () => onEdit(path, true)
-          }
+          onClick={() => onPreview(item)}
           className={clsx(isList && classes.listActionArea)}
         >
           <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
@@ -265,11 +254,11 @@ function MediaCard(props: MediaCardProps) {
           subheader={hasSubheader ? type : null}
           avatar={Avatar ? <Avatar /> : null}
           classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
-          onClick={(type === 'Image' || type === 'Video' || type === 'Page') && onPreview ? () => onPreview(path) : null}
+          onClick={(type === 'Image' || type === 'Video' || type === 'Page') && onNavigate ? () => onNavigate(item) : null}
           titleTypographyProps={{
             variant: 'subtitle2',
             component: 'h2',
-            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && onPreview && 'clickable')
+            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && onNavigate && 'clickable')
           }}
           subheaderTypographyProps={{
             variant: 'subtitle2',
@@ -291,9 +280,9 @@ function MediaCard(props: MediaCardProps) {
       </header>
       {
         (type === 'Image') ? (
-          onPreviewAsset ? (
+          onPreview ? (
             <CardActionArea
-              onClick={() => onPreviewAsset(path, type, name)}
+              onClick={() => onPreview(item)}
               className={clsx(isList && classes.listActionArea)}
             >
               <CardMedia
@@ -310,7 +299,7 @@ function MediaCard(props: MediaCardProps) {
             />
           )
         ) : (
-          renderIcon(type, path, name)
+          renderIcon(type)
         )
       }
     </Card>

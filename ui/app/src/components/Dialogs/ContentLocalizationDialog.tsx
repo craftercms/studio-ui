@@ -34,7 +34,7 @@ import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import DialogBody from './DialogBody';
 import DialogHeader from './DialogHeader';
 import SingleItemSelector from '../../modules/Content/Authoring/SingleItemSelector';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem } from '../../models/Item';
 
 const translations = defineMessages({
   mark: {
@@ -236,8 +236,8 @@ interface ContentLocalizationDialogProps {
   open: boolean;
   locales: any;
   rootPath: string;
-  item: SandboxItem;
-  onItemChange?(item: SandboxItem): void;
+  item: DetailedItem;
+  onItemChange?(item: DetailedItem): void;
   onClose?(): void;
   onClosed?(): void;
 }

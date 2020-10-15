@@ -100,7 +100,7 @@ function cleanseUrl(url: string) {
 }
 
 const reducer = createReducer<GlobalState['preview']>({
-  editMode: true,
+  editMode: false,
   // What's shown to the user across the board (url, address bar, etc)
   computedUrl: '',
   // The src of the iframe
@@ -207,7 +207,7 @@ const reducer = createReducer<GlobalState['preview']>({
     };
   },
   [GUEST_CHECK_IN]: (state, { payload }) => {
-    const { location, modelId } = payload;
+    const { location, modelId, path } = payload;
     const href = location.href;
     const origin = location.origin;
     const url = href.replace(location.origin, '');
@@ -217,6 +217,7 @@ const reducer = createReducer<GlobalState['preview']>({
         url,
         origin,
         modelId,
+        path,
         models: null,
         childrenMap: null,
         selected: null,

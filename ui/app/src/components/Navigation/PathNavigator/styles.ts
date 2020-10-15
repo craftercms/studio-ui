@@ -47,7 +47,7 @@ export const useStyles = makeStyles((theme) =>
     // region Header
     headerRoot: {
       display: 'flex',
-      padding: '0 10px 0',
+      padding: '0 0 0 10px',
       alignItems: 'center',
       cursor: 'pointer',
       '& .MuiSvgIcon-root': {
@@ -162,8 +162,7 @@ export const useStyles = makeStyles((theme) =>
       color: palette.gray.medium4
     },
     navItem: {
-      justifyContent: 'space-between',
-      padding: '0 0 0 10px',
+      padding: '0 0 0 10px !important',
       '&.noLeftPadding': {
         paddingLeft: 0
       },

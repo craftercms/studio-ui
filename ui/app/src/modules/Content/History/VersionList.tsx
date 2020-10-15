@@ -29,6 +29,7 @@ import { Resource } from '../../../models/Resource';
 import { LegacyVersion } from '../../../models/Version';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
+import LookupTable from '../../../models/LookupTable';
 
 const versionListStyles = makeStyles(() =>
   createStyles({
@@ -120,17 +121,19 @@ export function FancyFormattedDate(props: FancyFormattedDateProps) {
 }
 
 interface VersionListProps {
-  resource: Resource<LegacyVersion[]>;
+  versions: Resource<LegacyVersion[]>;
+  permissions?: Resource<LookupTable<boolean>>;
   selected?: string[];
   current?: string;
   onItemClick(version: LegacyVersion): void;
-  onOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean): void;
+  onOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean, permissions: LookupTable<boolean>): void;
 }
 
 export function VersionList(props: VersionListProps) {
   const classes = versionListStyles({});
-  const { resource, onOpenMenu, onItemClick, current, selected } = props;
-  const versions = resource.read();
+  const { versions: versionsResource, onOpenMenu, onItemClick, current, selected, permissions: permissionsResource } = props;
+  const versions = versionsResource.read();
+  const permissions = permissionsResource?.read();
 
   return (
     <List component="div" className={classes.list} disablePadding>
@@ -170,7 +173,7 @@ export function VersionList(props: VersionListProps) {
                 <IconButton
                   edge="end"
                   onClick={(e) =>
-                    onOpenMenu(e.currentTarget, version, current === version.versionNumber)
+                    onOpenMenu(e.currentTarget, version, current === version.versionNumber, permissions)
                   }
                 >
                   <MoreVertIcon />

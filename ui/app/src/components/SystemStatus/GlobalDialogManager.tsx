@@ -26,11 +26,14 @@ import { MinimizedBar } from './MinimizedBar';
 import { maximizeDialog } from '../../state/reducers/dialogs/minimizedDialogs';
 import GlobalState from '../../models/GlobalState';
 import { isPlainObject } from '../../utils/object';
-import ViewVersionDialog from '../../modules/Content/History/ViewVersionDialog';
-import CompareVersionsDialog from '../../modules/Content/History/CompareVersionsDialog';
-import RejectDialog from '../Dialogs/RejectDialog';
-import LegacyCodeEditorDialog from '../Dialogs/LegacyCodeEditorDialog';
+import PathSelectionDialog from '../Dialogs/PathSelectionDialog';
 
+const ViewVersionDialog = lazy(() => import('../../modules/Content/History/ViewVersionDialog'));
+const CompareVersionsDialog = lazy(() =>
+  import('../../modules/Content/History/CompareVersionsDialog')
+);
+const RejectDialog = lazy(() => import('../Dialogs/RejectDialog'));
+const EditSiteDialog = lazy(() => import('../../modules/System/Sites/Edit/EditSiteDialog'));
 const ConfirmDialog = lazy(() => import('../Dialogs/ConfirmDialog'));
 const ErrorDialog = lazy(() => import('./ErrorDialog'));
 const NewContentDialog = lazy(() => import('../../modules/Content/Authoring/NewContentDialog'));
@@ -42,6 +45,12 @@ const DependenciesDialog = lazy(() =>
 const DeleteDialog = lazy(() => import('../../modules/Content/Delete/DeleteDialog'));
 const WorkflowCancellationDialog = lazy(() => import('../Dialogs/WorkflowCancellationDialog'));
 const LegacyFormDialog = lazy(() => import('../Dialogs/LegacyFormDialog'));
+const LegacyCodeEditorDialog = lazy(() => import('../Dialogs/LegacyCodeEditorDialog'));
+const CreateFolderDialog = lazy(() => import('../Dialogs/CreateFolderDialog'));
+const CopyItemsDialog = lazy(() => import('../Dialogs/CopyDialog'));
+const CreateFileDialog = lazy(() => import('../Dialogs/CreateFileDialog'));
+const BulkUploadDialog = lazy(() => import('../Dialogs/BulkUploadDialog'));
+const PreviewDialog = lazy(() => import('../Dialogs/PreviewDialog'));
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -99,6 +108,7 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
+  const permissions = useSelection((state) => state.content.items.permissionsByPath);
   const dispatch = useDispatch();
   return (
     <Suspense fallback="">
@@ -204,6 +214,7 @@ function GlobalDialogManager() {
       <HistoryDialog
         open={state.history.open}
         versionsBranch={versionsBranch}
+        permissions={permissions?.[versionsBranch?.item?.path]}
         onClose={createCallback(state.history.onClose, dispatch)}
         onClosed={createCallback(state.history.onClosed, dispatch)}
         onDismiss={createCallback(state.history.onDismiss, dispatch)}
@@ -279,14 +290,99 @@ function GlobalDialogManager() {
         onRejectSuccess={createCallback(state.reject.onRejectSuccess, dispatch)}
       />
       {/* endregion */}
+
+      {/* region Create Folder */}
+      <CreateFolderDialog
+        open={state.createFolder.open}
+        path={state.createFolder.path}
+        rename={state.createFolder.rename}
+        value={state.createFolder.value}
+        allowBraces={state.createFolder.allowBraces}
+        onClose={createCallback(state.createFolder.onClose, dispatch)}
+        onClosed={createCallback(state.createFolder.onClosed, dispatch)}
+        onCreated={createCallback(state.createFolder.onCreated, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Create File */}
+      <CreateFileDialog
+        open={state.createFile.open}
+        path={state.createFile.path}
+        type={state.createFile.type}
+        onClose={createCallback(state.createFile.onClose, dispatch)}
+        onClosed={createCallback(state.createFile.onClosed, dispatch)}
+        onCreated={createCallback(state.createFile.onCreated, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Create Folder */}
+      <CopyItemsDialog
+        open={state.copy.open}
+        title={state.copy.title}
+        subtitle={state.copy.subtitle}
+        item={state.copy.item}
+        onClose={createCallback(state.copy.onClose, dispatch)}
+        onClosed={createCallback(state.copy.onClosed, dispatch)}
+        onOk={createCallback(state.copy.onOk, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Bulk Upload*/}
+      <BulkUploadDialog
+        open={state.upload.open}
+        path={state.upload.path}
+        site={state.upload.site}
+        maxSimultaneousUploads={state.upload.maxSimultaneousUploads}
+        onClose={createCallback(state.upload.onClose, dispatch)}
+        onClosed={createCallback(state.upload.onClosed, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Bulk Upload*/}
+      <PreviewDialog
+        open={state.preview.open}
+        url={state.preview.url}
+        type={state.preview.type}
+        mode={state.preview.mode}
+        title={state.preview.title}
+        content={state.preview.content}
+        onClose={createCallback(state.preview.onClose, dispatch)}
+        onClosed={createCallback(state.preview.onClosed, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Edit Site */}
+      <EditSiteDialog
+        open={state.editSite.open}
+        site={state.editSite.site}
+        onClose={createCallback(state.editSite.onClose, dispatch)}
+        onClosed={createCallback(state.editSite.onClosed, dispatch)}
+        onDismiss={createCallback(state.editSite.onDismiss, dispatch)}
+        onSaveSuccess={createCallback(state.editSite.onSaveSuccess, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Path Selection */}
+      <PathSelectionDialog
+        open={state.pathSelection.open}
+        rootPath={state.pathSelection.rootPath}
+        initialPath={state.pathSelection.initialPath}
+        showCreateFolder={state.pathSelection.showCreateFolder}
+        title={state.pathSelection.title}
+        onClose={createCallback(state.pathSelection.onClose, dispatch)}
+        onClosed={createCallback(state.pathSelection.onClosed, dispatch)}
+        onOk={createCallback(state.pathSelection.onOk, dispatch)}
+      />
+      {/* endregion */}
     </Suspense>
   );
 }
 
+// @formatter:off
 function MinimizedDialogManager({
-                                  state,
-                                  dispatch
-                                }: {
+  state,
+  dispatch
+}: {
   state: GlobalState['dialogs'];
   dispatch: Dispatch;
 }) {
@@ -310,18 +406,19 @@ function MinimizedDialogManager({
   }, [el, inventory]);
   return inventory.length
     ? ReactDOM.createPortal(
-      inventory.map(({ id, title, subtitle, status }) => (
-        <MinimizedBar
-          key={id}
-          title={title}
-          subtitle={subtitle}
-          status={status}
-          onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
-        />
-      )),
-      el
-    )
+        inventory.map(({ id, title, subtitle, status }) => (
+          <MinimizedBar
+            key={id}
+            title={title}
+            subtitle={subtitle}
+            status={status}
+            onMaximized={createCallback(maximizeDialog({ id }), dispatch)}
+          />
+        )),
+        el
+      )
     : null;
 }
+// @formatter:on
 
 export default React.memo(GlobalDialogManager);

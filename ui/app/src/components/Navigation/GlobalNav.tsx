@@ -413,11 +413,20 @@ export default function GlobalNav(props: GlobalNavProps) {
 
   const onSiteCardClick = (id: string) => {
     dispatch(changeSite(id));
-    navigateTo(
-      getStoredPreviewChoice(id) === '2'
-        ? `${authoringUrl}/next/preview`
-        : `${authoringUrl}/preview`
-    );
+    if (
+      window.location.href.includes('/preview') ||
+      window.location.href.includes('#/globalMenu')
+    ) {
+      navigateTo(
+        getStoredPreviewChoice(id) === '2'
+          ? `${authoringUrl}/next/preview`
+          : `${authoringUrl}/preview`
+      );
+    } else {
+      setTimeout(() => {
+        window.location.reload();
+      });
+    }
   };
 
   useEffect(() => {

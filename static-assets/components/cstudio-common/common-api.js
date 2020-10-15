@@ -716,6 +716,7 @@ var nodeOpen = false,
 
       deleteContent: function (items, requestDelete, callback) {
         const eventIdSuccess = 'deleteDialogSuccess';
+        const eventIdCancel = 'deleteDialogCancel';
 
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_DELETE_DIALOG',
@@ -731,18 +732,35 @@ var nodeOpen = false,
                 },
                 { type: 'CLOSE_DELETE_DIALOG' }
               ]
+            },
+            onClosed: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdCancel }
+                },
+                { type: 'DELETE_DIALOG_CLOSED' }
+              ]
             }
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           if (response) {
             eventNS.data = items;
             eventNS.typeAction = '';
             eventNS.oldPath = null;
             document.dispatchEvent(eventNS);
+            cancelUnsubscribe();
             callback && callback();
           }
+        });
+
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+          unsubscribe();
         });
 
       },
@@ -759,6 +777,12 @@ var nodeOpen = false,
         CrafterCMSNext.system.store.dispatch({
           type: 'BATCH_ACTIONS',
           payload: [
+            {
+              type: 'FETCH_USER_PERMISSIONS',
+              payload: {
+                path: item.path
+              }
+            },
             {
               type: 'FETCH_ITEM_VERSIONS',
               payload: {
@@ -781,6 +805,12 @@ var nodeOpen = false,
           type: 'BATCH_ACTIONS',
           payload: [
             {
+              type: 'FETCH_USER_PERMISSIONS',
+              payload: {
+                path: item.path
+              }
+            },
+            {
               type: 'FETCH_ITEM_VERSIONS',
               payload: {
                 config: true,
@@ -794,14 +824,14 @@ var nodeOpen = false,
             {
               type: 'SHOW_HISTORY_DIALOG',
               payload: {
-                onClose: {
+                onClosed: {
                   type: 'BATCH_ACTIONS',
                   payload: [
                     {
                       type: 'DISPATCH_DOM_EVENT',
                       payload: { id: eventIdOnClose }
                     },
-                    { type: 'CLOSE_HISTORY_DIALOG' }
+                    { type: 'HISTORY_DIALOG_CLOSED' }
                   ]
                 }
               }
@@ -825,6 +855,7 @@ var nodeOpen = false,
         const scheduling = approveType ? 'custom' : 'now';
 
         const eventIdSuccess = 'publishDialogSuccess';
+        const eventIdCancel = 'publishDialogCancel';
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
@@ -840,11 +871,29 @@ var nodeOpen = false,
                 },
                 { type: 'CLOSE_PUBLISH_DIALOG' }
               ]
+            },
+            onClosed: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdCancel }
+                },
+                { type: 'PUBLISH_DIALOG_CLOSED' }
+              ]
             }
           }
         });
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
+          cancelUnsubscribe();
+        });
+
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+          unsubscribe();
         });
       },
 
@@ -866,6 +915,7 @@ var nodeOpen = false,
         const _self = this;
 
         const eventIdSuccess = 'publishDialogSuccess';
+        const eventIdCancel = 'publishDialogCancel';
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_PUBLISH_DIALOG',
           payload: {
@@ -880,11 +930,29 @@ var nodeOpen = false,
                 },
                 { type: 'CLOSE_PUBLISH_DIALOG' }
               ]
+            },
+            onClosed: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdCancel }
+                },
+                { type: 'PUBLISH_DIALOG_CLOSED' }
+              ]
             }
           }
         });
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
           _self.reloadItems(items, response);
+          cancelUnsubscribe();
+        });
+
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+          unsubscribe();
         });
       },
 
@@ -2503,16 +2571,16 @@ var nodeOpen = false,
        * =>=>=>=> viewcontroller-in-context-edit.initializeContent
        * =>=>=>=>=> constructUrlWebFormSimpleEngine
        */
-      editContent: function (formId, site, id, nodeRef, path, asPopup, callback, auxParams, mode, isFlattenedInclude) {
+      editContent: function (formId, site, mimeType, nodeRef, path, asPopup, callback, auxParams, mode, isFlattenedInclude) {
         var CSA = CStudioAuthoring,
-          uri = id.replace('//', '/'),
+          uri = path.replace('//', '/'),
           params = { site: site || CStudioAuthoringContext.site, path: path };
 
         function doEdit() {
           if (uri.indexOf('/site') === 0) {
             CSA.Operations.openContentWebForm(
               formId,
-              id,
+              path,
               nodeRef,
               path,
               true,
@@ -2521,7 +2589,7 @@ var nodeOpen = false,
               auxParams,
               isFlattenedInclude
             );
-          } else if (CStudioAuthoring.Utils.isEditableFormAsset(uri)) {
+          } else if (CStudioAuthoring.Utils.isEditableFormAsset(mimeType)) {
             CStudioAuthoring.Operations.openTemplateEditor(
               uri,
               'default',
@@ -2545,6 +2613,7 @@ var nodeOpen = false,
         }
 
         const eventIdSuccess = 'workflowCancellationDialogContinue';
+        const eventIdCancel = 'workflowCancellationDialogCancel';
         CrafterCMSNext.system.store.dispatch({
           type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
           payload: {
@@ -2559,11 +2628,29 @@ var nodeOpen = false,
                 },
                 { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
               ]
+            },
+            onClosed: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdCancel }
+                },
+                { type: 'WORKFLOW_CANCELLATION_DIALOG_CLOSED' }
+              ]
             }
           }
         });
-        CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+
+        let unsubscribe, cancelUnsubscribe;
+
+        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
           doEdit();
+          cancelUnsubscribe();
+        });
+
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+          unsubscribe();
         });
 
         CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe(
@@ -2655,11 +2742,11 @@ var nodeOpen = false,
                               }
                             };
 
-                            if (CStudioAuthoring.Utils.isEditableFormAsset(parentItemTo.item.uri)) {
+                            if (CStudioAuthoring.Utils.isEditableFormAsset(parentItemTo.item.mimeTyp)) {
                               CStudioAuthoring.Operations.editContent(
                                 contentTO.contentType,
                                 CStudioAuthoringContext.site,
-                                filePath,
+                                contentTO.mimeType,
                                 '',
                                 filePath,
                                 false,
@@ -8540,24 +8627,18 @@ var nodeOpen = false,
       /**
        * Is Editable Form Asset
        */
-      isEditableFormAsset: function (uri) {
-        //TODO: We should make this a MIME type and make the MIME types a constant
-        if (
-          uri.indexOf('.ftl') != -1 ||
-          uri.indexOf('.css') != -1 ||
-          uri.indexOf('.js') != -1 ||
-          uri.indexOf('.groovy') != -1 ||
-          uri.indexOf('.txt') != -1 ||
-          uri.indexOf('.html') != -1 ||
-          uri.indexOf('.hbs') != -1 ||
-          uri.indexOf('.xml') != -1 ||
-          uri.indexOf('.tmpl') != -1 ||
-          uri.indexOf('.htm') != -1
-        ) {
-          return true;
-        } else {
-          return false;
-        }
+      isEditableFormAsset: function (mimeType) {
+        return (
+          mimeType &&
+          (
+            mimeType.match(/^text\//) ||
+            mimeType === 'application/javascript' ||
+            mimeType === 'application/x-javascript+xml' ||
+            mimeType === 'application/xml' ||
+            mimeType === 'application/json' ||
+            mimeType === 'application/x-sh'
+          )
+        );
       },
 
       /**

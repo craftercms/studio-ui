@@ -32,6 +32,14 @@ export function setStoredPreviewChoice(site: string, value: string) {
   return window.localStorage.setItem(`craftercms.previewCompatChoice.${site}`, value);
 }
 
+export function getStoredEditModeChoice(site: string): string {
+  return window.localStorage.getItem(`craftercms.editModeChoice.${site}`);
+}
+
+export function setStoredEditModeChoice(site: string, value: string) {
+  return window.localStorage.setItem(`craftercms.editModeChoice.${site}`, value);
+}
+
 export default {
   getStateMapFromLegacyItem,
   getStoredPreviewChoice,

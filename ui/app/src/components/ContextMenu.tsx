@@ -20,8 +20,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import { MessageDescriptor, useIntl } from 'react-intl';
-import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { PopoverOrigin } from '@material-ui/core';
+import ErrorOutlineOutlinedIcon from '@material-ui/icons/ErrorOutlineOutlined';
 
 export const useStyles = makeStyles((theme) =>
   createStyles({
@@ -45,13 +46,9 @@ export interface SectionItem extends Option {
 interface CustomMenuProps {
   anchorEl?: null | Element | ((element: Element) => Element);
   open: boolean;
-  classes?: {
-    paper?: any;
-    itemRoot?: any;
-    menuList?: any;
-    helperText?: any;
-  }
+  classes?: Partial<Record<'paper' | 'itemRoot' | 'menuList' | 'helperText', string>>;
   sections: SectionItem[][];
+  anchorOrigin?: PopoverOrigin;
   emptyState?: {
     icon?: ElementType;
     message: string;
@@ -63,8 +60,7 @@ interface CustomMenuProps {
 }
 
 export default function ContextMenu(props: CustomMenuProps) {
-  const { sections, classes, onClose, open, anchorEl, onMenuItemClicked, emptyState } = props;
-  const { formatMessage } = useIntl();
+  const { sections, classes, onClose, open, anchorEl, onMenuItemClicked, emptyState, anchorOrigin = undefined } = props;
   const emptyStyles = useStyles({});
 
   return (
@@ -73,29 +69,15 @@ export default function ContextMenu(props: CustomMenuProps) {
       open={open}
       classes={{ paper: classes?.paper, list: classes?.menuList }}
       onClose={onClose}
+      anchorOrigin={anchorOrigin}
     >
-      {
-        sections.map((section: any, i: number) =>
-          section.map((sectionItem: SectionItem, y: number) =>
-            (sectionItem.type === 'text') ? (
-              <div>
-                <Typography variant="body1" className={classes.helperText}>
-                  {formatMessage(sectionItem.label, sectionItem.values)}
-                </Typography>
-                <Divider />
-              </div>
-            ) : (
-              <MenuItem
-                divider={(i !== sections.length - 1) && (y === section.length - 1)}
-                onClick={() => onMenuItemClicked(sectionItem)}
-                classes={{ root: classes?.itemRoot }}
-              >
-                {formatMessage(sectionItem.label, sectionItem.values)}
-              </MenuItem>
-            )
-          )
-        )
-      }
+      <div>
+        <ContextMenuItems
+          sections={sections}
+          classes={classes}
+          onMenuItemClicked={onMenuItemClicked}
+        />
+      </div>
       {
         (sections.length === 0 && emptyState?.message) &&
         <div className={emptyStyles.root}>
@@ -106,5 +88,43 @@ export default function ContextMenu(props: CustomMenuProps) {
         </div>
       }
     </Menu>
+  );
+}
+
+interface ContextMenuItemsProps {
+  sections: SectionItem[][];
+  classes?: Partial<Record<'helperText' | 'itemRoot', string>>;
+  onMenuItemClicked(SectionItem): void;
+}
+
+export function ContextMenuItems(props: ContextMenuItemsProps) {
+  const { sections, classes, onMenuItemClicked } = props;
+  const { formatMessage } = useIntl();
+  return (
+    <>
+      {
+        sections.map((section: any, i: number) =>
+          section.map((sectionItem: SectionItem, y: number) =>
+            (sectionItem.type === 'text') ? (
+              <div>
+                <Typography variant="body1" className={classes?.helperText}>
+                  {formatMessage(sectionItem.label, sectionItem.values)}
+                </Typography>
+                <Divider />
+              </div>
+            ) : (
+              <MenuItem
+                key={sectionItem.id}
+                divider={(i !== sections.length - 1) && (y === section.length - 1)}
+                onClick={() => onMenuItemClicked(sectionItem)}
+                classes={{ root: classes?.itemRoot }}
+                dense
+              >
+                {formatMessage(sectionItem.label, sectionItem.values)}
+              </MenuItem>
+            )
+          )
+        )}
+    </>
   );
 }

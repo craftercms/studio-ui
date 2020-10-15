@@ -64,7 +64,7 @@ const useLinkIconStyles = makeStyles(() =>
       paddingTop: 0,
       paddingLeft: 9,
       paddingBottom: 0,
-      textDecoration: 'none'
+      textDecoration: 'none !important'
     },
     icon: {
       marginRight: 3
@@ -126,11 +126,9 @@ export function SiteExplorer(props: SiteExplorerProps) {
       )}
       {widgets?.map((item, index) => {
         const Component = ItemToComponentMap[item.name || item.render];
-        return <Component
-          key={index}
-          {...(item.name ? item.params : item.props)}
-          classes={classes}
-        />;
+        return (
+          <Component key={index} {...(item.name ? item.params : item.props)} classes={classes} />
+        );
       })}
     </>
   );
@@ -158,10 +156,7 @@ export function SiteExplorerContainer() {
     shouldResolve: (state) => !state.isFetching && Boolean(state.items)
   });
   useEffect(() => {
-    if (
-      (!state.items && !state.isFetching) ||
-      (prevSite !== undefined && prevSite !== site)
-    ) {
+    if ((!state.items && !state.isFetching) || (prevSite !== undefined && prevSite !== site)) {
       dispatch(fetchSidebarConfig(site));
     }
   }, [dispatch, prevSite, site, state.isFetching, state.items]);

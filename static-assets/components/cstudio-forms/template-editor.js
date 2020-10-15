@@ -253,7 +253,7 @@ CStudioAuthoring.Module.requireModule(
                       '</div>' +
                       '<div class=\'template-editor-button-container\'>';
 
-                    if (isWrite == true) {
+                    if (isWrite == true && !isRead) {
                       formHTML +=
                         '<div class=\'edit-buttons-container\'>' +
                         '<select id=\'themeSelector\'>' +
@@ -281,7 +281,7 @@ CStudioAuthoring.Module.requireModule(
                     } else {
                       formHTML +=
                         '<div class=\'edit-buttons-container viewer\'>' +
-                        '<div style=\'right: 120px;\' class=\'template-editor-cancel-button btn btn-default cstudio-template-editor-button\'>Close</div>';
+                        '<div class=\'template-editor-cancel-button btn btn-default cstudio-template-editor-button\'>Close</div>';
                       ('<div/>');
                     }
 
@@ -307,16 +307,30 @@ CStudioAuthoring.Module.requireModule(
                         var modePath = 'ace/mode/';
                         var mode = modePath + 'htmlmixed';
 
-                        if (templatePath.indexOf('.css') != -1) {
+                        if (templatePath.indexOf('.css') !== -1) {
                           mode = modePath + 'css';
-                        } else if (templatePath.indexOf('.js') != -1) {
+                        } else if (templatePath.indexOf('.js') !== -1) {
                           mode = modePath + 'javascript';
-                        } else if (templatePath.indexOf('.groovy') != -1) {
+                        } else if (templatePath.indexOf('.groovy') !== -1) {
                           mode = modePath + 'groovy';
-                        } else if (templatePath.indexOf('.ftl') != -1) {
+                        } else if (templatePath.indexOf('.ftl') !== -1) {
                           mode = modePath + 'ftl';
-                        } else if (templatePath.indexOf('.xml') != -1) {
+                        } else if (templatePath.indexOf('.xml') !== -1) {
                           mode = modePath + 'xml';
+                        } else if (templatePath.indexOf('.sh') !== -1) {
+                          mode = modePath + 'sh';
+                        } else if (templatePath.indexOf('.jsx') !== -1) {
+                          mode = modePath + 'jsx';
+                        } else if (templatePath.indexOf('.ts') !== -1) {
+                          mode = modePath + 'tsx';
+                        } else if (templatePath.indexOf('.less') !== -1) {
+                          mode = modePath + 'less';
+                        } else if (templatePath.indexOf('.sass') !== -1) {
+                          mode = modePath + 'sass';
+                        } else if (templatePath.indexOf('.scss') !== -1) {
+                          mode = modePath + 'scss';
+                        } else if (templatePath.indexOf('.tsx') !== -1) {
+                          mode = modePath + 'tsx';
                         }
 
                         langTools = ace.require('ace/ext/language_tools');
@@ -362,7 +376,8 @@ CStudioAuthoring.Module.requireModule(
                           enableSnippets: true,
                           showPrintMargin: false,
                           fontSize: fontSize,
-                          tabSize: tabSize
+                          tabSize: tabSize,
+                          readOnly: isRead
                         });
 
                         $(modalEl)
@@ -511,7 +526,9 @@ CStudioAuthoring.Module.requireModule(
                         langTools.addCompleter(customCompleter);
                       } else if (templatePath.indexOf('.ftl') != -1) {
 
-                        me.addLocales(nameWrapper, aceEditor, templatePath, filename, content);
+                        if (!isRead) {
+                          me.addLocales(nameWrapper, aceEditor, templatePath, filename, content);
+                        }
 
                         variableOpts = codeSnippets.freemarker;
 
@@ -534,7 +551,7 @@ CStudioAuthoring.Module.requireModule(
                       }
 
                       //Create and append select list
-                      if (Object.entries(variableOpts).length > 0) {
+                      if (!isRead && Object.entries(variableOpts).length > 0) {
                         var selectList = document.createElement('select');
                         selectList.className = 'variable';
                         templateEditorToolbarVarElt.appendChild(selectList);
@@ -660,7 +677,7 @@ CStudioAuthoring.Module.requireModule(
                         }
                       });
 
-                    if (isWrite == true) {
+                    if (isWrite == true && !isRead) {
                       var saveEl = modalEl.querySelector('.template-editor-update-button');
                       let unmount;
                       const options = [
@@ -782,14 +799,22 @@ CStudioAuthoring.Module.requireModule(
                                   type: 'DISPATCH_DOM_EVENT',
                                   payload: { id: createTemplateOnOk }
                                 },
-                                onCancel: {
-                                  type: 'DISPATCH_DOM_EVENT',
-                                  payload: { id: createTemplateOnCancel }
+                                onClosed: {
+                                  type: 'BATCH_ACTIONS',
+                                  payload: [
+                                    {
+                                      type: 'DISPATCH_DOM_EVENT',
+                                      payload: { id: createTemplateOnCancel }
+                                    },
+                                    { type: 'CONFIRM_DIALOG_CLOSED' }
+                                  ]
                                 }
                               }
                             });
 
-                            CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
+                            let unsubscribe, cancelUnsubscribe;
+
+                            unsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnOk, () => {
                               $(headerEl).find('.fileName')[0].innerText = this.value ? `${baseName}_${this.value}.ftl` : `${baseName}.ftl`;
                               aceEditor.setValue('');
                               CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
@@ -801,11 +826,12 @@ CStudioAuthoring.Module.requireModule(
                                   aceEditor.setValue(defaultContent);
                                 }
                               );
+                              cancelUnsubscribe();
                             });
 
-                            CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
+                            cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(createTemplateOnCancel, () => {
                               $select.val($select.data('prev'));
-                              CrafterCMSNext.system.store.dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
+                              unsubscribe();
                             });
 
                           }

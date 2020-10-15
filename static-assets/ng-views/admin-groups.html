@@ -14,7 +14,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class="container-fluid admin-view">
+<div class="container-fluid admin-view groups-view">
   <div class="row full">
     <div ng-show="!groups.groupView" class="mainContainer">
       <div class="actions clearfix pull-right mb10" style="width: 100%;">
@@ -37,7 +37,7 @@
           <thead>
           <tr>
             <th>{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
-            <th>{{ 'admin.groups.DESCRIPTION' | translate }}</th>
+            <th class="hidden-sm hidden-xs">{{ 'admin.groups.DESCRIPTION' | translate }}</th>
             <th>{{ 'admin.groups.EDIT_MEMBERSHIP' | translate }}</th>
           </tr>
           </thead>
@@ -45,8 +45,8 @@
 
           <tr id="group-{{ group.name | nospace }}" dir-paginate="group in groupsCollection | filter:q | itemsPerPage: groups.itemsPerPage"
               pagination-id="paginateGroups" current-page="groups.pagination.current" total-items="groups.totalLogs">
-            <td>{{group.name}}</td>
-            <td>{{group.desc}}</td>
+            <td class="group-name trim">{{group.name}}</td>
+            <td class="group-description hidden-sm hidden-xs">{{group.desc}}</td>
             <td>
               <a ng-click="groups.viewGroup(group)"
                  class="btn btn-sm edit"
@@ -70,10 +70,10 @@
         <dir-pagination-controls pagination-id="paginateGroups" on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>
       </div>
     </div>
-    <div ng-show="groups.groupView" class="col-md-12">
+    <div ng-show="groups.groupView" class="col-md-12 single-group-view">
       <h2 class="page-header">
         {{ groups.selectedGroup.name }}
-        <button class="close" ng-click="groups.groupView = false">« {{ 'admin.groups.BACK_TO_GROUPS'| translate }}</button>
+        <button class="close mt10" ng-click="groups.groupView = false">« {{ 'admin.groups.BACK_TO_GROUPS'| translate }}</button>
       </h2>
       <form class="form-horizontal" style="max-width: 600px;">
         <div class="form-group">

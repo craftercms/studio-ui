@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { parse } from 'query-string';
+import { parse, ParsedQuery } from 'query-string';
 import { LookupTable } from '../models/LookupTable';
-import { SandboxItem } from '../models/Item';
+import { DetailedItem } from '../models/Item';
 
 // Originally from ComponentPanel.getPreviewPagePath
-export function getPathFromPreviewURL(previewURL: string) {
+export function getPathFromPreviewURL(previewURL: string): string {
   let pagePath = previewURL;
 
   if (pagePath.indexOf('?') > 0) {
@@ -44,25 +44,26 @@ export function getPathFromPreviewURL(previewURL: string) {
   return `/site/website${pagePath}`;
 }
 
-export function getPreviewURLFromPath(baseUrl: string, path: string) {
-  if (path.endsWith('.xml')) {
-    path = path.replace('.xml', '.html');
-  }
-  path = path.replace('/site/website', '');
-  return `${baseUrl}${path}`;
+export function getPreviewURLFromPath(path: string): string {
+  path = withoutIndex(path).replace('/site/website', '');
+  return path;
 }
 
-export function getQueryVariable(query: string, variable: string) {
+export function getQueryVariable(query: string, variable: string): string | string[] {
   let qs = parse(query);
   return qs[variable] ?? null;
 }
 
-export function parseQueryString() {
+export function parseQueryString(): ParsedQuery {
   return parse(window.location.search);
 }
 
 // TODO: an initial path with trailing `/` breaks
-export function itemsFromPath(path: string, root: string, items: LookupTable<SandboxItem>): SandboxItem[] {
+export function itemsFromPath(
+  path: string,
+  root: string,
+  items: LookupTable<DetailedItem>
+): DetailedItem[] {
   const rootWithIndex = withIndex(root);
   const rootWithoutIndex = withoutIndex(root);
   const rootItem = items[rootWithIndex] ?? items[root];
@@ -99,19 +100,32 @@ export function getParentPath(path: string): string {
 }
 
 export function getParentsFromPath(path: string, rootPath: string): string[] {
-  let splitPath = withoutIndex(path).replace(rootPath, '').split('/');
+  let splitPath = withoutIndex(path)
+    .replace(rootPath, '')
+    .split('/');
   splitPath.pop();
-  return [rootPath, ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(2)];
+  return [
+    rootPath,
+    ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(2)
+  ];
 }
 
-export function getIndividualPaths(path: string) {
+export function getIndividualPaths(path: string, rootPath?: string): string[] {
   let paths = [];
   let array = path.replace(/^\/|\/$/g, '').split('/');
   do {
     paths.push('/' + array.join('/'));
     array.pop();
   } while (array.length);
-  return paths;
+  if (rootPath) {
+    if (paths.indexOf(withIndex(rootPath)) >= 0) {
+      return paths.slice(0, paths.indexOf(withIndex(rootPath)) + 1);
+    } else {
+      return paths.slice(0, paths.indexOf(rootPath) + 1);
+    }
+  } else {
+    return paths;
+  }
 }
 
 export default {

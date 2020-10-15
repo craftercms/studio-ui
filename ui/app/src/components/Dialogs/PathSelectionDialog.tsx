@@ -18,7 +18,7 @@ import DialogHeader from './DialogHeader';
 import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import Button from '@material-ui/core/Button';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import { useActiveSiteId, useLogicResource, useUnmount } from '../../utils/hooks';
@@ -28,13 +28,14 @@ import FolderBrowserTreeView, {
 } from '../Navigation/FolderBrowserTreeView';
 import makeStyles from '@material-ui/styles/makeStyles';
 import createStyles from '@material-ui/styles/createStyles';
-import CreateNewFolderDialog from './CreateNewFolderDialog';
+import CreateFolderDialog from './CreateFolderDialog';
 import { get } from '../../utils/ajax';
 import LookupTable from '../../models/LookupTable';
 import Suspencified from '../SystemStatus/Suspencified';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
+import StandardAction from '../../models/StandardAction';
 
 const messages = defineMessages({
   ok: {
@@ -65,14 +66,24 @@ const useStyles = makeStyles(() =>
   })
 );
 
-interface PathSelectionDialogProps {
+interface PathSelectionDialogBaseProps {
   open: boolean;
   rootPath: string;
+  showCreateFolder?: boolean;
   initialPath?: string;
   title?: string;
+}
+
+export type PathSelectionDialogProps = PropsWithChildren<PathSelectionDialogBaseProps> & {
   onClose(): void;
   onClosed?(): void;
-  onOk(selectedPath: string): void;
+  onOk?(response: { path: string }): void;
+};
+
+export interface PathSelectionDialogStateProps extends PathSelectionDialogBaseProps {
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
+  onOk?: StandardAction;
 }
 
 export default function PathSelectionDialog(props: PathSelectionDialogProps) {
@@ -84,7 +95,7 @@ export default function PathSelectionDialog(props: PathSelectionDialogProps) {
 }
 
 function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
-  const { onClosed, onClose, onOk, rootPath, initialPath, title } = props;
+  const { onClosed, onClose, onOk, rootPath, initialPath, title, showCreateFolder = true } = props;
   const classes = useStyles({});
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
@@ -93,10 +104,12 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
     initialPath ? getIndividualPaths(initialPath) : [rootPath]
   );
   const [invalidPath, setInvalidPath] = useState(false);
+  const [dirtyInput, setDirtyInput] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [treeNodes, setTreeNodes] = useState<TreeNode>(null);
   const [createFolder, setCreateFolder] = useState(false);
   const nodesLookupRef = useRef<LookupTable<TreeNode>>({});
+
   useUnmount(onClosed);
 
   useEffect(() => {
@@ -106,9 +119,9 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
       if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
         setInvalidPath(false);
       } else {
-        const allPaths = getIndividualPaths(currentPath).filter(
-          (path) => !nodesLookup[path] || !nodesLookup[path].fetched
-        );
+        const allPaths = getIndividualPaths(currentPath)
+          .filter((path) => !nodesLookup[path] || !nodesLookup[path].fetched)
+          .reverse();
         const requests: Observable<AjaxResponse>[] = [];
         allPaths.forEach((nextPath) => {
           requests.push(
@@ -137,7 +150,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
               if (!nodesLookup['root']) {
                 parent = {
                   id: item.path,
-                  name: item.name,
+                  name: item.name ? item.name : 'root',
                   fetched: true,
                   children: legacyItemsToTreeNodes(item.children)
                 };
@@ -178,7 +191,7 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
     setCreateFolder(false);
   };
 
-  const onFolderCreated = (path: string, name: string) => {
+  const onFolderCreated = ({ path, name }: { path: string; name: string }) => {
     setCreateFolder(false);
     let id = `${path}/${name}`;
     nodesLookupRef.current[currentPath].children.push({
@@ -206,7 +219,12 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
 
   const onPathChanged = (path: string) => {
     setCurrentPath(path);
-    setExpanded(getIndividualPaths(path));
+    setDirtyInput(false);
+    setExpanded(rootPath === '/' ? ['/', ...getIndividualPaths(path)] : getIndividualPaths(path));
+  };
+
+  const onKeyPress = (event: React.KeyboardEvent) => {
+    setDirtyInput(true);
   };
 
   return (
@@ -235,33 +253,37 @@ function PathSelectionDialogWrapper(props: PathSelectionDialogProps) {
             expanded={expanded}
             selected={currentPath.replace(/\/$/, '')}
             resource={resource}
+            onKeyPress={onKeyPress}
             onPathChanged={onPathChanged}
             isFetching={isFetching}
           />
         </Suspencified>
       </DialogBody>
       <DialogFooter>
-        <Button
-          disabled={invalidPath || isFetching}
-          onClick={onCreateFolder}
-          variant="outlined"
-          className={classes.createFolderBtn}
-        >
-          {formatMessage(messages.create)}
-        </Button>
+        {showCreateFolder && (
+          <Button
+            disabled={invalidPath || isFetching}
+            onClick={onCreateFolder}
+            variant="outlined"
+            className={classes.createFolderBtn}
+          >
+            {formatMessage(messages.create)}
+          </Button>
+        )}
+
         <Button onClick={onClose} variant="outlined">
           {formatMessage(messages.cancel)}
         </Button>
         <Button
-          disabled={invalidPath || isFetching}
-          onClick={() => onOk(currentPath)}
+          disabled={invalidPath || isFetching || dirtyInput}
+          onClick={() => onOk({ path: currentPath })}
           variant="contained"
           color="primary"
         >
           {formatMessage(messages.ok)}
         </Button>
       </DialogFooter>
-      <CreateNewFolderDialog
+      <CreateFolderDialog
         path={currentPath}
         open={createFolder}
         onClose={onCloseCreateFolder}

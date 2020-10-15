@@ -81,6 +81,7 @@
   var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
   var site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
   var type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
+  var readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly');
   var contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   var isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent');
 
@@ -92,7 +93,6 @@
         var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
         var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden');
         var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
-        var readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly');
 
         const aux = [];
         if (readOnly) aux.push({ name: 'readonly' });
@@ -219,6 +219,10 @@
       case 'asset':
       case 'controller':
       case 'template': {
+        let mode = null;
+        if (readOnly) {
+          mode = 'read';
+        }
         CStudioAuthoring.Operations.openTemplateEditor(path, 'default', {
           success: function (action) {
             window.top.postMessage({
@@ -240,7 +244,7 @@
           },
           id: type,
           callingWindow: window
-        }, null, null, true);
+        }, null, mode);
         break;
       }
     }

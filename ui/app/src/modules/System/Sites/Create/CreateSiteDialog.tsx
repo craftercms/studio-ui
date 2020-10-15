@@ -150,7 +150,9 @@ const messages = defineMessages({
 const siteInitialState: SiteState = {
   blueprint: null,
   siteId: '',
+  siteName: '',
   siteIdExist: false,
+  siteNameExist: false,
   invalidSiteId: false,
   description: '',
   pushSite: false,
@@ -590,7 +592,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function validateForm() {
-    if (!site.siteId || site.siteIdExist || site.invalidSiteId) {
+    if (!site.siteId || site.siteIdExist || !site.siteName || site.siteNameExist || site.invalidSiteId) {
       return false;
     } else if (!site.repoUrl && site.blueprint.id === 'GIT') {
       return false;
@@ -609,6 +611,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function createMarketplaceParams() {
     const params: MarketplaceSite = {
       siteId: site.siteId,
+      name: site.siteName,
       description: site.description,
       blueprintId: site.blueprint.id,
       blueprintVersion: {
@@ -627,7 +630,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       const params: CreateSiteMeta = {
         siteId: site.siteId,
         singleBranch: false,
-        createAsOrphan: site.createAsOrphan
+        createAsOrphan: site.createAsOrphan,
+        name: site.siteName
       };
       if (site.blueprint.id !== 'GIT') {
         params.blueprint = site.blueprint.id;

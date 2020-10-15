@@ -16,7 +16,7 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import { SandboxItem } from '../../models/Item';
+import { DetailedItem } from '../../models/Item';
 import { WidgetState } from '../../components/Navigation/PathNavigator/Widget';
 
 type PayloadWithId<P> = P & { id: string };
@@ -31,9 +31,9 @@ export const pathNavigatorSetCollapsed = createAction<PayloadWithId<{ collapsed:
 
 export const pathNavigatorSetCurrentPath = createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_SET_CURRENT_PATH');
 
-export const pathNavigatorItemChecked = createAction<PayloadWithId<{ item: SandboxItem }>>('PATH_NAVIGATOR_ITEM_CHECKED');
+export const pathNavigatorItemChecked = createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAVIGATOR_ITEM_CHECKED');
 
-export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: SandboxItem }>>('PATH_NAVIGATOR_ITEM_UNCHECKED');
+export const pathNavigatorItemUnchecked = createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAVIGATOR_ITEM_UNCHECKED');
 
 export const pathNavigatorClearChecked = createAction<{ id: string }>('PATH_NAVIGATOR_CLEAR_CHECKED');
 
@@ -46,3 +46,6 @@ export const pathNavigatorFetchParentItemsComplete = createAction<PayloadWithId<
 export const pathNavigatorFetchPathFailed = createAction('PATH_NAVIGATOR_FETCH_PATH_FAILED');
 
 export const pathNavigatorSetKeyword = createAction<PayloadWithId<{ keyword: string }>>('PATH_NAVIGATOR_SET_KEYWORD');
+
+export const pathNavigatorItemActionSuccess = createAction<PayloadWithId<{ option: string, item?: DetailedItem }>>('PATH_NAVIGATOR_ITEM_ACTION_SUCCESS');
+

@@ -19,8 +19,8 @@ import { ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'r
 import { catchAjaxError } from '../../utils/ajax';
 import { getChildrenByPath } from '../../services/content';
 import GlobalState from '../../models/GlobalState';
-import { getParentsFromPath, withIndex } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
+import { getParentsFromPath, withoutIndex } from '../../utils/path';
+import { forkJoin, NEVER, Observable } from 'rxjs';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import {
   pathNavigatorFetchParentItems,
@@ -28,8 +28,10 @@ import {
   pathNavigatorFetchPathComplete,
   pathNavigatorFetchPathFailed,
   pathNavigatorInit,
+  pathNavigatorItemActionSuccess,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
+  pathNavigatorSetKeyword,
   pathNavigatorUpdate
 } from '../actions/pathNavigator';
 
@@ -46,7 +48,10 @@ export default [
         );
         return [
           storedState ? pathNavigatorUpdate({ id, ...storedState }) : null,
-          pathNavigatorFetchParentItems({ id, path: storedState ? storedState.currentPath : payload.path })
+          pathNavigatorFetchParentItems({
+            id,
+            path: storedState ? storedState.currentPath : payload.path
+          })
         ].filter(Boolean);
       })
     ),
@@ -63,27 +68,33 @@ export default [
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
+      ofType(pathNavigatorSetKeyword.type),
+      withLatestFrom(state$),
+      mergeMap(([{ type, payload: { id, keyword } }, state]) =>
+        getChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, { keyword }).pipe(
+          map((response) => pathNavigatorFetchPathComplete({ id, response })),
+          catchAjaxError(pathNavigatorFetchPathFailed)
+        )
+      )
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
       ofType(pathNavigatorFetchParentItems.type),
       withLatestFrom(state$),
       mergeMap(
         ([
-          {
-            type,
-            payload: { id, path }
-          },
-          state
-        ]) => {
+           {
+             type,
+             payload: { id, path }
+           },
+           state
+         ]) => {
           const site = state.sites.active;
           const parentsPath = [...getParentsFromPath(path, state.pathNavigator[id].rootPath), path];
           const requests: Observable<GetChildrenResponse>[] = [];
           if (parentsPath.length) {
             parentsPath.forEach((parentPath) => {
-              if (
-                !state.pathNavigator[id].items[parentPath] &&
-                !state.pathNavigator[id].items[withIndex(parentPath)]
-              ) {
-                requests.push(getChildrenByPath(site, parentPath));
-              }
+              requests.push(getChildrenByPath(site, parentPath));
             });
             return forkJoin(requests).pipe(
               map((response) => pathNavigatorFetchParentItemsComplete({ id, response })),
@@ -100,25 +111,76 @@ export default [
     ),
   (action$, state$: StateObservable<GlobalState>) =>
     action$.pipe(
-      ofType(pathNavigatorSetCurrentPath.type, pathNavigatorSetCollapsed.type),
+      ofType(pathNavigatorFetchPathComplete.type, pathNavigatorSetCollapsed.type),
       withLatestFrom(state$),
       tap(
         ([
-          {
-            type,
-            payload: { id }
-          },
-          state
-        ]) => {
-          localStorage.setItem(
-            `craftercms.pathNavigator.${state.sites.active}.${id}`,
-            JSON.stringify({
-              currentPath: state.pathNavigator[id].currentPath,
-              collapsed: state.pathNavigator[id].collapsed
-            })
-          );
+           {
+             type,
+             payload: { id, response }
+           },
+           state
+         ]) => {
+          if (response?.length > 0) {
+            localStorage.setItem(
+              `craftercms.pathNavigator.${state.sites.active}.${id}`,
+              JSON.stringify({
+                currentPath: state.pathNavigator[id].currentPath,
+                collapsed: state.pathNavigator[id].collapsed
+              })
+            );
+          }
         }
       ),
       ignoreElements()
+    ),
+  (action$, state$: StateObservable<GlobalState>) =>
+    action$.pipe(
+      ofType(pathNavigatorItemActionSuccess.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        let currentPath = state.pathNavigator[payload.id].currentPath;
+        switch (payload.option) {
+          case 'delete': {
+            if (withoutIndex(payload.item.path) !== withoutIndex(currentPath)) {
+              return [pathNavigatorSetCurrentPath({
+                id: payload.id,
+                path: currentPath
+              })];
+            } else {
+              return NEVER;
+            }
+          }
+          case 'createFolder': {
+            if (withoutIndex(payload.item.path) === withoutIndex(currentPath)) {
+              return [pathNavigatorSetCurrentPath({
+                id: payload.id,
+                path: currentPath
+              })];
+            } else {
+              return NEVER;
+            }
+          }
+          case 'upload': {
+            if (payload.dropZoneStatus.uploadedFiles > 0 && withoutIndex(payload.item.path) === withoutIndex(currentPath)) {
+              return [pathNavigatorSetCurrentPath({
+                id: payload.id,
+                path: currentPath
+              })];
+            } else {
+              return NEVER;
+            }
+          }
+          case 'refresh': {
+            return [pathNavigatorSetCurrentPath({
+              id: payload.id,
+              path: currentPath
+            })];
+          }
+          default: {
+            return NEVER;
+          }
+        }
+      })
     )
 ] as Epic[];

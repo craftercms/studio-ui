@@ -38,7 +38,8 @@
     globalConfigMessages = i18n.messages.globalConfigMessages,
     words = i18n.messages.words,
     profileSettingsMessages = i18n.messages.profileSettingsMessages,
-    globalMenuMessages = i18n.messages.globalMenuMessages;
+    globalMenuMessages = i18n.messages.globalMenuMessages,
+    adminDashboardMessages = i18n.messages.adminDashboardMessages;
 
   app.run([
     '$rootScope',
@@ -47,10 +48,9 @@
     'authService',
     'sitesService',
     'Constants',
-    '$http',
-    '$cookies',
-    '$location',
-    function($rootScope, $state, $stateParams, authService, sitesService, Constants) {
+    '$uibModal',
+    '$timeout',
+    function($rootScope, $state, $stateParams, authService, sitesService, Constants, $uibModal, $timeout) {
       $rootScope.$state = $state;
       $rootScope.$stateParams = $stateParams;
 
@@ -120,6 +120,72 @@
       });
 
       sitesService.getLanguages($rootScope, true);
+
+      //More configuration on https://notifyjs.com/
+      $rootScope.showNotification = function (
+        message,
+        positionx,
+        positiony,
+        type,
+        originalx,
+        originaly,
+        classElt
+      ) {
+        var globalPositionx = positionx ? positionx : 'top',
+          globalPositiony = positiony ? positiony : 'right',
+          globalPosition = globalPositionx + ' ' + globalPositiony,
+          type = type ? type : 'success',
+          currentClassElt = classElt ? ' ' + classElt : '';
+        const currentType = type + currentClassElt;
+        originalx = originalx ? originalx : 0;
+        originaly = originaly ? originaly : 0;
+        let html;
+
+        if (type === 'success') {
+          html =
+            '<div><svg class="notifyjs-material-icon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.76,4 13.5,4.11 14.2, 4.31L15.77,2.74C14.61,2.26 13.34,2 12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0, 0 22,12M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z"></path></svg><span data-notify-text/></div>';
+        } else if (type === 'error') {
+          html =
+            '<div><svg class="notifyjs-material-icon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg><span data-notify-text/></div>';
+        } else {
+          html = '<div><span data-notify-text/></div>';
+        }
+
+        $.notify.addStyle('material', {
+          html
+        });
+
+        $.notify(message, {
+          globalPosition: globalPosition,
+          className: currentType,
+          style: 'material',
+          autoHideDelay: 4000
+        });
+
+        var element;
+        if (classElt) {
+          element = $('.notifyjs-corner').has('.' + classElt);
+        } else {
+          element = $('.notifyjs-corner').has('.notifyjs-bootstrap-' + type);
+        }
+
+        if (positionx == 'top') {
+          if (positiony == 'left') element.css({ top: originalx + 'px', left: originaly + 'px' });
+          if (positiony == 'right') element.css({ top: originalx + 'px', right: originaly + 'px' });
+        }
+        if (positionx == 'bottom') {
+          if (positiony == 'left')
+            element.css({
+              bottom: originalx + 'px',
+              left: originaly + 'px'
+            });
+          if (positiony == 'right')
+            element.css({
+              bottom: originalx + 'px',
+              right: originaly + 'px'
+            });
+        }
+      },
 
       CrafterCMSNext.renderBackgroundUI();
     }
@@ -520,11 +586,11 @@
       };
 
       this.editSite = function(site) {
-        me.setCookie('crafterSite', site.siteId);
+        me.setCookie('crafterSite', site.id);
         $timeout(
           function() {
             $window.location.href =
-              CrafterCMSNext.util.state.getStoredPreviewChoice(site.siteId) === '2'
+              CrafterCMSNext.util.state.getStoredPreviewChoice(site.id) === '2'
                 ? '/studio/next/preview'
                 : '/studio/preview';
           },
@@ -533,8 +599,48 @@
         );
       };
 
+      this.editSiteData = function(site, onEditSuccess) {
+        const eventIdSuccess = 'editSiteDialogSuccess';
+        const eventIdDismissed = 'editSiteDialogDismissed';
+        CrafterCMSNext.system.store.dispatch({
+          type: 'SHOW_EDIT_SITE_DIALOG',
+          payload: {
+            open: true,
+            site,
+            onSaveSuccess: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdSuccess }
+                },
+                { type: 'CLOSE_EDIT_SITE_DIALOG' }
+              ]
+            },
+            onClose: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventIdDismissed }
+                },
+                { type: 'CLOSE_EDIT_SITE_DIALOG' }
+              ]
+            }
+          }
+        });
+        let cleanupSuccess = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, (response) => {
+          $rootScope.showNotification(formatMessage(adminDashboardMessages.siteUpdated));
+          onEditSuccess(response);
+        });
+        CrafterCMSNext.createLegacyCallbackListener(eventIdDismissed, () => {
+          cleanupSuccess();
+        });
+
+      };
+
       this.goToDashboard = function(site) {
-        me.setCookie('crafterSite', site.siteId);
+        me.setCookie('crafterSite', site.id);
         $timeout(
           function() {
             $window.location.href = '/studio/site-dashboard';
@@ -556,7 +662,7 @@
 
       this.removeSite = function(site) {
         return $http.post(api('delete-site'), {
-          siteId: site.siteId
+          siteId: site.id
         });
       };
 
@@ -1222,6 +1328,7 @@
   ]);
 
   app.controller('SitesCtrl', [
+    '$rootScope',
     '$scope',
     '$state',
     '$location',
@@ -1233,6 +1340,7 @@
     'Constants',
 
     function(
+      $rootScope,
       $scope,
       $state,
       $location,
@@ -1246,6 +1354,17 @@
       $scope.sites = null;
 
       $scope.editSite = sitesService.editSite;
+
+      $scope.editSiteData = function(site) {
+        const onEditSuccess = () => {
+          CrafterCMSNext.system.store.dispatch({
+            type: 'CLOSE_EDIT_SITE_DIALOG',
+          });
+          getSites();
+        };
+
+        sitesService.editSiteData(site, onEditSuccess);
+      };
 
       $scope.goToDashboard = sitesService.goToDashboard;
 
@@ -1276,15 +1395,19 @@
       };
 
       function getSites(params) {
-        sitesService
-          .getSitesPerUser('me', params)
-          .success(function(data) {
-            $scope.totalSites = data.total ? data.total : null;
-            $scope.sites = data.sites;
+        if (params) {
+          $scope.paginationData = params;
+        }
+
+        CrafterCMSNext.services.sites.fetchSites($scope.paginationData)
+          .subscribe(data => {
+            $scope.totalSites = data.total;
+            $scope.sites = data;
             isRemove();
             createSitePermission();
-          })
-          .error(function() {
+          },
+          (e) => {
+            $rootScope.showNotification(e.message, null, null, 'error');
             $scope.sites = null;
           });
       }
@@ -1334,8 +1457,16 @@
 
       function addingRemoveProperty(siteId) {
         for (var j = 0; j < $scope.sites.length; j++) {
-          if ($scope.sites[j].siteId == siteId) {
+          if ($scope.sites[j].id == siteId) {
             $scope.sites[j].remove = true;
+          }
+        }
+      }
+
+      function addingEditProperty(siteId) {
+        for (var j = 0; j < $scope.sites.length; j++) {
+          if ($scope.sites[j].id == siteId) {
+            $scope.sites[j].edit = true;
           }
         }
       }
@@ -1348,6 +1479,9 @@
               if (data.permissions[i] == 'delete') {
                 addingRemoveProperty(siteId);
               }
+              if (data.permissions[i] == 'edit_site') {
+                addingEditProperty(siteId);
+              }
             }
           })
           .error(function() {});
@@ -1355,7 +1489,7 @@
 
       function isRemove() {
         for (var j = 0; j < $scope.sites.length; j++) {
-          removePermissionPerSite($scope.sites[j].siteId);
+          removePermissionPerSite($scope.sites[j].id);
         }
       }
 
@@ -1618,7 +1752,7 @@
     '$modalInstance',
     'siteToRemove',
     function($scope, $state, sitesService, $modalInstance, siteToRemove) {
-      $scope.siteToRemove = siteToRemove.siteId;
+      $scope.siteToRemove = siteToRemove.id;
       $scope.confirmationSubmitDisabled = false;
 
       function removeSiteSitesModal(site) {

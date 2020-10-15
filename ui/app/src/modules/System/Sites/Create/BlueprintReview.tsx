@@ -113,6 +113,10 @@ const messages = defineMessages({
     id: 'createSiteDialog.siteId',
     defaultMessage: 'Site ID'
   },
+  siteName: {
+    id: 'createSiteDialog.siteName',
+    defaultMessage: 'Site Name'
+  },
   sandboxBranch: {
     id: 'createSiteDialog.sandboxBranch',
     defaultMessage: 'Sandbox Branch'
@@ -291,6 +295,9 @@ function BlueprintReview(props: BlueprintReviewProps) {
             <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
               <EditIcon />
             </IconButton>
+          </Typography>
+          <Typography variant="body2" gutterBottom noWrap>
+            <span className={classes.bold}>{formatMessage(messages.siteName)}: </span> {inputs.siteName}
           </Typography>
           <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{formatMessage(messages.siteId)}: </span> {inputs.siteId}

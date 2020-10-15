@@ -20,7 +20,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { Variant } from '@material-ui/core/styles/createTypography';
-import { SandboxItem } from '../../../models/Item';
+import { DetailedItem } from '../../../models/Item';
 import InsertDriveFileRoundedIcon from '@material-ui/icons/InsertDriveFileRounded';
 import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import Popover from '@material-ui/core/Popover';
@@ -101,7 +101,7 @@ interface SingleItemSelectorProps {
     itemIcon?: string;
     popoverRoot?: string;
   };
-  selectedItem?: SandboxItem;
+  selectedItem?: DetailedItem;
   rootPath: string;
   label?: string;
   titleVariant?: Variant;
@@ -110,12 +110,12 @@ interface SingleItemSelectorProps {
   hideUI?: boolean;
   disabled?: boolean;
   onClose?(): void;
-  onItemClicked(item: SandboxItem): void;
+  onItemClicked(item: DetailedItem): void;
   onDropdownClick?(): void;
 }
 
 interface SingleItemSelectorState extends PaginationOptions {
-  byId: LookupTable<SandboxItem>;
+  byId: LookupTable<DetailedItem>;
   isFetching: boolean;
   error: ApiResponse;
   items: string[];
@@ -124,7 +124,7 @@ interface SingleItemSelectorState extends PaginationOptions {
   currentPath: string;
   keywords: string;
   pageNumber: number;
-  breadcrumb: SandboxItem[];
+  breadcrumb: DetailedItem[];
 }
 
 const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props: SingleItemSelectorProps) => ({
@@ -186,7 +186,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
     }
     case fetchParentsItemsComplete.type: {
       const { currentPath, rootPath, byId } = state;
-      let nextItems = { ...byId };
+      let nextItems: any = { ...byId };
       let items = [];
       let parentPath = withoutIndex(currentPath) === rootPath ? rootPath : getParentPath(currentPath);
 
@@ -213,7 +213,7 @@ const reducer: SingleItemSelectorReducer = (state, { type, payload }) => {
   }
 };
 
-function getNextPath(currentPath: string, byId: LookupTable<SandboxItem>): string {
+function getNextPath(currentPath: string, byId: LookupTable<DetailedItem>): string {
   let pieces = currentPath.split('/').slice(0);
   pieces.pop();
   if (currentPath.includes('index.xml')) {
@@ -226,7 +226,7 @@ function getNextPath(currentPath: string, byId: LookupTable<SandboxItem>): strin
   return nextPath;
 }
 
-export const changeCurrentPath = createAction<SandboxItem>('CHANGE_SELECTED_ITEM');
+export const changeCurrentPath = createAction<DetailedItem>('CHANGE_SELECTED_ITEM');
 
 export const fetchChildrenByPath = createAction<string>('FETCH_CHILDREN_BY_PATH');
 
@@ -297,7 +297,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     [state, site]
   );
 
-  const itemsResource = useLogicResource<SandboxItem[], SingleItemSelectorState>(state, {
+  const itemsResource = useLogicResource<DetailedItem[], SingleItemSelectorState>(state, {
     shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
     shouldReject: (consumer) => Boolean(consumer.error),
     shouldRenew: (consumer, resource) => (
@@ -309,16 +309,16 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     errorSelector: (consumer) => consumer.error
   });
 
-  const handleDropdownClick = (item: SandboxItem) => {
+  const handleDropdownClick = (item: DetailedItem) => {
     onDropdownClick();
     exec(fetchParentsItems(item?.path ?? rootPath));
   };
 
-  const onPathSelected = (item: SandboxItem) => {
+  const onPathSelected = (item: DetailedItem) => {
     exec(fetchChildrenByPath(item.path));
   };
 
-  const onCrumbSelected = (item: SandboxItem) => {
+  const onCrumbSelected = (item: DetailedItem) => {
     if (state.breadcrumb.length === 1) {
       handleItemClicked(item);
     } else {
@@ -326,7 +326,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
     }
   };
 
-  const handleItemClicked = (item: SandboxItem) => {
+  const handleItemClicked = (item: DetailedItem) => {
     exec(changeCurrentPath(item));
     onItemClicked(item);
   };

@@ -493,7 +493,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }), [items, publishingChannels, apiState]);
 
   const resource = useLogicResource<Return, Source>(publishSource, {
-    shouldResolve: (source) => (Boolean(source.items) && Boolean(source.publishingChannels)),
+    shouldResolve: (source) => (!source.items?.some((item) => !item.live) && Boolean(source.publishingChannels)),
     shouldReject: (source) => Boolean(source.apiState.error),
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => ({
@@ -525,7 +525,7 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   }, [items, setCheckedItems]);
 
   useEffect(() => {
-    if (items.length === 1 && items[0].live.lastScheduledDate) {
+    if (items.length === 1 && items[0].live?.lastScheduledDate) {
       setDialog({
         scheduling: 'custom',
         scheduledDateTime: moment(items[0].live.lastScheduledDate).format()

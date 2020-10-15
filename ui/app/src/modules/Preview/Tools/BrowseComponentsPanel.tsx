@@ -177,7 +177,7 @@ export default function BrowseComponentsPanel() {
               (item: ContentInstance) => item.craftercms.contentTypeId === source.contentTypeFilter
             ) || [];
         return {
-          ...pluckProps(source, 'count', 'query.limit', 'pageNumber', 'contentTypeFilter'),
+          ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber', 'contentTypeFilter'),
           items
         } as ComponentResource;
       }

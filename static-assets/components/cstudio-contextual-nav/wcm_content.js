@@ -959,7 +959,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                     CStudioAuthoring.Operations.editContent(
                       content.form,
                       CStudioAuthoringContext.siteId,
-                      content.uri,
+                      content.mimeType,
                       content.nodeRef,
                       content.uri,
                       false,

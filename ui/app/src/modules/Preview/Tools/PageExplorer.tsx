@@ -60,7 +60,7 @@ import palette from '../../../styles/palette';
 import { useDispatch } from 'react-redux';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import ComponentMenu from '../../../components/ComponentMenu';
+import { ItemMenu } from '../../../components/ItemMenu/ItemMenu';
 
 const rootPrefix = '{root}_';
 
@@ -346,7 +346,6 @@ interface TreeItemCustomInterface {
   handleClick?(node: RenderTree): void;
 
   handleOptions?(e: any, node: RenderTree): void;
-
 }
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
@@ -410,30 +409,27 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       onMouseOver={(e) => setOverState(e, true)}
       onMouseOut={(e) => setOverState(e, false)}
       icon={
-        isPageOrComponent(node.type) &&
-        <ChevronRightIcon onClick={() => handleClick(node)} className={classes.chevron} />
+        isPageOrComponent(node.type) && (
+          <ChevronRightIcon onClick={() => handleClick(node)} className={classes.chevron} />
+        )
       }
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(node)}>
           <Icon className={classes.icon} />
           <p title={node.name}>
-            {
-              (nodeName.length === 1) ? (
-                nodeName[0]
-              ) : (
-                <>{nodeName[1]} <span
-                  className={classes.nameLabel}
-                >{`(${nodeName[0].trim()})`}</span></>
-              )
-            }
+            {nodeName.length === 1 ? (
+              nodeName[0]
+            ) : (
+              <>
+                {nodeName[1]} <span className={classes.nameLabel}>{`(${nodeName[0].trim()})`}</span>
+              </>
+            )}
           </p>
           {over && isPageOrComponent(node.type) && (
             <IconButton
               className={classes.options}
               onMouseOver={(e) => setOverState(e, true)}
-              onClick={(e) =>
-                handleOptions(e, node)
-              }
+              onClick={(e) => handleOptions(e, node)}
             >
               <MoreVertIcon />
             </IconButton>
@@ -445,15 +441,13 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
         label: classes.treeItemLabelRoot,
         content: clsx(
           classes.treeItemContent,
-          (isPageOrComponent(node.type) && !isRootChild) && 'padded',
+          isPageOrComponent(node.type) && !isRootChild && 'padded',
           isRoot(node.id) && 'root'
         ),
         expanded: classes.treeItemExpanded,
         selected: classes.treeItemSelected,
         group: classes.treeItemGroup,
-        iconContainer: isRoot(node.id)
-          ? classes.displayNone
-          : classes.treeItemIconContainer
+        iconContainer: isRoot(node.id) ? classes.displayNone : classes.treeItemIconContainer
       }}
     >
       {node.children?.map((childNodeId, i) => (
@@ -466,13 +460,6 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       ))}
     </TreeItem>
   );
-}
-
-function createBackHandler(dispatch) {
-  const hostToGuest$ = getHostToGuestBus();
-  return () => {
-    hostToGuest$.next({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED });
-  };
 }
 
 export default function PageExplorer() {
@@ -488,7 +475,8 @@ export default function PageExplorer() {
   const [optionsMenu, setOptionsMenu] = React.useState({
     modelId: null,
     embeddedParentPath: null,
-    anchorEl: null
+    anchorEl: null,
+    path: null
   });
 
   const [state, setState] = React.useState<any>({
@@ -505,50 +493,55 @@ export default function PageExplorer() {
 
   const processedModels = useRef({});
 
-  const updateNode = useCallback((modelId: string, fieldId: string, nodeId: string) => {
-    const model = models[modelId];
-    const children = [];
+  const updateNode = useCallback(
+    (modelId: string, fieldId: string, nodeId: string) => {
+      const model = models[modelId];
+      const children = [];
 
-    // TODO: IF deleted op, optional: remove deleted id from nodeLookup
+      // TODO: IF deleted op, optional: remove deleted id from nodeLookup
 
-    if (nodeLookup[nodeId].type === 'node-selector') {
-      model[fieldId].forEach((id: string, i: number) => {
-        let itemContentTypeName = ContentTypesById[models[id].craftercms.contentTypeId].name;
-        children.push(
-          getNodeSelectorChildren(
-            models[id],
-            model.craftercms.id,
-            models[id].craftercms.path ? null : model.craftercms.path,
-            itemContentTypeName,
-            fieldId,
-            i
-          )
-        );
+      if (nodeLookup[nodeId].type === 'node-selector') {
+        model[fieldId].forEach((id: string, i: number) => {
+          let itemContentTypeName = ContentTypesById[models[id].craftercms.contentTypeId].name;
+          children.push(
+            getNodeSelectorChildren(
+              models[id],
+              model.craftercms.id,
+              models[id].craftercms.path ? null : model.craftercms.path,
+              itemContentTypeName,
+              fieldId,
+              i
+            )
+          );
+        });
+        const updatedNode = {
+          ...nodeLookup[nodeId],
+          children: children.map((node: RenderTree) => node.id)
+        };
+        setNodeLookup({ [nodeId]: updatedNode, ...hierarchicalToLookupTable(children) });
+      } else if (nodeLookup[nodeId].type === 'page') {
+        const contentType = ContentTypesById[model.craftercms.contentTypeId];
+        const rootNode = {
+          ...nodeLookup[nodeId],
+          children: getChildren(model, contentType, models, ContentTypesById)
+        };
+
+        setNodeLookup({ ...hierarchicalToLookupTable(rootNode) });
+      }
+    },
+    [ContentTypesById, models, nodeLookup, setNodeLookup]
+  );
+
+  const updateRoot = useCallback(
+    (modelId: string, fieldId: string, index: string | number, update: Function) => {
+      processedModels.current = {};
+      Object.values(models).forEach((model) => {
+        processedModels.current[model.craftercms.id] = true;
       });
-      const updatedNode = {
-        ...nodeLookup[nodeId],
-        children: children.map((node: RenderTree) => node.id)
-      };
-      setNodeLookup({ [nodeId]: updatedNode, ...hierarchicalToLookupTable(children) });
-    } else if (nodeLookup[nodeId].type === 'page') {
-      const contentType = ContentTypesById[model.craftercms.contentTypeId];
-      const rootNode = {
-        ...nodeLookup[nodeId],
-        children: getChildren(model, contentType, models, ContentTypesById)
-      };
-
-      setNodeLookup({ ...hierarchicalToLookupTable(rootNode) });
-    }
-
-  }, [ContentTypesById, models, nodeLookup, setNodeLookup]);
-
-  const updateRoot = useCallback((modelId: string, fieldId: string, index: string | number, update: Function) => {
-    processedModels.current = {};
-    Object.values(models).forEach((model) => {
-      processedModels.current[model.craftercms.id] = true;
-    });
-    update();
-  }, [models]);
+      update();
+    },
+    [models]
+  );
 
   // effect to refresh the contentTree if the models are updated
   useEffect(() => {
@@ -561,10 +554,7 @@ export default function PageExplorer() {
             updateNode(modelId, fieldId, `${modelId}_${fieldId}`);
           } else if (state.selected.includes(modelId)) {
             updateNode(modelId, fieldId, `${rootPrefix}${modelId}`);
-          } else if (
-            state.selected === 'root' &&
-            action.type === DELETE_ITEM_OPERATION_COMPLETE
-          ) {
+          } else if (state.selected === 'root' && action.type === DELETE_ITEM_OPERATION_COMPLETE) {
             updateRoot(modelId, fieldId, index, () => setState({ ...state }));
           }
         }
@@ -616,15 +606,15 @@ export default function PageExplorer() {
   useEffect(() => {
     const handler = (e) => {
       if (e.keyCode === 27) {
-        createBackHandler(dispatch)();
+        hostToGuest$.next({ type: CLEAR_CONTENT_TREE_FIELD_SELECTED });
       }
     };
     document.addEventListener('keydown', handler, false);
     return () => document.removeEventListener('keydown', handler, false);
-  }, [dispatch]);
+  }, [dispatch, hostToGuest$]);
 
   const onBack = () => {
-    createBackHandler(dispatch)();
+    hostToGuest$.next({ type: 'CLEAR_CONTENT_TREE_FIELD_SELECTED' });
     dispatch(selectTool());
   };
 
@@ -685,33 +675,35 @@ export default function PageExplorer() {
     }
   };
 
-  const handleOptions = (
-    event: any,
-    node: RenderTree
-  ) => {
+  const handleOptions = (event: any, node: RenderTree) => {
     event.stopPropagation();
 
     const parentModelId = findParentModelId(node.modelId, childrenMap, models);
     const path = models[node.modelId].craftercms.path;
-    const embeddedParentPath = !path && parentModelId ? models[parentModelId].craftercms.path : null;
+    const embeddedParentPath =
+      !path && parentModelId ? models[parentModelId].craftercms.path : null;
 
     setOptionsMenu({
       ...optionsMenu,
       modelId: node.modelId,
       embeddedParentPath,
+      path,
       anchorEl: event.currentTarget.parentElement
     });
   };
 
   const handleClose = () => setOptionsMenu({ ...optionsMenu, anchorEl: null });
 
-  const resource = useLogicResource<boolean, any>({ models, byId: ContentTypesById }, {
-    shouldResolve: (source) => Boolean(source.models && source.byId),
-    shouldReject: () => false,
-    shouldRenew: () => !Object.keys(processedModels.current).length && resource.complete,
-    resultSelector: () => true,
-    errorSelector: null
-  });
+  const resource = useLogicResource<boolean, any>(
+    { models, byId: ContentTypesById },
+    {
+      shouldResolve: (source) => Boolean(source.models && source.byId),
+      shouldReject: () => false,
+      shouldRenew: () => !Object.keys(processedModels.current).length && resource.complete,
+      resultSelector: () => true,
+      errorSelector: null
+    }
+  );
 
   return (
     <ToolPanel title={translations.title} onBack={onBack}>
@@ -731,7 +723,6 @@ export default function PageExplorer() {
             handleScroll={handleScroll}
             optionsMenu={optionsMenu}
             rootPrefix={rootPrefix}
-            site={site}
             handleOptions={handleOptions}
             resource={resource}
             nodeLookup={nodeLookup}
@@ -751,8 +742,8 @@ interface PageExplorerUIProps {
     modelId: string;
     embeddedParentPath: string;
     anchorEl: Element;
+    path: null;
   };
-  site: string;
   rootPrefix: string;
   handleScroll(node: RenderTree): void;
   handleClick(node: RenderTree): void;
@@ -774,7 +765,6 @@ function PageExplorerUI(props: PageExplorerUIProps) {
     handleClose,
     handleBreadCrumbClick,
     optionsMenu,
-    site,
     rootPrefix,
     nodeLookup,
     selected,
@@ -802,82 +792,81 @@ function PageExplorerUI(props: PageExplorerUIProps) {
 
   return (
     <>
-      {
-        Boolean(breadcrumbs.length > 1) && (
-          <MuiBreadcrumbs
-            maxItems={2}
-            aria-label="Breadcrumbs"
-            separator={<NavigateNextIcon fontSize="small" />}
-            classes={{
-              ol: classes.breadcrumbsList,
-              separator: classes.breadcrumbsSeparator
-            }}
-          >
-            {breadcrumbs.map((id, i: number) =>
-              id === selected ? (
-                <Typography
-                  key={nodeLookup[id].id}
-                  variant="subtitle2"
-                  className={classes.breadcrumbsTypography}
-                  children={nodeLookup[id].name.split(':').pop()}
-                />
-              ) : (
-                <Link
-                  key={id === 'root' ? 'root' : nodeLookup[id].id}
-                  color="inherit"
-                  component="button"
-                  variant="subtitle2"
-                  underline="always"
-                  className={classes.breadcrumbsButton}
-                  TypographyClasses={{
-                    root: classes.breadcrumbsTypography
-                  }}
-                  onClick={(e) => handleBreadCrumbClick(e, id === 'root' ? { id: 'root' } : nodeLookup[id])}
-                  children={
-                    id === 'root'
-                      ? <Root className={classes.rootIcon} />
-                      : nodeLookup[id].name.split(':').pop()
-                  }
-                />
-              )
-            )}
-          </MuiBreadcrumbs>
-        )
-      }
-      {
-        (node.id === 'root') ? (
-          <>
-            <Typography variant="subtitle1" className={classes.currentContentItems}>
-              <FormattedMessage
-                id="pageExplorerPanel.currentContentItems"
-                defaultMessage="Current Content Items"
+      {Boolean(breadcrumbs.length > 1) && (
+        <MuiBreadcrumbs
+          maxItems={2}
+          aria-label="Breadcrumbs"
+          separator={<NavigateNextIcon fontSize="small" />}
+          classes={{
+            ol: classes.breadcrumbsList,
+            separator: classes.breadcrumbsSeparator
+          }}
+        >
+          {breadcrumbs.map((id, i: number) =>
+            id === selected ? (
+              <Typography
+                key={nodeLookup[id].id}
+                variant="subtitle2"
+                className={classes.breadcrumbsTypography}
+                children={nodeLookup[id].name.split(':').pop()}
               />
-            </Typography>
-            {node.children?.map((childNodeId, i) => (
-              <TreeItemCustom
-                {...props}
-                key={String(childNodeId) + i}
-                node={nodeLookup[String(childNodeId)]}
-                isRootChild={node.type === 'root'}
+            ) : (
+              <Link
+                key={id === 'root' ? 'root' : nodeLookup[id].id}
+                color="inherit"
+                component="button"
+                variant="subtitle2"
+                underline="always"
+                className={classes.breadcrumbsButton}
+                TypographyClasses={{
+                  root: classes.breadcrumbsTypography
+                }}
+                onClick={(e) =>
+                  handleBreadCrumbClick(e, id === 'root' ? { id: 'root' } : nodeLookup[id])
+                }
+                children={
+                  id === 'root' ? (
+                    <Root className={classes.rootIcon} />
+                  ) : (
+                    nodeLookup[id].name.split(':').pop()
+                  )
+                }
               />
-            ))}
-          </>
-        ) : (
-          <TreeItemCustom
-            node={node}
-            nodeLookup={nodeLookup}
-            handleScroll={handleScroll}
-            handleClick={handleClick}
-            handleOptions={handleOptions}
-          />
-        )
-      }
-      <ComponentMenu
+            )
+          )}
+        </MuiBreadcrumbs>
+      )}
+      {node.id === 'root' ? (
+        <>
+          <Typography variant="subtitle1" className={classes.currentContentItems}>
+            <FormattedMessage
+              id="pageExplorerPanel.currentContentItems"
+              defaultMessage="Current Content Items"
+            />
+          </Typography>
+          {node.children?.map((childNodeId, i) => (
+            <TreeItemCustom
+              {...props}
+              key={String(childNodeId) + i}
+              node={nodeLookup[String(childNodeId)]}
+              isRootChild={node.type === 'root'}
+            />
+          ))}
+        </>
+      ) : (
+        <TreeItemCustom
+          node={node}
+          nodeLookup={nodeLookup}
+          handleScroll={handleScroll}
+          handleClick={handleClick}
+          handleOptions={handleOptions}
+        />
+      )}
+      <ItemMenu
+        path={optionsMenu.path}
+        open={Boolean(optionsMenu.anchorEl)}
         anchorEl={optionsMenu.anchorEl}
-        handleClose={handleClose}
-        site={site}
-        modelId={optionsMenu.modelId}
-        embeddedParentPath={optionsMenu.embeddedParentPath}
+        onClose={handleClose}
         anchorOrigin={{
           vertical: 'top',
           horizontal: DRAWER_WIDTH - 60

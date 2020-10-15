@@ -53,6 +53,7 @@ import {
   setChildrenMap,
   setContentTypeReceptacles,
   setItemBeingDragged,
+  setPreviewEditMode,
   SORT_ITEM_OPERATION,
   SORT_ITEM_OPERATION_COMPLETE,
   TRASHED,
@@ -79,6 +80,7 @@ import {
   useActiveSiteId,
   useContentTypeList,
   useMount,
+  usePermissions,
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
@@ -88,7 +90,12 @@ import { useSnackbar } from 'notistack';
 import { PreviewCompatibilityDialogContainer } from '../../components/Dialogs/PreviewCompatibilityDialog';
 import { getQueryVariable } from '../../utils/path';
 import PreviewTool from '../../models/PreviewTool';
-import { getStoredPreviewChoice, setStoredPreviewChoice } from '../../utils/state';
+import {
+  getStoredEditModeChoice,
+  getStoredPreviewChoice,
+  setStoredPreviewChoice
+} from '../../utils/state';
+import { completeDetailedItem } from '../../state/actions/content';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -149,8 +156,33 @@ export function PreviewConcierge(props: any) {
     window.location.href = `${authoringBase}/preview#/?page=${computedUrl}&site=${site}`;
   }, [authoringBase, computedUrl, site]);
 
-  // Guest detection, document domain restoring and misc cleanup.
+  // region Permissions and fetch of DetailedItem
+  const currentItemPath = guest?.path;
+  const permissions = usePermissions();
+  const write = permissions?.[currentItemPath]?.write;
+
+  useEffect(() => {
+    if (currentItemPath && site) {
+      dispatch(completeDetailedItem({ path: currentItemPath }));
+    }
+  }, [dispatch, currentItemPath, site]);
+
+  useEffect(() => {
+    if (write && editMode) {
+      getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
+    }
+  }, [dispatch, write, editMode]);
+  //endregion
+
+  // Guest detection, document domain restoring, editMode preference retrieval
+  // and contentType subject cleanup.
   useMount(() => {
+
+    const localEditMode = getStoredEditModeChoice(site) === 'true';
+    if (editMode !== localEditMode) {
+      dispatch(setPreviewEditMode({ editMode: localEditMode }));
+    }
+
     const sub = beginGuestDetection(enqueueSnackbar, closeSnackbar);
     const storedTool = window.localStorage.getItem(`craftercms.previewSelectedTool.${site}`);
     if (storedTool) {
@@ -200,8 +232,7 @@ export function PreviewConcierge(props: any) {
           }
           break;
         case GUEST_CHECK_IN: {
-          hostToGuest$.next({ type: HOST_CHECK_IN, payload: { editMode } });
-
+          getHostToGuestBus().next({ type: HOST_CHECK_IN, payload: { editMode } });
           dispatch(checkInGuest(payload));
 
           if (payload.documentDomain) {

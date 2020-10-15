@@ -42,93 +42,71 @@ WcmDashboardWidgetCommon.encodePathToNumbers = function(path) {
 };
 
 WcmDashboardWidgetCommon.insertEditLink = function(item, editLinkId) {
-  if (
-    item.uri.indexOf('.ftl') == -1 &&
-    item.uri.indexOf('.css') == -1 &&
-    item.uri.indexOf('.js') == -1 &&
-    item.uri.indexOf('.groovy') == -1 &&
-    item.uri.indexOf('.txt') == -1 &&
-    item.uri.indexOf('.html') == -1 &&
-    item.uri.indexOf('.hbs') == -1 &&
-    item.uri.indexOf('.xml') == -1
-  ) {
-    return 0; // dont render if not these types
-  }
+  if (CStudioAuthoring.Utils.isEditableFormAsset(item.mimeType)) {
+    CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, item.uri, {
+      success: function(results) {
+        function addEditLink() {
+          var editLink = document.getElementById(editLinkId);
 
-  CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, item.uri, {
-    success: function(results) {
-      function addEditLink() {
-        var editLink = document.getElementById(editLinkId);
-
-        if (editLink) {
-          editLink.innerHTML = ''.concat(
-            '<a href="javascript:" class="editLink',
-            item.deleted || item.inFlight ? ' non-previewable-edit' : '',
-            '">' + CMgs.format(langBundle, 'dashboardEdit') + '</a>'
-          );
-        } else {
-          // We cannot assume the DOM will be ready to insert the edit link
-          // that's why we'll poll until the element is available in the DOM
-          setTimeout(addEditLink, 200);
+          if (editLink) {
+            editLink.innerHTML = ''.concat(
+              '<a href="javascript:" class="editLink',
+              item.deleted || item.inFlight ? ' non-previewable-edit' : '',
+              '">' + CMgs.format(langBundle, 'dashboardEdit') + '</a>'
+            );
+          } else {
+            // We cannot assume the DOM will be ready to insert the edit link
+            // that's why we'll poll until the element is available in the DOM
+            setTimeout(addEditLink, 200);
+          }
         }
-      }
 
-      var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
+        var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
 
-      if (isUserAllowed) {
-        // If the user's role is allowed to edit the content then add an edit link
-        addEditLink();
+        if (isUserAllowed) {
+          // If the user's role is allowed to edit the content then add an edit link
+          addEditLink();
+        }
+      },
+      failure: function() {
+        throw new Error('Unable to retrieve user permissions');
       }
-    },
-    failure: function() {
-      throw new Error('Unable to retrieve user permissions');
-    }
-  });
+    });
+  }
 };
 
 WcmDashboardWidgetCommon.insertViewLink = function(item, viewLinkId) {
-  if (
-    item.uri.indexOf('.ftl') == -1 &&
-    item.uri.indexOf('.css') == -1 &&
-    item.uri.indexOf('.js') == -1 &&
-    item.uri.indexOf('.groovy') == -1 &&
-    item.uri.indexOf('.txt') == -1 &&
-    item.uri.indexOf('.html') == -1 &&
-    item.uri.indexOf('.hbs') == -1 &&
-    item.uri.indexOf('.xml') == -1
-  ) {
-    return 0; // dont render if not these types
-  }
+  if (CStudioAuthoring.Utils.isEditableFormAsset(item.mimeType)) {
+    CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, item.uri, {
+      success: function(results) {
+        function addViewLink() {
+          var viewLink = document.getElementById(viewLinkId);
 
-  CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, item.uri, {
-    success: function(results) {
-      function addViewLink() {
-        var viewLink = document.getElementById(viewLinkId);
-
-        if (viewLink) {
-          viewLink.innerHTML = ''.concat(
-            '<a href="javascript:" class="viewLink',
-            item.deleted || item.inFlight ? ' non-previewable-edit' : '',
-            '">' + CMgs.format(langBundle, 'dashletGoLiveColView') + '</a>'
-          );
-        } else {
-          // We cannot assume the DOM will be ready to insert the edit link
-          // that's why we'll poll until the element is available in the DOM
-          setTimeout(addViewLink, 200);
+          if (viewLink) {
+            viewLink.innerHTML = ''.concat(
+              '<a href="javascript:" class="viewLink',
+              item.deleted || item.inFlight ? ' non-previewable-edit' : '',
+              '">' + CMgs.format(langBundle, 'dashletGoLiveColView') + '</a>'
+            );
+          } else {
+            // We cannot assume the DOM will be ready to insert the edit link
+            // that's why we'll poll until the element is available in the DOM
+            setTimeout(addViewLink, 200);
+          }
         }
-      }
 
-      var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
+        var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
 
-      if (isUserAllowed) {
-        // If the user's role is allowed to edit the content then add an edit link
-        addViewLink();
+        if (isUserAllowed) {
+          // If the user's role is allowed to edit the content then add an edit link
+          addViewLink();
+        }
+      },
+      failure: function() {
+        throw new Error('Unable to retrieve user permissions');
       }
-    },
-    failure: function() {
-      throw new Error('Unable to retrieve user permissions');
-    }
-  });
+    });
+  }
 };
 
 WcmDashboardWidgetCommon.convertDate = function(dateString) {
@@ -892,7 +870,7 @@ WcmDashboardWidgetCommon.editItem = function(matchedElement, isChecked) {
       CStudioAuthoring.Operations.editContent(
         contentTO.form,
         CStudioAuthoringContext.siteId,
-        contentTO.uri,
+        contentTO.mimeType,
         contentTO.nodeRef,
         contentTO.uri,
         false,
