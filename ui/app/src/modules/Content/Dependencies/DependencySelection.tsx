@@ -24,6 +24,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Typography from '@material-ui/core/Typography';
 import {
   checkState,
@@ -35,6 +36,9 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
+import { useActiveSiteId, useSelection } from '../../../utils/hooks';
+import { showDeleteDialog, showEditDialog } from '../../../state/actions/dialogs';
+import { useDispatch } from 'react-redux';
 
 interface DependencySelectionProps<T extends BaseItem = BaseItem> {
   items: T[];
@@ -64,6 +68,8 @@ interface SelectionListProps<T extends BaseItem = BaseItem> {
   checked?: any;
   setChecked?: Function;
   disabled?: boolean;
+  showEdit?: boolean;
+  onEditClick?: Function;
 }
 
 export interface DeleteDependencies {
@@ -281,6 +287,10 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
     onChange
   } = props;
   const [checked, _setChecked] = useState<any>(checkState(items));
+  const siteId = useActiveSiteId();
+  const authoringBase = useSelection<string>(state => state.env.authoringBase);
+  const defaultFormSrc = `${authoringBase}/legacy/form`;
+  const dispatch = useDispatch();
 
   const setChecked = (uri: string[], isChecked: boolean) => {
     _setChecked(updateCheckedList(uri, isChecked, checked));
@@ -292,6 +302,14 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
       .map(([key]) => key);
     onChange?.(result);
   }, [checked, onChange]);
+
+  const onEditClick = (uri: string) => {
+    const src = `${defaultFormSrc}?site=${siteId}&path=${uri}&type=form`;
+    dispatch(showEditDialog({
+      src,
+      onSaveSuccess: showDeleteDialog({})
+    }));
+  };
 
   return (
     <div className={clsx(classes.dependencySelection, classes.dependencySelectionDelete)}>
@@ -341,6 +359,8 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
           }
           uris={resultItems.dependentItems}
           displayItemTitle={false}
+          showEdit={true}
+          onEditClick={onEditClick}
         />
       </>
       <div className={classes.bottomSection}>
@@ -373,7 +393,9 @@ function SelectionList(props: SelectionListProps) {
     onSelectAllClicked,
     checked,
     setChecked,
-    disabled = false
+    disabled = false,
+    showEdit = false,
+    onEditClick
   } = props;
 
   const classes = useStyles({});
@@ -493,8 +515,20 @@ function SelectionList(props: SelectionListProps) {
                     <ListItemText
                       id={labelId}
                       primary={uri}
-
                     />
+                    {
+                      showEdit &&
+                      <ListItemSecondaryAction>
+                        <Button
+                          color="primary"
+                          onClick={() => onEditClick(uri)}
+                          size="small"
+                          className={classes.selectAllBtn}
+                        >
+                          <FormattedMessage id="selectionList.edit" defaultMessage="Edit"/>
+                        </Button>
+                      </ListItemSecondaryAction>
+                    }
                   </ListItem>
                 );
               })
