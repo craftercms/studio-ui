@@ -102,8 +102,7 @@ const useStyles = makeStyles((theme: Theme) =>
       // backgroundColor: palette.gray.dark6
     },
     inputContainer: {
-      marginLeft: theme.spacing(1),
-      flex: 1
+      marginLeft: theme.spacing(1)
     },
     input: {
       border: 'none',
@@ -156,7 +155,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     searchAheadPopoverRoot: {
       width: 400,
-      marginTop: '10px'
+      display: 'flex'
     },
     selectorPopoverRoot: {
       width: 400,

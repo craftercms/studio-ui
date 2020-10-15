@@ -26,6 +26,7 @@ interface NavProps {
   isSelectMode?: boolean;
   leafs?: string[];
   showArrow?: boolean;
+  classes?: Partial<Record<'root', string>>;
   onItemClicked(item: DetailedItem): void;
   onSelectItem?(item: DetailedItem, unselect: boolean): void;
   onPathSelected?(item: DetailedItem): void;
@@ -34,7 +35,7 @@ interface NavProps {
 }
 
 // PathNavigatorList
-export default function (props: NavProps) {
+export default function(props: NavProps) {
   const {
     resource,
     onPathSelected,
@@ -49,7 +50,7 @@ export default function (props: NavProps) {
   } = props;
   const items = resource.read();
   return (
-    <List component="nav" disablePadding={true}>
+    <List component="nav" disablePadding={true} classes={{ root: props.classes?.root }}>
       {items.map((item: DetailedItem) => (
         <NavItem
           item={item}

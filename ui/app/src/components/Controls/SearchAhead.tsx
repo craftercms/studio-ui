@@ -24,15 +24,37 @@ import { search } from '../../services/search';
 import PathNavigatorList from '../Navigation/PathNavigator/PathNavigatorList';
 import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import Suspencified from '../SystemStatus/Suspencified';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    container: {
+      display: 'flex',
+      width: '100%'
+    },
+    input: {
+      width: '100%'
+    },
+    list: {
+      width: '100%'
+    },
+    progress: {
+      position: 'absolute',
+      right: 0
+    }
+  })
+);
 
 export default function(props) {
-  const { value, classes, placeholder, disabled, onKeyDown } = props;
+  const { value, placeholder, disabled, onKeyDown } = props;
+  const classes = useStyles({});
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const site = useActiveSiteId();
   const contentTypes = useContentTypeList((contentType) => contentType.id.startsWith('/page'));
   const [keyword, setKeyword] = useState(value);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [fetching, isFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(null);
   const [items, setItems] = useState(null);
 
   const resource = useLogicResource<any, any>(items, {
@@ -47,14 +69,14 @@ export default function(props) {
     const subscription = onSearch$
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe((keyword: string) => {
-        isFetching(true);
+        setIsFetching(true);
         search(site, {
           keywords: keyword,
           filters: {
             'content-type': contentTypes.map((contentType) => contentType.id)
           }
         }).subscribe((response) => {
-          isFetching(false);
+          setIsFetching(false);
           setItems(response.items);
         });
       });
@@ -70,15 +92,19 @@ export default function(props) {
   };
 
   return (
-    <ClickAwayListener onClickAway={() => setAnchorEl(null)} disableReactTree={true}>
-      <div className={classes?.container}>
+    <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
+      <div className={classes.container}>
         <InputBase
           value={keyword}
           onChange={(e) => onChange(e)}
           placeholder={placeholder}
           disabled={disabled}
-          classes={{ root: classes?.root, input: classes?.input }}
+          className={classes.input}
+          classes={{ root: props.classes?.root, input: props.classes?.input }}
           onKeyDown={onKeyDown}
+          endAdornment={
+            isFetching ? <CircularProgress className={classes.progress} size={15} /> : null
+          }
         />
         <Popper
           open={Boolean(anchorEl)}
@@ -88,14 +114,19 @@ export default function(props) {
           popperOptions={{
             modifiers: {
               offset: {
-                offset: '52, 0'
+                offset: '52, 10'
               }
             }
           }}
         >
-          <Paper className={classes?.popoverRoot}>
+          <Paper className={props.classes?.popoverRoot}>
             <Suspencified>
-              <PathNavigatorList resource={resource} onItemClicked={() => {}} showArrow={false} />
+              <PathNavigatorList
+                resource={resource}
+                onItemClicked={() => {}}
+                showArrow={false}
+                classes={{ root: classes.list }}
+              />
             </Suspencified>
           </Paper>
         </Popper>

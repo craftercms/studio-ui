@@ -109,7 +109,7 @@ export default function(props: NavItemProps) {
         )}
       >
         {item.label}
-        {locale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
+        {locale && locale !== item.localeCode && <FlagRoundedIcon className={classes.flag} />}
       </Typography>
       <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
         {onOpenItemMenu && (
