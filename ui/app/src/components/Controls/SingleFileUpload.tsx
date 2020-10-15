@@ -25,6 +25,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import '@uppy/core/src/style.scss';
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/file-input/src/style.scss';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import createStyles from '@material-ui/core/styles/createStyles';
 
 const messages = defineMessages({
   chooseFile: {
@@ -45,6 +47,16 @@ const messages = defineMessages({
   }
 });
 
+const singleFileUploadStyles = makeStyles((theme) =>
+  createStyles({
+    fileNameTrimmed: {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    }
+  })
+);
+
 interface UppyProps {
   formTarget: string;
   url: string;
@@ -55,7 +67,6 @@ interface UppyProps {
 }
 
 export default function SingleFileUpload(props: UppyProps) {
-
   const
     {
       url,
@@ -72,6 +83,8 @@ export default function SingleFileUpload(props: UppyProps) {
   );
   const [fileName, setFileName] = useState<string>();
   const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
+
+  const classes = singleFileUploadStyles({});
 
   useEffect(
     () => {
@@ -158,7 +171,7 @@ export default function SingleFileUpload(props: UppyProps) {
         <div className="uppy-file-input-container" />
         {
           fileName &&
-          <em className={'single-file-upload--file-name ' + fileNameErrorClass}>{fileName}</em>
+          <em className={`single-file-upload--filename ${fileNameErrorClass} ${classes.fileNameTrimmed}`}>{fileName}</em>
         }
       </div>
     </>
