@@ -177,7 +177,7 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
 
     const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(this.value) : this.value;
-    inputEl.value = (this.value = '_not-set') ? config.defaultValue : valueToSet;
+    inputEl.value = (this.value === '_not-set') ? config.defaultValue : valueToSet;
     controlWidgetContainerEl.appendChild(inputEl);
 
     YAHOO.util.Event.on(
