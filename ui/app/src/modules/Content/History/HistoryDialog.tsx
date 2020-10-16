@@ -49,6 +49,7 @@ import {
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
+import { fetchUserPermissions } from '../../../state/actions/content';
 
 const translations = defineMessages({
   previousPage: {
@@ -398,9 +399,14 @@ function HistoryDialog(props: HistoryDialogProps) {
           rootPath={rootPath}
           selectedItem={item}
           onItemClicked={(item) => {
-            setOpenSelector(false);
-            dispatch(versionsChangeItem({ item }));
-          }}
+                                     setOpenSelector(false);
+                                     dispatch(
+                                       batchActions([
+                                         versionsChangeItem({ item }),
+                                         fetchUserPermissions({ path: item.path })
+                                       ])
+                                     );
+                                   }}
         />
         <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
