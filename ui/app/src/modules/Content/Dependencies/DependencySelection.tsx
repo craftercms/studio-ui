@@ -307,7 +307,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
     const src = `${defaultFormSrc}?site=${siteId}&path=${uri}&type=form`;
     dispatch(showEditDialog({
       src,
-      onSaveSuccess: showDeleteDialog({})
+      onSaveSuccess: showDeleteDialog({ fetch: true })
     }));
   };
 

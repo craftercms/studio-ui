@@ -40,6 +40,8 @@ import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
 import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
+import { useDispatch } from 'react-redux';
+import { fetchedDepsDeleteDialog } from '../../../state/actions/dialogs';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -65,6 +67,7 @@ interface DeleteDialogUIProps {
 interface DeleteDialogBaseProps {
   open: boolean;
   items?: SandboxItem[];
+  fetch?: boolean;
 }
 
 export type DeleteDialogProps = PropsWithChildren<
@@ -246,7 +249,7 @@ export default function DeleteDialog(props: DeleteDialogProps) {
 }
 
 function DeleteDialogWrapper(props: DeleteDialogProps) {
-  const { items, onClose, onDismiss, onSuccess } = props;
+  const { items, onClose, onDismiss, onSuccess, fetch } = props;
   const [submissionComment, setSubmissionComment] = useState('');
   const [apiState, setApiState] = useSpreadState({
     error: null,
@@ -264,6 +267,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     deleteDependencies,
     apiState
   ]);
+  const dispatch = useDispatch();
   useUnmount(props.onClosed);
 
   const resource = useLogicResource<any, any>(depsSource, {
@@ -287,8 +291,12 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
           setApiState({ error });
         }
       );
+
+      if (fetch) {
+        dispatch(fetchedDepsDeleteDialog());
+      }
     }
-  }, [selectedItems, setApiState, siteId]);
+  }, [selectedItems, setApiState, siteId, fetch]);
 
   const handleSubmit = () => {
     const data = {

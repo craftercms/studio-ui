@@ -202,6 +202,7 @@ function GlobalDialogManager() {
       {/* region Delete */}
       <DeleteDialog
         open={state.delete.open}
+        fetch={state.delete.fetch}
         items={state.delete.items}
         onClose={createCallback(state.delete.onClose, dispatch)}
         onClosed={createCallback(state.delete.onClosed, dispatch)}
