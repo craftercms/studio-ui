@@ -61,7 +61,7 @@ interface SelectionListProps<T extends BaseItem = BaseItem> {
   title: any;
   subtitle?: any;
   items?: T[];
-  uris?: [];
+  uris?: string[];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
   displayItemTitle: boolean;
@@ -73,8 +73,8 @@ interface SelectionListProps<T extends BaseItem = BaseItem> {
 }
 
 export interface DeleteDependencies {
-  childItems: [],
-  dependentItems: []
+  childItems: string[],
+  dependentItems: string[]
 }
 
 const CenterCircularProgress = withStyles({
@@ -525,7 +525,7 @@ function SelectionList(props: SelectionListProps) {
                           size="small"
                           className={classes.selectAllBtn}
                         >
-                          <FormattedMessage id="selectionList.edit" defaultMessage="Edit"/>
+                          <FormattedMessage id="words.edit" defaultMessage="Edit"/>
                         </Button>
                       </ListItemSecondaryAction>
                     }

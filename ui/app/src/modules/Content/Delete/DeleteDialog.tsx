@@ -277,10 +277,10 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
   useEffect(() => {
     if (selectedItems.length) {
       fetchDeleteDependencies(siteId, selectedItems).subscribe(
-        (response: any) => {
+        (items) => {
           setDeleteDependencies({
-            childItems: response.items.childItems,
-            dependentItems: response.items.dependentItems
+            childItems: items.childItems,
+            dependentItems: items.dependentItems
           });
         },
         (error) => {
