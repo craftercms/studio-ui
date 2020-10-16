@@ -31,20 +31,31 @@ import ComponentIcon from '../../Icons/Component';
 import Page from '../../Icons/Page';
 import CropOriginalRoundedIcon from '@material-ui/icons/CropOriginalRounded';
 import Tooltip from '@material-ui/core/Tooltip';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 interface NavItemProps {
   item: DetailedItem;
   locale: string;
   isLeaf: boolean;
   isSelectMode?: boolean;
-  showArrow?: boolean;
+  showItemNavigateToButton?: boolean;
   onItemClicked?(item: DetailedItem, event: React.MouseEvent): void;
   onChangeParent?(item: DetailedItem): void;
   onPreview?(item: DetailedItem): void;
   onItemChecked?(item: DetailedItem, unselect: boolean): void;
   onOpenItemMenu?(element: Element, item: DetailedItem): void;
 }
+
+const translations = defineMessages({
+  view: {
+    id: 'words.view',
+    defaultMessage: 'View'
+  },
+  noChildren: {
+    id: 'navigator.noChildren',
+    defaultMessage: 'Item has no children'
+  }
+});
 
 // PathNavigatorListItem
 export default function(props: NavItemProps) {
@@ -59,9 +70,10 @@ export default function(props: NavItemProps) {
     onItemChecked,
     onOpenItemMenu,
     isLeaf,
-    showArrow = false
+    showItemNavigateToButton = false
   } = props;
   const [over, setOver] = useState(false);
+  const { formatMessage } = useIntl();
   const onMouseOver = isSelectMode ? null : () => setOver(true);
   const onMouseLeave = isSelectMode ? null : () => setOver(false);
   const onClick = (e) => onItemClicked?.(item, e);
@@ -114,7 +126,9 @@ export default function(props: NavItemProps) {
       <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
         {onOpenItemMenu && (
           <IconButton
-            aria-label="Options"
+            aria-label={
+              isLeaf ? formatMessage(translations.view) : formatMessage(translations.noChildren)
+            }
             className={classes.itemIconButton}
             onClick={(event) => {
               event.stopPropagation();
@@ -124,7 +138,7 @@ export default function(props: NavItemProps) {
             <MoreVertIcon className={classes.icon} />
           </IconButton>
         )}
-        {showArrow && (
+        {showItemNavigateToButton && (
           <Tooltip
             title={
               isLeaf ? (

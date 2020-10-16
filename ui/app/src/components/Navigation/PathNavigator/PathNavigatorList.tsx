@@ -25,7 +25,7 @@ interface NavProps {
   resource: Resource<DetailedItem[]>;
   isSelectMode?: boolean;
   leafs?: string[];
-  showArrow?: boolean;
+  showItemNavigateToButton?: boolean;
   classes?: Partial<Record<'root', string>>;
   onItemClicked(item: DetailedItem): void;
   onSelectItem?(item: DetailedItem, unselect: boolean): void;
@@ -46,7 +46,7 @@ export default function(props: NavProps) {
     onOpenItemMenu,
     onItemClicked,
     leafs = [],
-    showArrow
+    showItemNavigateToButton
   } = props;
   const items = resource.read();
   return (
@@ -63,7 +63,7 @@ export default function(props: NavProps) {
           onItemChecked={onSelectItem}
           onOpenItemMenu={onOpenItemMenu}
           onItemClicked={onItemClicked}
-          showArrow={showArrow}
+          showItemNavigateToButton={showItemNavigateToButton}
         />
       ))}
     </List>

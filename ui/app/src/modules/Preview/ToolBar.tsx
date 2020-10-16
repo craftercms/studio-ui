@@ -112,10 +112,6 @@ const useStyles = makeStyles((theme: Theme) =>
       }
     },
     iconButton: {
-      // padding: 5,
-      // margin: '0 5px 0 0',
-      // color: palette.gray.light4,
-      // backgroundColor: palette.gray.dark2
     },
     divider: {
       height: 28,
@@ -137,25 +133,6 @@ const useStyles = makeStyles((theme: Theme) =>
     globalNavSection: {
       display: 'flex',
       alignItems: 'center'
-    },
-    iframe: {
-      height: '0',
-      border: 0,
-      '&.complete': {
-        height: '100%'
-      }
-    },
-    loadingRoot: {
-      height: 'calc(100% - 104px)',
-      justifyContent: 'center'
-    },
-    searchAheadContainer: {
-      display: 'flex',
-      width: '100%'
-    },
-    searchAheadPopoverRoot: {
-      width: 400,
-      display: 'flex'
     },
     selectorPopoverRoot: {
       width: 400,
@@ -252,10 +229,7 @@ export function AddressBar(props: AddressBarProps) {
           disabled={noSiteSet}
           onKeyDown={createOnEnter((value) => onUrlChange(value), 'value')}
           classes={{
-            container: classes.searchAheadContainer,
-            root: classes.inputContainer,
-            input: classes.input,
-            popoverRoot: classes.searchAheadPopoverRoot
+            input: classes.input
           }}
         />
         <SingleItemSelector

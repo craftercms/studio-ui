@@ -16,32 +16,51 @@
 
 import InputBase from '@material-ui/core/InputBase';
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
-import { ClickAwayListener, Paper, Popper } from '@material-ui/core';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { useActiveSiteId, useContentTypeList, useLogicResource } from '../../utils/hooks';
+import { useActiveSiteId, useContentTypeList } from '../../utils/hooks';
 import { search } from '../../services/search';
-import PathNavigatorList from '../Navigation/PathNavigator/PathNavigatorList';
-import { parseLegacyItemToDetailedItem } from '../../utils/content';
-import Suspencified from '../SystemStatus/Suspencified';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { useAutocomplete } from '@material-ui/lab';
+import { SearchItem } from '../../models/Search';
+import clsx from 'clsx';
+import { CircularProgress, Paper } from '@material-ui/core';
+import LoadingState from '../SystemStatus/LoadingState';
+import EmptyState from '../SystemStatus/EmptyState';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      display: 'flex',
-      width: '100%'
-    },
-    input: {
-      width: '100%'
-    },
-    list: {
-      width: '100%'
+      width: '100%',
+      position: 'relative'
     },
     progress: {
       position: 'absolute',
       right: 0
+    },
+    inputRoot: {
+      width: '100%'
+    },
+    input: {},
+    paper: {
+      width: 400,
+      position: 'absolute',
+      right: '-52px',
+      top: '50px'
+    },
+    listBox: {
+      margin: 0,
+      padding: 0,
+      listStyle: 'none',
+      '& li[data-focus="true"]': {
+        backgroundColor: '#4a8df6',
+        color: 'white',
+        cursor: 'pointer'
+      },
+      '& li:active': {
+        backgroundColor: '#2977f5',
+        color: 'white'
+      }
     }
   })
 );
@@ -57,12 +76,17 @@ export default function(props) {
   const [isFetching, setIsFetching] = useState(null);
   const [items, setItems] = useState(null);
 
-  const resource = useLogicResource<any, any>(items, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source.map((item) => parseLegacyItemToDetailedItem(item)),
-    errorSelector: (source) => null
+  const {
+    getRootProps,
+    getInputProps,
+    getListboxProps,
+    getOptionProps,
+    groupedOptions,
+    popupOpen
+  } = useAutocomplete({
+    options: items ?? [],
+    getOptionLabel: (item: SearchItem) => item.name,
+    getOptionSelected: (option, value) => option.name === value.name
   });
 
   useEffect(() => {
@@ -92,45 +116,37 @@ export default function(props) {
   };
 
   return (
-    <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
-      <div className={classes.container}>
+    <div className={classes.container}>
+      <div {...getRootProps()}>
         <InputBase
-          value={keyword}
-          onChange={(e) => onChange(e)}
+          {...getInputProps()}
           placeholder={placeholder}
           disabled={disabled}
-          className={classes.input}
-          classes={{ root: props.classes?.root, input: props.classes?.input }}
-          onKeyDown={onKeyDown}
+          classes={{ root: classes.inputRoot, input: clsx(classes.input, props.classes?.input) }}
+          value={keyword}
+          onChange={(e) => onChange(e)}
+          onKeyDown={(e) => {
+            onKeyDown(e);
+          }}
           endAdornment={
             isFetching ? <CircularProgress className={classes.progress} size={15} /> : null
           }
         />
-        <Popper
-          open={Boolean(anchorEl)}
-          anchorEl={anchorEl}
-          placement="bottom-end"
-          disablePortal
-          popperOptions={{
-            modifiers: {
-              offset: {
-                offset: '52, 10'
-              }
-            }
-          }}
-        >
-          <Paper className={props.classes?.popoverRoot}>
-            <Suspencified>
-              <PathNavigatorList
-                resource={resource}
-                onItemClicked={() => {}}
-                showArrow={false}
-                classes={{ root: classes.list }}
-              />
-            </Suspencified>
-          </Paper>
-        </Popper>
       </div>
-    </ClickAwayListener>
+      {popupOpen && (
+        <Paper className={classes.paper}>
+          holita
+          {isFetching && <LoadingState />}
+          {isFetching === false && groupedOptions.length > 0 && (
+            <ul className={classes.listBox} {...getListboxProps()}>
+              {groupedOptions.map((option, index) => (
+                <li {...getOptionProps({ option, index })}>{option.name}</li>
+              ))}
+            </ul>
+          )}
+          {isFetching === false && groupedOptions.length === 0 && <EmptyState title="no results" />}
+        </Paper>
+      )}
+    </div>
   );
 }
