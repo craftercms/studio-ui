@@ -23,7 +23,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import StandardAction from '../../../../models/StandardAction';
 import { useLogicResource, useUnmount } from '../../../../utils/hooks';
 import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { Site } from '../../../../models/Site';
 import Suspencified from '../../../../components/SystemStatus/Suspencified';
@@ -33,11 +32,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../../models/GlobalState';
 import { LookupTable } from '../../../../models/LookupTable';
 import { fetchSites } from '../../../../state/reducers/sites';
+import Grid from '@material-ui/core/Grid';
 
 type Source = { site: Site; error: Error };
 type Return = Omit<Source, 'error'>;
 
 interface EditSiteDialogUIProps {
+  siteId: string;
   siteName: string;
   siteDescription: string;
   onSiteNameChange: Function;
@@ -68,7 +69,7 @@ export type EditSiteDialogProps = PropsWithChildren<EditSiteDialogBaseProps> & {
   onClose?(response?: any): any;
   onClosed?(response?: any): any;
   onDismiss?(response?: any): any;
-}
+};
 
 export interface EditSiteDialogStateProps extends EditSiteDialogBaseProps {
   onSaveSuccess?: StandardAction;
@@ -89,13 +90,7 @@ const messages = defineMessages({
 });
 
 function EditSiteDialog(props: EditSiteDialogProps) {
-  const {
-    site,
-    open,
-    onClosed,
-    onClose,
-    onSaveSuccess
-  } = props;
+  const { site, open, onClosed, onClose, onSaveSuccess } = props;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
@@ -104,10 +99,13 @@ function EditSiteDialog(props: EditSiteDialogProps) {
 
   useUnmount(onClosed);
 
-  const dialogResource = useMemo(() => ({
-    site,
-    error
-  }), [site, error]);
+  const dialogResource = useMemo(
+    () => ({
+      site,
+      error
+    }),
+    [site, error]
+  );
 
   const resource = useLogicResource<Return, Source>(dialogResource, {
     shouldResolve: (source) => Boolean(source.site),
@@ -118,9 +116,12 @@ function EditSiteDialog(props: EditSiteDialogProps) {
   });
 
   function checkSiteName(event: any, currentSiteName: string) {
-    if ( (currentSiteName !== event.target.value
-      && (sites && Object.keys(sites).filter(key => sites[key].name === event.target.value).length))
-      || event.target.value.trim() === '') {
+    if (
+      (currentSiteName !== event.target.value &&
+        sites &&
+        Object.keys(sites).filter((key) => sites[key].name === event.target.value).length) ||
+      event.target.value.trim() === ''
+    ) {
       setSubmitDisabled(true);
     } else {
       setSubmitDisabled(false);
@@ -128,16 +129,15 @@ function EditSiteDialog(props: EditSiteDialogProps) {
   }
 
   const handleSubmit = (id: string, name: string, description: string) => {
-    setSubmitting( true );
-
-    updateSite({id, name, description}).subscribe(
+    setSubmitting(true);
+    updateSite({ id, name, description }).subscribe(
       (response) => {
-        setSubmitting( false );
+        setSubmitting(false);
         dispatch(fetchSites());
         onSaveSuccess?.(response);
       },
       (e) => {
-        setSubmitting( false );
+        setSubmitting(false);
         setError(e);
       }
     );
@@ -166,19 +166,12 @@ function EditSiteDialog(props: EditSiteDialogProps) {
 }
 
 function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
-  const {
-    resource,
-    submitting,
-    submitDisabled,
-    checkSiteName,
-    onSubmit,
-    onClose
-  } = props;
+  const { resource, submitting, submitDisabled, checkSiteName, onSubmit, onClose } = props;
   const site = resource.read().site;
   const [name, setName] = useState(site.name);
   const [description, setDescription] = useState(site.description);
 
-  const onSiteNameChange = event => {
+  const onSiteNameChange = (event) => {
     checkSiteName(event, site.name);
     setName(event.target.value);
   };
@@ -191,6 +184,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
 
   return (
     <EditSiteDialogUI
+      siteId={site.id}
       siteName={name}
       siteDescription={description}
       onSiteNameChange={onSiteNameChange}
@@ -198,7 +192,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
       submitting={submitting}
       submitDisabled={submitDisabled}
       onKeyPress={onKeyPress}
-      onSubmit={ () => onSubmit(site.id, name, description) }
+      onSubmit={() => onSubmit(site.id, name, description)}
       onClose={onClose}
     />
   );
@@ -206,6 +200,7 @@ function EditSiteDialogUIContainer(props: EditSiteDialogUIContainerProps) {
 
 function EditSiteDialogUI(props: EditSiteDialogUIProps) {
   const {
+    siteId,
     siteName,
     siteDescription,
     onSiteNameChange,
@@ -217,76 +212,85 @@ function EditSiteDialogUI(props: EditSiteDialogUIProps) {
     onClose
   } = props;
   const { formatMessage } = useIntl();
-
   return (
     <>
       <DialogHeader
         id="editSiteDialogTitle"
-        title={
-          <FormattedMessage
-            id="editSiteDialog.title" defaultMessage="Edit Site"
-          />
-        }
+        title={<FormattedMessage id="editSiteDialog.title" defaultMessage="Edit Site" />}
       />
       <DialogBody>
-        <form>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                id="name"
-                name="name"
-                label={
-                  <FormattedMessage
-                    id="editSiteDialog.siteName" defaultMessage="Site Name"
-                  />
-                }
-                fullWidth
-                onChange={(event) => onSiteNameChange(event)}
-                onKeyPress={onKeyPress}
-                value={siteName}
-                inputProps={{ maxLength: 255 }}
-                autoFocus
-                error={submitDisabled}
-                helperText={
-                  !siteName.trim() ?
-                    formatMessage(messages.siteNameRequired) :
-                    submitDisabled ?
-                      formatMessage(messages.siteNameExists) :
-                      ''
-                }
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                id="description"
-                name="description"
-                label={
-                  <FormattedMessage
-                    id="editSiteDialog.siteDescription" defaultMessage="Site Description"
-                  />
-                }
-                fullWidth
-                onChange={(event) => onSiteDescriptionChange(event.target.value)}
-                onKeyPress={onKeyPress}
-                value={siteDescription??''}
-                inputProps={{ maxLength: 4000 }}
-              />
-            </Grid>
+        <Grid container spacing={1} component="form">
+          <Grid item xs={12}>
+            <TextField
+              autoFocus
+              fullWidth
+              id="name"
+              name="name"
+              label={<FormattedMessage id="editSiteDialog.siteName" defaultMessage="Site Name" />}
+              onChange={(event) => onSiteNameChange(event)}
+              onKeyPress={onKeyPress}
+              value={siteName}
+              inputProps={{ maxLength: 255 }}
+              error={submitDisabled}
+              helperText={
+                // prettier-ignore
+                !siteName.trim()
+                  ? formatMessage(messages.siteNameRequired)
+                  : submitDisabled
+                    ? formatMessage(messages.siteNameExists)
+                    : ''
+              }
+            />
           </Grid>
-        </form>
+          <Grid item xs={12}>
+            <TextField
+              id="siteId"
+              name="id"
+              label={<FormattedMessage id="editSiteDialog.siteId" defaultMessage="Site ID" />}
+              fullWidth
+              value={siteId}
+              disabled
+              helperText={
+                <FormattedMessage
+                  id="editSiteDialog.notEditable"
+                  defaultMessage="The site id is not editable"
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              id="description"
+              name="description"
+              label={
+                <FormattedMessage
+                  id="editSiteDialog.siteDescription"
+                  defaultMessage="Site Description"
+                />
+              }
+              fullWidth
+              onChange={(event) => onSiteDescriptionChange(event.target.value)}
+              onKeyPress={onKeyPress}
+              value={siteDescription ?? ''}
+              inputProps={{ maxLength: 4000 }}
+            />
+          </Grid>
+        </Grid>
       </DialogBody>
       <DialogFooter>
-        {
-          onClose && (
+        {onClose && (
           <Button onClick={onClose} variant="contained">
             <FormattedMessage id="editSiteDialog.cancel" defaultMessage="Cancel" />
           </Button>
         )}
-        {
-          onSubmit && (
-          <Button onClick={() => onSubmit()} variant="contained" color="primary" autoFocus disabled={submitting || submitDisabled}>
-            <FormattedMessage id="editSiteDialog.continue" defaultMessage="Continue" />
+        {onSubmit && (
+          <Button
+            onClick={() => onSubmit()}
+            variant="contained"
+            color="primary"
+            disabled={submitting || submitDisabled}
+          >
+            <FormattedMessage id="words.submit" defaultMessage="Submit" />
           </Button>
         )}
       </DialogFooter>
