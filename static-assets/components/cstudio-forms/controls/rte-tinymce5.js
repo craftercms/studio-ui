@@ -280,6 +280,7 @@ CStudioAuthoring.Module.requireModule(
           pluginList = this.autoGrow ? pluginList + ' autoresize' : pluginList;
 
           extendedValidElements = rteConfig.extendedElements ? rteConfig.extendedElements : '';
+          validChildren = rteConfig.validChildren ? rteConfig.validChildren : '';
 
           toolbarConfig1 =
             rteConfig.toolbarItems1 && rteConfig.toolbarItems1.length != 0
@@ -338,6 +339,7 @@ CStudioAuthoring.Module.requireModule(
             extended_valid_elements: extendedValidElements,
             browser_spellcheck: this.enableSpellCheck,
             contextmenu: !this.enableSpellCheck,
+            valid_children: validChildren,
 
             menu: {
               tools: { title: 'Tools', items: 'tinymcespellchecker code acecode wordcount' }
