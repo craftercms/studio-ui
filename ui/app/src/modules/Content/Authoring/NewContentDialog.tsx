@@ -22,7 +22,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import { fetchLegacyContentTypes } from '../../../services/content';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
 import NewContentCard from './NewContentCard';
 import SearchBar from '../../../components/Controls/SearchBar';
@@ -47,6 +46,7 @@ import { SandboxItem } from '../../../models/Item';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
 import palette from '../../../styles/palette';
 import { newContentCreationComplete } from '../../../state/actions/dialogs';
+import { fetchLegacyContentTypes } from '../../../services/contentTypes';
 
 const translations = defineMessages({
   title: {

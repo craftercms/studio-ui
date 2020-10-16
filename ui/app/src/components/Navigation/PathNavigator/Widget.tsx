@@ -52,7 +52,7 @@ import { getStoredPreviewChoice } from '../../../utils/state';
 import { ItemMenu } from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
-import { getContent } from '../../../services/content';
+import { getContentXML } from '../../../services/content';
 import { getNumOfMenuOptionsForItem, rand } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
 import LookupTable from '../../../models/LookupTable';
@@ -179,7 +179,7 @@ export default function(props: WidgetProps) {
         })
       );
     } else {
-      getContent(site, item.path).subscribe((content) => {
+      getContentXML(site, item.path).subscribe((content) => {
         let mode = 'txt';
 
         if (item.systemType === 'template') {

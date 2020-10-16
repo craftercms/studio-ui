@@ -22,7 +22,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
-import { cancelPackage, fetchEnvironments, fetchPackages } from '../../../../services/publishing';
+import { cancelPackage, fetchPublishingTargets, fetchPackages } from '../../../../services/publishing';
 import {
   CurrentFilters,
   Package,
@@ -227,10 +227,10 @@ function PublishingQueue(props: PublishingQueueProps) {
   setRequestForgeryToken();
 
   useEffect(() => {
-    fetchEnvironments(siteId).subscribe(
-      ({ response }) => {
+    fetchPublishingTargets(siteId).subscribe(
+      (response) => {
         let channels: string[] = [];
-        response.availablePublishChannels.forEach((channel: any) => {
+        response.forEach((channel) => {
           channels.push(channel.name);
         });
         setFilters({ environments: channels });

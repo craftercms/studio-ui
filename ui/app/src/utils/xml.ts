@@ -41,11 +41,25 @@ export function minify(xml: string) {
   throw new Error('minify error is not implemented.');
 }
 
-export function beautify(xml: string, options?: any) {
+interface BeautifyOptions {
+  tabWidth: number;
+  printWidth: number;
+  xmlWhitespaceSensitivity: 'ignore' | 'strict',
+  xmlSelfClosingSpace: boolean;
+}
+
+export function beautify(xml: string): string;
+export function beautify(xml: string, options: Partial<BeautifyOptions>): string;
+export function beautify(xml: string, options?: Partial<BeautifyOptions>): string {
   return prettier.format(xml, {
+    tabWidth: 2,
+    printWidth: 100,
+    xmlWhitespaceSensitivity: 'ignore',
+    xmlSelfClosingSpace: true,
+    ...options,
+    // @ts-ignore
     parser: 'xml',
-    plugins: [prettierXmlPlugin],
-    ...options
+    plugins: [prettierXmlPlugin]
   });
 }
 

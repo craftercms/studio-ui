@@ -22,12 +22,12 @@ export interface ContentInstanceSystemProps {
   dateCreated: string;
   dateModified: string;
   contentTypeId: string;
-  versionNumber?: string; // TODO: remove this;
+  sourceMap?: { [path: string]: string; }; // path: contentTypeId
 }
 
 export interface ContentInstance {
   craftercms: ContentInstanceSystemProps;
-  [prop: string]: any;
+  [fieldId: string]: any;
 }
 
 export default ContentInstance;

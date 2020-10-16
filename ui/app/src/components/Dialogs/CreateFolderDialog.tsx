@@ -22,7 +22,7 @@ import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { createNewFolder, renameFolder } from '../../services/content';
+import { createFolder, renameFolder } from '../../services/content';
 import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -31,7 +31,7 @@ import StandardAction from '../../models/StandardAction';
 
 export const translations = defineMessages({
   placeholder: {
-    id: 'createNewFolder.placeholder',
+    id: 'createFolder.placeholder',
     defaultMessage: 'Please type a folder name'
   }
 });
@@ -111,7 +111,7 @@ function CreateFolderUI(props: CreateFolderUIProps) {
           }
         );
       } else {
-        createNewFolder(site, path, encodeURI(name)).subscribe(
+        createFolder(site, path, encodeURI(name)).subscribe(
           (resp) => {
             onCreated?.({ path, name, rename });
           },

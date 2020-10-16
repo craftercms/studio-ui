@@ -20,7 +20,7 @@ import { Dialog } from '@material-ui/core';
 import DialogHeader from './DialogHeader';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import IFrame from '../IFrame';
-import Editor from '../Editor';
+import AceEditor from '../AceEditor';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { useUnmount } from '../../utils/hooks';
@@ -28,7 +28,8 @@ import { useUnmount } from '../../utils/hooks';
 const messages = defineMessages({
   videoProcessed: {
     id: 'search.videoProcessed',
-    defaultMessage: 'Video is being processed, preview will be available when processing is complete'
+    defaultMessage:
+      'Video is being processed, preview will be available when processing is complete'
   }
 });
 
@@ -43,6 +44,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& img': {
       maxWidth: '100%'
     }
+  },
+  editor: {
+    width: 900,
+    height: 600,
+    border: 'none'
   }
 }));
 
@@ -55,23 +61,21 @@ interface PreviewDialogBaseProps {
   content?: string;
 }
 
-export type PreviewDialogProps = PropsWithChildren<PreviewDialogBaseProps & {
-  onClose(): void;
-  onClosed?(): void;
-}>;
+export type PreviewDialogProps = PropsWithChildren<
+  PreviewDialogBaseProps & {
+    onClose(): void;
+    onClosed?(): void;
+  }
+>;
 
 export interface PreviewDialogStateProps extends PreviewDialogBaseProps {
   onClose?: StandardAction;
   onClosed?: StandardAction;
 }
 
-export default function (props: PreviewDialogProps) {
+export default function(props: PreviewDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      maxWidth="md"
-    >
+    <Dialog open={props.open} onClose={props.onClose} maxWidth="md">
       <PreviewDialogUI {...props} />
     </Dialog>
   );
@@ -79,9 +83,8 @@ export default function (props: PreviewDialogProps) {
 
 function PreviewDialogUI(props: PreviewDialogProps) {
   const { formatMessage } = useIntl();
-  const classes = useStyles({});
+  const classes = useStyles();
   useUnmount(props.onClosed);
-
   const renderPreview = () => {
     switch (props.type) {
       case 'image':
@@ -91,30 +94,28 @@ function PreviewDialogUI(props: PreviewDialogProps) {
           <AsyncVideoPlayer
             playerOptions={{ src: props.url, autoplay: true }}
             nonPlayableMessage={formatMessage(messages.videoProcessed)}
-          />);
+          />
+        );
       case 'page':
-        return (
-          <IFrame
-            url={props.url}
-            title={props.title}
-            width={960}
-            height={600}
-          />);
+        return <IFrame url={props.url} title={props.title} width={960} height={600} />;
       case 'editor': {
-        return <Editor mode={`ace/mode/${props.mode}`} data={props.content} />;
+        return (
+          <AceEditor
+            value={props.content}
+            className={classes.editor}
+            mode={`ace/mode/${props.mode}`}
+            readOnly
+          />
+        );
       }
       default:
         break;
     }
   };
-
   return (
     <>
       <DialogHeader title={props.title} onDismiss={props.onClose} />
-      <section className={classes.container}>
-        {renderPreview()}
-      </section>
+      <section className={classes.container}>{renderPreview()}</section>
     </>
   );
 }
-

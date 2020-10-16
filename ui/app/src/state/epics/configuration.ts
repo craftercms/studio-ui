@@ -22,11 +22,11 @@ import {
   fetchSidebarConfigComplete,
   fetchSidebarConfigFailed
 } from '../actions/configuration';
-import { getSidebarConfig } from '../../services/configuration';
+import { getSidebarItems } from '../../services/configuration';
 
 const fetch_sidebar_config: Epic = (action$) => action$.pipe(
   ofType(fetchSidebarConfig.type),
-  switchMap(({ payload }) => getSidebarConfig(payload).pipe(
+  switchMap(({ payload }) => getSidebarItems(payload).pipe(
     map(fetchSidebarConfigComplete),
     catchAjaxError(fetchSidebarConfigFailed)
   ))

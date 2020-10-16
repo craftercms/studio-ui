@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType } from 'react';
+import React, { ElementType, PropsWithChildren } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Gears from './Gears';
@@ -58,10 +58,12 @@ export interface LoadingStateProps {
   };
 }
 
+export type ConditionalLoadingStateProps = LoadingStateProps &
+  PropsWithChildren<{ isLoading: boolean }>;
+
 export default function LoadingState(props: LoadingStateProps) {
   const classes = useStyles({});
   const { graphic: Graphic = Gears, classes: propClasses } = props;
-
   return (
     <div className={clsx(classes.loadingView, propClasses?.root)}>
       {props.title && (
@@ -83,4 +85,9 @@ export default function LoadingState(props: LoadingStateProps) {
       </div>
     </div>
   );
+}
+
+export function ConditionalLoadingState(props: ConditionalLoadingStateProps) {
+  const { children, isLoading, ...loadingStateProps } = props;
+  return isLoading ? children : <LoadingState {...loadingStateProps} />;
 }

@@ -33,56 +33,53 @@ export function cancelPackage(siteId: string, packageIds: any) {
   return postJSON('/studio/api/2/publish/cancel', { siteId, packageIds });
 }
 
-export function fetchEnvironments(siteId: string) {
-  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`);
+export function fetchPublishingTargets(
+  site: string
+): Observable<Array<{ name: string; order: number; publish: boolean; updateStatus: boolean }>> {
+  return get(
+    `/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${site}`
+  ).pipe(pluck('availablePublishChannels'));
 }
 
 export function submitToGoLive(siteId: string, user: string, data): Observable<any> {
   return postJSON(
     `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
     data
-  ).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function goLive(siteId: string, user: string, data): Observable<any> {
   return postJSON(
     `/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`,
     data
-  ).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
+  ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function reject(siteId: string, items: string[], reason: string, submissionComment: string): Observable<{
-  commitId: string,
-  invalidateCache: boolean,
-  item: LegacyItem,
-  message: string,
-  status: number,
-  success: boolean
+export function reject(
+  siteId: string,
+  items: string[],
+  reason: string,
+  submissionComment: string
+): Observable<{
+  commitId: string;
+  invalidateCache: boolean;
+  item: LegacyItem;
+  message: string;
+  status: number;
+  success: boolean;
 }> {
   return forkJoin({
     dependencies: fetchDependencies(siteId, items)
   }).pipe(
     switchMap(({ dependencies }) =>
-      postJSON(
-        `/studio/api/1/services/api/1/workflow/reject.json?site=${siteId}`,
-        {
-          // api being used in legacy (/studio/api/1/services/api/1/dependency/get-dependencies.json)
-          // returns only hardDependencies
-          dependencies: dependencies.hardDependencies,
-          items,
-          reason,
-          submissionComment
-        }
-      ).pipe(
-        pluck('response'),
-        catchError(errorSelectorApi1)
-      )
+      postJSON(`/studio/api/1/services/api/1/workflow/reject.json?site=${siteId}`, {
+        // api being used in legacy (/studio/api/1/services/api/1/dependency/get-dependencies.json)
+        // returns only hardDependencies
+        dependencies: dependencies.hardDependencies,
+        items,
+        reason,
+        submissionComment
+      }).pipe(pluck('response'), catchError(errorSelectorApi1))
     )
   );
 }
@@ -91,7 +88,6 @@ export default {
   fetchPackages,
   fetchPackage,
   cancelPackage,
-  fetchEnvironments,
   submitToGoLive,
   goLive
 };
