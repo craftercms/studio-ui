@@ -22,7 +22,7 @@
     <div class="audit-nav">
         <div class="nav-containers mb20">
             <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label>
-            <span class="pr20" ng-show="!audit.sites">{{ audit.site }}</span>
+            <span class="pr20" ng-show="!audit.sites">{{sites.byId[audit.site].name}}</span>
             <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 5px;" ng-show="audit.sites">
                 <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle title="{{audit.site || 'admin.audit.ALL_SITES' | translate}}" >
                     {{audit.siteLabel || audit.site || 'admin.audit.ALL_SITES' | translate }}  <span class="caret"></span>
@@ -35,7 +35,9 @@
                         <a ng-click="audit.updateSite('admin.audit.SYSTEM', 'true')">{{ 'admin.audit.SYSTEM' | translate }}</a>
                     </li>
                     <li ng-repeat="site in audit.sites">
-                        <a class="text-capitalize" ng-click="audit.updateSite(site.siteId)">{{site.siteId}}</a>
+                        <a class="text-capitalize" ng-click="audit.updateSite(site.siteId)">
+                          {{ sites.byId[site.siteId] ? sites.byId[site.siteId].name : site.siteId }}
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -219,7 +221,7 @@
             <tr dir-paginate="log in audit.logs | filter:q | itemsPerPage: audit.logsPerPage"
                 current-page="audit.pagination.current" total-items="audit.totalLogs">
                 <td class="min-cel-width">{{log.operationTimestamp | amTimezone:audit.timeZone | amDateFormat:'MM-DD-YYYY hh:mm:ssa'}}</td>
-                <td>{{log.siteName}}</td>
+                <td>{{ sites.byId[log.siteName] ? sites.byId[log.siteName].name : log.siteName }}</td>
                 <td>{{log.operation}}</td>
                 <td class="min-cel-width wrap-content">{{log.primaryTargetValue}}</td>
                 <td><span class="username trim inline-block">{{log.actorId}}</span></td>

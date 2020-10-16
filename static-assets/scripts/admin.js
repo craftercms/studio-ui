@@ -214,8 +214,8 @@
         });
       };
 
-      this.getSpecificAudit = function(auditId) {
-        return $http.get(audit(auditId));
+      this.getSpecificAudit = function(siteName) {
+        return $http.get(audit(siteName));
       };
 
       this.getTimeZone = function(data) {
@@ -423,6 +423,7 @@
       audit.allTimeZones = moment.tz.names();
       audit.sort = 'date';
       $scope.originValues = [$translate.instant('admin.audit.ALL_ORIGINS'), 'API', 'GIT'];
+      $scope.sites = CrafterCMSNext.system.store.getState().sites;
 
       var delayTimer;
 
@@ -462,7 +463,7 @@
           });
       }
 
-      var getAudit = function(site) {
+      var getAudit = function(siteId) {
         audit.totalLogs = 0;
         getResultsPage(1);
 
@@ -477,8 +478,11 @@
         function getResultsPage(pageNumber) {
           var dateToUTC, dateFromUTC;
           var params = {};
+
+          const site = $scope.sites.byId[siteId];
+
           if (site) {
-            params.siteName = site;
+            params.siteName = site.name;
           }
           if (audit.userSelected && audit.userSelected != '') params.user = audit.userSelected;
 
@@ -557,9 +561,10 @@
 
       var getSpecificAudit = function(id) {
         var collapseContainer = $('#collapseContainer' + id);
+        const siteName = $scope.sites.byId[id].name
         var html;
         adminService
-          .getSpecificAudit(id)
+          .getSpecificAudit(siteName)
           .success(function(data) {
             var parameters = data.auditLog.parameters;
             //parameters = [{id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}, {id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}]
