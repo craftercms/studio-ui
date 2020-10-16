@@ -94,8 +94,14 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
               ]
             },
             onClosed: {
-              type: 'DISPATCH_DOM_EVENT',
-              payload: { id: editDialogCancel }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: editDialogCancel }
+                },
+                { type: 'NEW_CONTENT_DIALOG_CLOSED' }
+              ]
             }
           }
         });
@@ -124,7 +130,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           cancelUnsubscribe();
         });
 
-        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(editDialogSuccess, (response) => {
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(editDialogCancel, () => {
           unsubscribe();
         });
 
@@ -145,8 +151,14 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
               payload: { id: contentTypeSelected }
             },
             onClosed: {
-              type: 'DISPATCH_DOM_EVENT',
-              payload: { id: contentDialogCancel }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: contentDialogCancel }
+                },
+                { type: 'NEW_CONTENT_DIALOG_CLOSED' }
+              ]
             }
           }
         });
@@ -160,7 +172,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
           cancelUnsubscribe();
         });
 
-        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentTypeSelected, () => {
+        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(contentDialogCancel, () => {
           unsubscribe();
         });
       };

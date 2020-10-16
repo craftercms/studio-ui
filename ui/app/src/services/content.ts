@@ -1048,6 +1048,15 @@ export function changeContentType(
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
+export function checkPathExistence(site: string, path: string): Observable<boolean> {
+  return get(
+    `/studio/api/1/services/api/1/content/content-exists.json?site_id=${site}&path=${path}`
+  ).pipe(
+    map(({ response }) => response.content),
+    catchError(errorSelectorApi1)
+  );
+}
+
 export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
   return get(
     `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`
@@ -1096,5 +1105,6 @@ export default {
   lock,
   unlock,
   fetchWorkflowAffectedItems,
-  changeContentType
+  changeContentType,
+  checkPathExistence
 };

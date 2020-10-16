@@ -37,7 +37,7 @@
           <thead>
           <tr>
             <th>{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
-            <th>{{ 'admin.groups.DESCRIPTION' | translate }}</th>
+            <th class="hidden-sm hidden-xs">{{ 'admin.groups.DESCRIPTION' | translate }}</th>
             <th>{{ 'admin.groups.EDIT_MEMBERSHIP' | translate }}</th>
           </tr>
           </thead>
@@ -46,7 +46,7 @@
           <tr id="group-{{ group.name | nospace }}" dir-paginate="group in groupsCollection | filter:q | itemsPerPage: groups.itemsPerPage"
               pagination-id="paginateGroups" current-page="groups.pagination.current" total-items="groups.totalLogs">
             <td class="group-name trim">{{group.name}}</td>
-            <td>{{group.desc}}</td>
+            <td class="group-description hidden-sm hidden-xs">{{group.desc}}</td>
             <td>
               <a ng-click="groups.viewGroup(group)"
                  class="btn btn-sm edit"

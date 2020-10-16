@@ -118,6 +118,8 @@ function BlueprintForm(props: BlueprintFormProps) {
   const [sites, setSites] = useState(null);
   const { formatMessage } = useIntl();
   const maxLength = 4000;
+  const siteNameMaxLength = 255;
+  const siteIdMaxLength = 50;
 
   useEffect(() => {
     if (sites === null) {
@@ -201,7 +203,9 @@ function BlueprintForm(props: BlueprintFormProps) {
       siteId = siteId.replace(/0|-|_/, '');
     }
 
-    return siteId;
+    // Site id max length differs from the site name max length, so the id needs to be trimmed to
+    // its max length
+    return siteId.substring(0, siteIdMaxLength);
   }
 
   return (
@@ -220,7 +224,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             onKeyUp={(event) => checkSiteNames(event)}
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteName}
-            inputProps={{ maxLength: 50 }}
+            inputProps={{ maxLength: siteNameMaxLength }}
             error={( (inputs.submitted && !inputs.siteName) || inputs.siteNameExist )}
             helperText={
               inputs.submitted && !inputs.siteName
@@ -243,7 +247,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             onKeyUp={(event) => checkSites(event)}
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
-            inputProps={{ maxLength: 50 }}
+            inputProps={{ maxLength: siteIdMaxLength }}
             error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist || inputs.invalidSiteId)}
             helperText={
               renderHelperText(
