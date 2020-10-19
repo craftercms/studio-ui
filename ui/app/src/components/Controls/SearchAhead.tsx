@@ -166,7 +166,7 @@ export default function(props) {
         />
       </div>
       {/*{popupOpen && dirty && (*/}
-      {(
+      {
         <Paper className={classes.paper}>
           {isFetching && <LoadingState />}
           {isFetching === false && items?.length > 0 && (
@@ -198,7 +198,7 @@ export default function(props) {
             />
           )}
         </Paper>
-      )}
+      }
     </div>
   );
 }
@@ -215,14 +215,28 @@ function Option(props) {
       primary={
         <>
           {nameParts.map((part, i) =>
-            part.highlight ? <span key={i} className={highlighted}> {part.text} </span> : part.text
+            part.highlight ? (
+              <span key={i} className={highlighted}>
+                {' '}
+                {part.text}{' '}
+              </span>
+            ) : (
+              part.text
+            )
           )}
         </>
       }
       secondary={
         <>
           {pathParts.map((part, i) =>
-            part.highlight ? <span key={i} className={highlighted}> {part.text} </span> : part.text
+            part.highlight ? (
+              <span key={i} className={highlighted}>
+                {' '}
+                {part.text}{' '}
+              </span>
+            ) : (
+              part.text
+            )
           )}
         </>
       }
