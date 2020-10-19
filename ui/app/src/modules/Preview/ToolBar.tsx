@@ -111,8 +111,7 @@ const useStyles = makeStyles((theme: Theme) =>
         boxShadow: 'none'
       }
     },
-    iconButton: {
-    },
+    iconButton: {},
     divider: {
       height: 28,
       margin: 4
@@ -244,7 +243,7 @@ export function AddressBar(props: AddressBarProps) {
           }}
         />
       </Paper>
-      <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
+      <IconButton className={classes.iconButton} onClick={handleClick}>
         <MoreVertRounded />
       </IconButton>
       {Boolean(anchorEl) && (

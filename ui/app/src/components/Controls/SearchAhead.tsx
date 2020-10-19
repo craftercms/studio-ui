@@ -26,6 +26,7 @@ import { SearchItem } from '../../models/Search';
 import clsx from 'clsx';
 import {
   CircularProgress,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -36,6 +37,7 @@ import {
 import LoadingState from '../SystemStatus/LoadingState';
 import EmptyState from '../SystemStatus/EmptyState';
 import Page from '../Icons/Page';
+import CloseIcon from '@material-ui/icons/Close';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { FormattedMessage } from 'react-intl';
 import parse from 'autosuggest-highlight/parse';
@@ -46,6 +48,9 @@ const useStyles = makeStyles((theme: Theme) =>
     container: {
       width: '100%',
       position: 'relative'
+    },
+    closeIcon: {
+      padding: '3px'
     },
     progress: {
       position: 'absolute',
@@ -152,6 +157,11 @@ export default function(props) {
     return () => subscription.unsubscribe();
   }, [contentTypes, onSearch$, site]);
 
+  const onClean = () => {
+    setKeyword('');
+    setDirty(false);
+  };
+
   return (
     <div className={classes.container}>
       <div {...getRootProps()}>
@@ -161,22 +171,27 @@ export default function(props) {
           disabled={disabled}
           classes={{ root: classes.inputRoot, input: clsx(classes.input, props.classes?.input) }}
           endAdornment={
-            isFetching ? <CircularProgress className={classes.progress} size={15} /> : null
+            isFetching ? (
+              <CircularProgress className={classes.progress} size={15} />
+            ) : keyword ? (
+              <IconButton className={classes.closeIcon} onClick={onClean}>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            ) : null
           }
         />
       </div>
-      {/*{popupOpen && dirty && (*/}
-      {
+      {popupOpen && dirty && (
         <Paper className={classes.paper}>
           {isFetching && <LoadingState />}
-          {isFetching === false && items?.length > 0 && (
+          {isFetching === false && groupedOptions.length > 0 && (
             <List
               dense
               className={classes.listBox}
               subheader={<ListSubheader disableSticky>Pages</ListSubheader>}
               {...getListboxProps()}
             >
-              {items.map((option: SearchItem, index) => (
+              {groupedOptions.map((option: SearchItem, index) => (
                 <ListItem button dense component="li" {...getOptionProps({ option, index })}>
                   <ListItemIcon className={classes.listItemIcon}>
                     <Page />
@@ -198,7 +213,7 @@ export default function(props) {
             />
           )}
         </Paper>
-      }
+      )}
     </div>
   );
 }
