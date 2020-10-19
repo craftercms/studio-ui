@@ -233,8 +233,9 @@ function parseContentXML(
         const source = element.getAttribute('crafter-source');
         if (source) {
           current.craftercms.sourceMap[tagName] = source;
-          // TODO: how do we figure out the content type id from the source path
-          sourceContentTypeId = '/component/level-descriptor';
+          // TODO: https://github.com/craftercms/craftercms/issues/4093
+          // Temporarily falling back to a known content type while backend updates
+          sourceContentTypeId = element.getAttribute('crafter-source-content-type-id') ?? '/component/level-descriptor';
         }
         current[tagName] = parseElementByContentType(
           element,
@@ -1052,7 +1053,7 @@ export function checkPathExistence(site: string, path: string): Observable<boole
   return get(
     `/studio/api/1/services/api/1/content/content-exists.json?site_id=${site}&path=${path}`
   ).pipe(
-    map(({ response }) => response.content),
+    pluck('response', 'content'),
     catchError(errorSelectorApi1)
   );
 }

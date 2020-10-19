@@ -38,7 +38,7 @@ export function getRawConfiguration(site: string, configPath: string, module: Cr
   );
 }
 
-export function getDOM(site: string, configPath: string, module: CrafterCMSModules): Observable<XMLDocument> {
+export function getConfigurationDOM(site: string, configPath: string, module: CrafterCMSModules): Observable<XMLDocument> {
   return getRawConfiguration(site, configPath, module).pipe(map(fromString));
 }
 
@@ -365,7 +365,7 @@ export function fetchCannedMessage(site: string, locale: string, type: string): 
 export default {
   getProductLanguages,
   getRawConfiguration,
-  getDOM,
+  getConfigurationDOM,
   getGlobalMenuItems,
   getConfigurationHistory: getHistory,
   getSidebarItems

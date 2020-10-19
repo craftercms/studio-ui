@@ -313,6 +313,7 @@ export default function(props: WidgetProps) {
     <Suspencified>
       <WidgetUI
         state={state}
+        classes={props.classes}
         itemsByPath={itemsByPath}
         icon={icon}
         title={title}
@@ -339,7 +340,7 @@ export default function(props: WidgetProps) {
   );
 }
 
-function WidgetUI(props: any) {
+export function WidgetUI(props: any) {
   const classes = useStyles({});
   const {
     state,
