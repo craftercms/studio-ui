@@ -15,18 +15,31 @@
  */
 
 import InputBase from '@material-ui/core/InputBase';
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { useActiveSiteId, useContentTypeList } from '../../utils/hooks';
 import { search } from '../../services/search';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useAutocomplete } from '@material-ui/lab';
 import { SearchItem } from '../../models/Search';
 import clsx from 'clsx';
-import { CircularProgress, Paper } from '@material-ui/core';
+import {
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
+  Paper
+} from '@material-ui/core';
 import LoadingState from '../SystemStatus/LoadingState';
 import EmptyState from '../SystemStatus/EmptyState';
+import Page from '../Icons/Page';
+import { getPreviewURLFromPath } from '../../utils/path';
+import { FormattedMessage } from 'react-intl';
+import parse from 'autosuggest-highlight/parse';
+import match from 'autosuggest-highlight/match';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,32 +62,43 @@ const useStyles = makeStyles((theme: Theme) =>
       top: '50px'
     },
     listBox: {
+      overflow: 'auto',
+      maxHeight: 600,
       margin: 0,
       padding: 0,
       listStyle: 'none',
       '& li[data-focus="true"]': {
-        backgroundColor: '#4a8df6',
-        color: 'white',
-        cursor: 'pointer'
+        backgroundColor: 'rgba(0, 0, 0, 0.04)'
       },
       '& li:active': {
-        backgroundColor: '#2977f5',
+        backgroundColor: 'rgba(0, 0, 0, 0.04)',
         color: 'white'
       }
+    },
+    listItemIcon: {
+      minWidth: 'auto',
+      paddingRight: '16px'
+    },
+    EmptyImage: {
+      width: '100px'
+    },
+    highlighted: {
+      display: 'inline-block',
+      background: 'yellow'
     }
   })
 );
 
 export default function(props) {
-  const { value, placeholder, disabled, onKeyDown } = props;
+  const { value, placeholder, disabled, onEnter } = props;
   const classes = useStyles({});
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const site = useActiveSiteId();
   const contentTypes = useContentTypeList((contentType) => contentType.id.startsWith('/page'));
-  const [keyword, setKeyword] = useState(value);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [keyword, setKeyword] = useState('');
   const [isFetching, setIsFetching] = useState(null);
   const [items, setItems] = useState(null);
+  const [dirty, setDirty] = useState(false);
 
   const {
     getRootProps,
@@ -84,36 +108,49 @@ export default function(props) {
     groupedOptions,
     popupOpen
   } = useAutocomplete({
-    options: items ?? [],
-    getOptionLabel: (item: SearchItem) => item.name,
-    getOptionSelected: (option, value) => option.name === value.name
+    freeSolo: true,
+    inputValue: keyword,
+    onInputChange: (e, value, reason) => {
+      if (reason === 'reset') {
+        const previewUrl = getPreviewURLFromPath(value);
+        setKeyword(previewUrl);
+        onEnter(previewUrl);
+        setDirty(false);
+      } else {
+        setKeyword(value);
+        if (value) {
+          setIsFetching(true);
+          onSearch$.next(value);
+          setDirty(true);
+        } else {
+          setDirty(false);
+        }
+      }
+    },
+    options: keyword && items ? items : [],
+    filterOptions: (options: SearchItem[], state) => options,
+    getOptionLabel: (item: SearchItem) => item.path,
+    getOptionSelected: (option: SearchItem, value) => option.path === value.path
   });
 
   useEffect(() => {
-    const subscription = onSearch$
-      .pipe(debounceTime(400), distinctUntilChanged())
-      .subscribe((keyword: string) => {
-        setIsFetching(true);
-        search(site, {
-          keywords: keyword,
-          filters: {
-            'content-type': contentTypes.map((contentType) => contentType.id)
-          }
-        }).subscribe((response) => {
-          setIsFetching(false);
-          setItems(response.items);
-        });
+    setKeyword(value);
+  }, [value]);
+
+  useEffect(() => {
+    const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword: string) => {
+      search(site, {
+        keywords: keyword,
+        filters: {
+          'content-type': contentTypes.map((contentType) => contentType.id)
+        }
+      }).subscribe((response) => {
+        setIsFetching(false);
+        setItems(response.items);
       });
+    });
     return () => subscription.unsubscribe();
   }, [contentTypes, onSearch$, site]);
-
-  const onChange = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setKeyword(e.target.value);
-    onSearch$.next(e.target.value);
-    if (!anchorEl) {
-      setAnchorEl(e.target);
-    }
-  };
 
   return (
     <div className={classes.container}>
@@ -123,30 +160,72 @@ export default function(props) {
           placeholder={placeholder}
           disabled={disabled}
           classes={{ root: classes.inputRoot, input: clsx(classes.input, props.classes?.input) }}
-          value={keyword}
-          onChange={(e) => onChange(e)}
-          onKeyDown={(e) => {
-            onKeyDown(e);
-          }}
           endAdornment={
             isFetching ? <CircularProgress className={classes.progress} size={15} /> : null
           }
         />
       </div>
-      {popupOpen && (
+      {/*{popupOpen && dirty && (*/}
+      {(
         <Paper className={classes.paper}>
-          holita
           {isFetching && <LoadingState />}
-          {isFetching === false && groupedOptions.length > 0 && (
-            <ul className={classes.listBox} {...getListboxProps()}>
-              {groupedOptions.map((option, index) => (
-                <li {...getOptionProps({ option, index })}>{option.name}</li>
+          {isFetching === false && items?.length > 0 && (
+            <List
+              dense
+              className={classes.listBox}
+              subheader={<ListSubheader disableSticky>Pages</ListSubheader>}
+              {...getListboxProps()}
+            >
+              {items.map((option: SearchItem, index) => (
+                <ListItem button dense component="li" {...getOptionProps({ option, index })}>
+                  <ListItemIcon className={classes.listItemIcon}>
+                    <Page />
+                  </ListItemIcon>
+                  <Option
+                    name={option.name}
+                    path={option.path}
+                    keyword={keyword}
+                    highlighted={classes.highlighted}
+                  />
+                </ListItem>
               ))}
-            </ul>
+            </List>
           )}
-          {isFetching === false && groupedOptions.length === 0 && <EmptyState title="no results" />}
+          {isFetching === false && groupedOptions.length === 0 && (
+            <EmptyState
+              title={<FormattedMessage id="searchAhead.noResults" defaultMessage="No Results." />}
+              classes={{ image: classes.EmptyImage }}
+            />
+          )}
         </Paper>
       )}
     </div>
+  );
+}
+
+function Option(props) {
+  const { name, path, keyword, highlighted } = props;
+  const nameMatches = match(name, keyword);
+  const pathMatches = match(path, keyword);
+  const nameParts = parse(name, nameMatches);
+  const pathParts = parse(path, pathMatches);
+
+  return (
+    <ListItemText
+      primary={
+        <>
+          {nameParts.map((part, i) =>
+            part.highlight ? <span key={i} className={highlighted}> {part.text} </span> : part.text
+          )}
+        </>
+      }
+      secondary={
+        <>
+          {pathParts.map((part, i) =>
+            part.highlight ? <span key={i} className={highlighted}> {part.text} </span> : part.text
+          )}
+        </>
+      }
+    />
   );
 }

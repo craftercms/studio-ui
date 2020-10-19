@@ -144,12 +144,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-function createOnEnter(handler, argument: 'value' | 'event' = 'event') {
-  return argument === 'value'
-    ? (e) => e.key === 'Enter' && handler(e.target.value)
-    : (e) => e.key === 'Enter' && handler(e);
-}
-
 interface AddressBarProps {
   site: string;
   url: string;
@@ -227,7 +221,7 @@ export function AddressBar(props: AddressBarProps) {
           value={internalUrl}
           placeholder={noSiteSet ? '' : '/'}
           disabled={noSiteSet}
-          onKeyDown={createOnEnter((value) => onUrlChange(value), 'value')}
+          onEnter={(value) => onUrlChange(value)}
           classes={{
             input: classes.input
           }}
