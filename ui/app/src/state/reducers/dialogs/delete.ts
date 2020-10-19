@@ -19,7 +19,6 @@ import GlobalState from '../../../models/GlobalState';
 import {
   closeDeleteDialog,
   deleteDialogClosed,
-  fetchedDepsDeleteDialog,
   showDeleteDialog
 } from '../../actions/dialogs';
 
@@ -34,7 +33,6 @@ export default createReducer<GlobalState['dialogs']['delete']>(
       ...payload,
       open: true
     }),
-    [fetchedDepsDeleteDialog.type]: (state) => ({ ...state, fetch: false }),
     [closeDeleteDialog.type]: (state) => ({ ...state, open: false }),
     [deleteDialogClosed.type]: () => ({ open: false })
   }

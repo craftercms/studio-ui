@@ -37,9 +37,6 @@ import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
 import { useActiveSiteId, useSelection } from '../../../utils/hooks';
-import { showDeleteDialog, showEditDialog } from '../../../state/actions/dialogs';
-import { useDispatch } from 'react-redux';
-
 interface DependencySelectionProps<T extends BaseItem = BaseItem> {
   items: T[];
   siteId?: string;      // for dependencySelectionDelete
@@ -98,8 +95,7 @@ const useStyles = makeStyles(() => ({
     overflowY: 'hidden'
   },
   dependencySelectionDelete: {
-    overflowY: 'auto',
-    minHeight: '200px'
+    overflowY: 'auto'
   },
   dependencySelectionDisabled: {
     backgroundColor: palette.gray.light1
@@ -277,6 +273,7 @@ interface DependencySelectionDeleteProps {
   items: SandboxItem[],
   resultItems: DeleteDependencies;
   onChange: Function;
+  onEditDependency?: Function;
 }
 
 export function DependencySelectionDelete(props: DependencySelectionDeleteProps) {
@@ -284,13 +281,13 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
   const {
     items,
     resultItems,
-    onChange
+    onChange,
+    onEditDependency
   } = props;
   const [checked, _setChecked] = useState<any>(checkState(items));
   const siteId = useActiveSiteId();
   const authoringBase = useSelection<string>(state => state.env.authoringBase);
   const defaultFormSrc = `${authoringBase}/legacy/form`;
-  const dispatch = useDispatch();
 
   const setChecked = (uri: string[], isChecked: boolean) => {
     _setChecked(updateCheckedList(uri, isChecked, checked));
@@ -305,10 +302,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
 
   const onEditClick = (uri: string) => {
     const src = `${defaultFormSrc}?site=${siteId}&path=${uri}&type=form`;
-    dispatch(showEditDialog({
-      src,
-      onSaveSuccess: showDeleteDialog({ fetch: true })
-    }));
+    onEditDependency(src);
   };
 
   return (
@@ -359,7 +353,7 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
           }
           uris={resultItems.dependentItems}
           displayItemTitle={false}
-          showEdit={true}
+          showEdit
           onEditClick={onEditClick}
         />
       </>

@@ -40,8 +40,13 @@ import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
 import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
+import {
+  closeDeleteDialog,
+  showDeleteDialog,
+  showEditDialog
+} from '../../../state/actions/dialogs';
+import { batchActions } from '../../../state/actions/misc';
 import { useDispatch } from 'react-redux';
-import { fetchedDepsDeleteDialog } from '../../../state/actions/dialogs';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -49,6 +54,7 @@ interface DeleteDialogContentUIProps {
   submissionComment: string;
   setSubmissionComment: Function;
   onSelectionChange?: Function;
+  onEditDependency?: Function;
 }
 
 interface DeleteDialogUIProps {
@@ -62,12 +68,12 @@ interface DeleteDialogUIProps {
   onSelectionChange?(selection?: any): any;
   onClose?(): void;
   onDismiss?(): void;
+  onEditDependency?: Function;
 }
 
 interface DeleteDialogBaseProps {
   open: boolean;
   items?: SandboxItem[];
-  fetch?: boolean;
 }
 
 export type DeleteDialogProps = PropsWithChildren<
@@ -99,6 +105,10 @@ const translations = defineMessages({
 
 const deleteDialogStyles = makeStyles((theme) =>
   createStyles({
+    dialogBody: {
+      overflow: 'auto',
+      minHeight: '50vh'
+    },
     submissionCommentField: {
       '& .MuiTextField-root': {
         width: '100%'
@@ -137,7 +147,8 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
     items,
     submissionComment,
     setSubmissionComment,
-    onSelectionChange
+    onSelectionChange,
+    onEditDependency
   } = props;
   const classes = deleteDialogStyles({});
   const deleteDependencies: DeleteDependencies = resource.read();
@@ -150,6 +161,7 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
             items={items}
             resultItems={deleteDependencies}
             onChange={onSelectionChange}
+            onEditDependency={onEditDependency}
           />
         </Grid>
 
@@ -190,7 +202,8 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
     apiState,
     handleSubmit,
     onSelectionChange,
-    onDismiss
+    onDismiss,
+    onEditDependency
   } = props;
   const classes = deleteDialogStyles({});
   const { formatMessage } = useIntl();
@@ -202,7 +215,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
         subtitle={formatMessage(translations.headerSubTitle)}
         onDismiss={onDismiss}
       />
-      <DialogBody>
+      <DialogBody className={classes.dialogBody}>
         <SuspenseWithEmptyState resource={resource}>
           <DeleteDialogContentUI
             resource={resource}
@@ -210,6 +223,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
             submissionComment={submissionComment}
             setSubmissionComment={setSubmissionComment}
             onSelectionChange={onSelectionChange}
+            onEditDependency={onEditDependency}
           />
         </SuspenseWithEmptyState>
       </DialogBody>
@@ -249,7 +263,7 @@ export default function DeleteDialog(props: DeleteDialogProps) {
 }
 
 function DeleteDialogWrapper(props: DeleteDialogProps) {
-  const { items, onClose, onDismiss, onSuccess, fetch } = props;
+  const { items, onClose, onDismiss, onSuccess } = props;
   const [submissionComment, setSubmissionComment] = useState('');
   const [apiState, setApiState] = useSpreadState({
     error: null,
@@ -262,12 +276,12 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     dependentItems: []
   });
   const [selectedItems, setSelectedItems] = useState([]);
+  const dispatch = useDispatch();
 
   const depsSource = useMemo(() => ({ deleteDependencies, apiState }), [
     deleteDependencies,
     apiState
   ]);
-  const dispatch = useDispatch();
   useUnmount(props.onClosed);
 
   const resource = useLogicResource<any, any>(depsSource, {
@@ -291,12 +305,21 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
           setApiState({ error });
         }
       );
-
-      if (fetch) {
-        dispatch(fetchedDepsDeleteDialog());
-      }
     }
-  }, [selectedItems, setApiState, siteId, fetch]);
+  }, [selectedItems, setApiState, siteId]);
+
+  const onEditDependency = (src) => {
+    dispatch(batchActions([
+      closeDeleteDialog(),
+      showEditDialog({
+        src,
+        onClosed: showDeleteDialog({
+          items,
+          onSuccess
+        })
+      })
+    ]));
+  };
 
   const handleSubmit = () => {
     const data = {
@@ -328,6 +351,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
       onSelectionChange={setSelectedItems}
       onDismiss={onDismiss}
       onClose={onClose}
+      onEditDependency={onEditDependency}
     />
   );
 }

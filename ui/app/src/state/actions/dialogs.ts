@@ -86,7 +86,6 @@ export const publishDialogClosed = createAction('PUBLISH_DIALOG_CLOSED');
 
 // region Delete
 export const showDeleteDialog = createAction<Partial<DeleteDialogStateProps>>('SHOW_DELETE_DIALOG');
-export const fetchedDepsDeleteDialog = createAction<StandardAction>('FETCHED_DEPS_DELETE_DIALOG');
 export const closeDeleteDialog = createAction<StandardAction>('CLOSE_DELETE_DIALOG');
 export const deleteDialogClosed = createAction('DELETE_DIALOG_CLOSED');
 // endregion
