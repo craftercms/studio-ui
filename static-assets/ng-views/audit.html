@@ -22,8 +22,8 @@
     <div class="audit-nav">
         <div class="nav-containers mb20">
             <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label>
-            <span class="pr20" ng-show="!audit.sites">{{ audit.site }}</span>
-            <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 5px;" ng-show="audit.sites">
+            <span class="pr20" ng-show="audit.currentSiteName">{{ audit.currentSiteName }}</span>
+            <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 5px;" ng-show="!audit.currentSiteName">
                 <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle title="{{audit.site || 'admin.audit.ALL_SITES' | translate}}" >
                     {{audit.siteLabel || audit.site || 'admin.audit.ALL_SITES' | translate }}  <span class="caret"></span>
                 </button>
@@ -34,8 +34,8 @@
                     <li>
                         <a ng-click="audit.updateSite('admin.audit.SYSTEM', 'true')">{{ 'admin.audit.SYSTEM' | translate }}</a>
                     </li>
-                    <li ng-repeat="site in audit.sites">
-                        <a class="text-capitalize" ng-click="audit.updateSite(site.siteId)">{{site.siteId}}</a>
+                    <li ng-repeat="site in sites">
+                        <a class="text-capitalize" ng-click="audit.updateSite(site.id)">{{site.name}}</a>
                     </li>
                 </ul>
             </div>
@@ -66,13 +66,13 @@
                 </button>
                 <ul class="dropdown-menu" role="menu" ng-click="$event.stopPropagation()">
 
-                    <li ng-show="audit.sites"><a ng-class="{'active':( audit.actions.indexOf('Login') > -1 )}" ng-click="audit.updateActions('Login')">
+                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Login') > -1 )}" ng-click="audit.updateActions('Login')">
                         {{ 'admin.audit.operations.LOGIN' | translate }}
                     </a></li>
-                    <li ng-show="audit.sites"><a ng-class="{'active':( audit.actions.indexOf('Login_failed') > -1 )}" ng-click="audit.updateActions('Login_failed')">
+                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Login_failed') > -1 )}" ng-click="audit.updateActions('Login_failed')">
                         {{ 'admin.audit.operations.LOGIN_FAILED' | translate }}
                     </a></li>
-                    <li ng-show="audit.sites"><a ng-class="{'active':( audit.actions.indexOf('Logout') > -1 )}" ng-click="audit.updateActions('Logout')">
+                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Logout') > -1 )}" ng-click="audit.updateActions('Logout')">
                         {{ 'admin.audit.operations.LOGOUT' | translate }}
                     </a></li>
                     <li><a ng-class="{'active':( audit.actions.indexOf('Create') > -1 )}" ng-click="audit.updateActions('Create')">
@@ -96,10 +96,10 @@
                     <li><a ng-class="{'active':( audit.actions.indexOf('Disable') > -1 )}" ng-click="audit.updateActions('Disable')">
                         {{ 'admin.audit.operations.DISABLE' | translate }}
                     </a></li>
-                    <li ng-show="audit.sites"><a ng-class="{'active':( audit.actions.indexOf('Add_members') > -1 )}" ng-click="audit.updateActions('Add_members')">
+                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Add_members') > -1 )}" ng-click="audit.updateActions('Add_members')">
                         {{ 'admin.audit.operations.ADD_MEMBERS' | translate }}
                     </a></li>
-                    <li ng-show="audit.sites"><a ng-class="{'active':( audit.actions.indexOf('Remove_members') > -1 )}" ng-click="audit.updateActions('Remove_members')">
+                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Remove_members') > -1 )}" ng-click="audit.updateActions('Remove_members')">
                         {{ 'admin.audit.operations.REMOVE_MEMBERS' | translate }}
                     </a></li>
                     <li><a ng-class="{'active':( audit.actions.indexOf('Add_remote') > -1 )}" ng-click="audit.updateActions('Add_remote')">
@@ -135,7 +135,7 @@
                     <li><a ng-class="{'active':( audit.actions.indexOf('Start_publisher') > -1 )}" ng-click="audit.updateActions('Start_publisher')">
                         {{ 'admin.audit.operations.START_PUBLISHER' | translate }}
                     </a></li>
-                    <li ng-show="audit.sites"><a ng-class="{'active':( audit.actions.indexOf('Remove_cluster_node') > -1 )}" ng-click="audit.updateActions('Remove_cluster_node')">
+                    <li ng-show="!audit.currentSiteName"><a ng-class="{'active':( audit.actions.indexOf('Remove_cluster_node') > -1 )}" ng-click="audit.updateActions('Remove_cluster_node')">
                         {{ 'admin.audit.operations.REMOVE_CLUSTER_NODE' | translate }}
                     </a></li>
                   <li><a ng-class="{'active':( audit.actions.indexOf('Cancel_publishing_package') > -1 )}" ng-click="audit.updateActions('Cancel_publishing_package')">
