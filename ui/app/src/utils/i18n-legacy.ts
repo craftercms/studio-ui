@@ -891,6 +891,13 @@ const wcmRootFolder = defineMessages({
   },
 })
 
+const controlsCommonMessages = defineMessages({
+  escapeContent: {
+    id: 'controlsCommonMessages.escapeContent',
+    defaultMessage: 'Escape Content'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -924,5 +931,6 @@ export default {
   ossAttribution,
   dashboardWidgetsMessages,
   bulkUploadConfirmDialogMessages,
-  wcmRootFolder
+  wcmRootFolder,
+  controlsCommonMessages
 };
