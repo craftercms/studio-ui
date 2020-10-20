@@ -115,7 +115,7 @@ function PreviewDialogUI(props: PreviewDialogProps) {
         );
       case 'editor': {
         return (
-          <ConditionalLoadingState isLoading={!Boolean(props.content)}>
+          <ConditionalLoadingState isLoading={!props.content}>
             <AceEditor
               value={props.content}
               className={classes.editor}
