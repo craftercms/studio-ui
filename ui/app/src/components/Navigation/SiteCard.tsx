@@ -39,6 +39,10 @@ const useStyles = makeStyles(() => ({
     '&.disabled': {
       opacity: '0.5',
       pointerEvents: 'none'
+    },
+    '&.selected, &.selected:hover': {
+      color: palette.blue.main,
+      backgroundColor: palette.blue.highlight
     }
   },
   avatar: {
@@ -62,7 +66,7 @@ interface TitleCardProps {
   classes?: any;
   cardActions?: any;
   disabled?: boolean;
-
+  selected?: boolean;
   onCardClick(id: string): any;
 }
 
@@ -74,7 +78,8 @@ export default function SiteCard(props: TitleCardProps) {
     icon: Icon,
     onCardClick,
     cardActions = [],
-    disabled = false
+    disabled = false,
+    selected = false
   } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles({});
@@ -92,10 +97,12 @@ export default function SiteCard(props: TitleCardProps) {
 
   return (
     <Card
+      elevation={selected ? 0 : 1}
       className={clsx(
         classes.card,
         props.classes?.root && props.classes.root,
-        disabled && 'disabled'
+        disabled && 'disabled',
+        selected && 'selected'
       )}
       onClick={() => (!disabled ? onCardClick(value) : null)}
     >

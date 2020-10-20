@@ -512,14 +512,15 @@ export default function GlobalNav(props: GlobalNavProps) {
                   {formatMessage(messages.mySites)}
                 </Typography>
                 {sites.length ? (
-                  sites.map((site, i) => (
+                  sites.map((item, i) => (
                     <SiteCard
                       key={i}
-                      title={site.name}
-                      value={site.id}
-                      options={true}
+                      options
+                      selected={item.id === site}
+                      title={item.name}
+                      value={item.id}
                       classes={{ root: classes.titleCard }}
-                      onCardClick={() => onSiteCardClick(site.id)}
+                      onCardClick={() => onSiteCardClick(item.id)}
                       cardActions={cardActions}
                     />
                   ))
