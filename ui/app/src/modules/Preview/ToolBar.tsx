@@ -58,7 +58,7 @@ import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { ItemMenu } from '../../components/ItemMenu/ItemMenu';
-import SearchAhead from '../../components/Controls/SearchAhead';
+import SearchAhead from '../../components/Controls/PagesSearchAhead';
 
 const translations = defineMessages({
   openToolsPanel: {
