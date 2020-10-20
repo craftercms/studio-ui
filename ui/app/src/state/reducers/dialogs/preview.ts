@@ -16,7 +16,12 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { closePreviewDialog, previewDialogClosed, showPreviewDialog } from '../../actions/dialogs';
+import {
+  closePreviewDialog,
+  previewDialogClosed,
+  showPreviewDialog,
+  updatePreviewDialog
+} from '../../actions/dialogs';
 import { PreviewDialogStateProps } from '../../../components/Dialogs/PreviewDialog';
 
 const initialState: PreviewDialogStateProps = {
@@ -36,6 +41,10 @@ export default createReducer<GlobalState['dialogs']['preview']>(
       onClosed: previewDialogClosed(),
       ...payload,
       open: true
+    }),
+    [updatePreviewDialog.type]: (state, { payload }) => ({
+      ...state,
+      ...payload
     }),
     [closePreviewDialog.type]: (state) => ({
       ...state,
