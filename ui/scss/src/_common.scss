@@ -95,17 +95,23 @@
   }
 }
 
-.username.trim {
-  max-width: 390px;
+.trim {
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: -5px;
-}
+  white-space: nowrap;
 
-.group-name.trim {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  &.username {
+    max-width: 390px;
+    margin-bottom: -5px;
+  }
+
+  &.group-name {
+    max-width: 200px;
+  }
+
+  &.site-name {
+    max-width: 300px;
+  }
 }
 
 .icon-externally-managed {

@@ -23,8 +23,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
-import KeyboardArrowLeftRounded from '@material-ui/icons/KeyboardArrowLeftRounded';
-import KeyboardArrowRightRounded from '@material-ui/icons/KeyboardArrowRightRounded';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
@@ -39,7 +37,13 @@ import {
 import { useDispatch } from 'react-redux';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, usePreviewGuest, usePreviewState, useSelection } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  usePermissions,
+  usePreviewGuest,
+  usePreviewState,
+  useSelection
+} from '../../utils/hooks';
 import { getHostToGuestBus } from './previewContext';
 import { isBlank } from '../../utils/string';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -70,6 +74,14 @@ const translations = defineMessages({
   editModeOff: {
     id: 'previewToolbar.editModeOff',
     defaultMessage: 'Edit mode switched off'
+  },
+  reload: {
+    id: 'words.reload',
+    defaultMessage: 'Reload'
+  },
+  itemMenu: {
+    id: 'previewToolbar.itemMenu',
+    defaultMessage: 'Item menu'
   }
 });
 
@@ -147,6 +159,9 @@ const useStyles = makeStyles((theme: Theme) =>
     selectorPopoverRoot: {
       width: 400,
       marginLeft: '4px'
+    },
+    hidden: {
+      visibility: 'hidden'
     }
   })
 );
@@ -168,7 +183,8 @@ interface AddressBarProps {
 }
 
 export function AddressBar(props: AddressBarProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
+  const { formatMessage } = useIntl();
   const {
     site,
     url = '',
@@ -200,13 +216,20 @@ export function AddressBar(props: AddressBarProps) {
 
   return (
     <>
-      <IconButton className={classes.iconButton} aria-label="search">
+      {/*
+      TODO: Disabled. To be implemented at a later release or discarded. Browser back button suffices?
+      <IconButton className={classes.iconButton} aria-label="Back">
         <KeyboardArrowLeftRounded />
       </IconButton>
-      <IconButton className={classes.iconButton} aria-label="search">
+      <IconButton className={classes.iconButton} aria-label="Forward">
         <KeyboardArrowRightRounded />
       </IconButton>
-      <IconButton className={classes.iconButton} aria-label="search" onClick={onRefresh}>
+      */}
+      <IconButton
+        className={classes.iconButton}
+        title={formatMessage(translations.reload)}
+        onClick={onRefresh}
+      >
         <RefreshRounded />
       </IconButton>
       <Paper className={classes.addressBarInput}>
@@ -242,7 +265,7 @@ export function AddressBar(props: AddressBarProps) {
         />
         <SingleItemSelector
           disabled={noSiteSet}
-          rootPath='/site/website'
+          rootPath="/site/website"
           selectedItem={item as DetailedItem}
           open={openSelector}
           onClose={() => setOpenSelector(false)}
@@ -258,11 +281,14 @@ export function AddressBar(props: AddressBarProps) {
           }}
         />
       </Paper>
-      <IconButton className={classes.iconButton} aria-label="search" onClick={handleClick}>
+      <IconButton
+        className={classes.iconButton}
+        title={formatMessage(translations.itemMenu)}
+        onClick={handleClick}
+      >
         <MoreVertRounded />
       </IconButton>
-      {
-        Boolean(anchorEl) &&
+      {Boolean(anchorEl) && (
         <ItemMenu
           open={true}
           anchorEl={anchorEl}
@@ -270,7 +296,7 @@ export function AddressBar(props: AddressBarProps) {
           path={path}
           loaderItems={13}
         />
-      }
+      )}
     </>
   );
 }
@@ -287,15 +313,17 @@ export default function ToolBar() {
   const guest = usePreviewGuest();
   const modelId = guest?.modelId;
   const models = guest?.models;
-  const item = models?.[modelId] ? {
-    id: models[modelId].craftercms.id,
-    path: models[modelId].craftercms.path,
-    label: models[modelId].craftercms.label
-  } : null;
+  const item = models?.[modelId]
+    ? {
+        id: models[modelId].craftercms.id,
+        path: models[modelId].craftercms.path,
+        label: models[modelId].craftercms.label
+      }
+    : null;
   const { enqueueSnackbar } = useSnackbar();
 
   // region permissions
-  const permissions = useSelection((state) => state.content.permissions);
+  const permissions = usePermissions();
   const write = permissions?.[item?.path]?.['write'];
   const createContent = permissions?.[item?.path]?.['create_content'];
   // endregion
@@ -310,28 +338,27 @@ export default function ToolBar() {
           >
             <CustomMenu />
           </IconButton>
-          {
-            createContent &&
+          <section className={!createContent ? classes.hidden : ''}>
             <QuickCreate />
-          }
-          {
-            write &&
-            <Tooltip title={formatMessage(translations.toggleEditMode)}>
-              <EditSwitch
-                color="default"
-                checked={editMode}
-                onChange={(e) => {
-                  // prettier-ignore
-                  enqueueSnackbar(formatMessage(
-                    e.target.checked
-                      ? translations.editModeOn
-                      : translations.editModeOff
-                  ));
-                  dispatch(setPreviewEditMode({ editMode: e.target.checked }));
-                }}
-              />
-            </Tooltip>
-          }
+          </section>
+          <Tooltip
+            title={formatMessage(translations.toggleEditMode)}
+            className={!write ? classes.hidden : ''}
+          >
+            <EditSwitch
+              color="default"
+              checked={editMode}
+              onChange={(e) => {
+                // prettier-ignore
+                enqueueSnackbar(formatMessage(
+                  e.target.checked
+                    ? translations.editModeOn
+                    : translations.editModeOff
+                ));
+                dispatch(setPreviewEditMode({ editMode: e.target.checked }));
+              }}
+            />
+          </Tooltip>
         </section>
         <section className={classes.addressBarContainer}>
           <AddressBar

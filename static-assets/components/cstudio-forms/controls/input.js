@@ -31,6 +31,10 @@ CStudioForms.Controls.Input =
     this.id = id;
     this.readonly = readonly;
     this.supportedPostFixes = ['_s', '_t'];
+    this.escapeContent = false;
+
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.controlsCommonMessages = CrafterCMSNext.i18n.messages.controlsCommonMessages;
 
     return this;
   };
@@ -89,7 +93,8 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     // renderValidation does not require the result being passed
     obj.renderValidation(validationExist, validationResult);
     obj.owner.notifyValidation();
-    obj.form.updateModel(obj.id, obj.getValue());
+    const valueToSet = obj.escapeContent ? CStudioForms.Util.escapeXml(obj.getValue()) : obj.getValue();
+    obj.form.updateModel(obj.id, valueToSet);
   },
 
   _onChangeVal: function(evt, obj) {
@@ -169,7 +174,9 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
     this.inputEl = inputEl;
     YAHOO.util.Dom.addClass(inputEl, 'datum');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
-    inputEl.value = (this.value = '_not-set') ? config.defaultValue : this.value;
+
+    const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(this.value) : this.value;
+    inputEl.value = (this.value === '_not-set') ? config.defaultValue : valueToSet;
     controlWidgetContainerEl.appendChild(inputEl);
 
     YAHOO.util.Event.on(
@@ -197,6 +204,10 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
 
       if (prop.name == 'readonly' && prop.value == 'true') {
         this.readonly = true;
+      }
+
+      if (prop.name === 'escapeContent' && prop.value === 'true') {
+        this.escapeContent = true;
       }
     }
 
@@ -237,8 +248,10 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
   },
 
   setValue: function(value) {
-    this.value = value;
-    this.inputEl.value = value;
+    const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(value) : value;
+
+    this.value = valueToSet;
+    this.inputEl.value = valueToSet;
     this.count(null, this.countEl, this.inputEl);
     this._onChange(null, this);
     this.edited = false;
@@ -253,7 +266,13 @@ YAHOO.extend(CStudioForms.Controls.Input, CStudioForms.CStudioFormField, {
       { label: CMgs.format(langBundle, 'displaySize'), name: 'size', type: 'int', defaultValue: '50' },
       { label: CMgs.format(langBundle, 'maxLength'), name: 'maxlength', type: 'int', defaultValue: '50' },
       { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
-      { label: 'Tokenize for Indexing', name: 'tokenize', type: 'boolean', defaultValue: 'false' }
+      { label: 'Tokenize for Indexing', name: 'tokenize', type: 'boolean', defaultValue: 'false' },
+      {
+        label: this.formatMessage(this.controlsCommonMessages.escapeContent),
+        name: 'escapeContent',
+        type: 'boolean',
+        defaultValue: 'false'
+      }
     ];
   },
 

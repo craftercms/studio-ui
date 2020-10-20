@@ -80,6 +80,7 @@ import {
   useActiveSiteId,
   useContentTypeList,
   useMount,
+  usePermissions,
   usePreviewState,
   useSelection
 } from '../../utils/hooks';
@@ -94,7 +95,7 @@ import {
   getStoredPreviewChoice,
   setStoredPreviewChoice
 } from '../../utils/state';
-import { reloadDetailedItem } from '../../state/actions/content';
+import { completeDetailedItem } from '../../state/actions/content';
 
 const guestMessages = defineMessages({
   maxCount: {
@@ -157,12 +158,12 @@ export function PreviewConcierge(props: any) {
 
   // region Permissions and fetch of DetailedItem
   const currentItemPath = guest?.path;
-  const permissions = useSelection((state) => state.content.permissions);
+  const permissions = usePermissions();
   const write = permissions?.[currentItemPath]?.write;
 
   useEffect(() => {
     if (currentItemPath && site) {
-      dispatch(reloadDetailedItem({ path: currentItemPath }));
+      dispatch(completeDetailedItem({ path: currentItemPath }));
     }
   }, [dispatch, currentItemPath, site]);
 

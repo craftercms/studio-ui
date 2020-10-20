@@ -32,14 +32,14 @@ import { asArray } from '../utils/array';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
-export function getConfiguration(site: string, configPath: string, module: CrafterCMSModules): Observable<string> {
+export function getRawConfiguration(site: string, configPath: string, module: CrafterCMSModules): Observable<string> {
   return get(`/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`).pipe(
     map(({ response }) => response.content)
   );
 }
 
-export function getDOM(site: string, configPath: string, module: CrafterCMSModules): Observable<XMLDocument> {
-  return getConfiguration(site, configPath, module).pipe(map(fromString));
+export function getConfigurationDOM(site: string, configPath: string, module: CrafterCMSModules): Observable<XMLDocument> {
+  return getRawConfiguration(site, configPath, module).pipe(map(fromString));
 }
 
 // region PreviewToolsConfig
@@ -73,7 +73,7 @@ const audienceTypesMap: any = {
 };
 
 export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConfig> {
-  return getConfiguration(site, `/preview-tools/panel.xml`, 'studio').pipe(
+  return getRawConfiguration(site, `/preview-tools/panel.xml`, 'studio').pipe(
     map((content) => {
       try {
         return JSON.parse(content);
@@ -124,7 +124,7 @@ interface ActiveTargetingModel {
 }
 
 export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
-  return getConfiguration(site, `/targeting/targeting-config.xml`, 'studio').pipe(
+  return getRawConfiguration(site, `/targeting/targeting-config.xml`, 'studio').pipe(
     map((content) => {
       try {
         return JSON.parse(content);
@@ -308,8 +308,8 @@ export interface SidebarConfigItem {
   props?: object;
 }
 
-export function getSidebarConfig(site: string): Observable<SidebarConfigItem[]> {
-  return getConfiguration(site, '/context-nav/sidebar.xml', 'studio').pipe(
+export function getSidebarItems(site: string): Observable<SidebarConfigItem[]> {
+  return getRawConfiguration(site, '/context-nav/sidebar.xml', 'studio').pipe(
     map((rawXML) => {
       // The XML has a structure like:
       // {root}.contextNav.contexts.context.groups.group.menuItems.menuItem.modulehooks.modulehook;
@@ -364,8 +364,9 @@ export function fetchCannedMessage(site: string, locale: string, type: string): 
 
 export default {
   getProductLanguages,
-  getRawContent: getConfiguration,
-  getDOM,
+  getRawConfiguration,
+  getConfigurationDOM,
   getGlobalMenuItems,
-  getConfigurationHistory: getHistory
+  getConfigurationHistory: getHistory,
+  getSidebarItems
 };

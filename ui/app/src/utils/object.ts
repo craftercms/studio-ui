@@ -21,15 +21,25 @@ import { forEach } from './array';
 import { EntityState } from '../models/EntityState';
 import { stringify, StringifyOptions } from 'query-string';
 
+export function pluckProps<T extends object, K extends keyof T>(source: T, omitNull: boolean, ...props: K[]): Pick<T, K>;
+export function pluckProps<T extends object, K extends keyof T>(source: T, ...props: K[]): Pick<T, K>;
 export function pluckProps<T extends object, K extends keyof T>(source: T, ...props: K[]): Pick<T, K> {
+  let omitNull = false;
   const object: any = {};
   if (!source) {
     return object;
   }
+  if (typeof props[0] === 'boolean') {
+    omitNull = true;
+    props.shift();
+  }
   props.forEach((_prop_) => {
     const prop = String(_prop_);
     const propName = prop.substr(prop.lastIndexOf('.') + 1);
-    object[propName] = retrieveProperty(source, prop);
+    const value = retrieveProperty(source, prop);
+    if (nnou(value) || !omitNull) {
+      object[propName] = value;
+    }
   });
   return object;
 }

@@ -32,26 +32,15 @@ import {
   serialize,
   wrapElementInAuxDocument
 } from '../utils/xml';
-import {
-  ContentType,
-  ContentTypeField,
-  ContentTypeFieldValidations,
-  LegacyContentType,
-  LegacyDataSource,
-  LegacyFormDefinition,
-  LegacyFormDefinitionField,
-  LegacyFormDefinitionProperty,
-  LegacyFormDefinitionSection
-} from '../models/ContentType';
-import { nnou, nou, pluckProps, reversePluckProps, toQueryString } from '../utils/object';
+import { ContentType, ContentTypeField } from '../models/ContentType';
+import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import {
-  camelize,
   dataUriToBlob,
   decodeHTML,
   isBlank,
-  objectIdFromPath,
+  fileNameFromPath,
   popPiece,
   removeLastPiece
 } from '../utils/string';
@@ -69,6 +58,7 @@ import { parseLegacyItemToDetailedItem, parseLegacyItemToSandBoxItem } from '../
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { getParentPath, withoutIndex } from '../utils/path';
+import { fetchContentTypes } from './contentTypes';
 
 export function getComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
@@ -78,10 +68,10 @@ interface GetContentOptions {
   lock: boolean;
 }
 
-export function getContent(
+export function getContentXML(
   site: string,
   path: string,
-  options?: GetContentOptions
+  options?: Partial<GetContentOptions>
 ): Observable<string> {
   options = Object.assign({ lock: false }, options);
   const qs = toQueryString({ site_id: site, path, edit: options.lock });
@@ -90,24 +80,29 @@ export function getContent(
   );
 }
 
-export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
-  return get(
-    `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`
-  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
+export function getContentDOM(site: string, path: string): Observable<XMLDocument> {
+  return getContentXML(site, path).pipe(map(fromString));
 }
 
-export function getLegacyItemsTree(
+interface GetDescriptorOptions {
+  flatten: boolean;
+}
+
+export function getDescriptorXML(
   site: string,
   path: string,
-  options?: Partial<{ depth: number; order: string }>
-): Observable<LegacyItem> {
-  return get(
-    `/studio/api/1/services/api/1/content/get-items-tree.json${toQueryString({
-      site_id: site,
-      path,
-      ...options
-    })}`
-  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
+  options?: Partial<GetDescriptorOptions>
+): Observable<string> {
+  const qs = toQueryString({ siteId: site, path, flatten: true, ...options });
+  return get(`/studio/api/2/content/descriptor${qs}`).pipe(pluck('response', 'xml'));
+}
+
+export function getDescriptorDOM(
+  site: string,
+  path: string,
+  options?: Partial<GetDescriptorOptions>
+): Observable<XMLDocument> {
+  return getDescriptorXML(site, path, options).pipe(map(fromString));
 }
 
 export function getSandboxItem(site: string, path: string): Observable<SandboxItem> {
@@ -120,16 +115,18 @@ export function getDetailedItem(site: string, path: string): Observable<Detailed
   );
 }
 
-export function getDOM(site: string, path: string): Observable<XMLDocument> {
-  return getContent(site, path).pipe(map(fromString));
-}
-
 export function getContentInstanceLookup(
   site: string,
   path: string,
   contentTypesLookup: LookupTable<ContentType>
 ): Observable<LookupTable<ContentInstance>> {
-  return getDOM(site, path).pipe(map((doc) => parseContentXML(doc, path, contentTypesLookup, {})));
+  return getContentDOM(site, path).pipe(
+    map((doc) => {
+      const lookup = {};
+      parseContentXML(doc, path, contentTypesLookup, lookup);
+      return lookup;
+    })
+  );
 }
 
 export function getContentInstance(
@@ -137,12 +134,25 @@ export function getContentInstance(
   path: string,
   contentTypesLookup: LookupTable<ContentType>
 ): Observable<ContentInstance> {
-  return getDOM(site, path).pipe(
-    map(
-      (doc) =>
-        parseContentXML(doc, path, contentTypesLookup, {})[
-          getInnerHtml(doc.querySelector('objectId'))
-        ]
+  return getContentDOM(site, path).pipe(
+    map((doc) => parseContentXML(doc, path, contentTypesLookup, {}))
+  );
+}
+
+export function getContentInstanceDescriptor(
+  site: string,
+  path: string,
+  options?: Partial<GetDescriptorOptions>
+): Observable<LookupTable<ContentInstance>> {
+  return fetchContentTypes(site).pipe(
+    switchMap((ctl) =>
+      getDescriptorDOM(site, path, options).pipe(
+        map((doc) => {
+          const lookup = {};
+          parseContentXML(doc, path, createLookupTable(ctl), lookup);
+          return lookup;
+        })
+      )
     )
   );
 }
@@ -177,17 +187,16 @@ function parseElementByContentType(
       element.querySelectorAll(':scope > item').forEach((item) => {
         const key = getInnerHtml(item.querySelector('key'));
         const component = item.querySelector('component');
-        const instanceLK = parseContentXML(
+        const instance = parseContentXML(
           component ? wrapElementInAuxDocument(component) : null,
           key,
           contentTypesLookup,
           instanceLookup
         );
-        array.push(instanceLK[objectIdFromPath(key)]);
+        array.push(instance);
       });
       return array;
     }
-
     case 'html':
       return decodeHTML(getInnerHtml(element));
     default:
@@ -200,10 +209,10 @@ function parseContentXML(
   path: string = null,
   contentTypesLookup: LookupTable<ContentType>,
   instanceLookup: LookupTable<ContentInstance>
-): LookupTable<ContentInstance> {
-  const id = nnou(doc) ? getInnerHtml(doc.querySelector('objectId')) : objectIdFromPath(path);
-  const contentType = nnou(doc) ? getInnerHtml(doc.querySelector('content-type')) : null;
-  instanceLookup[id] = {
+): ContentInstance {
+  const id = nnou(doc) ? getInnerHtml(doc.querySelector('objectId')) : fileNameFromPath(path);
+  const contentTypeId = nnou(doc) ? getInnerHtml(doc.querySelector('content-type')) : null;
+  const current = {
     craftercms: {
       id,
       path,
@@ -211,23 +220,33 @@ function parseContentXML(
       locale: null,
       dateCreated: nnou(doc) ? getInnerHtml(doc.querySelector('createdDate_dt')) : null,
       dateModified: nnou(doc) ? getInnerHtml(doc.querySelector('lastModifiedDate_dt')) : null,
-      contentTypeId: contentType
+      contentTypeId: contentTypeId,
+      sourceMap: {}
     }
   };
+  instanceLookup[id] = current;
   if (nnou(doc)) {
     Array.from(doc.documentElement.children).forEach((element: Element) => {
-      if (!systemPropsList.includes(element.tagName)) {
-        instanceLookup[id][element.tagName] = parseElementByContentType(
+      const tagName = element.tagName;
+      if (!systemPropsList.includes(tagName)) {
+        let sourceContentTypeId;
+        const source = element.getAttribute('crafter-source');
+        if (source) {
+          current.craftercms.sourceMap[tagName] = source;
+          // TODO: https://github.com/craftercms/craftercms/issues/4093
+          // Temporarily falling back to a known content type while backend updates
+          sourceContentTypeId = element.getAttribute('crafter-source-content-type-id') ?? '/component/level-descriptor';
+        }
+        current[tagName] = parseElementByContentType(
           element,
-          contentTypesLookup[contentType].fields[element.tagName],
+          contentTypesLookup[sourceContentTypeId ?? contentTypeId].fields[tagName],
           contentTypesLookup,
           instanceLookup
         );
       }
     });
   }
-
-  return instanceLookup;
+  return current;
 }
 
 // Code disabled temporarily
@@ -240,7 +259,7 @@ function parseContentXML(
 ): LookupTable<ContentInstance> {
   const id = nnou(doc)
     ? getInnerHtml(doc.querySelector(':scope > objectId'))
-    : objectIdFromPath(path);
+    : fileNameFromPath(path);
   const contentType = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > content-type')) : null;
   instanceLookup[id] = {
     craftercms: {
@@ -326,21 +345,6 @@ function parseContentXMLWithoutContentTypes_processFields(
   });
 }*/
 
-function parseLegacyContentType(legacy: LegacyContentType): ContentType {
-  return {
-    id: legacy.form,
-    name: legacy.label.replace('Component - ', ''),
-    quickCreate: legacy.quickCreate,
-    quickCreatePath: legacy.quickCreatePath,
-    type: legacy.type,
-    fields: null,
-    sections: null,
-    displayTemplate: null,
-    dataSources: null,
-    mergeStrategy: null
-  };
-}
-
 const systemPropsList = [
   'content-type',
   'display-template',
@@ -357,453 +361,6 @@ const systemPropsList = [
   'lastModifiedDate',
   'lastModifiedDate_dt'
 ];
-
-export function fetchLegacyContentTypes(
-  site: string,
-  path?: string
-): Observable<LegacyContentType[]> {
-  const qs = toQueryString({ site, path });
-  return get(`/studio/api/1/services/api/1/content/get-content-types.json${qs}`).pipe(
-    pluck('response'),
-    catchError(errorSelectorApi1)
-  );
-}
-
-export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
-  return fetchLegacyContentTypes(site).pipe(
-    map((response) =>
-      (query?.type
-        ? response.filter(
-            (contentType) =>
-              contentType.type === query.type && contentType.name !== '/component/level-descriptor'
-          )
-        : response
-      ).map(parseLegacyContentType)
-    ),
-    switchMap((contentTypes) =>
-      zip(
-        of(contentTypes),
-        forkJoin<LookupTable<Observable<Partial<ContentType>>>, 'id'>(
-          contentTypes.reduce((hash, contentType) => {
-            hash[contentType.id] = fetchFormDefinition(site, contentType.id);
-            return hash;
-          }, {})
-        )
-      )
-    ),
-    map(([contentTypes, formDefinitions]) =>
-      contentTypes.map((contentType) => ({
-        ...contentType,
-        ...formDefinitions[contentType.id]
-      }))
-    )
-  );
-}
-
-export function fetchLegacyFormDefinition(
-  site: string,
-  contentTypeId: string
-): Observable<LegacyFormDefinition> {
-  return get(
-    `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types${contentTypeId}/form-definition.xml`
-  ).pipe(pluck('response'));
-}
-
-export function fetchFormDefinition(
-  site: string,
-  contentTypeId: string
-): Observable<Partial<ContentType>> {
-  return fetchLegacyFormDefinition(site, contentTypeId).pipe(map(parseLegacyFormDef));
-}
-
-export function fetchLegacyContentType(
-  site: string,
-  contentTypeId: string
-): Observable<LegacyContentType> {
-  return get(
-    `/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`
-  ).pipe(pluck('response'));
-}
-
-export function fetchContentType(site: string, contentTypeId: string): Observable<ContentType> {
-  return forkJoin({
-    type: fetchLegacyContentType(site, contentTypeId).pipe(map(parseLegacyContentType)),
-    definition: fetchFormDefinition(site, contentTypeId)
-  }).pipe(
-    map(({ type, definition }) => ({
-      ...type,
-      ...definition
-    }))
-  );
-}
-
-const systemPropList = [
-  'id',
-  'path',
-  'contentTypeId',
-  'dateCreated',
-  'dateModified',
-  'label',
-  'locale'
-];
-
-export function fetchById(site: string, id: string): Observable<any> {
-  return post(
-    `/api/1/site/graphql?crafterSite=${site}`,
-    {
-      query: `
-        query Page {
-          contentItems {
-            total
-            items {
-              id: objectId
-              path: localId
-              contentTypeId: content__type
-              dateCreated: createdDate_dt
-              dateModified: lastModifiedDate_dt
-              label: internal__name
-              ...on component_articles__widget {
-                title_t
-                max_articles_i
-
-              }
-              ...on component_contact__widget {
-                title_t
-                text_html
-                email_s
-                phone_s
-                address_html
-              }
-              ...on component_feature {
-                icon_s
-                title_t
-                body_html
-              }
-              ...on component_header {
-                logo_s
-                logo_text_t
-                business_name_s
-                social_media_links_o {
-                  item {
-                    social_media_s
-                    url_s
-                  }
-                }
-              }
-              ...on component_left__rail {
-                widgets_o {
-                  item {
-                    key
-                    component {
-                      id: objectId
-                    }
-                  }
-                }
-              }
-              ...on page_home {
-                title_t
-                header_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                left__rail_o {
-                  ...ContentIncludeWrapperFragment
-                }
-                hero_title_html
-                hero_text_html
-                hero_image_s
-                features_title_t
-                features_o {
-                  ...ContentIncludeWrapperFragment
-                }
-              }
-              ...on taxonomy {
-                items {
-                  item {
-                    key
-                    value
-                  }
-                }
-              }
-            }
-          }
-        }
-        fragment ContentIncludeWrapperFragment on ContentIncludeWrapper {
-          item {
-            key
-            component {
-              id: objectId
-            }
-          }
-        }
-      `
-    },
-    { 'Content-Type': 'application/json' }
-  ).pipe(
-    map(({ response }) =>
-      response.data.contentItems.items.flatMap((model) => {
-        if (['/page/search-results', '/component/level-descriptor'].includes(model.contentTypeId)) {
-          return [];
-        }
-
-        const system = pluckProps(model, ...systemPropList);
-        const data = reversePluckProps(model, ...systemPropList);
-
-        Object.entries(data).forEach(([key, value]: [string, any]) => {
-          if (key.endsWith('_o')) {
-            data[key] = value.item.map((item) => item.component?.id || item);
-          } else if (model.contentTypeId === '/taxonomy' && key === 'items') {
-            data[key] = value.item;
-          }
-        });
-
-        return [
-          {
-            craftercms: system,
-            ...data
-          }
-        ];
-      })
-    )
-  );
-}
-
-const typeMap = {
-  input: 'text',
-  'rte-tinymce5': 'html',
-  'rte-tinymce4': 'html',
-  checkbox: 'boolean',
-  'image-picker': 'image'
-};
-
-function asArray<T = any>(object: Array<T> | T): Array<T> {
-  return nou(object) ? [] : Array.isArray(object) ? object : [object];
-}
-
-// TODO: Temporarily disabled data sources until needed and read properly (images, and others?)
-function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentType> {
-  if (nou(definition)) {
-    return {};
-  }
-
-  const fields = {};
-  const sections = [];
-  //const dataSources = {};
-  const receptaclesLookup: LookupTable<LegacyDataSource> = {};
-
-  //get receptacles dataSources
-  if (definition.datasources?.datasource) {
-    asArray(definition.datasources.datasource).forEach((datasource: LegacyDataSource) => {
-      if (datasource.type === 'receptacles') receptaclesLookup[datasource.id] = datasource;
-    });
-  }
-
-  // In some cases, the back end parser seems to return this as "   " 🤷
-  // if (typeof definition.datasources !== 'string') {
-  //   const propsToPluck = ['browsePath', 'repoPath', 'enableSearchExisting', 'enableBrowseExisting', 'enableCreateNew'];
-  //   definition.datasources?.datasource && asArray<LegacyDataSource>(definition.datasources.datasource).forEach((legacyDS) => {
-  //
-  //     dataSources[legacyDS.id] = {
-  //       id: legacyDS.id,
-  //       name: legacyDS.title,
-  //       type: typeMap[legacyDS.type] || legacyDS.type, // e.g. shared-content, embedded-content, img-desktop-upload, img-repository-upload
-  //       allowedContentTypes: null,
-  //       repoPath: null,
-  //       browsePath: null,
-  //       enableSearchExisting: null,
-  //       enableBrowseExisting: null,
-  //       enableCreateNew: null
-  //     };
-  //
-  //     asArray<LegacyFormDefinitionProperty>(legacyDS.properties.property).forEach(prop => {
-  //       if (prop.name === 'contentTypeId') {
-  //         if (dataSources[legacyDS.id].allowedContentTypes === null) {
-  //           dataSources[legacyDS.id].allowedContentTypes = [];
-  //         }
-  //         dataSources[legacyDS.id].allowedContentTypes.push(...prop.value.split(','));
-  //       } else if (propsToPluck.includes(prop.name)) {
-  //         // TODO: Figure out how to reliable extract this for the purpose of validating welcomed content types.
-  //         dataSources[legacyDS.id][prop.name] = prop.value;
-  //       }
-  //     });
-  //
-  //   });
-  // }
-
-  // Parse Sections & Fields
-  definition.sections?.section &&
-    asArray<LegacyFormDefinitionSection>(definition.sections.section).forEach((legacySection) => {
-      const fieldIds = [];
-
-      legacySection.fields?.field &&
-        asArray<LegacyFormDefinitionField>(legacySection.fields.field).forEach((legacyField) => {
-          const fieldId = ['file-name', 'internal-name'].includes(legacyField.id)
-            ? camelize(legacyField.id)
-            : legacyField.id;
-
-          fieldIds.push(fieldId);
-
-          const field: ContentTypeField = {
-            id: fieldId,
-            name: legacyField.title,
-            type: typeMap[legacyField.type] || legacyField.type,
-            sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-            validations: {},
-            defaultValue: legacyField.defaultValue,
-            required: false
-          };
-
-          legacyField.constraints &&
-            asArray<LegacyFormDefinitionProperty>(legacyField.constraints.constraint).forEach(
-              (legacyProp) => {
-                const value = legacyProp.value.trim();
-                switch (legacyProp.name) {
-                  case 'required':
-                    if (value === 'true') {
-                      field.validations.required = {
-                        id: 'required',
-                        value: value === 'true',
-                        level: 'required'
-                      };
-                    }
-                    break;
-                  case 'allowDuplicates':
-                    break;
-                  case 'pattern':
-                    break;
-                  case 'minSize':
-                    break;
-                  default:
-                    console.log(
-                      `[parseLegacyFormDef] Unhandled constraint "${legacyProp.name}"`,
-                      legacyProp
-                    );
-                }
-              }
-            );
-
-          if (legacyField.type === 'repeat') {
-            field.fields = {};
-            asArray(legacyField.fields.field).forEach((_legacyField) => {
-              const _fieldId = camelize(_legacyField.id);
-              field.fields[_fieldId] = {
-                id: _fieldId,
-                name: _legacyField.title,
-                type: typeMap[_legacyField.type] || _legacyField.type,
-                sortable: legacyField.type === 'node-selector' || legacyField.type === 'repeat',
-                validations: null,
-                defaultValue: '',
-                required: false
-              };
-              if (field.fields[_fieldId].type === 'node-selector') {
-                field.fields[_fieldId].validations = getFieldValidations(
-                  _legacyField.properties.property,
-                  receptaclesLookup
-                );
-              }
-            });
-          } else if (legacyField.type === 'node-selector') {
-            field.validations = {
-              ...field.validations,
-              ...getFieldValidations(legacyField.properties.property, receptaclesLookup)
-            };
-          } else if (legacyField.type === 'input') {
-            field.validations = {
-              ...field.validations,
-              ...getFieldValidations(legacyField.properties.property)
-            };
-          }
-
-          fields[fieldId] = field;
-        });
-
-      sections.push({
-        description: legacySection.description,
-        expandByDefault: legacySection.defaultOpen === 'true',
-        title: legacySection.title,
-        fields: fieldIds
-      });
-    });
-
-  const topLevelProps: LegacyFormDefinitionProperty[] = definition.properties?.property
-    ? asArray(definition.properties.property)
-    : [];
-
-  return {
-    // Find display template
-    displayTemplate: topLevelProps.find((prop) => prop.name === 'display-template')?.value,
-    mergeStrategy: topLevelProps.find((prop) => prop.name === 'merge-strategy')?.value,
-    // dataSources: Object.values(dataSources),
-    sections,
-    fields
-  };
-}
-
-const systemValidationsNames = ['itemManager', 'minSize', 'maxSize', 'maxlength', 'readonly'];
-const systemValidationsKeysMap = {
-  minSize: 'minCount',
-  maxSize: 'maxCount',
-  maxlength: 'maxLength',
-  contentTypes: 'allowedContentTypes',
-  tags: 'allowedContentTypeTags',
-  readonly: 'readOnly'
-};
-
-function bestGuessParse(value: any) {
-  if (nou(value)) {
-    return null;
-  } else if (value === 'true') {
-    return true;
-  } else if (value === 'false') {
-    return false;
-  } else if (!isNaN(parseFloat(value))) {
-    return parseFloat(value);
-  } else {
-    return value;
-  }
-}
-
-function getFieldValidations(
-  fieldProperty: LegacyFormDefinitionProperty | LegacyFormDefinitionProperty[],
-  receptaclesLookup?: LookupTable<LegacyDataSource>
-): Partial<ContentTypeFieldValidations> {
-  const map = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<
-    LookupTable<LegacyFormDefinitionProperty>
-  >((table, prop) => {
-    table[prop.name] = prop;
-    return table;
-  }, {});
-
-  let validations: Partial<ContentTypeFieldValidations> = {};
-
-  Object.keys(map).forEach((key) => {
-    if (systemValidationsNames.includes(key)) {
-      if (key === 'itemManager' && receptaclesLookup) {
-        map.itemManager?.value &&
-          map.itemManager.value.split(',').forEach((value) => {
-            if (receptaclesLookup[value]) {
-              asArray(receptaclesLookup[value].properties?.property).forEach((prop) => {
-                if (systemValidationsKeysMap[prop.name]) {
-                  validations[systemValidationsKeysMap[prop.name]] = {
-                    id: systemValidationsKeysMap[prop.name],
-                    value: prop.value ? prop.value.split(',') : [],
-                    level: 'required'
-                  };
-                }
-              });
-            }
-          });
-      } else if (systemValidationsNames.includes(key) && !isBlank(map[key]?.value)) {
-        validations[systemValidationsKeysMap[key]] = {
-          id: systemValidationsKeysMap[key],
-          // TODO: Parse values robustly
-          value: bestGuessParse(map[key].value),
-          level: 'required'
-        };
-      }
-    }
-  });
-  return validations;
-}
 
 function writeContentUrl(qs: object): string {
   qs = new URLSearchParams(qs as URLSearchParams);
@@ -846,7 +403,7 @@ function performMutation(
   mutation: (doc: XMLDocument) => void
 ): Observable<any> {
   const isEmbeddedTarget = nnou(parentModelId);
-  return getDOM(site, isEmbeddedTarget ? parentModelId : modelId).pipe(
+  return getContentDOM(site, isEmbeddedTarget ? parentModelId : modelId).pipe(
     switchMap((doc) => {
       const qs = {
         site,
@@ -1108,7 +665,7 @@ export function getContentByContentType(
 }
 
 export function formatXML(site: string, path: string) {
-  return getDOM(site, path).pipe(
+  return getContentDOM(site, path).pipe(
     switchMap((doc) =>
       post(
         writeContentUrl({
@@ -1139,13 +696,6 @@ interface LegacyContentDocumentProps {
 interface AnyObject {
   [key: string]: any;
 }
-
-// TypeScript: Typing object with arbitrary properties - The "Property does not exist on type object" issue
-// function mergeContentDocumentProps<T = typeof object>(type: string, data: T): LegacyContentDocumentProps {
-// function mergeContentDocumentProps2<T = any>(type: string, data: T): LegacyContentDocumentProps {
-//   data.dateCreated;
-//   return null;
-// }
 
 function extractNode(doc: XMLDocument, fieldId: string, index: string | number) {
   const indexes =
@@ -1256,12 +806,6 @@ function insertCollectionItem(
   }
 }
 
-export function fetchPublishingChannels(site: string) {
-  return get(
-    `/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`
-  );
-}
-
 export function uploadDataUrl(
   site: string,
   file: any,
@@ -1343,17 +887,12 @@ export function revertTo(site: string, path: string, versionNumber: string): Obs
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-// region Get Version(s)
-
 interface VersionDescriptor {
   site: string;
   path: string;
   versionNumber: string;
   content: ContentInstance;
 }
-
-// Temporarily disabling getVersion(s) and returning just the necessary information to power
-// the previous "diff" view — without network requests — while we develop the backend
 
 export function getVersion(
   site: string,
@@ -1366,23 +905,6 @@ export function getVersion(
     versionNumber,
     content: null
   });
-  // Code disabled temporarily
-  // return getDOM(site, path).pipe(
-  //   map((doc) => {
-  //     const id = getInnerHtml(doc.querySelector('objectId'));
-  //     const content = parseContentXMLWithoutContentTypes(doc, path, {});
-  //     const item = content[id];
-  //     return {
-  //       id,
-  //       site,
-  //       path,
-  //       content,
-  //       versionNumber,
-  //       lastModifiedDate: item.craftercms.dateModified,
-  //       contentTypeId: item.craftercms.contentTypeId
-  //     };
-  //   })
-  // );
 }
 
 export function getVersions(
@@ -1405,61 +927,7 @@ export function getVersions(
       content: null
     }
   ]);
-  // Code disabled temporarily
-  // return getContentInstance(site, path, contentTypes).pipe(
-  //   map((response) => [
-  //     {
-  //       ...response,
-  //       title_t: 'testeo',
-  //       features_o: [
-  //         {
-  //           ...response['features_o'][0],
-  //           craftercms: {
-  //             ...response['features_o'][0].craftercms,
-  //             dateModified: Date.now(),
-  //             id: 'asd1232'
-  //           }
-  //         },
-  //         ...response['features_o']
-  //       ],
-  //       craftercms: {
-  //         ...response.craftercms,
-  //         versionNumber: versionNumbers[0]
-  //       }
-  //     },
-  //     {
-  //       ...response,
-  //       hero_image_s: 'https://via.placeholder.com/300',
-  //       features_o: [
-  //         {
-  //           ...response['features_o'][0],
-  //           craftercms: {
-  //             ...response['features_o'][0].craftercms,
-  //             dateModified: Date.now() + 1,
-  //             id: 'asd1232'
-  //           }
-  //         },
-  //         ...response['features_o'],
-  //         {
-  //           ...response['features_o'][0],
-  //           craftercms: {
-  //             ...response['features_o'][0].craftercms,
-  //             dateModified: Date.now(),
-  //             id: 'asd1234'
-  //           }
-  //         }
-  //       ],
-  //       hero_title_html: '<h2>Simply Editorial</h2>',
-  //       craftercms: {
-  //         ...response.craftercms,
-  //         versionNumber: versionNumbers[1]
-  //       }
-  //     }
-  //   ])
-  // );
 }
-
-// endregion
 
 export function getChildrenByPath(
   site: string,
@@ -1534,7 +1002,7 @@ export function deleteItems(
 }
 
 export function lock(site: string, path: string): Observable<boolean> {
-  return getContent(site, path, { lock: true }).pipe(mapTo(true));
+  return getContentXML(site, path, { lock: true }).pipe(mapTo(true));
 }
 
 export function unlock(site: string, path: string): Observable<boolean> {
@@ -1553,13 +1021,13 @@ export function fetchWorkflowAffectedItems(site: string, path: string): Observab
   );
 }
 
-export function createNewFolder(site: string, path: string, name: string): Observable<unknown> {
+export function createFolder(site: string, path: string, name: string): Observable<unknown> {
   return post(
     `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${path}&name=${name}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function createNewFile(site: string, path: string, fileName: string): Observable<unknown> {
+export function createFile(site: string, path: string, fileName: string): Observable<unknown> {
   return post(
     `/studio/api/1/services/api/1/content/write-content.json?site=${site}&phase=onSave&path=${path}&fileName=${fileName}&user=admin&unlock=true`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
@@ -1581,21 +1049,47 @@ export function changeContentType(
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
+export function checkPathExistence(site: string, path: string): Observable<boolean> {
+  return get(
+    `/studio/api/1/services/api/1/content/content-exists.json?site_id=${site}&path=${path}`
+  ).pipe(
+    pluck('response', 'content'),
+    catchError(errorSelectorApi1)
+  );
+}
+
+export function getLegacyItem(site: string, path: string): Observable<LegacyItem> {
+  return get(
+    `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${path}`
+  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
+}
+
+export function getLegacyItemsTree(
+  site: string,
+  path: string,
+  options?: Partial<{ depth: number; order: string }>
+): Observable<LegacyItem> {
+  return get(
+    `/studio/api/1/services/api/1/content/get-items-tree.json${toQueryString({
+      site_id: site,
+      path,
+      ...options
+    })}`
+  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
+}
+
 export default {
   getComponentInstanceHTML,
-  getContent,
+  getContentXML,
   getLegacyItem,
   getSandboxItem,
   getDetailedItem,
-  getDOM,
+  getContentDOM,
   getChildrenByPath,
   copy,
   cut,
   paste,
   getContentInstanceLookup,
-  fetchContentTypes,
-  fetchContentType,
-  fetchById,
   updateField,
   insertComponent,
   insertInstance,
@@ -1604,15 +1098,14 @@ export default {
   moveItem,
   deleteItem,
   getContentByContentType,
-  fetchPublishingChannels,
   uploadDataUrl,
   getBulkUploadUrl,
   fetchQuickCreateList,
-  fetchLegacyContentTypes,
   getContentHistory: getHistory,
   revertTo,
   lock,
   unlock,
   fetchWorkflowAffectedItems,
-  changeContentType
+  changeContentType,
+  checkPathExistence
 };

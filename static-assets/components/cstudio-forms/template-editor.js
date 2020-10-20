@@ -168,7 +168,7 @@ CStudioAuthoring.Module.requireModule(
 
                 Promise.all([
                     CrafterCMSNext.services.configuration
-                      .getDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
+                      .getConfigurationDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
                       .toPromise(),
                     new Promise((resolve, reject) => {
                       CStudioAuthoring.Service.getContent(templatePath, true, {
@@ -800,8 +800,14 @@ CStudioAuthoring.Module.requireModule(
                                   payload: { id: createTemplateOnOk }
                                 },
                                 onClosed: {
-                                  type: 'DISPATCH_DOM_EVENT',
-                                  payload: { id: createTemplateOnCancel }
+                                  type: 'BATCH_ACTIONS',
+                                  payload: [
+                                    {
+                                      type: 'DISPATCH_DOM_EVENT',
+                                      payload: { id: createTemplateOnCancel }
+                                    },
+                                    { type: 'CONFIRM_DIALOG_CLOSED' }
+                                  ]
                                 }
                               }
                             });

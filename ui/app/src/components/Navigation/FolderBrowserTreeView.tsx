@@ -97,6 +97,7 @@ interface FolderBrowserTreeViewProps {
   onNodeSelected(event: React.ChangeEvent<{}>, nodeId: string): void;
   onNodeToggle(event: React.ChangeEvent<{}>, nodeIds: string[]): void;
   onPathChanged(path: string): void;
+  onKeyPress?(event: React.KeyboardEvent): void;
 }
 
 export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
@@ -111,7 +112,8 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
     resource,
     onPathChanged,
     invalidPath,
-    isFetching
+    isFetching,
+    onKeyPress
   } = props;
 
   const treeNodes = resource.read();
@@ -124,24 +126,23 @@ export default function FolderBrowserTreeView(props: FolderBrowserTreeViewProps)
         onPathChanged={onPathChanged}
         invalidPath={invalidPath}
         isFetching={isFetching}
+        onKeyPress={onKeyPress}
       />
-      {
-        treeNodes ? (
-          <TreeView
-            classes={{ root: props.classes?.treeViewRoot }}
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
-            expanded={expanded}
-            selected={selected}
-            onNodeToggle={onNodeToggle}
-            onNodeSelect={onNodeSelected}
-          >
-            <RenderTreeNode node={treeNodes} />
-          </TreeView>
-        ) : (
-          <LoadingState classes={{ root: classes.loadingState }} />
-        )
-      }
+      {treeNodes ? (
+        <TreeView
+          classes={{ root: props.classes?.treeViewRoot }}
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpandIcon={<ChevronRightIcon />}
+          expanded={expanded}
+          selected={selected}
+          onNodeToggle={onNodeToggle}
+          onNodeSelect={onNodeSelected}
+        >
+          <RenderTreeNode node={treeNodes} />
+        </TreeView>
+      ) : (
+        <LoadingState classes={{ root: classes.loadingState }} />
+      )}
     </section>
   );
 }
@@ -222,10 +223,18 @@ interface PathSelectedProps {
   invalidPath: boolean;
   isFetching: boolean;
   onPathChanged(path: string): void;
+  onKeyPress?(event: React.KeyboardEvent): void;
 }
 
 function PathSelected(props: PathSelectedProps) {
-  const { rootPath, currentPath, onPathChanged, invalidPath, isFetching } = props;
+  const {
+    rootPath,
+    currentPath,
+    onPathChanged,
+    invalidPath,
+    isFetching,
+    onKeyPress: onInputChanges
+  } = props;
   const classes = getPathSelectedStyles({});
   const [focus, setFocus] = useState(false);
   const [value, setValue] = useState(null);
@@ -237,7 +246,7 @@ function PathSelected(props: PathSelectedProps) {
   const onBlur = () => {
     setFocus(false);
     let path = rootPath + value;
-    if (path.endsWith('/')) {
+    if (path !== '/' && path.endsWith('/')) {
       path = path.slice(0, -1);
     }
     onPathChanged(path);
@@ -246,10 +255,12 @@ function PathSelected(props: PathSelectedProps) {
   const onKeyPress = (event: React.KeyboardEvent) => {
     if (event.charCode === 13) {
       let path = rootPath + value;
-      if (path.endsWith('/')) {
+      if (path !== '/' && path.endsWith('/')) {
         path = path.slice(0, -1);
       }
       onPathChanged(path);
+    } else {
+      onInputChanges?.(event);
     }
   };
 
@@ -273,15 +284,14 @@ function PathSelected(props: PathSelectedProps) {
           endAdornment={isFetching ? <CircularProgress size={16} /> : null}
         />
       </section>
-      {
-        invalidPath &&
+      {invalidPath && (
         <FormHelperText error>
           <FormattedMessage
             id="folderBrowserTreeView.invalidPath"
-            defaultMessage={'The entered path doesn’t exist.'}
+            defaultMessage="The entered path doesn’t exist."
           />
         </FormHelperText>
-      }
+      )}
     </>
   );
 }

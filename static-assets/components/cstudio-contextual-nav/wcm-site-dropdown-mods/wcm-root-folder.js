@@ -3318,8 +3318,14 @@
               payload: { id: contentDialogTypeSelectedId }
             },
             onClosed: {
-              type: 'DISPATCH_DOM_EVENT',
-              payload: { id: contentDialogCancel }
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: contentDialogCancel }
+                },
+                { type: 'NEW_CONTENT_DIALOG_CLOSED' }
+              ]
             }
           }
         });
@@ -3347,8 +3353,14 @@
                   ]
                 },
                 onClosed: {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventIdCancel }
+                  type: 'BATCH_ACTIONS',
+                  payload: [
+                    {
+                      type: 'DISPATCH_DOM_EVENT',
+                      payload: { id: eventIdCancel }
+                    },
+                    { type: 'EDIT_DIALOG_CLOSED' }
+                  ]
                 }
               }
             });

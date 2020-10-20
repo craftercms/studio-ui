@@ -16,8 +16,7 @@
 
 import React from 'react';
 import { useStyles } from './styles';
-import PhotoSizeSelectActualIcon from '@material-ui/icons/PublicRounded';
-import PlaceRoundedIcon from '@material-ui/icons/PlaceRounded';
+import LanguageRounded from '@material-ui/icons/LanguageRounded';
 import clsx from 'clsx';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
@@ -36,19 +35,7 @@ interface HeaderProps {
 export default function (props: HeaderProps) {
   const classes = useStyles({});
   const { title, icon: Icon, locale, onLanguageMenu, onContextMenu, onClick } = props;
-  const currentFlag = (locale: string) => {
-    switch (locale) {
-      case 'en': {
-        return <PhotoSizeSelectActualIcon />;
-      }
-      case 'es': {
-        return <PlaceRoundedIcon />;
-      }
-      default: {
-        return <PhotoSizeSelectActualIcon />;
-      }
-    }
-  };
+  const currentFlag = (locale: string) => <LanguageRounded />;
   return (
     <header className={clsx(classes.headerRoot)} onClick={onClick}>
       {Icon && (typeof Icon === 'string' ? (
@@ -62,26 +49,33 @@ export default function (props: HeaderProps) {
         className={classes.headerTitle}
         children={title}
       />
-      <IconButton
-        aria-label="language select"
-        className={classes.iconButton}
-        onClick={(e) => {
-          e.stopPropagation();
-          onLanguageMenu(e.currentTarget);
-        }}
-      >
-        {currentFlag(locale)}
-      </IconButton>
-      <IconButton
-        aria-label="options"
-        className={classes.iconButton}
-        onClick={(e) => {
-          e.stopPropagation();
-          onContextMenu(e.currentTarget);
-        }}
-      >
-        <MoreVertIcon />
-      </IconButton>
+
+      {
+        onLanguageMenu &&
+        <IconButton
+          aria-label="language select"
+          className={classes.iconButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            onLanguageMenu(e.currentTarget);
+          }}
+        >
+          {currentFlag(locale)}
+        </IconButton>
+      }
+      {
+        onContextMenu &&
+        <IconButton
+          aria-label="options"
+          className={classes.iconButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            onContextMenu(e.currentTarget);
+          }}
+        >
+          <MoreVertIcon />
+        </IconButton>
+      }
     </header>
   );
 }

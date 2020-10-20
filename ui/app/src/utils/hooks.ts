@@ -68,6 +68,10 @@ export function useEnv(): GlobalState['env'] {
   return useSelector<GlobalState, GlobalState['env']>((state) => state.env);
 }
 
+export function usePermissions(): GlobalState['content']['items']['permissionsByPath'] {
+  return useSelector<GlobalState, GlobalState['content']['items']['permissionsByPath']>((state) => state.content.items.permissionsByPath);
+}
+
 export function useQuickCreateState(): GlobalState['content']['quickCreate'] {
   return useSelection((state) => state.content.quickCreate);
 }
@@ -87,13 +91,27 @@ export function useQuickCreateListResource() {
   });
 }
 
-export function useSystemVersionResource() {
+// TODO: Assess drawbacks & improve.
+// Might need to refactor the state to have the isFetching there.
+let /*private*/ systemVersionRequested = false;
+/**
+ * Will only fetch the system version once. It's controlled by the
+ * `systemVersionRequested` private to control whether it's been requested.
+ **/
+export function useSystemVersion() {
   const dispatch = useDispatch();
   const env = useEnv();
   useEffect(() => {
-    env.version === null && dispatch(fetchSystemVersion());
+    if (!systemVersionRequested && env.version === null) {
+      systemVersionRequested = true;
+      dispatch(fetchSystemVersion());
+    }
   }, [dispatch, env.version]);
-  return useResolveWhenNotNullResource(env.version);
+  return env.version;
+}
+
+export function useSystemVersionResource() {
+  return useResolveWhenNotNullResource(useSystemVersion());
 }
 
 export function useContentTypes(): LookupTable<ContentType> {
@@ -204,11 +222,9 @@ interface CustomResourceSelectors<ReturnType = unknown, SourceType = unknown, Er
   errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType;
 }
 
-export function useSelectorResource<
-  ReturnType = unknown,
+export function useSelectorResource<ReturnType = unknown,
   SourceType = GlobalState,
-  ErrorType = unknown
->(
+  ErrorType = unknown>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: CustomResourceSelectors<ReturnType, SourceType, ErrorType>
 ): Resource<ReturnType> {
@@ -303,15 +319,19 @@ export function useMinimizeDialog(initialTab: MinimizedDialog) {
   return state?.minimized ?? initialTab.minimized;
 }
 
+export function useSitesBranch(): GlobalState['sites'] {
+  return useSelection((state) => state.sites);
+}
+
+export function useSiteLookup(): LookupTable<Site> {
+  return useSitesBranch().byId;
+}
+
 export function useSiteList(): Site[] {
-  const state = useSites();
+  const state = useSitesBranch();
   return useMemo(() => (
     state.byId ? Object.values(state.byId) : null
   ), [state.byId]);
-}
-
-export function useSites(): GlobalState['sites'] {
-  return useSelection((state) => state.sites);
 }
 
 export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
