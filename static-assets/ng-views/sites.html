@@ -15,101 +15,131 @@
   -->
 
 <div class="sites-view mainContainer">
+  <header class="screen-title">
+    <h1>{{ 'dashboard.sites.SITES_LABEL' | translate }}</h1>
+  </header>
 
-    <header class="screen-title">
-        <h1>{{ 'dashboard.sites.SITES_LABEL' | translate }}</h1>
-    </header>
-
-    <div ng-if="sites">
-        <div ng-show="createSites" class="m10 createSitesBtn pull-left">
-            <button id="create-site" class="btn btn-default btn-pill btn-block" ng-click="createSitesDialog()" ng-class="{ active: $state.includes('create') }">
-                <!-- ui-sref="home.sites.create" -->
-                <i class="fa fa-plus-circle"></i> <span>{{ 'dashboard.sites.CREATE_SITE' | translate }}</span>
-            </button>
-        </div>
-        <div class="pull-right m10">
-            <label>{{ 'dashboard.sites.SITES_PER_PAGE' | translate }}: </label>
-            <input class="audit-number-logs" type="number" name="input" ng-model="sitesPag.sitesPerPage"
-                   min="0" max="500" ng-model-options="{debounce: defaultDelay}">
-        </div>
-        <div ui-view>
-            <table class="site-list table table-hover">
-                <thead>
-                <tr>
-                    <th><span class="sr-only">{{ 'dashboard.sites.SITE_NAME' | translate }}</span></th>
-                    <th><span class="sr-only">{{ 'dashboard.sites.SITE_DASHBOARD_LINK' | translate }}</span></th>
-                    <th><span class="sr-only">{{ 'dashboard.sites.PREVIEW_LINK' | translate }}</span></th>
-                    <th><span class="sr-only">{{ 'common.REMOVE_LABEL' | translate }}</span></th>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr id="site-row-{{site.id}}" dir-paginate="site in sites | filter:q | itemsPerPage: sitesPag.sitesPerPage" current-page="pagination" total-items="totalSites">
-                        <td class="name site-name trim">{{site.name ? site.name : site.id }}</td>
-                        <td class="preview"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
-                        <td class="dashboard"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
-                        <td class="remove">
-                          <a ng-show="site.edit"
-                            tooltip-placement="bottom"
-                            uib-tooltip="Edit"
-                            ng-click="editSiteData(site)"
-                          >
-                            <i class="fa fa-pencil"></i>
-                          </a>
-                        </td>
-                        <td class="remove">
-                          <a ng-show="site.remove"
-                             ng-click="removeSiteSites(site)"
-                             tooltip-placement="bottom"
-                             uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
-                            <i class="fa fa-trash-o"></i>
-                          </a>
-                        </td>
-                    </tr>
-
-                </tbody>
-            </table>
-
-            <dir-pagination-controls id="sites-pagination" class="ml10" on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
-        </div>
+  <div ng-if="sites">
+    <div ng-show="createSites" class="m10 createSitesBtn pull-left">
+      <button
+        id="create-site"
+        class="btn btn-default btn-pill btn-block"
+        ng-click="createSitesDialog()"
+        ng-class="{ active: $state.includes('create') }"
+      >
+        <i class="fa fa-plus-circle"></i>
+        <span>{{ 'dashboard.sites.CREATE_SITE' | translate }}</span>
+      </button>
     </div>
-
-    <div ng-if="(!sites || !sites.length) && !createSites">
-        <p class="site-message">{{ 'dashboard.sites.NO_SITES_MESSAGE' | translate }}</p>
+    <div class="pull-right m10">
+      <label>{{ 'dashboard.sites.SITES_PER_PAGE' | translate }}: </label>
+      <input
+        class="audit-number-logs"
+        type="number"
+        name="input"
+        ng-model="sitesPag.sitesPerPage"
+        min="0"
+        max="500"
+        ng-model-options="{debounce: defaultDelay}"
+      />
     </div>
+    <div ui-view>
+      <table class="site-list table table-hover">
+        <thead>
+          <tr>
+            <th><span class="sr-only">{{ 'dashboard.sites.SITE_NAME' | translate }}</span></th>
+            <th>
+              <span class="sr-only">{{ 'dashboard.sites.SITE_DASHBOARD_LINK' | translate }}</span>
+            </th>
+            <th><span class="sr-only">{{ 'dashboard.sites.PREVIEW_LINK' | translate }}</span></th>
+            <th><span class="sr-only">{{ 'common.EDIT' | translate }}</span></th>
+            <th><span class="sr-only">{{ 'common.REMOVE_LABEL' | translate }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            id="site-row-{{site.id}}"
+            dir-paginate="site in sites | filter:q | itemsPerPage: sitesPag.sitesPerPage"
+            current-page="pagination"
+            total-items="totalSites"
+          >
+            <td class="name site-name trim">{{site.name ? site.name : site.id }}</td>
+            <td class="preview">
+              <a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a>
+            </td>
+            <td class="dashboard">
+              <a ng-click="goToDashboard(site)"
+                >{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a
+              >
+            </td>
+            <td class="remove">
+              <a
+                ng-show="site.edit"
+                tooltip-placement="bottom"
+                uib-tooltip="Edit"
+                ng-click="editSiteData(site)"
+              >
+                <i class="fa fa-pencil"></i>
+              </a>
+            </td>
+            <td class="remove">
+              <a
+                ng-show="site.remove"
+                ng-click="removeSiteSites(site)"
+                tooltip-placement="bottom"
+                uib-tooltip="{{'common.REMOVE_LABEL' | translate}}"
+              >
+                <i class="fa fa-trash-o"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <dir-pagination-controls
+        id="sites-pagination"
+        class="ml10"
+        on-page-change="pageChanged(newPageNumber)"
+      ></dir-pagination-controls>
+    </div>
+  </div>
+
+  <div ng-if="(!sites || !sites.length) && !createSites">
+    <p class="site-message">{{ 'dashboard.sites.NO_SITES_MESSAGE' | translate }}</p>
+  </div>
 
   <div class="create-site-dialog-container"></div>
-
 </div>
 
 <div ng-show="showLoader" class="showLoader">
-    <i class="fa fa-spinner fa-spin fa-3x fa-fw loading"></i>
+  <i class="fa fa-spinner fa-spin fa-3x fa-fw loading"></i>
 </div>
 
 <script type="text/ng-template" id="removeConfirmation.html">
-    <div id="remove-site">
-        <div class="modal-header">
-            <h3 class="modal-title">{{ 'common.CONFIRMATION' | translate }}</h3>
-        </div>
-        <div class="modal-body">
-            <p>{{ 'dashboard.sites.REMOVE_SITE_CONFIRMATION_MSG' | translate }} {{siteToRemove}} {{ 'common.INTERROGATION_SIGN' | translate }}</p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary yes" ng-disabled="confirmationSubmitDisabled" ng-click="ok()">{{ 'common.YES' | translate }}</button>
-            <button class="btn btn-default no" ng-click="cancel()">{{ 'common.NO' | translate }}</button>
-        </div>
-    </div>
+  <div id="remove-site">
+      <div class="modal-header">
+          <h3 class="modal-title">{{ 'common.CONFIRMATION' | translate }}</h3>
+      </div>
+      <div class="modal-body">
+          <p>{{ 'dashboard.sites.REMOVE_SITE_CONFIRMATION_MSG' | translate }} {{siteToRemove}} {{ 'common.INTERROGATION_SIGN' | translate }}</p>
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-primary yes" ng-disabled="confirmationSubmitDisabled" ng-click="ok()">{{ 'common.YES' | translate }}</button>
+          <button class="btn btn-default no" ng-click="cancel()">{{ 'common.NO' | translate }}</button>
+      </div>
+  </div>
 </script>
 
 <script type="text/ng-template" id="invalidSite.html">
-    <div class="modal-header">
-        <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
-    </div>
-    <div class="modal-body">
-        <p>"{{siteValidation}}" {{ 'dashboard.sites.SITE_ERROR' | translate }}</p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-default" ng-click="cancel()">{{ 'common.CANCEL' | translate }}</button>
-    </div>
+  <div class="modal-header">
+      <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
+  </div>
+  <div class="modal-body">
+      <p>"{{siteValidation}}" {{ 'dashboard.sites.SITE_ERROR' | translate }}</p>
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-default" ng-click="cancel()">{{ 'common.CANCEL' | translate }}</button>
+  </div>
 </script>
 
 <script type="text/ng-template" id="notificationModal.html">

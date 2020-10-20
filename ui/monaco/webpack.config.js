@@ -17,14 +17,14 @@
 const path = require('path');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
-const publicPath = '/studio/static-assets/next/monaco/';
+const publicPath = '/studio/static-assets/libs/monaco/';
 
 module.exports = {
   mode: 'production',
   entry: './src/index.js',
   output: {
     publicPath,
-    path: path.resolve(__dirname, '..', '..', 'static-assets', 'next', 'monaco'),
+    path: path.resolve(__dirname, '..', '..', 'static-assets', 'libs', 'monaco'),
     filename: 'monaco.0.20.0.js'
   },
   module: {

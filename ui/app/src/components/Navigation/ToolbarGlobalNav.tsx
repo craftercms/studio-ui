@@ -22,9 +22,18 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import { getLogoutInfoURL } from '../../services/auth';
 import GlobalState from '../../models/GlobalState';
-import { useActiveSiteId, useEnv, useMount, useSelection, useSiteList } from '../../utils/hooks';
+import {
+  useActiveSiteId,
+  useEnv,
+  useMount,
+  useSelection,
+  useSiteList,
+  useSystemVersion
+} from '../../utils/hooks';
 import palette from '../../styles/palette';
 import Tooltip from '@material-ui/core/Tooltip';
+import { useDispatch } from 'react-redux';
+import { fetchSites } from '../../state/reducers/sites';
 
 const useStyles = makeStyles((theme) => ({
   avatarClickable: {
@@ -86,13 +95,19 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const { formatMessage } = useIntl();
   const { authHeaders = 'AUTH_HEADERS', authSaml = 'SAML' } = props;
   const [logoutUrl, setLogoutUrl] = useState<string>('/studio');
-  const { authoringBase, version } = useEnv();
+  const { authoringBase } = useEnv();
+  const version = useSystemVersion();
+  const sites = useSiteList();
+  const dispatch = useDispatch();
 
   useMount(() => {
     if (user.authType === authHeaders || user.authType === authSaml) {
       getLogoutInfoURL().subscribe((response) => {
         setLogoutUrl(response.logoutUrl ?? null);
       });
+    }
+    if (sites === null) {
+      dispatch(fetchSites());
     }
   });
 
@@ -109,7 +124,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
       </Tooltip>
       <GlobalNav
         site={useActiveSiteId()}
-        sites={useSiteList()}
+        sites={sites}
         anchor={anchor}
         user={user}
         version={version}

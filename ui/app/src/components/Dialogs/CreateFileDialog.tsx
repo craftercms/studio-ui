@@ -22,7 +22,7 @@ import DialogBody from './DialogBody';
 import DialogFooter from './DialogFooter';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { createNewFile } from '../../services/content';
+import { createFile } from '../../services/content';
 import { useActiveSiteId, useUnmount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -49,7 +49,7 @@ export interface CreateFileStateProps extends CreateFileBaseProps {
 
 export const translations = defineMessages({
   placeholder: {
-    id: 'createNewFile.placeholder',
+    id: 'createFile.placeholder',
     defaultMessage: 'Please type a name'
   }
 });
@@ -99,7 +99,7 @@ function CreateFileUI(props: CreateFileUIProps) {
 
     if (name) {
       const fileName = (type === 'controller') ? `${name}.groovy` : `${name}.ftl`;
-      createNewFile(site, path, fileName).subscribe(
+      createFile(site, path, fileName).subscribe(
         () => {
           onCreated?.({ path, fileName, type });
         },

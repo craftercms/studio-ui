@@ -40,7 +40,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import clsx from 'clsx';
 import { History, Location } from 'history';
-import { fetchWorkflowAffectedItems, getContent } from '../../services/content';
+import { fetchWorkflowAffectedItems, getContentXML } from '../../services/content';
 import SearchBar from '../../components/Controls/SearchBar';
 import palette from '../../styles/palette';
 import {
@@ -590,7 +590,7 @@ export default function Search(props: SearchProps) {
         break;
       }
       default: {
-        getContent(site, url).subscribe((content) => {
+        getContentXML(site, url).subscribe((content) => {
           let mode = 'txt';
           if (type === 'Template') {
             mode = 'ftl';

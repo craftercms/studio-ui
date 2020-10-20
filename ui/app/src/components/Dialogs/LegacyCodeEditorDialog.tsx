@@ -158,7 +158,7 @@ function EmbeddedLegacyCodeEditor(props: LegacyCodeEditorDialogProps) {
       <iframe
         ref={iframeRef}
         src={src}
-        title="Embedded Legacy Code Editor"
+        title="Code Editor"
         className={clsx(classes.iframe, !inProgress && 'complete')}
       />
     </>

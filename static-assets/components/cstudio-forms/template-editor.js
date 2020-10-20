@@ -168,7 +168,7 @@ CStudioAuthoring.Module.requireModule(
 
                 Promise.all([
                     CrafterCMSNext.services.configuration
-                      .getDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
+                      .getConfigurationDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
                       .toPromise(),
                     new Promise((resolve, reject) => {
                       CStudioAuthoring.Service.getContent(templatePath, true, {
