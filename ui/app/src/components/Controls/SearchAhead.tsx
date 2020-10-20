@@ -31,7 +31,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  ListSubheader,
   Paper
 } from '@material-ui/core';
 import LoadingState from '../SystemStatus/LoadingState';
@@ -158,22 +157,32 @@ export default function(props) {
   }, [contentTypes, onSearch$, site]);
 
   const onClean = () => {
-    setKeyword('');
+    setKeyword(value);
     setDirty(false);
   };
+
+  const inputProps: { [key: string]: any } = getInputProps();
 
   return (
     <div className={classes.container}>
       <div {...getRootProps()}>
         <InputBase
-          {...getInputProps()}
+          {...inputProps}
+          onFocus={(e) => {
+            inputProps.onFocus(e);
+            e.target.select();
+          }}
+          onBlur={(e) => {
+            inputProps.onFocus(e);
+            onClean();
+          }}
           placeholder={placeholder}
           disabled={disabled}
           classes={{ root: classes.inputRoot, input: clsx(classes.input, props.classes?.input) }}
           endAdornment={
             isFetching ? (
               <CircularProgress className={classes.progress} size={15} />
-            ) : keyword ? (
+            ) : keyword && keyword !== value ? (
               <IconButton className={classes.closeIcon} onClick={onClean}>
                 <CloseIcon fontSize="small" />
               </IconButton>
@@ -185,12 +194,7 @@ export default function(props) {
         <Paper className={classes.paper}>
           {isFetching && <LoadingState />}
           {isFetching === false && groupedOptions.length > 0 && (
-            <List
-              dense
-              className={classes.listBox}
-              subheader={<ListSubheader disableSticky>Pages</ListSubheader>}
-              {...getListboxProps()}
-            >
+            <List dense className={classes.listBox} {...getListboxProps()}>
               {groupedOptions.map((option: SearchItem, index) => (
                 <ListItem button dense component="li" {...getOptionProps({ option, index })}>
                   <ListItemIcon className={classes.listItemIcon}>
@@ -198,7 +202,7 @@ export default function(props) {
                   </ListItemIcon>
                   <Option
                     name={option.name}
-                    path={option.path}
+                    path={getPreviewURLFromPath(option.path)}
                     keyword={keyword}
                     highlighted={classes.highlighted}
                   />
