@@ -74,7 +74,7 @@
   <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/angular-moment/angular-moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-  <script src="/studio/static-assets/components/cstudio-common/ace/ace.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/ace/ace.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico?version=${UIBuildId!.now?string('Mddyyyy')}">
