@@ -423,6 +423,7 @@
       audit.allTimeZones = moment.tz.names();
       audit.sort = 'date';
       $scope.originValues = [$translate.instant('admin.audit.ALL_ORIGINS'), 'API', 'GIT'];
+      $scope.sites = CrafterCMSNext.system.store.getState().sites.byId;
 
       var delayTimer;
 
@@ -447,20 +448,6 @@
             audit.users = null;
           });
       };
-
-      function getSites() {
-        sitesService
-          .getSitesPerUser('me')
-          .success(function(data) {
-            audit.sites = data.sites;
-            audit.site = '';
-            getAudit(audit.site);
-            getUsers(audit.site);
-          })
-          .error(function() {
-            $scope.sites = null;
-          });
-      }
 
       var getAudit = function(site) {
         audit.totalLogs = 0;
@@ -708,13 +695,6 @@
         }, audit.defaultDelay);
       };
 
-      if (audit.site) {
-        getAudit(audit.site);
-        getUsers(audit.site);
-      } else {
-        getSites();
-      }
-
       audit.collapseParam = function(id) {
         var collapseContainer = $('#collapseContainer' + id);
 
@@ -738,6 +718,31 @@
           collapseContainerParent.find('.minus').hide();
         }
       };
+
+      audit.getAuditInfo = function() {
+        if (audit.site) {
+          audit.currentSiteName = $scope.sites[audit.site].name;
+          getAudit(audit.site);
+          getUsers(audit.site);
+        } else {
+          audit.site = '';
+          getAudit(audit.site);
+          getUsers(audit.site);
+        }
+      };
+
+      if (!$scope.sites) {
+        let unsubscribe;
+        unsubscribe = CrafterCMSNext.system.store.subscribe(() => {
+          $scope.sites = CrafterCMSNext.system.store.getState().sites.byId;
+          if ($scope.sites) {
+            unsubscribe();
+            audit.getAuditInfo();
+          }
+        });
+      } else {
+        audit.getAuditInfo();
+      }
     }
   ]);
 
