@@ -97,7 +97,6 @@ export default function SiteCard(props: TitleCardProps) {
 
   return (
     <Card
-      elevation={selected ? 0 : 1}
       className={clsx(
         classes.card,
         props.classes?.root && props.classes.root,
