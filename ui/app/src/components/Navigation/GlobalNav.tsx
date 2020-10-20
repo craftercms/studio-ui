@@ -472,11 +472,6 @@ export default function GlobalNav(props: GlobalNavProps) {
     );
   }, [dispatch, site, sidebarState.isFetching, sidebarState.items, rolesBySite]);
 
-  useMount(() => {
-    dispatch(fetchSites());
-    version === null && dispatch(fetchSystemVersion());
-  });
-
   return (
     <Popover
       open={Boolean(anchor)}
