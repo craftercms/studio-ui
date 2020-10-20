@@ -16,12 +16,12 @@
 
 CStudioAuthoring.Module.requireModule(
   'ace',
-  '/static-assets/components/cstudio-common/ace/ace.js',
+  '/static-assets/libs/ace/ace.js',
   {},
   {
     moduleLoaded: function () {
       CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
-      CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-common/ace/ext-language_tools.js');
+      CStudioAuthoring.Utils.addJavascript('/static-assets/libs/ace/ext-language_tools.js');
 
       CStudioAuthoring.Module.requireModule(
         'cstudio-forms-engine',
@@ -168,7 +168,7 @@ CStudioAuthoring.Module.requireModule(
 
                 Promise.all([
                     CrafterCMSNext.services.configuration
-                      .getDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
+                      .getConfigurationDOM(CStudioAuthoringContext.site, '/code-editor-config.xml', 'studio')
                       .toPromise(),
                     new Promise((resolve, reject) => {
                       CStudioAuthoring.Service.getContent(templatePath, true, {

@@ -30,6 +30,10 @@ CStudioForms.Controls.Textarea =
     this.id = id;
     this.readonly = readonly;
     this.supportedPostFixes = ['_s', '_t'];
+    this.escapeContent = false;
+
+    this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+    this.controlsCommonMessages = CrafterCMSNext.i18n.messages.controlsCommonMessages;
 
     return this;
   };
@@ -55,7 +59,9 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     }
 
     obj.owner.notifyValidation();
-    obj.form.updateModel(obj.id, obj.getValue());
+
+    const valueToSet = obj.escapeContent ? CStudioForms.Util.escapeXml(obj.getValue()) : obj.getValue();
+    obj.form.updateModel(obj.id, valueToSet);
   },
   _onChangeVal: function(evt, obj) {
     obj.edited = true;
@@ -132,7 +138,9 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     this.inputEl = inputEl;
     YAHOO.util.Dom.addClass(inputEl, 'datum');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
-    inputEl.value = (this.value = '_not-set') ? config.defaultValue : this.value;
+
+    const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(this.value) : this.value;
+    inputEl.value = (this.value === '_not-set') ? config.defaultValue : valueToSet;
 
     YAHOO.util.Event.on(inputEl, 'change', this._onChangeVal, this);
     YAHOO.util.Event.on(inputEl, 'blur', this._onChange, this);
@@ -186,6 +194,10 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
       if (prop.name == 'readonly' && prop.value == 'true') {
         this.readonly = true;
       }
+
+      if (prop.name === 'escapeContent' && prop.value === 'true') {
+        this.escapeContent = true;
+      }
     }
 
     if (this.readonly == true) {
@@ -207,8 +219,10 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
   },
 
   setValue: function(value) {
-    this.value = value;
-    this.inputEl.value = value;
+    const valueToSet = this.escapeContent ? CStudioForms.Util.unEscapeXml(value) : value;
+
+    this.value = valueToSet;
+    this.inputEl.value = valueToSet;
     this.count(null, this.countEl, this.inputEl);
     this._onChange(null, this);
     this.edited = false;
@@ -224,7 +238,14 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
       { label: CMgs.format(langBundle, 'rows'), name: 'rows', type: 'int', defaultValue: '5' },
       { label: CMgs.format(langBundle, 'maxLength'), name: 'maxlength', type: 'int', defaultValue: '100000' },
       { label: CMgs.format(langBundle, 'allowResize'), name: 'allowResize', type: 'boolean', defaultValue: 'true' },
-      { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }
+      { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
+      {
+
+        label: this.formatMessage(this.controlsCommonMessages.escapeContent),
+        name: 'escapeContent',
+        type: 'boolean',
+        defaultValue: 'false'
+      }
     ];
   },
 

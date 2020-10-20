@@ -22,8 +22,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import KeyboardArrowLeftRounded from '@material-ui/icons/KeyboardArrowLeftRounded';
-import KeyboardArrowRightRounded from '@material-ui/icons/KeyboardArrowRightRounded';
+import InputBase from '@material-ui/core/InputBase';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
@@ -76,6 +75,14 @@ const translations = defineMessages({
   editModeOff: {
     id: 'previewToolbar.editModeOff',
     defaultMessage: 'Edit mode switched off'
+  },
+  reload: {
+    id: 'words.reload',
+    defaultMessage: 'Reload'
+  },
+  itemMenu: {
+    id: 'previewToolbar.itemMenu',
+    defaultMessage: 'Item menu'
   }
 });
 
@@ -154,7 +161,8 @@ interface AddressBarProps {
 }
 
 export function AddressBar(props: AddressBarProps) {
-  const classes = useStyles({});
+  const classes = useStyles();
+  const { formatMessage } = useIntl();
   const {
     site,
     url = '',
@@ -186,13 +194,20 @@ export function AddressBar(props: AddressBarProps) {
 
   return (
     <>
-      <IconButton className={classes.iconButton} aria-label="search">
+      {/*
+      TODO: Disabled. To be implemented at a later release or discarded. Browser back button suffices?
+      <IconButton className={classes.iconButton} aria-label="Back">
         <KeyboardArrowLeftRounded />
       </IconButton>
-      <IconButton className={classes.iconButton} aria-label="search">
+      <IconButton className={classes.iconButton} aria-label="Forward">
         <KeyboardArrowRightRounded />
       </IconButton>
-      <IconButton className={classes.iconButton} aria-label="search" onClick={onRefresh}>
+      */}
+      <IconButton
+        className={classes.iconButton}
+        title={formatMessage(translations.reload)}
+        onClick={onRefresh}
+      >
         <RefreshRounded />
       </IconButton>
       <Paper className={classes.addressBarInput}>
@@ -243,7 +258,11 @@ export function AddressBar(props: AddressBarProps) {
           }}
         />
       </Paper>
-      <IconButton className={classes.iconButton} onClick={handleClick}>
+      <IconButton
+        className={classes.iconButton}
+        title={formatMessage(translations.itemMenu)}
+        onClick={handleClick}
+      >
         <MoreVertRounded />
       </IconButton>
       {Boolean(anchorEl) && (

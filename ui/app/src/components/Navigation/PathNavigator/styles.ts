@@ -26,7 +26,7 @@ export const useStyles = makeStyles((theme) =>
       }
     },
     widgetSection: {
-      padding: `0 0 0 10px`,
+      padding: `0 0 0 10px !important`,
       '& .MuiSvgIcon-root': {
         fontSize: '1.1rem'
       }
@@ -120,8 +120,7 @@ export const useStyles = makeStyles((theme) =>
       }
     },
     paginationToolbar: {
-      display: 'flex',
-      minHeight: '30px',
+      minHeight: '30px !important',
       justifyContent: 'space-between',
       '& .MuiTablePagination-spacer': {
         display: 'none'

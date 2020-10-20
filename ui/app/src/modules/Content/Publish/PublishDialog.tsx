@@ -16,8 +16,7 @@
 
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { fetchPublishingChannels } from '../../../services/content';
-import { goLive, submitToGoLive } from '../../../services/publishing';
+import { fetchPublishingTargets, goLive, submitToGoLive } from '../../../services/publishing';
 import { fetchDependencies } from '../../../services/dependencies';
 import { BaseItem, DetailedItem } from '../../../models/Item';
 import moment from 'moment';
@@ -473,9 +472,9 @@ function PublishDialogWrapper(props: PublishDialogProps) {
   const getPublishingChannels = useCallback(() => {
     setPublishingChannelsStatus('Loading');
     setSubmitDisabled(true);
-    fetchPublishingChannels(siteId).subscribe(
-      ({ response }) => {
-        setPublishingChannels(response.availablePublishChannels);
+    fetchPublishingTargets(siteId).subscribe(
+      (response) => {
+        setPublishingChannels(response);
         setPublishingChannelsStatus('Success');
         setSubmitDisabled(false);
       },

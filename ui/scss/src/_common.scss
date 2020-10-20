@@ -98,6 +98,7 @@
 .trim {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 
   &.username {
     max-width: 390px;

@@ -402,7 +402,15 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                   CStudioAuthoringContext.user,
                   {
                     success: function(userRoles) {
-                      for (k = 0, c = modules.length; k < c; k++) this.initDropdownModule(userRoles, modules[k]);
+                      // The new "PagesWidget" requires content types to be loaded
+                      var fetchContentTypes = false;
+                      for (k = 0, c = modules.length; k < c; k++) {
+                        this.initDropdownModule(userRoles, modules[k]);
+                        fetchContentTypes = fetchContentTypes || modules[k].render === 'PagesWidget';
+                      }
+                      if (fetchContentTypes) {
+                        CrafterCMSNext.system.store.dispatch({ type: 'FETCH_CONTENT_TYPES' });
+                      }
                     },
                     failure: function() {},
                     initDropdownModule: this.initDropdownModule

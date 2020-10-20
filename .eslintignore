@@ -9,7 +9,7 @@ node_modules
 /ui/services
 /scripts/*
 /ui/app/public/*
-/static-assets/components/cstudio-common/ace/*
+/static-assets/libs/ace/*
 /static-assets/components/cstudio-common/amplify-core.js
 /static-assets/components/cstudio-common/heatmap-support.js
 /static-assets/libs/*

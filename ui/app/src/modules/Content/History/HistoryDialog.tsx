@@ -49,6 +49,7 @@ import {
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
 import { batchActions } from '../../../state/actions/misc';
+import { fetchUserPermissions } from '../../../state/actions/content';
 
 const translations = defineMessages({
   previousPage: {
@@ -183,13 +184,15 @@ interface HistoryDialogBaseProps {
   open: boolean;
 }
 
-export type HistoryDialogProps = PropsWithChildren<HistoryDialogBaseProps & {
-  versionsBranch: VersionsStateProps;
-  permissions: LookupTable<boolean>;
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}>;
+export type HistoryDialogProps = PropsWithChildren<
+  HistoryDialogBaseProps & {
+    versionsBranch: VersionsStateProps;
+    permissions: LookupTable<boolean>;
+    onClose?(): void;
+    onClosed?(): void;
+    onDismiss?(): void;
+  }
+>;
 
 export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
   onClose?: StandardAction;
@@ -199,19 +202,14 @@ export interface HistoryDialogStateProps extends HistoryDialogBaseProps {
 
 export default function HistoryDialogWrapper(props: HistoryDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      fullWidth
-      maxWidth="md"
-    >
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
       <HistoryDialog {...props} />
     </Dialog>
   );
 }
 
 function HistoryDialog(props: HistoryDialogProps) {
-  const { onDismiss, versionsBranch, permissions} = props;
+  const { onDismiss, versionsBranch, permissions } = props;
   const { count, page, limit, current, item, rootPath } = versionsBranch;
   const path = item ? item.path : '';
   const [openSelector, setOpenSelector] = useState(false);
@@ -224,32 +222,34 @@ function HistoryDialog(props: HistoryDialogProps) {
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
   const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
-    shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
+    shouldResolve: (versionsBranch) =>
+      Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
     shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
     shouldRenew: (versionsBranch, resource) => resource.complete,
     resultSelector: (versionsBranch) => versionsBranch.versions,
     errorSelector: (versionsBranch) => versionsBranch.error
   });
 
-  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(permissions, {
-    shouldResolve: (permissions) => Boolean(permissions),
-    shouldReject: (permissions) => false,
-    shouldRenew: (permissions, resource) => resource.complete,
-    resultSelector: (permissions) => permissions,
-    errorSelector: (permissions) => null
-  });
+  const permissionsResource = useLogicResource<LookupTable<boolean>, LookupTable<boolean>>(
+    permissions,
+    {
+      shouldResolve: (permissions) => Boolean(permissions),
+      shouldReject: (permissions) => false,
+      shouldRenew: (permissions, resource) => resource.complete,
+      resultSelector: (permissions) => permissions,
+      errorSelector: (permissions) => null
+    }
+  );
 
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false, permissions) => {
       const write = permissions?.write;
       if (isCurrent) {
-        let sections = count > 1 ? [
-          [menuOptions.view],
-          [menuOptions.compareTo, menuOptions.compareToPrevious]
-        ] : [
-          [menuOptions.view]
-        ];
-        if(write && count > 1) {
+        let sections =
+          count > 1
+            ? [[menuOptions.view], [menuOptions.compareTo, menuOptions.compareToPrevious]]
+            : [[menuOptions.view]];
+        if (write && count > 1) {
           sections.push([menuOptions.revertToPrevious]);
         }
         setMenu({
@@ -258,14 +258,19 @@ function HistoryDialog(props: HistoryDialogProps) {
           activeItem: version
         });
       } else {
-        let sections = count > 1 ? [
-          [menuOptions.view],
-          [menuOptions.compareTo, menuOptions.compareToCurrent, menuOptions.compareToPrevious],
-          [menuOptions.revertToThisVersion]
-        ] : [
-          [menuOptions.view]
-        ];
-        if(write && count > 1) {
+        let sections =
+          count > 1
+            ? [
+                [menuOptions.view],
+                [
+                  menuOptions.compareTo,
+                  menuOptions.compareToCurrent,
+                  menuOptions.compareToPrevious
+                ],
+                [menuOptions.revertToThisVersion]
+              ]
+            : [[menuOptions.view]];
+        if (write && count > 1) {
           sections.push([menuOptions.revertToThisVersion]);
         }
         setMenu({
@@ -278,54 +283,63 @@ function HistoryDialog(props: HistoryDialogProps) {
     [count, setMenu]
   );
 
-  const compareVersionDialogWithActions = () => showCompareVersionsDialog({
-    rightActions: [
-      {
-        icon: 'HistoryIcon',
-        onClick: showHistoryDialog({}),
-        'aria-label': formatMessage(translations.backToHistoryList)
-      }
-    ]
-  });
+  const compareVersionDialogWithActions = () =>
+    showCompareVersionsDialog({
+      rightActions: [
+        {
+          icon: 'HistoryIcon',
+          onClick: showHistoryDialog({}),
+          'aria-label': formatMessage(translations.backToHistoryList)
+        }
+      ]
+    });
 
   const handleViewItem = (version: LegacyVersion) => {
-    dispatch(batchActions([
-      fetchContentTypes(),
-      fetchContentVersion({ path, versionNumber: version.versionNumber }),
-      showViewVersionDialog({
-        rightActions: [
-          {
-            icon: 'HistoryIcon',
-            onClick: showHistoryDialog({}),
-            'aria-label': formatMessage(translations.backToHistoryList)
-          }
-        ]
-      })
-    ]));
+    dispatch(
+      batchActions([
+        fetchContentTypes(),
+        fetchContentVersion({ path, versionNumber: version.versionNumber }),
+        showViewVersionDialog({
+          rightActions: [
+            {
+              icon: 'HistoryIcon',
+              onClick: showHistoryDialog({}),
+              'aria-label': formatMessage(translations.backToHistoryList)
+            }
+          ]
+        })
+      ])
+    );
   };
 
   const compareTo = (versionNumber: string) => {
-    dispatch(batchActions([
-      fetchContentTypes(),
-      compareVersion({ id: versionNumber }),
-      compareVersionDialogWithActions()
-    ]));
+    dispatch(
+      batchActions([
+        fetchContentTypes(),
+        compareVersion({ id: versionNumber }),
+        compareVersionDialogWithActions()
+      ])
+    );
   };
 
   const compareBoth = (selected: string[]) => {
-    dispatch(batchActions([
-      fetchContentTypes(),
-      compareBothVersions({ versions: selected }),
-      compareVersionDialogWithActions()
-    ]));
+    dispatch(
+      batchActions([
+        fetchContentTypes(),
+        compareBothVersions({ versions: selected }),
+        compareVersionDialogWithActions()
+      ])
+    );
   };
 
   const compareToPrevious = (versionNumber: string) => {
-    dispatch(batchActions([
-      fetchContentTypes(),
-      compareToPreviousVersion({ id: versionNumber }),
-      compareVersionDialogWithActions()
-    ]));
+    dispatch(
+      batchActions([
+        fetchContentTypes(),
+        compareToPreviousVersion({ id: versionNumber }),
+        compareVersionDialogWithActions()
+      ])
+    );
   };
 
   const revertToPrevious = (versionNumber: string) => {
@@ -399,7 +413,12 @@ function HistoryDialog(props: HistoryDialogProps) {
           selectedItem={item}
           onItemClicked={(item) => {
             setOpenSelector(false);
-            dispatch(versionsChangeItem({ item }));
+            dispatch(
+              batchActions([
+                versionsChangeItem({ item }),
+                fetchUserPermissions({ path: item.path })
+              ])
+            );
           }}
         />
         <SuspenseWithEmptyState resource={versionsResource}>
@@ -413,15 +432,9 @@ function HistoryDialog(props: HistoryDialogProps) {
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter classes={{ root: classes.dialogFooter }}>
-        {
-          count > 0 &&
-          <Pagination
-            count={count}
-            page={page}
-            rowsPerPage={limit}
-            onPageChanged={onPageChanged}
-          />
-        }
+        {count > 0 && (
+          <Pagination count={count} page={page} rowsPerPage={limit} onPageChanged={onPageChanged} />
+        )}
       </DialogFooter>
       {Boolean(menu.anchorEl) && (
         <ContextMenu

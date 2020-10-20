@@ -122,8 +122,11 @@ ui/app/src/test
 ui/app/src/tests
 static-assets/components/cstudio-admin/mods/encrypt-tool.js
 static-assets/components/cstudio-admin/mods/content-type-propsheet/contentTypes.js
+static-assets/components/cstudio-admin/mods/content-type-propsheet/content-path-input.js
 static-assets/components/cstudio-forms/controls/locale-selector.js
 static-assets/components/cstudio-forms/data-sources/receptacles.js
+static-assets/libs/monaco
+static-assets/libs/ace
 
 # misc
 *.ignore.*

@@ -111,7 +111,7 @@ export function dataUriToBlob(dataURI: string) {
   return blob;
 }
 
-export function objectIdFromPath(path: string) {
+export function fileNameFromPath(path: string) {
   return path.substr(path.lastIndexOf('/') + 1).replace(/\.xml/, '');
 }
 
@@ -160,7 +160,7 @@ export default {
   dasherize,
   formatBytes,
   dataUriToBlob,
-  objectIdFromPath,
+  fileNameFromPath,
   decodeHTML,
   bytesToSize,
   insureSingleSlash

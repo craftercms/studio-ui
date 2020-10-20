@@ -52,7 +52,7 @@ import { getStoredPreviewChoice } from '../../../utils/state';
 import { ItemMenu } from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
-import { getContent } from '../../../services/content';
+import { getContentXML } from '../../../services/content';
 import { getNumOfMenuOptionsForItem, rand } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
 import LookupTable from '../../../models/LookupTable';
@@ -179,7 +179,7 @@ export default function(props: WidgetProps) {
         })
       );
     } else {
-      getContent(site, item.path).subscribe((content) => {
+      getContentXML(site, item.path).subscribe((content) => {
         let mode = 'txt';
 
         if (item.systemType === 'template') {
@@ -313,6 +313,7 @@ export default function(props: WidgetProps) {
     <Suspencified>
       <WidgetUI
         state={state}
+        classes={props.classes}
         itemsByPath={itemsByPath}
         icon={icon}
         title={title}
@@ -339,7 +340,7 @@ export default function(props: WidgetProps) {
   );
 }
 
-function WidgetUI(props: any) {
+export function WidgetUI(props: any) {
   const classes = useStyles({});
   const {
     state,
@@ -371,7 +372,7 @@ function WidgetUI(props: any) {
     DetailedItem[],
     { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
   >(
-    // We only want to renew the state when itemsInPath changes. 
+    // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useMemo(() => ({ itemsByPath, itemsInPath: state.itemsInPath }), [state.itemsInPath]),
@@ -442,7 +443,6 @@ function WidgetUI(props: any) {
           />
         </SuspenseWithEmptyState>
         <TablePagination
-          className={classes.pagination}
           classes={{
             root: classes.pagination,
             selectRoot: 'hidden',

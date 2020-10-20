@@ -24,10 +24,11 @@ import {
   fetchContentTypesFailed
 } from '../actions/preview';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { fetchContentTypes, getContentByContentType } from '../../services/content';
+import { getContentByContentType } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import GlobalState from '../../models/GlobalState';
 import { Observable } from 'rxjs';
+import { fetchContentTypes } from '../../services/contentTypes';
 
 const fetch: Epic = (action$, state$) => action$.pipe(
   ofType(FETCH_CONTENT_TYPES),
