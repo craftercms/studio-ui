@@ -23,7 +23,6 @@ import {
   useSpreadState,
   useUnmount
 } from '../../../utils/hooks';
-import { fetchDeleteDependencies } from '../../../services/dependencies';
 import { DeleteDependencies, DependencySelectionDelete } from '../Dependencies/DependencySelection';
 import StandardAction from '../../../models/StandardAction';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -41,12 +40,11 @@ import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
 import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
 import {
-  closeDeleteDialog,
-  showDeleteDialog,
+  fetchDeleteDependencies,
   showEditDialog
 } from '../../../state/actions/dialogs';
-import { batchActions } from '../../../state/actions/misc';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import GlobalState from '../../../models/GlobalState';
 
 interface DeleteDialogContentUIProps {
   resource: Resource<DeleteDependencies>;
@@ -74,6 +72,7 @@ interface DeleteDialogUIProps {
 interface DeleteDialogBaseProps {
   open: boolean;
   items?: SandboxItem[];
+  isFetching: boolean;
 }
 
 export type DeleteDialogProps = PropsWithChildren<
@@ -86,6 +85,9 @@ export type DeleteDialogProps = PropsWithChildren<
 >;
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
+  childItems: string[];
+  dependentItems: string[];
+  isFetching: boolean;
   onClose?: StandardAction;
   onClosed?: StandardAction;
   onDismiss?: StandardAction;
@@ -236,7 +238,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
           autoFocus
           onClick={handleSubmit}
           color="primary"
-          disabled={apiState.submitting || selectedItems.length === 0}
+          disabled={apiState.submitting || !selectedItems || selectedItems.length === 0}
         >
           {apiState.submitting ? (
             <CircularProgress className={classes.btnSpinner} size={20} />
@@ -263,29 +265,30 @@ export default function DeleteDialog(props: DeleteDialogProps) {
 }
 
 function DeleteDialogWrapper(props: DeleteDialogProps) {
-  const { items, onClose, onDismiss, onSuccess } = props;
+  const { items, onClose, onDismiss, onSuccess, isFetching } = props;
   const [submissionComment, setSubmissionComment] = useState('');
   const [apiState, setApiState] = useSpreadState({
     error: null,
     submitting: false
   });
   const siteId = useActiveSiteId();
-  // Dependency selection
-  const [deleteDependencies, setDeleteDependencies] = useState<DeleteDependencies>({
-    childItems: [],
-    dependentItems: []
-  });
-  const [selectedItems, setSelectedItems] = useState([]);
+  const deleteDependencies = useSelector<GlobalState, { childItems: string[], dependentItems: string[]}>((state) => ({
+    childItems: state.dialogs.delete.childItems,
+    dependentItems: state.dialogs.delete.dependentItems
+  }));
+
+  const [selectedItems, setSelectedItems] = useState(null);
   const dispatch = useDispatch();
 
-  const depsSource = useMemo(() => ({ deleteDependencies, apiState }), [
+  const depsSource = useMemo(() => ({ deleteDependencies, apiState, isFetching }), [
     deleteDependencies,
-    apiState
+    apiState,
+    isFetching
   ]);
   useUnmount(props.onClosed);
 
   const resource = useLogicResource<any, any>(depsSource, {
-    shouldResolve: (source) => Boolean(source.deleteDependencies),
+    shouldResolve: (source) => Boolean(source.deleteDependencies && !source.isFetching),
     shouldReject: (source) => Boolean(source.apiState.error),
     shouldRenew: (source, resource) => resource.complete,
     resultSelector: (source) => source.deleteDependencies,
@@ -293,33 +296,17 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
   });
 
   useEffect(() => {
-    if (selectedItems.length) {
-      fetchDeleteDependencies(siteId, selectedItems).subscribe(
-        (items) => {
-          setDeleteDependencies({
-            childItems: items.childItems,
-            dependentItems: items.dependentItems
-          });
-        },
-        (error) => {
-          setApiState({ error });
-        }
-      );
+    if (selectedItems) {
+      dispatch(fetchDeleteDependencies(selectedItems));
     }
   }, [selectedItems, setApiState, siteId]);
 
   const onEditDependency = (src) => {
-    dispatch(batchActions([
-      closeDeleteDialog(),
-      showEditDialog({
-        src,
-        onClosed: showDeleteDialog({
-          items,
-          onSuccess
-        })
-      })
-    ]));
-  };
+    dispatch(showEditDialog({
+      src,
+      onClosed: fetchDeleteDependencies(selectedItems)
+    }));
+  }
 
   const handleSubmit = () => {
     const data = {

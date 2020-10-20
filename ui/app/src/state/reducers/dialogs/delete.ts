@@ -19,11 +19,20 @@ import GlobalState from '../../../models/GlobalState';
 import {
   closeDeleteDialog,
   deleteDialogClosed,
+  fetchDeleteDependencies,
+  fetchDeleteDependenciesComplete,
   showDeleteDialog
 } from '../../actions/dialogs';
 
+const initialState = {
+  open: false,
+  isFetching: false,
+  childItems: null,
+  dependentItems: null
+};
+
 export default createReducer<GlobalState['dialogs']['delete']>(
-  { open: false },
+  initialState,
   {
     [showDeleteDialog.type]: (state, { payload }) => ({
       ...state,
@@ -34,6 +43,15 @@ export default createReducer<GlobalState['dialogs']['delete']>(
       open: true
     }),
     [closeDeleteDialog.type]: (state) => ({ ...state, open: false }),
-    [deleteDialogClosed.type]: () => ({ open: false })
+    [deleteDialogClosed.type]: () => initialState,
+    [fetchDeleteDependencies.type]: (state) => ({
+      ...state,
+      isFetching: true
+    }),
+    [fetchDeleteDependenciesComplete.type]: (state, { payload }) => ({
+      ...state,
+      isFetching: false,
+      ...payload
+    }),
   }
 );
