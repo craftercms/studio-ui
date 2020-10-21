@@ -79,7 +79,6 @@ export const CLEAR_HIGHLIGHTED_RECEPTACLES = 'CLEAR_HIGHLIGHTED_RECEPTACLES';
 export const CONTENT_TREE_FIELD_SELECTED = 'CONTENT_TREE_FIELD_SELECTED';
 export const CLEAR_CONTENT_TREE_FIELD_SELECTED = 'CLEAR_CONTENT_TREE_FIELD_SELECTED';
 export const CHILDREN_MAP_UPDATE = 'CHILDREN_MAP_UPDATE';
-
 // endregion
 
 // region Actions
@@ -103,11 +102,14 @@ export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
 export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
 export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE';
-export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
+export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE =
+  'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
 export const FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED';
 export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
-export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE =
+  'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED =
+  'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL = 'SET_ACTIVE_TARGETING_MODEL';
 export const SET_ACTIVE_TARGETING_MODEL_COMPLETE = 'SET_ACTIVE_TARGETING_MODEL_COMPLETE';
@@ -220,7 +222,9 @@ export function setItemBeingDragged(iceId: number): StandardAction {
   };
 }
 
-export const fetchAudiencesPanelFormDefinition = createAction(FETCH_AUDIENCES_PANEL_FORM_DEFINITION);
+export const fetchAudiencesPanelFormDefinition = createAction(
+  FETCH_AUDIENCES_PANEL_FORM_DEFINITION
+);
 
 export function fetchAudiencesPanelFormDefinitionComplete(data): StandardAction {
   return {
@@ -265,28 +269,42 @@ export function setActiveTargetingModelFailed(error): StandardAction {
 
 export const fetchAssetsPanelItems = createAction<Partial<ElasticParams>>(FETCH_ASSETS_PANEL_ITEMS);
 
-export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_ASSETS_PANEL_ITEMS_COMPLETE);
+export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(
+  FETCH_ASSETS_PANEL_ITEMS_COMPLETE
+);
 
 export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
-export function fetchComponentsByContentType(contentTypeFilter?: string, options?: Partial<ComponentsContentTypeParams>): StandardAction {
+export function fetchComponentsByContentType(
+  contentTypeFilter?: string,
+  options?: Partial<ComponentsContentTypeParams>
+): StandardAction {
   return {
     type: FETCH_COMPONENTS_BY_CONTENT_TYPE,
     payload: { contentTypeFilter, options }
   };
 }
 
-export const fetchComponentsByContentTypeComplete = createAction<ContentInstancePage>(FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE);
+export const fetchComponentsByContentTypeComplete = createAction<ContentInstancePage>(
+  FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE
+);
 
-export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
+export const fetchComponentsByContentTypeFailed = createAction(
+  FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED
+);
 
-export const browseSharedInstance = createAction<{ contentType: string; }>(BROWSE_COMPONENT_INSTANCES);
+export const browseSharedInstance = createAction<{ contentType: string }>(
+  BROWSE_COMPONENT_INSTANCES
+);
 
-export const inPageInstances = createAction<{ contentType: string; }>(IN_PAGE_INSTANCES);
+export const inPageInstances = createAction<{ contentType: string }>(IN_PAGE_INSTANCES);
 
 export const clearReceptacles = createAction(CLEAR_RECEPTACLES);
 
-export const setContentTypeReceptacles = createAction<{ contentType: string; receptacle: ContentTypeReceptacle }>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
+export const setContentTypeReceptacles = createAction<{
+  contentType: string;
+  receptacle: ContentTypeReceptacle;
+}>(CONTENT_TYPE_RECEPTACLES_RESPONSE);
 
 export const setContentTypeFilter = createAction<string>(SET_CONTENT_TYPE_FILTER);
 
@@ -294,9 +312,15 @@ export const setChildrenMap = createAction<object>(CHILDREN_MAP_UPDATE);
 
 export const fetchPreviewToolsConfig = createAction<string>('FETCH_PREVIEW_TOOLS_CONFIG');
 
-export const fetchPreviewToolsConfigComplete = createAction<PreviewToolsConfig>('FETCH_PREVIEW_TOOLS_CONFIG_COMPLETE');
+export const fetchPreviewToolsConfigComplete = createAction<PreviewToolsConfig>(
+  'FETCH_PREVIEW_TOOLS_CONFIG_COMPLETE'
+);
 
-export const fetchPreviewToolsConfigFailed = createAction<AjaxError>('FETCH_PREVIEW_TOOLS_CONFIG_FAILED');
+export const fetchPreviewToolsConfigFailed = createAction<AjaxError>(
+  'FETCH_PREVIEW_TOOLS_CONFIG_FAILED'
+);
+
+export const updateToolsPanelWidth = createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 
 // endregion
 

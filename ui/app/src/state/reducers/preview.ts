@@ -52,7 +52,8 @@ import {
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
-  UPDATE_AUDIENCES_PANEL_MODEL
+  UPDATE_AUDIENCES_PANEL_MODEL,
+  updateToolsPanelWidth
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import {
@@ -110,6 +111,7 @@ const reducer = createReducer<GlobalState['preview']>({
   previousTool: null,
   // Don't change/commit the tool you're working with. Use your .env.development to set it
   selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,
+  toolsPanelWidth: 240,
   tools: null,
   guest: null,
   assets: createEntityState({
@@ -519,6 +521,10 @@ const reducer = createReducer<GlobalState['preview']>({
   [EDIT_MODE_CHANGED]: (state, { payload }) => ({
     ...state,
     editMode: payload.editMode
+  }),
+  [updateToolsPanelWidth.type]: (state,{ payload}) => ({
+    ...state,
+    toolsPanelWidth: payload.width
   })
 });
 
