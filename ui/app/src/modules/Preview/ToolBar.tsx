@@ -22,7 +22,6 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
@@ -57,7 +56,7 @@ import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { ItemMenu } from '../../components/ItemMenu/ItemMenu';
-import SearchAhead from '../../components/Controls/PagesSearchAhead';
+import PagesSearchAhead from '../../components/Navigation/PagesSearchAhead';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -231,7 +230,7 @@ export function AddressBar(props: AddressBarProps) {
             </MenuItem>
           ))}
         </Select>
-        <SearchAhead
+        <PagesSearchAhead
           value={internalUrl}
           placeholder={noSiteSet ? '' : '/'}
           disabled={noSiteSet}

@@ -17,7 +17,7 @@
 import InputBase from '@material-ui/core/InputBase';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { useActiveSiteId, useContentTypeList } from '../../utils/hooks';
 import { search } from '../../services/search';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -100,7 +100,7 @@ export default function(props) {
   const site = useActiveSiteId();
   const contentTypes = useContentTypeList((contentType) => contentType.id.startsWith('/page'));
   const [keyword, setKeyword] = useState('');
-  const [isFetching, setIsFetching] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
   const [items, setItems] = useState(null);
   const [dirty, setDirty] = useState(false);
 
@@ -123,9 +123,7 @@ export default function(props) {
       } else {
         setKeyword(value);
         if (value) {
-          setIsFetching(true);
           onSearch$.next(value);
-          setDirty(true);
         } else {
           setDirty(false);
         }
@@ -142,17 +140,26 @@ export default function(props) {
   }, [value]);
 
   useEffect(() => {
-    const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keyword: string) => {
-      search(site, {
-        keywords: keyword,
-        filters: {
-          'content-type': contentTypes.map((contentType) => contentType.id)
-        }
-      }).subscribe((response) => {
+    const subscription = onSearch$
+      .pipe(
+        tap(() => {
+          setIsFetching(true);
+          setDirty(true);
+        }),
+        debounceTime(400),
+        switchMap((keywords) =>
+          search(site, {
+            keywords,
+            filters: {
+              'content-type': contentTypes.map((contentType) => contentType.id)
+            }
+          })
+        )
+      )
+      .subscribe((response) => {
         setIsFetching(false);
         setItems(response.items);
       });
-    });
     return () => subscription.unsubscribe();
   }, [contentTypes, onSearch$, site]);
 
@@ -193,7 +200,7 @@ export default function(props) {
       {popupOpen && dirty && (
         <Paper className={classes.paper}>
           {isFetching && <LoadingState />}
-          {isFetching === false && groupedOptions.length > 0 && (
+          {!isFetching && groupedOptions.length > 0 && (
             <List dense className={classes.listBox} {...getListboxProps()}>
               {groupedOptions.map((option: SearchItem, index) => (
                 <ListItem button dense component="li" {...getOptionProps({ option, index })}>
@@ -210,7 +217,7 @@ export default function(props) {
               ))}
             </List>
           )}
-          {isFetching === false && groupedOptions.length === 0 && (
+          {!isFetching && groupedOptions.length === 0 && (
             <EmptyState
               title={<FormattedMessage id="searchAhead.noResults" defaultMessage="No Results." />}
               classes={{ image: classes.EmptyImage }}
