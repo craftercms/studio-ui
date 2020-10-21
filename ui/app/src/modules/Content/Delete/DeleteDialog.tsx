@@ -69,11 +69,11 @@ interface DeleteDialogBaseProps {
 
 export type DeleteDialogProps = PropsWithChildren<
   DeleteDialogBaseProps & {
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
-  onSuccess?(response?: any): any;
-}
+    onClose?(): any;
+    onClosed?(): any;
+    onDismiss?(): any;
+    onSuccess?(response?: any): any;
+  }
 >;
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
@@ -90,7 +90,8 @@ const translations = defineMessages({
   },
   headerSubTitle: {
     id: 'deleteDialog.headerSubTitle',
-    defaultMessage: 'Selected items will be deleted along with their child items. Please review dependent items before deleting as these will end-up with broken link references.'
+    defaultMessage:
+      'Selected items will be deleted along with their child items. Please review dependent items before deleting as these will end-up with broken link references.'
   }
 });
 
@@ -129,13 +130,7 @@ const deleteDialogStyles = makeStyles((theme) =>
 );
 
 function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
-  const {
-    resource,
-    items,
-    submissionComment,
-    setSubmissionComment,
-    onSelectionChange
-  } = props;
+  const { resource, items, submissionComment, setSubmissionComment, onSelectionChange } = props;
   const classes = deleteDialogStyles({});
   const deleteDependencies: DeleteDependencies = resource.read();
 
@@ -170,7 +165,6 @@ function DeleteDialogContentUI(props: DeleteDialogContentUIProps) {
               }}
             />
           </form>
-
         </Grid>
       </Grid>
     </>
@@ -234,12 +228,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
 
 export default function DeleteDialog(props: DeleteDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      fullWidth
-      maxWidth="md"
-    >
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
       <DeleteDialogWrapper {...props} />
     </Dialog>
   );
