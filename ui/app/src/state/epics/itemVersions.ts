@@ -63,7 +63,12 @@ export default [
       ofType(compareBothVersions.type, compareToPreviousVersion.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        getVersions(state.sites.active, state.versions.item.path, [state.versions.selected[0], state.versions.selected[1]], state.contentTypes.byId)
+        getVersions(
+          state.sites.active,
+          state.versions.config ? state.versions.revertPath : state.versions.item.path,
+          [state.versions.selected[0], state.versions.selected[1]],
+          state.contentTypes.byId
+        )
           .pipe(
             map(compareBothVersionsComplete),
             catchAjaxError(compareBothVersionsFailed)

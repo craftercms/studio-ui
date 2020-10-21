@@ -75,6 +75,7 @@ interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
   selectedA: LegacyVersion;
   selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
+  disableItemSwitching?: boolean;
   rightActions?: DialogHeaderAction[];
   onClose?(): void;
   onClosed?(): void;
@@ -82,6 +83,7 @@ interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps {
+  disableItemSwitching?: boolean;
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
   onClosed?: StandardAction;
@@ -103,6 +105,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     selectedB,
     onDismiss,
     versionsBranch,
+    disableItemSwitching = false,
     contentTypesBranch
   } = props;
   const {
@@ -113,7 +116,8 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     compareVersionsBranch,
     current,
     item,
-    rootPath
+    rootPath,
+    config
   } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
@@ -121,6 +125,8 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const dispatch = useDispatch();
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
+  const showSingleItemSelector = !config;
+
   useUnmount(props.onClosed);
 
   const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
@@ -216,10 +222,11 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         onDismiss={onDismiss}
       />
       <DialogBody>
-        {!compareMode && (
+        {!compareMode && showSingleItemSelector && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
             label="Item"
+            disabled={disableItemSwitching}
             open={openSelector}
             onClose={() => setOpenSelector(false)}
             onDropdownClick={() => setOpenSelector(!openSelector)}

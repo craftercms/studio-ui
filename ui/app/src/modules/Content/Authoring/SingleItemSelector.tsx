@@ -46,6 +46,7 @@ import {
 import { createLookupTable, nou } from '../../../utils/object';
 import { forkJoin, Observable } from 'rxjs';
 import palette from '../../../styles/palette';
+import { isFolder } from '../../../components/Navigation/PathNavigator/utils';
 
 const useStyles = makeStyles((theme) => ({
   popoverRoot: {
@@ -327,8 +328,14 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
   };
 
   const handleItemClicked = (item: DetailedItem) => {
-    exec(changeCurrentPath(item));
-    onItemClicked(item);
+    const folder = isFolder(item);
+
+    if (folder) {
+      onPathSelected(item);
+    } else {
+      exec(changeCurrentPath(item));
+      onItemClicked(item);
+    }
   };
 
   const Wrapper = hideUI ? React.Fragment : Paper;
@@ -364,6 +371,7 @@ export default function SingleItemSelector(props: SingleItemSelectorProps) {
         <IconButton
           className={classes.changeBtn}
           ref={anchorEl}
+          disabled={disabled}
           onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
         >
           <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />

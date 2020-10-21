@@ -41,8 +41,9 @@ import {
   versionsChangePage
 } from '../../../state/reducers/versions';
 import {
+  closeConfirmDialog,
   fetchContentVersion,
-  showCompareVersionsDialog,
+  showCompareVersionsDialog, showConfirmDialog,
   showHistoryDialog,
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
@@ -87,6 +88,19 @@ const translations = defineMessages({
   backToHistoryList: {
     id: 'historyDialog.back.selectRevision',
     defaultMessage: 'Back to history list'
+  },
+  confirmRevertTitle: {
+    id: 'historyDialog.confirmRevertTitle',
+    defaultMessage: 'Revert confirmation'
+  },
+  //TODO: discuss translations
+  confirmRevertBody: {
+    id: 'historyDialog.confirmRevertBody',
+    defaultMessage: 'Are you sure you want to revert to this version?'
+  },
+  confirmRevertPreviousBody: {
+    id: 'historyDialog.confirmRevertBody',
+    defaultMessage: 'Are you sure you want to revert to previous version?'
   }
 });
 
@@ -210,12 +224,13 @@ export default function HistoryDialogWrapper(props: HistoryDialogProps) {
 
 function HistoryDialog(props: HistoryDialogProps) {
   const { onDismiss, versionsBranch, permissions } = props;
-  const { count, page, limit, current, item, rootPath } = versionsBranch;
-  const path = item ? item.path : '';
+  const { count, page, limit, current, item, rootPath, config, revertPath } = versionsBranch;
+  const path = config ? revertPath : item ? item.path : '';
   const [openSelector, setOpenSelector] = useState(false);
   const { formatMessage } = useIntl();
   const classes = historyStyles({});
   const dispatch = useDispatch();
+  const showSingleItemSelector = !config;
 
   useUnmount(props.onClosed);
 
@@ -266,8 +281,7 @@ function HistoryDialog(props: HistoryDialogProps) {
                   menuOptions.compareTo,
                   menuOptions.compareToCurrent,
                   menuOptions.compareToPrevious
-                ],
-                [menuOptions.revertToThisVersion]
+                ]
               ]
             : [[menuOptions.view]];
         if (write && count > 1) {
@@ -285,6 +299,7 @@ function HistoryDialog(props: HistoryDialogProps) {
 
   const compareVersionDialogWithActions = () =>
     showCompareVersionsDialog({
+      disableItemSwitching: true,
       rightActions: [
         {
           icon: 'HistoryIcon',
@@ -343,11 +358,31 @@ function HistoryDialog(props: HistoryDialogProps) {
   };
 
   const revertToPrevious = (versionNumber: string) => {
-    dispatch(revertToPreviousVersion({ id: versionNumber }));
+    dispatch(
+      showConfirmDialog({
+        title: formatMessage(translations.confirmRevertTitle),
+        body: formatMessage(translations.confirmRevertPreviousBody),
+        onCancel: closeConfirmDialog(),
+        onOk: batchActions([
+          closeConfirmDialog(),
+          revertToPreviousVersion({ id: versionNumber })
+        ])
+      })
+    );
   };
 
   const revertTo = (versionNumber: string) => {
-    dispatch(revertContent({ path, versionNumber }));
+    dispatch(
+      showConfirmDialog({
+        title: formatMessage(translations.confirmRevertTitle),
+        body: formatMessage(translations.confirmRevertBody, { version: versionNumber}),
+        onCancel: closeConfirmDialog(),
+        onOk: batchActions([
+          closeConfirmDialog(),
+          revertContent({ path, versionNumber })
+        ])
+      })
+    );
   };
 
   const handleContextMenuClose = () => {
@@ -403,24 +438,27 @@ function HistoryDialog(props: HistoryDialogProps) {
         onDismiss={onDismiss}
       />
       <DialogBody className={classes.dialogBody}>
-        <SingleItemSelector
-          classes={{ root: classes.singleItemSelector }}
-          label="Item"
-          open={openSelector}
-          onClose={() => setOpenSelector(false)}
-          onDropdownClick={() => setOpenSelector(!openSelector)}
-          rootPath={rootPath}
-          selectedItem={item}
-          onItemClicked={(item) => {
-            setOpenSelector(false);
-            dispatch(
-              batchActions([
-                versionsChangeItem({ item }),
-                fetchUserPermissions({ path: item.path })
-              ])
-            );
-          }}
-        />
+        {
+          showSingleItemSelector &&
+          <SingleItemSelector
+            classes={{ root: classes.singleItemSelector }}
+            label="Item"
+            open={openSelector}
+            onClose={() => setOpenSelector(false)}
+            onDropdownClick={() => setOpenSelector(!openSelector)}
+            rootPath={rootPath}
+            selectedItem={item}
+            onItemClicked={(item) => {
+              setOpenSelector(false);
+              dispatch(
+                batchActions([
+                  versionsChangeItem({ item }),
+                  fetchUserPermissions({ path: item.path })
+                ])
+              );
+            }}
+          />
+        }
         <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
             versions={versionsResource}

@@ -73,15 +73,7 @@ export default function(props: NavItemProps) {
       className={clsx(classes.navItem, isSelectMode && 'noLeftPadding')}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
-      onClick={
-        navigable
-          ? onClick
-          : folder
-          ? () => onChangeParent?.(item)
-          : previewable
-          ? () => onPreview(item)
-          : null
-      }
+      onClick={onClick}
     >
       {isSelectMode ? (
         <Checkbox
