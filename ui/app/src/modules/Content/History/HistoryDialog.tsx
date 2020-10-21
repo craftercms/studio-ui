@@ -398,7 +398,7 @@ function HistoryDialog(props: HistoryDialogProps) {
     <>
       <DialogHeader
         title={
-          <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Content Item History" />
+          <FormattedMessage id="historyDialog.headerTitle" defaultMessage="Item History" />
         }
         onDismiss={onDismiss}
       />
