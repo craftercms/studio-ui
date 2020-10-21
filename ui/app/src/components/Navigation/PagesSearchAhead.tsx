@@ -15,10 +15,9 @@
  */
 
 import InputBase from '@material-ui/core/InputBase';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Subject } from 'rxjs';
+import React, { useEffect, useState } from 'react';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
-import { useActiveSiteId, useContentTypeList } from '../../utils/hooks';
+import { useActiveSiteId, useContentTypeList, useSubject } from '../../utils/hooks';
 import { search } from '../../services/search';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useAutocomplete } from '@material-ui/lab';
@@ -96,7 +95,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function(props) {
   const { value, placeholder, disabled, onEnter } = props;
   const classes = useStyles({});
-  const onSearch$ = useMemo(() => new Subject<string>(), []);
+  const onSearch$ = useSubject<string>();
   const site = useActiveSiteId();
   const contentTypes = useContentTypeList((contentType) => contentType.id.startsWith('/page'));
   const [keyword, setKeyword] = useState('');
