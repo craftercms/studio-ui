@@ -306,7 +306,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
       src,
       onClosed: fetchDeleteDependencies(selectedItems)
     }));
-  }
+  };
 
   const handleSubmit = () => {
     const data = {
