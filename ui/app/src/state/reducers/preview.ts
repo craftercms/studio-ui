@@ -100,433 +100,457 @@ function cleanseUrl(url: string) {
   return clean;
 }
 
-const reducer = createReducer<GlobalState['preview']>({
-  editMode: false,
-  // What's shown to the user across the board (url, address bar, etc)
-  computedUrl: '',
-  // The src of the iframe
-  currentUrl: previewLanding,
-  hostSize: { width: null, height: null },
-  showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
-  previousTool: null,
-  // Don't change/commit the tool you're working with. Use your .env.development to set it
-  selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,
-  toolsPanelWidth: 240,
-  tools: null,
-  guest: null,
-  assets: createEntityState({
-    page: [],
-    query: {
-      keywords: '',
-      offset: 0,
-      limit: 10,
-      filters: {
-        'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
+const reducer = createReducer<GlobalState['preview']>(
+  {
+    editMode: false,
+    // What's shown to the user across the board (url, address bar, etc)
+    computedUrl: '',
+    // The src of the iframe
+    currentUrl: previewLanding,
+    hostSize: { width: null, height: null },
+    showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL
+      ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true'
+      : true,
+    previousTool: null,
+    // Don't change/commit the tool you're working with. Use your .env.development to set it
+    selectedTool: (process.env.REACT_APP_PREVIEW_TOOL_SELECTED as PreviewTool) || null,
+    toolsPanelWidth: 240,
+    tools: null,
+    guest: null,
+    assets: createEntityState({
+      page: [],
+      query: {
+        keywords: '',
+        offset: 0,
+        limit: 10,
+        filters: {
+          'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
+        }
       }
+    }) as PagedEntityState<MediaItem>,
+    audiencesPanel: audiencesPanelInitialState,
+    components: componentsInitialState,
+    receptacles: {
+      selectedContentType: null,
+      byId: null
     }
-  }) as PagedEntityState<MediaItem>,
-  audiencesPanel: audiencesPanelInitialState,
-  components: componentsInitialState,
-  receptacles: {
-    selectedContentType: null,
-    byId: null
-  }
-}, {
-  [SELECT_TOOL]: (state, { payload }) => ({
-    ...state,
-    previousTool: state.selectedTool,
-    selectedTool: payload
-  }),
-  [SELECT_PREVIOUS_TOOL]: (state, { payload }) => {
-    return {
+  },
+  {
+    [SELECT_TOOL]: (state, { payload }) => ({
       ...state,
       previousTool: state.selectedTool,
       selectedTool: payload
-    };
-  },
-  [OPEN_TOOLS]: (state) => {
-    return {
-      ...state,
-      showToolsPanel: true
-    };
-  },
-  [CLOSE_TOOLS]: (state) => {
-    return {
-      ...state,
-      showToolsPanel: false
-    };
-  },
-  [fetchPreviewToolsConfigComplete.type]: (state, { payload }) => {
-    return {
-      ...state,
-      tools: payload.modules
-    };
-  },
-  [SET_HOST_SIZE]: (state, { payload }) => {
-    if (isNaN(payload.width)) {
-      payload.width = state.hostSize.width;
-    }
-    if (isNaN(payload.height)) {
-      payload.height = state.hostSize.height;
-    }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        width: minFrameSize(payload.width),
-        height: minFrameSize(payload.height)
-      }
-    };
-  },
-  [SET_HOST_WIDTH]: (state, { payload }) => {
-    if (isNaN(payload)) {
-      return state;
-    }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        width: minFrameSize(payload)
-      }
-    };
-  },
-  [SET_HOST_HEIGHT]: (state, { payload }) => {
-    if (isNaN(payload)) {
-      return state;
-    }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        height: minFrameSize(payload)
-      }
-    };
-  },
-  [FETCH_CONTENT_MODEL_COMPLETE]: (state, { payload }) => {
-    return {
-      ...state,
-      currentModels: payload
-    };
-  },
-  [GUEST_CHECK_IN]: (state, { payload }) => {
-    const { location, modelId, path } = payload;
-    const href = location.href;
-    const origin = location.origin;
-    const url = href.replace(location.origin, '');
-    return {
-      ...state,
-      guest: {
-        url,
-        origin,
-        modelId,
-        path,
-        models: null,
-        childrenMap: null,
-        selected: null,
-        itemBeingDragged: null
-      },
-      computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url,
-      // Setting URL causes dual reload when guest navigation occurs
-      // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
-      // TODO: Retrieval of guestBase from initialState is not right.
-      // currentUrl: payload.__CRAFTERCMS_GUEST_LANDING__
-      //   ? previewLanding
-      //   : `${origin}${url}`
-    };
-  },
-  [GUEST_CHECK_OUT]: (state) => {
-    let nextState = state;
-    if (state.guest) {
-      nextState = {
-        ...nextState,
-        guest: null
+    }),
+    [SELECT_PREVIOUS_TOOL]: (state, { payload }) => {
+      return {
+        ...state,
+        previousTool: state.selectedTool,
+        selectedTool: payload
       };
-    }
-    // If guest checks out, doesn't mean site is changing necessarily
-    // hence content types haven't changed
-    // if (state.contentTypes) {
-    //   nextState = { ...nextState, contentTypes: null };
-    // }
-    return nextState;
-  },
-  [GUEST_MODELS_RECEIVED]: (state, { payload }) => {
-    if (nnou(state.guest)) {
+    },
+    [OPEN_TOOLS]: (state) => {
+      return {
+        ...state,
+        showToolsPanel: true
+      };
+    },
+    [CLOSE_TOOLS]: (state) => {
+      return {
+        ...state,
+        showToolsPanel: false
+      };
+    },
+    [fetchPreviewToolsConfigComplete.type]: (state, { payload }) => {
+      return {
+        ...state,
+        tools: payload.modules
+      };
+    },
+    [SET_HOST_SIZE]: (state, { payload }) => {
+      if (isNaN(payload.width)) {
+        payload.width = state.hostSize.width;
+      }
+      if (isNaN(payload.height)) {
+        payload.height = state.hostSize.height;
+      }
+      return {
+        ...state,
+        hostSize: {
+          ...state.hostSize,
+          width: minFrameSize(payload.width),
+          height: minFrameSize(payload.height)
+        }
+      };
+    },
+    [SET_HOST_WIDTH]: (state, { payload }) => {
+      if (isNaN(payload)) {
+        return state;
+      }
+      return {
+        ...state,
+        hostSize: {
+          ...state.hostSize,
+          width: minFrameSize(payload)
+        }
+      };
+    },
+    [SET_HOST_HEIGHT]: (state, { payload }) => {
+      if (isNaN(payload)) {
+        return state;
+      }
+      return {
+        ...state,
+        hostSize: {
+          ...state.hostSize,
+          height: minFrameSize(payload)
+        }
+      };
+    },
+    [FETCH_CONTENT_MODEL_COMPLETE]: (state, { payload }) => {
+      return {
+        ...state,
+        currentModels: payload
+      };
+    },
+    [GUEST_CHECK_IN]: (state, { payload }) => {
+      const { location, modelId, path } = payload;
+      const href = location.href;
+      const origin = location.origin;
+      const url = href.replace(location.origin, '');
+      return {
+        ...state,
+        guest: {
+          url,
+          origin,
+          modelId,
+          path,
+          models: null,
+          childrenMap: null,
+          selected: null,
+          itemBeingDragged: null
+        },
+        computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : url
+        // Setting URL causes dual reload when guest navigation occurs
+        // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
+        // TODO: Retrieval of guestBase from initialState is not right.
+        // currentUrl: payload.__CRAFTERCMS_GUEST_LANDING__
+        //   ? previewLanding
+        //   : `${origin}${url}`
+      };
+    },
+    [GUEST_CHECK_OUT]: (state) => {
+      let nextState = state;
+      if (state.guest) {
+        nextState = {
+          ...nextState,
+          guest: null
+        };
+      }
+      // If guest checks out, doesn't mean site is changing necessarily
+      // hence content types haven't changed
+      // if (state.contentTypes) {
+      //   nextState = { ...nextState, contentTypes: null };
+      // }
+      return nextState;
+    },
+    [GUEST_MODELS_RECEIVED]: (state, { payload }) => {
+      if (nnou(state.guest)) {
+        return {
+          ...state,
+          guest: {
+            ...state.guest,
+            models: {
+              ...state.guest.models,
+              ...payload
+            }
+          }
+        };
+      } else {
+        // TODO: Currently getting models before check in some cases when coming from a different site.
+        console.error('[reducer/preview] Guest models received before guest check in.');
+        return state;
+      }
+    },
+    [SELECT_FOR_EDIT]: (state, { payload }) => {
+      if (state.guest === null) {
+        return state;
+      }
       return {
         ...state,
         guest: {
           ...state.guest,
-          models: {
-            ...state.guest.models,
-            ...payload
-          }
+          selected: [payload]
         }
       };
-    } else {
-      // TODO: Currently getting models before check in some cases when coming from a different site.
-      console.error('[reducer/preview] Guest models received before guest check in.');
-      return state;
-    }
-  },
-  [SELECT_FOR_EDIT]: (state, { payload }) => {
-    if (state.guest === null) {
-      return state;
-    }
-    return {
-      ...state,
-      guest: {
-        ...state.guest,
-        selected: [payload]
+    },
+    [CLEAR_SELECT_FOR_EDIT]: (state, { payload }) => {
+      if (state.guest === null) {
+        return state;
       }
-    };
-  },
-  [CLEAR_SELECT_FOR_EDIT]: (state, { payload }) => {
-    if (state.guest === null) {
-      return state;
-    }
-    return {
-      ...state,
-      guest: {
-        ...state.guest,
-        selected: null
-      }
-    };
-  },
-  [SET_ITEM_BEING_DRAGGED]: (state, { payload }) => {
-    if (nou(state.guest)) {
-      return state;
-    }
-    return {
-      ...state,
-      guest: {
-        ...state.guest,
-        itemBeingDragged: payload
-      }
-    };
-  },
-  [CHANGE_CURRENT_URL]: (state, { payload }) => (
-    (state.currentUrl === payload)
-      ? state
-      : {
+      return {
         ...state,
-        computedUrl: cleanseUrl(payload),
-        currentUrl: `${guestBase}${cleanseUrl(payload)}`
-      }
-  ),
-  [changeSite.type]: (state, { payload }) => {
-
-    let nextState = {
-      ...state,
-      tools: null,
-      audiencesPanel: audiencesPanelInitialState,
-      components: componentsInitialState
-    };
-
-    // TODO: If there's a guest it would have checked out?
-    // if (state.guest) {
-    //   nextState = { ...nextState, guest: null };
-    // }
-
-    if (payload.nextUrl !== nextState.currentUrl) {
-      nextState = {
-        ...nextState,
-        computedUrl: payload.nextUrl,
-        currentUrl: `${guestBase}${payload.nextUrl}`
+        guest: {
+          ...state.guest,
+          selected: null
+        }
       };
-    }
+    },
+    [SET_ITEM_BEING_DRAGGED]: (state, { payload }) => {
+      if (nou(state.guest)) {
+        return state;
+      }
+      return {
+        ...state,
+        guest: {
+          ...state.guest,
+          itemBeingDragged: payload
+        }
+      };
+    },
+    [CHANGE_CURRENT_URL]: (state, { payload }) =>
+      state.currentUrl === payload
+        ? state
+        : {
+            ...state,
+            computedUrl: cleanseUrl(payload),
+            currentUrl: `${guestBase}${cleanseUrl(payload)}`
+          },
+    [changeSite.type]: (state, { payload }) => {
+      let nextState = {
+        ...state,
+        tools: null,
+        audiencesPanel: audiencesPanelInitialState,
+        components: componentsInitialState
+      };
 
-    return nextState;
+      // TODO: If there's a guest it would have checked out?
+      // if (state.guest) {
+      //   nextState = { ...nextState, guest: null };
+      // }
 
-  },
-  [FETCH_AUDIENCES_PANEL_FORM_DEFINITION]: (state) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      isFetching: true,
-      error: null
-    }
-  }),
-  [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE]: (state, { payload }) => {
-    return {
+      if (payload.nextUrl !== nextState.currentUrl) {
+        nextState = {
+          ...nextState,
+          computedUrl: payload.nextUrl,
+          currentUrl: `${guestBase}${payload.nextUrl}`
+        };
+      }
+
+      return nextState;
+    },
+    [FETCH_AUDIENCES_PANEL_FORM_DEFINITION]: (state) => ({
       ...state,
       audiencesPanel: {
         ...state.audiencesPanel,
-        isFetching: false,
-        error: null,
-        contentType: payload.contentType,
-        model: payload.model
-      }
-    };
-  },
-  [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
-  }),
-  [UPDATE_AUDIENCES_PANEL_MODEL]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      applied: false,
-      model: {
-        ...state.audiencesPanel.model,
-        ...payload
-      }
-    }
-  }),
-  [SET_ACTIVE_TARGETING_MODEL]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      isApplying: true
-    }
-  }),
-  [SET_ACTIVE_TARGETING_MODEL_COMPLETE]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      isApplying: false,
-      applied: true
-    }
-  }),
-  [SET_ACTIVE_TARGETING_MODEL_FAILED]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      isApplying: false,
-      applied: false,
-      error: payload.response
-    }
-  }),
-  [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => {
-    let newQuery = { ...state.assets.query, ...query };
-    return {
-      ...state,
-      assets: {
-        ...state.assets,
         isFetching: true,
-        query: newQuery,
-        pageNumber: Math.ceil(newQuery.offset / newQuery.limit)
-      }
-    };
-  },
-  [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
-    let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
-    let page = [...state.assets.page];
-    page[state.assets.pageNumber] = searchResult.items.map(item => item.path);
-    return {
-      ...state,
-      assets: {
-        ...state.assets,
-        byId: { ...state.assets.byId, ...itemsLookupTable },
-        page,
-        count: searchResult.total,
-        isFetching: false,
         error: null
       }
-    };
-  },
-  [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
-    ...state,
-    assets: { ...state.assets, error: payload.response, isFetching: false }
-  }),
-  [FETCH_COMPONENTS_BY_CONTENT_TYPE]: (state, { payload: { contentTypeFilter, options } }: { payload: { contentTypeFilter: string[] | string, options?: ComponentsContentTypeParams } }) => {
-    let newQuery = { ...state.components.query, ...options };
-    return {
+    }),
+    [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE]: (state, { payload }) => {
+      return {
+        ...state,
+        audiencesPanel: {
+          ...state.audiencesPanel,
+          isFetching: false,
+          error: null,
+          contentType: payload.contentType,
+          model: payload.model
+        }
+      };
+    },
+    [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED]: (state, { payload }) => ({
+      ...state,
+      audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
+    }),
+    [UPDATE_AUDIENCES_PANEL_MODEL]: (state, { payload }) => ({
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        applied: false,
+        model: {
+          ...state.audiencesPanel.model,
+          ...payload
+        }
+      }
+    }),
+    [SET_ACTIVE_TARGETING_MODEL]: (state, { payload }) => ({
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        isApplying: true
+      }
+    }),
+    [SET_ACTIVE_TARGETING_MODEL_COMPLETE]: (state, { payload }) => ({
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        isApplying: false,
+        applied: true
+      }
+    }),
+    [SET_ACTIVE_TARGETING_MODEL_FAILED]: (state, { payload }) => ({
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        isApplying: false,
+        applied: false,
+        error: payload.response
+      }
+    }),
+    [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => {
+      let newQuery = { ...state.assets.query, ...query };
+      return {
+        ...state,
+        assets: {
+          ...state.assets,
+          isFetching: true,
+          query: newQuery,
+          pageNumber: Math.ceil(newQuery.offset / newQuery.limit)
+        }
+      };
+    },
+    [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (
+      state,
+      { payload: searchResult }: { payload: SearchResult }
+    ) => {
+      let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
+      let page = [...state.assets.page];
+      page[state.assets.pageNumber] = searchResult.items.map((item) => item.path);
+      return {
+        ...state,
+        assets: {
+          ...state.assets,
+          byId: { ...state.assets.byId, ...itemsLookupTable },
+          page,
+          count: searchResult.total,
+          isFetching: false,
+          error: null
+        }
+      };
+    },
+    [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
+      ...state,
+      assets: { ...state.assets, error: payload.response, isFetching: false }
+    }),
+    [FETCH_COMPONENTS_BY_CONTENT_TYPE]: (
+      state,
+      {
+        payload: { contentTypeFilter, options }
+      }: {
+        payload: { contentTypeFilter: string[] | string; options?: ComponentsContentTypeParams };
+      }
+    ) => {
+      let newQuery = { ...state.components.query, ...options };
+      return {
+        ...state,
+        components: {
+          ...state.components,
+          isFetching: true,
+          query: newQuery,
+          pageNumber: Math.ceil(newQuery.offset / newQuery.limit),
+          contentTypeFilter: contentTypeFilter
+            ? contentTypeFilter
+            : state.components.contentTypeFilter
+        }
+      };
+    },
+    [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (
+      state,
+      { payload }: { payload: ContentInstancePage }
+    ) => {
+      let page = [...state.components.page];
+      page[state.components.pageNumber] = Object.keys(payload.lookup);
+      return {
+        ...state,
+        components: {
+          ...state.components,
+          byId: { ...state.components.byId, ...payload.lookup },
+          page,
+          count: payload.count,
+          isFetching: false,
+          error: null
+        }
+      };
+    },
+    [FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED]: (state, { payload }) => ({
+      ...state,
+      components: { ...state.components, error: payload.response, isFetching: false }
+    }),
+    [IN_PAGE_INSTANCES]: (state, { payload }) => ({
+      ...state,
+      previousTool: 'craftercms.ice.components',
+      selectedTool: 'craftercms.ice.inPageInstances',
+      components: {
+        ...state.components,
+        contentTypeFilter: payload.contentType
+      }
+    }),
+    [BROWSE_COMPONENT_INSTANCES]: (state, { payload }) => ({
+      ...state,
+      previousTool: 'craftercms.ice.components',
+      selectedTool: 'craftercms.ice.browseComponents',
+      components: {
+        ...state.components,
+        contentTypeFilter: payload.contentType,
+        inThisPage: payload.inThisPage
+      }
+    }),
+    [CONTENT_TYPE_RECEPTACLES_RESPONSE]: (state, { payload }) => ({
+      ...state,
+      receptacles: {
+        ...state.receptacles,
+        selectedContentType: payload.contentTypeId,
+        byId: { ...state.receptacles.byId, ...createLookupTable(payload.receptacles) }
+      }
+    }),
+    [CLEAR_RECEPTACLES]: (state, { payload }) => ({
+      ...state,
+      receptacles: {
+        ...state.receptacles,
+        selectedContentType: null,
+        byId: null
+      }
+    }),
+    [SET_CONTENT_TYPE_FILTER]: (state, { payload }) => ({
       ...state,
       components: {
         ...state.components,
-        isFetching: true,
-        query: newQuery,
-        pageNumber: Math.ceil(newQuery.offset / newQuery.limit),
-        contentTypeFilter: contentTypeFilter ? contentTypeFilter : state.components.contentTypeFilter
+        isFetching: null,
+        contentTypeFilter: payload,
+        query: {
+          ...state.components.query,
+          offset: 0,
+          keywords: ''
+        }
       }
-    };
-  },
-  [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (state, { payload }: { payload: ContentInstancePage }) => {
-    let page = [...state.components.page];
-    page[state.components.pageNumber] = Object.keys(payload.lookup);
-    return {
+    }),
+    [CHILDREN_MAP_UPDATE]: (state, { payload }) => ({
       ...state,
-      components: {
-        ...state.components,
-        byId: { ...state.components.byId, ...payload.lookup },
-        page,
-        count: payload.count,
-        isFetching: false,
-        error: null
+      guest: {
+        ...state.guest,
+        childrenMap: {
+          ...state.guest?.childrenMap,
+          ...payload
+        }
       }
-    };
-  },
-  [FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED]: (state, { payload }) => ({
-    ...state,
-    components: { ...state.components, error: payload.response, isFetching: false }
-  }),
-  [IN_PAGE_INSTANCES]: (state, { payload }) => ({
-    ...state,
-    previousTool: 'craftercms.ice.components',
-    selectedTool: 'craftercms.ice.inPageInstances',
-    components: {
-      ...state.components,
-      contentTypeFilter: payload.contentType
-    }
-  }),
-  [BROWSE_COMPONENT_INSTANCES]: (state, { payload }) => ({
-    ...state,
-    previousTool: 'craftercms.ice.components',
-    selectedTool: 'craftercms.ice.browseComponents',
-    components: {
-      ...state.components,
-      contentTypeFilter: payload.contentType,
-      inThisPage: payload.inThisPage
-    }
-  }),
-  [CONTENT_TYPE_RECEPTACLES_RESPONSE]: (state, { payload }) => ({
-    ...state,
-    receptacles: {
-      ...state.receptacles,
-      selectedContentType: payload.contentTypeId,
-      byId: { ...state.receptacles.byId, ...createLookupTable(payload.receptacles) }
-    }
-  }),
-  [CLEAR_RECEPTACLES]: (state, { payload }) => ({
-    ...state,
-    receptacles: {
-      ...state.receptacles,
-      selectedContentType: null,
-      byId: null
-    }
-  }),
-  [SET_CONTENT_TYPE_FILTER]: (state, { payload }) => ({
-    ...state,
-    components: {
-      ...state.components,
-      isFetching: null,
-      contentTypeFilter: payload,
-      query: {
-        ...state.components.query,
-        offset: 0,
-        keywords: ''
+    }),
+    [EDIT_MODE_CHANGED]: (state, { payload }) => ({
+      ...state,
+      editMode: payload.editMode
+    }),
+    [updateToolsPanelWidth.type]: (state, { payload }) => {
+      const minDrawerWidth = 240;
+      const maxDrawerWidth = 500;
+      if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
+        return state;
       }
+      return {
+        ...state,
+        toolsPanelWidth: payload.width
+      };
     }
-  }),
-  [CHILDREN_MAP_UPDATE]: (state, { payload }) => ({
-    ...state,
-    guest: {
-      ...state.guest,
-      childrenMap: {
-        ...state.guest?.childrenMap,
-        ...payload
-      }
-    }
-  }),
-  [EDIT_MODE_CHANGED]: (state, { payload }) => ({
-    ...state,
-    editMode: payload.editMode
-  }),
-  [updateToolsPanelWidth.type]: (state,{ payload}) => ({
-    ...state,
-    toolsPanelWidth: payload.width
-  })
-});
+  }
+);
 
 function minFrameSize(suggestedSize: number): number {
   return suggestedSize === null ? null : suggestedSize < 320 ? 320 : suggestedSize;

@@ -18,10 +18,7 @@ import { DrawerProps } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
 import React, { useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-
-// TODO: should we move this to the state?;
-const minDrawerWidth = 240;
-const maxDrawerWidth = 500;
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -35,16 +32,16 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: '5px'
   },
   dragger: {
-    width: "5px",
-    cursor: "ew-resize",
-    padding: "4px 0 0",
-    borderTop: "1px solid #ddd",
-    position: "absolute",
+    width: '5px',
+    cursor: 'ew-resize',
+    padding: '4px 0 0',
+    borderTop: '1px solid #ddd',
+    position: 'absolute',
     top: 0,
     right: 0,
     bottom: 0,
     zIndex: 100,
-    backgroundColor: "#f4f7f9"
+    backgroundColor: '#f4f7f9'
   }
 }));
 
@@ -56,23 +53,33 @@ interface ResizeableDrawerProps extends DrawerProps {
 
 export default function(props: ResizeableDrawerProps) {
   const classes = useStyles();
-  const { open, children, width, onWidthChange} = props;
+  const {
+    open,
+    children,
+    width,
+    onWidthChange,
+    className,
+    classes: propsClasses,
+    PaperProps,
+    ...rest
+  } = props;
 
-  const handleMouseMove = useCallback((e) => {
-    e.preventDefault();
-    const newWidth = e.clientX - document.body.offsetLeft;
-    if (newWidth > minDrawerWidth && newWidth < maxDrawerWidth) {
+  const handleMouseMove = useCallback(
+    (e) => {
+      e.preventDefault();
+      const newWidth = e.clientX - document.body.offsetLeft;
       onWidthChange(newWidth);
-    }
-  }, [onWidthChange]);
+    },
+    [onWidthChange]
+  );
 
   const handleMouseDown = () => {
     const handleMouseUp = () => {
-      document.removeEventListener("mouseup", handleMouseUp, true);
-      document.removeEventListener("mousemove", handleMouseMove, true);
+      document.removeEventListener('mouseup', handleMouseUp, true);
+      document.removeEventListener('mousemove', handleMouseMove, true);
     };
-    document.addEventListener("mouseup", handleMouseUp, true);
-    document.addEventListener("mousemove", handleMouseMove, true);
+    document.addEventListener('mouseup', handleMouseUp, true);
+    document.addEventListener('mousemove', handleMouseMove, true);
   };
 
   return (
@@ -80,9 +87,10 @@ export default function(props: ResizeableDrawerProps) {
       open={open}
       anchor="left"
       variant="persistent"
-      className={classes.drawer}
-      classes={{ paper: classes.drawerPaper }}
-      PaperProps={{ style: { width } }}
+      className={clsx(classes.drawer, className)}
+      classes={{ ...propsClasses, paper: classes.drawerPaper }}
+      PaperProps={{ ...PaperProps, style: { width } }}
+      {...rest}
     >
       <div onMouseDown={handleMouseDown} className={classes.dragger} />
       {children}
