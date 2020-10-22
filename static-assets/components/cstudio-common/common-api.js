@@ -798,7 +798,8 @@ var nodeOpen = false,
       viewConfigurationHistory: function (contentObj, isWrite) {
         const eventIdOnClose = 'showHistoryDialogConfigOnClose';
         const item = {
-          path: contentObj.path
+          path: contentObj.uri,
+          label: contentObj.path.split('/').pop()
         };
 
         CrafterCMSNext.system.store.dispatch({
@@ -813,8 +814,7 @@ var nodeOpen = false,
             {
               type: 'FETCH_ITEM_VERSIONS',
               payload: {
-                config: true,
-                revertPath: contentObj.uri,
+                isConfig: true,
                 environment: contentObj.environment,
                 module: contentObj.module,
                 item,

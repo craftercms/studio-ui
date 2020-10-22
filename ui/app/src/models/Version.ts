@@ -46,8 +46,7 @@ export interface VersionsStateProps {
   byId: string;
   item: DetailedItem;
   rootPath?: string;
-  config?: boolean;
-  revertPath?: string;
+  isConfig?: boolean;
   environment?: string;
   module?: string;
   error: ApiResponse;

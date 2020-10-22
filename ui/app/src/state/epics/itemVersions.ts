@@ -44,7 +44,7 @@ export default [
       ofType(fetchItemVersions.type, versionsChangeItem.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) => {
-        const service = (state.versions.config)
+        const service = (state.versions.isConfig)
           ? getConfigurationHistory(
             state.sites.active,
             payload.path ?? state.versions.item.path,
@@ -65,7 +65,7 @@ export default [
       switchMap(([{ payload }, state]) =>
         getVersions(
           state.sites.active,
-          state.versions.config ? state.versions.revertPath : state.versions.item.path,
+          state.versions.item.path,
           [state.versions.selected[0], state.versions.selected[1]],
           state.contentTypes.byId
         )
@@ -82,7 +82,7 @@ export default [
       switchMap(([{ payload }, state]) =>
         revertTo(
           state.sites.active,
-          state.versions.config ? state.versions.revertPath : payload.path ?? state.versions.item.path,
+          payload.path ?? state.versions.item.path,
           payload.versionNumber ?? state.versions.previous
         ).pipe(
           map(revertContentComplete),

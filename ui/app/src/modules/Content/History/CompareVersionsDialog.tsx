@@ -68,6 +68,7 @@ interface CompareVersionsDialogBaseProps {
   open: boolean;
   error: ApiResponse;
   isFetching: boolean;
+  disableItemSwitching?: boolean;
 }
 
 interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
@@ -75,7 +76,6 @@ interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
   selectedA: LegacyVersion;
   selectedB: LegacyVersion;
   contentTypesBranch?: EntityState<ContentType>;
-  disableItemSwitching?: boolean;
   rightActions?: DialogHeaderAction[];
   onClose?(): void;
   onClosed?(): void;
@@ -83,7 +83,6 @@ interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps {
-  disableItemSwitching?: boolean;
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
   onClosed?: StandardAction;
@@ -116,8 +115,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     compareVersionsBranch,
     current,
     item,
-    rootPath,
-    config
+    rootPath
   } = versionsBranch;
   const { formatMessage } = useIntl();
   const classes = useStyles({});
@@ -125,7 +123,6 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const dispatch = useDispatch();
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
-  const showSingleItemSelector = !config;
 
   useUnmount(props.onClosed);
 
@@ -158,7 +155,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     shouldReject: ({ compareVersionsBranch, contentTypesBranch }) =>
       Boolean(compareVersionsBranch.error || contentTypesBranch.error),
     shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) =>
-      (compareVersionsBranch.isFetching || contentTypesBranch.isFetching) && resource.complete,
+      resource.complete,
     resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => ({
       a: compareVersionsBranch.compareVersions?.[0],
       b: compareVersionsBranch.compareVersions?.[1],
@@ -222,7 +219,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         onDismiss={onDismiss}
       />
       <DialogBody>
-        {!compareMode && showSingleItemSelector && (
+        {!compareMode && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
             label="Item"
