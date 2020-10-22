@@ -280,9 +280,9 @@ export default function(props: WidgetProps) {
         window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
       }
     } else if (folder) {
-      onPathSelected(item)
+      onPathSelected(item);
     } else if (previewable) {
-      onPreview(item)
+      onPreview(item);
     }
   };
 
