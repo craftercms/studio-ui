@@ -19,8 +19,6 @@ import { StandardAction } from '../../models/StandardAction';
 
 // region Declarations
 
-export const DRAWER_WIDTH = 240;
-
 let hostToGuest$: Subject<StandardAction>;
 let guestToHost$: Subject<StandardAction>;
 let hostToHost$: Subject<StandardAction>;

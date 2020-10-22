@@ -36,10 +36,11 @@ import { useDispatch } from 'react-redux';
 import SearchBar from '../../../components/Controls/SearchBar';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import TablePagination from '@material-ui/core/TablePagination';
-import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
+import { getHostToGuestBus } from '../previewContext';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ContentType from '../../../models/ContentType';
+import { Resource } from '../../../models/Resource';
 
 const translations = defineMessages({
   browse: {
@@ -90,7 +91,6 @@ const useStyles = makeStyles((theme) =>
       'bottom': 0,
       'background': 'white',
       'color': 'black',
-      'width': `calc(${DRAWER_WIDTH}px - 1px)`,
       'left': 0,
       'borderTop': '1px solid rgba(0, 0, 0, 0.12)',
       '& p': {
@@ -152,6 +152,7 @@ export default function BrowseComponentsPanel() {
   const dispatch = useDispatch();
   const initialKeyword = useSelection((state) => state.preview.components.query.keywords);
   const contentTypeFilter = useSelection((state) => state.preview.components.contentTypeFilter);
+  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const [keyword, setKeyword] = useState(initialKeyword);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const contentTypes = contentTypesBranch.byId
@@ -260,6 +261,7 @@ export default function BrowseComponentsPanel() {
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             chooseContentTypeImageUrl={`${authoringBase}/static-assets/images/choose_option.svg`}
+            width={toolsPanelWidth}
           />
         </React.Suspense>
       </ErrorBoundary>
@@ -267,17 +269,28 @@ export default function BrowseComponentsPanel() {
   );
 }
 
-function BrowsePanelUI(props) {
+interface BrowsePanelUIProps {
+  componentsResource: Resource<ComponentResource>;
+  chooseContentTypeImageUrl: string;
+  width: number;
+  classes?: Partial<Record<'browsePanelWrapper' | 'pagination' | 'toolbar' | 'list' | 'noResultsImage' | 'noResultsTitle' | 'emptyState' | 'emptyStateImage' | 'emptyStateTitle', string>>;
+  onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
+  onDragStart(item: ContentInstance): void;
+  onDragEnd(): void;
+}
+
+function BrowsePanelUI(props: BrowsePanelUIProps) {
   const {
     componentsResource,
     classes,
     onPageChanged,
     onDragStart,
     onDragEnd,
-    chooseContentTypeImageUrl
+    chooseContentTypeImageUrl,
+    width
   } = props;
   const { formatMessage } = useIntl();
-  const components: ComponentResource = componentsResource.read();
+  const components = componentsResource.read();
   const { count, pageNumber, items, limit, contentTypeFilter } = components;
   return (
     <div className={classes.browsePanelWrapper}>
@@ -285,6 +298,7 @@ function BrowsePanelUI(props) {
         <>
           <TablePagination
             className={classes.pagination}
+            style={{ width: width - 1 }}
             classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
             component="div"
             labelRowsPerPage=""
