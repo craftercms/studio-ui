@@ -32,7 +32,7 @@ import GlobalState, { PagedEntityState } from '../../../models/GlobalState';
 import TablePagination from '@material-ui/core/TablePagination';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
+import { getHostToGuestBus } from '../previewContext';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -131,7 +131,6 @@ const assetsPanelStyles = makeStyles(() =>
     uploadOverlay: {
       position: 'fixed',
       background: fade(palette.black, 0.9),
-      width: `calc(${DRAWER_WIDTH}px - 1px)`,
       top: 0,
       bottom: 0,
       left: 0,
@@ -310,7 +309,7 @@ export default function AssetsPanel() {
         </div>
         <Suspencified loadingStateProps={{ title: formatMessage(translations.retrieveAssets) }}>
           {dragInProgress && (
-            <div className={classes.uploadOverlay}>
+            <div className={classes.uploadOverlay} style={{ width: toolsPanelWidth - 1 }}>
               <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
             </div>
           )}
