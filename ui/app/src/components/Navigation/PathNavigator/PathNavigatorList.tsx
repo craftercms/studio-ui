@@ -21,19 +21,21 @@ import React from 'react';
 import { Resource } from '../../../models/Resource';
 
 interface NavProps {
-  locale: string;
+  locale?: string;
   resource: Resource<DetailedItem[]>;
   isSelectMode?: boolean;
-  leafs: string[];
+  leafs?: string[];
+  showItemNavigateToButton?: boolean;
+  classes?: Partial<Record<'root', string>>;
   onItemClicked(item: DetailedItem): void;
   onSelectItem?(item: DetailedItem, unselect: boolean): void;
-  onPathSelected(item: DetailedItem): void;
+  onPathSelected?(item: DetailedItem): void;
   onPreview?(item: DetailedItem): void;
   onOpenItemMenu?(element: Element, item: DetailedItem): void;
 }
 
 // PathNavigatorList
-export default function (props: NavProps) {
+export default function(props: NavProps) {
   const {
     resource,
     onPathSelected,
@@ -43,11 +45,12 @@ export default function (props: NavProps) {
     onSelectItem,
     onOpenItemMenu,
     onItemClicked,
-    leafs
+    leafs = [],
+    showItemNavigateToButton
   } = props;
   const items = resource.read();
   return (
-    <List component="nav" disablePadding={true}>
+    <List component="nav" disablePadding={true} classes={{ root: props.classes?.root }}>
       {items.map((item: DetailedItem) => (
         <NavItem
           item={item}
@@ -60,6 +63,7 @@ export default function (props: NavProps) {
           onItemChecked={onSelectItem}
           onOpenItemMenu={onOpenItemMenu}
           onItemClicked={onItemClicked}
+          showItemNavigateToButton={showItemNavigateToButton}
         />
       ))}
     </List>
