@@ -45,6 +45,7 @@ interface IFrameProps {
   height?: string | number;
   className?: string;
   border?: 'portrait' | 'landscape';
+  onLoadComplete?(): void;
 }
 
 export default function IFrame(props: IFrameProps) {
@@ -55,7 +56,8 @@ export default function IFrame(props: IFrameProps) {
     width,
     height,
     border,
-    className
+    className,
+    onLoadComplete
   } = props;
 
   const cls = clsx(classes.iframe, {
@@ -69,6 +71,7 @@ export default function IFrame(props: IFrameProps) {
     <iframe
       style={{ width, height }}
       title={title}
+      onLoad={onLoadComplete}
       src={url || 'about:blank'}
       className={cls}
     />

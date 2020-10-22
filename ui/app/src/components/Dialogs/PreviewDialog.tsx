@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 import StandardAction from '../../models/StandardAction';
 import { Dialog } from '@material-ui/core';
 import DialogHeader from './DialogHeader';
@@ -24,6 +24,7 @@ import AceEditor from '../AceEditor';
 import { defineMessages, useIntl } from 'react-intl';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { useUnmount } from '../../utils/hooks';
+import LoadingState, { ConditionalLoadingState } from '../SystemStatus/LoadingState';
 
 const messages = defineMessages({
   videoProcessed: {
@@ -36,8 +37,8 @@ const messages = defineMessages({
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     maxWidth: '700px',
-    minWidth: '400px',
-    minHeight: '200px',
+    minWidth: '500px',
+    minHeight: '400px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -85,6 +86,9 @@ function PreviewDialogUI(props: PreviewDialogProps) {
   const { formatMessage } = useIntl();
   const classes = useStyles();
   useUnmount(props.onClosed);
+
+  const [isLoading, setIsLoading] = useState(true);
+
   const renderPreview = () => {
     switch (props.type) {
       case 'image':
@@ -97,15 +101,28 @@ function PreviewDialogUI(props: PreviewDialogProps) {
           />
         );
       case 'page':
-        return <IFrame url={props.url} title={props.title} width={960} height={600} />;
+        return (
+          <>
+            {isLoading && <LoadingState />}
+            <IFrame
+              url={props.url}
+              title={props.title}
+              width={isLoading ? 0 : 960}
+              height={isLoading ? 0 : 600}
+              onLoadComplete={() => setIsLoading(false)}
+            />
+          </>
+        );
       case 'editor': {
         return (
-          <AceEditor
-            value={props.content}
-            className={classes.editor}
-            mode={`ace/mode/${props.mode}`}
-            readOnly
-          />
+          <ConditionalLoadingState isLoading={!props.content}>
+            <AceEditor
+              value={props.content}
+              className={classes.editor}
+              mode={`ace/mode/${props.mode}`}
+              readOnly
+            />
+          </ConditionalLoadingState>
         );
       }
       default:

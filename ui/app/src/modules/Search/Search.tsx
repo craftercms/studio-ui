@@ -50,7 +50,8 @@ import {
   showDeleteDialog,
   showEditDialog,
   showPreviewDialog,
-  showWorkflowCancellationDialog
+  showWorkflowCancellationDialog,
+  updatePreviewDialog
 } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useLogicResource, usePermissions, useSelection } from '../../utils/hooks';
@@ -62,8 +63,6 @@ import { Loader } from '../../components/ItemMenu/ItemMenu';
 import { isEditableAsset } from '../../utils/content';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { getPreviewURLFromPath } from '../../utils/path';
@@ -161,10 +160,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   videoPreview: {},
-  optionIcon: {
-    color: palette.gray.medium3,
-    marginRight: '5px'
-  },
   mediaCardListRoot: {
     display: 'flex'
   },
@@ -194,12 +189,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const loaderStyles = makeStyles(() =>
   createStyles({
     loadingWrapper: {
-      width: '105px',
+      width: '75px',
       padding: '0px 15px'
-    },
-    optionIcon: {
-      color: palette.gray.medium3,
-      marginRight: '5px'
     }
   })
 );
@@ -251,20 +242,24 @@ const messages = defineMessages({
   delete: {
     id: 'words.delete',
     defaultMessage: 'Delete'
+  },
+  preview: {
+    id: 'words.preview',
+    defaultMessage: 'Preview'
   }
 });
 
 interface SearchProps {
   history: History;
   location: Location;
-  mode: string;
+  mode?: string;
   onSelect(path: string, selected: boolean): any;
 }
 
 export default function Search(props: SearchProps) {
   const classes = useStyles({});
   const { current: refs } = useRef<any>({});
-  const { history, location, mode, onSelect } = props;
+  const { history, location, mode = 'default', onSelect } = props;
   const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
   const searchParameters = useMemo(
     () => setSearchParameters(initialSearchParameters, queryParams),
@@ -330,7 +325,6 @@ export default function Search(props: SearchProps) {
           <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
             <MediaCard
               item={item}
-              onNavigate={onNavigate}
               onPreview={onPreview}
               onSelect={handleSelect}
               selected={selected}
@@ -590,23 +584,28 @@ export default function Search(props: SearchProps) {
         break;
       }
       default: {
+        let mode = 'txt';
+        if (type === 'Template') {
+          mode = 'ftl';
+        } else if (type === 'Groovy') {
+          mode = 'groovy';
+        } else if (type === 'JavaScript') {
+          mode = 'javascript';
+        } else if (type === 'CSS') {
+          mode = 'css';
+        }
+        dispatch(
+          showPreviewDialog({
+            type: 'editor',
+            title,
+            url,
+            mode
+          })
+        );
+
         getContentXML(site, url).subscribe((content) => {
-          let mode = 'txt';
-          if (type === 'Template') {
-            mode = 'ftl';
-          } else if (type === 'Groovy') {
-            mode = 'groovy';
-          } else if (type === 'JavaScript') {
-            mode = 'javascript';
-          } else if (type === 'CSS') {
-            mode = 'css';
-          }
           dispatch(
-            showPreviewDialog({
-              type: 'editor',
-              title,
-              url,
-              mode,
+            updatePreviewDialog({
               content
             })
           );
@@ -649,10 +648,7 @@ export default function Search(props: SearchProps) {
           }),
           closeDeleteDialog()
         ]),
-        onClosed: batchActions([
-          dispatchDOMEvent({ id: idDialogCancel }),
-          deleteDialogClosed()
-        ])
+        onClosed: batchActions([dispatchDOMEvent({ id: idDialogCancel }), deleteDialogClosed()])
       })
     );
 
@@ -775,11 +771,13 @@ export default function Search(props: SearchProps) {
           item={simpleMenu.item}
           anchorEl={simpleMenu.anchorEl}
           onClose={onMenuClose}
+          onNavigate={onNavigate}
           onEdit={onEdit}
           onDelete={onDelete}
           messages={{
             edit: formatMessage(messages.edit),
             delete: formatMessage(messages.delete),
+            preview: formatMessage(messages.preview),
             noPermissions: formatMessage(messages.noPermissions)
           }}
         />
@@ -795,9 +793,11 @@ interface SimpleMenuProps {
   messages: {
     delete: string;
     edit: string;
+    preview: string;
     noPermissions: string;
   };
   onClose(): void;
+  onNavigate(item: MediaItem): void;
   onEdit(item: MediaItem): void;
   onDelete(item: MediaItem): void;
 }
@@ -807,10 +807,11 @@ interface SimpleMenuUIProps {
   messages: {
     delete: string;
     edit: string;
+    preview: string;
     noPermissions: string;
   };
-  classes?: Partial<Record<'optionIcon', string>>;
   onClose(): void;
+  onNavigate(): void;
   onEdit(): void;
   onDelete(): void;
 }
@@ -821,15 +822,23 @@ function SimpleMenu(props: SimpleMenuProps) {
     shouldResolve: (source) => Boolean(source),
     shouldReject: (source) => false,
     shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => ({ ...source, editable: isEditableAsset(props.item.path) }),
+    resultSelector: (source) => ({
+      ...source,
+      editable: isEditableAsset(props.item.path),
+      preview: props.item.type === 'Page'
+    }),
     errorSelector: (source) => null
   });
+
+
   return (
     <Menu anchorEl={props.anchorEl} open={Boolean(props.anchorEl)} onClose={props.onClose}>
       <Suspense
         fallback={
           <div className={classes.loadingWrapper}>
-            <Loader loaderItems={2} />
+            <Loader
+              loaderItems={props.item.type === 'Image' ? 1 : props.item.type === 'Page' ? 3 : 2}
+            />
           </div>
         }
       >
@@ -837,9 +846,9 @@ function SimpleMenu(props: SimpleMenuProps) {
           resource={resource}
           messages={props.messages}
           onClose={props.onClose}
+          onNavigate={() => props.onNavigate(props.item)}
           onEdit={() => props.onEdit(props.item)}
           onDelete={() => props.onDelete(props.item)}
-          classes={classes}
         />
       </Suspense>
     </Menu>
@@ -847,9 +856,10 @@ function SimpleMenu(props: SimpleMenuProps) {
 }
 
 function SimpleMenuUI(props: SimpleMenuUIProps) {
-  const { resource, onEdit, onClose, onDelete, classes, messages } = props;
+  const { resource, onEdit, onClose, onDelete, messages, onNavigate } = props;
   const permissions = resource.read();
   const editable = permissions.editable;
+  const preview = permissions.preview;
   const isWriteAllowed = permissions.write;
   const isDeleteAllowed = permissions.delete;
   return (
@@ -861,7 +871,6 @@ function SimpleMenuUI(props: SimpleMenuUIProps) {
             onEdit();
           }}
         >
-          <EditIcon className={classes.optionIcon} />
           {messages.edit}
         </MenuItem>
       )}
@@ -872,10 +881,20 @@ function SimpleMenuUI(props: SimpleMenuUIProps) {
             onDelete();
           }}
         >
-          <DeleteIcon className={classes.optionIcon} />
           {messages.delete}
         </MenuItem>
       )}
+      {
+        preview && (
+          <MenuItem
+            onClick={() => {
+              onNavigate();
+            }}
+          >
+            {messages.preview}
+          </MenuItem>
+        )
+      }
       {!isWriteAllowed && !isDeleteAllowed && (
         <MenuItem onClick={onClose}>{messages.noPermissions}</MenuItem>
       )}
