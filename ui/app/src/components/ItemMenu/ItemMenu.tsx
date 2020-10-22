@@ -432,12 +432,12 @@ export function ItemMenu(props: ItemMenuProps) {
         break;
       }
       case 'codeEditor': {
-        let src = `${legacyFormSrc}site=${site}&path=${encodeURI(item.path)}&type=asset`;
+        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset`;
         dispatch(showCodeEditorDialog({ src }));
         break;
       }
       case 'viewCodeEditor': {
-        let src = `${legacyFormSrc}site=${site}&path=${encodeURI(item.path)}&type=asset&readonly=true`;
+        let src = `${legacyFormSrc}site=${site}&path=${encodeURIComponent(item.path)}&type=asset&readonly=true`;
         dispatch(showCodeEditorDialog({ src }));
         break;
       }
