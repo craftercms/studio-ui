@@ -175,6 +175,9 @@ export const uploadDialogClosed = createAction('UPLOAD_DIALOG_CLOSED');
 export const showPreviewDialog = createAction<Partial<PreviewDialogStateProps>>(
   'SHOW_PREVIEW_DIALOG'
 );
+export const updatePreviewDialog = createAction<Partial<PreviewDialogStateProps>>(
+  'UPDATE_PREVIEW_DIALOG'
+);
 export const closePreviewDialog = createAction<StandardAction>('CLOSE_PREVIEW_DIALOG');
 export const previewDialogClosed = createAction('PREVIEW_DIALOG_CLOSED');
 // endregion
