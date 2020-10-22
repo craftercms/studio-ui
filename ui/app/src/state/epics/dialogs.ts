@@ -31,8 +31,10 @@ import {
   fetchContentVersion,
   fetchContentVersionComplete,
   fetchContentVersionFailed,
+  fetchDeleteDependencies, fetchDeleteDependenciesComplete, fetchDeleteDependenciesFailed,
   newContentCreationComplete
 } from '../actions/dialogs';
+import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
 import { getVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
@@ -108,5 +110,15 @@ export default [
   (action$, state$: Observable<GlobalState>) => action$.pipe(
     ofType(newContentCreationComplete.type),
     switchMap(({ payload }) => (payload.item?.isPage ? of(changeCurrentUrl(payload.redirectUrl)) : NEVER))
+  ),
+  (action$, state$) => action$.pipe(
+    ofType(fetchDeleteDependencies.type),
+    withLatestFrom(state$),
+    switchMap(([{payload: items}, state]) =>
+      fetchDeleteDependenciesService(state.sites.active, items).pipe(
+        map(fetchDeleteDependenciesComplete),
+        catchAjaxError(fetchDeleteDependenciesFailed)
+      )
+    )
   )
 ] as Epic[];
