@@ -189,7 +189,7 @@ export default React.forwardRef(function AceEditor(props: AceEditorProps, ref) {
     };
     if (!window.ace) {
       const script = document.createElement('script');
-      script.src = '/studio/static-assets/components/cstudio-common/ace/ace.js';
+      script.src = '/studio/static-assets/libs/ace/ace.js';
       script.onload = init;
       document.head.appendChild(script);
     } else {
