@@ -93,6 +93,10 @@ const translations = defineMessages({
 });
 
 const dependenciesDialogStyles = makeStyles((theme) => createStyles({
+  dialogBody: {
+    overflow: 'auto',
+    minHeight: '50vh'
+  },
   titleRoot: {
     margin: 0,
     padding: '13px 20px 11px',
@@ -326,7 +330,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
         title={formatMessage(translations.headerTitle)}
         onDismiss={onDismiss}
       />
-      <DialogBody>
+      <DialogBody className={classes.dialogBody}>
         <div className={classes.selectionContent}>
           <SingleItemSelector
             label="Item"
