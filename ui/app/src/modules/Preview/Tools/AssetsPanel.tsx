@@ -154,7 +154,6 @@ interface AssetResource {
 export default function AssetsPanel() {
   const classes = assetsPanelStyles({});
   const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
-  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [dragInProgress, setDragInProgress] = useState(false);
   const hostToGuest$ = getHostToGuestBus();
