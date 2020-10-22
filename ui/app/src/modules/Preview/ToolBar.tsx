@@ -22,7 +22,6 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
@@ -57,6 +56,7 @@ import palette from '../../styles/palette';
 import SingleItemSelector from '../Content/Authoring/SingleItemSelector';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { ItemMenu } from '../../components/ItemMenu/ItemMenu';
+import PagesSearchAhead from '../../components/Navigation/PagesSearchAhead';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -108,8 +108,7 @@ const useStyles = makeStyles((theme: Theme) =>
       // backgroundColor: palette.gray.dark6
     },
     inputContainer: {
-      marginLeft: theme.spacing(1),
-      flex: 1
+      marginLeft: theme.spacing(1)
     },
     input: {
       border: 'none',
@@ -118,12 +117,7 @@ const useStyles = makeStyles((theme: Theme) =>
         boxShadow: 'none'
       }
     },
-    iconButton: {
-      // padding: 5,
-      // margin: '0 5px 0 0',
-      // color: palette.gray.light4,
-      // backgroundColor: palette.gray.dark2
-    },
+    iconButton: {},
     divider: {
       height: 28,
       margin: 4
@@ -145,17 +139,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       alignItems: 'center'
     },
-    iframe: {
-      height: '0',
-      border: 0,
-      '&.complete': {
-        height: '100%'
-      }
-    },
-    loadingRoot: {
-      height: 'calc(100% - 104px)',
-      justifyContent: 'center'
-    },
     selectorPopoverRoot: {
       width: 400,
       marginLeft: '4px'
@@ -165,12 +148,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
-
-function createOnEnter(handler, argument: 'value' | 'event' = 'event') {
-  return argument === 'value'
-    ? (e) => e.key === 'Enter' && handler(e.target.value)
-    : (e) => e.key === 'Enter' && handler(e);
-}
 
 interface AddressBarProps {
   site: string;
@@ -253,15 +230,14 @@ export function AddressBar(props: AddressBarProps) {
             </MenuItem>
           ))}
         </Select>
-        <InputBase
+        <PagesSearchAhead
           value={internalUrl}
-          onChange={(e) => setInternalUrl(e.target.value)}
-          onKeyDown={createOnEnter((value) => onUrlChange(value), 'value')}
           placeholder={noSiteSet ? '' : '/'}
           disabled={noSiteSet}
-          className={classes.inputContainer}
-          classes={{ input: classes.input }}
-          inputProps={{ 'aria-label': '' }}
+          onEnter={(value) => onUrlChange(value)}
+          classes={{
+            input: classes.input
+          }}
         />
         <SingleItemSelector
           disabled={noSiteSet}

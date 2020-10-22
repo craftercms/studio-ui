@@ -248,8 +248,7 @@ export function generateMenuOptions(
           if (read) {
             _optionsA.push(menuOptions.view);
           }
-        }
-        if (isImage) {
+        } else if (isImage) {
           _optionsA.push(menuOptions.viewImage);
         } else {
           _optionsA.push(menuOptions.codeEditor);

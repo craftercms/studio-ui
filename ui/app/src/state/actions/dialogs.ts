@@ -88,6 +88,9 @@ export const publishDialogClosed = createAction('PUBLISH_DIALOG_CLOSED');
 export const showDeleteDialog = createAction<Partial<DeleteDialogStateProps>>('SHOW_DELETE_DIALOG');
 export const closeDeleteDialog = createAction<StandardAction>('CLOSE_DELETE_DIALOG');
 export const deleteDialogClosed = createAction('DELETE_DIALOG_CLOSED');
+export const fetchDeleteDependencies = createAction<string[]>('FETCH_DELETE_DEPENDENCIES');
+export const fetchDeleteDependenciesComplete = createAction('FETCH_DELETE_DEPENDENCIES_COMPLETE');
+export const fetchDeleteDependenciesFailed = createAction('FETCH_DELETE_DEPENDENCIES_FAILED');
 // endregion
 
 // region New Content
@@ -171,6 +174,9 @@ export const uploadDialogClosed = createAction('UPLOAD_DIALOG_CLOSED');
 // region Preview Dialog
 export const showPreviewDialog = createAction<Partial<PreviewDialogStateProps>>(
   'SHOW_PREVIEW_DIALOG'
+);
+export const updatePreviewDialog = createAction<Partial<PreviewDialogStateProps>>(
+  'UPDATE_PREVIEW_DIALOG'
 );
 export const closePreviewDialog = createAction<StandardAction>('CLOSE_PREVIEW_DIALOG');
 export const previewDialogClosed = createAction('PREVIEW_DIALOG_CLOSED');

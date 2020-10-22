@@ -203,6 +203,7 @@ function GlobalDialogManager() {
       <DeleteDialog
         open={state.delete.open}
         items={state.delete.items}
+        isFetching={state.delete.isFetching}
         onClose={createCallback(state.delete.onClose, dispatch)}
         onClosed={createCallback(state.delete.onClosed, dispatch)}
         onDismiss={createCallback(state.delete.onDismiss, dispatch)}

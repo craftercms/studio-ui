@@ -296,7 +296,7 @@ export function useSpreadState<S>(initialState: S): [S, Dispatch<SetStateAction<
   return useReducer((state, nextState) => ({ ...state, ...nextState }), initialState);
 }
 
-export function useSubject<T = unknown>() {
+export function useSubject<T = unknown>(): Subject<T> {
   return useMemo(() => new Subject<T>(), []);
 }
 

@@ -24,6 +24,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Typography from '@material-ui/core/Typography';
 import {
   checkState,
@@ -35,7 +36,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import palette from '../../../styles/palette';
-
+import { useActiveSiteId, useSelection } from '../../../utils/hooks';
 interface DependencySelectionProps<T extends BaseItem = BaseItem> {
   items: T[];
   siteId?: string;      // for dependencySelectionDelete
@@ -57,18 +58,20 @@ interface SelectionListProps<T extends BaseItem = BaseItem> {
   title: any;
   subtitle?: any;
   items?: T[];
-  uris?: [];
+  uris?: string[];
   onItemClicked?: Function;
   onSelectAllClicked?: Function;
   displayItemTitle: boolean;
   checked?: any;
   setChecked?: Function;
   disabled?: boolean;
+  showEdit?: boolean;
+  onEditClick?: Function;
 }
 
 export interface DeleteDependencies {
-  childItems: [],
-  dependentItems: []
+  childItems: string[],
+  dependentItems: string[]
 }
 
 const CenterCircularProgress = withStyles({
@@ -92,8 +95,7 @@ const useStyles = makeStyles(() => ({
     overflowY: 'hidden'
   },
   dependencySelectionDelete: {
-    overflowY: 'auto',
-    minHeight: '200px'
+    overflowY: 'auto'
   },
   dependencySelectionDisabled: {
     backgroundColor: palette.gray.light1
@@ -271,6 +273,7 @@ interface DependencySelectionDeleteProps {
   items: SandboxItem[],
   resultItems: DeleteDependencies;
   onChange: Function;
+  onEditDependency?: Function;
 }
 
 export function DependencySelectionDelete(props: DependencySelectionDeleteProps) {
@@ -278,9 +281,13 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
   const {
     items,
     resultItems,
-    onChange
+    onChange,
+    onEditDependency
   } = props;
   const [checked, _setChecked] = useState<any>(checkState(items));
+  const siteId = useActiveSiteId();
+  const authoringBase = useSelection<string>(state => state.env.authoringBase);
+  const defaultFormSrc = `${authoringBase}/legacy/form`;
 
   const setChecked = (uri: string[], isChecked: boolean) => {
     _setChecked(updateCheckedList(uri, isChecked, checked));
@@ -292,6 +299,11 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
       .map(([key]) => key);
     onChange?.(result);
   }, [checked, onChange]);
+
+  const onEditClick = (uri: string) => {
+    const src = `${defaultFormSrc}?site=${siteId}&path=${uri}&type=form`;
+    onEditDependency(src);
+  };
 
   return (
     <div className={clsx(classes.dependencySelection, classes.dependencySelectionDelete)}>
@@ -341,6 +353,8 @@ export function DependencySelectionDelete(props: DependencySelectionDeleteProps)
           }
           uris={resultItems.dependentItems}
           displayItemTitle={false}
+          showEdit
+          onEditClick={onEditClick}
         />
       </>
       <div className={classes.bottomSection}>
@@ -373,7 +387,9 @@ function SelectionList(props: SelectionListProps) {
     onSelectAllClicked,
     checked,
     setChecked,
-    disabled = false
+    disabled = false,
+    showEdit = false,
+    onEditClick
   } = props;
 
   const classes = useStyles({});
@@ -493,8 +509,20 @@ function SelectionList(props: SelectionListProps) {
                     <ListItemText
                       id={labelId}
                       primary={uri}
-
                     />
+                    {
+                      showEdit &&
+                      <ListItemSecondaryAction>
+                        <Button
+                          color="primary"
+                          onClick={() => onEditClick(uri)}
+                          size="small"
+                          className={classes.selectAllBtn}
+                        >
+                          <FormattedMessage id="words.edit" defaultMessage="Edit"/>
+                        </Button>
+                      </ListItemSecondaryAction>
+                    }
                   </ListItem>
                 );
               })
