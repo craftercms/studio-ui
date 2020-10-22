@@ -91,13 +91,6 @@ const assetsPanelStyles = makeStyles(() =>
       marginBottom: '16px'
     },
     pagination: {
-      marginLeft: 'auto',
-      position: 'fixed',
-      zIndex: 1,
-      bottom: 0,
-      background: 'white',
-      color: 'black',
-      left: 0,
       borderTop: '1px solid rgba(0, 0, 0, 0.12)',
       '& p': {
         padding: 0
@@ -113,7 +106,7 @@ const assetsPanelStyles = makeStyles(() =>
       padding: 0,
       display: 'flex',
       justifyContent: 'space-between',
-      paddingLeft: '20px',
+      paddingLeft: '12px',
       '& .MuiTablePagination-spacer': {
         display: 'none'
       },
@@ -129,7 +122,7 @@ const assetsPanelStyles = makeStyles(() =>
       marginTop: '10px'
     },
     uploadOverlay: {
-      position: 'fixed',
+      position: 'absolute',
       background: fade(palette.black, 0.9),
       top: 0,
       bottom: 0,
@@ -309,14 +302,13 @@ export default function AssetsPanel() {
         </div>
         <Suspencified loadingStateProps={{ title: formatMessage(translations.retrieveAssets) }}>
           {dragInProgress && (
-            <div className={classes.uploadOverlay} style={{ width: toolsPanelWidth - 1 }}>
+            <div className={classes.uploadOverlay}>
               <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
             </div>
           )}
           <AssetsPanelUI
             classes={classes}
             assetsResource={resource}
-            width={toolsPanelWidth}
             onPageChanged={onPageChanged}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
@@ -330,7 +322,6 @@ export default function AssetsPanel() {
 
 interface AssetsPanelUIProps {
   guestBase: string;
-  width: number;
   classes?: Partial<Record<'assetsPanelWrapper' | 'pagination' | 'toolbar' | 'card' | 'noResultsImage' | 'noResultsTitle', string>>;
   assetsResource: Resource<AssetResource>;
   onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
@@ -339,7 +330,7 @@ interface AssetsPanelUIProps {
 }
 
 export function AssetsPanelUI(props:AssetsPanelUIProps) {
-  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase, width } = props;
+  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase } = props;
   const assets = assetsResource.read();
   const { count, pageNumber, items, limit } = assets;
   const { formatMessage } = useIntl();
@@ -348,7 +339,6 @@ export function AssetsPanelUI(props:AssetsPanelUIProps) {
     <div className={classes.assetsPanelWrapper}>
       <TablePagination
         className={classes.pagination}
-        style={{ width: width - 1 }}
         classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
         component="div"
         labelRowsPerPage=""
@@ -356,10 +346,12 @@ export function AssetsPanelUI(props:AssetsPanelUIProps) {
         rowsPerPage={limit}
         page={pageNumber}
         backIconButtonProps={{
-          'aria-label': formatMessage(translations.previousPage)
+          'aria-label': formatMessage(translations.previousPage),
+          'size': 'small'
         }}
         nextIconButtonProps={{
-          'aria-label': formatMessage(translations.nextPage)
+          'aria-label': formatMessage(translations.nextPage),
+          'size': 'small'
         }}
         onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
           onPageChanged(e, page * limit)

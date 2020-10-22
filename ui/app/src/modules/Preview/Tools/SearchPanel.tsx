@@ -23,8 +23,7 @@ import {
   useActiveSiteId,
   useDebouncedInput,
   useLogicResource,
-  useMount,
-  useSelection
+  useMount
 } from '../../../utils/hooks';
 import SearchBar from '../../../components/Controls/SearchBar';
 import {
@@ -73,6 +72,9 @@ const useStyles = makeStyles(() => ({
   searchContainer: {
     padding: '16px'
   },
+  paginationContainer: {
+    padding: '0 16px'
+  },
   searchResultsList: {
     padding: '0',
     '& li:first-child': {
@@ -80,14 +82,7 @@ const useStyles = makeStyles(() => ({
     }
   },
   pagination: {
-    'marginLeft': 'auto',
-    'position': 'fixed',
-    'zIndex': 1,
-    'bottom': 0,
-    'background': 'white',
-    'color': 'black',
-    'left': 0,
-    'borderTop': '1px solid rgba(0, 0, 0, 0.12)',
+    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
     '& p': {
       padding: 0
     },
@@ -99,10 +94,10 @@ const useStyles = makeStyles(() => ({
     }
   },
   toolbar: {
-    'padding': 0,
-    'display': 'flex',
-    'justifyContent': 'space-between',
-    'paddingLeft': '20px',
+    padding: 0,
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingLeft: '12px',
     '& .MuiTablePagination-spacer': {
       display: 'none'
     },
@@ -125,7 +120,9 @@ function SearchResults(props) {
   };
 
   const onDragEnd = (item: ContentInstance | MediaItem) => {
-    hostToGuest$.next({ type: item['craftercms'] ? COMPONENT_INSTANCE_DRAG_ENDED : ASSET_DRAG_ENDED });
+    hostToGuest$.next({
+      type: item['craftercms'] ? COMPONENT_INSTANCE_DRAG_ENDED : ASSET_DRAG_ENDED
+    });
   };
 
   return (
@@ -161,14 +158,16 @@ export default function SearchPanel() {
   const [error, setError] = useState<ApiResponse>(null);
   const site = useActiveSiteId();
   const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
-  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   // TODO: Components
   //const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
   // const contentTypesIds = contentTypes?.map(item => item.id);
   // const contentTypesLookup = createLookupTable(contentTypes, 'id');
   const [pageNumber, setPageNumber] = useState(0);
 
-  const resource = useLogicResource<Array<ContentInstance | SearchItem>, ContentInstancePage | SearchResult>(searchResults, {
+  const resource = useLogicResource<
+    Array<ContentInstance | SearchItem>,
+    ContentInstancePage | SearchResult
+  >(searchResults, {
     shouldResolve: (data) => Boolean(data),
     shouldReject: () => Boolean(error),
     shouldRenew: (data, resourceArg) => resourceArg.complete,
@@ -183,37 +182,40 @@ export default function SearchPanel() {
     onSearch();
   });
 
-  const onSearch = useCallback((keywords: string = '', options?: ComponentsContentTypeParams) => {
-    // TODO: Components
-    // getContentByContentType(site, contentTypesIds, contentTypesLookup, {
-    //   ...initialSearchParameters,
-    //   keywords,
-    //   ...options,
-    //   type: 'Component'
-    // }).subscribe(
-    //   (result) => {
-    //     setSearchResults(result);
-    //   },
-    //   ({ response }) => {
-    //     setError(response);
-    //   }
-    // )
-    search(site, {
-      ...initialSearchParameters,
-      keywords,
-      ...options,
-      // TODO: Use this when api support OR operator
-      //filters: { 'content-type': contentTypes?.map(item => item.id), 'mime-type': mimeTypes }
-      filters: { 'mime-type': mimeTypes }
-    }).subscribe(
-      (result) => {
-        setSearchResults(result);
-      },
-      ({ response }) => {
-        setError(response);
-      }
-    );
-  }, [site]);
+  const onSearch = useCallback(
+    (keywords: string = '', options?: ComponentsContentTypeParams) => {
+      // TODO: Components
+      // getContentByContentType(site, contentTypesIds, contentTypesLookup, {
+      //   ...initialSearchParameters,
+      //   keywords,
+      //   ...options,
+      //   type: 'Component'
+      // }).subscribe(
+      //   (result) => {
+      //     setSearchResults(result);
+      //   },
+      //   ({ response }) => {
+      //     setError(response);
+      //   }
+      // )
+      search(site, {
+        ...initialSearchParameters,
+        keywords,
+        ...options,
+        // TODO: Use this when api support OR operator
+        //filters: { 'content-type': contentTypes?.map(item => item.id), 'mime-type': mimeTypes }
+        filters: { 'mime-type': mimeTypes }
+      }).subscribe(
+        (result) => {
+          setSearchResults(result);
+        },
+        ({ response }) => {
+          setError(response);
+        }
+      );
+    },
+    [site]
+  );
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
@@ -232,7 +234,11 @@ export default function SearchPanel() {
 
   return (
     <ToolPanel
-      title={keyword ? formatMessage(translations.titleKeyword, { keyword: keyword }) : formatMessage(translations.title)}
+      title={
+        keyword
+          ? formatMessage(translations.titleKeyword, { keyword: keyword })
+          : formatMessage(translations.title)
+      }
     >
       <div className={classes.searchContainer}>
         <SearchBar
@@ -243,6 +249,30 @@ export default function SearchPanel() {
           showActionButton={Boolean(keyword)}
         />
       </div>
+      {searchResults && (
+        <div className={classes.paginationContainer}>
+          <TablePagination
+            className={classes.pagination}
+            classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+            component="div"
+            labelRowsPerPage=""
+            count={searchResults['count'] || searchResults['total']}
+            rowsPerPage={initialSearchParameters.limit}
+            page={pageNumber}
+            backIconButtonProps={{
+              'aria-label': formatMessage(translations.previousPage),
+              'size': 'small'
+            }}
+            nextIconButtonProps={{
+              'aria-label': formatMessage(translations.nextPage),
+              'size': 'small'
+            }}
+            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
+              onPageChanged(e, page)
+            }
+          />
+        </div>
+      )}
       <SuspenseWithEmptyState
         resource={resource}
         withEmptyStateProps={{
@@ -251,30 +281,6 @@ export default function SearchPanel() {
       >
         <SearchResults resource={resource} />
       </SuspenseWithEmptyState>
-      {
-        searchResults &&
-        <TablePagination
-          className={classes.pagination}
-          style={{ width: toolsPanelWidth - 1 }}
-          classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-          component="div"
-          labelRowsPerPage=""
-          count={searchResults['count'] || searchResults['total']}
-          rowsPerPage={initialSearchParameters.limit}
-          page={pageNumber}
-          backIconButtonProps={{
-            'aria-label': formatMessage(translations.previousPage)
-          }}
-          nextIconButtonProps={{
-            'aria-label': formatMessage(translations.nextPage)
-          }}
-          onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
-            onPageChanged(e, page)
-          }
-        />
-      }
     </ToolPanel>
   );
 }
-
-
