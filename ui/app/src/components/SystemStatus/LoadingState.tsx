@@ -89,5 +89,5 @@ export default function LoadingState(props: LoadingStateProps) {
 
 export function ConditionalLoadingState(props: ConditionalLoadingStateProps) {
   const { children, isLoading, ...loadingStateProps } = props;
-  return isLoading ? children : <LoadingState {...loadingStateProps} />;
+  return isLoading ? <LoadingState {...loadingStateProps} /> : <>{children}</>;
 }

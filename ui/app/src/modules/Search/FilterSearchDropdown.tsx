@@ -167,7 +167,7 @@ const messages: any = defineMessages({
     defaultMessage: 'Sort By'
   },
   relevance: {
-    id: 'searchFilter.relevance',
+    id: 'words.relevance',
     defaultMessage: 'Relevance'
   },
   internalName: {
@@ -175,7 +175,7 @@ const messages: any = defineMessages({
     defaultMessage: 'Name'
   },
   width: {
-    id: 'searchFilter.width',
+    id: 'words.width',
     defaultMessage: 'Width'
   },
   contentType: {
@@ -195,7 +195,7 @@ const messages: any = defineMessages({
     defaultMessage: 'Last Edit Date'
   },
   height: {
-    id: 'searchFilter.height',
+    id: 'words.height',
     defaultMessage: 'Height'
   },
   asc: {
@@ -215,15 +215,15 @@ const messages: any = defineMessages({
     defaultMessage: 'Less relevant first'
   },
   apply: {
-    id: 'searchFilter.apply',
+    id: 'words.apply',
     defaultMessage: 'Apply'
   },
-  clean: {
-    id: 'searchFilter.clean',
-    defaultMessage: 'Clean'
+  clear: {
+    id: 'words.clear',
+    defaultMessage: 'Clear'
   },
   go: {
-    id: 'searchFilter.go',
+    id: 'words.go',
     defaultMessage: 'Go'
   },
   under: {
@@ -235,11 +235,11 @@ const messages: any = defineMessages({
     defaultMessage: 'Above {value}{unit}'
   },
   min: {
-    id: 'searchFilter.min',
+    id: 'words.min',
     defaultMessage: 'Min'
   },
   max: {
-    id: 'searchFilter.max',
+    id: 'words.max',
     defaultMessage: 'Max'
   },
   searchIn: {
@@ -319,7 +319,7 @@ function Filter(props: FilterProps) {
           className={classes.button}
           onClick={() => handleClearClick(facet)}
         >
-          {formatMessage(messages.clean)}
+          {formatMessage(messages.clear)}
         </Button>
         {facetsLookupTable[facet].multiple && (
           <Button

@@ -41,10 +41,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   card: {
     '& .cardTitle': {
       ...cardTitleStyles,
-      '&.clickable': {
-        textDecoration: 'underline',
-        cursor: 'pointer'
-      }
     },
     '& .cardSubtitle': {
       overflow: 'hidden',
@@ -54,7 +50,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   cardHeaderRoot: {
-    padding: '9px 0'
+    padding: '9px 0',
+    cursor: 'pointer',
+    width: '100%'
   },
   avatar: {
     color: palette.black,
@@ -125,8 +123,6 @@ interface MediaCardProps {
 
   onHeaderButtonClick?(...props: any): any;
 
-  onNavigate?(item: MediaItem): any;
-
   onPreview?(item: MediaItem): any;
 
   onSelect?(path: string, selected: boolean): any;
@@ -139,7 +135,6 @@ interface MediaCardProps {
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
   const {
-    onNavigate,
     onPreview,
     onSelect,
     selected,
@@ -254,11 +249,11 @@ function MediaCard(props: MediaCardProps) {
           subheader={hasSubheader ? type : null}
           avatar={Avatar ? <Avatar /> : null}
           classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
-          onClick={(type === 'Image' || type === 'Video' || type === 'Page') && onNavigate ? () => onNavigate(item) : null}
+          onClick={ () => onPreview(item)}
           titleTypographyProps={{
             variant: 'subtitle2',
             component: 'h2',
-            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && onNavigate && 'clickable')
+            className: 'cardTitle'
           }}
           subheaderTypographyProps={{
             variant: 'subtitle2',

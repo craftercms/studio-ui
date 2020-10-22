@@ -227,7 +227,7 @@ CStudioAuthoring.Module.requireModule(
                 });
               },
 
-              renderTemplateEditor: function (templatePath, content, onSaveCb, contentType, isRead) {
+              renderTemplateEditor: function (templatePath, content, onSaveCb, contentType, mode) {
                 const me = this;
                 var permsCallback = {
                   success: function (response) {
@@ -242,7 +242,8 @@ CStudioAuthoring.Module.requireModule(
                     modalEl.appendChild(containerEl);
                     var formHTML = '';
 
-                    if (isRead === 'read') {
+                    const isRead = mode === 'read';
+                    if (isRead) {
                       formHTML += '<div class="cstudio-form-readonly-banner">READ ONLY</div>';
                     }
 
