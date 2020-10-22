@@ -46,6 +46,7 @@ import { nnou, pluckProps } from '../../../utils/object';
 import { uploadDataUrl } from '../../../services/content';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
 import palette from '../../../styles/palette';
+import { Resource } from '../../../models/Resource';
 
 const translations = defineMessages({
   assetsPanel: {
@@ -96,7 +97,6 @@ const assetsPanelStyles = makeStyles(() =>
       bottom: 0,
       background: 'white',
       color: 'black',
-      width: `calc(${DRAWER_WIDTH}px - 1px)`,
       left: 0,
       borderTop: '1px solid rgba(0, 0, 0, 0.12)',
       '& p': {
@@ -162,6 +162,7 @@ interface AssetResource {
 export default function AssetsPanel() {
   const classes = assetsPanelStyles({});
   const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
+  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [dragInProgress, setDragInProgress] = useState(false);
   const hostToGuest$ = getHostToGuestBus();
@@ -316,11 +317,11 @@ export default function AssetsPanel() {
           <AssetsPanelUI
             classes={classes}
             assetsResource={resource}
+            width={toolsPanelWidth}
             onPageChanged={onPageChanged}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             guestBase={guestBase}
-            onDragDrop={onDragDrop}
           />
         </Suspencified>
       </div>
@@ -328,9 +329,19 @@ export default function AssetsPanel() {
   );
 }
 
-export function AssetsPanelUI(props) {
-  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase } = props;
-  const assets: AssetResource = assetsResource.read();
+interface AssetsPanelUIProps {
+  guestBase: string;
+  width: number;
+  classes?: Partial<Record<'assetsPanelWrapper' | 'pagination' | 'toolbar' | 'card' | 'noResultsImage' | 'noResultsTitle', string>>;
+  assetsResource: Resource<AssetResource>;
+  onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
+  onDragStart(mediaItem: MediaItem): void;
+  onDragEnd(): void;
+}
+
+export function AssetsPanelUI(props:AssetsPanelUIProps) {
+  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase, width } = props;
+  const assets = assetsResource.read();
   const { count, pageNumber, items, limit } = assets;
   const { formatMessage } = useIntl();
 
@@ -338,6 +349,7 @@ export function AssetsPanelUI(props) {
     <div className={classes.assetsPanelWrapper}>
       <TablePagination
         className={classes.pagination}
+        style={{ width: width - 1 }}
         classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
         component="div"
         labelRowsPerPage=""

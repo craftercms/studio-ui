@@ -22,8 +22,9 @@ import ToolPanel from './ToolPanel';
 import {
   useActiveSiteId,
   useDebouncedInput,
+  useLogicResource,
   useMount,
-  useLogicResource
+  useSelection
 } from '../../../utils/hooks';
 import SearchBar from '../../../components/Controls/SearchBar';
 import {
@@ -37,7 +38,7 @@ import {
 import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspencified';
 import { DraggablePanelListItem } from './DraggablePanelListItem';
 import TablePagination from '@material-ui/core/TablePagination';
-import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
+import { getHostToGuestBus } from '../previewContext';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -85,7 +86,6 @@ const useStyles = makeStyles(() => ({
     'bottom': 0,
     'background': 'white',
     'color': 'black',
-    'width': `calc(${DRAWER_WIDTH}px - 1px)`,
     'left': 0,
     'borderTop': '1px solid rgba(0, 0, 0, 0.12)',
     '& p': {
@@ -140,7 +140,7 @@ function SearchResults(props) {
         />
       ))}
     </List>
-  )
+  );
 }
 
 const initialSearchParameters: Partial<ElasticParams> = {
@@ -161,6 +161,7 @@ export default function SearchPanel() {
   const [error, setError] = useState<ApiResponse>(null);
   const site = useActiveSiteId();
   const [searchResults, setSearchResults] = useState<ContentInstancePage | SearchResult>(null);
+  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   // TODO: Components
   //const contentTypes = useContentTypeList((contentType) => contentType.type === 'component');
   // const contentTypesIds = contentTypes?.map(item => item.id);
@@ -223,7 +224,10 @@ export default function SearchPanel() {
 
   function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, page: number) {
     setPageNumber(page);
-    onSearch(keyword, { offset: page * initialSearchParameters.limit, limit: initialSearchParameters.limit })
+    onSearch(keyword, {
+      offset: page * initialSearchParameters.limit,
+      limit: initialSearchParameters.limit
+    });
   }
 
   return (
@@ -245,12 +249,13 @@ export default function SearchPanel() {
           isEmpty: (items: Array<ContentInstance>) => !Boolean(items.length)
         }}
       >
-        <SearchResults resource={resource}/>
+        <SearchResults resource={resource} />
       </SuspenseWithEmptyState>
       {
         searchResults &&
         <TablePagination
           className={classes.pagination}
+          style={{ width: toolsPanelWidth - 1 }}
           classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
           component="div"
           labelRowsPerPage=""
@@ -269,7 +274,7 @@ export default function SearchPanel() {
         />
       }
     </ToolPanel>
-  )
+  );
 }
 
 
