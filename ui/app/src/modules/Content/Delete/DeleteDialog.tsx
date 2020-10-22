@@ -39,10 +39,7 @@ import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
 import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
-import {
-  fetchDeleteDependencies,
-  showEditDialog
-} from '../../../state/actions/dialogs';
+import { fetchDeleteDependencies, showEditDialog } from '../../../state/actions/dialogs';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 
@@ -295,7 +292,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     if (selectedItems) {
       dispatch(fetchDeleteDependencies(selectedItems));
     }
-  }, [selectedItems, setApiState, siteId]);
+  }, [dispatch, selectedItems, setApiState, siteId]);
 
   const onEditDependency = (src) => {
     dispatch(showEditDialog({
