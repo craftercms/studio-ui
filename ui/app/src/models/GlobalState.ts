@@ -117,6 +117,7 @@ export interface GlobalState {
     showToolsPanel: boolean;
     selectedTool: PreviewTool;
     previousTool: PreviewTool;
+    toolsPanelWidth: number;
     tools: Array<any>;
     hostSize: WidthAndHeight;
     guest: GuestData;

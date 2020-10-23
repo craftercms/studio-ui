@@ -22,9 +22,9 @@ import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTiltedRi
 import { Typography } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { DRAWER_WIDTH } from '../previewContext';
 import palette from '../../../styles/palette';
 import clsx from 'clsx';
+import { useSelection } from '../../../utils/hooks';
 
 const useStyles = makeStyles((theme) => createStyles({
   rubbishBin: {
@@ -37,8 +37,6 @@ const useStyles = makeStyles((theme) => createStyles({
     margin: theme.spacing(1),
     position: 'absolute',
     left: theme.spacing(1),
-    width: DRAWER_WIDTH - 30,
-    // right: theme.spacing(1),
     bottom: theme.spacing(1),
     color: palette.white,
     zIndex: theme.zIndex.drawer
@@ -61,6 +59,7 @@ export default function RubbishBin(props: any) {
   const classes = useStyles({});
   const [over, setOver] = useState(false);
   const [trashed, setTrashed] = useState(false);
+  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   useEffect(() => {
     if (props.open) {
       setOver(false);
@@ -71,6 +70,7 @@ export default function RubbishBin(props: any) {
     <Grow in={props.open}>
       <Paper
         elevation={2}
+        style={{ width: toolsPanelWidth - 30}}
         className={clsx(classes.rubbishBin, over && classes.rubbishBinHover)}
         onDragOver={(e) => {
           e.preventDefault();
