@@ -272,9 +272,6 @@ export function generateMenuOptions(
         }
         _optionsA.push(menuOptions.history);
         _optionsA.push(menuOptions.dependencies);
-        if (isAsset) {
-          _optionsA.push(menuOptions.upload);
-        }
       } else if (read) {
         _optionsA.push(menuOptions.view);
         _optionsA.push(menuOptions.history);

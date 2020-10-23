@@ -144,7 +144,7 @@ function CreateFileUI(props: CreateFileUIProps) {
             ) : (
               <FormattedMessage
                 id="newFile.helperText"
-                defaultMessage="Consisting of: letters, numbers, dash (-) and underscore (_)."
+                defaultMessage="Consisting of: letters, numbers, dot (.), dash (-) and underscore (_)."
               />
             )
           }
@@ -153,7 +153,7 @@ function CreateFileUI(props: CreateFileUIProps) {
           InputLabelProps={{
             shrink: true
           }}
-          onChange={(event) => setName(event.target.value.replace(/[^a-zA-Z0-9-_]/g, ''))}
+          onChange={(event) => setName(event.target.value.replace(/[^a-zA-Z0-9-_.]/g, ''))}
         />
       </DialogBody>
       <DialogFooter>

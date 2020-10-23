@@ -38,7 +38,7 @@ export function fetchPublishingTargets(
 ): Observable<Array<{ name: string; order: number; publish: boolean; updateStatus: boolean }>> {
   return get(
     `/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${site}`
-  ).pipe(pluck('availablePublishChannels'));
+  ).pipe(pluck('response', 'availablePublishChannels'));
 }
 
 export function submitToGoLive(siteId: string, user: string, data): Observable<any> {

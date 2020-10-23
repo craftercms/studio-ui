@@ -39,10 +39,7 @@ import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
 import Grid from '@material-ui/core/Grid';
 import TextFieldWithMax from '../../../components/Controls/TextFieldWithMax';
-import {
-  fetchDeleteDependencies,
-  showEditDialog
-} from '../../../state/actions/dialogs';
+import { fetchDeleteDependencies, showEditDialog } from '../../../state/actions/dialogs';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 
@@ -77,11 +74,11 @@ interface DeleteDialogBaseProps {
 
 export type DeleteDialogProps = PropsWithChildren<
   DeleteDialogBaseProps & {
-  onClose?(): any;
-  onClosed?(): any;
-  onDismiss?(): any;
-  onSuccess?(response?: any): any;
-}
+    onClose?(): any;
+    onClosed?(): any;
+    onDismiss?(): any;
+    onSuccess?(response?: any): any;
+  }
 >;
 
 export interface DeleteDialogStateProps extends DeleteDialogBaseProps {
@@ -101,7 +98,8 @@ const translations = defineMessages({
   },
   headerSubTitle: {
     id: 'deleteDialog.headerSubTitle',
-    defaultMessage: 'Selected items will be deleted along with their child items. Please review dependent items before deleting as these will end-up with broken link references.'
+    defaultMessage:
+      'Selected items will be deleted along with their child items. Please review dependent items before deleting as these will end-up with broken link references.'
   }
 });
 
@@ -253,12 +251,7 @@ function DeleteDialogUI(props: DeleteDialogUIProps) {
 
 export default function DeleteDialog(props: DeleteDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      fullWidth
-      maxWidth="md"
-    >
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
       <DeleteDialogWrapper {...props} />
     </Dialog>
   );
@@ -299,7 +292,7 @@ function DeleteDialogWrapper(props: DeleteDialogProps) {
     if (selectedItems) {
       dispatch(fetchDeleteDependencies(selectedItems));
     }
-  }, [selectedItems, setApiState, siteId]);
+  }, [dispatch, selectedItems, setApiState, siteId]);
 
   const onEditDependency = (src) => {
     dispatch(showEditDialog({
