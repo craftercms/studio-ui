@@ -29,6 +29,7 @@ import {
   useActiveSiteId,
   useLogicResource,
   usePreviousValue,
+  useRoles,
   useSelection
 } from '../../../utils/hooks';
 import Alert from '@material-ui/lab/Alert';
@@ -54,7 +55,7 @@ const translations = defineMessages({
   },
   unsupportedItemsPreset: {
     id: 'siteExplorerPanel.unsupportedItemsPreset',
-    defaultMessage: "Some items in the site explorer config are not supported and won't show."
+    defaultMessage: 'Some items in the site explorer config are not supported and won\'t show.'
   }
 });
 
@@ -102,7 +103,8 @@ const LinkWithIcon = (props: LinkWithIconProps) => {
       <ListItemText
         primary={
           <>
-            <i className={`${classes.icon} ${icon.baseClass}`} style={{...icon.baseStyle}} /> {label}
+            <i className={`${classes.icon} ${icon.baseClass}`} style={{ ...icon.baseStyle }} />{' '}
+            {label}
           </>
         }
       />
@@ -140,12 +142,19 @@ export function SiteExplorerContainer() {
   const dispatch = useDispatch();
   const prevSite = usePreviousValue(site);
   const state = useSelection((state) => state.configuration.sidebar);
+  const rolesBySite = useRoles();
+
   const resource = useLogicResource(state, {
     errorSelector: (state) => state.error,
     resultSelector: ({ items }) => {
-      const supported = items.filter((i) =>
-        ['craftercms.link', 'craftercms.pathNavigator'].includes(i.id)
-      );
+      const supported = items.filter((item) => {
+        const userRoles = rolesBySite[site];
+        const itemRoles = item.permittedRoles?.role;
+        const hasPermission = itemRoles.length
+          ? userRoles.some((role) => itemRoles.includes(role))
+          : true;
+        return ['craftercms.link', 'craftercms.pathNavigator'].includes(item.id) && hasPermission;
+      });
       const notSupported = items.filter(
         (i) => !['craftercms.link', 'craftercms.pathNavigator'].includes(i.id)
       );
@@ -155,6 +164,7 @@ export function SiteExplorerContainer() {
     shouldRenew: (state, resource) => resource.complete,
     shouldResolve: (state) => !state.isFetching && Boolean(state.items)
   });
+
   useEffect(() => {
     if ((!state.items && !state.isFetching) || (prevSite !== undefined && prevSite !== site)) {
       dispatch(fetchSidebarConfig(site));

@@ -52,7 +52,6 @@ import { User } from '../../models/User';
 import EmptyState from '../SystemStatus/EmptyState';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { setSiteCookie } from '../../utils/auth';
-import { forEach } from '../../utils/array';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -426,18 +425,9 @@ export default function GlobalNav(props: GlobalNavProps) {
       getGlobalMenuLinks(site).subscribe((response) => {
         setSiteMenu(
           response.filter((item) => {
-            const roles = item.roles;
-            return roles?.length
-              ? forEach(
-                  roles,
-                  (role) => {
-                    if (rolesBySite[site] && rolesBySite[site].includes(role)) {
-                      return true;
-                    }
-                  },
-                  false
-                )
-              : true;
+            const userRoles = rolesBySite[site];
+            const itemRoles = item.roles;
+            return itemRoles.length ? userRoles.some((role) => itemRoles.includes(role)) : true;
           })
         );
       });

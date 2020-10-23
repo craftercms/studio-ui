@@ -318,7 +318,9 @@ function parseSimulatorPanelConfig(element: Element) {
 export interface SidebarConfigItem {
   id?: string;
   parameters?: object;
-  permittedRoles?: string;
+  permittedRoles?: {
+    role?: string[];
+  };
 }
 
 export function getSidebarItems(site: string): Observable<SidebarConfigItem[]> {
