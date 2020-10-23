@@ -55,6 +55,10 @@ const translations = defineMessages({
 
 const useStyles = makeStyles(() =>
   createStyles({
+    dialogBody: {
+      overflow: 'auto',
+      minHeight: '50vh'
+    },
     singleItemSelector: {
       marginBottom: '10px'
     },
@@ -218,7 +222,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         rightActions={rightActions}
         onDismiss={onDismiss}
       />
-      <DialogBody>
+      <DialogBody className={classes.dialogBody}>
         {!compareMode && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
