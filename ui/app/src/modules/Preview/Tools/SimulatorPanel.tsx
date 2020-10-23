@@ -16,7 +16,6 @@
 
 import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useMemo, useReducer } from 'react';
-import { DRAWER_WIDTH } from '../previewContext';
 import { getTranslation } from '../../../utils/i18n';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
@@ -97,7 +96,8 @@ export default function SimulatorPanel(props: any) {
 
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const maxWidth = window.innerWidth - DRAWER_WIDTH;
+  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
+  const maxWidth = window.innerWidth - toolsPanelWidth;
 
   const channels = useMemo(() => {
     const _channels = props.config?.channels;

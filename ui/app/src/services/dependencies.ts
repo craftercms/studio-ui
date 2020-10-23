@@ -27,7 +27,7 @@ export function fetchDependencies(siteId: string, items: any) {
 
 export function getSimpleDependencies(siteId: string, path: string): Observable<LegacyItem> {
   return postJSON(
-    `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json?site=${siteId}&path=${path}`
+    `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json?site=${siteId}&path=${encodeURIComponent(path)}`
   ).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
@@ -36,7 +36,7 @@ export function getSimpleDependencies(siteId: string, path: string): Observable<
 
 export function getDependant(siteId: string, path: string): Observable<LegacyItem> {
   return postJSON(
-    `/studio/api/1/services/api/1/dependency/get-dependant.json?site=${siteId}&path=${path}`
+    `/studio/api/1/services/api/1/dependency/get-dependant.json?site=${siteId}&path=${encodeURIComponent(path)}`
   ).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
@@ -47,7 +47,7 @@ export function fetchDeleteDependencies(siteId: string, paths: string[]): Observ
   childItems: string[];
   dependentItems: string[];
 }> {
-  return get(`/studio/api/2/content/get_delete_package?siteId=${siteId}&paths=${paths}`).pipe(
+  return get(`/studio/api/2/content/get_delete_package?siteId=${siteId}&paths=${paths.map(path => encodeURIComponent(path))}`).pipe(
     pluck('response', 'items')
   );
 }

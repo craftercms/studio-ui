@@ -24,29 +24,31 @@ import IconButton from '@material-ui/core/IconButton';
 import { selectTool } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  panelHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-start'
-  }
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    panelHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(0, 1),
+      ...theme.mixins.toolbar,
+      justifyContent: 'flex-start'
+    }
+  })
+);
 
 type ToolPanelProps = PropsWithChildren<{
   title: string | MessageDescriptor;
-  BackIcon?: ElementType,
-  onBack?: () => void,
+  BackIcon?: ElementType;
+  onBack?: () => void;
   classes?: {
     body?: any;
-  }
+  };
 }>;
 
 interface PanelHeaderProps {
   title: string;
-  BackIcon?: ElementType,
-  onBack: () => void
+  BackIcon?: ElementType;
+  onBack: () => void;
 }
 
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
@@ -58,9 +60,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
         <IconButton onClick={onBack}>
           <BackIcon />
         </IconButton>
-        <Typography component="h2">
-          {title}
-        </Typography>
+        <Typography component="h2">{title}</Typography>
       </header>
       <Divider />
     </>
@@ -70,12 +70,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 export function ToolPanel(props: ToolPanelProps): ReactElement | null {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const {
-    title,
-    BackIcon,
-    onBack = () => dispatch(selectTool()),
-    classes
-  } = props;
+  const { title, BackIcon, onBack = () => dispatch(selectTool()), classes } = props;
   return (
     <>
       <PanelHeader
@@ -83,9 +78,7 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
         BackIcon={BackIcon}
         onBack={onBack}
       />
-      <section className={classes?.body}>
-        {props.children}
-      </section>
+      <section className={classes?.body}>{props.children}</section>
     </>
   );
 }

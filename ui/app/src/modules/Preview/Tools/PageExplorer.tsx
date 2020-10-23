@@ -53,7 +53,7 @@ import {
   selectTool,
   SORT_ITEM_OPERATION_COMPLETE
 } from '../../../state/actions/preview';
-import { DRAWER_WIDTH, getHostToGuestBus, getHostToHostBus } from '../previewContext';
+import { getHostToGuestBus, getHostToHostBus } from '../previewContext';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
 import { Resource } from '../../../models/Resource';
 import palette from '../../../styles/palette';
@@ -688,7 +688,7 @@ export default function PageExplorer() {
       modelId: node.modelId,
       embeddedParentPath,
       path,
-      anchorEl: event.currentTarget.parentElement
+      anchorEl: event.currentTarget
     });
   };
 
@@ -867,10 +867,6 @@ function PageExplorerUI(props: PageExplorerUIProps) {
         open={Boolean(optionsMenu.anchorEl)}
         anchorEl={optionsMenu.anchorEl}
         onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: DRAWER_WIDTH - 60
-        }}
       />
     </>
   );

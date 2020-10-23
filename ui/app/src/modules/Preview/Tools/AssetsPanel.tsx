@@ -32,7 +32,7 @@ import GlobalState, { PagedEntityState } from '../../../models/GlobalState';
 import TablePagination from '@material-ui/core/TablePagination';
 import { fromEvent, interval } from 'rxjs';
 import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
+import { getHostToGuestBus } from '../previewContext';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
@@ -46,6 +46,7 @@ import { nnou, pluckProps } from '../../../utils/object';
 import { uploadDataUrl } from '../../../services/content';
 import Suspencified from '../../../components/SystemStatus/Suspencified';
 import palette from '../../../styles/palette';
+import { Resource } from '../../../models/Resource';
 
 const translations = defineMessages({
   assetsPanel: {
@@ -90,14 +91,6 @@ const assetsPanelStyles = makeStyles(() =>
       marginBottom: '16px'
     },
     pagination: {
-      marginLeft: 'auto',
-      position: 'fixed',
-      zIndex: 1,
-      bottom: 0,
-      background: 'white',
-      color: 'black',
-      width: `calc(${DRAWER_WIDTH}px - 1px)`,
-      left: 0,
       borderTop: '1px solid rgba(0, 0, 0, 0.12)',
       '& p': {
         padding: 0
@@ -113,7 +106,7 @@ const assetsPanelStyles = makeStyles(() =>
       padding: 0,
       display: 'flex',
       justifyContent: 'space-between',
-      paddingLeft: '20px',
+      paddingLeft: '12px',
       '& .MuiTablePagination-spacer': {
         display: 'none'
       },
@@ -129,9 +122,8 @@ const assetsPanelStyles = makeStyles(() =>
       marginTop: '10px'
     },
     uploadOverlay: {
-      position: 'fixed',
+      position: 'absolute',
       background: fade(palette.black, 0.9),
-      width: `calc(${DRAWER_WIDTH}px - 1px)`,
       top: 0,
       bottom: 0,
       left: 0,
@@ -320,7 +312,6 @@ export default function AssetsPanel() {
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             guestBase={guestBase}
-            onDragDrop={onDragDrop}
           />
         </Suspencified>
       </div>
@@ -328,9 +319,18 @@ export default function AssetsPanel() {
   );
 }
 
-export function AssetsPanelUI(props) {
+interface AssetsPanelUIProps {
+  guestBase: string;
+  classes?: Partial<Record<'assetsPanelWrapper' | 'pagination' | 'toolbar' | 'card' | 'noResultsImage' | 'noResultsTitle', string>>;
+  assetsResource: Resource<AssetResource>;
+  onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
+  onDragStart(mediaItem: MediaItem): void;
+  onDragEnd(): void;
+}
+
+export function AssetsPanelUI(props:AssetsPanelUIProps) {
   const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase } = props;
-  const assets: AssetResource = assetsResource.read();
+  const assets = assetsResource.read();
   const { count, pageNumber, items, limit } = assets;
   const { formatMessage } = useIntl();
 
@@ -345,10 +345,12 @@ export function AssetsPanelUI(props) {
         rowsPerPage={limit}
         page={pageNumber}
         backIconButtonProps={{
-          'aria-label': formatMessage(translations.previousPage)
+          'aria-label': formatMessage(translations.previousPage),
+          'size': 'small'
         }}
         nextIconButtonProps={{
-          'aria-label': formatMessage(translations.nextPage)
+          'aria-label': formatMessage(translations.nextPage),
+          'size': 'small'
         }}
         onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
           onPageChanged(e, page * limit)

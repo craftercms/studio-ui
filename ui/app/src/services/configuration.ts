@@ -264,7 +264,7 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
     }
   });
 
-  const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val}`).join('&'));
+  const params = encodeURIComponent(Object.entries(model).map(([key, val]) => `${key}=${val}`).join('&'));
 
   return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
 }

@@ -203,7 +203,7 @@ function LegacyVersionDialog(props: VersionViewProps) {
     <iframe
       title="View version"
       className={classes.iframe}
-      src={`http://localhost:8080/studio/diff?site=${version.site}&path=${version.path}&version=${version.versionNumber}&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
+      src={`http://localhost:8080/studio/diff?site=${version.site}&path=${encodeURIComponent(version.path)}&version=${version.versionNumber}&versionTO=${version.versionNumber}&mode=iframe&ui=next`}
     />
   );
 }
