@@ -55,6 +55,10 @@ const translations = defineMessages({
 
 const useStyles = makeStyles(() =>
   createStyles({
+    dialogBody: {
+      overflow: 'auto',
+      minHeight: '50vh'
+    },
     singleItemSelector: {
       marginBottom: '10px'
     },
@@ -68,6 +72,7 @@ interface CompareVersionsDialogBaseProps {
   open: boolean;
   error: ApiResponse;
   isFetching: boolean;
+  disableItemSwitching?: boolean;
 }
 
 interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps {
@@ -103,6 +108,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     selectedB,
     onDismiss,
     versionsBranch,
+    disableItemSwitching = false,
     contentTypesBranch
   } = props;
   const {
@@ -121,6 +127,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const dispatch = useDispatch();
   const selectMode = selectedA && !selectedB;
   const compareMode = selectedA && selectedB;
+
   useUnmount(props.onClosed);
 
   const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
@@ -152,7 +159,7 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     shouldReject: ({ compareVersionsBranch, contentTypesBranch }) =>
       Boolean(compareVersionsBranch.error || contentTypesBranch.error),
     shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) =>
-      (compareVersionsBranch.isFetching || contentTypesBranch.isFetching) && resource.complete,
+      resource.complete,
     resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => ({
       a: compareVersionsBranch.compareVersions?.[0],
       b: compareVersionsBranch.compareVersions?.[1],
@@ -215,11 +222,12 @@ function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         rightActions={rightActions}
         onDismiss={onDismiss}
       />
-      <DialogBody>
+      <DialogBody className={classes.dialogBody}>
         {!compareMode && (
           <SingleItemSelector
             classes={{ root: classes.singleItemSelector }}
             label="Item"
+            disabled={disableItemSwitching}
             open={openSelector}
             onClose={() => setOpenSelector(false)}
             onDropdownClick={() => setOpenSelector(!openSelector)}

@@ -53,7 +53,7 @@ import { ItemMenu } from '../../ItemMenu/ItemMenu';
 import { completeDetailedItem, fetchUserPermissions } from '../../../state/actions/content';
 import { showEditDialog, showPreviewDialog } from '../../../state/actions/dialogs';
 import { getContentXML } from '../../../services/content';
-import { getNumOfMenuOptionsForItem, rand } from './utils';
+import { getNumOfMenuOptionsForItem, isFolder, isNavigable, isPreviewable, rand } from './utils';
 import LoadingState from '../../SystemStatus/LoadingState';
 import LookupTable from '../../../models/LookupTable';
 
@@ -270,9 +270,19 @@ export default function(props: WidgetProps) {
   const onCloseItemMenu = () => setItemMenu({ ...itemMenu, anchorEl: null });
 
   const onItemClicked = (item: DetailedItem) => {
-    if (item.previewUrl) {
-      let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
-      window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
+    const navigable = isNavigable(item);
+    const previewable = isPreviewable(item);
+    const folder = isFolder(item);
+
+    if (navigable) {
+      if (item.previewUrl) {
+        let previewBase = getStoredPreviewChoice(site) === '2' ? 'next/preview' : 'preview';
+        window.location.href = `${authoringBase}/${previewBase}#/?page=${item.previewUrl}&site=${site}`;
+      }
+    } else if (folder) {
+      onPathSelected(item);
+    } else if (previewable) {
+      onPreview(item);
     }
   };
 

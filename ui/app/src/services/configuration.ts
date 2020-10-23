@@ -350,7 +350,9 @@ export function getProductLanguages(): Observable<{ id: string; label: string }[
 }
 
 export function getHistory(site: string, path: string, environment: string, module: string): Observable<VersionsResponse> {
-  return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${path}&environment=${environment}&module=${module}`).pipe(
+  const parsedPath = encodeURIComponent(path.replace('/config/studio', ''));
+
+  return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`).pipe(
     pluck('response', 'history')
   );
 }
