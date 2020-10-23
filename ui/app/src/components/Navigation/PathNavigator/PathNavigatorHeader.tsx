@@ -26,6 +26,7 @@ interface HeaderProps {
   locale: string;
   title: string;
   icon: React.ElementType | string;
+  style: object;
   onClick?(): void;
   onLanguageMenu?(anchor: Element): void;
   onContextMenu?(anchor: Element): void;
@@ -34,12 +35,12 @@ interface HeaderProps {
 // PathNavigatorHeader
 export default function (props: HeaderProps) {
   const classes = useStyles({});
-  const { title, icon: Icon, locale, onLanguageMenu, onContextMenu, onClick } = props;
+  const { title, icon: Icon, locale, onLanguageMenu, onContextMenu, onClick, style } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
-    <header className={clsx(classes.headerRoot)} onClick={onClick}>
+    <header className={clsx(classes.headerRoot)} onClick={onClick} style={style}>
       {Icon && (typeof Icon === 'string' ? (
-        <span className={`fa ${Icon}`} />
+        <span className={Icon}/>
       ) : (
         <Icon className={classes.pagesIcon} />
       ))}

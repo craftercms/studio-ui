@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import SiteCard from './SiteCard';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
-import { getGlobalMenuItems } from '../../services/configuration';
+import { getGlobalMenuItems, getGlobalMenuLinks } from '../../services/configuration';
 import ErrorState from '../SystemStatus/ErrorState';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
@@ -35,7 +35,7 @@ import IconButton from '@material-ui/core/IconButton';
 import LoadingState from '../SystemStatus/LoadingState';
 import Hidden from '@material-ui/core/Hidden';
 import { LookupTable } from '../../models/LookupTable';
-import { useSelection } from '../../utils/hooks';
+import { useMount } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
 import { camelize, getInitials, getSimplifiedVersion, popPiece } from '../../utils/string';
 import { changeSite } from '../../state/reducers/sites';
@@ -49,11 +49,10 @@ import CardHeader from '@material-ui/core/CardHeader';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import { Site } from '../../models/Site';
 import { User } from '../../models/User';
-import { fetchSidebarConfig } from '../../state/actions/configuration';
-import { forEach } from '../../utils/array';
 import EmptyState from '../SystemStatus/EmptyState';
 import { getStoredPreviewChoice } from '../../utils/state';
 import { setSiteCookie } from '../../utils/auth';
+import { forEach } from '../../utils/array';
 
 const tileStyles = makeStyles(() =>
   createStyles({
@@ -248,11 +247,6 @@ const globalNavUrlMapping = {
   settings: '#/settings'
 };
 
-const siteMenuKeys = {
-  dashboard: 'dashboard',
-  siteConfig: 'site-config'
-};
-
 const globalNavStyles = makeStyles((theme) =>
   createStyles({
     popover: {
@@ -371,7 +365,6 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
-  const sidebarState = useSelection((state) => state.configuration.sidebar);
   const dispatch = useDispatch();
 
   const cardActions = useMemo(
@@ -429,20 +422,12 @@ export default function GlobalNav(props: GlobalNavProps) {
   };
 
   useEffect(() => {
-    if (site && !sidebarState.items && !sidebarState.isFetching) {
-      dispatch(fetchSidebarConfig(site));
-    }
-    getGlobalMenuItems().subscribe(
-      ({ response }) => {
-        setMenuItems(response.menuItems);
-        let roleFound = {
-          [siteMenuKeys.dashboard]: false,
-          [siteMenuKeys.siteConfig]: false
-        };
-        sidebarState.items?.forEach((item) => {
-          if (item.name === siteMenuKeys.siteConfig || item.name === siteMenuKeys.dashboard) {
-            let roles = item.params['roles']?.['role'];
-            roleFound[item.name] = roles?.length
+    if (site) {
+      getGlobalMenuLinks(site).subscribe((response) => {
+        setSiteMenu(
+          response.filter((item) => {
+            const roles = item.roles;
+            return roles?.length
               ? forEach(
                   roles,
                   (role) => {
@@ -453,9 +438,16 @@ export default function GlobalNav(props: GlobalNavProps) {
                   false
                 )
               : true;
-            setSiteMenu(roleFound);
-          }
-        });
+          })
+        );
+      });
+    }
+  }, [rolesBySite, site]);
+
+  useMount(() => {
+    getGlobalMenuItems().subscribe(
+      ({ response }) => {
+        setMenuItems(response.menuItems);
       },
       (error) => {
         if (error.response) {
@@ -469,7 +461,7 @@ export default function GlobalNav(props: GlobalNavProps) {
         }
       }
     );
-  }, [dispatch, site, sidebarState.isFetching, sidebarState.items, rolesBySite]);
+  });
 
   return (
     <Popover
@@ -587,14 +579,6 @@ export default function GlobalNav(props: GlobalNavProps) {
                 {formatMessage(messages.site)}
               </Typography>
               <nav className={classes.sitesApps}>
-                {siteMenu?.[siteMenuKeys.dashboard] && (
-                  <Tile
-                    title={formatMessage(messages.dashboard)}
-                    icon="fa-tasks"
-                    link={`${authoringUrl}/site-dashboard`}
-                    onClick={onMenuClose}
-                  />
-                )}
                 <Tile
                   title={formatMessage(messages.preview2)}
                   icon={Preview}
@@ -607,20 +591,21 @@ export default function GlobalNav(props: GlobalNavProps) {
                   link={getLink('legacy.preview', authoringUrl)}
                   disabled={!site}
                 />
-                {siteMenu?.[siteMenuKeys.siteConfig] && (
-                  <Tile
-                    title={formatMessage(messages.siteConfig)}
-                    icon="fa-sliders"
-                    link={getLink('siteConfig', authoringUrl)}
-                    onClick={onMenuClose}
-                  />
-                )}
                 <Tile
                   title={formatMessage(messages.search)}
                   icon={SearchIcon}
                   link={getLink('search', authoringUrl)}
                   disabled={!site}
                 />
+                {siteMenu?.map((item) => (
+                  <Tile
+                    key={item.label}
+                    title={item.label}
+                    icon={item.icon}
+                    link={item.path}
+                    onClick={onMenuClose}
+                  />
+                ))}
               </nav>
             </div>
             <div className={classes.railBottom}>

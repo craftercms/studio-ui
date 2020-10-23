@@ -345,6 +345,10 @@ export function useSiteLocales(): GlobalState['translation']['siteLocales'] {
   return siteLocales;
 }
 
+export function useRoles(): GlobalState['user']['rolesBySite'] {
+  return useSelection((state) => state.user.rolesBySite);
+}
+
 export function usePreviousValue<T = any>(value: T) {
   const ref = useRef<T>();
   useEffect(() => {

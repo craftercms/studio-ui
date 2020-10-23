@@ -84,14 +84,25 @@ const useExplorerStyles = makeStyles(() =>
   })
 );
 
-const LinkWithIcon = ({ label, icon, href }) => {
+interface LinkWithIconProps {
+  label: string;
+  altText: string;
+  link: string;
+  icon: {
+    baseClass: string;
+    baseStyle: object;
+  };
+}
+
+const LinkWithIcon = (props: LinkWithIconProps) => {
+  const { link, label, altText, icon } = props;
   const classes = useLinkIconStyles();
   return (
-    <ListItem button component={Link} href={href} className={classes.links}>
+    <ListItem button component={Link} href={link} className={classes.links} aria-label={altText}>
       <ListItemText
         primary={
           <>
-            <i className={`${classes.icon} ${icon}`} /> {label}
+            <i className={`${classes.icon} ${icon.baseClass}`} style={{...icon.baseStyle}} /> {label}
           </>
         }
       />
@@ -99,18 +110,9 @@ const LinkWithIcon = ({ label, icon, href }) => {
   );
 };
 
-const DashboardLink = () => (
-  <LinkWithIcon label="Dashboard" icon="fa fa-tasks" href="/studio/site-dashboard" />
-);
-
-const SiteConfigLink = () => (
-  <LinkWithIcon label="Site Config" icon="fa fa-sliders" href="/studio/site-config" />
-);
-
 const ItemToComponentMap = {
-  PagesWidget: Widget,
-  'site-config': SiteConfigLink,
-  dashboard: DashboardLink
+  'craftercms.pathNavigator': Widget,
+  'craftercms.link': LinkWithIcon
 };
 
 export function SiteExplorer(props: SiteExplorerProps) {
@@ -125,10 +127,8 @@ export function SiteExplorer(props: SiteExplorerProps) {
         <Alert severity="warning">{formatMessage(translations.unsupportedItemsPreset)}</Alert>
       )}
       {widgets?.map((item, index) => {
-        const Component = ItemToComponentMap[item.name || item.render];
-        return (
-          <Component key={index} {...(item.name ? item.params : item.props)} classes={classes} />
-        );
+        const Component = ItemToComponentMap[item.id];
+        return <Component key={index} {...item.parameters} classes={classes} />;
       })}
     </>
   );
@@ -144,10 +144,10 @@ export function SiteExplorerContainer() {
     errorSelector: (state) => state.error,
     resultSelector: ({ items }) => {
       const supported = items.filter((i) =>
-        ['PagesWidget', 'site-config', 'dashboard'].includes(i.name || i.render)
+        ['craftercms.link', 'craftercms.pathNavigator'].includes(i.id)
       );
       const notSupported = items.filter(
-        (i) => !['PagesWidget', 'site-config', 'dashboard'].includes(i.name || i.render)
+        (i) => !['craftercms.link', 'craftercms.pathNavigator'].includes(i.id)
       );
       return { supported, notSupported };
     },

@@ -151,7 +151,7 @@ export function toJS(xml: string | XMLDocument): any {
   if (typeof xml !== 'string') {
     xml = serialize(xml);
   }
-  return parser.parse(xml, {});
+  return parser.parse(xml, { attributeNamePrefix:"", ignoreAttributes: false});
 }
 
 export default {

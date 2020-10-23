@@ -39,7 +39,6 @@ import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import Nav from './PathNavigatorList';
 import ContentLoader from 'react-content-loader';
 import { languages } from '../../../utils/i18n-legacy';
-import { removeSpaces } from '../../../utils/string';
 import {
   pathNavigatorInit,
   pathNavigatorItemChecked,
@@ -85,12 +84,22 @@ const menuOptions = {
   }
 };
 
+interface OverrideClass {
+  baseClass: string;
+  expandedClass: string;
+  collapsedClass: string;
+  baseStyle: object;
+  expandedStyle: object;
+  collapsedStyle: object;
+}
+
 export interface WidgetProps {
-  path: string;
-  icon?: string | React.ElementType;
   id: string;
-  title?: string;
-  locale: string;
+  label: string;
+  rootPath: string;
+  excludePaths: object;
+  icon: OverrideClass | React.ElementType;
+  container: OverrideClass;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
 }
 
@@ -124,10 +133,11 @@ export interface WidgetState {
 
 // PathNavigator
 export default function(props: WidgetProps) {
-  const { title, icon, path, id = removeSpaces(props.title), locale } = props;
+  const { label, icon, container, rootPath: path, id } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
+  const locale = 'en';
   const { authoringBase } = useEnv();
   const legacyFormSrc = `${authoringBase}/legacy/form?`;
   const dispatch = useDispatch();
@@ -316,7 +326,8 @@ export default function(props: WidgetProps) {
         classes={props.classes}
         itemsByPath={itemsByPath}
         icon={icon}
-        title={title}
+        container={container}
+        title={label}
         itemMenu={itemMenu}
         simpleMenu={simpleMenu}
         onHeaderClick={onHeaderClick}
@@ -346,6 +357,7 @@ export function WidgetUI(props: any) {
     state,
     itemsByPath,
     icon,
+    container,
     title,
     itemMenu,
     simpleMenu,
@@ -389,9 +401,29 @@ export function WidgetUI(props: any) {
   );
 
   return (
-    <section className={clsx(classes.root, props.classes?.root, state?.collapsed && 'collapsed')}>
+    <section
+      className={clsx(
+        classes.root,
+        props.classes?.root,
+        state?.collapsed && 'collapsed',
+        container.baseClass,
+        state?.collapsed ? container.collapsedClass : container.expandedClass
+      )}
+      style={{
+        ...container.baseStyle,
+        ...(state?.collapsed ? container.collapsedStyle : container.expandedStyle)
+      }}
+    >
       <Header
-        icon={icon}
+        icon={
+          icon.baseClass
+            ? `${icon.baseClass} ${state?.collapsed ? icon.collapsedClass : icon.expandedClass}`
+            : icon
+        }
+        style={{
+          ...icon.baseStyle,
+          ...(state?.collapsed ? icon.collapsedStyle : icon.expandedStyle)
+        }}
         title={title}
         locale={state?.localeCode}
         onClick={() => onHeaderClick(!state?.collapsed)}
@@ -402,7 +434,7 @@ export function WidgetUI(props: any) {
             : null
         }
       />
-      <div {...(state?.collapsed ? { hidden: true } : {})} className={clsx(props.classes?.body)}>
+      <div {...(state?.collapsed ? { hidden: true } : {})} className={props.classes?.body}>
         <Breadcrumbs
           keyword={state?.keyword}
           breadcrumb={state?.breadcrumb.map(
