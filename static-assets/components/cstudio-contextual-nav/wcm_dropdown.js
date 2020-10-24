@@ -54,8 +54,10 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
     unsubscribe = CrafterCMSNext.system.store.subscribe(() => {
       const stateSite = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site];
       if (stateSite) {
-        const siteName = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site].name;
-        navBarSiteNameEl.innerHTML = siteName ? siteName : CStudioAuthoringContext.site;
+        const site = CrafterCMSNext.system.store.getState().sites.byId[CStudioAuthoringContext.site];
+        const siteName = site.name || site.id;
+        navBarSiteNameEl.innerHTML = siteName;
+        navBarSiteNameEl.setAttribute('title', siteName);
         unsubscribe();
       }
     });

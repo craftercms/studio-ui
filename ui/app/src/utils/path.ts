@@ -45,8 +45,7 @@ export function getPathFromPreviewURL(previewURL: string): string {
 }
 
 export function getPreviewURLFromPath(path: string): string {
-  path = withoutIndex(path).replace('/site/website', '');
-  return path;
+  return withoutIndex(path).replace('/site/website', '') || '/';
 }
 
 export function getQueryVariable(query: string, variable: string): string | string[] {
