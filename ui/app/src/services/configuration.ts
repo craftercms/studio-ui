@@ -322,7 +322,7 @@ export interface SidebarConfigItem {
 }
 
 export function getSidebarItems(site: string): Observable<SidebarConfigItem[]> {
-  return getRawConfiguration(site, '/context-nav/sidebar.xml', 'studio').pipe(
+  return getRawConfiguration(site, '/site-explorer.xml', 'studio').pipe(
     map((rawXML) => {
       if (rawXML) {
         const items = Array.from(fromString(rawXML).querySelectorAll('widget'));
