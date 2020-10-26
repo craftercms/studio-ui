@@ -84,7 +84,7 @@ const menuOptions = {
   }
 };
 
-interface OverrideClass {
+interface StateStylingProps {
   baseClass: string;
   expandedClass: string;
   collapsedClass: string;
@@ -98,8 +98,8 @@ export interface WidgetProps {
   label: string;
   rootPath: string;
   excludePaths: object;
-  icon: OverrideClass | React.ElementType;
-  container: OverrideClass;
+  icon: StateStylingProps | React.ElementType;
+  container: StateStylingProps;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
 }
 
@@ -400,33 +400,35 @@ export function WidgetUI(props: any) {
     }
   );
 
+  console.log(state);
+
   return (
     <section
       className={clsx(
         classes.root,
         props.classes?.root,
-        state?.collapsed && 'collapsed',
+        state.collapsed && 'collapsed',
         container.baseClass,
-        state?.collapsed ? container.collapsedClass : container.expandedClass
+        state.collapsed ? container.collapsedClass : container.expandedClass
       )}
       style={{
         ...container.baseStyle,
-        ...(state?.collapsed ? container.collapsedStyle : container.expandedStyle)
+        ...(state.collapsed ? container.collapsedStyle : container.expandedStyle)
       }}
     >
       <Header
         icon={
           icon.baseClass
-            ? `${icon.baseClass} ${state?.collapsed ? icon.collapsedClass : icon.expandedClass}`
+            ? `${icon.baseClass} ${state.collapsed ? icon.collapsedClass : icon.expandedClass}`
             : icon
         }
         style={{
           ...icon.baseStyle,
-          ...(state?.collapsed ? icon.collapsedStyle : icon.expandedStyle)
+          ...(state.collapsed ? icon.collapsedStyle : icon.expandedStyle)
         }}
         title={title}
-        locale={state?.localeCode}
-        onClick={() => onHeaderClick(!state?.collapsed)}
+        locale={state.localeCode}
+        onClick={() => onHeaderClick(!state.collapsed)}
         onContextMenu={(anchor) => onHeaderButtonClick(anchor, 'options')}
         onLanguageMenu={
           siteLocales?.localeCodes?.length
@@ -434,10 +436,10 @@ export function WidgetUI(props: any) {
             : null
         }
       />
-      <div {...(state?.collapsed ? { hidden: true } : {})} className={props.classes?.body}>
+      <div {...(state.collapsed ? { hidden: true } : {})} className={props.classes?.body}>
         <Breadcrumbs
-          keyword={state?.keyword}
-          breadcrumb={state?.breadcrumb.map(
+          keyword={state.keyword}
+          breadcrumb={state.breadcrumb.map(
             (path) => itemsByPath[path] ?? itemsByPath[withIndex(path)]
           )}
           onMenu={onCurrentParentMenu}
@@ -464,8 +466,8 @@ export function WidgetUI(props: any) {
           }}
         >
           <Nav
-            leafs={state?.leafs}
-            locale={state?.localeCode}
+            leafs={state.leafs}
+            locale={state.localeCode}
             resource={resource}
             onSelectItem={onSelectItem}
             onPathSelected={onPathSelected}
@@ -482,8 +484,8 @@ export function WidgetUI(props: any) {
           }}
           component="div"
           labelRowsPerPage=""
-          count={state?.count}
-          rowsPerPage={state?.limit}
+          count={state.count}
+          rowsPerPage={state.limit}
           page={state && Math.ceil(state.offset / state.limit)}
           backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
           nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}

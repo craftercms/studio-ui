@@ -330,7 +330,12 @@ export function getSidebarItems(site: string): Observable<SidebarConfigItem[]> {
         const items = Array.from(fromString(rawXML).querySelectorAll('widget'));
         const cleanDoc = fromString(`<?xml version="1.0" encoding="UTF-8"?><root></root>`);
         cleanDoc.documentElement.append(...items);
-        return asArray<SidebarConfigItem>(toJS(cleanDoc).root.widget).filter(Boolean);
+        return asArray<SidebarConfigItem>(
+          toJS(cleanDoc, {
+            attributeNamePrefix: '',
+            ignoreAttributes: false
+          }).root.widget
+        ).filter(Boolean);
       } else {
         return [];
       }
