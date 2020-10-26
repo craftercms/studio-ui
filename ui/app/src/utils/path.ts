@@ -145,5 +145,7 @@ export default {
   withoutIndex,
   withIndex,
   getParentPath,
-  getParentsFromPath
+  getParentsFromPath,
+  getIndividualPaths,
+  getRootPath
 };

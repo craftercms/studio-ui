@@ -897,7 +897,7 @@ var nodeOpen = false,
         });
       },
 
-      viewDependencies: function (site, items, approveType, defaultSelection, rootPath) {
+      viewDependencies: function (site, items, approveType, defaultSelection) {
         //defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
         const dependenciesShown = defaultSelection ? defaultSelection : 'depends-on';
 
@@ -906,7 +906,7 @@ var nodeOpen = false,
           payload: {
             open: true,
             item: CrafterCMSNext.util.content.parseLegacyItemToSandBoxItem(items[0]),
-            rootPath,
+            rootPath: CrafterCMSNext.util.path.getRootPath(items[0].path),
             dependenciesShown
           }
         });

@@ -1741,9 +1741,7 @@ var storage = CStudioAuthoring.Storage;
                       CStudioAuthoring.Operations.viewDependencies(
                         CStudioAuthoringContext.site,
                         selectedContent,
-                        false,
-                        null,
-                        oCurrentTextNode.instance.config.params.path
+                        false
                       );
                     },
                     failure: function() {}
