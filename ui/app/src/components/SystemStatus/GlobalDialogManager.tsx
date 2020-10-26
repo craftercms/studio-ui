@@ -256,6 +256,7 @@ function GlobalDialogManager() {
           versionsBranch?.selected[1] ? versionsBranch.byId[versionsBranch.selected[1]] : null
         }
         versionsBranch={versionsBranch}
+        disableItemSwitching={state.compareVersions.disableItemSwitching}
         onClose={createCallback(state.compareVersions.onClose, dispatch)}
         onClosed={createCallback(state.compareVersions.onClosed, dispatch)}
         onDismiss={createCallback(state.compareVersions.onDismiss, dispatch)}

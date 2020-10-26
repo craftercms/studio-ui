@@ -18,7 +18,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { fromEvent, NEVER, Observable } from 'rxjs';
 import clsx from 'clsx';
-import { DRAWER_WIDTH, getGuestToHostBus, getHostToGuestBus } from './previewContext';
+import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { filter, map, pluck } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
 import { StandardAction } from '../../models/StandardAction';
@@ -64,8 +64,8 @@ const useStyles = makeStyles((theme) =>
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen
       }),
-      width: `calc(100% - ${DRAWER_WIDTH}px)`,
-      marginLeft: DRAWER_WIDTH
+      //width: `calc(100% - ${DRAWER_WIDTH}px)`,
+      //marginLeft: DRAWER_WIDTH
     }
   })
 );
@@ -183,6 +183,7 @@ export default function Host() {
   const classes = useStyles({});
   const site = useActiveSiteId();
   const guestBase = useSelection<string>(state => state.env.guestBase);
+  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const {
     hostSize,
     currentUrl,
@@ -196,7 +197,10 @@ export default function Host() {
   }, []);
 
   return (
-    <div className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}>
+    <div
+      style={ showToolsPanel? { width: `calc(100% - ${toolsPanelWidth}px)` ,marginLeft: toolsPanelWidth} : {}}
+      className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}
+    >
       <HostUI
         url={currentUrl}
         site={site}

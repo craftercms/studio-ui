@@ -541,7 +541,7 @@ export default function Search(props: SearchProps) {
     dispatch(fetchUserPermissions({ path: item.path }));
     setSimpleMenu({
       item,
-      anchorEl: event.target
+      anchorEl: event.currentTarget
     });
   };
 

@@ -24,7 +24,7 @@ import { SuspenseWithEmptyState } from '../../../components/SystemStatus/Suspenc
 import { LookupTable } from '../../../models/LookupTable';
 import StandardAction from '../../../models/StandardAction';
 import { useDispatch } from 'react-redux';
-import { VersionList } from './VersionList';
+import { FancyFormattedDate, VersionList } from './VersionList';
 import TablePagination from '@material-ui/core/TablePagination';
 import { fetchContentTypes } from '../../../state/actions/preview';
 import DialogHeader from '../../../components/Dialogs/DialogHeader';
@@ -41,8 +41,10 @@ import {
   versionsChangePage
 } from '../../../state/reducers/versions';
 import {
+  closeConfirmDialog,
   fetchContentVersion,
   showCompareVersionsDialog,
+  showConfirmDialog,
   showHistoryDialog,
   showViewVersionDialog
 } from '../../../state/actions/dialogs';
@@ -87,6 +89,14 @@ const translations = defineMessages({
   backToHistoryList: {
     id: 'historyDialog.back.selectRevision',
     defaultMessage: 'Back to history list'
+  },
+  confirmRevertTitle: {
+    id: 'historyDialog.confirmRevertTitle',
+    defaultMessage: 'Revert confirmation'
+  },
+  confirmRevertBody: {
+    id: 'historyDialog.confirmRevertBody',
+    defaultMessage: 'Are you sure you want to revert to <b>{versionTitle}</b>?'
   }
 });
 
@@ -210,7 +220,7 @@ export default function HistoryDialogWrapper(props: HistoryDialogProps) {
 
 function HistoryDialog(props: HistoryDialogProps) {
   const { onDismiss, versionsBranch, permissions } = props;
-  const { count, page, limit, current, item, rootPath } = versionsBranch;
+  const { count, page, limit, current, item, rootPath, isConfig } = versionsBranch;
   const path = item ? item.path : '';
   const [openSelector, setOpenSelector] = useState(false);
   const { formatMessage } = useIntl();
@@ -266,8 +276,7 @@ function HistoryDialog(props: HistoryDialogProps) {
                   menuOptions.compareTo,
                   menuOptions.compareToCurrent,
                   menuOptions.compareToPrevious
-                ],
-                [menuOptions.revertToThisVersion]
+                ]
               ]
             : [[menuOptions.view]];
         if (write && count > 1) {
@@ -285,6 +294,7 @@ function HistoryDialog(props: HistoryDialogProps) {
 
   const compareVersionDialogWithActions = () =>
     showCompareVersionsDialog({
+      disableItemSwitching: true,
       rightActions: [
         {
           icon: 'HistoryIcon',
@@ -342,12 +352,38 @@ function HistoryDialog(props: HistoryDialogProps) {
     );
   };
 
-  const revertToPrevious = (versionNumber: string) => {
-    dispatch(revertToPreviousVersion({ id: versionNumber }));
+  const revertToPrevious = (activeItem: LegacyVersion) => {
+    dispatch(
+      showConfirmDialog({
+        title: formatMessage(translations.confirmRevertTitle),
+        body: formatMessage(translations.confirmRevertBody, {
+          versionTitle: <FancyFormattedDate date={activeItem.lastModifiedDate} />,
+          b: (msg) => <b key={'bold'}>&nbsp;{msg}</b>
+        }),
+        onCancel: closeConfirmDialog(),
+        onOk: batchActions([
+          closeConfirmDialog(),
+          revertToPreviousVersion({ id: activeItem.versionNumber })
+        ])
+      })
+    );
   };
 
-  const revertTo = (versionNumber: string) => {
-    dispatch(revertContent({ path, versionNumber }));
+  const revertTo = (activeItem: LegacyVersion) => {
+    dispatch(
+      showConfirmDialog({
+        title: formatMessage(translations.confirmRevertTitle),
+        body: formatMessage(translations.confirmRevertBody, {
+          versionTitle: <FancyFormattedDate date={activeItem.lastModifiedDate} />,
+          b: (msg) => <b key={'bold'}>&nbsp;{msg}</b>
+        }),
+        onCancel: closeConfirmDialog(),
+        onOk: batchActions([
+          closeConfirmDialog(),
+          revertContent({ path, versionNumber: activeItem.versionNumber })
+        ])
+      })
+    );
   };
 
   const handleContextMenuClose = () => {
@@ -378,11 +414,11 @@ function HistoryDialog(props: HistoryDialogProps) {
         break;
       }
       case 'revertToPrevious': {
-        revertToPrevious(activeItem.versionNumber);
+        revertToPrevious(activeItem);
         break;
       }
       case 'revertToThisVersion': {
-        revertTo(activeItem.versionNumber);
+        revertTo(activeItem);
         break;
       }
       default:
@@ -407,6 +443,7 @@ function HistoryDialog(props: HistoryDialogProps) {
           classes={{ root: classes.singleItemSelector }}
           label="Item"
           open={openSelector}
+          disabled={isConfig}
           onClose={() => setOpenSelector(false)}
           onDropdownClick={() => setOpenSelector(!openSelector)}
           rootPath={rootPath}

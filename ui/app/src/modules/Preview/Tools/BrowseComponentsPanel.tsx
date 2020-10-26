@@ -36,10 +36,11 @@ import { useDispatch } from 'react-redux';
 import SearchBar from '../../../components/Controls/SearchBar';
 import EmptyState from '../../../components/SystemStatus/EmptyState';
 import TablePagination from '@material-ui/core/TablePagination';
-import { DRAWER_WIDTH, getHostToGuestBus } from '../previewContext';
+import { getHostToGuestBus } from '../previewContext';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ContentType from '../../../models/ContentType';
+import { Resource } from '../../../models/Resource';
 
 const translations = defineMessages({
   browse: {
@@ -75,7 +76,10 @@ const translations = defineMessages({
 const useStyles = makeStyles((theme) =>
   createStyles({
     browsePanelWrapper: {
-      padding: '15px 0 55px 0'
+      padding: '16px 0 55px 0'
+    },
+    paginationContainer: {
+      padding: '0 16px'
     },
     list: {
       padding: 0
@@ -84,15 +88,7 @@ const useStyles = makeStyles((theme) =>
       padding: '15px 15px 0px 15px'
     },
     pagination: {
-      'marginLeft': 'auto',
-      'position': 'fixed',
-      'zIndex': 1,
-      'bottom': 0,
-      'background': 'white',
-      'color': 'black',
-      'width': `calc(${DRAWER_WIDTH}px - 1px)`,
-      'left': 0,
-      'borderTop': '1px solid rgba(0, 0, 0, 0.12)',
+      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
       '& p': {
         padding: 0
       },
@@ -104,10 +100,10 @@ const useStyles = makeStyles((theme) =>
       }
     },
     toolbar: {
-      'padding': 0,
-      'display': 'flex',
-      'justifyContent': 'space-between',
-      'paddingLeft': '20px',
+      padding: 0,
+      display: 'flex',
+      justifyContent: 'space-between',
+      paddingLeft: '12px',
       '& .MuiTablePagination-spacer': {
         display: 'none'
       },
@@ -156,8 +152,8 @@ export default function BrowseComponentsPanel() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const contentTypes = contentTypesBranch.byId
     ? Object.values(contentTypesBranch.byId).filter(
-      (contentType) => contentType.type === 'component'
-    )
+        (contentType) => contentType.type === 'component'
+      )
     : null;
   const isFetching = useSelection((state) => state.preview.components.isFetching);
   const resource = useSelectorResource<ComponentResource, PagedEntityState<ContentInstance>>(
@@ -177,7 +173,13 @@ export default function BrowseComponentsPanel() {
               (item: ContentInstance) => item.craftercms.contentTypeId === source.contentTypeFilter
             ) || [];
         return {
-          ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber', 'contentTypeFilter'),
+          ...pluckProps(
+            source,
+            'count',
+            'query.limit' as 'limit',
+            'pageNumber',
+            'contentTypeFilter'
+          ),
           items
         } as ComponentResource;
       }
@@ -267,7 +269,30 @@ export default function BrowseComponentsPanel() {
   );
 }
 
-function BrowsePanelUI(props) {
+interface BrowsePanelUIProps {
+  componentsResource: Resource<ComponentResource>;
+  chooseContentTypeImageUrl: string;
+  classes?: Partial<
+    Record<
+      | 'browsePanelWrapper'
+      | 'paginationContainer'
+      | 'pagination'
+      | 'toolbar'
+      | 'list'
+      | 'noResultsImage'
+      | 'noResultsTitle'
+      | 'emptyState'
+      | 'emptyStateImage'
+      | 'emptyStateTitle',
+      string
+    >
+  >;
+  onPageChanged(e: React.MouseEvent<HTMLButtonElement>, page: number): void;
+  onDragStart(item: ContentInstance): void;
+  onDragEnd(): void;
+}
+
+function BrowsePanelUI(props: BrowsePanelUIProps) {
   const {
     componentsResource,
     classes,
@@ -277,30 +302,34 @@ function BrowsePanelUI(props) {
     chooseContentTypeImageUrl
   } = props;
   const { formatMessage } = useIntl();
-  const components: ComponentResource = componentsResource.read();
+  const components = componentsResource.read();
   const { count, pageNumber, items, limit, contentTypeFilter } = components;
   return (
     <div className={classes.browsePanelWrapper}>
       {contentTypeFilter ? (
         <>
-          <TablePagination
-            className={classes.pagination}
-            classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-            component="div"
-            labelRowsPerPage=""
-            count={count}
-            rowsPerPage={limit}
-            page={pageNumber}
-            backIconButtonProps={{
-              'aria-label': formatMessage(translations.previousPage)
-            }}
-            nextIconButtonProps={{
-              'aria-label': formatMessage(translations.nextPage)
-            }}
-            onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
-              onPageChanged(e, page * limit)
-            }
-          />
+          <div className={classes.paginationContainer}>
+            <TablePagination
+              className={classes.pagination}
+              classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+              component="div"
+              labelRowsPerPage=""
+              count={count}
+              rowsPerPage={limit}
+              page={pageNumber}
+              backIconButtonProps={{
+                'aria-label': formatMessage(translations.previousPage),
+                size: 'small'
+              }}
+              nextIconButtonProps={{
+                'aria-label': formatMessage(translations.nextPage),
+                size: 'small'
+              }}
+              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) =>
+                onPageChanged(e, page * limit)
+              }
+            />
+          </div>
           <List className={classes.list}>
             {items.map((item: ContentInstance) => (
               <DraggablePanelListItem

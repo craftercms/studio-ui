@@ -27,8 +27,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Drawer from '@material-ui/core/Drawer';
-import { DRAWER_WIDTH } from './previewContext';
 import Typography from '@material-ui/core/Typography';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ToolPanel from './Tools/ToolPanel';
@@ -40,7 +38,11 @@ import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import ReceptaclesPanel from './Tools/ReceptaclesPanel';
 import InPageInstancesPanel from './Tools/InPageInstancesPanel';
-import { fetchPreviewToolsConfig, selectTool } from '../../state/actions/preview';
+import {
+  fetchPreviewToolsConfig,
+  selectTool,
+  updateToolsPanelWidth
+} from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import {
   useActiveSiteId,
@@ -61,20 +63,10 @@ import { OverridableComponent } from '@material-ui/core/OverridableComponent';
 import SiteExplorer from './Tools/SiteExplorer';
 import PageExplorerRounded from '../../components/Icons/PageExplorerRounded';
 import SiteExplorerRounded from '../../components/Icons/SiteExplorerRounded';
+import ResizeableDrawer from './ResizeableDrawer';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    drawer: {
-      flexShrink: 0,
-      width: DRAWER_WIDTH
-    },
-    drawerPaper: {
-      top: 64,
-      bottom: 0,
-      height: 'auto',
-      width: DRAWER_WIDTH,
-      zIndex: theme.zIndex.appBar - 1
-    },
     itemIconRoot: {
       minWidth: 35
     },
@@ -259,7 +251,7 @@ const componentIconMap: { [key in PreviewTool]: OverridableComponent<SvgIconType
   'craftercms.siteExplorerPanel': SiteExplorerRounded
 };
 
-const componentMap: {  [key in PreviewTool]: React.ElementType } = {
+const componentMap: { [key in PreviewTool]: React.ElementType } = {
   'craftercms.ice.components': ComponentsPanel,
   'craftercms.ice.assets': AssetsPanel,
   'craftercms.ice.audiences': AudiencesPanel,
@@ -279,13 +271,14 @@ export default function ToolsPanel() {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { guest, tools, selectedTool, showToolsPanel } = usePreviewState();
+  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
   let Tool = guest?.selected
     ? EditFormPanel
     : Boolean(selectedTool)
-      ? componentMap[selectedTool] || UnknownPanel
-      : ToolSelector;
+    ? componentMap[selectedTool] || UnknownPanel
+    : ToolSelector;
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
   let config = toolMeta?.config;
 
@@ -303,13 +296,14 @@ export default function ToolsPanel() {
   }, [site, dispatch, tools]);
 
   return (
-    <Drawer
+    <ResizeableDrawer
       open={showToolsPanel}
-      anchor="left"
-      variant="persistent"
-      className={classes.drawer}
-      classes={{ paper: classes.drawerPaper }}
-    >
+      width={toolsPanelWidth}
+      onWidthChange={(width) => {
+      dispatch(updateToolsPanelWidth({
+        width
+      }))
+    }}>
       {site ? (
         <Suspencified loadingStateProps={{ title: `${formatMessage(translations.loading)}...` }}>
           <Tool id={toolMeta?.id} config={config} resource={resource} />
@@ -326,6 +320,6 @@ export default function ToolsPanel() {
           classes={{ root: classes.emptyState, image: classes.emptyStateImage }}
         />
       )}
-    </Drawer>
+    </ResizeableDrawer>
   );
 }
