@@ -127,12 +127,12 @@ export function getIndividualPaths(path: string, rootPath?: string): string[] {
   } while (array.length);
   if (rootPath) {
     if (paths.indexOf(withIndex(rootPath)) >= 0) {
-      return paths.slice(0, paths.indexOf(withIndex(rootPath)) + 1);
+      return paths.slice(0, paths.indexOf(withIndex(rootPath)) + 1).reverse();
     } else {
-      return paths.slice(0, paths.indexOf(rootPath) + 1);
+      return paths.slice(0, paths.indexOf(rootPath) + 1).reverse();
     }
   } else {
-    return paths;
+    return paths.reverse();
   }
 }
 

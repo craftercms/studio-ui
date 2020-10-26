@@ -135,7 +135,7 @@ export interface WidgetState {
 
 // PathNavigator
 export default function(props: WidgetProps) {
-  const { label, icon, container, rootPath: path, id, locale, excludes } = props;
+  const { label, icon, container, rootPath: path, id = label, locale, excludes } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();

@@ -106,7 +106,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
       } else {
         const widgetState = {
           ...state[id],
-          breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath).reverse(),
+          breadcrumb: getIndividualPaths(withoutIndex(path), state[id].rootPath),
           itemsInPath: response.map((item) => item.id),
           count: response.length
         };
@@ -141,7 +141,7 @@ const reducer = createReducer<LookupTable<WidgetState>>(
         [id]: {
           ...state[id],
           itemsInPath,
-          breadcrumb: getIndividualPaths(withoutIndex(currentPath), rootPath).reverse()
+          breadcrumb: getIndividualPaths(withoutIndex(currentPath), rootPath)
         }
       };
     },

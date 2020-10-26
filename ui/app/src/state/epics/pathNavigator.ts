@@ -91,7 +91,7 @@ export default [
            state
          ]) => {
           const site = state.sites.active;
-          const parentsPath = getIndividualPaths(path, state.pathNavigator[id].rootPath).reverse();
+          const parentsPath = getIndividualPaths(path, state.pathNavigator[id].rootPath);
           const requests: Observable<GetChildrenResponse>[] = [];
           if (parentsPath.length) {
             parentsPath.forEach((parentPath) => {
