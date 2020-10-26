@@ -272,7 +272,11 @@ export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> 
     }
   });
 
-  const params = encodeURIComponent(Object.entries(model).map(([key, val]) => `${key}=${val}`).join('&'));
+  const params = encodeURIComponent(
+    Object.entries(model)
+      .map(([key, val]) => `${key}=${val}`)
+      .join('&')
+  );
 
   return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
 }
@@ -405,12 +409,17 @@ export function getProductLanguages(): Observable<{ id: string; label: string }[
   );
 }
 
-export function getHistory(site: string, path: string, environment: string, module: string): Observable<VersionsResponse> {
+export function getHistory(
+  site: string,
+  path: string,
+  environment: string,
+  module: string
+): Observable<VersionsResponse> {
   const parsedPath = encodeURIComponent(path.replace('/config/studio', ''));
 
-  return get(`/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`).pipe(
-    pluck('response', 'history')
-  );
+  return get(
+    `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
+  ).pipe(pluck('response', 'history'));
 }
 
 export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {
