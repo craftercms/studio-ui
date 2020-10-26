@@ -98,10 +98,10 @@ export interface WidgetProps {
   id: string;
   label: string;
   rootPath: string;
-  excludes: string[];
+  excludes?: string[];
   locale?: string;
-  icon: Partial<StateStylingProps>;
-  container: StateStylingProps;
+  icon?: Partial<StateStylingProps>;
+  container?: Partial<StateStylingProps>;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
 }
 
@@ -135,7 +135,7 @@ export interface WidgetState {
 
 // PathNavigator
 export default function(props: WidgetProps) {
-  const { label, icon, container, rootPath: path, id = label, locale, excludes } = props;
+  const { label, icon = {}, container = {}, rootPath: path, id = label, locale, excludes } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
