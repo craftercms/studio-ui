@@ -1742,6 +1742,7 @@ var storage = CStudioAuthoring.Storage;
                         CStudioAuthoringContext.site,
                         selectedContent,
                         false,
+                        null,
                         oCurrentTextNode.instance.config.params.path
                       );
                     },

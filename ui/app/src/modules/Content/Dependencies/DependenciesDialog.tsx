@@ -60,26 +60,35 @@ import { ApiResponse } from '../../../models/ApiResponse';
 import SingleItemSelector from '../Authoring/SingleItemSelector';
 import Dialog from '@material-ui/core/Dialog';
 import palette from '../../../styles/palette';
-import { showCodeEditorDialog, showEditDialog } from '../../../state/actions/dialogs';
+import {
+  showCodeEditorDialog,
+  showEditDialog,
+  showHistoryDialog
+} from '../../../state/actions/dialogs';
+import { batchActions } from '../../../state/actions/misc';
+import { fetchItemVersions } from '../../../state/reducers/versions';
+import { getRootPath } from '../../../utils/path';
+import { fetchUserPermissions } from '../../../state/actions/content';
 
 const assetsTypes = {
   'all-deps': {
-    label: <FormattedMessage
-      id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies"
-    />,
+    label: (
+      <FormattedMessage id="dependenciesDialog.allDeps" defaultMessage="Show all dependencies" />
+    ),
     filter: () => true
   },
   'content-items': {
-    label: <FormattedMessage
-      id="dependenciesDialog.contentItems" defaultMessage="Content items only"
-    />,
-    filter: (dependency: SandboxItem) => (dependency.systemType === 'component' || dependency.systemType === 'page')
+    label: (
+      <FormattedMessage id="dependenciesDialog.contentItems" defaultMessage="Content items only" />
+    ),
+    filter: (dependency: SandboxItem) =>
+      dependency.systemType === 'component' || dependency.systemType === 'page'
   },
-  'assets': {
+  assets: {
     label: <FormattedMessage id="dependenciesDialog.assets" defaultMessage="Assets only" />,
     filter: (dependency: SandboxItem) => isAsset(dependency.path)
   },
-  'code': {
+  code: {
     label: <FormattedMessage id="dependenciesDialog.code" defaultMessage="Code only" />,
     filter: (dependency: SandboxItem) => isCode(dependency.path)
   }
@@ -92,196 +101,195 @@ const translations = defineMessages({
   }
 });
 
-const dependenciesDialogStyles = makeStyles((theme) => createStyles({
-  dialogBody: {
-    overflow: 'auto',
-    minHeight: '50vh'
-  },
-  titleRoot: {
-    margin: 0,
-    padding: '13px 20px 11px',
-    background: palette.white
-  },
-  title: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 10
-  },
-  subtitle: {
-    fontSize: '14px',
-    lineHeight: '18px',
-    paddingRight: '35px'
-  },
-  selectionContent: {
-    marginBottom: '15px',
-    display: 'flex'
-  },
-  dialogFooter: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2)
-  },
-  formControl: {
-    minWidth: 120,
-    marginLeft: 'auto'
-  },
-  selectLabel: {
-    position: 'relative',
-    color: palette.gray.dark5,
-    fontSize: '14px'
-  },
-  select: {
-    fontSize: '16px',
-    border: 'none',
-    background: 'none'
-  },
-  selectedItem: {
-    backgroundColor: palette.white,
-    borderRadius: '5px',
-    padding: '10px',
-    height: '40px',
-    fontSize: '16px',
-    borderColor: palette.gray.light1
-  },
-  selectedItemLabel: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '0 10px 0 0',
-    '& .label': {
-      fontWeight: '600',
-      marginRight: '10px',
-      color: palette.black,
-      fontSize: '16px'
+const dependenciesDialogStyles = makeStyles((theme) =>
+  createStyles({
+    dialogBody: {
+      overflow: 'auto',
+      minHeight: '50vh'
     },
-    '& .item-icon': {
-      color: palette.teal.main,
-      marginRight: '10px',
-      width: '20px',
-      height: '20px'
+    titleRoot: {
+      margin: 0,
+      padding: '13px 20px 11px',
+      background: palette.white
     },
-    '& .item-title': {
-      marginRight: '25px'
-    }
-  },
-  selectedItemEditIcon: {
-    fontSize: '14px',
-    color: palette.gray.medium5,
-    width: '16px',
-    height: '16px'
-  },
-  dependenciesList: {
-    backgroundColor: palette.white,
-    padding: 0,
-    borderRadius: '5px 5px 0 0',
-    overflowY: 'auto'
-  },
-  dependenciesListItem: {
-    boxShadow: '0 1px 1px #EBEBF0',
-    padding: 0,
-    height: '70px'
-  },
-  dependenciesCompactListItem: {
-    height: '43px'
-  },
-  listItemPreview: {
-    width: '100px',
-    height: '70px',
-    borderRadius: 0
-  },
-  listItemContent: {
-    paddingLeft: '15px'
-  },
-  compactViewAction: {
-    marginRight: 'auto'
-  },
-  showTypesSelect: {
-    '& > .MuiRadio-root': {
-      display: 'none'
-    }
-  },
-  showTypesMenu: {
-    '& .MuiListItem-root': {
-      padding: '0 10px',
+    title: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingBottom: 10
+    },
+    subtitle: {
       fontSize: '14px',
+      lineHeight: '18px',
+      paddingRight: '35px'
+    },
+    selectionContent: {
+      marginBottom: '15px',
+      display: 'flex'
+    },
+    dialogFooter: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2)
+    },
+    formControl: {
+      minWidth: 120,
+      marginLeft: 'auto'
+    },
+    selectLabel: {
+      position: 'relative',
+      color: palette.gray.dark5,
+      fontSize: '14px'
+    },
+    select: {
+      fontSize: '16px',
+      border: 'none',
+      background: 'none'
+    },
+    selectedItem: {
+      backgroundColor: palette.white,
+      borderRadius: '5px',
+      padding: '10px',
+      height: '40px',
+      fontSize: '16px',
+      borderColor: palette.gray.light1
+    },
+    selectedItemLabel: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      padding: '0 10px 0 0',
+      '& .label': {
+        fontWeight: '600',
+        marginRight: '10px',
+        color: palette.black,
+        fontSize: '16px'
+      },
+      '& .item-icon': {
+        color: palette.teal.main,
+        marginRight: '10px',
+        width: '20px',
+        height: '20px'
+      },
+      '& .item-title': {
+        marginRight: '25px'
+      }
+    },
+    selectedItemEditIcon: {
+      fontSize: '14px',
+      color: palette.gray.medium5,
+      width: '16px',
+      height: '16px'
+    },
+    dependenciesList: {
+      backgroundColor: palette.white,
+      padding: 0,
+      borderRadius: '5px 5px 0 0',
+      overflowY: 'auto'
+    },
+    dependenciesListItem: {
+      boxShadow: '0 1px 1px #EBEBF0',
+      padding: 0,
+      height: '70px'
+    },
+    dependenciesCompactListItem: {
+      height: '43px'
+    },
+    listItemPreview: {
+      width: '100px',
+      height: '70px',
+      borderRadius: 0
+    },
+    listItemContent: {
+      paddingLeft: '15px'
+    },
+    compactViewAction: {
+      marginRight: 'auto'
+    },
+    showTypesSelect: {
       '& > .MuiRadio-root': {
-        padding: '6px',
-        '& .MuiSvgIcon-root': {
-          width: '16px',
-          height: '16px'
+        display: 'none'
+      }
+    },
+    showTypesMenu: {
+      '& .MuiListItem-root': {
+        padding: '0 10px',
+        fontSize: '14px',
+        '& > .MuiRadio-root': {
+          padding: '6px',
+          '& .MuiSvgIcon-root': {
+            width: '16px',
+            height: '16px'
+          }
         }
       }
+    },
+    listEllipsis: {
+      padding: '8px'
+    },
+    suspense: {
+      height: '100%'
+    },
+    suspenseTitle: {
+      fontSize: '18px',
+      fontWeight: 600
     }
-  },
-  listEllipsis: {
-    padding: '8px'
-  },
-  suspense: {
-    height: '100%'
-  },
-  suspenseTitle: {
-    fontSize: '18px',
-    fontWeight: 600
-  }
-}));
+  })
+);
 
 interface DependenciesListProps {
   resource: Resource<DetailedItem[]>;
   compactView: boolean;
   showTypes: string;
 
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
+  handleContextMenuClick(
+    event: React.MouseEvent<HTMLButtonElement>,
+    dependency: DetailedItem
+  ): void;
 }
 
 function DependenciesList(props: DependenciesListProps) {
-  const {
-    resource,
-    compactView,
-    showTypes,
-    handleContextMenuClick
-  } = props;
+  const { resource, compactView, showTypes, handleContextMenuClick } = props;
   const classes = dependenciesDialogStyles({});
   const dependencies: DetailedItem[] = resource.read();
 
   return (
     <List className={classes.dependenciesList}>
-      {
-        dependencies
-          .filter(dependency => assetsTypes[showTypes].filter(dependency))
-          .map(dependency =>
-            <ListItem
-              key={dependency.path}
-              className={clsx(classes.dependenciesListItem, { [classes.dependenciesCompactListItem]: compactView })}
-            >
-              {
-                isImage(dependency.path) && !compactView &&
-                <ListItemAvatar>
-                  <Avatar className={classes.listItemPreview} src={dependency.path} />
-                </ListItemAvatar>
-              }
-              <ListItemText
-                className={classes.listItemContent}
-                primary={dependency.label}
-                secondary={(!compactView) ? dependency.path : null}
-              />
+      {dependencies
+        .filter((dependency) => assetsTypes[showTypes].filter(dependency))
+        .map((dependency) => (
+          <ListItem
+            key={dependency.path}
+            className={clsx(classes.dependenciesListItem, {
+              [classes.dependenciesCompactListItem]: compactView
+            })}
+          >
+            {isImage(dependency.path) && !compactView && (
+              <ListItemAvatar>
+                <Avatar className={classes.listItemPreview} src={dependency.path} />
+              </ListItemAvatar>
+            )}
+            <ListItemText
+              className={classes.listItemContent}
+              primary={dependency.label}
+              secondary={!compactView ? dependency.path : null}
+            />
 
-              <IconButton
-                aria-haspopup="true"
-                onClick={(e) => {
-                  handleContextMenuClick(e, dependency);
-                }}
-                className={classes.listEllipsis}
-              >
-                <MoreVertIcon />
-              </IconButton>
-            </ListItem>
-          )
-      }
+            <IconButton
+              aria-haspopup="true"
+              onClick={(e) => {
+                handleContextMenuClick(e, dependency);
+              }}
+              className={classes.listEllipsis}
+            >
+              <MoreVertIcon />
+            </IconButton>
+          </ListItem>
+        ))}
     </List>
   );
 }
 
 interface DependenciesDialogUIProps {
-  resource: Resource<DetailedItem[]>
+  resource: Resource<DetailedItem[]>;
   item: DetailedItem;
   rootPath: string;
   setItem: Function;
@@ -294,9 +302,13 @@ interface DependenciesDialogUIProps {
   onDismiss?(): void;
   isEditableItem: Function;
   handleEditorDisplay(item: DetailedItem): void;
+  handleHistoryDisplay(item: DetailedItem): void;
   contextMenu: any;
 
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
+  handleContextMenuClick(
+    event: React.MouseEvent<HTMLButtonElement>,
+    dependency: DetailedItem
+  ): void;
 
   handleContextMenuClose(): void;
 }
@@ -316,6 +328,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     onDismiss,
     isEditableItem,
     handleEditorDisplay,
+    handleHistoryDisplay,
     contextMenu,
     handleContextMenuClick,
     handleContextMenuClose
@@ -326,10 +339,7 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
 
   return (
     <>
-      <DialogHeader
-        title={formatMessage(translations.headerTitle)}
-        onDismiss={onDismiss}
-      />
+      <DialogHeader title={formatMessage(translations.headerTitle)} onDismiss={onDismiss} />
       <DialogBody className={classes.dialogBody}>
         <div className={classes.selectionContent}>
           <SingleItemSelector
@@ -354,13 +364,13 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                 className: classes.select
               }}
             >
-              <MenuItem value='depends-on'>
+              <MenuItem value="depends-on">
                 <FormattedMessage
                   id="dependenciesDialog.dependsOn"
                   defaultMessage="Items that depend on selected item"
                 />
               </MenuItem>
-              <MenuItem value='depends-on-me'>
+              <MenuItem value="depends-on-me">
                 <FormattedMessage
                   id="dependenciesDialog.dependsOnMe"
                   defaultMessage="Dependencies of selected item"
@@ -373,22 +383,20 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           resource={resource}
           withEmptyStateProps={{
             emptyStateProps: {
-              title: (
-                dependenciesShown === 'depends-on'
-                  ? (
-                    <FormattedMessage
-                      id="dependenciesDialog.emptyDependantsMessage"
-                      defaultMessage={'{itemName} has no dependencies'}
-                      values={{ itemName: item?.label }}
-                    />
-                  ) : (
-                    <FormattedMessage
-                      id="dependenciesDialog.emptyDependenciesMessage"
-                      defaultMessage={'Nothing depends on {itemName}'}
-                      values={{ itemName: item?.label }}
-                    />
-                  )
-              ),
+              title:
+                dependenciesShown === 'depends-on' ? (
+                  <FormattedMessage
+                    id="dependenciesDialog.emptyDependantsMessage"
+                    defaultMessage={'{itemName} has no dependencies'}
+                    values={{ itemName: item?.label }}
+                  />
+                ) : (
+                  <FormattedMessage
+                    id="dependenciesDialog.emptyDependenciesMessage"
+                    defaultMessage={'Nothing depends on {itemName}'}
+                    values={{ itemName: item?.label }}
+                  />
+                ),
               classes: {
                 root: classes.suspense,
                 title: classes.suspenseTitle
@@ -413,22 +421,17 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             open={Boolean(contextMenu.el)}
             onClose={handleContextMenuClose}
           >
-            {
-              contextMenu.dependency && isEditableItem(contextMenu.dependency.path) &&
+            {contextMenu.dependency && isEditableItem(contextMenu.dependency.path) && (
               <MenuItem
                 onClick={() => {
                   handleEditorDisplay(contextMenu.dependency);
                   handleContextMenuClose();
                 }}
               >
-                <FormattedMessage
-                  id="dependenciesDialog.edit"
-                  defaultMessage="Edit"
-                />
+                <FormattedMessage id="dependenciesDialog.edit" defaultMessage="Edit" />
               </MenuItem>
-            }
-            {
-              contextMenu.dependency &&
+            )}
+            {contextMenu.dependency && (
               <MenuItem
                 onClick={() => {
                   setItem(contextMenu.dependency);
@@ -440,14 +443,16 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                   defaultMessage="Dependencies"
                 />
               </MenuItem>
-            }
+            )}
             <MenuItem
-              onClick={handleContextMenuClose}
-            >   {/* TODO: pending, waiting for new history dialog */}
-              <FormattedMessage
-                id="dependenciesDialog.history"
-                defaultMessage="History"
-              />
+              onClick={() => {
+                handleHistoryDisplay(contextMenu.dependency);
+                handleContextMenuClose();
+              }}
+            >
+              {' '}
+              {/* TODO: pending, waiting for new history dialog */}
+              <FormattedMessage id="dependenciesDialog.history" defaultMessage="History" />
             </MenuItem>
           </Menu>
         </SuspenseWithEmptyState>
@@ -488,19 +493,12 @@ function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               getContentAnchorEl: null
             }}
           >
-            {
-              Object.keys(assetsTypes).map(typeId =>
-                (
-                  <MenuItem value={typeId} key={typeId}>
-                    <Radio
-                      checked={showTypes === typeId}
-                      color="primary"
-                    />
-                    {assetsTypes[typeId].label}
-                  </MenuItem>
-                )
-              )
-            }
+            {Object.keys(assetsTypes).map((typeId) => (
+              <MenuItem value={typeId} key={typeId}>
+                <Radio checked={showTypes === typeId} color="primary" />
+                {assetsTypes[typeId].label}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </DialogFooter>
@@ -515,16 +513,18 @@ interface DependenciesDialogBaseProps {
   dependenciesShown?: string;
 }
 
-export type DependenciesDialogProps = PropsWithChildren<DependenciesDialogBaseProps & {
-  onClose?(): void;
-  onClosed?(): void;
-  onDismiss?(): void;
-}>;
+export type DependenciesDialogProps = PropsWithChildren<
+  DependenciesDialogBaseProps & {
+    onClose?(): void;
+    onClosed?(): void;
+    onDismiss?(): void;
+  }
+>;
 
 export interface DependenciesDialogStateProps extends DependenciesDialogBaseProps {
-  onClose?: StandardAction
-  onClosed?: StandardAction
-  onDismiss?: StandardAction
+  onClose?: StandardAction;
+  onClosed?: StandardAction;
+  onDismiss?: StandardAction;
 }
 
 const dialogInitialState = {
@@ -536,12 +536,7 @@ const dialogInitialState = {
 
 export default function DependenciesDialog(props: DependenciesDialogProps) {
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.onClose}
-      fullWidth
-      maxWidth="md"
-    >
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
       <DependenciesDialogWrapper {...props} />
     </Dialog>
   );
@@ -558,7 +553,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
   const [deps, setDeps] = useState(null);
   const [error, setError] = useState<ApiResponse>(null);
   const siteId = useActiveSiteId();
-  const authoringBase = useSelection<string>(state => state.env.authoringBase);
+  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const defaultFormSrc = `${authoringBase}/legacy/form`;
   const [contextMenu, setContextMenu] = useSpreadState({
     el: null,
@@ -584,11 +579,26 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     }
   };
 
+  const handleHistoryDisplay = (item: DetailedItem) => {
+    dispatch(
+      batchActions([
+        fetchUserPermissions({
+          path: item.path
+        }),
+        fetchItemVersions({
+          item,
+          rootPath: getRootPath(item.path)
+        }),
+        showHistoryDialog({})
+      ])
+    );
+  };
+
   const depsSource = useMemo(() => {
     return { deps, error };
   }, [deps, error]);
 
-  const resource = useLogicResource<DetailedItem[], { deps: DetailedItem[], error: ApiResponse }>(
+  const resource = useLogicResource<DetailedItem[], { deps: DetailedItem[]; error: ApiResponse }>(
     depsSource,
     {
       shouldResolve: (source) => Boolean(source.deps),
@@ -599,44 +609,45 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     }
   );
 
-  const getDepsItems = useCallback((siteId: string, path: string, newItem?: boolean) => {
-    if (dialog.dependenciesShown === 'depends-on') {
-      if (dialog.dependantItems === null || newItem) {
-        getDependant(siteId, path)
-          .subscribe(response => {
+  const getDepsItems = useCallback(
+    (siteId: string, path: string, newItem?: boolean) => {
+      if (dialog.dependenciesShown === 'depends-on') {
+        if (dialog.dependantItems === null || newItem) {
+          getDependant(siteId, path).subscribe(
+            (response) => {
               const dependantItems = parseLegacyItemToSandBoxItem(response);
               setDialog({
                 dependantItems,
-                ...(
-                  newItem ? { dependencies: null } : {}
-                )
+                ...(newItem ? { dependencies: null } : {})
               });
               setDeps(dependantItems);
             },
-            (error) => setError(error));
+            (error) => setError(error)
+          );
+        } else {
+          setDeps(dialog.dependantItems);
+        }
       } else {
-        setDeps(dialog.dependantItems);
-      }
-    } else {
-      if (dialog.dependencies === null || newItem) {
-        getSimpleDependencies(siteId, path)
-          .subscribe(response => {
+        if (dialog.dependencies === null || newItem) {
+          getSimpleDependencies(siteId, path).subscribe(
+            (response) => {
               const dependencies = parseLegacyItemToSandBoxItem(response);
               setDialog({
                 dependencies,
-                ...(
-                  newItem ? { dependantItems: null } : {}
-                )
+                ...(newItem ? { dependantItems: null } : {})
               });
               setDeps(dependencies);
             },
-            (error) => setError(error));
-      } else {
-        setDeps(dialog.dependencies);
+            (error) => setError(error)
+          );
+        } else {
+          setDeps(dialog.dependencies);
+        }
       }
-    }
-    // eslint-disable-next-line
-  }, [dialog.item, dialog.dependenciesShown, setDialog]);
+      // eslint-disable-next-line
+    },
+    [dialog.item, dialog.dependenciesShown, setDialog]
+  );
 
   useEffect(() => {
     setDialog({ item });
@@ -674,7 +685,10 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
     setDialog({ dependenciesShown });
   };
 
-  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem) => {
+  const handleContextMenuClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    dependency: DetailedItem
+  ) => {
     setContextMenu({
       el: event.currentTarget,
       dependency
@@ -703,6 +717,7 @@ function DependenciesDialogWrapper(props: DependenciesDialogProps) {
       onDismiss={onDismiss}
       isEditableItem={isEditableAsset}
       handleEditorDisplay={handleEditorDisplay}
+      handleHistoryDisplay={handleHistoryDisplay}
       contextMenu={contextMenu}
       handleContextMenuClick={handleContextMenuClick}
       handleContextMenuClose={handleContextMenuClose}
