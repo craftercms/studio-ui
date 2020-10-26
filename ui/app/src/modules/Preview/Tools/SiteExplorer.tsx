@@ -87,7 +87,6 @@ const useExplorerStyles = makeStyles(() =>
 
 interface LinkWithIconProps {
   label: string;
-  altText: string;
   link: string;
   icon: {
     baseClass: string;
@@ -96,10 +95,10 @@ interface LinkWithIconProps {
 }
 
 const LinkWithIcon = (props: LinkWithIconProps) => {
-  const { link, label, altText, icon } = props;
+  const { link, label, icon } = props;
   const classes = useLinkIconStyles();
   return (
-    <ListItem button component={Link} href={link} className={classes.links} aria-label={altText}>
+    <ListItem button component={Link} href={link} className={classes.links}>
       <ListItemText
         primary={
           <>

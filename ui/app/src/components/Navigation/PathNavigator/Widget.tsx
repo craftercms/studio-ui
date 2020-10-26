@@ -100,7 +100,7 @@ export interface WidgetProps {
   rootPath: string;
   excludes: string[];
   locale?: string;
-  icon: StateStylingProps | React.ElementType;
+  icon: Partial<StateStylingProps>;
   container: StateStylingProps;
   classes?: Partial<Record<'root' | 'body' | 'searchRoot', string>>;
 }
@@ -166,12 +166,13 @@ export default function(props: WidgetProps) {
 
   useEffect(() => {
     if (siteLocales.defaultLocaleCode) {
-      dispatch(pathNavigatorSetLocaleCode({
-        id,
-        locale: siteLocales.defaultLocaleCode
-      }));
+      dispatch(
+        pathNavigatorSetLocaleCode({
+          id,
+          locale: siteLocales.defaultLocaleCode
+        })
+      );
     }
-
   }, [dispatch, id, siteLocales.defaultLocaleCode]);
 
   if (!state) {
@@ -233,9 +234,9 @@ export default function(props: WidgetProps) {
       checked
         ? pathNavigatorItemChecked({ id, item })
         : pathNavigatorItemUnchecked({
-          id,
-          item
-        })
+            id,
+            item
+          })
     );
   };
 
@@ -401,8 +402,10 @@ export function WidgetUI(props: any) {
   } = props;
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
+  const resource = useLogicResource<
+    DetailedItem[],
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
+  >(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -434,11 +437,9 @@ export function WidgetUI(props: any) {
       }}
     >
       <Header
-        icon={
-          icon.baseClass
-            ? `${icon.baseClass} ${state.collapsed ? icon.collapsedClass : icon.expandedClass}`
-            : icon
-        }
+        iconClassName={`${icon.baseClass} ${
+          state.collapsed ? icon.collapsedClass : icon.expandedClass
+        }`}
         style={{
           ...icon.baseStyle,
           ...(state.collapsed ? icon.collapsedStyle : icon.expandedStyle)
