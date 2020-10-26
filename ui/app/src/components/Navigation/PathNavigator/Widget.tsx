@@ -135,7 +135,7 @@ export interface WidgetState {
 
 // PathNavigator
 export default function(props: WidgetProps) {
-  const { label, icon, container, rootPath: path, id, locale} = props;
+  const { label, icon, container, rootPath: path, id, locale } = props;
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useSelection((state) => state.content.items).byPath;
   const site = useActiveSiteId();
@@ -165,14 +165,14 @@ export default function(props: WidgetProps) {
   });
 
   useEffect(() => {
-    if(siteLocales.defaultLocaleCode) {
+    if (siteLocales.defaultLocaleCode) {
       dispatch(pathNavigatorSetLocaleCode({
         id,
         locale: siteLocales.defaultLocaleCode
-      }))
+      }));
     }
 
-  }, [dispatch, id, siteLocales.defaultLocaleCode])
+  }, [dispatch, id, siteLocales.defaultLocaleCode]);
 
   if (!state) {
     return <LoadingState />;
@@ -233,9 +233,9 @@ export default function(props: WidgetProps) {
       checked
         ? pathNavigatorItemChecked({ id, item })
         : pathNavigatorItemUnchecked({
-            id,
-            item
-          })
+          id,
+          item
+        })
     );
   };
 
@@ -401,10 +401,8 @@ export function WidgetUI(props: any) {
   } = props;
   const { formatMessage } = useIntl();
 
-  const resource = useLogicResource<
-    DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }
-  >(
+  const resource = useLogicResource<DetailedItem[],
+    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem> }>(
     // We only want to renew the state when itemsInPath changes.
     // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
